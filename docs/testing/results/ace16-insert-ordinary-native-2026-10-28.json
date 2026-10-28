@@ -1,0 +1,509 @@
+{
+  "date": "2026-10-28",
+  "scope": "Ordinary 13/17-field scalar INSERT engineering candidates; no native Microsoft Access or normal-save claim",
+  "producer_build": {
+    "path": "docs/testing/results/ace16-insert-ordinary-example-build-2026-10-28.json",
+    "bytes": 153915,
+    "sha256": "e0c1b2ce4da8695c3f4fc581d58dbd56e412d4cec609719c232b7d9836ceda9e"
+  },
+  "producer_receipt_revision": "93311ab8",
+  "source_capture": {
+    "path": ".cache/ace16-insert-ordinary-source-first-20261028/report.json",
+    "bytes": 22351,
+    "sha256": "2a44c95bf5da8825b0a15bfb2a31245e542f063e8b585d98e36335e24e0b15e7"
+  },
+  "source_qualification_freeze": {
+    "path": ".cache/ace16-insert-ordinary-qualification-next-20261028/freeze.json",
+    "bytes": 13492,
+    "sha256": "9cc63e3c3670869330f4cf4c4918df0b7a60835fd518a61ad5a1954b493673d4"
+  },
+  "source_qualification": {
+    "path": ".cache/ace16-insert-ordinary-qualification-next-20261028/source-gates-first.json",
+    "bytes": 4670,
+    "sha256": "af1b4d58cb45b7816b596bba3f895a511ceec0d11a4df4133a80bd8094e211c3"
+  },
+  "expected_before_build": {
+    "path": ".cache/ace16-insert-ordinary-expected-second-20261028/freeze.json",
+    "bytes": 20952,
+    "sha256": "5d0cbb7364aa2e75a7c3eecf616da85a75030aa7d740e7b60d000cc5d41b35af"
+  },
+  "expected_plan": {
+    "path": ".cache/ace16-insert-ordinary-expected-second-20261028/plan.json",
+    "bytes": 26105,
+    "sha256": "b743323b0a6bcce358919a0f7b884747ba46ee054bbb049dca45dec132d5c0b5"
+  },
+  "producer_report": {
+    "path": ".cache/ace16-insert-ordinary-candidates-first-20261028/report.json",
+    "bytes": 57217,
+    "sha256": "96344ef6ac9e4b759395fd077c24e3be196d3808b525a65eb80df6f515c0104e"
+  },
+  "fresh_reader_report": {
+    "path": ".cache/ace16-insert-ordinary-getters-first-20261028/report.json",
+    "bytes": 122954,
+    "sha256": "9586af4d1da0664ef3d6c74a0e8eb6cee130f01ce173ec5420419236c123af94"
+  },
+  "producer_protocol_freeze": {
+    "path": ".cache/ace16-insert-ordinary-candidates-next-20261028/protocol-freeze.json",
+    "bytes": 22059,
+    "sha256": "499513934048d9515d0cec31c4ee204fd491d222b14b3624d19d73373bdb6145"
+  },
+  "producer_binding": {
+    "path": ".cache/ace16-insert-ordinary-candidates-next-20261028/binding-first.json",
+    "bytes": 155228,
+    "sha256": "26e8c95b3b51df50e13eef87e23107ef929e4ba4a5bab861c55b35b32a05acef"
+  },
+  "getter_protocol_freeze": {
+    "path": ".cache/ace16-insert-ordinary-getters-next-20261028/controller-freeze.json",
+    "bytes": 22062,
+    "sha256": "c810f29c00dc748db43e48d0cb77af74796f9c03ca687c78aa08ebc1c4dba054"
+  },
+  "getter_binding": {
+    "path": ".cache/ace16-insert-ordinary-getters-next-20261028/binding-first.json",
+    "bytes": 6783,
+    "sha256": "f468cc40ae50ebf246143811f3295f0f8bd9db715e446a0a610410ffbef5c7e7"
+  },
+  "observed_counts": {
+    "source_capture_calls": 9,
+    "candidate_calls": 4,
+    "candidate_first_pass_exit_zero": 4,
+    "complete_image_matches": 4,
+    "fresh_reader_calls": 8,
+    "fresh_first_pass_exit_zero": 8,
+    "preserved_old_selected_ROWS": 1804,
+    "final_selected_primary_pairs": 1808,
+    "all_table_fresh_rows": 3616,
+    "new_INDEX_pages": 8,
+    "new_DATA_pages": 2,
+    "new_bitmap_pages": 0,
+    "total_appended_bytes": 40960
+  },
+  "cases": [
+    {
+      "id": "V2016-FixedRows",
+      "profile": "V2016",
+      "table": "FixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2016-source.accdb",
+        "bytes": 495616,
+        "sha256": "bbfd0711082b6870200e44e7147dd101a521236868aaba135edddf6e29a7e6b8"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-FixedRows.tsv",
+        "bytes": 252,
+        "sha256": "3e2572ea7bd2c87e05800c61c0c1aa14e2bee38e25d8bb548ee6ac97b679bb23"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-FixedRows-expected.accdb",
+        "bytes": 503808,
+        "sha256": "12036fe516892b180dcc6a56f29a288900a27781535eeaa998c851af5d15f174"
+      },
+      "expected_details": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-FixedRows-details.json",
+        "bytes": 492,
+        "sha256": "1906e546484ffa2552ae68dd67a94120275ad0945019631c9bcc24fe67af9a0f"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-ordinary-candidates-first-20261028/V2016-FixedRows.accdb",
+        "bytes": 503808,
+        "sha256": "12036fe516892b180dcc6a56f29a288900a27781535eeaa998c851af5d15f174"
+      },
+      "whole_image_exact": true,
+      "summary": {
+        "source_rows": 451,
+        "final_rows": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "primary_position": 2,
+        "fixed_end": 69,
+        "variable_positions": [],
+        "new_ROWS": [
+          25867
+        ],
+        "new_record_bytes": [
+          71
+        ],
+        "fresh_INDEX_creation_order": [
+          121,
+          122
+        ],
+        "suffix_purposes": {
+          "121": "INDEX",
+          "122": "INDEX"
+        },
+        "root_height_before": 0,
+        "root_height_after": 1,
+        "old_ROWS_preserved": 451,
+        "final_key_ROW_pairs": 452,
+        "bytes_added": 8192
+      },
+      "fresh_reader_proof": {
+        "verified": true,
+        "typed_rows": 904,
+        "selected_rows": 452,
+        "selected_primary_key_ROW_pairs": 452,
+        "old_selected_ROWS_preserved": 451,
+        "new_ROWS": [
+          25867
+        ],
+        "table_inventory": [
+          "FixedRows",
+          "MixedRows",
+          "Sentinel"
+        ],
+        "public_AFTER_stream_or_ROW_authority": false
+      }
+    },
+    {
+      "id": "V2016-MixedRows",
+      "profile": "V2016",
+      "table": "MixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2016-source.accdb",
+        "bytes": 495616,
+        "sha256": "bbfd0711082b6870200e44e7147dd101a521236868aaba135edddf6e29a7e6b8"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-MixedRows.tsv",
+        "bytes": 1555,
+        "sha256": "45d1dd7fd66f8a3c48ff74c68a3f88099ee4a3fab20ecddc48346e83b914ced3"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-MixedRows-expected.accdb",
+        "bytes": 507904,
+        "sha256": "b193f6470d139913f6d9f02a069a49db5171894909219172602bd0a2c9998563"
+      },
+      "expected_details": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2016-MixedRows-details.json",
+        "bytes": 548,
+        "sha256": "fb876474388f62d4b7fc2be79616398905b459af5278919f08bcb1656fe774a5"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-ordinary-candidates-first-20261028/V2016-MixedRows.accdb",
+        "bytes": 507904,
+        "sha256": "b193f6470d139913f6d9f02a069a49db5171894909219172602bd0a2c9998563"
+      },
+      "whole_image_exact": true,
+      "summary": {
+        "source_rows": 451,
+        "final_rows": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "primary_position": 2,
+        "fixed_end": 69,
+        "variable_positions": [
+          11,
+          12,
+          13,
+          14
+        ],
+        "new_ROWS": [
+          30976
+        ],
+        "new_record_bytes": [
+          1106
+        ],
+        "fresh_INDEX_creation_order": [
+          122,
+          123
+        ],
+        "suffix_purposes": {
+          "121": "DATA",
+          "122": "INDEX",
+          "123": "INDEX"
+        },
+        "root_height_before": 0,
+        "root_height_after": 1,
+        "old_ROWS_preserved": 451,
+        "final_key_ROW_pairs": 452,
+        "bytes_added": 12288
+      },
+      "fresh_reader_proof": {
+        "verified": true,
+        "typed_rows": 904,
+        "selected_rows": 452,
+        "selected_primary_key_ROW_pairs": 452,
+        "old_selected_ROWS_preserved": 451,
+        "new_ROWS": [
+          30976
+        ],
+        "table_inventory": [
+          "FixedRows",
+          "MixedRows",
+          "Sentinel"
+        ],
+        "public_AFTER_stream_or_ROW_authority": false
+      }
+    },
+    {
+      "id": "V2019-FixedRows",
+      "profile": "V2019",
+      "table": "FixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2019-source.accdb",
+        "bytes": 569344,
+        "sha256": "6c3f299d71e397588d562d2ab161def669e3c12cf289c499e4ace51cb079e832"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-FixedRows.tsv",
+        "bytes": 252,
+        "sha256": "3e2572ea7bd2c87e05800c61c0c1aa14e2bee38e25d8bb548ee6ac97b679bb23"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-FixedRows-expected.accdb",
+        "bytes": 577536,
+        "sha256": "3d5c19bab3c20ef7155c4fea00bef0fbee12b06ca8cd598d224d95a9a63cc360"
+      },
+      "expected_details": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-FixedRows-details.json",
+        "bytes": 492,
+        "sha256": "b359746a87eafdb0292d6bc89eb48d334381d8457e1cce111368735950562cc4"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-ordinary-candidates-first-20261028/V2019-FixedRows.accdb",
+        "bytes": 577536,
+        "sha256": "3d5c19bab3c20ef7155c4fea00bef0fbee12b06ca8cd598d224d95a9a63cc360"
+      },
+      "whole_image_exact": true,
+      "summary": {
+        "source_rows": 451,
+        "final_rows": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "primary_position": 2,
+        "fixed_end": 69,
+        "variable_positions": [],
+        "new_ROWS": [
+          30475
+        ],
+        "new_record_bytes": [
+          71
+        ],
+        "fresh_INDEX_creation_order": [
+          139,
+          140
+        ],
+        "suffix_purposes": {
+          "139": "INDEX",
+          "140": "INDEX"
+        },
+        "root_height_before": 0,
+        "root_height_after": 1,
+        "old_ROWS_preserved": 451,
+        "final_key_ROW_pairs": 452,
+        "bytes_added": 8192
+      },
+      "fresh_reader_proof": {
+        "verified": true,
+        "typed_rows": 904,
+        "selected_rows": 452,
+        "selected_primary_key_ROW_pairs": 452,
+        "old_selected_ROWS_preserved": 451,
+        "new_ROWS": [
+          30475
+        ],
+        "table_inventory": [
+          "FixedRows",
+          "MixedRows",
+          "Sentinel"
+        ],
+        "public_AFTER_stream_or_ROW_authority": false
+      }
+    },
+    {
+      "id": "V2019-MixedRows",
+      "profile": "V2019",
+      "table": "MixedRows",
+      "source": {
+        "path": ".cache/ace16-insert-ordinary-source-first-20261028/V2019-source.accdb",
+        "bytes": 569344,
+        "sha256": "6c3f299d71e397588d562d2ab161def669e3c12cf289c499e4ace51cb079e832"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-MixedRows.tsv",
+        "bytes": 1555,
+        "sha256": "45d1dd7fd66f8a3c48ff74c68a3f88099ee4a3fab20ecddc48346e83b914ced3"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-MixedRows-expected.accdb",
+        "bytes": 581632,
+        "sha256": "789e707c9134401e37ea724c1b699c141d175852d37ee4eae84db223b313374f"
+      },
+      "expected_details": {
+        "path": ".cache/ace16-insert-ordinary-expected-second-20261028/V2019-MixedRows-details.json",
+        "bytes": 548,
+        "sha256": "a2fe9e53c145dff1135a6900463c66a3cdb560162539cc7158ab5de734cbf35b"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-ordinary-candidates-first-20261028/V2019-MixedRows.accdb",
+        "bytes": 581632,
+        "sha256": "789e707c9134401e37ea724c1b699c141d175852d37ee4eae84db223b313374f"
+      },
+      "whole_image_exact": true,
+      "summary": {
+        "source_rows": 451,
+        "final_rows": 452,
+        "history_before": 451,
+        "history_after": 452,
+        "primary_position": 2,
+        "fixed_end": 69,
+        "variable_positions": [
+          11,
+          12,
+          13,
+          14
+        ],
+        "new_ROWS": [
+          35584
+        ],
+        "new_record_bytes": [
+          1106
+        ],
+        "fresh_INDEX_creation_order": [
+          140,
+          141
+        ],
+        "suffix_purposes": {
+          "139": "DATA",
+          "140": "INDEX",
+          "141": "INDEX"
+        },
+        "root_height_before": 0,
+        "root_height_after": 1,
+        "old_ROWS_preserved": 451,
+        "final_key_ROW_pairs": 452,
+        "bytes_added": 12288
+      },
+      "fresh_reader_proof": {
+        "verified": true,
+        "typed_rows": 904,
+        "selected_rows": 452,
+        "selected_primary_key_ROW_pairs": 452,
+        "old_selected_ROWS_preserved": 451,
+        "new_ROWS": [
+          35584
+        ],
+        "table_inventory": [
+          "FixedRows",
+          "MixedRows",
+          "Sentinel"
+        ],
+        "public_AFTER_stream_or_ROW_authority": false
+      }
+    }
+  ],
+  "binding_history": {
+    "first_expected_bundle": {
+      "path": ".cache/ace16-insert-ordinary-expected-first-20261028/freeze.json",
+      "bytes": 17132,
+      "sha256": "6487c063eb358d81921d9ace7cef6a5f2b39fff3cb28f10126603467a374bf71"
+    },
+    "gate_report_versions": {
+      "path": ".cache/ace16-insert-ordinary-qualification-next-20261028/gate-report-versions/history.json",
+      "bytes": 1101,
+      "sha256": "1185d813f6cfd8660c24c5cddfb3dada76652ab8fef03967c88a3f71a3c77aa1"
+    },
+    "cause": "Source qualification report metadata was expanded after first golden preparation; pre-build pin validation detected that sole input drift.",
+    "resolution": "New pure bundle rebinds the final receipt and requires all four complete expected images and details to remain identical; no producer ran before resolution.",
+    "model_request_source_changes": false
+  },
+  "limitations": [
+    "The exact source and new record bytes are interpreted independently; old NULL payloads and valid alternate Text remain opaque/preserved.",
+    "Raw Boolean declaration length one is already normalized to zero payload width by the unchanged native Rust reader.",
+    "Source gates do not grant complete catalog mutation authority; the actual native candidate still passes its own full admission and final proof.",
+    "Normal ACE writes, required data macros, wider indexes/record profiles and native Access save/reopen remain unfinished."
+  ],
+  "maintained_saved_verification": {
+    "tools": [
+      {
+        "path": "docs/testing/ace16_insert_ordinary/README.md",
+        "bytes": 7382,
+        "sha256": "d6510b2dd20278379d8b5f16a97914f1348af31de13ac05ecfc680b40bce2e27"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/acceptance.py",
+        "bytes": 5118,
+        "sha256": "65e75b77054d5be4386d8f109a3c3faf0759fd0881a5a4d2a8dfb680184f8a48"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/image_model.py",
+        "bytes": 10302,
+        "sha256": "0533b841b7a2516ad7bceb842f609a275e277818d3da59a9bbe2e2f78ba53282"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/record_decode.py",
+        "bytes": 8186,
+        "sha256": "011274519e7e4389030eb0b962fc1579febb8274b2babe76f1be91460512d050"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/reference.py",
+        "bytes": 8160,
+        "sha256": "c378f50053604daa78d775872dadfc92254117d353311360e46d2285c1ae5696"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/reference_verify.py",
+        "bytes": 7244,
+        "sha256": "c97bd20268de4a7f47ea2fc951fc2ad95eb2e2bbc17773ad6c065c96d99b4409"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/requests.py",
+        "bytes": 1442,
+        "sha256": "42fcbe7abf68b3c3d0dff965b74c5d32684876ea2d56f24568d1fbc454effa87"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/row_codec.py",
+        "bytes": 7518,
+        "sha256": "4aeda01a29cab15bb6c70a776ce3094aee22317fc0c1a4997306fa5157714ef0"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/source.py",
+        "bytes": 12288,
+        "sha256": "f9d5a4be10f8945b8747f6af205a9210f1f9f8707df68dca40716dffc98673c4"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ordinary/verify.py",
+        "bytes": 16725,
+        "sha256": "bb68ca503cc57c1d18a57054eb9d8bbbd0a9b9ed9680c0f22a0dc37ded70cd17"
+      }
+    ],
+    "default": {
+      "exit_code": 0,
+      "report": {
+        "path": ".cache/ace16-insert-ordinary-maintained-proof-20261028/root-complete-first.json",
+        "bytes": 8661,
+        "sha256": "4345d7764ea0cf8505f9f02c0ab373554c1af1c99ea941bdd6bf3109fbadf472"
+      },
+      "pin_occurrences": 2268,
+      "distinct_paths": 615,
+      "child_processes": 0
+    },
+    "optional_git": {
+      "exit_code": 0,
+      "report": {
+        "path": ".cache/ace16-insert-ordinary-maintained-proof-20261028/root-complete-git-first.json",
+        "bytes": 8722,
+        "sha256": "f30bb02c3aa3b04b7485cf7980bb599ff4f12ce696d2366c10d36d54641cfc57"
+      },
+      "compiled_source_objects": 766,
+      "receipt_objects": 1,
+      "metadata_child_processes": 1
+    },
+    "missing_evidence": {
+      "exit_code": 2,
+      "available": false,
+      "report": {
+        "path": ".cache/ace16-insert-ordinary-maintained-proof-20261028/root-missing-first.json",
+        "bytes": 184,
+        "sha256": "378f30a540abbf880a19f688dbbd4d67cb5c8423f896536ad48c74ea7d177bc2"
+      }
+    },
+    "local_documentation_targets": {
+      "checked": 6085,
+      "missing": 0
+    }
+  },
+  "separate_public_reference": {
+    "path": "docs/testing/results/ace16-insert-ordinary-public-reference-2026-10-28.json",
+    "bytes": 18730,
+    "sha256": "9e84d2b7fbe72ca3b9db9e136569009ccf46ebefc692bad9a0ded9710799269a"
+  }
+}

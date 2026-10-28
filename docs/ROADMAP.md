@@ -357,9 +357,18 @@ qualification remain unfinished.
   example passes eight. All 403 ACE unit functions pass with one existing ignored
   test, including the 108-function subset. Strict all-target/all-feature Clippy,
   four public preview contracts, three compile-fail doctests, minimal compilation,
-  strict rustdoc and formatting pass. Authentic broader-schema
-  sources/references/candidates are unrun. Existing two-field receipts are not
-  retargeted; defaults/generated fields, additional indexes, Decimal/LVAL/extended
+  strict rustdoc and formatting pass. Nine actual source capture calls and four
+  saved-only typed gates pass; four independent complete images match four
+  first-attempt [candidates](testing/results/ace16-insert-ordinary-native-2026-10-28.json)
+  before eight first-attempt fresh getter/map calls. All 1,804 old selected ROWs
+  remain; the suffix contains eight INDEX and two DATA pages with no bitmap.
+  The pre-build source-gate receipt metadata rebind preserves all four image and
+  detail files. Four separate [public INSERT references](testing/results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+  and eight inert getter/map calls pass on their first attempts, with matching new
+  ROWs and allocation purposes. Complete images differ only in 1,566 unused
+  fresh-INDEX bytes per case; engineering padding stays zero. Existing two-field
+  receipts are not retargeted;
+  defaults/generated fields, additional indexes, Decimal/LVAL/extended
   dates, required data macros and normal native saves remain unfinished.
 
 Major gates still open before the full backend is complete:

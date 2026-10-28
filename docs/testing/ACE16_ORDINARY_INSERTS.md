@@ -13,10 +13,73 @@ functions. The full ACE unit batch passes 403 functions with one existing ignore
 test; the 108-function subset is included. Production library/example compilation
 and eight example functions pass. Strict all-target/all-feature Clippy, four public
 preview contracts, three compile-fail doctests, minimal compilation, strict rustdoc
-and formatting pass. New authentic source/reference runs, an isolated committed
-producer artifact and complete-image/getter qualification remain unrun. Earlier
+and formatting pass. Four actual-source candidates now match independently frozen
+complete images, followed by eight passing fresh read-only getter/map calls.
+The separate public reference phase also passes four INSERTs and eight inert
+getter/map calls on their first attempts. Earlier
 [two-field recursive evidence](ACE16_INSERT_RECURSIVE.md) remains separately
 qualified; it does not supply wider-schema or Text INSERT evidence.
+
+## Actual ordinary-schema qualification
+
+Two fresh Jackcess 5.0.4 public-builder originals, V2016 and V2019, each contain
+FixedRows, MixedRows and Sentinel. FixedRows has thirteen fixed fields; MixedRows
+has seventeen fields including two Short Text and two Binary fields. Both targets
+contain 451 manually assigned Int32 keys and genuine PrimaryID/Twin aliases of
+physical index zero. The primary is native column two, after a nullable Int32
+companion and Boolean. Both actual Text fields store Boolean
+`AllowZeroLength=true`, and no field stores `DefaultValue`. All nine bounded
+source capture commands pass on their first attempts. Capture explicitly does
+not establish source eligibility; four
+subsequent saved-only gates check actual metadata, properties, typed raw records,
+ROWs, maps and the pressure geometry before image construction.
+
+The actual fixed extent is 69 bytes. Source FixedRows records are 71 bytes, with
+3,279 bytes free on the highest hint page. MixedRows records are 97 bytes, with
+only 23 bytes free on each DATA page. New explicit requests produce 71-byte fixed
+or 1,106-byte mixed records. Stored Byte FF is checked against the actual signed
+Java `Byte:-1` projection and Core Byte 255. DATE uses explicit UTC and
+`LOCAL_DATE_TIME`; Currency, IEEE bits, GUID, masks and variable offsets are
+checked independently. Existing NULL payloads and reader-valid Text wires are
+decoded and preserved, rather than reconstructed with new-record defaults.
+
+The raw Boolean declaration has length one, while the existing native reader
+normalizes its physical payload width to zero. The Python oracle was corrected
+to make the same distinction. No Rust writer defect or admission change was
+needed. A separate source-gate receipt metadata change from 4,482 to 4,670 bytes
+was detected before the producer build. The initial bundle is retained; the
+87-input rebound bundle reproduces all four complete images and detail files
+byte-for-byte, with source, request and model bytes unchanged.
+
+The [committed producer build](results/ace16-insert-ordinary-example-build-2026-10-28.json)
+then produces all four [matching candidates](results/ace16-insert-ordinary-native-2026-10-28.json)
+on their first attempts. All four complete-image comparisons precede eight
+first-attempt fresh read-only getter/map calls. Each final snapshot has 904 typed
+rows across the three tables. The four cases retain all 1,804 old selected ROWs
+and contain 1,808 final primary key/ROW pairs. FixedRows fits its existing DATA
+page and appends two INDEX leaves; MixedRows appends one DATA page followed by
+two INDEX leaves. Together the candidates add eight INDEX pages and two DATA
+pages, 40,960 bytes, with no bitmap page. Each table and physical historical
+counter increments once despite the logical alias.
+
+The [maintained saved verifier](ace16_insert_ordinary/README.md) rederives all four
+images before interpreting cached fresh streams. Its default mode starts no
+child process; optional Git verification checks the compiled source closure.
+Missing private evidence is reported explicitly rather than treated as success.
+
+Four separate [public INSERT references](results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+and eight fresh inert getter/map calls also pass on their first attempts. Their
+new ROWs and allocation purposes agree with the engineering cases, and the
+transition proofs preserve old records and the other tables. The public proof
+decodes requested values and observes index framing independently; it does not
+construct the engineering images or require public scratch bytes to match them.
+Complete comparisons find exactly 1,566 differing bytes per case: 783 bytes in
+each fresh INDEX leaf's unused suffix. Both readers agree on the 226-entry,
+prefix-zero leaf frames and all 2,034 active bytes. The retained root, DATA,
+metadata, maps, counters and all other bytes agree in these four cases. The
+engineering suffixes remain zero; public unused bytes do not become golden data.
+These results do not establish Windows/native Microsoft Access save or reopen
+behavior.
 
 ## Declared storage and explicit carriers
 
@@ -132,6 +195,6 @@ forgeries, explicit/absent/wrong-type empty policies, quotas and cancellation.
 Defaults remain refused even with complete values or an empty batch. AutoNumber,
 generated identities, extra physical indexes, wider primary/tuple/foreign profiles,
 LVAL/Decimal/extended-date records, required data macros and production native
-saves remain separate work. New broader-schema source/reference and candidate
-qualification are unrun. Windows/native Microsoft Access comparisons remain
+saves remain separate work. Public broader-schema INSERT references provide
+separate independent-writer evidence. Windows/native Microsoft Access comparisons remain
 deferred; literal checks and Jackcess evidence do not establish full compatibility.
