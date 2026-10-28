@@ -405,7 +405,12 @@ fn decode_page(
         bytes[shared..length]
             .copy_from_slice(&page[ENTRY_START + previous_end..ENTRY_START + endpoint]);
         reserve(&mut entries, 1, reader)?;
-        entries.push(Wire::read_paid(&bytes[..length], reader)?);
+        let wire = if children {
+            Wire::read_branch_paid(&bytes[..length], reader)?
+        } else {
+            Wire::read_paid(&bytes[..length], reader)?
+        };
+        entries.push(wire);
         previous_end = endpoint;
     }
     if usize::from(u16_at(page, FREE_OFFSET)?) != PAGE_BYTES - ENTRY_START - previous_end {

@@ -20,11 +20,16 @@ pub(super) enum Wire {
         length: usize,
     },
     Owned(Vec<u8>),
+    BranchInline {
+        bytes: [u8; INLINE_BYTES],
+        length: usize,
+    },
+    BranchOwned(Vec<u8>),
 }
 
 impl Wire {
     pub(super) fn read(bytes: &[u8]) -> Result<Self, EditError> {
-        if bytes.len() > INLINE_BYTES {
+        if !(MARKER_BYTES + ROW_BYTES..=INLINE_BYTES).contains(&bytes.len()) {
             return Err(EditError::Preservation);
         }
         let mut encoded = [0; INLINE_BYTES];
@@ -62,10 +67,45 @@ impl Wire {
         &self,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
-        Self::read_paid(self, reader)
+        if self.is_branch() {
+            Self::read_branch_paid(self, reader)
+        } else {
+            Self::read_paid(self, reader)
+        }
+    }
+
+    pub(super) fn read_branch_paid(
+        bytes: &[u8],
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        if bytes.len() < MARKER_BYTES + ROW_BYTES + CHILD_BYTES {
+            return Err(EditError::Preservation);
+        }
+        Ok(Self::read_paid(bytes, reader)?.into_branch())
+    }
+
+    fn into_branch(self) -> Self {
+        match self {
+            Self::Inline { bytes, length } => Self::BranchInline { bytes, length },
+            Self::Owned(bytes) => Self::BranchOwned(bytes),
+            branch => branch,
+        }
+    }
+
+    fn is_branch(&self) -> bool {
+        matches!(self, Self::BranchInline { .. } | Self::BranchOwned(_))
+    }
+
+    fn comparison_parts(&self) -> (&[u8], &[u8], &[u8]) {
+        let end = self.len() - if self.is_branch() { CHILD_BYTES } else { 0 };
+        let key_end = end - ROW_BYTES;
+        (&self[..key_end], &self[key_end..end], &self[end..])
     }
 
     pub(super) fn child(&self, number: u32) -> Result<Self, EditError> {
+        if self.is_branch() || self.len() < MARKER_BYTES + ROW_BYTES {
+            return Err(EditError::Preservation);
+        }
         let end = self
             .len()
             .checked_add(CHILD_BYTES)
@@ -76,7 +116,7 @@ impl Wire {
         let mut bytes = [0; INLINE_BYTES];
         bytes[..self.len()].copy_from_slice(self);
         bytes[self.len()..end].copy_from_slice(&number.to_be_bytes());
-        Self::read(&bytes[..end])
+        Ok(Self::read(&bytes[..end])?.into_branch())
     }
 
     pub(super) fn child_paid(
@@ -84,6 +124,9 @@ impl Wire {
         number: u32,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
+        if self.is_branch() || self.len() < MARKER_BYTES + ROW_BYTES {
+            return Err(EditError::Preservation);
+        }
         if self.len() + CHILD_BYTES <= INLINE_BYTES {
             return self.child(number);
         }
@@ -97,7 +140,7 @@ impl Wire {
         let mut bytes = [0; MAX_WIRE_BYTES];
         bytes[..self.len()].copy_from_slice(self);
         bytes[self.len()..end].copy_from_slice(&number.to_be_bytes());
-        Self::read_paid(&bytes[..end], reader)
+        Self::read_branch_paid(&bytes[..end], reader)
     }
 }
 
@@ -131,15 +174,17 @@ impl Deref for Wire {
     type Target = [u8];
     fn deref(&self) -> &Self::Target {
         match self {
-            Self::Inline { bytes, length } => &bytes[..*length],
-            Self::Owned(bytes) => bytes,
+            Self::Inline { bytes, length } | Self::BranchInline { bytes, length } => {
+                &bytes[..*length]
+            }
+            Self::Owned(bytes) | Self::BranchOwned(bytes) => bytes,
         }
     }
 }
 
 impl PartialEq for Wire {
     fn eq(&self, other: &Self) -> bool {
-        **self == **other
+        self.is_branch() == other.is_branch() && **self == **other
     }
 }
 impl Eq for Wire {}
@@ -150,7 +195,17 @@ impl PartialOrd for Wire {
 }
 impl Ord for Wire {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.deref().cmp(other.deref())
+        // Native entry order compares the complete key first, then its ROW.
+        // ROW bytes cannot participate in a variable-length key comparison.
+        let (key, row, child) = self.comparison_parts();
+        let (other_key, other_row, other_child) = other.comparison_parts();
+        key.cmp(other_key)
+            .then_with(|| row.cmp(other_row))
+            // Child/kind ties keep Ord consistent with physical-byte equality.
+            // They never authorize duplicate key/ROW bounds: source bounds are
+            // stripped to leaf form before their strict-order qualification.
+            .then_with(|| child.cmp(other_child))
+            .then_with(|| self.is_branch().cmp(&other.is_branch()))
     }
 }
 impl<'a> IntoIterator for &'a Wire {

@@ -218,3 +218,35 @@ fn an_existing_empty_text_key_does_not_authorize_new_empty_text_without_a_declar
         Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
     );
 }
+
+#[test]
+fn descending_binary_prefix_keys_compare_before_their_row_suffixes() {
+    for code in [5, 6] {
+        let settings = Settings {
+            family: Family::Binary,
+            descending: true,
+            tuple: false,
+            reversed: false,
+            unique: false,
+            ignored: false,
+        };
+        let case = model::source(
+            code,
+            settings,
+            vec![
+                row(1, None, Some(vec![])),
+                row(2, None, Some(vec![255; 8])),
+                row(3, None, Some(vec![0])),
+            ],
+        );
+        run(
+            &case,
+            &[
+                row(10, None, Some(vec![255; 255])),
+                row(11, None, Some(vec![255; 9])),
+                row(12, None, Some(vec![])),
+                row(13, None, None),
+            ],
+        );
+    }
+}
