@@ -1,9 +1,10 @@
 //! Requested preferred variable wires; no builder serializer supplies proof.
 mod decimal;
+mod long_value;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{
-        data_type::{NUMERIC, SHORT_BINARY, SHORT_TEXT},
+        data_type::{LONG_TEXT, NUMERIC, OLE, SHORT_BINARY, SHORT_TEXT},
         layout::UNICODE_COMPRESSION_FLAG,
         text,
     },
@@ -24,6 +25,9 @@ pub(super) fn encode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     check(budget, cancelled)?;
+    if matches!(field.native_type(), LONG_TEXT | OLE) {
+        return long_value::encode_inline(field, value, budget, cancelled);
+    }
     if field.native_type() == NUMERIC {
         return decimal::encode(field, value, budget, cancelled);
     }

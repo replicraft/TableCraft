@@ -4,8 +4,8 @@ use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
         data_type::{
-            MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, NUMERIC, NUMERIC_BYTES, SHORT_BINARY,
-            SHORT_TEXT,
+            LONG_TEXT, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, NUMERIC, NUMERIC_BYTES, OLE,
+            SHORT_BINARY, SHORT_TEXT,
         },
         layout::{FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
@@ -118,6 +118,18 @@ pub(super) fn capture(
 }
 
 fn variable(field: &NativeColumn) -> Result<(), EditError> {
+    if matches!(field.native_type(), LONG_TEXT | OLE) {
+        let valid = field.flags() == UPDATABLE_FLAG
+            && field.storage_length() == 0
+            && (field.extended_flags() == 0
+                || (field.native_type() == LONG_TEXT
+                    && field.extended_flags() == UNICODE_COMPRESSION_FLAG));
+        return if valid {
+            Ok(())
+        } else {
+            Err(EditError::Unsupported(WriteBlocker::Column))
+        };
+    }
     let valid = field.flags() == UPDATABLE_FLAG
         && field.storage_length() > 0
         && match (field.native_type(), field.scalar_type()) {

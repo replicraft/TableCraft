@@ -247,19 +247,25 @@ fn boolean_offsets_cannot_invent_payload_extent_and_invalid_layouts_refuse() {
     ));
     literal::put16(&mut overlap, TABLE + FIELDS + FIELD_BYTES + 21, 4);
     qualify(&schema(&overlap), &mut budget(), &|| false).unwrap();
-    for (kind, length) in [(20, 42), (12, 0), (11, 0)] {
-        let variables = if kind == 20 {
-            Vec::new()
-        } else {
-            vec![(1, 0, false)]
-        };
-        let unsupported = source(
-            &[("ID", 4, 0, 4), ("Unsupported", kind, 4, length)],
-            &variables,
+    let extended = source(&[("ID", 4, 0, 4), ("Extended", 20, 4, 42)], &[]);
+    let metadata = schema(&extended);
+    assert!(metadata.columns()[1].scalar_type().is_some());
+    assert!(qualify(&metadata, &mut budget(), &|| false).is_err());
+
+    for kind in [12, 11] {
+        let ordinary = source(
+            &[("ID", 4, 0, 4), ("LongValue", kind, 0, 0)],
+            &[(1, 0, false)],
         );
-        let metadata = schema(&unsupported);
-        assert!(metadata.columns()[1].scalar_type().is_some());
-        assert!(qualify(&metadata, &mut budget(), &|| false).is_err());
+        qualify(&schema(&ordinary), &mut budget(), &|| false).unwrap();
+        for (flags, extended, declared) in [(2, 16, 0), (6, 0, 0), (2, 0, 1)] {
+            let mut unsupported = ordinary.clone();
+            let field = TABLE + FIELDS + FIELD_BYTES;
+            unsupported[field + 15] = flags;
+            unsupported[field + 16] = extended;
+            literal::put16(&mut unsupported, field + 23, declared);
+            assert!(qualify(&schema(&unsupported), &mut budget(), &|| false).is_err());
+        }
     }
 }
 
@@ -297,4 +303,72 @@ fn decimal_reconstruction_uses_literal_words_and_rejects_scale_precision_and_car
             Err(EditError::Unsupported(WriteBlocker::Column)),
         );
     }
+}
+
+#[test]
+fn inline_memo_and_ole_descriptors_keep_null_empty_and_compressed_payload_separate() {
+    let before = source(
+        &[("ID", 4, 0, 4), ("Object", 11, 0, 0), ("Memo", 12, 0, 0)],
+        &[(1, 0, false), (2, 1, true)],
+    );
+    let metadata = schema(&before);
+    let encoded = reconstruct(
+        &before,
+        &metadata,
+        0,
+        vec![
+            Value::Int32(7),
+            Value::Binary(Vec::new()),
+            Value::Text("ABC".into()),
+        ],
+    )
+    .unwrap();
+    let mut expected = vec![3, 0, 7, 0, 0, 0];
+    expected.extend([0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0]);
+    expected.extend([5, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0, 255, 254, 65, 66, 67]);
+    expected.extend([35, 0, 18, 0, 6, 0, 2, 0, 7]);
+    assert_eq!(encoded, expected);
+
+    let null = reconstruct(
+        &before,
+        &metadata,
+        0,
+        vec![Value::Int32(7), Value::Null, Value::Text(String::new())],
+    )
+    .unwrap();
+    let mut expected = vec![3, 0, 7, 0, 0, 0];
+    expected.extend([0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0]);
+    expected.extend([18, 0, 6, 0, 6, 0, 2, 0, 5]);
+    assert_eq!(null, expected);
+}
+
+#[test]
+fn memo_inline_encoding_retains_raw_ties_and_refuses_nonroundtripping_bom_or_external_choice() {
+    let before = source(&[("ID", 4, 0, 4), ("Memo", 12, 0, 0)], &[(1, 0, true)]);
+    let metadata = schema(&before);
+    let row = reconstruct(
+        &before,
+        &metadata,
+        0,
+        vec![Value::Int32(1), Value::Text("AB".into())],
+    )
+    .unwrap();
+    assert_eq!(
+        &row[6..22],
+        &[4, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0, 65, 0, 66, 0]
+    );
+    assert_eq!(&row[22..], &[22, 0, 6, 0, 1, 0, 3]);
+    for value in [Value::Text("\u{feff}A".into()), Value::Text("A".repeat(63))] {
+        assert!(reconstruct(&before, &metadata, 0, vec![Value::Int32(1), value]).is_err());
+    }
+    let wrong = reconstruct(
+        &before,
+        &metadata,
+        0,
+        vec![Value::Int32(1), Value::Binary(Vec::new())],
+    );
+    assert!(matches!(
+        wrong,
+        Err(EditError::Unsupported(WriteBlocker::Column))
+    ));
 }

@@ -12,6 +12,21 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Inline Memo/OLE INSERT records
+
+The separate ACE 16 INSERT preview now accepts qualified ordinary Memo/OLE
+values whose preferred encoded payload fits the existing 64-byte inline profile.
+It reuses the working long-value encoder directly; an independent record audit
+reconstructs request payloads, compression decisions and 12-byte descriptors.
+NULL and present empty values remain distinct, with explicit empty-Memo policy.
+
+Two public complete-image and two independent audit functions cover both layouts,
+raw/compact UTF-16, NUL/non-BMP values, opaque OLE, limits and exact descriptors.
+All 160 table INSERT/audit functions, strict ACE all-target/all-feature Clippy,
+minimal compilation, formatting and documentation/dependency guards pass.
+External single/chained LVAL allocation is the next phase; normal saves and
+native Access qualification remain separate. See the [inline LVAL contract](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation).
+
 ## Short Text/Binary INSERT index keys
 
 The separate ACE 16 INSERT preview now maintains qualified General Short Text

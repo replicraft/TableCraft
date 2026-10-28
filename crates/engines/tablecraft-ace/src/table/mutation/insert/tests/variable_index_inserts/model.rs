@@ -191,7 +191,7 @@ pub(super) fn source(code: u8, settings: Settings, records: Vec<Row>) -> Case {
     };
     raw::put16(&mut before, column + 23, 510);
     if !matches!(settings.family, Family::Binary) {
-        super::properties::allow_empty_text(&mut before);
+        super::super::properties::allow_empty_text(&mut before);
         before[column + 11..column + 15].copy_from_slice(&[
             9,
             4,

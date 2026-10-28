@@ -11,7 +11,7 @@ required data-macro semantics remain unqualified.
 
 The selected ordinary ACE 16 table now admits the
 [ordinary scalar-row profile](ACE16_ORDINARY_INSERTS.md): supported fixed scalars,
-Boolean masks and multiple Short Text/Binary fields, with complete current
+Boolean masks and multiple Short Text/Binary fields, and [qualified inline Memo/OLE](ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation), with complete current
 physical geometry. Each request supplies every exact carrier in native column
 order. The actual declared Int32 primary selects its key column, not the first
 Int32 or a name. NULL and present empty values remain distinct. Text bounds count
