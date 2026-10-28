@@ -99,10 +99,7 @@ pub fn read_attachment_metadata_with_limits<R: NativeReadSource>(
         return Err(InspectError::Malformed);
     }
     let observed = crate::inspect_table_schema(source, scope, flat.name(), budget, cancelled)?;
-    if observed.object_id() != flat.object_id()
-        || observed.definition_page() != flat.definition_page()
-        || observed.layout != flat.layout
-    {
+    if !observed.same_definition(flat) {
         return Err(InspectError::Malformed);
     }
     let (positions, columns) =

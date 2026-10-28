@@ -171,6 +171,28 @@ pub struct TableSchema {
     pub(super) layout: Layout,
 }
 impl TableSchema {
+    /// Compare the complete native schema metadata captured by these values.
+    /// This includes catalog scope/name, definition, header and physical field layout.
+    /// It does not compare record/index contents or property maps and cannot establish
+    /// source/revision equality: callers must retain the same stable source binding.
+    pub fn same_definition(&self, other: &Self) -> bool {
+        self.object == other.object
+            && self.name == other.name
+            && self.definition == other.definition
+            && self.header == other.header
+            && self.layout == other.layout
+            && self.columns.len() == other.columns.len()
+            && self
+                .columns
+                .iter()
+                .zip(&other.columns)
+                .all(|(left, right)| {
+                    left.field == right.field
+                        && left.name == right.name
+                        && left.profile == right.profile
+                })
+    }
+
     /// Original table name.
     pub fn name(&self) -> &str {
         self.name.as_str()

@@ -1,14 +1,22 @@
 use super::super::{ComplexColumnSchema, ComplexTableSchema};
-use crate::TableSnapshot;
+use crate::{NativeRowReference, TableSnapshot};
 use std::ops::Range;
 use tablecraft_core::values::Value;
 
 /// One snapshot-local parent row's stored key and checked child membership.
 pub struct ComplexParentLink {
+    pub(super) reference: NativeRowReference,
     pub(super) key: Option<i32>,
     pub(super) range: Range<usize>,
 }
 impl ComplexParentLink {
+    /// Validated logical parent root, before following any forwarding pointer.
+    /// Complete parent links are in strictly increasing page/slot order. Compare
+    /// references only within the same stable source and returned owner schema.
+    pub const fn row_reference(&self) -> NativeRowReference {
+        self.reference
+    }
+
     /// Raw key scoped to this snapshot's selected column; not a global object ID.
     pub const fn key(&self) -> Option<i32> {
         self.key
