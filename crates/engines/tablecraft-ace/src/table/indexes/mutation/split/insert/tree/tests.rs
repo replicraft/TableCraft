@@ -65,6 +65,7 @@ fn operation<'a>(
         image,
         checked,
         id: 0,
+        physical: 0,
         final_keys: keys,
     }
 }

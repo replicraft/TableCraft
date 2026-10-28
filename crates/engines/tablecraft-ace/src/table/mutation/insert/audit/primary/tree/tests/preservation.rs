@@ -262,8 +262,8 @@ fn independent_child_growth_covers_both_sides_peer_bulk_and_qualified_map_transi
                     let (left, right) = leaves(root);
                     let retained = if target_left { left } else { right };
                     assert_eq!(after.len(), (eof + 1 + usize::from(promoted)) * PAGE);
-                    assert_eq!(staged.indexes.added.len(), 1 + usize::from(promoted));
-                    assert_eq!(staged.indexes.promotions.len(), usize::from(promoted));
+                    assert_eq!(staged.indexes[0].added.len(), 1 + usize::from(promoted));
+                    assert_eq!(staged.indexes[0].promotions.len(), usize::from(promoted));
                     assert_eq!(&after[eof * PAGE..eof * PAGE + 2], &[4, 1]);
                     assert_eq!(
                         u16::from_le_bytes(
@@ -327,8 +327,8 @@ fn odd_halves_and_data_first_share_the_cursor_without_repartitioning_original_bo
             let new_left = 19 + usize::from(empty_hint);
             let retained = if target_left { 17 } else { 18 };
             assert_eq!(after.len(), (new_left + 1) * PAGE);
-            assert_eq!(staged.indexes.added.len(), 1);
-            assert_eq!(staged.indexes.added[0].number as usize, new_left);
+            assert_eq!(staged.indexes[0].added.len(), 1);
+            assert_eq!(staged.indexes[0].added[0].number as usize, new_left);
             assert_eq!(&after[new_left * PAGE..new_left * PAGE + 2], &[4, 1]);
             assert_eq!(
                 u16::from_le_bytes(
@@ -376,7 +376,7 @@ fn healthy_checked_child_growth_rejects_residue_requests_and_extra_patch_authori
         )
         .unwrap();
 
-        staged.indexes.added[0].bytes[3000] = 0x58;
+        staged.indexes[0].added[0].bytes[3000] = 0x58;
         let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
         checked(&forged, 453);
         assert_eq!(
@@ -391,10 +391,10 @@ fn healthy_checked_child_growth_rejects_residue_requests_and_extra_patch_authori
             ),
             Err(EditError::Preservation)
         );
-        staged.indexes.added[0].bytes[3000] = 0;
+        staged.indexes[0].added[0].bytes[3000] = 0;
 
-        for patch in 0..staged.indexes.patches.len() {
-            staged.indexes.patches[patch].after[3000] ^= 1;
+        for patch in 0..staged.indexes[0].patches.len() {
+            staged.indexes[0].patches[patch].after[3000] ^= 1;
             let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
             checked(&forged, 453);
             assert_eq!(
@@ -409,13 +409,13 @@ fn healthy_checked_child_growth_rejects_residue_requests_and_extra_patch_authori
                 ),
                 Err(EditError::Preservation)
             );
-            staged.indexes.patches[patch].after[3000] ^= 1;
+            staged.indexes[0].patches[patch].after[3000] ^= 1;
         }
         if target_left {
             let before_page = before[18 * PAGE..19 * PAGE].to_vec();
             let mut after_page = before_page.clone();
             after_page[3000] ^= 1;
-            staged.indexes.patches.push(IndexDataPatch {
+            staged.indexes[0].patches.push(IndexDataPatch {
                 offset: 18 * PAGE,
                 before: before_page,
                 after: after_page,
@@ -434,7 +434,7 @@ fn healthy_checked_child_growth_rejects_residue_requests_and_extra_patch_authori
                 ),
                 Err(EditError::Preservation)
             );
-            staged.indexes.patches.pop();
+            staged.indexes[0].patches.pop();
         }
         let drift = requests(&[-227]);
         assert_eq!(
@@ -515,7 +515,7 @@ fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     let staged = prepare(&image, &structural, &both, &mut budget(), &|| false).unwrap();
     let candidate = finish(image, "Items", &both, &staged, &mut budget(), &|| false).unwrap();
     checked(candidate.candidate_bytes(), 904);
-    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(staged.indexes[0].added.len(), 2);
     assert_eq!(candidate.candidate_bytes().len(), 130 * PAGE);
     assert_eq!(word(candidate.candidate_bytes(), 95, 20), 101);
 
@@ -530,7 +530,7 @@ fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     let staged = prepare(&image, &structural, &repeated, &mut budget(), &|| false).unwrap();
     let candidate = finish(image, "Items", &repeated, &staged, &mut budget(), &|| false).unwrap();
     checked(candidate.candidate_bytes(), 904);
-    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(staged.indexes[0].added.len(), 2);
     assert_eq!(word(candidate.candidate_bytes(), 13, 20), 18);
 
     // The same all-bounded source accepts a new maximum when its parent fits.
@@ -544,7 +544,7 @@ fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     let candidate = finish(image, "Items", &fitting, &staged, &mut budget(), &|| false).unwrap();
     checked(candidate.candidate_bytes(), 303);
     assert_eq!(candidate.candidate_bytes().len(), before.len());
-    assert!(staged.indexes.added.is_empty());
+    assert!(staged.indexes[0].added.is_empty());
     assert_eq!(word(candidate.candidate_bytes(), 13, 20), 0);
 
     // MAX destroys one shared prefix byte: 13 + 301 * 12 = 3625 > 3616.
@@ -559,7 +559,7 @@ fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     assert_eq!(after.len(), before.len() + 2 * PAGE);
     assert_eq!(after[13 * PAGE + 26], 2);
     assert_eq!(word(after, 13, 20), 0);
-    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(staged.indexes[0].added.len(), 2);
     for number in [324, 325] {
         assert_eq!(after[number * PAGE + 26], 1);
         assert_ne!(word(after, number, 20), 0);
@@ -570,7 +570,7 @@ fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     let extra = requests(&[-1]);
     let structural = preflight(&next, "Items", &extra, &mut budget(), &|| false).unwrap();
     let staged = prepare(&next, &structural, &extra, &mut budget(), &|| false).unwrap();
-    assert!(staged.indexes.added.is_empty());
+    assert!(staged.indexes[0].added.is_empty());
     let candidate = finish(next, "Items", &extra, &staged, &mut budget(), &|| false).unwrap();
     checked(candidate.candidate_bytes(), 304);
 }
@@ -600,15 +600,15 @@ fn valid_alternate_fresh_destination_order_cannot_replace_declared_normalization
         &|| false,
     )
     .unwrap();
-    assert_eq!(staged.indexes.added.len(), 2);
-    assert_eq!(staged.indexes.added[0].number, 128);
-    assert_eq!(staged.indexes.added[1].number, 129);
+    assert_eq!(staged.indexes[0].added.len(), 2);
+    assert_eq!(staged.indexes[0].added[0].number, 128);
+    assert_eq!(staged.indexes[0].added[1].number, 129);
 
     // Preserve every key, ROW, membership cell and counter while exchanging the
     // destinations of the two new leaves. The graph remains semantically valid.
-    let (first, rest) = staged.indexes.added.split_at_mut(1);
+    let (first, rest) = staged.indexes[0].added.split_at_mut(1);
     std::mem::swap(&mut first[0].bytes, &mut rest[0].bytes);
-    for patch in &mut staged.indexes.patches {
+    for patch in &mut staged.indexes[0].patches {
         if patch.offset == 95 * PAGE {
             assert_eq!(
                 u16::from_le_bytes(patch.after[24..26].try_into().unwrap()),
@@ -661,7 +661,7 @@ fn independently_checked_internal_growth_rejects_fresh_and_retained_residue() {
     let requested = requests(&[i32::MAX]);
     let structural = preflight(&image, "Items", &requested, &mut budget(), &|| false).unwrap();
     let mut staged = prepare(&image, &structural, &requested, &mut budget(), &|| false).unwrap();
-    assert_eq!(staged.indexes.added.len(), 2);
+    assert_eq!(staged.indexes[0].added.len(), 2);
     let healthy = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
     checked(&healthy, 303);
     audit::prove(
@@ -678,9 +678,9 @@ fn independently_checked_internal_growth_rejects_fresh_and_retained_residue() {
     // Both appended pages are internal nodes. Their unused bytes must be zero
     // even though each carries valid complete child bounds and a tail child.
     for page in 0..2 {
-        assert_eq!(staged.indexes.added[page].bytes[0], 3);
-        assert_eq!(staged.indexes.added[page].bytes[3500], 0);
-        staged.indexes.added[page].bytes[3500] = 0x6c;
+        assert_eq!(staged.indexes[0].added[page].bytes[0], 3);
+        assert_eq!(staged.indexes[0].added[page].bytes[3500], 0);
+        staged.indexes[0].added[page].bytes[3500] = 0x6c;
         let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
         checked(&forged, 303);
         assert_eq!(
@@ -695,11 +695,10 @@ fn independently_checked_internal_growth_rejects_fresh_and_retained_residue() {
             ),
             Err(EditError::Preservation)
         );
-        staged.indexes.added[page].bytes[3500] = 0;
+        staged.indexes[0].added[page].bytes[3500] = 0;
     }
 
-    let root = staged
-        .indexes
+    let root = staged.indexes[0]
         .patches
         .iter_mut()
         .find(|patch| patch.offset == 13 * PAGE)

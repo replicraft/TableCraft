@@ -8,11 +8,11 @@ mod write;
 
 use super::super::{ImageProof, copied, reserve};
 use super::split::PromotionExpected;
-use super::{WIRE_BYTES, page_range};
+use super::{Wire, page_range};
 use crate::{
     EditError, NativeImage, NativeIndex,
     format::{page::PAGE_BYTES, reader::Reader},
-    table::indexes::mutation::insertion::PrimaryInsertion,
+    table::indexes::mutation::insertion::IndexInsertion,
 };
 use std::io::Cursor;
 
@@ -26,20 +26,21 @@ pub(super) struct Change {
     rebased: Option<u32>,
 }
 
-pub(super) fn original(
+pub(super) fn inventory(
     image: &NativeImage,
     index: &NativeIndex,
     definition: u32,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<[u8; WIRE_BYTES]>, EditError> {
-    Ok(source::Source::capture(image, index, definition, reader)?.entries)
+) -> Result<(Vec<Wire>, Vec<u32>), EditError> {
+    let source = source::Source::capture(image, index, definition, reader)?;
+    Ok((source.entries, source.pages))
 }
 
 pub(super) fn derive(
     image: &NativeImage,
     index: &NativeIndex,
     definition: u32,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Change, EditError> {
@@ -67,7 +68,7 @@ impl Change {
 
     pub(super) fn compare(
         &self,
-        actual: &PrimaryInsertion,
+        actual: &IndexInsertion,
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {

@@ -1,6 +1,6 @@
 //! Resolve independently normalized symbols, replay maps and frame exact pages.
 
-use super::super::{WIRE_BYTES, page_range, split::maps::Allocation};
+use super::super::{Wire, page_range, split::maps::Allocation};
 use super::{
     Change, ImageProof, frames,
     normalize::{Normalized, Origin, Payload},
@@ -10,7 +10,7 @@ use super::{
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex,
     format::{page::PAGE_BYTES, reader::Reader},
-    table::indexes::mutation::insertion::PrimaryInsertion,
+    table::indexes::mutation::insertion::IndexInsertion,
 };
 use std::io::Cursor;
 
@@ -18,7 +18,7 @@ pub(super) fn derive(
     image: &NativeImage,
     index: &NativeIndex,
     source: &Source,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     normalized: &Normalized,
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -188,7 +188,7 @@ fn collect(
 
 pub(super) fn compare(
     change: &Change,
-    actual: &PrimaryInsertion,
+    actual: &IndexInsertion,
     proof: &ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {

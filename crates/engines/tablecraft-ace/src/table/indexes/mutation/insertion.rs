@@ -1,4 +1,4 @@
-//! Request membership and cardinality growth for one qualified Int32 primary.
+//! Request membership and cardinality growth for one qualified physical numeric index.
 use super::split::{
     self, AddedPage,
     allocation::{Promotion, Rebase},
@@ -24,7 +24,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 
 const ENTRY_BUFFER: usize =
-    size_of::<u8>() + size_of::<i32>() + size_of::<u32>() + size_of::<u32>();
+    size_of::<u8>() + size_of::<i64>() + size_of::<u32>() + size_of::<u32>();
 
 /// Borrow the request carrier. DATA certification must independently establish
 /// the new logical ROW; this key planner does not grant DATA placement authority.
@@ -34,7 +34,7 @@ pub(in crate::table) struct InsertKey<'a> {
 }
 
 /// Builder comparison facts, not a sealed request or after-image certificate.
-pub(in crate::table) struct PrimaryInsertion {
+pub(in crate::table) struct IndexInsertion {
     pub patches: Vec<IndexDataPatch>,
     pub added: Vec<AddedPage>,
     pub promotions: Vec<Promotion>,
@@ -44,17 +44,19 @@ pub(in crate::table) struct PrimaryInsertion {
     root: u32,
     usage: u32,
     original_count: usize,
+    source_pages: Vec<u32>,
+    column: usize,
+    distinct_added: usize,
     expected: Vec<KeyRef>,
 }
 
-impl PrimaryInsertion {
-    /// Transfer the DATA cursor through primary maintenance and return its sole
+impl IndexInsertion {
+    /// Transfer the DATA cursor through physical-index maintenance and return its sole
     /// final owner. Bounded root maxima can change without allocating pages.
     pub(in crate::table) fn continue_with_append(
         mut self,
         image: &NativeImage,
         checked: &TableCheck,
-        id: usize,
         append: State,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -68,7 +70,8 @@ impl PrimaryInsertion {
             split::insert::Operation {
                 image,
                 checked,
-                id,
+                id: self.column,
+                physical: self.physical,
                 final_keys: &self.expected,
             },
             append,
@@ -84,6 +87,10 @@ impl PrimaryInsertion {
         Ok((self, plan.append))
     }
 
+    pub(in crate::table) fn source_pages(&self) -> &[u32] {
+        &self.source_pages
+    }
+
     pub(in crate::table) fn physical(&self) -> u32 {
         self.physical
     }
@@ -93,6 +100,10 @@ impl PrimaryInsertion {
     pub(in crate::table) fn usage(&self) -> u32 {
         self.usage
     }
+    pub(in crate::table) fn distinct_added(&self) -> usize {
+        self.distinct_added
+    }
+
     pub(in crate::table) fn original_count(&self) -> usize {
         self.original_count
     }
@@ -107,12 +118,13 @@ pub(in crate::table) fn prepare(
     image: &NativeImage,
     checked: &TableCheck,
     id_column: usize,
+    physical: u32,
     requests: &[InsertKey<'_>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<PrimaryInsertion, EditError> {
+) -> Result<IndexInsertion, EditError> {
     check(budget, cancelled)?;
-    let index = qualify(checked, id_column, budget, cancelled)?;
+    let index = qualify(checked, id_column, physical, budget, cancelled)?;
     let schema = checked.schema();
     let root_start = (index.root_page() as usize)
         .checked_mul(PAGE_BYTES)
@@ -130,8 +142,12 @@ pub(in crate::table) fn prepare(
     }
     let profile = SingleProfile {
         column: schema.columns()[id_column].number(),
-        kind: NumericKey::new(ScalarType::Int32)?,
-        descending: false,
+        kind: NumericKey::new(
+            schema.columns()[id_column]
+                .scalar_type()
+                .ok_or(InspectError::Unsupported)?,
+        )?,
+        descending: index.columns()[0].descending(),
     };
     let mut source = image.reader();
     let mut reader = Reader {
@@ -157,7 +173,11 @@ pub(in crate::table) fn prepare(
     {
         return Err(EditError::Preservation);
     }
+    let mut source_pages = Vec::new();
+    collect_pages(&tree, &mut source_pages, &mut reader)?;
     let original_count = expected.len();
+    reader.work(expected.len())?;
+    let original_distinct = distinct(&expected);
     let final_count = original_count
         .checked_add(requests.len())
         .filter(|count| *count <= MAX_LIVE_ROWS)
@@ -171,10 +191,7 @@ pub(in crate::table) fn prepare(
         .map_err(|_| InspectError::Allocation)?;
     for request in requests {
         reader.tick()?;
-        let value = match request.value {
-            Value::Int32(value) => i64::from(*value),
-            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-        };
+        let value = profile.kind.key_type().key(request.value)?;
         let page = reference_page(request.reference);
         if page == 0
             || u64::from(page) >= MAX_IMAGE_BYTES / PAGE_BYTES as u64
@@ -187,7 +204,7 @@ pub(in crate::table) fn prepare(
             return Err(EditError::Conflict);
         }
         expected.push(KeyRef {
-            key: Some(value),
+            key: value,
             row: request.reference,
         });
     }
@@ -212,7 +229,7 @@ pub(in crate::table) fn prepare(
     let mut patches = Vec::new();
     // NODE continuation also rebuilds bounded parent maxima when every leaf
     // fits; all NODE sources use that same owned service.
-    let mut requires_continuation = source_node;
+    let mut requires_continuation = source_node && !requests.is_empty();
     if !source_node && !requests.is_empty() {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(
@@ -242,7 +259,11 @@ pub(in crate::table) fn prepare(
         }
     }
     check(reader.budget, cancelled)?;
-    Ok(PrimaryInsertion {
+    reader.work(expected.len())?;
+    let distinct_added = distinct(&expected)
+        .checked_sub(original_distinct)
+        .ok_or(EditError::Preservation)?;
+    Ok(IndexInsertion {
         patches,
         added: Vec::new(),
         promotions: Vec::new(),
@@ -252,56 +273,106 @@ pub(in crate::table) fn prepare(
         root: index.root_page(),
         usage: index.usage_map(),
         original_count,
+        source_pages,
+        column: id_column,
+        distinct_added,
         expected,
     })
 }
 
-fn qualify<'a>(
+pub(in crate::table::indexes) fn qualify<'a>(
     checked: &'a TableCheck,
-    id_column: usize,
+    column: usize,
+    physical: u32,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a NativeIndex, EditError> {
     let schema = checked.schema();
     let field = schema
         .columns()
-        .get(id_column)
+        .get(column)
         .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-    if field.scalar_type() != Some(ScalarType::Int32) {
+    if !matches!(
+        field.scalar_type(),
+        Some(
+            ScalarType::Byte
+                | ScalarType::Int16
+                | ScalarType::Int32
+                | ScalarType::Int64
+                | ScalarType::Currency
+        )
+    ) {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
-    if schema.layout.physical_indexes != 1 || checked.indexes().is_empty() {
+    if physical as usize >= schema.layout.physical_indexes {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
-    let mut primary = None;
-    let first = checked.indexes()[0].index();
-    for checked_index in checked.indexes() {
+    let first = checked
+        .indexes()
+        .iter()
+        .find(|item| item.index().data_number() == physical)
+        .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?
+        .index();
+    let mut primary = false;
+    for item in checked
+        .indexes()
+        .iter()
+        .filter(|item| item.index().data_number() == physical)
+    {
         check(budget, cancelled)?;
-        let index = checked_index.index();
+        let index = item.index();
         let constraints = index
             .constraints()
             .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
-        if checked_index.status() != IndexCheckStatus::Checked
+        if item.status() != IndexCheckStatus::Checked
             || index.native_type() > PRIMARY_INDEX
-            || index.data_number() != 0
             || index.root_page() != first.root_page()
             || index.usage_map() != first.usage_map()
             || index.flags() != first.flags()
             || index.columns() != first.columns()
             || index.columns().len() != 1
             || index.columns()[0].number() != field.number()
-            || index.columns()[0].descending()
-            || !constraints.unique()
-            || !constraints.required()
             || constraints.ignore_nulls()
+            || (constraints.primary_key()
+                && (primary
+                    || field.scalar_type() != Some(ScalarType::Int32)
+                    || index.columns()[0].descending()
+                    || !constraints.unique()
+                    || !constraints.required()))
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
-        if constraints.primary_key() && primary.replace(index).is_some() {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
+        primary |= constraints.primary_key();
     }
-    primary.ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    Ok(first)
+}
+
+fn collect_pages(
+    tree: &Tree,
+    pages: &mut Vec<u32>,
+    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader.tick()?;
+    reader
+        .budget
+        .charge_allocation(1, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
+    pages
+        .try_reserve_exact(1)
+        .map_err(|_| InspectError::Allocation)?;
+    pages.push(tree.number());
+    for child in tree.children() {
+        collect_pages(child, pages, reader)?;
+    }
+    Ok(())
+}
+
+fn distinct(entries: &[KeyRef]) -> usize {
+    entries
+        .iter()
+        .enumerate()
+        .filter(|(position, entry)| *position == 0 || entries[*position - 1].key != entry.key)
+        .count()
 }
 
 #[cfg(test)]

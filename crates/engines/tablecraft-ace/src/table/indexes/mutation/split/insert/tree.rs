@@ -4,7 +4,10 @@ mod source;
 mod write;
 
 use super::super::{AllocationPolicy, Plan, allocation, leaf_entries, pages, seal};
-use super::{ENTRY_BUFFER, Operation, primary, prior_allocations, retained_members};
+use super::{
+    ENTRY_BUFFER, Operation, physical_index, prior_allocations, require_prior_owners,
+    retained_members,
+};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -24,7 +27,6 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_schema::ScalarType;
 
 /// Bind original topology and immutable final membership, preflight all levels,
 /// then resolve the same DATA cursor into final INDEX/bitmap reservations.
@@ -38,25 +40,32 @@ pub(super) fn continue_primary(
     let image = operation.image;
     let checked = operation.checked;
     let definition = checked.schema().definition_page();
-    let index = primary(&operation, budget, cancelled)?;
+    let index = physical_index(&operation, budget, cancelled)?;
     if append.original_length != image.as_bytes().len()
         || append.owner != definition
         || append.length < append.original_length
         || append.length as u64 > MAX_IMAGE_BYTES
         || !append.length.is_multiple_of(PAGE_BYTES)
         || (append.length - append.original_length) / PAGE_BYTES != append.reservations_len()
-        || append.indexes().next().is_some()
+        || append
+            .indexes()
+            .any(|prior| prior.physical >= operation.physical)
     {
         return Err(EditError::Preservation);
     }
+    require_prior_owners(&operation, &append, budget, cancelled)?;
     append.preview(0)?;
     if operation.final_keys.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
     let profile = SingleProfile {
         column: checked.schema().columns()[operation.id].number(),
-        kind: NumericKey::new(ScalarType::Int32)?,
-        descending: false,
+        kind: NumericKey::new(
+            checked.schema().columns()[operation.id]
+                .scalar_type()
+                .ok_or(InspectError::Unsupported)?,
+        )?,
+        descending: index.columns()[0].descending(),
     };
     let header = IndexHeader::read(raw(image, index.root_page())?)?;
     if !matches!(header.kind, NODE | LEAF) || header.previous.get() != 0 || header.next.get() != 0 {
@@ -80,7 +89,14 @@ pub(super) fn continue_primary(
             return Err(EditError::Conflict);
         }
     } else {
-        retained_members(&source.keys, operation.final_keys, &append, &mut reader)?;
+        retained_members(
+            &source.keys,
+            operation.final_keys,
+            &profile,
+            index,
+            &append,
+            &mut reader,
+        )?;
     }
     let layout = if operation.final_keys.is_empty() {
         None

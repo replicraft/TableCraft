@@ -95,7 +95,7 @@ fn literal_leaf(original: &[u8], keys: &[(i32, u32)]) -> Vec<u8> {
     bytes
 }
 
-fn compose_root(before: &[u8], plan: &PrimaryInsertion) -> Vec<u8> {
+fn compose_root(before: &[u8], plan: &IndexInsertion) -> Vec<u8> {
     let mut bytes = before.to_vec();
     for patch in &plan.patches {
         assert_eq!(
@@ -130,7 +130,7 @@ fn genuine_primary_insertion_grows_cardinality_once_for_logical_aliases() {
             let expected_root =
                 literal_leaf(&before[ROOT_START..ROOT_START + PAGE], &expected_entries);
             let image = split_model::capture(&before);
-            let plan = prepare(&image, &check, 1, &request, &mut budget(), &|| false).unwrap();
+            let plan = prepare(&image, &check, 1, 0, &request, &mut budget(), &|| false).unwrap();
             assert_eq!(
                 (
                     plan.physical(),
@@ -197,7 +197,7 @@ fn unordered_new_keys_keep_exact_signed_domain_and_complete_row_ties() {
     ];
     let expected = literal_leaf(&before[ROOT_START..ROOT_START + PAGE], &expected_entries);
     let image = split_model::capture(&before);
-    let plan = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
+    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
     assert_eq!(plan.expected().len(), 6);
     assert_eq!(
         plan.expected().collect::<Vec<_>>(),
@@ -217,14 +217,25 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
     let before = source(5, true);
     let check = checked(&before);
     let image = split_model::capture(&before);
-    for value in [Value::Null, Value::Int64(40), Value::Binary(vec![40])] {
+    let null = Value::Null;
+    let requests = [InsertKey {
+        reference: (12 << 8) | 3,
+        value: &null,
+    }];
+    assert!(matches!(
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        Err(EditError::Inspect(InspectError::IndexConstraint(
+            IndexConstraintViolation::NullKey
+        )))
+    ));
+    for value in [Value::Int64(40), Value::Binary(vec![40])] {
         let requests = [InsertKey {
             reference: (12 << 8) | 3,
             value: &value,
         }];
         assert!(matches!(
-            prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
-            Err(EditError::Unsupported(WriteBlocker::Column))
+            prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+            Err(EditError::Inspect(InspectError::Malformed))
         ));
     }
     let duplicate = Value::Int32(20);
@@ -233,7 +244,7 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
         value: &duplicate,
     }];
     assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::DuplicateKey
         )))
@@ -245,7 +256,7 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
             value: &value,
         }];
         assert!(matches!(
-            prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
+            prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
             Err(EditError::Conflict)
         ));
     }
@@ -260,7 +271,7 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
         },
     ];
     assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Conflict)
     ));
     let requests = [
@@ -274,7 +285,7 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
         },
     ];
     assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::DuplicateKey
         )))
@@ -285,10 +296,9 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
 #[test]
 fn all_index_profiles_and_existing_write_headers_are_qualified_without_fallback() {
     let value = Value::Int32(40);
-    for mode in 0..4 {
+    for mode in 1..4 {
         let mut before = source(6, false);
         match mode {
-            0 => before[10 * PAGE + 218] = 0,
             1 => before[10 * PAGE + 189] |= 2,
             2 => before[ROOT_START + 8] = 0x42,
             _ => {}
@@ -301,7 +311,9 @@ fn all_index_profiles_and_existing_write_headers_are_qualified_without_fallback(
         }];
         let column = if mode == 3 { 0 } else { 1 };
         assert!(matches!(
-            prepare(&image, &check, column, &request, &mut budget(), &|| false),
+            prepare(&image, &check, column, 0, &request, &mut budget(), &|| {
+                false
+            }),
             Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
         ));
     }
@@ -320,7 +332,7 @@ fn overflow_prepares_no_leaf_patch_before_explicit_split_continuation() {
         reference: (15 << 8) | 250,
         value: &value,
     }];
-    let pending = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
+    let pending = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
     assert!(pending.requires_continuation);
     assert_eq!(pending.expected().len(), 501);
     assert!(pending.patches.is_empty());
@@ -345,7 +357,7 @@ fn pools_late_cancellation_retry_and_empty_requests_preserve_source_bytes() {
             _ => unreachable!(),
         };
         assert!(
-            matches!(prepare(&image, &check, 1, &requests, &mut allowance, &|| false), Err(EditError::Inspect(InspectError::Limit(LimitError { resource: actual, .. }))) if actual == resource)
+            matches!(prepare(&image, &check, 1, 0, &requests, &mut allowance, &|| false), Err(EditError::Inspect(InspectError::Limit(LimitError { resource: actual, .. }))) if actual == resource)
         );
     }
     let calls = Cell::new(0);
@@ -355,19 +367,19 @@ fn pools_late_cancellation_retry_and_empty_requests_preserve_source_bytes() {
         prior >= 10
     };
     assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &cancelled),
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &cancelled),
         Err(EditError::Inspect(InspectError::Cancelled))
     ));
-    let healthy = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
+    let healthy = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
     assert_eq!(healthy.expected().len(), 4);
-    let noop = prepare(&image, &check, 1, &[], &mut budget(), &|| false).unwrap();
+    let noop = prepare(&image, &check, 1, 0, &[], &mut budget(), &|| false).unwrap();
     assert!(noop.patches.is_empty());
     assert_eq!(noop.expected().len(), 3);
     assert_eq!(image.as_bytes(), before);
 }
 
 #[test]
-fn another_genuine_physical_index_is_not_silently_skipped() {
+fn selected_physical_plans_bind_each_owner_without_claiming_coordinator_coverage() {
     let mut before = source(6, false);
     before.resize(18 * PAGE, 0);
     let original = before[10 * PAGE..11 * PAGE].to_vec();
@@ -413,10 +425,45 @@ fn another_genuine_physical_index_is_not_silently_skipped() {
         reference: (12 << 8) | 3,
         value: &value,
     }];
+    let first = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+    let second = prepare(&image, &check, 1, 1, &requests, &mut budget(), &|| false).unwrap();
+    assert_eq!(
+        (first.physical(), first.root(), first.usage()),
+        (0, 13, 14 << 8)
+    );
+    assert_eq!(
+        (second.physical(), second.root(), second.usage()),
+        (1, 16, 17 << 8)
+    );
+    assert_eq!(first.source_pages(), &[13]);
+    assert_eq!(second.source_pages(), &[16]);
+    for plan in [&first, &second] {
+        assert_eq!(plan.original_count(), 3);
+        assert_eq!(plan.distinct_added(), 1);
+        assert_eq!(
+            plan.expected().collect::<Vec<_>>(),
+            vec![
+                (Some(10), 12 << 8),
+                (Some(20), (12 << 8) | 1),
+                (Some(30), (12 << 8) | 2),
+                (Some(40), (12 << 8) | 3),
+            ]
+        );
+        assert!(plan.added.is_empty());
+        assert!(plan.promotions.is_empty());
+        assert!(plan.rebases.is_empty());
+        assert!(!plan.patches.is_empty());
+        assert!(
+            plan.patches
+                .iter()
+                .all(|patch| patch.offset / PAGE == plan.root() as usize)
+        );
+    }
     assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
+        prepare(&image, &check, 1, 2, &requests, &mut budget(), &|| false),
         Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
     ));
+    assert_eq!(image.as_bytes(), before);
 }
 
 #[test]
@@ -432,7 +479,7 @@ fn empty_primary_leaf_accepts_its_first_key_without_reallocating_or_canonicalizi
     let check = checked(&before);
     assert_eq!(check.rows(), 0);
     let image = split_model::capture(&before);
-    let noop = prepare(&image, &check, 1, &[], &mut budget(), &|| false).unwrap();
+    let noop = prepare(&image, &check, 1, 0, &[], &mut budget(), &|| false).unwrap();
     assert_eq!(noop.original_count(), 0);
     assert!(noop.patches.is_empty());
     let value = Value::Int32(i32::MIN);
@@ -444,7 +491,7 @@ fn empty_primary_leaf_accepts_its_first_key_without_reallocating_or_canonicalizi
         &before[ROOT_START..ROOT_START + PAGE],
         &[(i32::MIN, 12 << 8)],
     );
-    let plan = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
+    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
     assert_eq!(
         plan.expected().collect::<Vec<_>>(),
         [(Some(i64::from(i32::MIN)), 12 << 8)]
@@ -457,4 +504,39 @@ fn empty_primary_leaf_accepts_its_first_key_without_reallocating_or_canonicalizi
         &image.as_bytes()[10 * PAGE + 67..10 * PAGE + 71],
         &7_u32.to_le_bytes()
     );
+}
+
+#[test]
+fn ordinary_duplicate_and_null_families_increment_history_once() {
+    for flags in [0x80, 0x81] {
+        let mut before = source(6, false);
+        before[10 * PAGE + 189] = flags;
+        before[10 * PAGE + 218] = 0;
+        let report = checked(&before);
+        let image = split_model::capture(&before);
+        let values = if flags == 0x80 {
+            vec![
+                Value::Int32(10),
+                Value::Int32(40),
+                Value::Int32(40),
+                Value::Null,
+                Value::Null,
+            ]
+        } else {
+            vec![Value::Null, Value::Null]
+        };
+        let requests = values
+            .iter()
+            .enumerate()
+            .map(|(position, value)| InsertKey {
+                reference: (12 << 8) | (3 + position as u32),
+                value,
+            })
+            .collect::<Vec<_>>();
+        let plan = prepare(&image, &report, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(plan.distinct_added(), if flags == 0x80 { 2 } else { 1 });
+        assert_eq!(plan.source_pages(), &[13]);
+        assert_eq!(plan.expected().len(), 3 + values.len());
+        assert_eq!(image.as_bytes(), before);
+    }
 }

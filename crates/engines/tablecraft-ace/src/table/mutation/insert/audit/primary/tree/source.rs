@@ -1,27 +1,22 @@
 //! Original raw root bounds, complete child streams and canonical ownership.
-use super::super::{
-    BITMAP_BITS, BITMAP_START, FREE_OFFSET, INDEX_VERSION, KEY_MARKER, PREFIX_OFFSET, WIRE_BYTES,
-    decode, reference, value,
-};
+use super::super::{INDEX_VERSION, Wire, decode, decode_page, reference};
 use super::{raw, reserve};
 use crate::{
     EditError, NativeImage, NativeIndex,
-    format::{allocation, bytes::u16_at, page::PAGE_BYTES, reader::Reader},
+    format::{allocation, reader::Reader},
     limits::{MAX_INDEX_DEPTH, MAX_LIVE_ROWS},
     table::indexes::{
         header::IndexHeader,
-        page::{ENTRY_START, LEAF, NODE},
+        page::{LEAF, NODE},
     },
 };
 use std::{io::Cursor, ops::Range};
-
-const BOUND_BYTES: usize = WIRE_BYTES + size_of::<u32>();
 
 pub(super) struct Source {
     pub root: Branch,
     pub definition: u32,
     pub pages: Vec<u32>,
-    pub entries: Vec<[u8; WIRE_BYTES]>,
+    pub entries: Vec<Wire>,
 }
 
 pub(super) struct Branch {
@@ -35,7 +30,7 @@ pub(super) struct Branch {
 
 struct Capture {
     pages: Vec<u32>,
-    entries: Vec<[u8; WIRE_BYTES]>,
+    entries: Vec<Wire>,
     levels: Vec<Vec<u32>>,
 }
 
@@ -118,7 +113,7 @@ fn walk(
             return Err(EditError::Preservation);
         }
         reserve(&mut capture.entries, entries.len(), reader)?;
-        reader.work(entries.len().saturating_mul(WIRE_BYTES))?;
+        reader.work(entries.len().saturating_mul(size_of::<Wire>()))?;
         capture.entries.extend(entries);
         0
     } else if header.kind == NODE {
@@ -177,61 +172,33 @@ fn walk(
 fn decode_root(
     page: &[u8],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Vec<([u8; WIRE_BYTES], u32)>, EditError> {
-    let prefix = usize::from(u16_at(page, PREFIX_OFFSET)?);
-    if prefix > BOUND_BYTES {
+) -> Result<Vec<(Wire, u32)>, EditError> {
+    let (wires, _) = decode_page(page, true, reader)?;
+    if wires.is_empty() && IndexHeader::read(page)?.prefix.get() != 0 {
         return Err(EditError::Preservation);
     }
-    let mut bounds = Vec::new();
-    let mut first = [0; BOUND_BYTES];
-    let mut previous_end = 0;
-    reader.work((ENTRY_START - BITMAP_START) * BITMAP_BITS)?;
-    for endpoint in 0..(ENTRY_START - BITMAP_START) * BITMAP_BITS {
-        if page[BITMAP_START + endpoint / BITMAP_BITS] & (1 << (endpoint % BITMAP_BITS)) == 0 {
-            continue;
-        }
-        reader.tick()?;
-        let shared = if bounds.is_empty() { 0 } else { prefix };
-        if endpoint > PAGE_BYTES - ENTRY_START
-            || endpoint.checked_sub(previous_end) != Some(BOUND_BYTES - shared)
-        {
-            return Err(EditError::Preservation);
-        }
-        let mut wire = first;
-        wire[shared..].copy_from_slice(&page[ENTRY_START + previous_end..ENTRY_START + endpoint]);
-        if bounds.is_empty() {
-            first = wire;
-        }
-        let mut key = [0; WIRE_BYTES];
-        key.copy_from_slice(&wire[..WIRE_BYTES]);
-        if key[0] != KEY_MARKER
-            || bounds
-                .last()
-                .is_some_and(|(prior, _)| value(prior) >= value(&key))
-        {
+    let mut bounds: Vec<(Wire, u32)> = Vec::new();
+    reserve(&mut bounds, wires.len(), reader)?;
+    for wire in wires {
+        reader.work(wire.len() + 1)?;
+        let end = wire.len() - size_of::<u32>();
+        let key = Wire::read(&wire[..end])?;
+        if bounds.last().is_some_and(|(previous, _)| *previous >= key) {
             return Err(EditError::Preservation);
         }
         let child = u32::from_be_bytes(
-            wire[WIRE_BYTES..]
+            wire[end..]
                 .try_into()
                 .map_err(|_| EditError::Preservation)?,
         );
-        reserve(&mut bounds, 1, reader)?;
         bounds.push((key, child));
-        previous_end = endpoint;
     }
-    if (bounds.is_empty() && prefix != 0)
-        || usize::from(u16_at(page, FREE_OFFSET)?) != PAGE_BYTES - ENTRY_START - previous_end
-    {
-        return Err(EditError::Preservation);
-    }
-
     Ok(bounds)
 }
 
 pub(super) fn membership(
-    original: &[[u8; WIRE_BYTES]],
-    entries: &[[u8; WIRE_BYTES]],
+    original: &[Wire],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     if entries.len() < original.len() || entries.len() > MAX_LIVE_ROWS {
@@ -239,8 +206,8 @@ pub(super) fn membership(
     }
     for (position, entry) in entries.iter().enumerate() {
         reader.work(position + 1)?;
-        if entry[0] != KEY_MARKER
-            || (position > 0 && value(&entries[position - 1]) >= value(entry))
+        if entry.len() < 1 + size_of::<u32>()
+            || (position > 0 && entries[position - 1] >= *entry)
             || entries[..position]
                 .iter()
                 .any(|prior| reference(prior) == reference(entry))

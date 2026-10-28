@@ -2,6 +2,7 @@
 mod audit;
 mod compose;
 mod counters;
+mod indexes;
 mod placement;
 mod policies;
 mod primary_column;
@@ -17,8 +18,7 @@ use crate::{
     inspect_catalog,
     limits::MAX_LIVE_ROWS,
     table::{
-        indexes::mutation::insertion::{self, InsertKey, PrimaryInsertion},
-        mutation::variable_split::metadata::Metadata,
+        indexes::mutation::insertion::IndexInsertion, mutation::variable_split::metadata::Metadata,
     },
 };
 use std::io::Cursor;
@@ -45,7 +45,7 @@ impl RowInsert {
 
 struct Staged {
     data: placement::Plan,
-    indexes: PrimaryInsertion,
+    indexes: Vec<IndexInsertion>,
     counters: Vec<counters::Patch>,
 }
 
@@ -53,15 +53,19 @@ impl NativeImage {
     /// Construct a separate, non-journalable ACE 16 INSERT engineering candidate.
     ///
     /// The current profile constructs complete explicit ordinary fixed-scalar
-    /// and Short Text/Binary/Decimal records. Boolean uses its native value mask; other
-    /// fixed fields retain exact carriers and nullable presence bits. The sole
-    /// required unique ascending Int32 primary is selected from index metadata,
-    /// including logical aliases, independently of column order. Leaf and branch
-    /// trees admit recursive splits and one retained-root height increase per
-    /// operation, within existing depth and resource limits. Defaults, generated
-    /// fields, additional indexes and unsupported framing refuse. Decimal requires
-    /// its exact declared scale and precision without conversion or rounding. DATA and index
-    /// growth share one qualified EOF cursor and native map allocator.
+    /// and Short Text/Binary/Decimal records. Boolean uses its native value mask;
+    /// other fixed fields retain exact carriers and nullable presence bits.
+    /// One required unique ascending Int32 primary is selected from metadata,
+    /// independently of column order or physical slot. Additional single-key
+    /// Byte/Int16/Int32/Int64/Currency indexes admit either direction and represented
+    /// NULLs under their constraints. Logical aliases share one physical plan.
+    /// Leaf and branch trees admit recursive splits and a retained-root height
+    /// increase within existing limits. Every physical owner shares the same
+    /// DATA-first EOF cursor and map allocator. Historical counters increase only
+    /// for newly introduced key families, not every duplicate secondary entry.
+    /// Defaults, generated fields, Ignore-NULL indexes and other key profiles
+    /// remain refused. Decimal records require exact declared scale and precision
+    /// without conversion or rounding.
     ///
     /// This does not enable normal saves or qualify required data macros or
     /// Microsoft Access behavior. Only explicit disposable offline copies should
@@ -116,7 +120,7 @@ fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
-    let id = primary_column::resolve(structural, budget, cancelled)?;
+    let primary = primary_column::resolve(structural, budget, cancelled)?;
     let profile = record::Profile::bind(structural.schema(), budget, cancelled)?;
     policies::require_text_declarations(image, structural.schema(), requests, budget, cancelled)?;
 
@@ -130,7 +134,13 @@ fn prepare(
 
     for request in requests {
         check(budget, cancelled)?;
-        records.push(profile.build(request.values(), budget, cancelled)?);
+        let record = profile.build(request.values(), budget, cancelled)?;
+        // The public INSERT identity remains an explicit non-NULL Int32. The
+        // generic physical planner separately admits nullable secondary keys.
+        if !matches!(request.values().get(primary), Some(Value::Int32(_))) {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        records.push(record);
     }
 
     let metadata = Metadata::capture_for_insert(
@@ -150,31 +160,15 @@ fn prepare(
         cancelled,
     )?;
 
-    budget
-        .charge_allocation(requests.len() as u64, size_of::<InsertKey<'_>>() as u64)
-        .map_err(InspectError::from)?;
-    let mut keys = Vec::new();
-    keys.try_reserve_exact(requests.len())
-        .map_err(|_| InspectError::Allocation)?;
-
-    for (request, row) in requests.iter().zip(&data.rows) {
-        check(budget, cancelled)?;
-        keys.push(InsertKey {
-            reference: row.reference,
-            value: &request.values()[id],
-        });
-    }
-
-    let indexes = insertion::prepare(image, structural, id, &keys, budget, cancelled)?;
-
     let placement::Plan {
         pages,
         maps,
         append,
         rows,
     } = data;
-    let (indexes, append) =
-        indexes.continue_with_append(image, structural, id, append, budget, cancelled)?;
+    let (indexes, append) = indexes::prepare(
+        image, structural, requests, &rows, append, budget, cancelled,
+    )?;
     let data = placement::Plan {
         pages,
         maps,

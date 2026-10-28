@@ -1,5 +1,5 @@
 //! Request-routed subtrees and audit-owned symbolic postorder normalization.
-use super::super::WIRE_BYTES;
+use super::super::Wire;
 use super::{
     frames, reserve,
     source::{Branch, Source},
@@ -34,7 +34,7 @@ pub(super) struct Normalized {
 
 pub(super) fn prepare(
     source: &Source,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Normalized, EditError> {
     let mut result = Normalized {
@@ -62,7 +62,7 @@ fn routed(
     original: &Branch,
     range: Range<usize>,
     source: &Source,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     result: &mut Normalized,
     root: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -155,7 +155,7 @@ fn routed(
 fn normalize(
     index: usize,
     result: &mut Normalized,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<usize>, EditError> {
     let left = divide(result, index, reader)?;
@@ -249,7 +249,7 @@ fn divide(
 fn fits(
     node: &Node,
     result: &Normalized,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<bool, EditError> {
     let seed = match node.origin {

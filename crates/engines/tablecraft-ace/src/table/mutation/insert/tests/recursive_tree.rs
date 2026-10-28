@@ -348,8 +348,7 @@ fn reader_valid_root_residue_and_fresh_padding_forgeries_fail_final_request_proo
         let mut staged =
             prepare(&image, &before, &requests, &mut base::budget(), &|| false).unwrap();
         if mutation == 0 {
-            let root = staged
-                .indexes
+            let root = staged.indexes[0]
                 .patches
                 .iter_mut()
                 .find(|patch| patch.offset == 13 * PAGE)
@@ -359,8 +358,7 @@ fn reader_valid_root_residue_and_fresh_padding_forgeries_fail_final_request_proo
             // Preserve canonical patch order: change only original-root residue.
             root.after[PAGE - 1] ^= 1;
         } else {
-            let page = staged
-                .indexes
+            let page = staged.indexes[0]
                 .added
                 .iter_mut()
                 .find(|page| page.number == expected.fresh[0])

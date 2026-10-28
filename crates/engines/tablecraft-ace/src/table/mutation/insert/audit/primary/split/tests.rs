@@ -184,7 +184,7 @@ fn root_growth_proof_covers_represented_rebased_and_promoted_inventory() {
             let checked = preflight(&image, "Items", &requests, &mut budget(), &|| false).unwrap();
             let staged = prepare(&image, &checked, &requests, &mut budget(), &|| false).unwrap();
             assert_eq!(
-                staged.indexes.added.len(),
+                staged.indexes[0].added.len(),
                 2 + usize::from(metadata.is_some())
             );
 
@@ -241,7 +241,7 @@ fn healthy_growth_rejects_correlated_request_root_and_fresh_residue_forgery() {
     )
     .unwrap();
 
-    staged.indexes.added[0].bytes[3000] = 0x37;
+    staged.indexes[0].added[0].bytes[3000] = 0x37;
     let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
     self::checked(&forged, 452);
     assert_eq!(
@@ -256,9 +256,9 @@ fn healthy_growth_rejects_correlated_request_root_and_fresh_residue_forgery() {
         ),
         Err(EditError::Preservation)
     );
-    staged.indexes.added[0].bytes[3000] = 0;
+    staged.indexes[0].added[0].bytes[3000] = 0;
 
-    staged.indexes.patches[0].after[3000] ^= 1;
+    staged.indexes[0].patches[0].after[3000] ^= 1;
     let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
     self::checked(&forged, 452);
     assert_eq!(
@@ -273,7 +273,7 @@ fn healthy_growth_rejects_correlated_request_root_and_fresh_residue_forgery() {
         ),
         Err(EditError::Preservation)
     );
-    staged.indexes.patches[0].after[3000] ^= 1;
+    staged.indexes[0].patches[0].after[3000] ^= 1;
 
     let changed = vec![RowInsert::new(vec![Value::Int32(227), Value::Null])];
     assert_eq!(
@@ -310,7 +310,7 @@ fn index_row_transition_cannot_retire_even_unchanged_certified_data_effects() {
         };
 
         let (mut entries, _) = decode(&before[95 * PAGE..96 * PAGE], &mut reader).unwrap();
-        entries.push(literal_wire(226, (15 << 8) | 196));
+        entries.push(Wire::read(&literal_wire(226, (15 << 8) | 196)).unwrap());
         let offset = 15 * PAGE - 69;
         assert_eq!(before[offset], 0);
         let mut proof = ImageProof {
