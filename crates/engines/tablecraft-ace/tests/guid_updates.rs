@@ -5,7 +5,7 @@ mod base;
 mod guid_fixture;
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "guid_composite_indexes/fixture.rs"]
 mod tuple_fixture;
 

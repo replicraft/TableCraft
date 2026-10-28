@@ -6,7 +6,7 @@ mod fixture;
 mod large;
 #[path = "index_nodes/limits.rs"]
 mod limits;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     io::Cursor,

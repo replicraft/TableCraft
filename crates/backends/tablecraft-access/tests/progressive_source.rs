@@ -6,8 +6,7 @@ mod fixture;
 mod linked_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "progressive_source/extrema.rs"]
 mod extrema;

@@ -6,7 +6,7 @@ mod fixture;
 mod hyperlink;
 #[path = "calculated_memos/fixture.rs"]
 mod memo_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use memo_fixture::{FIELD_START, chained_database, database, descriptor, inline, lval, wrapped};
 use std::{cell::Cell, io::Cursor};

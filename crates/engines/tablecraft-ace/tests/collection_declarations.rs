@@ -7,7 +7,7 @@ mod base;
 mod complex_fixture;
 #[path = "complex_links/fixture.rs"]
 mod links_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

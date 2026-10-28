@@ -1501,6 +1501,7 @@ dependencies = [
  "tablecraft-query",
  "tablecraft-schema",
  "tablecraft-sql",
+ "tablecraft-testkit",
  "thiserror",
  "tracing",
  "uuid",
@@ -1533,6 +1534,7 @@ dependencies = [
  "tablecraft-model",
  "tablecraft-schema",
  "tablecraft-sql",
+ "tablecraft-testkit",
  "thiserror",
  "tracing",
  "uuid",
@@ -1567,6 +1569,7 @@ dependencies = [
  "tablecraft-query",
  "tablecraft-sql",
  "tablecraft-sqlite",
+ "tablecraft-testkit",
  "tempfile",
  "tracing",
  "tracing-subscriber",
@@ -1705,6 +1708,10 @@ dependencies = [
  "tokio-rusqlite",
  "tracing",
 ]
+
+[[package]]
+name = "tablecraft-testkit"
+version = "0.1.0"
 
 [[package]]
 name = "tempfile"

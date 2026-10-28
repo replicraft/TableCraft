@@ -1,9 +1,14 @@
+//! Literal Jet/ACE test images, without production codec dependencies.
+
+/// Write a literal little-endian test word into an existing byte buffer.
 pub fn put16(b: &mut [u8], at: usize, value: u16) {
     b[at..at + 2].copy_from_slice(&value.to_le_bytes());
 }
+/// Write a literal little-endian test integer into an existing byte buffer.
 pub fn put32(b: &mut [u8], at: usize, value: u32) {
     b[at..at + 4].copy_from_slice(&value.to_le_bytes());
 }
+/// Build an independent 4 KiB DATA page with explicit slot flags and bodies.
 pub fn data_page(owner: u32, rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     let mut page = vec![0; 4096];
     page[0] = 1;
@@ -19,6 +24,7 @@ pub fn data_page(owner: u32, rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     }
     page
 }
+/// Encode the five-field catalog record used by the raw fixture images.
 pub fn record(id: i32, parent: i32, kind: i16, flags: u32, name: &[u8]) -> Vec<u8> {
     let mut row = vec![0; 16];
     put16(&mut row, 0, 5);
@@ -34,6 +40,7 @@ pub fn record(id: i32, parent: i32, kind: i16, flags: u32, name: &[u8]) -> Vec<u
     row.push(0x1f);
     row
 }
+/// Build a small catalog fixture with optional forwarding and indirect allocation.
 pub fn image(overflow: bool, indirect: bool) -> Vec<u8> {
     let mut bytes = vec![0; 7 * 4096];
     bytes[..4].copy_from_slice(&[0, 1, 0, 0]);

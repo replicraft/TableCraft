@@ -8,7 +8,7 @@ mod composite_fixture;
 #[allow(dead_code)]
 #[path = "large_index_selections/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::ops::Bound::{Included, Unbounded};
 use tablecraft_ace::{

@@ -1,5 +1,6 @@
 //! Shared independent encoded-key fixtures; no mutation admission is implied.
-use super::{fixture, index_fixture, support};
+use super::{fixture, index_fixture};
+use tablecraft_testkit::access as support;
 
 #[allow(dead_code)]
 #[path = "../../tests/ace16_encoded_delete_contract/model.rs"]

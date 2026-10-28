@@ -1,6 +1,6 @@
 #[path = "linked_tables/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

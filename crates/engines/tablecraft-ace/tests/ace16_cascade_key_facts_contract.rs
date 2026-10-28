@@ -9,7 +9,7 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod restrict_model;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_cascade_key_facts_contract/tuple.rs"]
 mod tuple;

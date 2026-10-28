@@ -1,8 +1,8 @@
-mod support;
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use tablecraft_ace::{InspectError, read_table};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 struct FaultReader {
     cursor: Cursor<Vec<u8>>,

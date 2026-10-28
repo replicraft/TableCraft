@@ -2,12 +2,12 @@
 mod chains;
 #[path = "table_schema/short_values.rs"]
 mod short_values;
-mod support;
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
+use tablecraft_testkit::access as support;
 fn copy() -> Cursor<Vec<u8>> {
     Cursor::new(
         std::fs::read(

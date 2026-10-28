@@ -6,7 +6,7 @@ mod edits;
 mod failures;
 #[path = "composite_indexes/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::io::Cursor;

@@ -9,8 +9,8 @@ mod restrict_model;
 #[allow(dead_code)]
 #[path = "foreign_updates/fixture.rs"]
 mod self_fixture;
-mod support;
 use fixture as base;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_cascading_delete_contract/boundaries.rs"]
 mod boundaries;

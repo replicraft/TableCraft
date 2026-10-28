@@ -7,7 +7,7 @@ mod fixture;
 #[path = "ace16_long_value_updates_contract/model.rs"]
 mod original_model;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_long_value_map_authority_contract/model.rs"]
 mod model;

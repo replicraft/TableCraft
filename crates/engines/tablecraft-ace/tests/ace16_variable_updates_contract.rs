@@ -3,7 +3,7 @@
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_variable_updates_contract/model.rs"]
 mod model;

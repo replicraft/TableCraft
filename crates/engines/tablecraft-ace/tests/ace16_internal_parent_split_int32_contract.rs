@@ -12,7 +12,7 @@ mod old_model;
 #[allow(dead_code)]
 #[path = "ace16_split_int32_contract/model.rs"]
 mod root_model;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_internal_parent_split_int32_contract/model.rs"]
 mod model;

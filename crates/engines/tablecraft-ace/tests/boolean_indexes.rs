@@ -4,7 +4,7 @@ mod base;
 mod mixed;
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "boolean_indexes/selections.rs"]
 mod selections;

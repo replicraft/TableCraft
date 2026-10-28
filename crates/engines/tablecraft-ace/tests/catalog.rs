@@ -1,12 +1,12 @@
 #[path = "support/page_reads.rs"]
 mod page_reads;
-mod support;
 use proptest::prelude::*;
 use std::io::Cursor;
 use support::*;
 use tablecraft_ace::{InspectError, inspect_catalog};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
+use tablecraft_testkit::access as support;
 fn inspect(bytes: Vec<u8>) -> Result<tablecraft_ace::CatalogInspection, InspectError> {
     inspect_catalog(
         &mut Cursor::new(bytes),

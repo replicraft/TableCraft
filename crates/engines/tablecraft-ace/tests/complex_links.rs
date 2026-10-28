@@ -6,8 +6,8 @@ mod complex_fixture;
 mod links_fixture;
 #[path = "complex_links/signed.rs"]
 mod signed;
-mod support;
 use links_fixture::populated;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{

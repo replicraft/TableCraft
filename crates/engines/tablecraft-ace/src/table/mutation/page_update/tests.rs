@@ -1,13 +1,13 @@
 //! Causal after-audit checks, independent of correct staging output.
 use super::{forward::Plan, record, roots, space::Space, stage};
 use crate::{
-    EditError, NativeImage, SlotScalarUpdate, WriteBlocker, check_table,
-    table::mutation::gates,
-    test_support::{base, support},
+    EditError, NativeImage, SlotScalarUpdate, WriteBlocker, check_table, table::mutation::gates,
+    test_support::base,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(128 * 1024 * 1024, 100_000, 30_000_000)

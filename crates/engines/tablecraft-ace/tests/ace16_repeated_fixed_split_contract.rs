@@ -12,7 +12,7 @@ mod index_fixture;
 #[allow(dead_code)]
 #[path = "ace16_split_int32_contract/model.rs"]
 mod root_model;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_repeated_fixed_split_contract/model.rs"]
 mod model;

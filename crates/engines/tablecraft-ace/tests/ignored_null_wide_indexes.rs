@@ -13,7 +13,7 @@ mod int64_index_fixture;
 #[allow(dead_code)]
 #[path = "ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ignored_null_wide_indexes/fixture.rs"]
 mod wide;
 

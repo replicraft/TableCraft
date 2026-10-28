@@ -10,8 +10,7 @@ mod linked_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "multivalue_join_results/boundaries.rs"]
 mod boundaries;

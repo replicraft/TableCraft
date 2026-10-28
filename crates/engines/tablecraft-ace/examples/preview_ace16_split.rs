@@ -64,9 +64,7 @@ mod index_fixture;
 #[path = "../tests/ace16_split_int32/model.rs"]
 mod model;
 #[cfg(test)]
-#[allow(dead_code)]
-#[path = "../tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 #[cfg(test)]
 #[path = "preview_ace16_split/tests.rs"]
 mod tests;

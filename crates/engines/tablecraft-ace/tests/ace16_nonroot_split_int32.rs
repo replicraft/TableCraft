@@ -11,7 +11,7 @@ mod fixture;
 mod index_fixture;
 #[path = "ace16_nonroot_split_int32/model.rs"]
 mod model;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ace16_nonroot_split_int32/values.rs"]
 mod values;
 

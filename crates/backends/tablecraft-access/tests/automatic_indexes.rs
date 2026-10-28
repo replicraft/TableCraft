@@ -9,8 +9,7 @@ mod narrow_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

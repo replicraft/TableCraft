@@ -16,8 +16,6 @@ mod links_fixture;
 mod metadata;
 #[path = "attachment_data_source/raw.rs"]
 mod raw;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -29,6 +27,7 @@ use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access as support;
 
 // Independently written uncompressed wrapper for a zero-byte file, empty type.
 const EMPTY_FILE: &[u8] = &[

@@ -4,7 +4,7 @@ mod base;
 #[allow(dead_code)]
 #[path = "composite_indexes/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{io::Cursor, ops::Bound};
 use tablecraft_ace::{

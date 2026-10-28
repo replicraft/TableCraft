@@ -4,7 +4,7 @@ mod fixture;
 mod index_fixture;
 #[path = "foreign_indexes/reads.rs"]
 mod reads;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{InspectError, inspect_foreign_index_links, inspect_table_indexes};

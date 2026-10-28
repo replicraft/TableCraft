@@ -10,8 +10,7 @@ mod base;
 mod complex_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::{Cell, RefCell},

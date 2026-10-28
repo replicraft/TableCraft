@@ -5,7 +5,6 @@ mod base;
 mod mixed;
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{
@@ -17,6 +16,7 @@ use tablecraft_core::{
     values::{Currency, Double, Guid, LegacyDateTime, Single, Value},
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

@@ -5,7 +5,6 @@ mod fixture;
 mod index_fixture;
 #[path = "index_projection/profiles.rs"]
 mod profiles;
-mod support;
 use std::{io::Cursor, ops::Bound};
 use tablecraft_ace::{
     IndexProjection, IndexProjectionSelection, InspectError, Int32IndexSelection,
@@ -13,6 +12,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const DEFINITION_PAGE: usize = 10;

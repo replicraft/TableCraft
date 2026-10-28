@@ -13,6 +13,7 @@ ALLOWED = {
     "tablecraft-model": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-io": {"tablecraft-core"},
     "tablecraft-crypto": set(),
+    "tablecraft-testkit": set(),
     "tablecraft-db": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-sql": set(),
     "tablecraft-expressions": {"tablecraft-core", "tablecraft-sql"},
@@ -20,16 +21,16 @@ ALLOWED = {
                          "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-ace": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-sql", "tablecraft-expressions",
-                       "tablecraft-query", "tablecraft-crypto"},
+                       "tablecraft-query", "tablecraft-crypto", "tablecraft-testkit"},
     "tablecraft-access": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                           "tablecraft-db", "tablecraft-ace", "tablecraft-query",
-                          "tablecraft-sql", "tablecraft-io", "tablecraft-expressions"},
+                          "tablecraft-sql", "tablecraft-io", "tablecraft-expressions", "tablecraft-testkit"},
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",
-                       "tablecraft-expressions", "tablecraft-query"},
+                       "tablecraft-expressions", "tablecraft-query", "tablecraft-testkit"},
 }
 
 
@@ -61,6 +62,8 @@ def violations(metadata):
                 target = actual
             if target not in packages:
                 continue
+            if target == "tablecraft-testkit" and dep.get("kind") != "dev":
+                errors.append(f"{name} -> {target}: engineering fixtures are development-only")
             target_directory = Path(packages[target]["manifest_path"]).resolve().parent
             if is_library and target_directory.is_relative_to(root / "apps"):
                 errors.append(f"{name} -> {target}: library must not depend on an application")

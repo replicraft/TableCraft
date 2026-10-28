@@ -13,7 +13,7 @@ mod fixture;
 mod index_fixture;
 #[path = "ace16_page_updates/model.rs"]
 mod model;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ace16_page_updates/values.rs"]
 mod values;
 

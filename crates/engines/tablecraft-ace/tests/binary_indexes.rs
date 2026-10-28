@@ -4,7 +4,6 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
-mod support;
 use std::io::Cursor;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 use tablecraft_ace::{
@@ -17,6 +16,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const INDEX_PAGE: usize = 13;

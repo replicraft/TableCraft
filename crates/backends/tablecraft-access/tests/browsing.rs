@@ -5,13 +5,12 @@ mod cursor;
 mod fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::io::Cursor;
 use tablecraft_access::{NativeBrowser, TablePageRequest};
 use tablecraft_ace::InspectError;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 #[test]
 fn library_inventory_and_pages_are_usable_without_cli_or_query_evaluation() {

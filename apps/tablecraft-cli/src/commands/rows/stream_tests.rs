@@ -1,14 +1,12 @@
 #[allow(dead_code)]
 #[path = "../../../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
-#[allow(dead_code)]
-#[path = "../../../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use super::*;
 use std::{
     cell::Cell,
     io::{self, Cursor},
 };
+use tablecraft_testkit::access as support;
 
 fn new_browser() -> NativeBrowser<'static, Cursor<Vec<u8>>> {
     NativeBrowser::new(

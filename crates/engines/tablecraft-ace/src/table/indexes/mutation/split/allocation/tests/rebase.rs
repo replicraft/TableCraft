@@ -5,11 +5,12 @@ use crate::{
     EditError, IndexCheckStatus, NativeImage, WriteBlocker, check_table,
     format::reader::Reader,
     table::mutation::append::State,
-    test_support::{encoded::model, map_growth, support},
+    test_support::{encoded::model, map_growth},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 95;

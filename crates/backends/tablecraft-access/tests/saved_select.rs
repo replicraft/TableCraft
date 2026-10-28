@@ -32,8 +32,7 @@ mod parameter_prompts;
 mod parameters;
 #[path = "saved_select/qualified_fields.rs"]
 mod qualified_fields;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "saved_select/unions.rs"]
 mod unions;
 #[path = "saved_select/wildcards.rs"]

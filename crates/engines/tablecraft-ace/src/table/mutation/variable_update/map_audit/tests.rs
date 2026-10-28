@@ -3,11 +3,12 @@ use super::super::{authority::Operation, placement::Plan};
 use crate::{
     EditError, NativeImage, SlotScalarUpdate,
     table::mutation::{gates, page_update::stage},
-    test_support::{base, support},
+    test_support::base,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE: usize = 4096;
 

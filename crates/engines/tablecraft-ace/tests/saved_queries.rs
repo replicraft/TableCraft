@@ -3,7 +3,7 @@
 mod base;
 #[path = "saved_queries/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use fixture::{DEFINITION_PAGE, EMPTY_ID, Fragment, PAGE_BYTES, QUERY_ID, database, database_with};
 use proptest::prelude::*;

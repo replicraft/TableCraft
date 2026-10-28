@@ -11,6 +11,6 @@ mod model;
 #[path = "foreign_updates/fixture.rs"]
 mod self_fixture;
 use fixture as base;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ace16_restrict_delete_contract/values.rs"]
 mod values;

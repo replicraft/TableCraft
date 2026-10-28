@@ -4,7 +4,7 @@ mod base;
 mod mixed;
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::io::Cursor;

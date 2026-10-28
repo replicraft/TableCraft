@@ -7,8 +7,7 @@ mod decimal_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/composite_indexes/fixture.rs"]
 mod numeric_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_access::NativeSource;

@@ -1,7 +1,6 @@
 #[allow(dead_code)]
 #[path = "mutation/fixture.rs"]
 mod fixture;
-mod support;
 use std::{
     cell::Cell,
     io::{self, Cursor, Read, Seek, SeekFrom},
@@ -9,6 +8,7 @@ use std::{
 use tablecraft_ace::{InspectError, NativeImage, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 #[derive(Clone, Copy)]
 enum Mode {

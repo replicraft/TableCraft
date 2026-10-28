@@ -12,14 +12,13 @@ mod map_fixture;
 mod maps;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     fs,
     path::PathBuf,
     process::{Command, Output},
     sync::atomic::{AtomicU64, Ordering},
 };
+use tablecraft_testkit::access as support;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct FileCopy {

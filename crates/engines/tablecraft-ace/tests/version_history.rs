@@ -7,7 +7,7 @@ mod complex_fixture;
 mod compression;
 #[path = "version_history/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "version_history/visible_memo.rs"]
 mod visible_memo;
 

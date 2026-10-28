@@ -13,7 +13,7 @@ mod fixture;
 mod index_fixture;
 #[path = "ace16_encoded_split_contract/model.rs"]
 mod model;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ace16_encoded_split_contract/values.rs"]
 mod values;
 

@@ -3,9 +3,9 @@ use super::super::{Operation, admission, finish, stage, tests::model};
 use crate::{
     EditError, InspectError, WriteBlocker,
     table::mutation::map_authority::{self, Owner},
-    test_support::support,
 };
 use tablecraft_core::values::Value;
+use tablecraft_testkit::access as support;
 
 fn original(shared: bool) -> Vec<u8> {
     let mut bytes = model::source(6, 1);

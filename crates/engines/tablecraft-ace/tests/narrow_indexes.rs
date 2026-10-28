@@ -4,7 +4,7 @@ mod fixture;
 mod int64_index_fixture;
 #[path = "ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::io::Cursor;

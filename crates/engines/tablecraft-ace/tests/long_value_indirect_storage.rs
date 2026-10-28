@@ -5,7 +5,7 @@ mod fixture;
 #[path = "long_value_storage/model.rs"]
 mod model;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{

@@ -6,8 +6,7 @@ mod cli_support;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod target_fixture;

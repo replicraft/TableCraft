@@ -6,7 +6,7 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_encoded_delete_contract/boundaries.rs"]
 mod boundaries;

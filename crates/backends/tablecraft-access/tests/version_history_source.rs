@@ -11,8 +11,7 @@ mod compression;
 mod fixture;
 #[path = "version_history_source/mixed.rs"]
 mod mixed;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "version_history_source/visible_memo.rs"]
 mod visible_memo;
 

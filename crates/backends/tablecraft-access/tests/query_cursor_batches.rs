@@ -3,8 +3,6 @@
 mod fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -15,6 +13,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: u64 = 4096;
 const LATE_DATA_PAGE: u64 = map_fixture::FIRST_DATA_PAGE as u64 + 5000;

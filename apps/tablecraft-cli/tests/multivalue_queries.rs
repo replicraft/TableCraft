@@ -8,8 +8,6 @@ mod cli_support;
 mod complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use cli_support::run;
 use std::{
     fs,
@@ -17,6 +15,7 @@ use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+use tablecraft_testkit::access as support;
 
 const FORMAT_VERSION_OFFSET: usize = 20;
 const PAGE_BYTES: usize = 4096;

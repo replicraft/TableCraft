@@ -2,7 +2,7 @@
 mod base;
 #[path = "object_payloads/fixture.rs"]
 mod payload_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{InspectError, NativeImage, PayloadPresence};
