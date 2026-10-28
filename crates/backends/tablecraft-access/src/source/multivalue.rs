@@ -138,9 +138,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let values = self.collection_columns(table)?;
         validate_projection(collections, values.len())?;
         let entry = self.entry(table)?;
-        if entry.index.is_some() {
-            return Err(QueryError::Unsupported);
-        }
         let cache = entry.multivalues.get().ok_or(QueryError::Source)?;
         for index in collections {
             if (self.cancelled)() {

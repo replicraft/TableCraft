@@ -169,8 +169,23 @@ fn stored_data_keeps_selected_index_cancellation_and_native_budget_failures() {
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score.FileData FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
+    let member = source
+        .collection_members("Items")
+        .unwrap()
+        .iter()
+        .position(|member| member.column().name() == "FileData")
+        .unwrap();
+    let mut callbacks = 0;
+    assert_eq!(
+        source.scan_collection_members("Items", &[], &[], &[member], &mut |_, _| {
+            callbacks += 1;
+            Ok(())
+        }),
+        Err(QueryError::UnknownName)
+    );
+    assert_eq!(callbacks, 0);
 
     let armed = Cell::new(false);
     let cancelled = || armed.get();

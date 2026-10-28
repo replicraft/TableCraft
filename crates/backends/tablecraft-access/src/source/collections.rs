@@ -1,4 +1,5 @@
 //! Aligned named stored-member views over separately cached complete child snapshots.
+mod indexed;
 mod load;
 mod payload;
 use super::{NativeSource, query_error};
@@ -46,6 +47,17 @@ enum NativeField<'a> {
     History(&'a VersionHistoryColumn, &'a str),
 }
 impl NativeField<'_> {
+    fn owner(&self) -> &tablecraft_ace::TableSchema {
+        match self {
+            Self::Value(column) => column.links().schema().owner(),
+            Self::Attachment(column, _) | Self::AttachmentData(column, _) => {
+                column.links().schema().owner()
+            }
+            Self::AttachmentMetadata(column, _) => column.schema().owner(),
+            Self::History(column, _) => column.links().schema().owner(),
+        }
+    }
+
     fn parents(&self) -> &[ComplexParentLink] {
         match self {
             Self::Value(column) => column.links().parents(),
@@ -251,7 +263,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             return Err(QueryError::Unsupported);
         }
         validate_projection(indices, self.schema_columns(table)?.len())?;
-        if self.entry(table)?.index.is_some() {
+        let entry = self.entry(table)?;
+        let declared = entry.columns.get().ok_or(QueryError::Source)?;
+        if entry.index.is_some() && declared.has_cached(Some(indices)) {
             return Err(QueryError::Unsupported);
         }
         let selected = self.load_values(table, values)?;
@@ -267,6 +281,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         // Legacy Value views precede named members, matching the source contract.
         for (position, column) in selected.into_iter().enumerate() {
             fields.insert(position, NativeField::Value(column));
+        }
+        if self.entry(table)?.index.is_some() {
+            return self.indexed_member_scan(table, indices, &fields, visitor);
         }
         let parents = fields.first().ok_or(QueryError::Source)?.parents().len();
         if fields.iter().any(|field| field.parents().len() != parents) {

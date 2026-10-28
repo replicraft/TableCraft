@@ -33,8 +33,9 @@ Larger limits do not qualify calculated values or permit writes.
 selected multivalue and attachment caches as well as scalar snapshots. Binding
 still reads metadata only. Caches publish only after complete link/type checks;
 a failed child read can be retried explicitly under the remaining original
-budget, and only a complete retry becomes reusable. Selected native indexes on
-collection-reading parents remain unsupported, without sequential fallback.
+budget, and only a complete retry becomes reusable. Explicit required parent
+indexes now use [logical root alignment](../queries/INDEXED_COLLECTION_QUERIES.md)
+with complete collection validation and no sequential scalar fallback.
 
 ## CLI scope
 

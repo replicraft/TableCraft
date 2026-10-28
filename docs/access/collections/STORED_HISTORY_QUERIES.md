@@ -82,8 +82,10 @@ Text to a second query cache nor reread child rows for each selected member.
 Partial/failed reads are never published as complete caches. TOP and restrictive
 filters do not hide corruption in a selected complete history. Unreferenced
 history records remain unloaded, so ordinary scalar counts do not depend on their
-integrity. Explicit indexes on a collection-reading parent remain rejected with
-no silent sequential fallback. Existing native, query, Text and output controls
+integrity. Explicit required parent indexes now use
+[checked logical root alignment](../queries/INDEXED_COLLECTION_QUERIES.md), without
+sequential fallback. Selected cached-calculation scalar projections remain
+unsupported with an index. Existing native, query, Text and output controls
 continue to apply.
 
 ## Verification
