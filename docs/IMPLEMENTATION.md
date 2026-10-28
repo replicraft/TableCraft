@@ -63,9 +63,12 @@ and three leaves. Every new DATA record fits; only one INDEX page and represente
 membership bits change. Public retained RIGHT resets to prefix zero (2,034 active
 bytes), while engineering framing retains seed one (1,809 active bytes). Public
 unused-byte rewrites also differ from engineering retained residue/fresh zeros.
-Independent
-engineering goldens and committed-producer/getter acceptance remain pending;
-public bytes do not supply those goldens. Additional source children, multiple
+Four independently frozen complete images match all four first-attempt committed
+producer candidates, followed by eight successful fresh independent getter/map
+calls. All 2,708 original ROWs survive and 2,712 final primary key/ROW pairs agree.
+The [evidence record](testing/results/ace16-insert-child-splits-native-2026-10-27.json)
+keeps those phases and the public framing differences separate; public bytes
+do not supply the engineering goldens. Additional source children, multiple
 offenders, halves requiring another split, broader key/record profiles and normal
 native saves remain unfinished. Native Microsoft Access comparisons remain deferred.
 
