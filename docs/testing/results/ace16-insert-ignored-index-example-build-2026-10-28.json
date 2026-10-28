@@ -1,0 +1,42 @@
+{
+  "operation": "Build the INSERT engineering example from an isolated committed-source archive",
+  "commit": "1670f7be9943d67fc562aecf0f4a8cd56cdeaec0",
+  "isolated_source": ".cache/ace16-insert-ignored-index-build-20261028/source",
+  "source_archive": {
+    "path": ".cache/ace16-insert-ignored-index-build-20261028/committed-source.tar",
+    "bytes": 89415680,
+    "sha256": "9749cdbaf1464a4374417999184eb83e85a605219e9a9af2ea13d3830562532d"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/freeze.json",
+    "bytes": 34077,
+    "sha256": "ff6076fce53ffed22089ad46ab2748cbd409cfb318236c5a1f8d7e3c18b6e0c7"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/target"
+  ],
+  "shared_cargo_cache": true,
+  "status": 0,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-ignored-index-20261028",
+    "bytes": 18520776,
+    "sha256": "3fc831baa85032e828aa5f0b1a7ad09b70869db82cf128bea201a6b419573a5d"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
