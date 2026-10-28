@@ -1,191 +1,159 @@
-//! Inert ACCDT package inventory; schema/data interpretation is a separate layer.
-mod archive;
-mod encoding;
-mod objects;
-mod part_uri;
-mod relationships;
-mod tree;
-mod xml;
-mod xml_names;
-pub use objects::TemplateObject;
-mod data;
-pub use data::TemplateTable;
-mod source;
-pub use source::TemplateSource;
+//! Metadata-only binding and explicit, bounded complete stored-data scans.
+use std::cell::{OnceCell, RefCell};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_formats::{
+    ReadError,
+    template::{TemplateError, TemplateObject, TemplatePackage},
+};
+use tablecraft_model::ObjectKind;
+use tablecraft_query::{QueryError, Source};
+use tablecraft_schema::Column;
+use tablecraft_sql::query::Query;
 
-use std::collections::BTreeMap;
-use std::io::{Read, Seek, SeekFrom};
-use tablecraft_ace::InspectError;
-use tablecraft_core::limits::{Resource, ResourceBudget};
-use thiserror::Error;
-
-const TEMPLATE_RELATIONSHIP: &str =
-    "http://schemas.microsoft.com/office/access/2005/04/template/start";
-const MAX_PARTS: usize = 4096;
-const MAX_NAME_BYTES: usize = 1024;
-const MAX_PACKAGE_BYTES: usize = 64 * 1024 * 1024;
-const MAX_EXPANDED_BYTES: usize = 64 * 1024 * 1024;
-
-/// Template failures omit package content, part names and dependency diagnostics.
-#[derive(Debug, Error, PartialEq, Eq)]
-pub enum TemplateError {
-    /// I/O, cancellation, budget or allocation failure.
-    #[error(transparent)]
-    Read(#[from] InspectError),
-    /// Inconsistent archive, XML, content types or relationship graph.
-    #[error("malformed Access template package")]
-    Malformed,
-    /// Unsupported ZIP/OPC feature, external target or resource ceiling.
-    #[error("Access template package feature or size is not supported")]
-    Unsupported,
+struct Table {
+    object: TemplateObject,
+    columns: OnceCell<Result<Vec<Column>, TemplateError>>,
 }
-
-/// One validated internal OPC relationship. Targets are package-relative names.
-#[derive(Debug)]
-pub struct TemplateRelationship {
-    pub(super) id: String,
-    pub(super) kind: String,
-    pub(super) target: String,
+/// Read-only query bridge for inline template data. Binding parses only a
+/// selected inline XSD prefix; it never decodes records or executes object bodies.
+/// Scans validate complete table snapshots before callbacks. Shared host budgets
+/// apply across repeated scans; the immutable package supplies stable input.
+pub struct TemplateSource<'a> {
+    package: &'a TemplatePackage,
+    tables: Vec<Table>,
+    queries: Vec<String>,
+    budget: RefCell<ResourceBudget>,
+    cancelled: &'a dyn Fn() -> bool,
 }
-
-impl TemplateRelationship {
-    /// Identifier unique within the relationship's source part.
-    pub fn id(&self) -> &str {
-        &self.id
-    }
-    /// Declared relationship type URI; it grants no execution permission.
-    pub fn kind(&self) -> &str {
-        &self.kind
-    }
-    /// Resolved logical IRI part name, without a leading slash.
-    pub fn target(&self) -> &str {
-        &self.target
-    }
-}
-
-/// Immutable, bounded, in-memory template part. Bytes remain inert.
-pub struct TemplatePart {
-    name: String,
-    content_type: String,
-    bytes: Vec<u8>,
-    relationships: Vec<TemplateRelationship>,
-}
-
-impl TemplatePart {
-    /// Validated package-relative logical IRI name, after ZIP UTF-8 mapping.
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-    /// OPC content type resolved from the content-types part.
-    pub fn content_type(&self) -> &str {
-        &self.content_type
-    }
-    /// Stored/decompressed content, with checked ZIP CRC. No code is run.
-    pub fn bytes(&self) -> &[u8] {
-        &self.bytes
-    }
-    /// Internal relationships from this part, validated against the package.
-    pub fn relationships(&self) -> &[TemplateRelationship] {
-        &self.relationships
-    }
-}
-
-/// Validated ZIP/OPC inventory with one template metadata relationship.
-/// This does not instantiate a database, interpret schemas or verify signatures.
-/// Sources must remain stable/offline while opening. No disk extraction occurs.
-pub struct TemplatePackage {
-    parts: BTreeMap<String, TemplatePart>,
-    root_relationships: Vec<TemplateRelationship>,
-    metadata: String,
-}
-
-impl TemplatePackage {
-    /// Select ZIP template input by content. Non-ZIP sources are rewound and
-    /// returned as None; malformed/non-template ZIP files fail without fallback.
-    pub fn open_if_template<R: Read + Seek>(
-        source: &mut R,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Option<Self>, TemplateError> {
-        const PREFIX_BYTES: usize = size_of::<u32>();
-        const SIGNATURES: [[u8; PREFIX_BYTES]; 3] =
-            [*b"PK\x03\x04", *b"PK\x05\x06", *b"PK\x07\x08"];
-        budget
-            .charge(Resource::Bytes, PREFIX_BYTES as u64)
-            .map_err(InspectError::from)?;
-        let mut prefix = [0; PREFIX_BYTES];
-        tablecraft_io::read_exact_at(source, 0, &mut prefix, budget, cancelled)
-            .map_err(InspectError::from)?;
-        if SIGNATURES.contains(&prefix) {
-            return Self::open(source, budget, cancelled).map(Some);
+impl<'a> TemplateSource<'a> {
+    /// Discover object identities only. Missing/linked/unsupported table schemas
+    /// fail when selected; unrelated application bodies are not interpreted.
+    pub fn new(
+        package: &'a TemplatePackage,
+        mut budget: ResourceBudget,
+        cancelled: &'a dyn Fn() -> bool,
+    ) -> Result<Self, TemplateError> {
+        let objects = package.objects(&mut budget, cancelled)?;
+        let queries: Vec<_> = objects
+            .iter()
+            .filter(|object| object.kind() == ObjectKind::Query)
+            .map(|object| object.name().to_owned())
+            .collect();
+        if objects.iter().any(|object| {
+            object.kind() == ObjectKind::Table
+                && queries
+                    .iter()
+                    .any(|query| query.eq_ignore_ascii_case(object.name()))
+        }) {
+            return Err(TemplateError::Malformed);
         }
-        source
-            .seek(SeekFrom::Start(0))
-            .map_err(InspectError::from)?;
+        let tables = objects
+            .into_iter()
+            .filter(|object| object.kind() == ObjectKind::Table)
+            .map(|object| Table {
+                object,
+                columns: OnceCell::new(),
+            })
+            .collect();
+        Ok(Self {
+            package,
+            tables,
+            queries,
+            budget: RefCell::new(budget),
+            cancelled,
+        })
+    }
+    fn table(&self, name: &str) -> Result<&Table, QueryError> {
+        self.tables
+            .iter()
+            .find(|table| table.object.name().eq_ignore_ascii_case(name))
+            .ok_or(QueryError::UnknownName)
+    }
+}
+impl Source for TemplateSource<'_> {
+    fn query(&self, name: &str) -> Result<Option<&Query>, QueryError> {
+        if self
+            .queries
+            .iter()
+            .any(|query| query.eq_ignore_ascii_case(name))
+        {
+            return Err(QueryError::Unsupported);
+        }
         Ok(None)
     }
-
-    /// Capture a classic single-disk stored/deflated OPC package under shared
-    /// budgets and cancellation. ZIP64, encryption and external targets fail.
-    pub fn open<R: Read + Seek>(
-        source: &mut R,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, TemplateError> {
-        let _span = tracing::debug_span!("access.template.open").entered();
-        let parts = archive::read(source, budget, cancelled)?;
-        relationships::assemble(parts, budget, cancelled)
-    }
-
-    /// All content parts in ASCII-folded package-name order, excluding OPC controls.
-    pub fn parts(&self) -> impl ExactSizeIterator<Item = &TemplatePart> {
-        self.parts.values()
-    }
-    /// OPC ASCII-case-insensitive lookup, without Unicode case folding.
-    /// Names are package-relative identifiers, never filesystem paths.
-    pub fn part(&self, name: &str) -> Option<&TemplatePart> {
-        if name.len() > MAX_NAME_BYTES {
-            return None;
+    fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
+        let table = self.table(table)?;
+        {
+            let mut budget = self
+                .budget
+                .try_borrow_mut()
+                .map_err(|_| QueryError::Source)?;
+            check(&mut budget, self.cancelled).map_err(|error| query_error(&error))?;
+            if table.columns.get().is_none() {
+                let result =
+                    self.package
+                        .columns_for_object(&table.object, &mut budget, self.cancelled);
+                if let Err(error @ TemplateError::Read(_)) = &result {
+                    return Err(query_error(error));
+                }
+                table.columns.set(result).map_err(|_| QueryError::Source)?;
+            }
         }
-        // Bound lookup scratch without a heap allocation or caller-owned budget.
-        let mut key = [0; MAX_NAME_BYTES];
-        let key = &mut key[..name.len()];
-        key.copy_from_slice(name.as_bytes());
-        key.make_ascii_lowercase();
-        // ASCII folding preserves UTF-8 encoding.
-        self.parts.get(std::str::from_utf8(key).ok()?)
+        match table.columns.get().ok_or(QueryError::Source)? {
+            Ok(columns) => Ok(columns),
+            Err(error) => Err(query_error(error)),
+        }
     }
-    /// The unique template metadata part selected by the root relationship.
-    pub fn metadata(&self) -> &TemplatePart {
-        // Construction validates existence before publishing the package.
-        &self.parts[&self.metadata]
+
+    fn scan(
+        &self,
+        table: &str,
+        visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        let table = self.table(table)?;
+        let snapshot = {
+            let mut budget = self
+                .budget
+                .try_borrow_mut()
+                .map_err(|_| QueryError::Source)?;
+            self.package
+                .read_table(table.object.name(), &mut budget, self.cancelled)
+                .map_err(|error| query_error(&error))?
+        };
+        if snapshot.columns() != self.columns(table.object.name())? {
+            return Err(QueryError::SchemaChanged);
+        }
+        for row in snapshot.rows() {
+            {
+                let mut budget = self
+                    .budget
+                    .try_borrow_mut()
+                    .map_err(|_| QueryError::Source)?;
+                check(&mut budget, self.cancelled).map_err(|error| query_error(&error))?;
+            }
+            visitor(row)?;
+        }
+        Ok(())
     }
-    /// Validated package-level internal relationships.
-    pub fn relationships(&self) -> &[TemplateRelationship] {
-        &self.root_relationships
+}
+fn query_error(error: &TemplateError) -> QueryError {
+    match error {
+        TemplateError::Read(ReadError::Cancelled) => QueryError::Cancelled,
+        TemplateError::Read(ReadError::Limit(limit)) => QueryError::Limit(*limit),
+        TemplateError::Read(ReadError::Allocation) => QueryError::Allocation,
+        TemplateError::Unsupported => QueryError::Unsupported,
+        _ => QueryError::Source,
     }
 }
 
 fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), TemplateError> {
     if cancelled() {
-        return Err(InspectError::Cancelled.into());
+        return Err(ReadError::Cancelled.into());
     }
     budget
-        .charge(Resource::Steps, 1)
-        .map_err(InspectError::from)?;
+        .charge(tablecraft_core::limits::Resource::Steps, 1)
+        .map_err(ReadError::from)?;
     Ok(())
-}
-
-fn allocate(size: usize, budget: &mut ResourceBudget) -> Result<Vec<u8>, TemplateError> {
-    budget
-        .charge(Resource::Bytes, size as u64)
-        .map_err(InspectError::from)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(size)
-        .map_err(|_| InspectError::Allocation)?;
-    bytes.resize(size, 0);
-    Ok(bytes)
 }
 
 #[cfg(test)]

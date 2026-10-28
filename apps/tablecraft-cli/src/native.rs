@@ -3,9 +3,9 @@ mod source;
 pub(crate) use source::{NativeFile, open, open_raw};
 
 use std::path::Path;
-use tablecraft_access::template::{TemplateError, TemplatePackage};
-use tablecraft_ace::{Header, InspectError, TableSnapshotLimits};
+use tablecraft_ace::{Header, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_formats::template::{TemplateError, TemplatePackage};
 use tablecraft_io::SharedFile;
 use tablecraft_model::CatalogScope;
 
@@ -32,6 +32,6 @@ pub(crate) fn open_template(
     path: &Path,
     budget: &mut ResourceBudget,
 ) -> Result<Option<TemplatePackage>, TemplateError> {
-    let mut file = SharedFile::open(path).map_err(InspectError::from)?;
+    let mut file = SharedFile::open(path).map_err(tablecraft_formats::ReadError::from)?;
     TemplatePackage::open_if_template(&mut file, budget, &|| false)
 }

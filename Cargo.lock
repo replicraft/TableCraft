@@ -1484,18 +1484,14 @@ name = "tablecraft-access"
 version = "0.1.0"
 dependencies = [
  "base64",
- "cab",
  "clap",
  "flate2",
- "iri-string",
- "jiff",
  "proptest",
- "quick-xml",
- "rust_decimal",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",
  "tablecraft-expressions",
+ "tablecraft-formats",
  "tablecraft-io",
  "tablecraft-model",
  "tablecraft-query",
@@ -1564,6 +1560,7 @@ dependencies = [
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-expressions",
+ "tablecraft-formats",
  "tablecraft-io",
  "tablecraft-model",
  "tablecraft-query",
@@ -1634,6 +1631,28 @@ dependencies = [
  "unicode-normalization",
  "uuid",
  "writeable",
+]
+
+[[package]]
+name = "tablecraft-formats"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "cab",
+ "flate2",
+ "iri-string",
+ "jiff",
+ "proptest",
+ "quick-xml",
+ "rust_decimal",
+ "tablecraft-core",
+ "tablecraft-io",
+ "tablecraft-model",
+ "tablecraft-schema",
+ "thiserror",
+ "tracing",
+ "uuid",
+ "zip",
 ]
 
 [[package]]

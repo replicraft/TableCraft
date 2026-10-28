@@ -1,10 +1,14 @@
 # Inert ACCDT package inspection
 
-The Access backend now exposes `template::TemplatePackage::open` and immutable
+`tablecraft-formats` exposes `template::TemplatePackage::open` and immutable
 part/relationship inventories. Basic CLI `inspect PATH` selects this reader by
 ZIP content and the required template relationship, independently of extension.
 It reports content parts, the metadata part, content types, byte lengths and
 internal relationship counts. No file is extracted, instantiated or executed.
+
+Package codecs live in [the formats crate](../../formats/ACCESS_PACKAGES.md).
+The Access adapter retains the `TemplateSource` query bridge; consumers import
+package types directly from their owning crate.
 
 ```sh
 tablecraft inspect example.accdt

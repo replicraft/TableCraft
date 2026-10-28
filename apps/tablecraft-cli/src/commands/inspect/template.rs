@@ -2,8 +2,8 @@
 use super::{Mode, line};
 use crate::{commands::error::Error, output::TableOutput, presentation::Format};
 use std::path::Path;
-use tablecraft_access::template::TemplateError;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_formats::template::TemplateError;
 
 pub(super) fn try_run(
     path: &Path,

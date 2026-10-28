@@ -282,3 +282,223 @@ fn decoder_source_failures_and_repeated_interrupts_keep_original_typed_error() {
         assert!(!error.to_string().contains("private"));
     }
 }
+
+#[test]
+fn native_header_validation_keeps_complete_spool_and_factory_failure_order() {
+    for (offset, expected) in [
+        (0, AccessInputError::Native(InspectError::Malformed)),
+        (20, AccessInputError::Native(InspectError::Unsupported)),
+    ] {
+        let mut native = database(5);
+        native[offset] = 0xff;
+        let package = fixture::cabinet(&native, true);
+        let called = Cell::new(false);
+        let dropped = Rc::new(Cell::new(false));
+        let written = Rc::new(Cell::new(0));
+        let spool = Spool::fresh(dropped.clone(), written.clone());
+        let result = AccessInput::open_spooled(
+            Cursor::new(&package),
+            || {
+                called.set(true);
+                Ok(spool)
+            },
+            &mut budget(),
+            &|| false,
+        );
+        let Err(error) = result else {
+            panic!("invalid native payload must not be published")
+        };
+        assert_eq!(error, expected);
+        assert!(called.get());
+        assert!(dropped.get());
+        assert_eq!(written.get(), native.len());
+
+        let called = Cell::new(false);
+        let mut exhausted = ResourceBudget::new(0, 1000, 1_000_000);
+        let result = AccessInput::<_, Cursor<Vec<u8>>>::open_spooled(
+            Cursor::new(&package),
+            || {
+                called.set(true);
+                Ok(Cursor::new(Vec::new()))
+            },
+            &mut exhausted,
+            &|| false,
+        );
+        assert!(matches!(
+            result,
+            Err(AccessInputError::Native(InspectError::Limit(_)))
+        ));
+        assert!(!called.get());
+    }
+}
+
+#[test]
+fn header_errors_precede_final_rewind_host_cancel_and_work_failures() {
+    let valid = database(5);
+    let mut invalid = valid.clone();
+    invalid[0] = 0xff;
+    let valid_package = fixture::cabinet(&valid, false);
+    let invalid_package = fixture::cabinet(&invalid, false);
+
+    let mut healthy = AccessInput::open_spooled(
+        Cursor::new(&valid_package),
+        || Ok(Cursor::new(Vec::new())),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut actual = Vec::new();
+    healthy.read_to_end(&mut actual).unwrap();
+    assert_eq!(actual, valid);
+
+    for header_valid in [false, true] {
+        for cancel in [false, true] {
+            let package = if header_valid {
+                &valid_package
+            } else {
+                &invalid_package
+            };
+            let dropped = Rc::new(Cell::new(false));
+            let written = Rc::new(Cell::new(0));
+            let cancelled = Rc::new(Cell::new(false));
+            let mut spool = Spool::fresh(dropped.clone(), written.clone());
+            if cancel {
+                spool.cancel_on_final_rewind = Some(cancelled.clone());
+            } else {
+                spool.final_rewind_failure = Some(io::ErrorKind::PermissionDenied);
+            }
+            let result = AccessInput::open_spooled(
+                Cursor::new(package),
+                || Ok(spool),
+                &mut budget(),
+                &|| cancelled.get(),
+            );
+            let Err(error) = result else {
+                panic!("invalid header or final rewind must refuse publication")
+            };
+            let expected = if !header_valid {
+                InspectError::Malformed
+            } else if cancel {
+                InspectError::Cancelled
+            } else {
+                InspectError::Io(io::ErrorKind::PermissionDenied)
+            };
+            assert_eq!(error, AccessInputError::Native(expected));
+            assert_eq!(cancelled.get(), header_valid && cancel);
+            assert!(dropped.get());
+            assert_eq!(written.get(), valid.len());
+        }
+    }
+
+    // Measure only the work preceding a native-header refusal. That same
+    // allowance reaches validation for both equally sized stored CABs, but
+    // leaves no step for the valid header's deferred final rewind.
+    let mut measured = budget();
+    let initial_steps = measured.remaining(tablecraft_core::limits::Resource::Steps);
+    let result = AccessInput::<_, Cursor<Vec<u8>>>::open_spooled(
+        Cursor::new(&invalid_package),
+        || Ok(Cursor::new(Vec::new())),
+        &mut measured,
+        &|| false,
+    );
+    assert!(matches!(
+        result,
+        Err(AccessInputError::Native(InspectError::Malformed))
+    ));
+    let steps = initial_steps - measured.remaining(tablecraft_core::limits::Resource::Steps);
+    for (package, malformed) in [(&invalid_package, true), (&valid_package, false)] {
+        let mut allowance = ResourceBudget::new(64 * 1024 * 1024, 1000, steps);
+        let result = AccessInput::<_, Cursor<Vec<u8>>>::open_spooled(
+            Cursor::new(package),
+            || Ok(Cursor::new(Vec::new())),
+            &mut allowance,
+            &|| false,
+        );
+        if malformed {
+            assert!(matches!(
+                result,
+                Err(AccessInputError::Native(InspectError::Malformed))
+            ));
+        } else {
+            assert!(matches!(
+                result,
+                Err(AccessInputError::Native(InspectError::Limit(limit)))
+                    if limit.resource == tablecraft_core::limits::Resource::Steps
+            ));
+        }
+    }
+}
+
+#[test]
+fn captured_native_validation_precedes_terminal_cancellation_in_both_routes() {
+    fn open_small(
+        package: &[u8],
+        hybrid: bool,
+        allowance: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), AccessInputError> {
+        if hybrid {
+            AccessInput::<_, Cursor<Vec<u8>>>::open_with_spool(
+                Cursor::new(package),
+                || panic!("small captured input must not request host storage"),
+                allowance,
+                cancelled,
+            )
+            .map(|_| ())
+        } else {
+            AccessInput::open(Cursor::new(package), allowance, cancelled).map(|_| ())
+        }
+    }
+
+    let native = database(5);
+    let valid = fixture::cabinet(&native, false);
+    for hybrid in [false, true] {
+        let calls = Cell::new(0);
+        open_small(&valid, hybrid, &mut budget(), &|| {
+            calls.set(calls.get() + 1);
+            false
+        })
+        .unwrap();
+        let terminal = calls.get();
+        for (payload, expected) in [
+            (native.clone(), InspectError::Cancelled),
+            (
+                {
+                    let mut invalid = native.clone();
+                    invalid[0] = 0xff;
+                    invalid
+                },
+                InspectError::Malformed,
+            ),
+            (
+                {
+                    let mut unknown = native.clone();
+                    unknown[20] = 0xff;
+                    unknown
+                },
+                InspectError::Unsupported,
+            ),
+        ] {
+            let package = fixture::cabinet(&payload, false);
+            let current = Cell::new(0);
+            let result = open_small(&package, hybrid, &mut budget(), &|| {
+                current.set(current.get() + 1);
+                current.get() == terminal
+            });
+            assert_eq!(result.unwrap_err(), AccessInputError::Native(expected));
+        }
+
+        // A structurally valid Jet header is outside the deployment ACE family.
+        // Its family refusal also precedes the terminal cancellation callback.
+        let mut jet = native.clone();
+        jet[4..19].copy_from_slice(b"Standard Jet DB");
+        jet[20] = 1;
+        let package = fixture::cabinet(&jet, false);
+        let current = Cell::new(0);
+        let result = open_small(&package, hybrid, &mut budget(), &|| {
+            current.set(current.get() + 1);
+            current.get() == terminal
+        });
+        assert_eq!(result.unwrap_err(), AccessInputError::UnsupportedPackage);
+    }
+}

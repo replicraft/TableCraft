@@ -28,10 +28,9 @@ mod stream;
 mod text_policy;
 pub(crate) use args::Command;
 use std::fmt;
-use tablecraft_access::{
-    CalculationError, ExternalSourceError, LinkSourceError, template::TemplateError,
-};
+use tablecraft_access::{CalculationError, ExternalSourceError, LinkSourceError};
 use tablecraft_expressions::EvalError;
+use tablecraft_formats::template::TemplateError;
 
 pub(super) enum Error {
     Input(tablecraft_access::AccessInputError),
