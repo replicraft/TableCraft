@@ -53,12 +53,10 @@ impl NativeImage {
     ///
     /// The current profile constructs ordinary Int32/ShortBinary records with
     /// explicit values and maintains one required unique ascending Int32 primary
-    /// index, including logical aliases. An original root leaf may grow into a
-    /// retained root and two fresh leaves. An existing height-one root admits
-    /// any qualified nonempty child count, either root form, and repeated or
-    /// multiple leaf splits when the final parent fits. Deeper sources, defaults,
-    /// generated fields, additional indexes and unsupported split shapes refuse.
-    /// DATA and index
+    /// index, including logical aliases. Qualified leaf and branch trees admit
+    /// recursive splits and one retained-root height increase per operation,
+    /// within the existing depth and resource limits. Defaults, generated fields,
+    /// additional indexes and unsupported framing refuse. DATA and index
     /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or

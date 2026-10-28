@@ -1,4 +1,5 @@
-//! Independent small height-one sources keep routing and preservation visible.
+//! Preserved fitted source controls and recursive raw-proof adversaries.
+mod preservation;
 use super::*;
 use crate::{
     IndexCheckStatus, RowInsert, check_table, check_table_constraints,

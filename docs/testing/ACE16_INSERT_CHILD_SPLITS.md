@@ -124,10 +124,14 @@ Windows/native Microsoft Access comparisons remain deferred by the user.
 
 ## Current boundary
 
-The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now
-admits a three-child result as a later source, plus arbitrary original leaf-child
-counts, multiple offenders and repeated leaf splits when the final parent fits.
-Recursive parent splitting/root growth, deeper sources, broader index/record
-profiles, generated/defaulted values, required data macros and normal native
-saves remain unfinished. The original one-child and current general-profile
-evidence scopes remain separate.
+The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) extends
+original child counts and multiple/repeated leaf normalization. The later
+[recursive continuation](ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
+sources, internal splitting and one retained-root growth event when the new top
+fits. Existing source heights and the grown height remain below the unchanged
+depth ceiling of 16. The earlier original-file results and frozen images above
+remain separate; no new recursive original-file qualification is implied.
+
+Broader index/record profiles, generated/defaulted values, required data macros,
+additional nesting of an oversized new top and normal native saves remain
+unfinished. Windows/native Microsoft Access comparisons remain deferred.

@@ -1,7 +1,7 @@
 //! Cardinality-growing primary continuation; DATA authority stays with INSERT.
-mod height_one;
 #[cfg(test)]
 mod tests;
+mod tree;
 
 use super::super::{NumericKey, profile::SingleProfile, repack, tree::Tree};
 use super::{AllocationPolicy, Plan, edit_prepared, leaf_entries, nonroot, seal};
@@ -45,8 +45,8 @@ pub(in crate::table::indexes) struct Operation<'a> {
     pub final_keys: &'a [KeyRef],
 }
 
-/// Continue a qualified overflowing root leaf or one child of the admitted
-/// two-leaf tree. Existing fitted INSERT remains a separate caller path. This
+/// Continue a qualified overflowing root leaf or recursive original-bound tree.
+/// Existing fitted root-leaf INSERT remains a separate caller path. This
 /// does not invoke UPDATE key preparation or the unchanged-cardinality arena.
 pub(in crate::table::indexes) fn continue_primary(
     operation: Operation<'_>,
@@ -95,7 +95,7 @@ pub(in crate::table::indexes) fn continue_primary(
         .ok_or(InspectError::Truncated)?;
     let header = IndexHeader::read(original)?;
     if header.kind == NODE {
-        return height_one::continue_primary(operation, append, reader.budget, cancelled);
+        return tree::continue_primary(operation, append, reader.budget, cancelled);
     }
     if header.kind != LEAF
         || header.previous.get() != 0
@@ -137,7 +137,7 @@ pub(in crate::table::indexes) fn continue_primary(
             reader.budget,
             cancelled,
         )? {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            return tree::continue_primary(operation, append, reader.budget, cancelled);
         }
     }
     // Every role possibly changed by DATA plus the sole physical primary is

@@ -5,8 +5,8 @@ use crate::{
     EditError, InspectError,
     format::{page::PAGE_BYTES, reader::Reader},
     table::indexes::{
-        header::IndexHeader,
-        page::{ENTRY_START, LEAF},
+        header::{IndexHeader, LEVEL_OFFSET},
+        page::{ENTRY_START, LEAF, NODE},
     },
 };
 use std::{io::Cursor, mem::offset_of};
@@ -123,7 +123,7 @@ pub(super) fn leaf(
         .ok_or(EditError::Preservation)
 }
 
-pub(super) fn root(
+pub(super) fn branch(
     original: &[u8],
     maxima: &[[u8; WIRE_BYTES]],
     children: &[u32],
@@ -169,4 +169,27 @@ pub(super) fn root(
     }
 
     Ok(after)
+}
+
+pub(super) fn seed(
+    original: Option<&[u8]>,
+    definition: u32,
+    height: u8,
+    links: (u32, u32),
+    reset_prefix: bool,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<u8>, EditError> {
+    let mut bytes = match original {
+        Some(bytes) => copied(bytes, reader)?,
+        None => copied(&[0; PAGE_BYTES], reader)?,
+    };
+    bytes[..2].copy_from_slice(&[if height == 0 { LEAF } else { NODE }, INDEX_VERSION]);
+    bytes[OWNER..OWNER + size_of::<u32>()].copy_from_slice(&definition.to_le_bytes());
+    bytes[PREVIOUS..PREVIOUS + size_of::<u32>()].copy_from_slice(&links.0.to_le_bytes());
+    bytes[NEXT..NEXT + size_of::<u32>()].copy_from_slice(&links.1.to_le_bytes());
+    bytes[LEVEL_OFFSET] = height;
+    if reset_prefix {
+        bytes[PREFIX..PREFIX + size_of::<u16>()].fill(0);
+    }
+    Ok(bytes)
 }

@@ -124,9 +124,8 @@ pub(in crate::table) fn prepare(
     let header = IndexHeader::read(original)?;
     let source_leaf =
         header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
-    let source_height_one = header.kind == NODE && header.qualified_for_update(1);
-    if (!source_leaf && !source_height_one) || header.previous.get() != 0 || header.next.get() != 0
-    {
+    let source_node = header.kind == NODE;
+    if (!source_leaf && !source_node) || header.previous.get() != 0 || header.next.get() != 0 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let profile = SingleProfile {
@@ -154,7 +153,7 @@ pub(in crate::table) fn prepare(
     )?;
     if expected.len() != checked.rows()
         || (source_leaf && !tree.is_leaf())
-        || (source_height_one && tree.height() != 1)
+        || (source_node && tree.is_leaf())
     {
         return Err(EditError::Preservation);
     }
@@ -213,8 +212,8 @@ pub(in crate::table) fn prepare(
     let mut patches = Vec::new();
     // NODE continuation also rebuilds bounded parent maxima when every leaf
     // fits; all NODE sources use that same owned service.
-    let mut requires_continuation = source_height_one;
-    if !source_height_one && !requests.is_empty() {
+    let mut requires_continuation = source_node;
+    if !source_node && !requests.is_empty() {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(
             original,

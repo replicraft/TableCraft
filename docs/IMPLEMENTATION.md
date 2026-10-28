@@ -34,6 +34,41 @@ targets; their corrected focused reruns pass. The original failures are retained
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
 
+## Recursive primary INSERT continuation
+
+The optional [recursive INSERT continuation](testing/ACE16_INSERT_RECURSIVE.md)
+now routes immutable final pairs through qualified original NODE trees at heights
+below the unchanged depth ceiling of 16. Original bounds partition assigned
+subtree ranges, with final-child clamping. Leaf and internal overflows normalize
+in original postorder with stable RIGHT/LEFT passes, immutable Existing/Fresh
+framing origins, complete per-height sibling chains and one DATA/index append
+state. A single grown root retains its page/residue under seed zero: original
+NODE becomes all-bounded, while original LEAF retains the established tail form.
+The new top must fit and remain below the depth ceiling. The previous LEAF
+constructor remains first for two fitting halves; larger/repeated LEAF overflow
+now uses the generic recursive path.
+
+The focused INSERT retry passes all 88 functions. Its first result preserved
+87 passes and a stale post-image assertion: after rebase to base eight, INDEX
+519 is still represented and does not promote. That original source/image now
+remains a positive final-cell control, alongside a separate three-offender case
+that reaches INDEX 520 and bitmap 521. Production and independent model bytes
+did not change. Existing H1 controls migrate to the actual recursive owner;
+root-residue adversaries preserve canonical patch order. The complete ACE unit
+batch passes 383 functions with one existing ignored test; the 88-function subset
+is included. Four public preview contracts, three compile-fail checks, minimal
+compilation, strict Clippy, rustdoc, formatting, the 15-package guard and 6,048
+documentation targets pass. Initial style-only lint and module-order formatting
+failures remain preserved before their passing retries. The preceding full
+integration-target inventory was not rerun. New authentic recursive source and
+reference actions have not run; no original-file candidate qualification is
+claimed. Prior receipts
+remain separate; Windows/native Access comparisons remain deferred.
+
+Additional nesting of an oversized new top, wider key/record profiles,
+generated/defaulted values, required data macros and normal native saves remain
+unfinished.
+
 ## General height-one INSERT continuation
 
 The optional [general height-one continuation](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
@@ -65,9 +100,10 @@ continuation ran only the four unattempted calls. Both reports remain preserved.
 The [evidence record](testing/results/ace16-insert-general-height-one-native-2026-10-28.json)
 keeps that tooling failure separate from database results. Public framing does
 not supply the engineering expected images.
-Recursive parent growth, deeper trees, broader key/record profiles, required data
-macros and normal native saves remain unfinished; native Access comparisons
-remain deferred.
+The recursive continuation above now extends deeper source and parent-growth
+admission. This height-one original-file evidence does not qualify those new
+forms. Broader key/record profiles, required data macros and normal native saves
+remain unfinished; native Access comparisons remain deferred.
 
 ## One-child split during INSERT
 
@@ -105,8 +141,9 @@ The [evidence record](testing/results/ace16-insert-child-splits-native-2026-10-2
 keeps those phases and the public framing differences separate; public bytes
 do not supply the engineering goldens. The later general height-one continuation
 above removes the original arity/offender/half-count restrictions when the final
-parent fits. Recursive parent growth, deeper sources, broader key/record profiles
-and normal native saves remain unfinished. Native Microsoft Access comparisons remain deferred.
+parent fits. The recursive continuation above now extends deeper sources and
+parent growth without changing this checkpoint's evidence. Broader key/record
+profiles and normal native saves remain unfinished. Native Microsoft Access comparisons remain deferred.
 
 ## Fitted INSERT into an existing height-one primary
 
@@ -134,8 +171,10 @@ keeps those phases distinct. Actual original-file requests extend the right tail
 from 226 to 227 entries, preserving all 1,808 old ROWs across four results, with
 no new pages or map edits. Literal controls separately cover left/bulk routing.
 The general height-one continuation above now admits additional original leaf
-children and multiple/repeated offenders when the parent fits. Deeper sources,
-parent growth, other key profiles, defaults/generated values, required data macros and normal native saves remain unfinished. Jackcess
+children and multiple/repeated offenders when the parent fits; the recursive
+continuation above extends deeper sources and parent growth. Other key profiles,
+defaults/generated values, required data macros and normal native saves remain
+unfinished. Jackcess
 and engineering results do not establish deferred Windows/native Microsoft
 Access qualification.
 
@@ -148,8 +187,9 @@ independent replay covers early/late bitmap promotion, source-seeded framing,
 map ownership, exact counter deltas and complete unchanged-byte preservation.
 Fitted insertions into the exact height-one result use the separate continuation
 above. General height-one sources now normalize multiple/repeated leaf
-overflows under a fitting parent. Original root-leaf growth still requires two
-fitting fresh halves; deeper sources and parent growth remain separate work.
+overflows under a fitting parent. The recursive continuation above removes the
+two-fitting-halves limit for larger LEAF overflow and extends deeper NODE sources
+and parent growth; this original-file evidence remains separately scoped.
 
 The scoped batch passes 341 ACE unit functions (one existing ignored test), four
 existing public preview contracts, seven example functions and three compile-fail
@@ -168,7 +208,8 @@ existing/EOF pages and maintains one required Int32 primary leaf, including
 logical aliases. Table and actual historical physical-index counters increase
 once per new row. Independent request-bound replay protects complete images,
 allocation purposes and map effects. Defaults, generated fields, broader index
-profiles and deeper splits remain refused; normal native saves remain closed.
+profiles remain refused; qualified recursive splits use the continuation above,
+while normal native saves remain closed.
 
 Verification covers 328 distinct passing ACE unit functions across a full batch
 and a targeted hint-promotion check (one existing ignored test), four existing
