@@ -12,6 +12,58 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Retained String joins and typed query composition
+
+String concatenation and String-selected addition now join exact active bytes,
+including odd fragments. Unicode consumers and final Text publication still
+validate the completed range. Eleven concatenation, eight addition and six query
+String functions pass; byte-vector properties distinguish this implementation
+contract from unrun native odd-byte observations. See
+[concatenation](expressions/text/CONCATENATION.md#odd-byte-join-verification).
+
+Typed-list joins now reject proven scalar nonmatches through the existing
+borrowed comparison service before allocating a combined row. Complete list
+validation, compound eager predicates, outer absence and encounter order remain
+unchanged. A bounded 80-by-80 control demonstrates avoided allocations without
+claiming a join directory or a throughput benchmark.
+
+Explicit typed execution also admits scalar-only totals over a direct list-bearing
+named/derived query. It validates complete eager inner lists before reusing normal
+WHERE/group/HAVING/order/TOP services. Bare-list aggregate operands, list keys,
+outer collection/domain/subquery contexts and ordinary/progressive execution keep
+their separate refusals. Twelve typed-join functions and four outer-join functions
+pass. See [typed collection composition](query/collections/MULTIVALUE_QUERIES.md).
+
+## Selected indexed calculation caches
+
+Stored scalar outputs now accept the existing ordinary typed index selections.
+Explicit indexes retain key order; automatic safe hints retain logical table
+order. Partial snapshots retain residual predicates and never become complete
+relation caches. Collection expansion keeps complete `All` reference alignment.
+Four new engine and six independent adapter functions pass, alongside twelve
+engine and twenty-two cached/collection adapter regressions. The first new
+pruning control incorrectly expected an inclusive separator to skip its neighbor;
+it now retains that refusal and proves pruning with a strict bound. Production
+pruning was unchanged. See [stored query reads](access/calculations/CACHED_CALCULATION_QUERIES.md).
+
+## Decimal INSERT engineering continuation
+
+The separate ACE 16 INSERT preview now constructs exact nullable Decimal variable
+fields, with unchanged declared scale and precision. An independent audit derives
+the native words by radix division and checks complete records/images. Eight
+synthetic complete images cover both ACE 16 layouts, aliases and fitted/EOF
+placement. All 84 INSERT functions and eight example-input/publication functions
+pass, including explicit Decimal quotas/cancellation and invalid declaration and
+carrier controls. The example accepts exact `coefficient:scale` input through the
+existing shared parser. This does not enable normal saves or establish native
+Access write qualification; see [ordinary INSERT scope](testing/ACE16_ORDINARY_INSERTS.md#exact-decimal-continuation).
+
+The combined continuation passes strict Clippy across expressions, query, ACE,
+Access and CLI targets/features, standalone minimal expression compilation,
+minimal ACE/Access/query compilation, all 30 CLI browsing regressions, formatting,
+local documentation links and the dependency guard. No new dependencies or native
+Access qualification claims were introduced.
+
 ## Automatic buffered browsing
 
 `rows PATH` selects the sole user table, excluding system tables while counting
@@ -43,7 +95,8 @@ See [the indexed collection profile](access/queries/INDEXED_COLLECTION_QUERIES.m
 
 Metadata-only attachment queries still omit FileData pages, and missing/corrupt
 required indexes never fall back to sequential scalar reads. Explicit stored
-calculation outputs now compose through ordinary index keys with complete `All`
+calculation outputs now compose through ordinary index keys, including typed
+selected scalar traversals. Collection alignment still requires complete `All`
 traversal. Their qualified stored values remain inert; physical keys retain
 ordinary validation, and collection membership uses the same logical references.
 Existing scalar caches, partial-selection rules and automatic scalar index
