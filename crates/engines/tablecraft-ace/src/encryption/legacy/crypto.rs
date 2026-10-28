@@ -2,11 +2,8 @@ use super::{
     AES_BLOCK_BYTES, Algorithm, Decoder, Encryption, MAX_KEY_BYTES, MD5_BYTES, SHA1_BYTES,
 };
 use crate::{InspectError, format::page::PAGE_BYTES, header::check};
-use aes::cipher::{BlockCipherDecrypt, BlockCipherEncrypt, KeyInit};
-use rc4::StreamCipher;
-use sha2::Digest;
-use subtle::ConstantTimeEq;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_crypto::{Direction, HashAlgorithm, Rc4Stream, aes_ecb, constant_time_eq};
 use zeroize::{Zeroize, Zeroizing};
 
 const MAX_PASSWORD_UNITS: usize = 255;
@@ -45,17 +42,17 @@ pub(super) fn unlock(
             aes_transform(&key[..decoder.key_bytes], &mut *verifier, false)?;
             aes_transform(&key[..decoder.key_bytes], &mut *actual, false)?;
         } else {
-            let mut cipher = rc4::Rc4::new_from_slice(&key[..stream_key_bytes(&decoder)])
+            let mut cipher = Rc4Stream::new(&key[..stream_key_bytes(&decoder)])
                 .map_err(|_| InspectError::MalformedEncryption)?;
-            cipher.apply_keystream(&mut *verifier);
-            cipher.apply_keystream(&mut actual[..hash_bytes]);
+            cipher.apply(&mut *verifier);
+            cipher.apply(&mut actual[..hash_bytes]);
         }
         let expected = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
-            digest::<md5::Md5>(&[&*verifier])
+            digest(HashAlgorithm::Md5, &[&*verifier])
         } else {
-            digest::<sha1::Sha1>(&[&*verifier])
+            digest(HashAlgorithm::Sha1, &[&*verifier])
         };
-        if !bool::from(expected[..hash_bytes].ct_eq(&actual[..hash_bytes])) {
+        if !constant_time_eq(&expected[..hash_bytes], &actual[..hash_bytes]) {
             return Err(InspectError::IncorrectPassword);
         }
     }
@@ -85,22 +82,25 @@ fn base(
         }
         match encryption.algorithm {
             Algorithm::BinaryRc4 => {
-                let hash = digest::<md5::Md5>(&[&bytes[..length]]);
+                let hash = digest(HashAlgorithm::Md5, &[&bytes[..length]]);
                 let mut repeated = Zeroizing::new([0; BINARY_REPEAT_BYTES]);
                 for chunk in repeated.chunks_exact_mut(BINARY_PREFIX_BYTES + encryption.salt.len())
                 {
                     chunk[..BINARY_PREFIX_BYTES].copy_from_slice(&hash[..BINARY_PREFIX_BYTES]);
                     chunk[BINARY_PREFIX_BYTES..].copy_from_slice(&encryption.salt);
                 }
-                let hash = digest::<md5::Md5>(&[&*repeated]);
+                let hash = digest(HashAlgorithm::Md5, &[&*repeated]);
                 base[..BINARY_PREFIX_BYTES].copy_from_slice(&hash[..BINARY_PREFIX_BYTES]);
             }
             Algorithm::CryptoApiRc4 | Algorithm::Aes { .. } => {
-                let mut hash = digest::<sha1::Sha1>(&[&encryption.salt, &bytes[..length]]);
+                let mut hash = digest(HashAlgorithm::Sha1, &[&encryption.salt, &bytes[..length]]);
                 if let Algorithm::Aes { iterations } = encryption.algorithm {
                     for i in 0..iterations {
                         check(budget, cancelled)?;
-                        let next = digest::<sha1::Sha1>(&[&i.to_le_bytes(), &hash[..SHA1_BYTES]]);
+                        let next = digest(
+                            HashAlgorithm::Sha1,
+                            &[&i.to_le_bytes(), &hash[..SHA1_BYTES]],
+                        );
                         hash.zeroize();
                         hash = next;
                     }
@@ -130,14 +130,17 @@ fn key(decoder: &Decoder, block: &[u8; 4]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
             key[..block.len()].copy_from_slice(block);
             key
         }
-        Algorithm::BinaryRc4 => digest::<md5::Md5>(&[&decoder.base[..BINARY_PREFIX_BYTES], block]),
+        Algorithm::BinaryRc4 => digest(
+            HashAlgorithm::Md5,
+            &[&decoder.base[..BINARY_PREFIX_BYTES], block],
+        ),
         Algorithm::CryptoApiRc4 => {
-            let mut key = digest::<sha1::Sha1>(&[&decoder.base[..SHA1_BYTES], block]);
+            let mut key = digest(HashAlgorithm::Sha1, &[&decoder.base[..SHA1_BYTES], block]);
             key[decoder.key_bytes..].zeroize();
             key
         }
         Algorithm::Aes { .. } => {
-            let hash = digest::<sha1::Sha1>(&[&decoder.base[..SHA1_BYTES], block]);
+            let hash = digest(HashAlgorithm::Sha1, &[&decoder.base[..SHA1_BYTES], block]);
             let mut pads = Zeroizing::new([
                 [INNER_PAD; DIGEST_BLOCK_BYTES],
                 [OUTER_PAD; DIGEST_BLOCK_BYTES],
@@ -147,8 +150,8 @@ fn key(decoder: &Decoder, block: &[u8; 4]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
                     *b ^= h;
                 }
             }
-            let first = digest::<sha1::Sha1>(&[&pads[0]]);
-            let second = digest::<sha1::Sha1>(&[&pads[1]]);
+            let first = digest(HashAlgorithm::Sha1, &[&pads[0]]);
+            let second = digest(HashAlgorithm::Sha1, &[&pads[1]]);
             let mut key = Zeroizing::new([0; MAX_KEY_BYTES]);
             key[..SHA1_BYTES].copy_from_slice(&first[..SHA1_BYTES]);
             key[SHA1_BYTES..].copy_from_slice(&second[..MAX_KEY_BYTES - SHA1_BYTES]);
@@ -181,48 +184,37 @@ pub(super) fn transform(
     if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
         aes_transform(&key[..decoder.key_bytes], &mut *scratch, encrypt)?;
     } else {
-        rc4::Rc4::new_from_slice(&key[..stream_key_bytes(decoder)])
+        Rc4Stream::new(&key[..stream_key_bytes(decoder)])
             .map_err(|_| InspectError::MalformedEncryption)?
-            .apply_keystream(&mut *scratch);
+            .apply(&mut *scratch);
     }
     check(budget, cancelled)?;
     page.copy_from_slice(&*scratch);
     Ok(())
 }
 
-fn digest<D: Digest>(parts: &[&[u8]]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
-    let mut hasher = D::new();
-    for part in parts {
-        hasher.update(part);
-    }
-    let mut hash = hasher.finalize();
+fn digest(algorithm: HashAlgorithm, parts: &[&[u8]]) -> Zeroizing<[u8; MAX_KEY_BYTES]> {
+    // Legacy native key derivation owns its 32-byte zero-padded working width.
+    // The shared algorithm returns its full fixed digest without native policy.
+    let hash = tablecraft_crypto::digest(algorithm, parts);
     let mut result = Zeroizing::new([0; MAX_KEY_BYTES]);
-    result[..hash.len()].copy_from_slice(&hash);
-    hash.as_mut_slice().zeroize();
+    result.copy_from_slice(&hash[..MAX_KEY_BYTES]);
     result
 }
 
 fn aes_transform(key: &[u8], bytes: &mut [u8], encrypt: bool) -> Result<(), InspectError> {
-    macro_rules! decrypt {
-        ($cipher:ty) => {{
-            let cipher =
-                <$cipher>::new_from_slice(key).map_err(|_| InspectError::MalformedEncryption)?;
-            for block in bytes.as_chunks_mut::<AES_BLOCK_BYTES>().0 {
-                if encrypt {
-                    cipher.encrypt_block(block.into());
-                } else {
-                    cipher.decrypt_block(block.into());
-                }
-            }
-        }};
+    if !matches!(key.len(), 16 | 24 | 32) {
+        return Err(InspectError::UnsupportedEncryption);
     }
-    match key.len() {
-        16 => decrypt!(aes::Aes128),
-        24 => decrypt!(aes::Aes192),
-        32 => decrypt!(aes::Aes256),
-        _ => return Err(InspectError::UnsupportedEncryption),
-    }
-    Ok(())
+    // The legacy native verifier/profile intentionally transforms only complete
+    // ECB blocks. The remainder is preserved here, not in the generic cipher.
+    let length = bytes.len() / AES_BLOCK_BYTES * AES_BLOCK_BYTES;
+    let direction = if encrypt {
+        Direction::Encrypt
+    } else {
+        Direction::Decrypt
+    };
+    aes_ecb(key, &mut bytes[..length], direction).map_err(|_| InspectError::MalformedEncryption)
 }
 
 pub(super) fn rekey(
@@ -244,23 +236,23 @@ pub(super) fn rekey(
     };
     let key = key(&decoder, &[0; 4]);
     let mut hash = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
-        digest::<md5::Md5>(&[&*verifier])
+        digest(HashAlgorithm::Md5, &[&*verifier])
     } else {
-        digest::<sha1::Sha1>(&[&*verifier])
+        digest(HashAlgorithm::Sha1, &[&*verifier])
     };
     if matches!(decoder.algorithm, Algorithm::Aes { .. }) {
         aes_transform(&key[..decoder.key_bytes], &mut *verifier, true)?;
         aes_transform(&key[..decoder.key_bytes], &mut *hash, true)?;
     } else {
-        let mut cipher = rc4::Rc4::new_from_slice(&key[..stream_key_bytes(&decoder)])
+        let mut cipher = Rc4Stream::new(&key[..stream_key_bytes(&decoder)])
             .map_err(|_| InspectError::MalformedEncryption)?;
-        cipher.apply_keystream(&mut *verifier);
+        cipher.apply(&mut *verifier);
         let length = if matches!(decoder.algorithm, Algorithm::BinaryRc4) {
             MD5_BYTES
         } else {
             SHA1_BYTES
         };
-        cipher.apply_keystream(&mut hash[..length]);
+        cipher.apply(&mut hash[..length]);
     }
     encryption.verifier.copy_from_slice(&*verifier);
     encryption.verifier_hash.copy_from_slice(&*hash);

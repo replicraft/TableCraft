@@ -1522,15 +1522,12 @@ dependencies = [
  "fst",
  "getrandom 0.4.3",
  "jiff",
- "md-5",
  "proptest",
  "quick-xml",
- "rc4",
- "sha1",
  "sha2",
  "smallvec",
- "subtle",
  "tablecraft-core",
+ "tablecraft-crypto",
  "tablecraft-expressions",
  "tablecraft-io",
  "tablecraft-model",
@@ -1586,6 +1583,21 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+]
+
+[[package]]
+name = "tablecraft-crypto"
+version = "0.1.0"
+dependencies = [
+ "aes",
+ "cbc",
+ "md-5",
+ "rc4",
+ "sha1",
+ "sha2",
+ "subtle",
+ "thiserror",
+ "zeroize",
 ]
 
 [[package]]

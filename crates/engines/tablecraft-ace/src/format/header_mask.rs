@@ -1,6 +1,6 @@
 //! Jet 4 / ACE root-page obfuscation, independent of data-page encryption.
 use crate::InspectError;
-use rc4::{KeyInit, StreamCipher};
+use tablecraft_crypto::Rc4Stream;
 
 const MASK_START: usize = 24;
 pub(crate) const PREFIX_END: usize = MASK_START + 128;
@@ -11,8 +11,8 @@ pub(crate) fn apply(bytes: &mut [u8]) -> Result<(), InspectError> {
     let masked = bytes
         .get_mut(MASK_START..PREFIX_END)
         .ok_or(InspectError::Truncated)?;
-    rc4::Rc4::new_from_slice(&MASK_KEY)
+    Rc4Stream::new(&MASK_KEY)
         .map_err(|_| InspectError::Malformed)?
-        .apply_keystream(masked);
+        .apply(masked);
     Ok(())
 }

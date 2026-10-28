@@ -1,7 +1,7 @@
 //! Native header masking and SID-key folding; not password encryption.
 use crate::InspectError;
 use crate::format::header_mask::{self, PREFIX_END};
-use subtle::ConstantTimeEq;
+use tablecraft_crypto::constant_time_eq;
 use zeroize::Zeroizing;
 
 const PASSWORD_OFFSET: usize = 66;
@@ -117,7 +117,7 @@ impl NativeHeader {
             used += size_of::<u16>();
         }
         expected[length..].fill(0);
-        if used != length || !bool::from(expected[..].ct_eq(&actual[..])) {
+        if used != length || !constant_time_eq(&expected[..], &actual[..]) {
             return Err(InspectError::IncorrectPassword);
         }
         Ok(())

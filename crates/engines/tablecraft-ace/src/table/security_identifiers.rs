@@ -12,9 +12,9 @@ use crate::{
     },
     header::check,
 };
-use rc4::{KeyInit, StreamCipher};
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_crypto::Rc4Stream;
 use tablecraft_model::CatalogScope;
 use zeroize::Zeroizing;
 
@@ -114,9 +114,9 @@ pub(crate) fn remask<R: NativeReadSource>(
                 let before = copy(&data[start..end])?;
                 let mut after = copy(&before)?;
                 for key in [old, new] {
-                    rc4::Rc4::new_from_slice(key)
+                    Rc4Stream::new(key)
                         .map_err(|_| InspectError::MalformedEncryption)?
-                        .apply_keystream(after.as_mut_slice());
+                        .apply(after.as_mut_slice());
                 }
                 patches
                     .try_reserve(1)
