@@ -3,6 +3,7 @@
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
+- [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
 - [Verification records](results/)
 
 This directory also owns focused test contracts, reference runners and inert

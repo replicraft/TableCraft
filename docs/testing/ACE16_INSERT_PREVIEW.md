@@ -27,16 +27,18 @@ Text additionally requires an explicit AllowZeroLength declaration; stored false
 still rejects the value through normal constraints. Missing declarations are not
 inferred as native defaults.
 
-Exactly one physical unique, required, ascending Int32 primary index is admitted.
-Qualified logical aliases share that physical identity. An original root leaf
+A unique, required, ascending Int32 primary remains mandatory. Qualified
+[additional integral/Currency physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+now compose through the same INSERT service; logical aliases share their actual
+physical owner. An original root leaf
 uses the established [two-fitting-halves path](ACE16_INSERT_ROOT_SPLITS.md)
 first. Larger/repeated leaf overflow and arbitrary qualified NODE sources use the
 [recursive continuation](ACE16_INSERT_RECURSIVE.md), retaining the existing depth
 ceiling of 16 and requiring source/new heights below 16. Original tail-present
 and all-bounded forms retain their routing policy; internal overflows propagate
 through independently normalized child ranges. One root growth event is allowed
-per operation, and the resulting top must fit. Other physical indexes,
-ignored-NULL profiles and additional key fields remain refused. Original records
+per physical tree, and the resulting top must fit. Ignore-NULL profiles,
+composite keys and other unqualified key families remain refused. Original records
 and their logical ROW references remain intact.
 
 ## Placement, index membership and counters

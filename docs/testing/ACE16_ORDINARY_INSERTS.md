@@ -2,10 +2,11 @@
 
 The existing `NativeImage::preview_ace16_insert_rows` engineering API now builds
 complete explicit ordinary rows containing supported fixed scalars and multiple
-Short Text/Binary fields. The actual sole required, unique, ascending Int32
-physical primary selects the key column; an earlier Int32 companion or a field's
-name does not select it. Genuine logical aliases retain one physical counter
-increment. No new public preview method or normal save path is introduced.
+Short Text/Binary fields. A required, unique, ascending Int32 primary selects
+its actual key column; an earlier Int32 companion or a field's
+name does not select it. [Additional physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+now retain their own checked trees and distinct-key counter deltas, with logical
+aliases sharing one physical owner. No new public preview method or normal save path is introduced.
 
 The complete focused INSERT batch passes 108 functions, including the previous
 88 and six new builder, four independent record-proof and ten end-to-end
@@ -195,7 +196,7 @@ multiple variable ordinals, second mask bytes, preferred Text and finalizer
 forgeries, explicit/absent/wrong-type empty policies, quotas and cancellation.
 
 Defaults remain refused even with complete values or an empty batch. AutoNumber,
-generated identities, extra physical indexes, wider primary/tuple/foreign profiles,
+generated identities, unqualified secondary key families, wider primary/tuple/foreign profiles,
 LVAL/extended-date records, required data macros and production native
 saves remain separate work. Public broader-schema INSERT references provide
 separate independent-writer evidence. Windows/native Microsoft Access comparisons remain
