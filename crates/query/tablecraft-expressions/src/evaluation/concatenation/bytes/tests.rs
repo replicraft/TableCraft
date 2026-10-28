@@ -41,7 +41,7 @@ fn concatenation_joins_surrogate_units_before_publication_and_keeps_null_rules()
     }
     for (sql, expected) in [
         ("ChrW(55296)&'x'", EvalError::UnrepresentableText),
-        ("LenB(ChrB(65)&ChrB(0))", EvalError::UnrepresentableText),
+        ("ChrB(65)&''", EvalError::UnrepresentableText),
         ("ChrW(55296)&CVErr(1)", EvalError::TypeMismatch),
         ("CVErr(1)&ChrW(55296)", EvalError::TypeMismatch),
         ("Nz(NULL)&CVErr(1)", EvalError::TypeMismatch),
@@ -163,5 +163,125 @@ proptest! {
         let sql = format!("ChrW({high})&ChrW({low})");
         let expected = char::from_u32(code).unwrap().to_string();
         prop_assert_eq!(evaluate(&sql), Ok(Value::Text(expected)));
+    }
+}
+
+#[test]
+fn odd_fragments_join_in_byte_order_and_unicode_consumers_validate_the_final_range() {
+    for operator in ["&", "+"] {
+        for (sql, value) in [
+            (
+                format!("ChrB(65){operator}ChrB(0)"),
+                Value::Text("A".into()),
+            ),
+            (format!("LenB(ChrB(65){operator}'')"), Value::Int32(1)),
+            (
+                format!("AscB(ChrB(255){operator}ChrB(0))"),
+                Value::Int16(255),
+            ),
+            (format!("VarType(ChrB(65){operator}'')"), Value::Int16(8)),
+            (
+                format!("(ChrB(65){operator}ChrB(0)){operator}'B'"),
+                Value::Text("AB".into()),
+            ),
+            (
+                format!("LeftB('AB',1){operator}MidB('AB',2,3)"),
+                Value::Text("AB".into()),
+            ),
+            (
+                format!("MidB(ChrB(0){operator}'A',2,2)"),
+                Value::Text("A".into()),
+            ),
+        ] {
+            assert_eq!(evaluate(&sql), Ok(value), "{sql}");
+        }
+        for sql in [
+            format!("ChrB(65){operator}''"),
+            format!("Len(ChrB(65){operator}'')"),
+            format!("AscW(ChrB(65){operator}'')"),
+            format!("ChrB(0){operator}ChrB(216)"),
+        ] {
+            assert_eq!(evaluate(&sql), Err(EvalError::UnrepresentableText), "{sql}");
+        }
+    }
+    assert_eq!(evaluate("LenB(ChrB(65)&NULL)"), Ok(Value::Int32(1)));
+    assert_eq!(evaluate("ChrB(65)+NULL"), Ok(Value::Null));
+    for sql in ["ChrB(65)&(1/0)", "ChrB(65)+(1/0)"] {
+        assert_eq!(evaluate(sql), Err(EvalError::DivisionByZero));
+    }
+}
+
+#[test]
+fn odd_joins_keep_allocation_cancellation_and_final_text_limits() {
+    let expression =
+        parse_expression("ChrB(65)&ChrB(0)&ChrB(66)&ChrB(0)", Default::default()).unwrap();
+    let mut budget = ResourceBudget::new(65536, 0, 10000);
+    let mut evaluator = Evaluator::new(
+        &NoBindings,
+        &mut budget,
+        crate::evaluation::EvalLimits {
+            max_text_bytes: 1,
+            ..Default::default()
+        },
+    );
+    assert_eq!(evaluator.evaluate(&expression), Err(EvalError::TextLimit));
+    let observed = Cell::new(0);
+    Evaluator::new(
+        &NoBindings,
+        &mut ResourceBudget::new(65536, 0, 10000),
+        Default::default(),
+    )
+    .with_cancellation(&|| {
+        observed.set(observed.get() + 1);
+        false
+    })
+    .evaluate(&expression)
+    .unwrap();
+    for stop in 1..=observed.get() {
+        let calls = Cell::new(0);
+        assert_eq!(
+            Evaluator::new(
+                &NoBindings,
+                &mut ResourceBudget::new(65536, 0, 10000),
+                Default::default()
+            )
+            .with_cancellation(&|| {
+                calls.set(calls.get() + 1);
+                calls.get() == stop
+            })
+            .evaluate(&expression),
+            Err(EvalError::Cancelled)
+        );
+    }
+    let operands = || {
+        [65, 0]
+            .map(|byte| ExpressionByteOperand::Bytes(ByteString::from_owned(vec![byte]).unwrap()))
+    };
+    let [left, right] = operands();
+    assert!(matches!(
+        Evaluator::new(
+            &NoBindings,
+            &mut ResourceBudget::new(1, 0, 100),
+            Default::default()
+        )
+        .apply_expression_concatenation(left, right),
+        Err(EvalError::Limit(_))
+    ));
+}
+
+proptest! {
+    #![proptest_config(crate::test_support::config())]
+
+    #[test]
+    fn raw_join_is_exact_byte_concatenation(left in prop::collection::vec(any::<u8>(), 0..64), right in prop::collection::vec(any::<u8>(), 0..64)) {
+        let mut expected = left.clone();
+        expected.extend_from_slice(&right);
+        let result = Evaluator::new(&NoBindings, &mut ResourceBudget::new(65536, 0, 10000), Default::default())
+            .apply_expression_concatenation(
+                ExpressionByteOperand::Bytes(ByteString::from_owned(left).unwrap()),
+                ExpressionByteOperand::Bytes(ByteString::from_owned(right).unwrap()),
+            ).unwrap();
+        let ByteOperand::Bytes(actual) = result else { panic!("raw String expected") };
+        prop_assert_eq!(actual.as_bytes(), expected.as_slice());
     }
 }

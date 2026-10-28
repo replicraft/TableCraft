@@ -25,14 +25,13 @@ Unselected conditional branches remain eager.
 Binary and GUID implicit formatting remain unsupported; callers use explicit
 qualified conversions where available. Error operands now fail TypeMismatch after
 both operands evaluate. They never render as CLI `#ERROR(...)` text inside an
-expression; explicit CStr remains distinct. Missing, odd-byte string and array
-concatenation remain outside this extension. See the
+expression; explicit CStr remains distinct. Missing and array concatenation remain outside this extension. See the
 [expression consumer contract](../../query/aggregates/EXPRESSION_AGGREGATES.md#concatenation-and-numeric-admission). Full native
 Variant, byte-array and regional behavior remain compatibility gaps.
 
 ## Lossless UTF-16 concatenation
 
-Ampersand now retains complete raw UTF-16 units through its operands and result.
+Ampersand retains exact active String bytes through its operands and result.
 For example, `ChrW(55357)&ChrW(56832)` and
 `Left('😀',1)&Right('😀',1)` publish `😀` without first decoding either
 surrogate half. Nested Len/LenB, AscW/AscB, CVar, type inspection, byte producers
@@ -42,10 +41,11 @@ is not interpreted as Text, and raw strings do not become stored/parameter cells
 
 Both operands evaluate eagerly before state admission and scalar formatting.
 Error remains TypeMismatch even beside NULL or a raw string; operational errors
-in a later operand remain visible. Raw operands must contain whole UTF-16 units;
-odd-byte concatenation is explicitly unqualified and refused, including pairs
-whose combined byte count would be even. This does not extend the overloaded `+`
-operator or arbitrary raw-string comparison/selection semantics.
+in a later operand remain visible. Odd fragments join in byte order as well:
+`ChrB(65)&ChrB(0)` forms the complete UTF-16LE String `A`. An odd final range
+remains available to byte consumers such as LenB/AscB, while Unicode consumers
+and final Text publication reject it. This does not make Binary arrays Strings
+or change raw-string comparison/selection semantics.
 
 Scalar-only pairs retain the existing borrowed UTF-8 join. When a raw operand is
 present, ordinary scalar conversion still uses explicit CStr policies, and Text
@@ -59,7 +59,7 @@ runtime Text policies and declaration provenance through these intermediates.
 The [MS-VBAL ampersand contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/9f072ffc-e943-4fcc-a4d0-f3c7db96abd9)
 defines String joining, Empty/NULL admission and Error refusal; Access query
 availability is established by the query examples cited below. These sources
-motivate the explicit complete-unit profile, not native qualification of
+motivate the explicit retained-byte profile, not native qualification of
 surrogate handling, odd-byte strings or broader Variant/Byte-array coercion.
 
 The original ampersand expansion passed 1,542 source-free controls over both
@@ -73,13 +73,13 @@ subsequent plus expansion below records the recipe's current combined coverage.
 
 ## Lossless String addition
 
-The String/String branch of `+` now retains complete raw UTF-16 units just as
+The String/String branch of `+` retains exact active String bytes just as
 ampersand does. `ChrW(55357)+ChrW(56832)` and
 `Left('😀',1)+Right('😀',1)` publish `😀`. Nested byte/unit observations,
 inspection, CStr/CVar and slices can consume the intermediate. Direct invalid
 final output remains refused; qualified [query cells](RETAINED_STRINGS.md) now
-retain the intermediate. Odd-byte concatenation is
-still unqualified and refused when a join is required.
+retain the intermediate. `ChrB(65)+ChrB(0)` can likewise form `A`; an odd
+final range remains strict at Unicode observation and publication.
 
 Plus keeps its separate NULL rule: `ChrW(55296)+NULL` returns NULL after both
 operands evaluate. This needs no Unicode decoding, string join or numeric policy;
@@ -201,7 +201,8 @@ The String branch retains raw complete UTF-16 units, including an unpaired
 surrogate that a later unit consumer can inspect. It formats the numeric operand
 through existing CStr, preserving exact LongLong, Currency and Decimal output and
 requiring the existing numeric/date output policies. It never parses a nonnumeric
-String prefix merely to concatenate it. Odd-byte joins remain refused. The
+String prefix merely to concatenate it. Odd bytes remain lossless in the selected
+String branch; Unicode publication still validates the final range. The
 numeric branch strictly publishes reached raw Strings and reuses the existing
 NumberFormat and numeric target rules. Scalar/Scalar mismatch or an unresolved
 category does not first decode a malformed String. Entry work, formatting,
@@ -256,3 +257,16 @@ explicit execution after observing rows; names, types and NULL headings remain
 validated first. Ordinary base-field pivots retain their earlier duplicate
 checks before scanning. Binding remains metadata-only. Candidate retention stays
 bounded by the existing cumulative allocation and work allowances.
+
+## Odd-byte join verification
+
+The shared String join copies active byte ranges exactly, including byte slices
+and paired odd fragments. Independent byte-vector properties and literal controls
+cover both operators, NULL/Empty distinctions, surrogate assembly, eager failures,
+allocation/work ceilings and cancellation. Eleven concatenation and eight addition
+unit functions pass. Six query String tests cover retained derived/UNION cells,
+group counts, parameter rebinding and atomic refusal of invalid final output;
+these joins introduce no new comparison or Unicode-decoding policy.
+
+Native Access odd-byte observations remain unrun. Byte algebra and strict final
+publication establish this implementation contract, not native compatibility.
