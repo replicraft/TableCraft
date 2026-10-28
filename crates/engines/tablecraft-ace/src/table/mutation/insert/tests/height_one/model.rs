@@ -44,8 +44,8 @@ fn entries(page: &[u8]) -> Vec<(i32, u32)> {
     result
 }
 
-pub(super) fn minimum_left_bytes(before: &[u8], additions: &[i32]) -> usize {
-    let mut values = entries(&before[17 * PAGE..18 * PAGE])
+pub(super) fn minimum_leaf_bytes(before: &[u8], page: usize, additions: &[i32]) -> usize {
+    let mut values = entries(&before[page * PAGE..(page + 1) * PAGE])
         .into_iter()
         .map(|(value, _)| value)
         .collect::<Vec<_>>();

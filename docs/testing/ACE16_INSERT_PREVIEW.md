@@ -26,9 +26,11 @@ Qualified logical aliases share that physical identity. An original root leaf
 may grow into a [retained root and two fresh leaves](ACE16_INSERT_ROOT_SPLITS.md).
 An existing height-one source with exactly two leaves also admits
 [fitted insertions under its original bound](ACE16_INSERT_HEIGHT_ONE.md).
-Other physical indexes, ignored-NULL profiles, additional key fields, broader
-source trees, overflowing existing child leaves and splits whose halves cannot
-fit refuse. Original records and their logical ROW references remain intact.
+[One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) of that exact two-leaf
+source can instead split into a fresh left and retained right under the original
+root. Other physical indexes, ignored-NULL profiles, additional key fields,
+broader source trees, multiple overflowing children and splits whose halves
+cannot fit refuse. Original records and their logical ROW references remain intact.
 
 ## Placement, index membership and counters
 
@@ -48,8 +50,9 @@ and unrelated residue bytes. Duplicate original or batch primary values retain
 typed uniqueness failures. Root-leaf growth uses a separate cardinality-aware
 continuation; it does not invoke UPDATE key preparation or its audit. Fitted
 height-one insertions preserve the original inclusive separator and both child
-identities; only affected fitting leaves change. Larger trees, existing child
-overflow and oversized halves remain explicit failures.
+identities; only affected fitting leaves change. A separate one-child overflow
+continuation derives new cardinality-aware ranges and one new left leaf. Larger
+source trees, multiple offenders and oversized halves remain explicit failures.
 
 The declared table count increases by the number of inserted rows. The actual
 [historical physical index counter](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)

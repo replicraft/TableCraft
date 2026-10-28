@@ -1,4 +1,5 @@
 //! Cardinality-growing primary continuation; DATA authority stays with INSERT.
+pub(in crate::table::indexes) mod height_one;
 #[cfg(test)]
 mod tests;
 
@@ -18,7 +19,7 @@ use crate::{
     table::{
         indexes::{
             header::IndexHeader,
-            page::{KeyRef, LEAF},
+            page::{KeyRef, LEAF, NODE},
         },
         mutation::{
             append::{self, State},
@@ -44,9 +45,9 @@ pub(in crate::table::indexes) struct Operation<'a> {
     pub final_keys: &'a [KeyRef],
 }
 
-/// Continue only an overflowing original primary leaf whose two halves fit.
-/// Existing represented/fitted INSERT remains a separate caller path. This does
-/// not invoke UPDATE key preparation or the unchanged-cardinality arena.
+/// Continue a qualified overflowing root leaf or one child of the admitted
+/// two-leaf tree. Existing fitted INSERT remains a separate caller path. This
+/// does not invoke UPDATE key preparation or the unchanged-cardinality arena.
 pub(in crate::table::indexes) fn continue_primary(
     operation: Operation<'_>,
     append: State,
@@ -93,6 +94,9 @@ pub(in crate::table::indexes) fn continue_primary(
         .get(offset..offset + PAGE_BYTES)
         .ok_or(InspectError::Truncated)?;
     let header = IndexHeader::read(original)?;
+    if header.kind == NODE {
+        return height_one::continue_primary(operation, append, reader.budget, cancelled);
+    }
     if header.kind != LEAF
         || header.previous.get() != 0
         || header.next.get() != 0

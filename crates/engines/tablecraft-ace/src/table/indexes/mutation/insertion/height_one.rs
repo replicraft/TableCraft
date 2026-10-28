@@ -22,6 +22,7 @@ use tablecraft_schema::ScalarType;
 
 /// DATA placement and counters remain independently certified by the caller.
 /// This helper neither borrows nor changes the shared append cursor.
+/// `None` reports capacity exhaustion only; structural errors remain failures.
 pub(in crate::table::indexes) fn prepare(
     image: &NativeImage,
     checked: &TableCheck,
@@ -29,7 +30,7 @@ pub(in crate::table::indexes) fn prepare(
     final_keys: &[KeyRef],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<IndexDataPatch>, EditError> {
+) -> Result<Option<Vec<IndexDataPatch>>, EditError> {
     let index = qualify(checked, id, budget, cancelled)?;
     let profile = SingleProfile {
         column: checked.schema().columns()[id].number(),
@@ -162,7 +163,7 @@ pub(in crate::table::indexes) fn prepare(
             reader.budget,
             cancelled,
         )? {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            return Ok(None);
         }
     }
     let mut patches = Vec::new();
@@ -193,7 +194,7 @@ pub(in crate::table::indexes) fn prepare(
         original_start = original_end;
     }
     check(reader.budget, cancelled)?;
-    Ok(patches)
+    Ok(Some(patches))
 }
 
 fn raw(image: &NativeImage, number: u32) -> Result<&[u8], EditError> {

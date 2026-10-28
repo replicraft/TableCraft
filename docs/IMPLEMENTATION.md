@@ -34,6 +34,41 @@ targets; their corrected focused reruns pass. The original failures are retained
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
 
+## One-child split during INSERT
+
+The optional [child-split INSERT continuation](testing/ACE16_INSERT_CHILD_SPLITS.md)
+now handles exactly one overflowing child of the existing one-bound, two-leaf
+Int32 primary. Original-bound routing retains every old key/ROW; the offender's
+lower count-half goes to a fresh LEFT leaf while its original page retains RIGHT.
+The root stays at height one with two complete key/ROW bounds and its original
+tail. Fitting peer INSERTs are supported in the same batch, with exact sibling
+repairs and original-seeded framing. DATA and one new INDEX plus any bitmap share
+the same append cursor; independent raw replay certifies all map, purpose,
+counter and complete-image effects.
+
+The first integrated INSERT batch passes 68 functions, including 13 new controls
+for both sides/headers, aliases, peer batches, odd halves, DATA-first EOF,
+represented/rebased/promoted maps and healthy-semantic preservation forgeries.
+The full ACE unit batch passes 363 functions with one existing ignored test;
+the 68-function subset is included. Four public preview contracts and three
+compile-fail doctests pass. Strict Clippy passes after an unused test-only import
+was moved into its owning test module; the first warning/failure remains preserved.
+Minimal-feature compilation, strict rustdoc, formatting, the 15-package guard
+and 6,019 documentation targets pass. The preceding fitting checkpoint's full
+135-summary/1,228-test target inventory was not rerun for this slice.
+A separate public Jackcess source/reference phase passed 25 calls first attempt.
+All four sources qualified with 677 rows, one root bound/two leaves and a
+451-entry right child at prefix one/free seven; the references contain 678 rows
+and three leaves. Every new DATA record fits; only one INDEX page and represented
+membership bits change. Public retained RIGHT resets to prefix zero (2,034 active
+bytes), while engineering framing retains seed one (1,809 active bytes). Public
+unused-byte rewrites also differ from engineering retained residue/fresh zeros.
+Independent
+engineering goldens and committed-producer/getter acceptance remain pending;
+public bytes do not supply those goldens. Additional source children, multiple
+offenders, halves requiring another split, broader key/record profiles and normal
+native saves remain unfinished. Native Microsoft Access comparisons remain deferred.
+
 ## Fitted INSERT into an existing height-one primary
 
 The optional [retained-tree INSERT continuation](testing/ACE16_INSERT_HEIGHT_ONE.md)
@@ -47,8 +82,8 @@ rules, and table/historical counters increase once per inserted row.
 
 The independent audit decodes the original tree and request-bound final pairs,
 rederives both leaf images and checks the exact patch inventory and complete
-image. The full ACE batch passes 1,228 tests across 135 summaries, including
-three compile-fail checks; its unit summary is 350 passing functions and one
+image. That fitting checkpoint's full ACE batch passed 1,228 tests across 135
+summaries, including three compile-fail checks; its unit summary is 350 passing functions and one
 existing ignored test. Seven example functions pass separately. Strict Clippy,
 minimal-feature compilation, rustdoc, formatting, documentation links and
 package boundaries pass. The 55-function INSERT subset includes nine new controls.
@@ -59,8 +94,9 @@ The [scoped record](testing/results/ace16-insert-height-one-native-2026-10-27.js
 keeps those phases distinct. Actual original-file requests extend the right tail
 from 226 to 227 entries, preserving all 1,808 old ROWs across four results, with
 no new pages or map edits. Literal controls separately cover left/bulk routing.
-Existing child overflow, broader trees, other key profiles, defaults/generated
-values, required data macros and normal native saves remain unfinished. Jackcess
+A single child overflow uses the separate continuation above. Multiple
+offenders, oversized halves, broader source trees, other key profiles,
+defaults/generated values, required data macros and normal native saves remain unfinished. Jackcess
 and engineering results do not establish deferred Windows/native Microsoft
 Access qualification.
 
@@ -72,8 +108,9 @@ its final key/ROW list no longer fits. DATA and index allocation share one curso
 independent replay covers early/late bitmap promotion, source-seeded framing,
 map ownership, exact counter deltas and complete unchanged-byte preservation.
 Fitted insertions into the exact height-one result use the separate continuation
-above. Existing child overflow, broader source trees and oversized halves remain
-explicit refusals.
+above, and one overflowing child has a separate cardinality-aware continuation.
+Multiple offenders, broader source trees and oversized halves remain explicit
+refusals.
 
 The scoped batch passes 341 ACE unit functions (one existing ignored test), four
 existing public preview contracts, seven example functions and three compile-fail

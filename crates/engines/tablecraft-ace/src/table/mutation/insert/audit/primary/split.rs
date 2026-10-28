@@ -1,6 +1,6 @@
 //! Independent two-leaf INSERT growth; source/request wires supply authority.
 mod framing;
-mod maps;
+pub(in crate::table::mutation::insert::audit::primary) mod maps;
 #[cfg(test)]
 mod tests;
 
