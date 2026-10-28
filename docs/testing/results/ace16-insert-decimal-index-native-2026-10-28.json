@@ -1,0 +1,3591 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "operation": "ACE16 engineering Decimal single and two-component secondary INSERT evidence",
+  "scope": {
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "originals": 48,
+    "cases": 48,
+    "physical_indexes_per_table": 2,
+    "logical_index_names_per_table": 4,
+    "primary": "Manual required unique ascending Int32 ID, physical 0",
+    "single_fitted": "16 cases: (precision,scale)=(1,0),(3,2),(28,4),(28,28), ASC/DESC, both profiles; ordinary nonunique.",
+    "single_pressure": "4 cases: Decimal(28,4), ASC/DESC, both profiles; ordinary nonunique.",
+    "Decimal_GUID_pressure": "16 cases: both written orders and four direction combinations, both profiles; ordinary nonunique.",
+    "two_Decimal_fitted": "12 cases: Amount(28,4), Peer(3,2), both written orders with directions AD, ordinary/unique/unique-ignored, both profiles.",
+    "not_qualified": [
+      "Arbitrary Decimal tuple combinations",
+      "Native Microsoft Access saves/reopens",
+      "Data macros",
+      "Windows integration",
+      "Normal production write paths"
+    ]
+  },
+  "ordering": [
+    "All 48 independent source gates before any public append",
+    "All 48 complete SOURCE+REQUEST engineering images frozen before isolated committed producer build",
+    "All 48 candidate full-image comparisons before any fresh getter",
+    "Public AFTER framing and Java NEW key wires never construct expected images"
+  ],
+  "phases": {
+    "public_writer": {
+      "commands": 289,
+      "compile": 1,
+      "generate": 48,
+      "before_reads": 96,
+      "append_disposable_copies": 48,
+      "after_reads": 96,
+      "first_attempt_completed": true,
+      "report": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/report.json",
+        "bytes": 1723769,
+        "sha256": "e215a166ffa806e55aba72caedab49fd08668f6d832f51b97928db857eb1c4cc"
+      },
+      "controller_freeze": {
+        "path": ".cache/ace16-decimal-index-insert-source-next-20261028/controller-freeze.json",
+        "bytes": 5359,
+        "sha256": "0d2aef26adf5eadc9bc5c871d7fa3436bbeb4eac6e1a75f254afbc3a1babc324"
+      },
+      "warnings": {
+        "commands_with_warnings": 8,
+        "omitted_all_NULL_events": 12,
+        "policy": "Exact known two-line JUL grammar via existing omission_warnings owner; other stderr empty"
+      }
+    },
+    "native_candidates": {
+      "commands": 48,
+      "full_images_matched": 48,
+      "first_attempt_completed": true,
+      "report": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/report.json",
+        "bytes": 397522,
+        "sha256": "b60170d500df1733970c74f5dbf515395b6832f7694c10372f0b6b72883daf7a"
+      },
+      "freeze": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/protocol-freeze.json",
+        "bytes": 130226,
+        "sha256": "c9e1caa287270e32ccc6ded79a89b1ba016a4e65ba63311c1f01cdb740a5b219"
+      },
+      "binding": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/binding-first.json",
+        "bytes": 32080,
+        "sha256": "caec17071f6d4d6febda16affebe43d042547efd30fa0b229fef7232503b5a76"
+      },
+      "stream_bytes": 8388608,
+      "seconds_per_child": 30
+    },
+    "fresh_read_only": {
+      "commands": 96,
+      "case_proofs": 48,
+      "first_attempt_completed": true,
+      "report": {
+        "path": ".cache/ace16-decimal-index-insert-getters-first-20261028/report.json",
+        "bytes": 1352409,
+        "sha256": "f42f1e4ffdac8449f1d84b7ef2ab08f6e9e2066d972e68d31be93650ebbb5830"
+      },
+      "freeze": {
+        "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/controller-freeze.json",
+        "bytes": 131091,
+        "sha256": "0026530e52b133521abe8f23cf1def84eedd1fcd8b6117585c9c63b62bea695e"
+      },
+      "binding": {
+        "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/binding-first.json",
+        "bytes": 76396,
+        "sha256": "ca8c6d833e44512f53164851d896d6bc83d0fdb2a40c94e33bc3c91596ac8ca7"
+      },
+      "stream_bytes": 16777216,
+      "seconds_per_child": 30,
+      "java_heap_bytes": 536870912
+    }
+  },
+  "expected": {
+    "freeze": {
+      "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/freeze.json",
+      "bytes": 129246,
+      "sha256": "3fc004c2edaa1711acb01fe43c8b421728f851455692939a56266f520d67b44f"
+    },
+    "plan": {
+      "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/plan.json",
+      "bytes": 109736,
+      "sha256": "e3a2d0f2dd35414eb1b4e518c72a1f9ce915f0f5b3eb98b8790d5d01ddf2f3fe"
+    },
+    "report": {
+      "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/report.json",
+      "bytes": 239111,
+      "sha256": "93765b280c27eed1910ec23ef05fa102b1c967d299335e55427f655f10955c19"
+    },
+    "input_pins": 421,
+    "output_pins": 98,
+    "source_or_request_or_image_repairs": 0,
+    "model_preparation_failures": 0,
+    "new_INDEX_pages": 40,
+    "new_DATA_pages": 0,
+    "new_BITMAP_pages": 0
+  },
+  "producer": {
+    "compiled_revision": "288aa53e1aa51129273d6609b2a002d3a2604dff",
+    "receipt_revision": "c8a4069b57c56db5745e1ebc90d8928727939870",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-insert-decimal-index-20261028",
+      "bytes": 20442408,
+      "sha256": "0757db079ea737415f9509bbf8a2f4d96bb7e6fe41b920b10054806aef0bae72"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/ace16-insert-decimal-index-example-build-2026-10-28.json",
+      "bytes": 1393,
+      "sha256": "a046a93bb5d1e7b5823d47bd81afb323539d4f59114f2414aa0ff601a0e5266b"
+    },
+    "source_archive": {
+      "path": ".cache/ace16-insert-decimal-index-build-20261028/committed-source.tar",
+      "bytes": 90030080,
+      "sha256": "2c93196da556d0a6efc4ccfe945d89c46beced70a04a76b6c45b1ebbb641fe7a"
+    },
+    "binding_tools": {
+      "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/binding-tools-freeze.json",
+      "bytes": 1389,
+      "sha256": "9b3720a2653fc3c01bc9c49dea831ff2da3deb1956a2e618a7dd7694f06182b9"
+    }
+  },
+  "totals": {
+    "candidate_images": 48,
+    "fresh_getter_calls_replayed": 96,
+    "old_rows_preserved": 2252,
+    "inserted_rows": 160,
+    "final_rows": 2412,
+    "final_physical_key_ROW_pairs": 4812
+  },
+  "pure_authoring_history": {
+    "description": "Initial unbound getter static summary printed 32 images/64 future calls while real inventory, cap and preflight already checked 48/96. Only two display literals changed before candidate/getter execution. No fixture phase failed or reran.",
+    "initial_source": {
+      "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/before-static-summary-correction/inspect_candidates.py",
+      "bytes": 9841,
+      "sha256": "765cc4b3f472d3e2ac44cb5b9e4420b6c2dbe3aa22153bd65837031c1b6ddbab"
+    },
+    "initial_freeze": {
+      "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/before-static-summary-correction/controller-freeze.json",
+      "bytes": 131091,
+      "sha256": "2618224eb233853aba5001ecc49a99b09d3bd19e4baeaec0e01d546664d83be6"
+    },
+    "initial_static_output": {
+      "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/before-static-summary-correction/static-unbound-first.json",
+      "bytes": 101,
+      "sha256": "770b67d23f3281239e3844c830561d3f10bd3e133a5950298405bef201cd6c08"
+    },
+    "corrected_static_output": {
+      "path": ".cache/ace16-decimal-index-insert-getters-next-20261028/static-unbound-corrected.json",
+      "bytes": 101,
+      "sha256": "7def7888a5e8e89fc019cceb108e4cab97a281a4a49f78daa977844f25a0832f"
+    }
+  },
+  "saved_checks": {
+    "private_candidate_postcheck": {
+      "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/saved-postcheck-first.json",
+      "bytes": 18670,
+      "sha256": "131689ebd4d5ed35cd03655b8a85ef6ca4189e5c98b4928dc8d18877e5203ccc"
+    },
+    "public_reference_postcheck": {
+      "path": ".cache/ace16-decimal-index-insert-source-next-20261028/saved-postcheck-first.json",
+      "bytes": 17165,
+      "sha256": "a14eaa7de9aa85b2adb5d85dd766c656b99bfae260738349290a9f9876399dd4"
+    },
+    "default": {
+      "status": 0,
+      "children": 0,
+      "pin_occurrences": 11423,
+      "distinct_paths": 3087
+    },
+    "explicit_git": {
+      "status": 0,
+      "archive_files": 4494,
+      "receipt_blobs": 1,
+      "metadata_children": 1
+    },
+    "missing_evidence": {
+      "status": 2,
+      "available": false
+    },
+    "artifacts": {
+      "default-first.json": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/default-first.json",
+        "bytes": 53681,
+        "sha256": "98cf1f763c3f3c345e4039dc4e413d0b0a3b71f2b60e4e3dd9965f18237eae79"
+      },
+      "default-first.stderr": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/default-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git-first.json": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/git-first.json",
+        "bytes": 53760,
+        "sha256": "75a378c9c770a0fc48379b5f3fd77f46b981443d87bcbd4eb9286a9cd18f8131"
+      },
+      "git-first.stderr": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/git-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "missing-first.json": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/missing-first.json",
+        "bytes": 340,
+        "sha256": "c7b80e4e43fd5f0899a749d69d0bd6884628683b168f99adc133bbe75fdb4541"
+      },
+      "missing-first.stderr": {
+        "path": ".cache/ace16-decimal-index-insert-maintained-proof-20261028/missing-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "maintained_identity": {
+    "recipes_and_Java": "Exact executed private bytes",
+    "reference_and_stderr_policy": "Only repository ROOT and owning recipes import changes; exact transformations and function ASTs checked",
+    "model": "Actual maintained multiple-index framing owner retained; only repository ROOT changes, constructor function ASTs and def n onward bytes exact"
+  },
+  "maintained_files": [
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/DecimalIndexInsertReference.java",
+      "bytes": 17998,
+      "sha256": "341b06a5338c10e77d9efe65ef2c55ea29bc3e65bf5bc5c6d3a6987b329eca6c"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/README.md",
+      "bytes": 4972,
+      "sha256": "7f8aa7a9f7bb4635d04e6aea92327039102ee15ff42888fe6fd8d78c31fb4616"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/model.py",
+      "bytes": 17752,
+      "sha256": "16a131c0f1919566e6352d8a65bfed97b297842926b856d2442ecbd2308a65b6"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/recipes.py",
+      "bytes": 4917,
+      "sha256": "3b68f38617e67c651d36b247814cb9765b514e2e1c15d62f0a2688cb22bb7a6a"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/reference.py",
+      "bytes": 23306,
+      "sha256": "cb749805af6b410c92b04a40732fab2e71fbeead558df06061573381f680b708"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/stderr_policy.py",
+      "bytes": 802,
+      "sha256": "066dafbb79b66a872e32605c8689ce72117a56f5e26638a62e1adb82a9f66abd"
+    },
+    {
+      "path": "docs/testing/ace16_insert_decimal_indexes/verify.py",
+      "bytes": 17812,
+      "sha256": "d8a2ec78a0bcb8fe92a59b71603a897812f0fa0d49eb24c0caae514172e6497c"
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-Decimal-A-fitted-ordinary-p1s0",
+      "Amount_domain": {
+        "precision": 1,
+        "scale": 0
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0-source.accdb",
+        "bytes": 389120,
+        "sha256": "9b1366ec914b68d5ca8d5115bd6f7f27dd9526a38d430c08874ff19bca8cf58d"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0-before-getter.stdout",
+        "bytes": 2057,
+        "sha256": "e52615b37b8631e6e40156b20419ed22c99af774c56f81788675d991d5ea7ae8"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-A-fitted-ordinary-p1s0.tsv",
+        "bytes": 121,
+        "sha256": "c8da94d78e0cc82515408a8bceb349589d90c9cde73fe99a99e30f1527de3bc9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0-generate.stdout",
+        "bytes": 491,
+        "sha256": "96ce22ccaae2427d2715f4ce997620a9c029245ea4d76a2aabec3883ccefc01f"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0.accdb",
+        "bytes": 389120,
+        "sha256": "eb9732778617bc72a3e998402479e2dfe00e60f3d157c32efbed9af9c33a3fd6"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0-facts.json",
+        "bytes": 1452,
+        "sha256": "afb11af1065f523472af47d4bed9bdccc5c4d34e81d3f6189a07b5679002190d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-A-fitted-ordinary-p1s0.accdb",
+        "bytes": 389120,
+        "sha256": "eb9732778617bc72a3e998402479e2dfe00e60f3d157c32efbed9af9c33a3fd6"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-D-fitted-ordinary-p1s0",
+      "Amount_domain": {
+        "precision": 1,
+        "scale": 0
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0-source.accdb",
+        "bytes": 389120,
+        "sha256": "9a0fc22727ad082bdc500d9194b8a3f4d8ac82a442a40ffb5d0cbf511d4fa5bb"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0-before-getter.stdout",
+        "bytes": 2059,
+        "sha256": "2346a17bcd8b16908b832ebf1ae76eb46b1607d72f5f4147ffef63454870513a"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-D-fitted-ordinary-p1s0.tsv",
+        "bytes": 121,
+        "sha256": "c8da94d78e0cc82515408a8bceb349589d90c9cde73fe99a99e30f1527de3bc9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0-generate.stdout",
+        "bytes": 491,
+        "sha256": "897de2508db6828d5d3af8a8be51abe8f7de3baeefbe6c36a0a1377784b89a80"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0.accdb",
+        "bytes": 389120,
+        "sha256": "cf445aaaffff306eac825a69d228af217806b7ff807145494d86b23556d0c456"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0-facts.json",
+        "bytes": 1452,
+        "sha256": "afb11af1065f523472af47d4bed9bdccc5c4d34e81d3f6189a07b5679002190d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-D-fitted-ordinary-p1s0.accdb",
+        "bytes": 389120,
+        "sha256": "cf445aaaffff306eac825a69d228af217806b7ff807145494d86b23556d0c456"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-A-fitted-ordinary-p3s2",
+      "Amount_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2-source.accdb",
+        "bytes": 389120,
+        "sha256": "b8e454e0caaa856ee66a5f2595247aac04b30b10c31d8eb1807ce3d61fef094f"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2-before-getter.stdout",
+        "bytes": 2072,
+        "sha256": "309b1bbe88ac6385b87f2f8f9440d3747e407448b1e30f121d7d4f328809cde8"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-A-fitted-ordinary-p3s2.tsv",
+        "bytes": 125,
+        "sha256": "314882db96fc2694bcbbff39c59817e3c092060f72aef427e960ee74076ad415"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2-generate.stdout",
+        "bytes": 491,
+        "sha256": "ac75c6d713c36ed96ecbaff11bd4876daa3ead2cb478b4816c52ff246a58c99b"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2.accdb",
+        "bytes": 389120,
+        "sha256": "e3cd5f9dc0d1d45f5900cf7078288de9b1a2901f4bc4e65248e96a228d4c1770"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2-facts.json",
+        "bytes": 1452,
+        "sha256": "88de5c7333521ea60364a847df86b11d867972ae923ccdfe3eff29b2552c92f3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-A-fitted-ordinary-p3s2.accdb",
+        "bytes": 389120,
+        "sha256": "e3cd5f9dc0d1d45f5900cf7078288de9b1a2901f4bc4e65248e96a228d4c1770"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-D-fitted-ordinary-p3s2",
+      "Amount_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2-source.accdb",
+        "bytes": 389120,
+        "sha256": "6b9dc6f4eb42c335db4344b920f42997f4fc04dc4b249040dc1be6ef24db577e"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2-before-getter.stdout",
+        "bytes": 2074,
+        "sha256": "a44a761fd08424095f8471f6ed7e8b5f92a10ed46c7898ab29627ca871af8f6a"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-D-fitted-ordinary-p3s2.tsv",
+        "bytes": 125,
+        "sha256": "314882db96fc2694bcbbff39c59817e3c092060f72aef427e960ee74076ad415"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2-generate.stdout",
+        "bytes": 491,
+        "sha256": "d8257426d8bae549170289cbe3e3fa7a783aea5c4b4e211a320993d548c02ad6"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2.accdb",
+        "bytes": 389120,
+        "sha256": "d5e9b66ff8b5fd501f36222a9976ed2dbcb5bec912725e7036478d988f353d0d"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2-facts.json",
+        "bytes": 1452,
+        "sha256": "88de5c7333521ea60364a847df86b11d867972ae923ccdfe3eff29b2552c92f3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-D-fitted-ordinary-p3s2.accdb",
+        "bytes": 389120,
+        "sha256": "d5e9b66ff8b5fd501f36222a9976ed2dbcb5bec912725e7036478d988f353d0d"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-A-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "805a08cc50a4b86c739545e49a82338dc6d46959ae2a5653a68d099067c2dce1"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2128,
+        "sha256": "9a43dcaaf302b28ac98b60009b58d324743b9a2a0021924863188385888ef13b"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-A-fitted-ordinary-p28s4.tsv",
+        "bytes": 175,
+        "sha256": "9085637f8ea56898ff0b15bf664f5547f7cfbde7ff117fa03019409a9c2596b7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 491,
+        "sha256": "db16111181effb43bdb9739c97d8f17d8b5a50704bd4b392ee429c8c5bfeede6"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "04a0ddbf28b76840f245dd2d51a445098456e99ace289023fc05b8f37e4740d2"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1452,
+        "sha256": "43deb819d6e1735b365a6da6c025fdd7ce343f56c08b7aa5b692d123f98ff87e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "04a0ddbf28b76840f245dd2d51a445098456e99ace289023fc05b8f37e4740d2"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-D-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "29fb6a60646bfed2a3c7470773528ad50ff61a0b5eec38337260ab056b95c71b"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2130,
+        "sha256": "937f4c5befe5e39406203c72b473ede64331f83da512364c4fd96d622a199239"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-D-fitted-ordinary-p28s4.tsv",
+        "bytes": 175,
+        "sha256": "9085637f8ea56898ff0b15bf664f5547f7cfbde7ff117fa03019409a9c2596b7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 491,
+        "sha256": "4b84923d0e2c9fc6e050f15484e9290556b0b2182d7441fb132b3781c80a15c9"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "5f4c86afaeba271049903697206777388173ec8da267a2ec13e3229990155493"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1452,
+        "sha256": "43deb819d6e1735b365a6da6c025fdd7ce343f56c08b7aa5b692d123f98ff87e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "5f4c86afaeba271049903697206777388173ec8da267a2ec13e3229990155493"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-A-fitted-ordinary-p28s28",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 28
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28-source.accdb",
+        "bytes": 389120,
+        "sha256": "a628019629adc24d87deecb6e64718f21728b0283dc0409903c04e6835198be9"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28-before-getter.stdout",
+        "bytes": 2127,
+        "sha256": "5c2215cad464e05cbd4e3652c6dd62e4b5ac8cb915254e32e8190c549295f77f"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-A-fitted-ordinary-p28s28.tsv",
+        "bytes": 178,
+        "sha256": "86f8503f82db8aa1ee9223471448ad98bb57879b9f042817c9e2abf54b1ddc5a"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28-generate.stdout",
+        "bytes": 491,
+        "sha256": "db16111181effb43bdb9739c97d8f17d8b5a50704bd4b392ee429c8c5bfeede6"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28.accdb",
+        "bytes": 389120,
+        "sha256": "e5daedddc3d40e4e77ce76fd2727fb1c2b9a7056b82b04bae2af86f1c1a29982"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28-facts.json",
+        "bytes": 1452,
+        "sha256": "43deb819d6e1735b365a6da6c025fdd7ce343f56c08b7aa5b692d123f98ff87e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-A-fitted-ordinary-p28s28.accdb",
+        "bytes": 389120,
+        "sha256": "e5daedddc3d40e4e77ce76fd2727fb1c2b9a7056b82b04bae2af86f1c1a29982"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-D-fitted-ordinary-p28s28",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 28
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28-source.accdb",
+        "bytes": 389120,
+        "sha256": "4f9dadae52bb010b35b384bb1354994a2e1f6a565a02051b4a4722e1e1afabb4"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28-before-getter.stdout",
+        "bytes": 2129,
+        "sha256": "bd9a1c4813c5305c3abaf9f2972eb9515bf0d95043ee0031a5a38d942f8bbe09"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-D-fitted-ordinary-p28s28.tsv",
+        "bytes": 178,
+        "sha256": "86f8503f82db8aa1ee9223471448ad98bb57879b9f042817c9e2abf54b1ddc5a"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28-generate.stdout",
+        "bytes": 491,
+        "sha256": "4b84923d0e2c9fc6e050f15484e9290556b0b2182d7441fb132b3781c80a15c9"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28.accdb",
+        "bytes": 389120,
+        "sha256": "5c7b06d55757c508f59b900fb0bd9e9608a076f5962cd7ee11ae85969c5d1e55"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28-facts.json",
+        "bytes": 1452,
+        "sha256": "43deb819d6e1735b365a6da6c025fdd7ce343f56c08b7aa5b692d123f98ff87e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-D-fitted-ordinary-p28s28.accdb",
+        "bytes": 389120,
+        "sha256": "5c7b06d55757c508f59b900fb0bd9e9608a076f5962cd7ee11ae85969c5d1e55"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Decimal-A-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "db8fe168bb5548e4990884c6d3d9f944f073c8e664916c4ec9a244ef2e5cb1a1"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 45052,
+        "sha256": "a4ca28fb1131b7404b4e25f7d6e5c4c74bdcb2ab205df29a3f205e6b3d472d63"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-A-pressure-ordinary-p28s4.tsv",
+        "bytes": 30,
+        "sha256": "ebc9f7af8db03ca13eca011c0c239b7d8d7e0f25c14c184487baee03c35943a9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 8535,
+        "sha256": "06b3b3fabcad4eedb576bd17e5fdb2e311ea029853b3447f21150ee472d232ae"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "c019372264cc542a2ede4acccc0dd18cb0210ae2726d3210403e210a48be16b1"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1447,
+        "sha256": "2b3f0c319b0b854e5be5a2c80893ac5deb2ffb4cf408bf3f94e7c4c8391aa10e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-A-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "c019372264cc542a2ede4acccc0dd18cb0210ae2726d3210403e210a48be16b1"
+      },
+      "rows": 166,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 165,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-Decimal-D-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "790d0e419283cb505205a458cacbea76c13f909200e865873a24fddc5133cd6d"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 45054,
+        "sha256": "a815e7d9d73d4a42be82c0900bb4f57449b48e60f63017843593fcb6d010e999"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-Decimal-D-pressure-ordinary-p28s4.tsv",
+        "bytes": 30,
+        "sha256": "ebc9f7af8db03ca13eca011c0c239b7d8d7e0f25c14c184487baee03c35943a9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 8535,
+        "sha256": "993951439bbd164b18c9af5c6d4675e909443b3222f3c9d70cc190a9d3ef01ef"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "3c85d6aff776722c343acd37b495b68cd4e35e8856b7c8bc0758ca6563eb2193"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1447,
+        "sha256": "2b3f0c319b0b854e5be5a2c80893ac5deb2ffb4cf408bf3f94e7c4c8391aa10e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-Decimal-D-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "3c85d6aff776722c343acd37b495b68cd4e35e8856b7c8bc0758ca6563eb2193"
+      },
+      "rows": 166,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 165,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "c15dc549110829fb72cd10e2b560d96fde771aac7837b714cb1271496e8037c3"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38157,
+        "sha256": "f599aa1dacb38b4663dc1047b8785066783e048e2a895c151ad9b0cca65aaee5"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "85e2f09e5a68e87a71710bbddc008917d35e0ecb08b28367551cf812f2f2ce4b"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "4927eab59351b8c4dd73d930a33944fb3f8c52062c5eb776c1f2cbb4e5804c38"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenGuid-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "4927eab59351b8c4dd73d930a33944fb3f8c52062c5eb776c1f2cbb4e5804c38"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "537215e3dde6e069c6f8ea992ccf65bdeea71768a2b50061061be5c04a2059b6"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38159,
+        "sha256": "bf09e8a21dd95e1637cc2ee6893fd4c1ebf8baf319f9efd4ead119a4bff06e3b"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "3529827b59227ab8589008af56c350e3bafde385b25b74228461466b542dbcd3"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "f9d962763e39cec1a894bee621ff9e1b3545a25a2f12207eaf778c06b243a3c0"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenGuid-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "f9d962763e39cec1a894bee621ff9e1b3545a25a2f12207eaf778c06b243a3c0"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "16d69cf836349d3fab60b95147f055995311ec7dd06a05696981d3da19b54671"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38159,
+        "sha256": "6d630a4198cb058651d71ea57dad0e1bba869c6967ac2da33b3b61ec8422255a"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "e19cc11b61d687303d4645beb10878232ad24ec84ec372b114893f785965d553"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "904d7638c9919268e4a99bcd993947e4fc017dfe94d1dc0d5efd02786130da70"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenGuid-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "904d7638c9919268e4a99bcd993947e4fc017dfe94d1dc0d5efd02786130da70"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "f8f67f393c291b0463fe2b4b5a76741d6b41c9852bc59412ab1c2f659dad063a"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38161,
+        "sha256": "72085c42904744af4be99cfe0cd2eaa9072115b4e352da33f9dabacc4635d3c7"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "700dc144d4d14cca707e70ef0293e5a68853c9c9998e3b56a5b991760d7f5e04"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "8aecdf078b29dadc764028e7b19678f088b0d4924b08562affebcc54d27646b0"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenGuid-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "8aecdf078b29dadc764028e7b19678f088b0d4924b08562affebcc54d27646b0"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "ea51e204f9d213b613e88334a31f6df07e29fd26c309cac87f82c2898727a8f9"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38157,
+        "sha256": "1d5b89fe79de7f105f07f6c31a0a74bd741aa0da0b53270e2bd57a8a13746ecd"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "5e594672b133139adef70ffea442696f344ba48ca724c9537d8572b370cfdeec"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "8ac4ee13d460ca41524c2e51e612f727b36f527187555eafd23cbf9fec4bd61f"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-GuidThenDecimal-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "8ac4ee13d460ca41524c2e51e612f727b36f527187555eafd23cbf9fec4bd61f"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "2e85508fa7104bbdc7b13a944be162525766aef0ba1a449ddb7e1bfd21948762"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38159,
+        "sha256": "b0cdb6b1af3fb563da0ac0db8120fadaca83c42b9cbb10c905fa9b67717f9fb3"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "c04b9abe7d9ccfbbeaf032d2a0c3d6bdafe02b87f0151780646d7e96ba7f21d9"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "ea0cdaa10358af762fe400bdb752a89c3b1220c2492da80046678ba37f42c92b"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-GuidThenDecimal-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "ea0cdaa10358af762fe400bdb752a89c3b1220c2492da80046678ba37f42c92b"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "6a488b393e9492756d995cda19e642456002cb5881fa384fd480bb15eaadf609"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38159,
+        "sha256": "645f85c582cf689f06f5df9dcef1c731b87d9d808589447f1f38c8aa67af8790"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "ace07cecd6af24a2f0d0adfabcfc8bef43337bbf033175b6bdefe830c09f4f97"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "b0c53b803ad9f47dde0875f6b2863170b452b772d9e79270ad72858b9faca0e6"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-GuidThenDecimal-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "b0c53b803ad9f47dde0875f6b2863170b452b772d9e79270ad72858b9faca0e6"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 393216,
+        "sha256": "4d9c7b49db4b3a42df85777d5d71d9a0dd87d6e51e30c2c26b392eefa8e4edce"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38161,
+        "sha256": "3bbea62c3564448176d054e557445ff1f6d067bca0fc0ab0223f25c9f5846ce8"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "95bab586ce06c60b019ddc7a6251cdcdc3055b27ba793954613dba791cc576cf"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "3a811f23a12e7f06cbdd338a65f52c999801fc031c7a0d9ecd20c90268552cc7"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1441,
+        "sha256": "c1d2c3d43c71749b7d0cc5e2c2944edc3f5afd1ed1bf2a24deb2187948b2054f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-GuidThenDecimal-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 401408,
+        "sha256": "3a811f23a12e7f06cbdd338a65f52c999801fc031c7a0d9ecd20c90268552cc7"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "c95a9597a3ad30d697471f8e86496c9c13cd7d086c68afd0a4be44987c0a6a16"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2199,
+        "sha256": "b898d82172af949ec5988eed9b047babe8447ba20bb4437f336926ba99668f31"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4.tsv",
+        "bytes": 156,
+        "sha256": "b9ff66d6f7859971a9707ab2966a15d843f3486b7be18c1ccb87d64da0f11132"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 661,
+        "sha256": "6c87c923903980beabe91734df9e5d4b1369515ba917f4b839f688fdb7a87ae0"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "c3ca961c7f80a54e8abb1ffcaf6661a0210779e6daa63bf75a34fef1307a672b"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1346,
+        "sha256": "cc0929d911b0c5898705b6ad0e31c90ee43346716a6dbec4f567a9d4a064e8e1"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenDecimal-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "c3ca961c7f80a54e8abb1ffcaf6661a0210779e6daa63bf75a34fef1307a672b"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-DecimalThenDecimal-AD-fitted-unique-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "1f6a729293f0ba0f27893f4367e1377f0b6e2a202a61b828f7c986bf3bc0d32c"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4-before-getter.stdout",
+        "bytes": 2197,
+        "sha256": "e85d6f147b858a707f460f940d99b6ed97c5cb6d5f195cc8480cc624795845d4"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4-generate.stdout",
+        "bytes": 659,
+        "sha256": "624920d8ac12f1d20a2d05b773e0687fc95b7e1a02d0764753d6acf6d702efb4"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "346dfeae63995d104e67e6e62e1e6d555eb592c62a315e8e28cdbe1df70c2d4b"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4-facts.json",
+        "bytes": 1346,
+        "sha256": "1226283eac9d9c9a88920572825237775e4fcf787172b9ee597e9006a0ad2d76"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "346dfeae63995d104e67e6e62e1e6d555eb592c62a315e8e28cdbe1df70c2d4b"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "636da9ce57d9d5f97f8bbaf7710ec7602580631986b20e293bc246a3c6ee4bcc"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-before-getter.stdout",
+        "bytes": 2145,
+        "sha256": "d9b4280f2bd68185678fd35bcbac6ad72c1461a4ad93e5a609c71e3a3da6a8c6"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-generate.stdout",
+        "bytes": 667,
+        "sha256": "0b77ac859b512b8c96334dcdf5be1531e138f577ac41a3280995ce53774c7c04"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "cd4a07c801e2043d0be18ad0616364c6627a8177bd1defcc5bceeefdeedb3aab"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-facts.json",
+        "bytes": 1344,
+        "sha256": "33e3676b2721ad0046a63972fddd51b59215c2cfa36b7568a107f075012390f5"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "cd4a07c801e2043d0be18ad0616364c6627a8177bd1defcc5bceeefdeedb3aab"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ReversedDecimals-AD-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "347b04f0bcf1ecaf948ab965af997ec1ec4397db348240a9acd5a8e2e6292aae"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2199,
+        "sha256": "690c4370e8a7a4087addc8c3f62c29e7cda27f0e04793c5362c6a3ef7034f72b"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4.tsv",
+        "bytes": 156,
+        "sha256": "b9ff66d6f7859971a9707ab2966a15d843f3486b7be18c1ccb87d64da0f11132"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 659,
+        "sha256": "49cc8c0270e029efc019f87e6989dec114da1bcc4a9e88a13888bed053341aa8"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "14bc72fb8dc75570dd023d55a4bb4a5e5052fd87674123968928c54b2dd311ad"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1346,
+        "sha256": "cc0929d911b0c5898705b6ad0e31c90ee43346716a6dbec4f567a9d4a064e8e1"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-ReversedDecimals-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "14bc72fb8dc75570dd023d55a4bb4a5e5052fd87674123968928c54b2dd311ad"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ReversedDecimals-AD-fitted-unique-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "2c672fd14a64f679433fdee24236c77fdfd3c9884662f99a7ebcfd849e23edf9"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4-before-getter.stdout",
+        "bytes": 2197,
+        "sha256": "f494509587d25793616bd47249d42cadf92c14bcaf9c1b79345c74d76e702368"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-ReversedDecimals-AD-fitted-unique-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4-generate.stdout",
+        "bytes": 657,
+        "sha256": "aec1c0d2021d8e1959d62b01acddb8b168abaf747a44893ab07edc835f5d52c8"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "f72caedeb949b19fa290c1f401e10a1531d153c4993ca1f669751e1c775b1174"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4-facts.json",
+        "bytes": 1346,
+        "sha256": "1226283eac9d9c9a88920572825237775e4fcf787172b9ee597e9006a0ad2d76"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "f72caedeb949b19fa290c1f401e10a1531d153c4993ca1f669751e1c775b1174"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4-source.accdb",
+        "bytes": 389120,
+        "sha256": "3bb7d8d303b3239a15b723b4b178ae4495da80b91a5cebd2cee966e01b58e52c"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4-before-getter.stdout",
+        "bytes": 2145,
+        "sha256": "f8842fd3619cfdfe7110e1f204052ce39c10d60d84c733fb0948f9716ca531de"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4-generate.stdout",
+        "bytes": 665,
+        "sha256": "0026e1a11451373346881be2639b928f396391e6b2c2a04bcc417b271294fd63"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "9fd87f8b4c797d3a87deb8282ddef1049918e881ea7e3496502bc79884125f31"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4-facts.json",
+        "bytes": 1344,
+        "sha256": "33e3676b2721ad0046a63972fddd51b59215c2cfa36b7568a107f075012390f5"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2016-ReversedDecimals-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 389120,
+        "sha256": "9fd87f8b4c797d3a87deb8282ddef1049918e881ea7e3496502bc79884125f31"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-A-fitted-ordinary-p1s0",
+      "Amount_domain": {
+        "precision": 1,
+        "scale": 0
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0-source.accdb",
+        "bytes": 462848,
+        "sha256": "eaf8c2be5f2fb09a5913f42bd8e7cf3520f7375fd298bfe172ec261be6231dd7"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0-before-getter.stdout",
+        "bytes": 2068,
+        "sha256": "d226e28b3d7657ecff784a932750250ef20fd313c50b83bb1a35b07dcb2389f0"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-A-fitted-ordinary-p1s0.tsv",
+        "bytes": 121,
+        "sha256": "c8da94d78e0cc82515408a8bceb349589d90c9cde73fe99a99e30f1527de3bc9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0-generate.stdout",
+        "bytes": 491,
+        "sha256": "2fdbe8b7f87f7e2a23e5a69e86bcc133c5887bbc6d48566dff0e45d71bd7ef14"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0.accdb",
+        "bytes": 462848,
+        "sha256": "10b3720b8db8dbbd76f78434e683a8eb4550d6348fcd85ce78164ac279881cab"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0-facts.json",
+        "bytes": 1461,
+        "sha256": "4e665b0c65e70794dbd16450667f2937cbf3a3abfb8b23f25d202960704e8b9d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-A-fitted-ordinary-p1s0.accdb",
+        "bytes": 462848,
+        "sha256": "10b3720b8db8dbbd76f78434e683a8eb4550d6348fcd85ce78164ac279881cab"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-D-fitted-ordinary-p1s0",
+      "Amount_domain": {
+        "precision": 1,
+        "scale": 0
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0-source.accdb",
+        "bytes": 462848,
+        "sha256": "962a67dd4373a0a09958c1ce7eb37e681b5c5518ee122888deffeecb5f41abf5"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0-before-getter.stdout",
+        "bytes": 2070,
+        "sha256": "e98801875d177de84fa76d5cd068fbff0948f994ae2669040ac9f71901087792"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-D-fitted-ordinary-p1s0.tsv",
+        "bytes": 121,
+        "sha256": "c8da94d78e0cc82515408a8bceb349589d90c9cde73fe99a99e30f1527de3bc9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0-generate.stdout",
+        "bytes": 491,
+        "sha256": "4f51340863e073c274df9fea2dc2084d01f54a84f29447c0457573870fa17f7f"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0.accdb",
+        "bytes": 462848,
+        "sha256": "dacbf74c71479dee227e804b4e08ad7fed0c0ff4170a366b591c004fd265b2b7"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0-facts.json",
+        "bytes": 1461,
+        "sha256": "4e665b0c65e70794dbd16450667f2937cbf3a3abfb8b23f25d202960704e8b9d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-D-fitted-ordinary-p1s0.accdb",
+        "bytes": 462848,
+        "sha256": "dacbf74c71479dee227e804b4e08ad7fed0c0ff4170a366b591c004fd265b2b7"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-A-fitted-ordinary-p3s2",
+      "Amount_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2-source.accdb",
+        "bytes": 462848,
+        "sha256": "e0352dad1c422aebcdd7e93d6ecbd40809c8ea600a9104fe3965dd7f2c407d3f"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2-before-getter.stdout",
+        "bytes": 2083,
+        "sha256": "e7dc6f91686d1bbed299a054960ffb9505f655679502c9a3df54da90df5879b1"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-A-fitted-ordinary-p3s2.tsv",
+        "bytes": 125,
+        "sha256": "314882db96fc2694bcbbff39c59817e3c092060f72aef427e960ee74076ad415"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2-generate.stdout",
+        "bytes": 491,
+        "sha256": "d8e5aa9e0c52168b25659955a53d814fe9cba3c6e14b72af9eb7c8fc6d616d11"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2.accdb",
+        "bytes": 462848,
+        "sha256": "072b169cda87a6fa17b55efeacb7f8f0c79ed93161443a4fbe5f12b0e782edb5"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2-facts.json",
+        "bytes": 1461,
+        "sha256": "e106c8aed05cb67652c1b55b31d3ca1b36bf17e4d5b9ec581fae234182731215"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-A-fitted-ordinary-p3s2.accdb",
+        "bytes": 462848,
+        "sha256": "072b169cda87a6fa17b55efeacb7f8f0c79ed93161443a4fbe5f12b0e782edb5"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-D-fitted-ordinary-p3s2",
+      "Amount_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2-source.accdb",
+        "bytes": 462848,
+        "sha256": "6320d0b1683b18d22c624396d0495408e7b3d5124cbb9df1bc1c639e7878216e"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2-before-getter.stdout",
+        "bytes": 2085,
+        "sha256": "9da052bfe9ee1a5eecd59ae93e42e060e65c70de6bbd41c3b0db0b3afcf136f0"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-D-fitted-ordinary-p3s2.tsv",
+        "bytes": 125,
+        "sha256": "314882db96fc2694bcbbff39c59817e3c092060f72aef427e960ee74076ad415"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2-generate.stdout",
+        "bytes": 491,
+        "sha256": "24f43fc7df79c1d5cc9c8f3f3e0e19e9daeca056c72c13f35aed7e077ba26271"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2.accdb",
+        "bytes": 462848,
+        "sha256": "18603751a19417ab53e53aad23cc40f8a30dfefa825c28bc0c2d7da44c791bc0"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2-facts.json",
+        "bytes": 1461,
+        "sha256": "e106c8aed05cb67652c1b55b31d3ca1b36bf17e4d5b9ec581fae234182731215"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-D-fitted-ordinary-p3s2.accdb",
+        "bytes": 462848,
+        "sha256": "18603751a19417ab53e53aad23cc40f8a30dfefa825c28bc0c2d7da44c791bc0"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-A-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "84a80e171fca0e3b0b5ed0c7601dc52873da8404f06e99953307aa71dd19f62f"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2139,
+        "sha256": "aa92e5f37da01b0ab0850f9db89058fbc0c0b6996d1fb4989d03336db006b9a1"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-A-fitted-ordinary-p28s4.tsv",
+        "bytes": 175,
+        "sha256": "9085637f8ea56898ff0b15bf664f5547f7cfbde7ff117fa03019409a9c2596b7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 491,
+        "sha256": "28995bdc6f6bae9d3acb401a7230aeabcc4115009ee2ec50060c49587335aade"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "b2e92f5c878531bdd444b86b392157c6239cb11777860f65953041bf496823fe"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1461,
+        "sha256": "38a5e5467622c1d517dbcbf30aa8c437cb25f957a796b3d988eab99355b8f7fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "b2e92f5c878531bdd444b86b392157c6239cb11777860f65953041bf496823fe"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-D-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "d32dc304fd4370a78bb74e842b67de580291197c869b8505185fb8dfe8ae32c2"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2141,
+        "sha256": "f14f63d16b5c632017d2d91cdb3e1e6572ac4477a8c1c91166e9edb1234b3213"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-D-fitted-ordinary-p28s4.tsv",
+        "bytes": 175,
+        "sha256": "9085637f8ea56898ff0b15bf664f5547f7cfbde7ff117fa03019409a9c2596b7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 491,
+        "sha256": "96a77fc231e5dec8257837842ea2086946de3b7bb5c6b5636f25bf314dadd39a"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "f2d11a6b4ebdfc50f434e73eafec4d83171911549dda737bd5ca3414531665e0"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1461,
+        "sha256": "38a5e5467622c1d517dbcbf30aa8c437cb25f957a796b3d988eab99355b8f7fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "f2d11a6b4ebdfc50f434e73eafec4d83171911549dda737bd5ca3414531665e0"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-A-fitted-ordinary-p28s28",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 28
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28-source.accdb",
+        "bytes": 462848,
+        "sha256": "f8967041f7fc62b34b618d98ea86065f551da6b4ff16922b35d2c6682ea7511b"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28-before-getter.stdout",
+        "bytes": 2138,
+        "sha256": "b54b9baa7be136afb9cc5bedbd8b9827c9305dbb8be098afe4ac0d7f2e50555d"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-A-fitted-ordinary-p28s28.tsv",
+        "bytes": 178,
+        "sha256": "86f8503f82db8aa1ee9223471448ad98bb57879b9f042817c9e2abf54b1ddc5a"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28-generate.stdout",
+        "bytes": 491,
+        "sha256": "28995bdc6f6bae9d3acb401a7230aeabcc4115009ee2ec50060c49587335aade"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28.accdb",
+        "bytes": 462848,
+        "sha256": "7ef7099e8c5693a610be6b9e66933ad70828a097553edfe825b4db06bfc2a8dd"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28-facts.json",
+        "bytes": 1461,
+        "sha256": "38a5e5467622c1d517dbcbf30aa8c437cb25f957a796b3d988eab99355b8f7fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-A-fitted-ordinary-p28s28.accdb",
+        "bytes": 462848,
+        "sha256": "7ef7099e8c5693a610be6b9e66933ad70828a097553edfe825b4db06bfc2a8dd"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-D-fitted-ordinary-p28s28",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 28
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28-source.accdb",
+        "bytes": 462848,
+        "sha256": "0bc48feeffbe8a783c95a80ee0aefdbe945a6115cd6d0bdedf5057b1fdadb639"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28-before-getter.stdout",
+        "bytes": 2140,
+        "sha256": "72bf545c885bfa0f75b83614e1831a4019e5c46caa6f6f6bb57c702cc5928e26"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-D-fitted-ordinary-p28s28.tsv",
+        "bytes": 178,
+        "sha256": "86f8503f82db8aa1ee9223471448ad98bb57879b9f042817c9e2abf54b1ddc5a"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28-generate.stdout",
+        "bytes": 491,
+        "sha256": "96a77fc231e5dec8257837842ea2086946de3b7bb5c6b5636f25bf314dadd39a"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28.accdb",
+        "bytes": 462848,
+        "sha256": "927a0bc50779b9c825114d908ce0ea20d18a97995f33219fa3f6451e5aba520e"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28-facts.json",
+        "bytes": 1461,
+        "sha256": "38a5e5467622c1d517dbcbf30aa8c437cb25f957a796b3d988eab99355b8f7fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-D-fitted-ordinary-p28s28.accdb",
+        "bytes": 462848,
+        "sha256": "927a0bc50779b9c825114d908ce0ea20d18a97995f33219fa3f6451e5aba520e"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Decimal-A-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "2fc82c7148e3c397fe6db6a88a7e0e853aaa5d6a1d1384f596beca7f1c6644e5"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 45222,
+        "sha256": "b0d1487b476661e13d52136ec614c1753df6304ac8a7d9b6d1f95b469921f7e3"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-A-pressure-ordinary-p28s4.tsv",
+        "bytes": 30,
+        "sha256": "ebc9f7af8db03ca13eca011c0c239b7d8d7e0f25c14c184487baee03c35943a9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 8535,
+        "sha256": "07540b6bf4d4d112c16394bd1600d70260cb5a10e9e8d992608569af06127f6e"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "d4871a7d70da09ab72ecfda6ff865d6d3c61dacb76e8d436231ec6de2eedd0ec"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1459,
+        "sha256": "a1caf758b5075ea7c32db8d41329a471c94fcf32e085cf38c9c282e5ce026d7a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-A-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "d4871a7d70da09ab72ecfda6ff865d6d3c61dacb76e8d436231ec6de2eedd0ec"
+      },
+      "rows": 166,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 165,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Decimal-D-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "01a2e14e38a20a5d79c237fffe309547edefa0e6224181cd365b00b678f8b5b2"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 45224,
+        "sha256": "0fa434a1d3466e5909343f1a7a60781c03f036303c0bd5b0cd438eb470741af9"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-Decimal-D-pressure-ordinary-p28s4.tsv",
+        "bytes": 30,
+        "sha256": "ebc9f7af8db03ca13eca011c0c239b7d8d7e0f25c14c184487baee03c35943a9"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 8535,
+        "sha256": "7d25ce6fd909d849b5c40de1ed2a77cf12c4864a91da146f9df6152d8309c611"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "ec579a0d0a6bb9f11c4d1f50023aaf62341a0b7394fdb97b32d0bb455c17995c"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1459,
+        "sha256": "a1caf758b5075ea7c32db8d41329a471c94fcf32e085cf38c9c282e5ce026d7a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-Decimal-D-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "ec579a0d0a6bb9f11c4d1f50023aaf62341a0b7394fdb97b32d0bb455c17995c"
+      },
+      "rows": 166,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 165,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "f9edd9b3f624dd68e8b216bb6f83ac2d0da657d590e491e5052828ab4ed4ef3f"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38251,
+        "sha256": "2ac0680bae846b13ecb8cb1b58a93d4464cbfbf81a3a745956edb3fdc0cc7616"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "60d5c70c74bd75614065856565cf63705470a8a8d7ebb79cc2491e75893d8115"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "78c59672463ed476731d9696b5f7ce6a92ef8b369ccb1112919aa56ded1c98ff"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenGuid-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "78c59672463ed476731d9696b5f7ce6a92ef8b369ccb1112919aa56ded1c98ff"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "43facf72843d9c6bfecac6a5750ebb6767289a51865f5c8cfee94d421a2ae72d"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38253,
+        "sha256": "b7d43a03c7b479a27c6449c662241d92eeb634125f577186db496075380314ba"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "cdd254167e60cedff849bbe43a29fbce99cc050a642df83e68b16765ea42c3ba"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "7e9e1b1becb963b264163f5305bf3a0ddca86c68e38bc8fd2fceaf49481de6a2"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenGuid-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "7e9e1b1becb963b264163f5305bf3a0ddca86c68e38bc8fd2fceaf49481de6a2"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "468eda92eb100a7ec7e41c5f66ad018a9f765949e67d76039bda11704a179f1c"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38253,
+        "sha256": "421c16c06ef451ccad464346f183f03f4d2380153e6f49b59e3e7286c141bb03"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "aca70000e1acd53a7abd4808ab18d48bb4a06609fcb98346e04086a0c39988b8"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "7e28a7e7bf28e04d5182b2feb0dec6b4ab01ff63f5c26484712fa9a93c0bbea7"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenGuid-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "7e28a7e7bf28e04d5182b2feb0dec6b4ab01ff63f5c26484712fa9a93c0bbea7"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "4d8f8907248d37e9372cf8bf8650fa58d4ba8f96e09fe172c672ebf15b24b0df"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38255,
+        "sha256": "1e3fb31a64e19e2754895d578fece9044a1f0c8f21693c3fdff8bdc5b297391e"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "274179ad1e77fa79a40621c9ba7fc6f9f9dbb251c3189a98fb3fbbb03953d6f5"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "c2c5a15ac17739724db13b264d04e4ceaf030921780fdae58307988a0762dd06"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenGuid-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "c2c5a15ac17739724db13b264d04e4ceaf030921780fdae58307988a0762dd06"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "c87e7fda7da8da68a210fdc3e265016801ce734e6971510a4af77ad81de4b83c"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38251,
+        "sha256": "99f07d5152644a3eaca7d033665f2355a7e58e44f9e7c6d42fce33d9d0c17c9d"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "e925ec3ea9fb29fcb820fdcaf0133f855d841dc799f1d9c9a529f8f41adc7aa7"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "d58d95b582eb620796410f79c0b6fcb87a81f197aa374ae6cb187cbd079763f6"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-GuidThenDecimal-AA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "d58d95b582eb620796410f79c0b6fcb87a81f197aa374ae6cb187cbd079763f6"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "ac44bafc089e0a7ed772e82d52791cee95a84e4a2464dc1ac846a2af9b3db7f9"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38253,
+        "sha256": "1b7d56a330b4880f485d30d8a2c3756e0bffe48b4c76a544fdc7d5ec6931bd9d"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "dd7d12842fa7e24750fddc914bf44d1a2611bbd7a557568255ff9735f5f8c514"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "65324b25b7754f4c9c069978e63bfbbed609769ecfa92afa0334726427ad8cdf"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-GuidThenDecimal-AD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "65324b25b7754f4c9c069978e63bfbbed609769ecfa92afa0334726427ad8cdf"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "f8d69e72b104b18e3c0914351e0fe57286bab74ddbd842beec40d6520ac5c969"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38253,
+        "sha256": "40523688fed80be770ed10d68d5c9a483106858f953c087b9215c6ac4fcaae55"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "904cf1ab215d31bcdbd06d296eaf10f368cb6251b67c7fa4bd417793968df703"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "938dff0be19095d1f6f7ebe578f8b638a867f4b42e60d7cce453f4ac22f16f46"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-GuidThenDecimal-DA-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "938dff0be19095d1f6f7ebe578f8b638a867f4b42e60d7cce453f4ac22f16f46"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": "GUID",
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4-source.accdb",
+        "bytes": 466944,
+        "sha256": "7b0fc264088a19e51730ca7b9cdac0e9ca109cbe165413bfd26f206e033f3089"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4-before-getter.stdout",
+        "bytes": 38255,
+        "sha256": "7d742faf87534be6c091dcde8306d01f3518c205b790c2a2d69890d59ffa1346"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4.tsv",
+        "bytes": 64,
+        "sha256": "cb4a854f203b63320d4d2e81b6930524f5fa3cabf89b1f41e40e6562bcb68b26"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4-generate.stdout",
+        "bytes": 7984,
+        "sha256": "9553eb0b01d00d7a9b237c86b714138ab87f775af3c1c85476a4b7ec13617570"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "2c8fe395dc724962c2778a4b47f1773c850e1ad1e739cdfe0218bc96579a848b"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4-facts.json",
+        "bytes": 1453,
+        "sha256": "cde02862e2f72554eae1750d81b6869e9e13245f90423d12b8b3b4b7d2a23a7f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-GuidThenDecimal-DD-pressure-ordinary-p28s4.accdb",
+        "bytes": 475136,
+        "sha256": "2c8fe395dc724962c2778a4b47f1773c850e1ad1e739cdfe0218bc96579a848b"
+      },
+      "rows": 90,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 89,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "c4902348e97aa6ce6be7cad41504e7f68bf35c0b87a2220f483699fe1f200a80"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2210,
+        "sha256": "96e6d6148bf00db531915dc82df80431b21f8f915447386f9f406e45c9f2061d"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4.tsv",
+        "bytes": 156,
+        "sha256": "b9ff66d6f7859971a9707ab2966a15d843f3486b7be18c1ccb87d64da0f11132"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 661,
+        "sha256": "6a29cd5b41c13cc5775d56eb79601b83e3e701e1b9423843ad0da484a9c24763"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "c0a9c431abf7cca006eacbd56b3e5306175440c1208800daa6190f210521668e"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1355,
+        "sha256": "3e18004b126ebcea64b089579b18e167560de86d9da920a3bc7595aa97d652fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenDecimal-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "c0a9c431abf7cca006eacbd56b3e5306175440c1208800daa6190f210521668e"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-DecimalThenDecimal-AD-fitted-unique-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "4d39494210c02872078efc485de9959d81bca84ad126467fe19b5a2618c83569"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4-before-getter.stdout",
+        "bytes": 2208,
+        "sha256": "63172ee8273300a9c06698175ce196b7f9c767e2d1e30f230d5bf08b9a6d3338"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4-generate.stdout",
+        "bytes": 659,
+        "sha256": "20a12f51005592d774ffbcb247049e98d7b6315fed2452d0da3d24b74e4d44fd"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "767d2c427eaee0762d0719eef17712f86933cf956d41d6550e487920dfcd7912"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4-facts.json",
+        "bytes": 1355,
+        "sha256": "f47bad26db6d954396453d8a020cfd8fb28f1e7a5837ce96f4660ac390c5e08f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "767d2c427eaee0762d0719eef17712f86933cf956d41d6550e487920dfcd7912"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "91a8f6be15f2f45d289769877bb1fee9ea17d4436ff1be6282491d4d59f1cd46"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-before-getter.stdout",
+        "bytes": 2156,
+        "sha256": "65d89315730a70010fd50456c9d9acc8076207d92466bb786ae037fe2193a47b"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-generate.stdout",
+        "bytes": 667,
+        "sha256": "f512b5db029c0d59040b3cb5c9795d79e77c8919585a5386d6658911403e08a9"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "1c9c08b12746ed6f90089f4d6f691d7319d31dd5f80d0433ea27041ffbf26994"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4-facts.json",
+        "bytes": 1353,
+        "sha256": "122f4bb762b5e6025356084eceb124009a71f98366e9e9a6fb7bb1d59c8597fb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-DecimalThenDecimal-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "1c9c08b12746ed6f90089f4d6f691d7319d31dd5f80d0433ea27041ffbf26994"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ReversedDecimals-AD-fitted-ordinary-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "a34bbc8b74f194bdea98d1f00a9390611679eb698fcd8f0993dd92f32d53100a"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4-before-getter.stdout",
+        "bytes": 2210,
+        "sha256": "31b18477bcce20e0cd826711ce2ed7900fcdf5132b2521705cb5299dd45596cb"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4.tsv",
+        "bytes": 156,
+        "sha256": "b9ff66d6f7859971a9707ab2966a15d843f3486b7be18c1ccb87d64da0f11132"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4-generate.stdout",
+        "bytes": 659,
+        "sha256": "54fbb9ef70e01eb3fc2a7d4962865e4cc85bf073087f701839d56d696028bd2e"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "db05a83bb36126f64fbae299a3f869cdf9f580ab27bc5f4d4679673757960148"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4-facts.json",
+        "bytes": 1355,
+        "sha256": "3e18004b126ebcea64b089579b18e167560de86d9da920a3bc7595aa97d652fa"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-ReversedDecimals-AD-fitted-ordinary-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "db05a83bb36126f64fbae299a3f869cdf9f580ab27bc5f4d4679673757960148"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ReversedDecimals-AD-fitted-unique-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "541ea1de3f139b7662a48d7e3dbc89efabb4c0cadcca842a0cf66d9763ee477a"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4-before-getter.stdout",
+        "bytes": 2208,
+        "sha256": "e9b956d180bae5fa86b08daea7c1bc47a1df1e5cdc11cc31905bd61d4be231fc"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-ReversedDecimals-AD-fitted-unique-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4-generate.stdout",
+        "bytes": 657,
+        "sha256": "3ee088e78ed49790f0252f015afd41ccca1af47f7ba2577e25f39c6914f1b1b6"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "25fea00208dd4d4de61a0bb3aaad19243a658504d46e3840dd635481013742c3"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4-facts.json",
+        "bytes": 1355,
+        "sha256": "f47bad26db6d954396453d8a020cfd8fb28f1e7a5837ce96f4660ac390c5e08f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "25fea00208dd4d4de61a0bb3aaad19243a658504d46e3840dd635481013742c3"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4",
+      "Amount_domain": {
+        "precision": 28,
+        "scale": 4
+      },
+      "Peer_domain": {
+        "precision": 3,
+        "scale": 2
+      },
+      "source": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4-source.accdb",
+        "bytes": 462848,
+        "sha256": "07252d740f6c17c79d6c2631ced0b5f20ed4011257c13cb24938a384a3212a51"
+      },
+      "before_getter": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4-before-getter.stdout",
+        "bytes": 2156,
+        "sha256": "a27476dfe1678961fdeff1e65ee79b07d19a4653733b8c5506dac9d42045fa8f"
+      },
+      "before_maps": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "requests": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-next-20261028/requests/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4.tsv",
+        "bytes": 127,
+        "sha256": "5e42810a619d252e65b18d21834b27dc1fc629b36269e8a54a75348a9c17ddf4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-decimal-index-insert-reference-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4-generate.stdout",
+        "bytes": 665,
+        "sha256": "062754465c277d72b445b358a0fd7267c8ae4c418176e0520580df654e51f6c1"
+      },
+      "expected": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "26dacd00635c92b5cd2875f7530db70e480b552d015bbfaf486d402e2bd03e15"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4-facts.json",
+        "bytes": 1353,
+        "sha256": "122f4bb762b5e6025356084eceb124009a71f98366e9e9a6fb7bb1d59c8597fb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-decimal-index-insert-candidates-first-20261028/V2019-ReversedDecimals-AD-fitted-unique-ignored-p28s4.accdb",
+        "bytes": 462848,
+        "sha256": "26dacd00635c92b5cd2875f7530db70e480b552d015bbfaf486d402e2bd03e15"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    }
+  ]
+}

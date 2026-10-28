@@ -397,8 +397,10 @@ qualification remain unfinished.
 The [exact Decimal INSERT index continuation](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
 now maintains single Decimal and Decimal-bearing fixed tuples, retaining each
 field's declared precision/scale. Eight complete-image functions and two separate
-audit controls bring the INSERT batch to 183 passing functions. Independent
-original-file Decimal INSERT evidence and normal-save qualification remain open.
+audit controls bring that INSERT checkpoint to 183 passing functions. Forty-eight
+source/request-only images now match first-attempt committed-producer outputs
+before 96 fresh independent getter/map calls pass. The source/reference phase
+passes 289 calls. Normal-save and native Access qualification remain open.
 
 The [Short Text/Binary INSERT continuation](testing/ACE16_VARIABLE_INDEX_INSERTS.md)
 now retains non-Copy keys and complete row NULL facts through fitted/root/recursive
