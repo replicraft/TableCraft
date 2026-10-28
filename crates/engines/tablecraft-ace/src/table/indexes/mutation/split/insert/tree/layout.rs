@@ -1,6 +1,6 @@
 //! Original-bound INSERT routing and postorder symbolic normalization.
 use super::{
-    ENTRY_BUFFER, raw,
+    raw,
     source::{self, Source},
 };
 use crate::{
@@ -9,7 +9,7 @@ use crate::{
     limits::MAX_INDEX_DEPTH,
     table::indexes::{
         header::IndexHeader,
-        mutation::{encoding, profile::SingleProfile, repack},
+        mutation::{encoding, repack, retained::RetainedProfile},
         page::{ENTRY_START, Entry, KeyRef},
     },
 };
@@ -43,21 +43,21 @@ pub(super) struct Layout {
     pub root: usize,
 }
 
-struct Context<'a> {
+struct Context<'a, P: RetainedProfile, const N: usize> {
     image: &'a NativeImage,
-    source: &'a Source,
-    keys: &'a [KeyRef],
-    profile: &'a SingleProfile,
+    source: &'a Source<P::Key>,
+    keys: &'a [KeyRef<P::Key>],
+    profile: &'a P,
 }
 
-pub(super) fn prepare(
+pub(super) fn prepare<P: RetainedProfile, const N: usize>(
     image: &NativeImage,
-    source: &Source,
-    keys: &[KeyRef],
-    profile: &SingleProfile,
+    source: &Source<P::Key>,
+    keys: &[KeyRef<P::Key>],
+    profile: &P,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Layout, EditError> {
-    let context = Context {
+    let context = Context::<_, N> {
         image,
         source,
         keys,
@@ -90,8 +90,8 @@ pub(super) fn prepare(
     Ok(layout)
 }
 
-fn build(
-    context: &Context<'_>,
+fn build<P: RetainedProfile, const N: usize>(
+    context: &Context<'_, P, N>,
     original: usize,
     range: Range<usize>,
     root: bool,
@@ -200,8 +200,8 @@ fn build(
     singleton(node, reader)
 }
 
-fn normalize(
-    context: &Context<'_>,
+fn normalize<P: RetainedProfile, const N: usize>(
+    context: &Context<'_, P, N>,
     layout: &mut Layout,
     right: usize,
     left: usize,
@@ -299,8 +299,8 @@ fn divide(
     Ok(left)
 }
 
-fn fits(
-    context: &Context<'_>,
+fn fits<P: RetainedProfile, const N: usize>(
+    context: &Context<'_, P, N>,
     layout: &Layout,
     index: usize,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -314,14 +314,14 @@ fn fits(
                 reader.cancelled,
             )?;
             match node.origin {
-                Origin::Existing(number) => repack::borrowed_fits::<_, ENTRY_BUFFER>(
+                Origin::Existing(number) => repack::borrowed_fits::<_, N>(
                     raw(context.image, number)?,
                     &entries,
                     context.profile,
                     reader.budget,
                     reader.cancelled,
                 ),
-                Origin::Fresh => repack::borrowed_fits_fresh::<_, ENTRY_BUFFER>(
+                Origin::Fresh => repack::borrowed_fits_fresh::<_, N>(
                     &entries,
                     context.profile,
                     reader.budget,
@@ -335,14 +335,20 @@ fn fits(
                 .len()
                 .checked_sub(usize::from(*tail))
                 .ok_or(EditError::Preservation)?;
-            let mut first = [0; ENTRY_BUFFER];
+            let mut first = [0; N];
             let mut common = 0;
             let mut total = 0usize;
             for (position, &child) in children[..count].iter().enumerate() {
-                reader.work(ENTRY_BUFFER)?;
-                let value = context.keys[layout.nodes[child].maximum];
-                let encoded = encoding::retained_entry::<_, ENTRY_BUFFER>(
-                    &Entry { value, child: 0 },
+                reader.work(N)?;
+                let key = &context.keys[layout.nodes[child].maximum];
+                let encoded = encoding::borrowed_entry::<_, N>(
+                    &Entry {
+                        value: KeyRef {
+                            key: &key.key,
+                            row: key.row,
+                        },
+                        child: 0,
+                    },
                     context.profile,
                 )?;
                 let key_row_bytes = encoded.length;

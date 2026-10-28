@@ -79,7 +79,8 @@ pub(super) fn continue_primary(
         cancelled,
         reads: 0,
     };
-    let source = source::capture(image, index, definition, &profile, &mut reader)?;
+    let source =
+        source::capture::<_, ENTRY_BUFFER>(image, index, definition, &profile, &mut reader)?;
     super::super::super::insertion::require_population(
         index,
         &source.keys,
@@ -104,7 +105,7 @@ pub(super) fn continue_primary(
     let layout = if operation.final_keys.is_empty() {
         None
     } else {
-        Some(layout::prepare(
+        Some(layout::prepare::<_, ENTRY_BUFFER>(
             image,
             &source,
             operation.final_keys,
@@ -166,7 +167,7 @@ pub(super) fn continue_primary(
         reader.tick()?;
         numbers[fresh] = allocation::reserve(image, index, &mut plan, &mut reader)?;
     }
-    write::emit(
+    write::emit::<_, ENTRY_BUFFER>(
         write::Operation {
             image,
             keys: operation.final_keys,

@@ -1261,3 +1261,17 @@ Clippy with warnings denied, minimal compilation and formatting pass. The first
 compile exposed a removed module import and leftover imports; the import-only
 correction precedes these checks. No new compatibility claim follows from this
 internal ownership change.
+
+
+The recursive INSERT kernel also now transports profile-owned keys without
+requiring key `Copy`, `Clone` or representational equality. Source topology,
+normalization and serialization use the existing retained-profile and borrowed
+entry services with explicit buffer widths. Its production caller still selects
+the same numeric profile and 17-byte buffer; GUID/composite INSERT admission
+has not been added by this refactor.
+
+All 159 INSERT regression functions pass, including an additional non-Copy
+retained-key control over real source topology and independent INDEX-only image
+expectations. That control establishes key transport, not authority for new DATA
+rows. Library Clippy, minimal compilation and formatting pass. Existing complete
+candidate tests retain responsibility for placement, constraints and preservation.
