@@ -428,6 +428,11 @@ within their original record capacity, using separately typed bitmap pages and
 independent original-byte replay. Its combined INSERT batch passes 194 functions.
 Missing-map initialization, global map growth and pointer-record expansion remain
 open; these checkpoints do not qualify normal saves or native Access behavior.
+The external-payload profile additionally passes sixteen source/request-only
+complete-image comparisons and sixteen fresh independent typed-row/map reads.
+Its committed producer was rebuilt in a fresh target after a stale shared-cache
+artifact was rejected before execution. The later map-growth continuation retains
+its separate qualification gate.
 
 Major gates still open before the full backend is complete:
 

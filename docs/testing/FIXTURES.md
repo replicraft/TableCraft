@@ -1,5 +1,36 @@
 # Candidate Access fixtures
 
+## Original external Memo/OLE INSERT inputs
+
+Original project helper
+[LongValueInsertFixture.java](ace16_insert_external_long_values/LongValueInsertFixture.java)
+creates four inert originals with the reviewed Jackcess 5.0.4 JAR
+(SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+It reuses the existing bounded file-channel helper. No upstream code or database
+fixture is copied. Public row creation/deletion is explicit, expression evaluation
+stays disabled, and linked database opens are refused. Originals remain private
+under `.cache/ace16-insert-external-long-value-source-first-20261028/`.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016 raw Memo | 446,464 | `9a6b7e0e5b0984e51e1af3170ff92e641b48809db2f74c17ab634f80993c0359` |
+| V2016 compressed Memo | 446,464 | `1f5c45d48680ef13c474ebe9b6a6a3e4a745ac7dcdca94c5f3b2b96d82d11c04` |
+| V2019 raw Memo | 520,192 | `986ddd0db110ef562ead874c3c27dbba514a6d2154cb49bf0836d17f3966f125` |
+| V2019 compressed Memo | 520,192 | `e8c39e4b9e52f4204e5e58338d2180efaba980e193c4be078fc84aaf771454de` |
+
+Each original has six live parents, ordinary OLE and Memo columns, two physical
+I32 indexes with true aliases, and an untouched Sentinel. The saved catalog-wide
+gate observes one preserved orphan chunk per long column after public deletion;
+no source patch or orphan predicate forces that result. SOURCE9 capture passed
+separately from saved-only qualification. The
+[maintained proof](ace16_insert_external_long_values/README.md) derives sixteen
+complete request images before producer execution, then verifies sixteen native
+candidates and sixteen fresh combined getter/map calls. The independent public
+phase retains its initial two successful children, footer-proof correction and
+thirty unique remaining children. The shared-target stale build and corrective
+fresh-target compilation are separately recorded. Native Access/Windows saves
+remain unrun; this corpus does not qualify map-growth or initialization cases.
+
 ## Original DATE candidate inputs
 
 Original Apache-2.0 [DateCandidateFixture.java](DateCandidateFixture.java),

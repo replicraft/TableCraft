@@ -30,6 +30,22 @@ first-pass result. Native Access qualification remains separate. See the
 
 ## External Memo/OLE INSERT allocation
 
+Sixteen source/request-only external Memo/OLE images now match the separately
+built committed producer byte for byte, followed by sixteen fresh independent
+typed-row/map/catalog reads. Four source databases cover both ACE 16 headers and
+raw/compressed Memo policies. The public-reference phase retains its two
+successful calls followed by a proof-script footer assertion, the saved-only
+correction, and thirty distinct remaining successful calls.
+
+An initial shared-target build reused an older executable because archived source
+timestamps preceded its Cargo fingerprint. It was rejected before any candidate
+call. A fresh, initially absent target compiled the committed source and supplied
+the distinct artifact used for all sixteen comparisons. The [corrected build
+receipt](testing/results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
+retains this lineage. These comparisons qualify the stated engineering profile;
+they do not establish native Access save/reopen behavior or qualify the later
+column-map growth and initialization continuations.
+
 The separate ACE 16 INSERT preview now places ordinary external single/chained
 Memo/OLE payloads before DATA and INDEX on one typed append state. Complete
 requests and record-width fallback qualify before reservations. Fresh source
