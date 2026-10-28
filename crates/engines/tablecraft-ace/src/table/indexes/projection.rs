@@ -3,7 +3,7 @@ use super::{
     BooleanIndexSelection, DateTimeIndexSelection, DecimalIndexSelection, Int32IndexSelection,
     Int64IndexSelection, NativeIndex, key::KeyRow,
 };
-use crate::{InspectError, TableSchema, header::check, table::snapshot};
+use crate::{InspectError, TableFeatures, TableSchema, header::check, table::snapshot};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -92,13 +92,42 @@ impl RowProjection {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
-        let Some(names) = requested else {
+        Self::build(schema, index, requested, None, budget, cancelled)
+    }
+
+    pub fn stored(
+        features: &TableFeatures,
+        index: &NativeIndex,
+        requested: Option<&[&str]>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::build(
+            features.schema(),
+            index,
+            requested,
+            Some(features),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn build(
+        schema: &TableSchema,
+        index: &NativeIndex,
+        requested: Option<&[&str]>,
+        features: Option<&TableFeatures>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        if requested.is_none() && features.is_none() {
             return Ok(Self {
                 output_columns: snapshot::columns(schema, budget)?,
                 decoded: None,
             });
-        };
-        if names.len() > schema.columns().len() {
+        }
+        let output_count = requested.map_or(schema.columns().len(), <[&str]>::len);
+        if output_count > schema.columns().len() {
             return Err(InspectError::Malformed);
         }
         let count = schema.columns().len();
@@ -126,28 +155,53 @@ impl RowProjection {
             check(budget, cancelled)?;
             budget.charge(
                 Resource::Steps,
-                (names.len() + index.columns().len()) as u64,
+                (requested.map_or(0, <[&str]>::len) + index.columns().len()) as u64,
             )?;
-            let output = names
-                .iter()
-                .any(|name| field.name().eq_ignore_ascii_case(name));
+            let output = requested.is_none_or(|names| {
+                names
+                    .iter()
+                    .any(|name| field.name().eq_ignore_ascii_case(name))
+            });
             let key = index
                 .columns()
                 .iter()
                 .any(|key| key.number() == field.number());
             if output || key {
-                budget.charge_allocation(field.name().len() as u64, 1)?;
-                let column = field.column()?;
+                // Index keys retain ordinary scalar authority even when the same
+                // field is requested as output. Calculated keys remain refused.
+                let feature = if key {
+                    None
+                } else {
+                    match features {
+                        Some(features) => {
+                            budget.charge(Resource::Steps, native as u64 + 1)?;
+                            Some(
+                                features
+                                    .columns()
+                                    .nth(native)
+                                    .ok_or(InspectError::Malformed)?,
+                            )
+                        }
+                        None => None,
+                    }
+                };
+                let mut column = || match &feature {
+                    Some(feature) => feature.stored_column(budget),
+                    None => {
+                        budget.charge_allocation(field.name().len() as u64, 1)?;
+                        field.column()
+                    }
+                };
+                let decoded = column()?;
                 if output {
-                    budget.charge_allocation(field.name().len() as u64, 1)?;
-                    output_columns.push(field.column()?);
+                    output_columns.push(column()?);
                     returned.push(positions.len());
                 }
                 positions.push(native);
-                columns.push(column);
+                columns.push(decoded);
             }
         }
-        if output_columns.len() != names.len() {
+        if output_columns.len() != output_count {
             return Err(InspectError::Malformed);
         }
         Ok(Self {

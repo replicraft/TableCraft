@@ -1,5 +1,6 @@
 mod membership;
 mod references;
+mod stored;
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
@@ -17,7 +18,7 @@ use super::{
 };
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
-    InspectError, NativeReadSource, NativeRowReference, TableSnapshotLimits,
+    InspectError, NativeReadSource, NativeRowReference, TableFeatures, TableSnapshotLimits,
     format::{
         allocation,
         reader::Reader,
@@ -27,6 +28,7 @@ use crate::{
 };
 use membership::{DataPages, OwnershipStrategy};
 pub use references::{IndexedTableSnapshot, read_table_index_with_references};
+pub use stored::{read_stored_table_index_with_references, read_stored_table_index_with_request};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -192,6 +194,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
             table_order: false,
             eligible_rows: None,
             row_references: None,
+            stored_features: None,
         },
         budget,
         cancelled,
@@ -228,6 +231,7 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
             table_order: true,
             eligible_rows: None,
             row_references: None,
+            stored_features: None,
         },
         budget,
         cancelled,
@@ -321,6 +325,7 @@ struct ReadOptions<'a> {
     // Set only by the private complete physical-index consistency check.
     eligible_rows: Option<usize>,
     row_references: Option<&'a mut Vec<NativeRowReference>>,
+    stored_features: Option<&'a TableFeatures>,
 }
 impl Default for ReadOptions<'_> {
     fn default() -> Self {
@@ -332,6 +337,7 @@ impl Default for ReadOptions<'_> {
             table_order: false,
             eligible_rows: None,
             row_references: None,
+            stored_features: None,
         }
     }
 }
@@ -421,6 +427,12 @@ fn read_selected<R: crate::NativeReadSource>(
     }
     let selected = &inspection.indexes[position];
     let schema = &inspection.schema;
+    if options
+        .stored_features
+        .is_some_and(|features| !schema.same_definition(features.schema()))
+    {
+        return Err(InspectError::Malformed);
+    }
     let omitted_nulls = selected
         .constraints()
         .is_some_and(|constraints| constraints.ignore_nulls());
@@ -479,7 +491,12 @@ fn read_selected<R: crate::NativeReadSource>(
     {
         return Err(InspectError::Unsupported);
     }
-    let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
+    let projection = match options.stored_features {
+        Some(features) => {
+            RowProjection::stored(features, selected, options.columns, budget, cancelled)?
+        }
+        None => RowProjection::new(schema, selected, options.columns, budget, cancelled)?,
+    };
     let mut view = ReadView {
         projection: &projection,
         maximum_rows: options.maximum_rows as usize,
