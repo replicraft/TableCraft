@@ -272,7 +272,12 @@ fn fits(
                     .get(*child)
                     .and_then(|node| node.maximum)
                     .ok_or(EditError::Preservation)?;
-                maxima.push(*entries.get(maximum).ok_or(EditError::Preservation)?);
+                maxima.push(
+                    entries
+                        .get(maximum)
+                        .ok_or(EditError::Preservation)?
+                        .copy_paid(reader)?,
+                );
             }
             Ok(frames::parent(&maxima, seed, reader)?.fits())
         }

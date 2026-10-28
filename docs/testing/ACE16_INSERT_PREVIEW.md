@@ -39,8 +39,9 @@ and all-bounded forms retain their routing policy; internal overflows propagate
 through independently normalized child ranges. One root growth event is allowed
 per physical tree, and the resulting top must fit. Qualified non-Required
 secondary Ignore-NULL indexes omit NULL keys through the same physical-owner
-service. Primary/Required Ignore-NULL profiles, composite keys and other
-unqualified key families remain refused. Original records
+service. Qualified [two-to-ten-component fixed GUID/numeric keys](ACE16_FIXED_TUPLE_INSERTS.md)
+now retain complete tuple NULL rules and wide bounds. Primary/Required Ignore-NULL
+profiles and other unqualified key families remain refused. Original records
 and their logical ROW references remain intact.
 
 ## Placement, index membership and counters

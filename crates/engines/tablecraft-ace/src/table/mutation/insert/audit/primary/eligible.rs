@@ -46,14 +46,14 @@ pub(super) fn primary_references(
     let mut previous = None;
     for entry in entries {
         reader.work(entry.len())?;
-        let value = selection
-            .profile
-            .value(entry)?
-            .ok_or(EditError::Preservation)?;
-        if previous.is_some_and(|prior| prior >= value) {
+        if selection.profile.value(entry)?.any {
             return Err(EditError::Preservation);
         }
-        previous = Some(value);
+        let key = &entry[..entry.len() - size_of::<u32>()];
+        if previous.is_some_and(|prior: &[u8]| prior >= key) {
+            return Err(EditError::Preservation);
+        }
+        previous = Some(key);
         references.push(reference(entry));
     }
     let levels = references.len().checked_ilog2().unwrap_or(0) as usize + 1;
@@ -81,6 +81,19 @@ pub(super) fn original(
 ) -> Result<(), EditError> {
     let mut expected = Vec::new();
     reserve(&mut expected, references.len(), reader)?;
+    // The record decoder emits declaration order, independently of written
+    // index component order. Decode/remap a sorted set; the profile retains its
+    // original component sequence for physical key assembly.
+    let mut columns = selection.profile.columns(reader)?;
+    let levels = columns.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    let work = columns
+        .len()
+        .checked_mul(levels)
+        .ok_or(InspectError::StructureLimit)?;
+    reader.work(work)?;
+    columns.sort_unstable();
+    reader.work(columns.len())?;
+    columns.dedup();
     let mut current = None;
     for reference in references {
         reader.tick()?;
@@ -99,17 +112,23 @@ pub(super) fn original(
             checked.schema().definition_page(),
             page,
         )?;
-        let values =
-            record::decode_selected(&raw, checked.schema(), Some(&[selection.column]), reader)?;
-        let value = selection
-            .profile
-            .request(values.first().ok_or(EditError::Preservation)?)?;
-        if values.len() != 1 {
+        let selected = record::decode_selected(&raw, checked.schema(), Some(&columns), reader)?;
+        if selected.len() != columns.len() {
             return Err(EditError::Preservation);
         }
-        if value.is_some() {
+        let mut values = Vec::new();
+        reserve(&mut values, checked.schema().columns().len(), reader)?;
+        values.resize_with(checked.schema().columns().len(), || {
+            tablecraft_core::values::Value::Null
+        });
+        for (column, value) in columns.iter().zip(selected) {
+            reader.tick()?;
+            values[*column] = value;
+        }
+        let wire = selection.profile.request(&values, *reference, reader)?;
+        if !selection.profile.value(&wire)?.all {
             reader.work(size_of::<Wire>())?;
-            expected.push(selection.profile.encode(value, *reference)?);
+            expected.push(wire);
         }
     }
     let levels = expected.len().checked_ilog2().unwrap_or(0) as usize + 1;

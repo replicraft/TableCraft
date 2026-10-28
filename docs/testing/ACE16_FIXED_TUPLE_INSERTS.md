@@ -1,0 +1,94 @@
+# Fixed GUID and tuple INSERT engineering preview
+
+The separate `NativeImage::preview_ace16_insert_rows` service now maintains
+single GUID secondary indexes and qualified two-to-ten-component fixed-key
+indexes. Components may use Boolean, Byte, Int16, Int32, Int64, Currency, Single,
+Double, legacy DateTime or GUID, with an independent direction per component.
+The required unique ascending Int32 primary remains mandatory and may occupy
+any physical index slot. This does not enable normal saves, journalable ACE
+edits, schema changes or required data-macro execution.
+
+The [ordinary record contract](ACE16_ORDINARY_INSERTS.md) still governs all
+supplied fields, including fields outside an index. Its contiguous-column,
+explicit-value, default/generated-field and payload restrictions remain intact.
+Decimal, Text, Binary and other unqualified index profiles remain refused;
+being able to store a value does not qualify an index on it. Foreign indexes and
+unsupported relationship or validation semantics retain their existing gates.
+
+## Typed ownership and allocation
+
+Each physical owner prepares complete immutable request rows through its actual
+native profile. Declaration positions are resolved from native column descriptors;
+no table/field name or first scalar field selects the key. A `PreparedIndex`
+retains typed keys and profiles while exposing its original page inventory.
+The composer checks disjoint ownership against earlier physical trees before
+INDEX allocation. Logical aliases share one physical plan and counter.
+
+Continuation consumes the same DATA-first allocation state. Only after that
+owner finishes does the plan retain owned encoded-key/ROW facts for comparison.
+The final audit independently derives those facts; it does not accept the
+planner's component, NULL or source-membership declarations as authority.
+Existing source topology, original bounds, seed/residue rules, recursive
+normalization and retirement/allocation exclusions remain in force.
+
+GUID field storage uses its native little-endian segments; physical index keys
+use canonical bytes and two fixed segments. Descending encoding complements the
+value bytes and final length tag while retaining continuation tag `09`. The
+existing native codec constructs keys, and the independent audit owns a separate
+GUID wire validator and literal goldens. Numeric and DATE components retain
+their established exact carriers and physical ordering, without SQL coercion.
+
+## Complete tuple rules
+
+Required rejects a NULL in any selected component. Unique exempts only an
+entirely NULL tuple; repeated partially NULL keys still conflict. IgnoreNULL
+omits only tuples whose selected components are all NULL. A field outside the
+index does not affect that decision. Required+IgnoreNULL and primary IgnoreNULL
+combinations remain refused. Boolean false remains a non-NULL mask value.
+
+Historical distinct counters compare complete key-only families, excluding ROW
+references. Repeated families count once, existing families count zero and an
+omitted all-NULL key contributes zero. Table and primary cardinality include
+every inserted row. An owner receiving no eligible keys retains its entire tree,
+map and history, while other owners may change shared global allocation bits.
+
+Ignored original membership is independently reconstructed from the actual
+primary group's complete logical ROW universe, including forwarding roots.
+Every selected stored field is decoded. The decoder emits declaration order;
+the audit remaps those values before encoding the index's written component
+order. This preserves reversed keys and prevents same-count or ordinal-only
+membership substitution. Short audit wires stay inline; wider keys and copied
+branch maxima allocate only after explicit budget charges.
+
+## Current verification
+
+All 171 INSERT regression functions pass. Eight end-to-end GUID/tuple functions
+construct real metadata, complete records, streams and expected whole images
+before invoking the preview. Both ACE 16 layouts cover independent directions,
+reversed key order, aliases, physical primary swaps, exact GUID carriers,
+all/partial NULLs, uniqueness, historical deltas, quotas and terminal cancellation.
+
+A full single-GUID leaf grows from 157 non-NULL entries plus one NULL entry:
+3,616 active bytes. Ten-GUID tuples additionally exercise eleven fixed fields,
+two-byte masks and 168-byte records. Their 194-byte leaf entries grow an
+ordinary 3,506-byte source or ignored 3,492-byte source into two leaves and a
+real 198-byte node bound. DATA still fits its original page; exact EOF ordering,
+map bits, counters, old NULL payloads, original root residue and fresh padding
+are checked. A fitted unique case differing only in the last written component
+checks complete-key comparison.
+
+The full ACE unit batch passes 468 functions with one existing ignored fixture
+generator. Strict ACE Clippy across all targets/features, minimal compilation,
+formatting and dependency/documentation guards pass. The first recovered GUID batch passed five functions and exposed two
+reversed ignored-tuple audit failures. The projection-order correction preserves
+the original and expected bytes; a causal source control additionally rejects
+canonical same-count membership with the wrong stored field value. An earlier
+attempt stopped on exhausted Cargo-cache disk space before tests ran; only
+rebuildable incremental cache was cleared. These failures remain separate from
+the subsequent passing batch.
+
+Independent original-file GUID/tuple comparisons are being prepared separately.
+The [scalar file corpus](ace16_insert_scalar_indexes/README.md) qualifies earlier
+Boolean/IEEE/DATE cases from its recorded producer, not these additional keys.
+Native Microsoft Access save/reopen, data macros, shared-file behavior and
+production write admission remain unqualified.

@@ -1,4 +1,5 @@
 use super::*;
+use crate::table::indexes::mutation::{NumericKey, profile::SingleProfile};
 use crate::{IndexCheckStatus, IndexConstraintViolation, check_table, check_table_constraints};
 use model::{PAGE, ROOT};
 use tablecraft_core::limits::Resource;
@@ -80,6 +81,11 @@ fn seeded_data(image: &NativeImage, number: u32) -> State {
 
 #[test]
 fn exact451_to452_overflow_retains_root_and_physical_aliases() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         for aliases in [false, true] {
             let (before, original) = model::source(code, 451, aliases, false);
@@ -92,12 +98,12 @@ fn exact451_to452_overflow_retains_root_and_physical_aliases() {
                 7,
             );
             assert_eq!(keys.len() * 9 - (keys.len() - 1), 3617);
-            let plan = continue_primary(
+            let plan = continue_index::<_, ENTRY_BUFFER>(
                 Operation {
                     image: &image,
                     checked: &structural,
-                    id: 0,
-                    physical: 0,
+                    index: structural.indexes()[0].index(),
+                    profile: &profile,
                     final_keys: &keys,
                 },
                 State::new(&image, 10),
@@ -124,6 +130,11 @@ fn exact451_to452_overflow_retains_root_and_physical_aliases() {
 
 #[test]
 fn prior_data_reservation_and_index_children_share_one_cursor_and_global_byte() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         let (before, original) = model::source(code, 451, true, false);
         let structural = checked(&before, 451, 2);
@@ -131,12 +142,12 @@ fn prior_data_reservation_and_index_children_share_one_cursor_and_global_byte() 
         let reference = 16 << 8;
         let keys = model::final_keys(&original, reference);
         let state = seeded_data(&image, 16);
-        let plan = continue_primary(
+        let plan = continue_index::<_, ENTRY_BUFFER>(
             Operation {
                 image: &image,
                 checked: &structural,
-                id: 0,
-                physical: 0,
+                index: structural.indexes()[0].index(),
+                profile: &profile,
                 final_keys: &keys,
             },
             state,
@@ -166,18 +177,23 @@ fn prior_data_reservation_and_index_children_share_one_cursor_and_global_byte() 
 
 #[test]
 fn indirect_promotion_reserves_distinct_bitmap_between_the_two_index_leaves() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         let (before, original) = model::source(code, 451, true, true);
         let structural = checked(&before, 451, 2);
         let image = capture(&before);
         let reference = (15 << 8) | 196;
         let keys = model::final_keys(&original, reference);
-        let plan = continue_primary(
+        let plan = continue_index::<_, ENTRY_BUFFER>(
             Operation {
                 image: &image,
                 checked: &structural,
-                id: 0,
-                physical: 0,
+                index: structural.indexes()[0].index(),
+                profile: &profile,
                 final_keys: &keys,
             },
             State::new(&image, 10),
@@ -208,16 +224,21 @@ fn indirect_promotion_reserves_distinct_bitmap_between_the_two_index_leaves() {
 
 #[test]
 fn fitting_root_refuses_growth_while_height1_uses_the_general_continuation() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let (before, original) = model::source(6, 450, false, false);
     let checked_source = checked(&before, 450, 1);
     let image = capture(&before);
     let keys = model::final_keys(&original, (15 << 8) | 195);
-    let error = continue_primary(
+    let error = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &checked_source,
-            id: 0,
-            physical: 0,
+            index: checked_source.indexes()[0].index(),
+            profile: &profile,
             final_keys: &keys,
         },
         State::new(&image, 10),
@@ -240,12 +261,12 @@ fn fitting_root_refuses_growth_while_height1_uses_the_general_continuation() {
         row: (15 << 8) | 197,
     });
     second.sort_by_key(|entry| (entry.key, entry.row));
-    let plan = continue_primary(
+    let plan = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &checked_source,
-            id: 0,
-            physical: 0,
+            index: checked_source.indexes()[0].index(),
+            profile: &profile,
             final_keys: &second,
         },
         State::new(&image, 10),
@@ -271,6 +292,11 @@ fn fitting_root_refuses_growth_while_height1_uses_the_general_continuation() {
 
 #[test]
 fn changed_original_keys_duplicate_refs_and_duplicate_primary_values_refuse() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let (before, original) = model::source(6, 451, false, false);
     let structural = checked(&before, 451, 1);
     let image = capture(&before);
@@ -293,12 +319,12 @@ fn changed_original_keys_duplicate_refs_and_duplicate_primary_values_refuse() {
                 ))
             }
         };
-        let error = continue_primary(
+        let error = continue_index::<_, ENTRY_BUFFER>(
             Operation {
                 image: &image,
                 checked: &structural,
-                id: 0,
-                physical: 0,
+                index: structural.indexes()[0].index(),
+                profile: &profile,
                 final_keys: &forged,
             },
             State::new(&image, 10),
@@ -313,6 +339,11 @@ fn changed_original_keys_duplicate_refs_and_duplicate_primary_values_refuse() {
 
 #[test]
 fn foreign_role_alias_and_allocated_future_cells_refuse_without_a_plan() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for role_alias in [false, true] {
         let (mut before, original) = model::source(6, 451, false, false);
         if role_alias {
@@ -323,12 +354,12 @@ fn foreign_role_alias_and_allocated_future_cells_refuse_without_a_plan() {
         let structural = checked(&before, 451, 1);
         let image = capture(&before);
         let keys = model::final_keys(&original, (15 << 8) | 196);
-        let error = continue_primary(
+        let error = continue_index::<_, ENTRY_BUFFER>(
             Operation {
                 image: &image,
                 checked: &structural,
-                id: 0,
-                physical: 0,
+                index: structural.indexes()[0].index(),
+                profile: &profile,
                 final_keys: &keys,
             },
             State::new(&image, 10),
@@ -348,6 +379,11 @@ fn foreign_role_alias_and_allocated_future_cells_refuse_without_a_plan() {
 
 #[test]
 fn bounded_work_and_late_cancellation_leave_retry_images_deterministic() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let (before, original) = model::source(6, 451, true, false);
     let structural = checked(&before, 451, 2);
     let image = capture(&before);
@@ -363,12 +399,12 @@ fn bounded_work_and_late_cancellation_leave_retry_images_deterministic() {
             Resource::Steps,
         ),
     ] {
-        let error = continue_primary(
+        let error = continue_index::<_, ENTRY_BUFFER>(
             Operation {
                 image: &image,
                 checked: &structural,
-                id: 0,
-                physical: 0,
+                index: structural.indexes()[0].index(),
+                profile: &profile,
                 final_keys: &keys,
             },
             State::new(&image, 10),
@@ -382,12 +418,12 @@ fn bounded_work_and_late_cancellation_leave_retry_images_deterministic() {
         );
     }
     let calls = std::cell::Cell::new(0);
-    let plan = continue_primary(
+    let plan = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &structural,
-            id: 0,
-            physical: 0,
+            index: structural.indexes()[0].index(),
+            profile: &profile,
             final_keys: &keys,
         },
         State::new(&image, 10),
@@ -402,12 +438,12 @@ fn bounded_work_and_late_cancellation_leave_retry_images_deterministic() {
     model::assert_image(&model::compose(&before, &plan, reference), &expected);
     let stop = calls.get() - 1;
     let current = std::cell::Cell::new(0);
-    let error = continue_primary(
+    let error = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &structural,
-            id: 0,
-            physical: 0,
+            index: structural.indexes()[0].index(),
+            profile: &profile,
             final_keys: &keys,
         },
         State::new(&image, 10),
@@ -420,12 +456,12 @@ fn bounded_work_and_late_cancellation_leave_retry_images_deterministic() {
     .err()
     .unwrap();
     assert_eq!(error, EditError::Inspect(InspectError::Cancelled));
-    let retry = continue_primary(
+    let retry = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &structural,
-            id: 0,
-            physical: 0,
+            index: structural.indexes()[0].index(),
+            profile: &profile,
             final_keys: &keys,
         },
         State::new(&image, 10),

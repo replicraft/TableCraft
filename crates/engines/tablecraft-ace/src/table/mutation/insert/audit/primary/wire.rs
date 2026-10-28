@@ -1,48 +1,113 @@
-//! Bounded audit-owned encoded entries with their actual physical length.
-use crate::EditError;
-use std::{cmp::Ordering, ops::Deref};
+//! Short keys stay inline; wider fixed tuples own explicitly charged bytes.
+use crate::{EditError, InspectError, format::reader::Reader};
+use std::{cmp::Ordering, io::Cursor, ops::Deref};
+use tablecraft_core::values::Guid;
 
-pub(super) const MAX_WIRE_BYTES: usize = size_of::<u8>() + size_of::<i64>() + 2 * size_of::<u32>();
+const MARKER_BYTES: usize = size_of::<u8>();
+const TAG_BYTES: usize = size_of::<u8>();
+const ROW_BYTES: usize = size_of::<u32>();
+const CHILD_BYTES: usize = size_of::<u32>();
+const GUID_SEGMENTS: usize = 2;
+const INLINE_BYTES: usize = MARKER_BYTES + size_of::<i64>() + ROW_BYTES + CHILD_BYTES;
+const MAX_COMPONENTS: usize = 10;
+const GUID_KEY_BYTES: usize = MARKER_BYTES + Guid::BYTE_LEN + GUID_SEGMENTS * TAG_BYTES;
+pub(super) const MAX_WIRE_BYTES: usize = MAX_COMPONENTS * GUID_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
-#[derive(Clone, Copy)]
 #[cfg_attr(test, derive(Debug))]
-pub(super) struct Wire {
-    bytes: [u8; MAX_WIRE_BYTES],
-    length: usize,
+pub(super) enum Wire {
+    Inline {
+        bytes: [u8; INLINE_BYTES],
+        length: usize,
+    },
+    Owned(Vec<u8>),
 }
 
 impl Wire {
     pub(super) fn read(bytes: &[u8]) -> Result<Self, EditError> {
+        if bytes.len() > INLINE_BYTES {
+            return Err(EditError::Preservation);
+        }
+        let mut encoded = [0; INLINE_BYTES];
+        encoded[..bytes.len()].copy_from_slice(bytes);
+        Ok(Self::Inline {
+            bytes: encoded,
+            length: bytes.len(),
+        })
+    }
+
+    pub(super) fn read_paid(
+        bytes: &[u8],
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        if bytes.len() <= INLINE_BYTES {
+            return Self::read(bytes);
+        }
         if bytes.len() > MAX_WIRE_BYTES {
             return Err(EditError::Preservation);
         }
-        let mut result = Self {
-            bytes: [0; MAX_WIRE_BYTES],
-            length: bytes.len(),
-        };
-        result.bytes[..bytes.len()].copy_from_slice(bytes);
-        Ok(result)
+        reader
+            .budget
+            .charge_allocation(bytes.len() as u64, 1)
+            .map_err(InspectError::from)?;
+        reader.work(bytes.len())?;
+        let mut owned = Vec::new();
+        owned
+            .try_reserve_exact(bytes.len())
+            .map_err(|_| InspectError::Allocation)?;
+        owned.extend_from_slice(bytes);
+        Ok(Self::Owned(owned))
     }
 
-    pub(super) fn child(self, number: u32) -> Result<Self, EditError> {
+    pub(super) fn copy_paid(
+        &self,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        Self::read_paid(self, reader)
+    }
+
+    pub(super) fn child(&self, number: u32) -> Result<Self, EditError> {
         let end = self
-            .length
-            .checked_add(size_of::<u32>())
+            .len()
+            .checked_add(CHILD_BYTES)
+            .ok_or(EditError::Preservation)?;
+        if end > INLINE_BYTES {
+            return Err(EditError::Preservation);
+        }
+        let mut bytes = [0; INLINE_BYTES];
+        bytes[..self.len()].copy_from_slice(self);
+        bytes[self.len()..end].copy_from_slice(&number.to_be_bytes());
+        Self::read(&bytes[..end])
+    }
+
+    pub(super) fn child_paid(
+        &self,
+        number: u32,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        if self.len() + CHILD_BYTES <= INLINE_BYTES {
+            return self.child(number);
+        }
+        let end = self
+            .len()
+            .checked_add(CHILD_BYTES)
             .ok_or(EditError::Preservation)?;
         if end > MAX_WIRE_BYTES {
             return Err(EditError::Preservation);
         }
-        let mut result = self;
-        result.bytes[self.length..end].copy_from_slice(&number.to_be_bytes());
-        result.length = end;
-        Ok(result)
+        let mut bytes = [0; MAX_WIRE_BYTES];
+        bytes[..self.len()].copy_from_slice(self);
+        bytes[self.len()..end].copy_from_slice(&number.to_be_bytes());
+        Self::read_paid(&bytes[..end], reader)
     }
 }
 
 impl Deref for Wire {
     type Target = [u8];
     fn deref(&self) -> &Self::Target {
-        &self.bytes[..self.length]
+        match self {
+            Self::Inline { bytes, length } => &bytes[..*length],
+            Self::Owned(bytes) => bytes,
+        }
     }
 }
 

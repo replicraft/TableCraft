@@ -230,8 +230,7 @@ fn structurally_valid_primary_recompression_and_slack_edits_still_refuse() {
             root[27..480].fill(0);
             let mut end = 0;
             for (position, (value, reference)) in forged.indexes[0].expected().enumerate() {
-                let mut wire = vec![127];
-                wire.extend(((value.unwrap() as i32 as u32) ^ 0x80000000).to_be_bytes());
+                let mut wire = value.to_vec();
                 wire.extend(reference.to_be_bytes());
                 let suffix = &wire[usize::from(position != 0)..];
                 root[480 + end..480 + end + suffix.len()].copy_from_slice(suffix);

@@ -50,7 +50,7 @@ impl<A: WriteValue> TupleProfile<A> {
         )
     }
 
-    fn with_coverage(
+    pub(super) fn with_coverage(
         index: &NativeIndex,
         schema: &TableSchema,
         coverage: Coverage,

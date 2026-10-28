@@ -6,7 +6,6 @@ use tablecraft_schema::ScalarType;
 
 pub(super) struct Selection<'a> {
     pub index: &'a NativeIndex,
-    pub column: usize,
     pub profile: Profile,
     pub primary: bool,
 }
@@ -74,21 +73,9 @@ pub(super) fn capture<'a>(
             }
         }
         let index = selected.ok_or(EditError::Preservation)?;
-        let [key] = index.columns() else {
-            return Err(EditError::Preservation);
-        };
-        let mut column = None;
-        for (position, field) in checked.schema().columns().iter().enumerate() {
-            reader.tick()?;
-            if field.number() == key.number() && column.replace(position).is_some() {
-                return Err(EditError::Preservation);
-            }
-        }
-        let column = column.ok_or(EditError::Preservation)?;
         result.push(Selection {
             index,
-            column,
-            profile: Profile::bind(index, &checked.schema().columns()[column])?,
+            profile: Profile::bind(index, checked.schema(), reader)?,
             primary: is_primary,
         });
     }

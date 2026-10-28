@@ -17,17 +17,20 @@ there is no partial index-maintenance mode.
 
 A required unique ascending Int32 primary remains mandatory. Its
 physical slot need not be zero. Secondary single-key indexes admit Byte, Int16,
-Int32, Int64, Currency, Boolean, Single, Double and legacy DateTime fields in
+Int32, Int64, Currency, Boolean, Single, Double, legacy DateTime and GUID fields in
 either direction, including represented NULLs where the carrier supports them
 and ordinary or unique constraints. Key carriers remain exact; no SQL coercion
 or floating conversion supplies native keys. Existing constraint services retain
 required-key and nullable-unique behavior.
 
-Secondary Ignore-NULL indexes now admit the same single-key numeric profile
-when the index is not Required. Primary Ignore-NULL and Required+Ignore-NULL
-combinations remain refused, as do foreign indexes, tuples and other key families. Carrying a Decimal, Text, Binary, floating or other admitted field in a
-new record does not authorize an index on that field. The ordinary record profile
-and the physical key profile remain separate requirements.
+Secondary Ignore-NULL indexes admit the qualified fixed-key profiles when the
+index is not Required. Primary Ignore-NULL and Required+Ignore-NULL combinations
+remain refused, as do foreign indexes and other unqualified key families.
+Qualified [fixed GUID/numeric tuples](ACE16_FIXED_TUPLE_INSERTS.md) now extend
+this service to two-to-ten components with independent directions. Storing a
+Decimal, Text, Binary or other unqualified key carrier does not authorize an
+index on that field. The ordinary record and physical key profiles remain
+separate requirements.
 
 Distinct physical trees must own disjoint original INDEX pages, including their
 descendants. Logical aliases within one physical owner do not violate this rule.
@@ -237,7 +240,8 @@ and deeper scalar-specific reference observations remain unqualified.
 
 The recursive tree kernel now uses generic retained keys and borrowed encoding.
 Its current numeric caller and exact allocation/image policy are unchanged.
-A non-Copy retained-key test brings the INSERT regression batch to 159 passing
-functions. This internal preparation does not admit GUID, composite or variable
-secondary keys; their full-row NULL rules, source membership and independent
-wire proof still need implementation.
+A non-Copy retained-key test brought that checkpoint to 159 passing INSERT
+functions. The later [fixed GUID/tuple continuation](ACE16_FIXED_TUPLE_INSERTS.md)
+now implements complete-row NULL rules, original membership and independent
+wire proof, with 171 passing INSERT functions. Variable-key and Decimal index
+continuations remain separate work.

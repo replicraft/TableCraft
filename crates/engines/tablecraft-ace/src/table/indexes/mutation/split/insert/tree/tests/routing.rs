@@ -195,18 +195,24 @@ fn operation<'a>(
     image: &'a NativeImage,
     checked: &'a TableCheck,
     keys: &'a [KeyRef],
-) -> Operation<'a> {
+    profile: &'a SingleProfile,
+) -> Operation<'a, SingleProfile> {
     Operation {
         image,
         checked,
-        id: 1,
-        physical: 0,
+        index: checked.indexes()[0].index(),
+        profile,
         final_keys: keys,
     }
 }
 
 #[test]
 fn original_bound_routes_left_right_both_and_noop_through_the_real_continuation() {
+    let profile = SingleProfile {
+        column: 1,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         for aliases in [false, true] {
             let before = source(code, aliases);
@@ -215,8 +221,8 @@ fn original_bound_routes_left_right_both_and_noop_through_the_real_continuation(
             for additions in [vec![5], vec![25], vec![40], vec![5, 25, 40], vec![]] {
                 let final_keys = keys(&additions);
                 let golden = expected(&before, &final_keys);
-                let plan = continue_primary(
-                    operation(&image, &check, &final_keys),
+                let plan = continue_index::<_, ENTRY_BUFFER>(
+                    operation(&image, &check, &final_keys, &profile),
                     State::new(&image, 10),
                     &mut budget(),
                     &|| false,
@@ -236,6 +242,11 @@ fn original_bound_routes_left_right_both_and_noop_through_the_real_continuation(
 
 #[test]
 fn source_seed_capacity_repair_remains_local_to_the_affected_leaf() {
+    let profile = SingleProfile {
+        column: 1,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         let before = source(code, true);
         let check = checked(&before);
@@ -246,8 +257,8 @@ fn source_seed_capacity_repair_remains_local_to_the_affected_leaf() {
             u16::from_le_bytes(golden[15 * PAGE + 24..15 * PAGE + 26].try_into().unwrap()),
             1
         );
-        let plan = continue_primary(
-            operation(&image, &check, &final_keys),
+        let plan = continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &final_keys, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| false,
@@ -260,12 +271,17 @@ fn source_seed_capacity_repair_remains_local_to_the_affected_leaf() {
 
 #[test]
 fn duplicate_bounds_changed_original_rows_and_malformed_source_topology_refuse() {
+    let profile = SingleProfile {
+        column: 1,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let before = source(5, false);
     let check = checked(&before);
     let image = capture(&before);
     assert!(
-        continue_primary(
-            operation(&image, &check, &keys(&[20])),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &keys(&[20]), &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| false
@@ -275,8 +291,8 @@ fn duplicate_bounds_changed_original_rows_and_malformed_source_topology_refuse()
     let mut changed = keys(&[25]);
     changed[0].row = (17 << 8) | 199;
     assert_eq!(
-        continue_primary(
-            operation(&image, &check, &changed),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &changed, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| false
@@ -289,8 +305,8 @@ fn duplicate_bounds_changed_original_rows_and_malformed_source_topology_refuse()
         invalid[offset] = value;
         let image = capture(&invalid);
         assert_eq!(
-            continue_primary(
-                operation(&image, &check, &keys(&[25])),
+            continue_index::<_, ENTRY_BUFFER>(
+                operation(&image, &check, &keys(&[25]), &profile),
                 State::new(&image, 10),
                 &mut budget(),
                 &|| false
@@ -303,6 +319,11 @@ fn duplicate_bounds_changed_original_rows_and_malformed_source_topology_refuse()
 
 #[test]
 fn migrated_kernel_quotas_cancel_and_retry_keep_original_bytes() {
+    let profile = SingleProfile {
+        column: 1,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let before = source(6, true);
     let check = checked(&before);
     let image = capture(&before);
@@ -311,8 +332,8 @@ fn migrated_kernel_quotas_cancel_and_retry_keep_original_bytes() {
         let mut limits = budget();
         limits.charge(resource, limits.remaining(resource)).unwrap();
         assert!(
-            continue_primary(
-                operation(&image, &check, &final_keys),
+            continue_index::<_, ENTRY_BUFFER>(
+                operation(&image, &check, &final_keys, &profile),
                 State::new(&image, 10),
                 &mut limits,
                 &|| false
@@ -322,8 +343,8 @@ fn migrated_kernel_quotas_cancel_and_retry_keep_original_bytes() {
     }
     let calls = Cell::new(0);
     assert!(
-        continue_primary(
-            operation(&image, &check, &final_keys),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &final_keys, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| {
@@ -333,8 +354,8 @@ fn migrated_kernel_quotas_cancel_and_retry_keep_original_bytes() {
         )
         .is_err()
     );
-    let plan = continue_primary(
-        operation(&image, &check, &final_keys),
+    let plan = continue_index::<_, ENTRY_BUFFER>(
+        operation(&image, &check, &final_keys, &profile),
         State::new(&image, 10),
         &mut budget(),
         &|| false,
