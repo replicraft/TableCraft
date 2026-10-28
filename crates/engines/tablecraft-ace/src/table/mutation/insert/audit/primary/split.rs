@@ -29,6 +29,21 @@ pub(super) struct Growth {
     pub rebased: Option<u32>,
 }
 
+pub(super) fn two_halves_fit(
+    entries: &[[u8; WIRE_BYTES]],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<bool, EditError> {
+    reader.tick()?;
+    let middle = entries.len() / 2;
+    if middle == 0 || middle == entries.len() {
+        return Ok(false);
+    }
+
+    let left = framing::measure(&entries[..middle], 0, reader)?;
+    let right = framing::measure(&entries[middle..], 0, reader)?;
+    Ok(left.fits() && right.fits())
+}
+
 pub(super) fn derive(
     image: &NativeImage,
     index: &NativeIndex,

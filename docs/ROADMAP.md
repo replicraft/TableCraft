@@ -268,8 +268,9 @@ qualification remain unfinished.
   the root as a height-one node and appends two leaves under the DATA allocator's
   same cursor. Four frozen complete-image comparisons and eight fresh independent
   getter/map calls pass. General height-one admission now extends leaf-child
-  counts and repeated normalization; deeper sources, parent growth, defaults
-  and required data macros remain unfinished.
+  counts and repeated normalization; the recursive continuation below extends
+  deeper sources and parent growth. Defaults and required data macros remain
+  unfinished.
 
 - [x] [Fitted INSERT into an existing height-one primary](testing/ACE16_INSERT_HEIGHT_ONE.md)
   routes final key/ROW pairs against the original inclusive bound of exactly two
@@ -280,7 +281,8 @@ qualification remain unfinished.
   tail, while literals cover left/bulk routing. The full ACE batch passes 1,228
   tests including three compile-fail checks, with seven example functions passing
   separately. The later general height-one continuation extends those source
-  shapes; parent growth, deeper trees and normal native saves remain unfinished.
+  shapes, and the recursive continuation below extends parent growth and deeper
+  trees. Normal native saves remain unfinished.
   Native Microsoft Access comparisons remain deferred.
 
 - [x] [One-child INSERT splitting](testing/ACE16_INSERT_CHILD_SPLITS.md) now
@@ -298,8 +300,9 @@ qualification remain unfinished.
   retained seed one. Four independently frozen complete images match the first
   four committed-producer candidates; all eight fresh independent getter/map
   calls pass. The later general height-one continuation admits additional source
-  children and multiple/repeated normalization when the parent fits; deeper
-  trees, parent growth and normal native saves remain unfinished.
+  children and multiple/repeated normalization when the parent fits; the recursive
+  continuation below extends deeper trees and parent growth. Normal native saves
+  remain unfinished.
 
 - [x] [General height-one INSERT](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
   admits arbitrary nonempty leaf-child counts, tail-present/all-bounded roots,
@@ -314,7 +317,27 @@ qualification remain unfinished.
   images match the committed producer, and all eight distinct fresh getter/map
   commands pass. A four-call controller stop and separate unattempted-call
   continuation remain explicit in the evidence.
-  Recursive parent growth, deeper trees and production saves remain unfinished.
+  The recursive continuation below extends parent growth and deeper trees;
+  production saves remain unfinished.
+
+- [x] [Recursive primary INSERT](testing/ACE16_INSERT_RECURSIVE.md) now admits
+  qualified NODE trees below the unchanged depth ceiling of 16, with recursive
+  original-bound routing, multiple/repeated leaf and internal splits, per-height
+  sibling proof and one shared DATA/index append state. One grown root retains
+  its ID/residue under seed zero; original NODE grows all-bounded, original LEAF
+  grows tail-present. The new top must fit. Larger root-LEAF overflow no longer
+  requires two fitting halves, while previously accepted images remain unchanged.
+  The focused retry passes 88 functions; the first 87-pass/one-assertion failure
+  remains preserved, with the final represented inline cell distinguished from
+  subsequent out-of-window promotion. All 383 ACE unit functions pass with one
+  existing ignored test; the 88-function subset is included. Four public
+  contracts, three compile-fail checks and strict/minimal/rustdoc/fmt checks pass,
+  alongside the 15-package guard and 6,048 documentation targets. Mechanical
+  style-only lint and module-order formatting failures remain preserved before
+  their passing retries. New authentic recursive source/reference actions have
+  not run. No recursive original-file or native Access qualification is claimed; additional
+  top nesting, wider profiles, required data macros and production saves remain
+  unfinished.
 
 Major gates still open before the full backend is complete:
 
@@ -1117,7 +1140,7 @@ explicit user reprioritization and is excluded from the active sequence.
 | 1 | Native schema metadata | Bounded ACE 16-family metadata, inert saved-query fragments and owned local SELECT reconstruction, scoped complex links/child scalars, bounded typed multivalue/attachment/stored-history collections and mixed read-only browsing pages, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
 | 2 | Constraint validation | Qualified complete native index checks (including ACE 16 Decimal tuples) and one-to-ten-column Boolean/integer/Currency/GUID plus same-precision/scale ACE 16 Decimal FK tuple audits implemented (Boolean membership remains read-only) alongside bounded field/pure-rule audits, including statically Text/NULL Len and explicit binary StrComp; broader FK/expression profiles, collations, other carriers and native Access evidence remain |
 | 3 | Preservation | Complete images, unchanged-byte patch proofs and bounded direct catalog-child inspection implemented; owned children block edits; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
-| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. A separate variable-record service now supports fitted Short Text/Binary changes, hidden-target forwarding, alternate owned-page placement and represented EOF data-page allocation. Ordinary raw Memo/OLE replacement, integral/Currency splits and General Text/Binary splits have separate engineering services and original-file candidate proofs. A combined variable-record/index service now shares one append state and independently certifies DATA/index/bitmap effects; its first six original-file candidates pass complete-image and independent getter proofs. Qualified [ordinary hint/index window transitions](testing/ACE16_ALLOCATION_TRANSITIONS.md) now rebase inline maps or promote them with distinct metadata reservations and independent byte replay; all twelve enlarged-source candidates now pass complete-image and fresh independent getter proofs on the first attempt. A separate [ordinary-row INSERT preview](testing/ACE16_INSERT_PREVIEW.md) now constructs explicit Int32/Short Binary records and required primary-leaf entries with exact positive table/historical counters and independent fitted/EOF proof; four original-file candidates and eight fresh independent getter/map calls pass. A separate [root-leaf growth path](testing/ACE16_INSERT_ROOT_SPLITS.md) now retains a height-one root and adds two leaves under independent DATA/index/map proof; its four complete-image comparisons and eight fresh getter/map calls pass. [Fitted insertion into an existing two-leaf primary](testing/ACE16_INSERT_HEIGHT_ONE.md) now preserves the original inclusive bound and whole root, independently certifies fitting leaf changes, and allocates no index pages; four original-file complete-image comparisons and eight fresh getter/map calls pass, extending the right tail without new pages or map changes. The [one-child overflow checkpoint](testing/ACE16_INSERT_CHILD_SPLITS.md) independently certifies a retained-root two-to-three-leaf INSERT with fitting peer changes; 25 public source/reference calls, four complete-image candidate comparisons and eight fresh independent getter/map calls pass on four eligible right-child sources, with public framing differences recorded separately. [General height-one INSERT](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now removes per-child-count restrictions and normalizes multiple/repeated leaf overflows when the parent fits; all 25 independent general-profile reference calls, four complete-image producer comparisons and eight distinct fresh getter/map commands pass, with the stopped getter controller and four-call continuation preserved separately. General allocation/map growth, broader Memo/OLE profiles and reclamation, tuple and broader index split profiles, composite deletion, broader relationship actions, self/cyclic cascades, SET NULL, broader INSERT and production ACE saves remain unfinished |
+| 4 | Native physical mutation | Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. A separate variable-record service now supports fitted Short Text/Binary changes, hidden-target forwarding, alternate owned-page placement and represented EOF data-page allocation. Ordinary raw Memo/OLE replacement, integral/Currency splits and General Text/Binary splits have separate engineering services and original-file candidate proofs. A combined variable-record/index service now shares one append state and independently certifies DATA/index/bitmap effects; its first six original-file candidates pass complete-image and independent getter proofs. Qualified [ordinary hint/index window transitions](testing/ACE16_ALLOCATION_TRANSITIONS.md) now rebase inline maps or promote them with distinct metadata reservations and independent byte replay; all twelve enlarged-source candidates now pass complete-image and fresh independent getter proofs on the first attempt. A separate [ordinary-row INSERT preview](testing/ACE16_INSERT_PREVIEW.md) now constructs explicit Int32/Short Binary records and required primary-leaf entries with exact positive table/historical counters and independent fitted/EOF proof; four original-file candidates and eight fresh independent getter/map calls pass. A separate [root-leaf growth path](testing/ACE16_INSERT_ROOT_SPLITS.md) now retains a height-one root and adds two leaves under independent DATA/index/map proof; its four complete-image comparisons and eight fresh getter/map calls pass. [Fitted insertion into an existing two-leaf primary](testing/ACE16_INSERT_HEIGHT_ONE.md) now preserves the original inclusive bound and whole root, independently certifies fitting leaf changes, and allocates no index pages; four original-file complete-image comparisons and eight fresh getter/map calls pass, extending the right tail without new pages or map changes. The [one-child overflow checkpoint](testing/ACE16_INSERT_CHILD_SPLITS.md) independently certifies a retained-root two-to-three-leaf INSERT with fitting peer changes; 25 public source/reference calls, four complete-image candidate comparisons and eight fresh independent getter/map calls pass on four eligible right-child sources, with public framing differences recorded separately. [General height-one INSERT](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now removes per-child-count restrictions and normalizes multiple/repeated leaf overflows when the parent fits; all 25 independent general-profile reference calls, four complete-image producer comparisons and eight distinct fresh getter/map commands pass, with the stopped getter controller and four-call continuation preserved separately. The [recursive INSERT continuation](testing/ACE16_INSERT_RECURSIVE.md) now extends qualified deeper sources, internal splitting and one root growth when the new top fits; 383 ACE unit functions pass (including the 88-function INSERT subset), while new authentic recursive source/reference actions and original-file qualification remain unrun. General allocation/map growth, broader Memo/OLE profiles and reclamation, tuple and broader index split profiles, composite deletion, broader relationship actions, self/cyclic cascades, SET NULL, broader INSERT and production ACE saves remain unfinished |
 | 5 | Native transactions and recovery | Optional validated image journal integration and local fault/reopen tests implemented; native Access/power-loss/network-filesystem qualification remains |
 | 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |

@@ -93,11 +93,14 @@ remains deferred by the user.
 
 ## Current boundary
 
-The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now
-admits additional original leaf children, multiple offenders and repeated leaf
-splits when the final parent fits. The unchanged-whole-root guarantee described
-above belongs to this tail-present fitting checkpoint. All-bounded roots may
-need a new last stored maximum even when every leaf fits. Parent overflow,
-deeper sources, broader index/record profiles, generated/defaulted values,
-required data macros and normal native saves remain separate work. Earlier
-original-file results and their frozen images remain unchanged.
+The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) extends
+original child counts and multiple/repeated leaf normalization. The later
+[recursive continuation](ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
+sources, internal splitting and one retained-root growth event when the new top
+fits. Existing source heights and the grown height remain below the unchanged
+depth ceiling of 16. The earlier original-file results and frozen images above
+remain separate; no new recursive original-file qualification is implied.
+
+Broader index/record profiles, generated/defaulted values, required data macros,
+additional nesting of an oversized new top and normal native saves remain
+unfinished. Windows/native Microsoft Access comparisons remain deferred.

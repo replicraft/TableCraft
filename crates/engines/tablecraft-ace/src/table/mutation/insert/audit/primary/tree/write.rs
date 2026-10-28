@@ -1,11 +1,9 @@
 //! Resolve independently normalized symbols, replay maps and frame exact pages.
-#[cfg(test)]
-mod tests;
 
 use super::super::{WIRE_BYTES, page_range, split::maps::Allocation};
 use super::{
     Change, ImageProof, frames,
-    normalize::{Normalized, Origin},
+    normalize::{Normalized, Origin, Payload},
     raw, reserve,
     source::Source,
 };
@@ -25,35 +23,7 @@ pub(super) fn derive(
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Change, EditError> {
-    let mut maxima = Vec::new();
-    reserve(&mut maxima, normalized.logical.len(), reader)?;
-    for position in &normalized.logical {
-        reader.tick()?;
-        let node = normalized
-            .nodes
-            .get(*position)
-            .ok_or(EditError::Preservation)?;
-        if node.range.start >= node.range.end {
-            return Err(EditError::Preservation);
-        }
-        maxima.push(
-            *entries
-                .get(node.range.end - 1)
-                .ok_or(EditError::Preservation)?,
-        );
-    }
-    let bounds = maxima
-        .len()
-        .checked_sub(usize::from(source.tail))
-        .ok_or(EditError::Preservation)?;
-    if !frames::parent(&maxima[..bounds], source.prefix, reader)?.fits() {
-        return Err(EditError::Preservation);
-    }
-
-    let mut pages = Vec::new();
-    reserve(&mut pages, source.children.len() + 1, reader)?;
-    pages.push(source.root);
-    pages.extend(source.children.iter().map(|child| child.number));
+    let pages = super::copied_numbers(&source.pages, reader)?;
     for number in &pages {
         let range = page_range(*number)?;
         reader.work(PAGE_BYTES)?;
@@ -66,7 +36,7 @@ pub(super) fn derive(
     let mut ids = Vec::new();
     reserve(&mut ids, normalized.nodes.len(), reader)?;
     ids.extend(normalized.nodes.iter().map(|node| match node.origin {
-        Origin::Existing { number, .. } => Some(number),
+        Origin::Existing { number, .. } | Origin::GrownRoot { number } => Some(number),
         Origin::Fresh => None,
     }));
     let mut indexes = Vec::new();
@@ -88,62 +58,85 @@ pub(super) fn derive(
         allocation.finish(proof, reader)?
     };
 
-    let mut logical_ids = Vec::new();
-    reserve(&mut logical_ids, normalized.logical.len(), reader)?;
-    for index in &normalized.logical {
-        reader.tick()?;
-        logical_ids.push(
-            ids.get(*index)
-                .and_then(|number| *number)
-                .ok_or(EditError::Preservation)?,
-        );
-    }
-    let tail = if source.tail {
-        let actual = logical_ids.last().copied().ok_or(EditError::Preservation)?;
-        let original = source
-            .children
-            .last()
-            .ok_or(EditError::Preservation)?
-            .number;
-        if actual != original {
-            return Err(EditError::Preservation);
-        }
-        actual
-    } else {
-        0
-    };
-    let root = frames::root(
-        raw(image, source.root)?,
-        &maxima[..bounds],
-        &logical_ids[..bounds],
-        tail,
+    let mut levels = Vec::new();
+    let mut visited = Vec::new();
+    collect(
+        normalized.root,
+        normalized,
+        &mut levels,
+        &mut visited,
         reader,
     )?;
-    reader.work(PAGE_BYTES)?;
-    proof.bytes[page_range(source.root)?].copy_from_slice(&root);
-    for (position, index) in normalized.logical.iter().enumerate() {
-        let node = normalized
-            .nodes
-            .get(*index)
-            .ok_or(EditError::Preservation)?;
-        let number = logical_ids[position];
-        let previous = position
-            .checked_sub(1)
-            .map_or(0, |offset| logical_ids[offset]);
-        let next = logical_ids.get(position + 1).copied().unwrap_or(0);
-        let before = match node.origin {
-            Origin::Existing { number, .. } => Some(raw(image, number)?),
-            Origin::Fresh => None,
-        };
-        let after = frames::leaf(
-            before,
-            source.definition,
-            (previous, next),
-            &entries[node.range.clone()],
-            reader,
-        )?;
-        reader.work(PAGE_BYTES)?;
-        proof.bytes[page_range(number)?].copy_from_slice(&after);
+    if visited.len() != normalized.nodes.len()
+        || visited.len() != source.pages.len() + normalized.fresh.len()
+    {
+        return Err(EditError::Preservation);
+    }
+    for level in levels {
+        for (position, symbol) in level.iter().enumerate() {
+            reader.tick()?;
+            let node = &normalized.nodes[*symbol];
+            let number = ids[*symbol].ok_or(EditError::Preservation)?;
+            let previous = position
+                .checked_sub(1)
+                .map(|i| ids[level[i]])
+                .unwrap_or(Some(0))
+                .ok_or(EditError::Preservation)?;
+            let next = level
+                .get(position + 1)
+                .map(|i| ids[*i])
+                .unwrap_or(Some(0))
+                .ok_or(EditError::Preservation)?;
+            let (before, reset) = match node.origin {
+                Origin::Existing { number, .. } => (Some(raw(image, number)?), false),
+                Origin::GrownRoot { number } => (Some(raw(image, number)?), true),
+                Origin::Fresh => (None, true),
+            };
+            let seed = frames::seed(
+                before,
+                source.definition,
+                node.height,
+                (previous, next),
+                reset,
+                reader,
+            )?;
+            let after = match &node.payload {
+                Payload::Leaf(range) => frames::leaf(
+                    Some(&seed),
+                    source.definition,
+                    (previous, next),
+                    &entries[range.clone()],
+                    reader,
+                )?,
+                Payload::Branch { children, tail } => {
+                    let count = children
+                        .len()
+                        .checked_sub(usize::from(*tail))
+                        .ok_or(EditError::Preservation)?;
+                    let mut maxima = Vec::new();
+                    let mut numbers = Vec::new();
+                    reserve(&mut maxima, count, reader)?;
+                    reserve(&mut numbers, count, reader)?;
+                    for child in &children[..count] {
+                        reader.tick()?;
+                        let maximum = normalized.nodes[*child]
+                            .maximum
+                            .ok_or(EditError::Preservation)?;
+                        maxima.push(*entries.get(maximum).ok_or(EditError::Preservation)?);
+                        numbers.push(ids[*child].ok_or(EditError::Preservation)?);
+                    }
+                    let tail_number = if *tail {
+                        ids[*children.last().ok_or(EditError::Preservation)?]
+                            .ok_or(EditError::Preservation)?
+                    } else {
+                        0
+                    };
+                    frames::branch(&seed, &maxima, &numbers, tail_number, reader)?
+                }
+            };
+            reader.work(PAGE_BYTES)?;
+            proof.bytes[page_range(number)?].copy_from_slice(&after);
+        }
     }
 
     Ok(Change {
@@ -155,6 +148,42 @@ pub(super) fn derive(
         promoted,
         rebased,
     })
+}
+
+fn collect(
+    index: usize,
+    normalized: &Normalized,
+    levels: &mut Vec<Vec<usize>>,
+    visited: &mut Vec<usize>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader.work(visited.len() + 1)?;
+    if visited.contains(&index) {
+        return Err(EditError::Preservation);
+    }
+    reserve(visited, 1, reader)?;
+    visited.push(index);
+    let node = normalized.nodes.get(index).ok_or(EditError::Preservation)?;
+    while levels.len() <= usize::from(node.height) {
+        reserve(levels, 1, reader)?;
+        levels.push(Vec::new());
+    }
+    let level = &mut levels[usize::from(node.height)];
+    reserve(level, 1, reader)?;
+    level.push(index);
+    if let Payload::Branch { children, .. } = &node.payload {
+        for child in children {
+            if normalized
+                .nodes
+                .get(*child)
+                .is_none_or(|child| child.height + 1 != node.height)
+            {
+                return Err(EditError::Preservation);
+            }
+            collect(*child, normalized, levels, visited, reader)?;
+        }
+    }
+    Ok(())
 }
 
 pub(super) fn compare(

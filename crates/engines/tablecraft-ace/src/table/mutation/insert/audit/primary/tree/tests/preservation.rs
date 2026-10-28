@@ -1,7 +1,6 @@
 //! Literal source pressure and healthy-semantic adversaries for child growth.
 use crate::{
-    EditError, IndexCheckStatus, NativeImage, RowInsert, WriteBlocker, check_table,
-    check_table_constraints,
+    EditError, IndexCheckStatus, NativeImage, RowInsert, check_table, check_table_constraints,
     table::{
         indexes::mutation::IndexDataPatch,
         mutation::insert::{audit, compose, finish, preflight, prepare, tests::model},
@@ -501,7 +500,7 @@ fn bounded_parent_source() -> Vec<u8> {
 }
 
 #[test]
-fn multiple_and_repeated_offenders_normalize_while_parent_capacity_stays_explicit() {
+fn multiple_and_repeated_offenders_and_parent_growth_preserve_old_sources() {
     let left = (0..451)
         .map(|number| i32::MIN + number * 1_000_000)
         .collect::<Vec<_>>();
@@ -535,7 +534,7 @@ fn multiple_and_repeated_offenders_normalize_while_parent_capacity_stays_explici
     assert_eq!(word(candidate.candidate_bytes(), 13, 20), 18);
 
     // The same all-bounded source accepts a new maximum when its parent fits.
-    // This positive gate prevents the refusal below from passing on tail shape.
+    // This positive gate independently establishes the original bounded form.
     let before = bounded_parent_source();
     checked(&before, 302);
     let image = capture(&before);
@@ -549,14 +548,31 @@ fn multiple_and_repeated_offenders_normalize_while_parent_capacity_stays_explici
     assert_eq!(word(candidate.candidate_bytes(), 13, 20), 0);
 
     // MAX destroys one shared prefix byte: 13 + 301 * 12 = 3625 > 3616.
-    // The last leaf still fits, so only final parent capacity should refuse.
+    // The last leaf still fits; two fresh internal nodes absorb parent growth.
     let image = capture(&before);
     let overflow = requests(&[i32::MAX]);
     let structural = preflight(&image, "Items", &overflow, &mut budget(), &|| false).unwrap();
-    assert!(matches!(
-        prepare(&image, &structural, &overflow, &mut budget(), &|| false),
-        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    ));
+    let staged = prepare(&image, &structural, &overflow, &mut budget(), &|| false).unwrap();
+    let candidate = finish(image, "Items", &overflow, &staged, &mut budget(), &|| false).unwrap();
+    let after = candidate.candidate_bytes();
+    checked(after, 303);
+    assert_eq!(after.len(), before.len() + 2 * PAGE);
+    assert_eq!(after[13 * PAGE + 26], 2);
+    assert_eq!(word(after, 13, 20), 0);
+    assert_eq!(staged.indexes.added.len(), 2);
+    for number in [324, 325] {
+        assert_eq!(after[number * PAGE + 26], 1);
+        assert_ne!(word(after, number, 20), 0);
+    }
+
+    // A later operation traverses the grown source and preserves every level.
+    let next = capture(after);
+    let extra = requests(&[-1]);
+    let structural = preflight(&next, "Items", &extra, &mut budget(), &|| false).unwrap();
+    let staged = prepare(&next, &structural, &extra, &mut budget(), &|| false).unwrap();
+    assert!(staged.indexes.added.is_empty());
+    let candidate = finish(next, "Items", &extra, &staged, &mut budget(), &|| false).unwrap();
+    checked(candidate.candidate_bytes(), 304);
 }
 
 #[test]
@@ -635,4 +651,73 @@ fn exchanged(number: u32) -> u32 {
         129 => 128,
         _ => number,
     }
+}
+
+#[test]
+fn independently_checked_internal_growth_rejects_fresh_and_retained_residue() {
+    let before = bounded_parent_source();
+    checked(&before, 302);
+    let image = capture(&before);
+    let requested = requests(&[i32::MAX]);
+    let structural = preflight(&image, "Items", &requested, &mut budget(), &|| false).unwrap();
+    let mut staged = prepare(&image, &structural, &requested, &mut budget(), &|| false).unwrap();
+    assert_eq!(staged.indexes.added.len(), 2);
+    let healthy = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
+    checked(&healthy, 303);
+    audit::prove(
+        &image,
+        "Items",
+        &requested,
+        &staged,
+        &healthy,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+
+    // Both appended pages are internal nodes. Their unused bytes must be zero
+    // even though each carries valid complete child bounds and a tail child.
+    for page in 0..2 {
+        assert_eq!(staged.indexes.added[page].bytes[0], 3);
+        assert_eq!(staged.indexes.added[page].bytes[3500], 0);
+        staged.indexes.added[page].bytes[3500] = 0x6c;
+        let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
+        checked(&forged, 303);
+        assert_eq!(
+            audit::prove(
+                &image,
+                "Items",
+                &requested,
+                &staged,
+                &forged,
+                &mut budget(),
+                &|| false,
+            ),
+            Err(EditError::Preservation)
+        );
+        staged.indexes.added[page].bytes[3500] = 0;
+    }
+
+    let root = staged
+        .indexes
+        .patches
+        .iter_mut()
+        .find(|patch| patch.offset == 13 * PAGE)
+        .unwrap();
+    assert_eq!(root.after[3500], before[13 * PAGE + 3500]);
+    root.after[3500] ^= 1;
+    let forged = compose::compose(&image, &staged, &mut budget(), &|| false).unwrap();
+    checked(&forged, 303);
+    assert_eq!(
+        audit::prove(
+            &image,
+            "Items",
+            &requested,
+            &staged,
+            &forged,
+            &mut budget(),
+            &|| false,
+        ),
+        Err(EditError::Preservation)
+    );
 }

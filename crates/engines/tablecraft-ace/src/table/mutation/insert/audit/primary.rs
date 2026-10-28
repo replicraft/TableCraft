@@ -1,6 +1,6 @@
 //! Original-wire primary membership and historical-counter certification.
-mod height_one;
 mod split;
+mod tree;
 use super::super::Staged;
 use super::{ImageProof, Row, copied, reserve};
 use crate::{
@@ -53,8 +53,8 @@ pub(super) fn prove(
     let header = IndexHeader::read(original)?;
     let source_leaf =
         header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
-    let source_height_one = header.kind == NODE && header.qualified_for_update(1);
-    if (!source_leaf && !source_height_one)
+    let source_node = header.kind == NODE;
+    if (!source_leaf && !source_node)
         || header.version != INDEX_VERSION
         || header.owner.get() != checked.schema().definition_page()
         || header.previous.get() != 0
@@ -66,7 +66,7 @@ pub(super) fn prove(
         decode(original, reader)?
     } else {
         (
-            height_one::original(image, index, checked.schema().definition_page(), reader)?,
+            tree::original(image, index, checked.schema().definition_page(), reader)?,
             0,
         )
     };
@@ -119,8 +119,19 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
-    if source_height_one {
-        let change = height_one::derive(
+    let rendered = if source_leaf {
+        if rows.is_empty() {
+            Some((copied(original, reader)?, old_active))
+        } else {
+            render(original, &entries, reader)?
+        }
+    } else {
+        None
+    };
+    let recursive =
+        source_node || (rendered.is_none() && !split::two_halves_fit(&entries, reader)?);
+    if recursive {
+        let change = tree::derive(
             image,
             index,
             checked.schema().definition_page(),
@@ -152,11 +163,6 @@ pub(super) fn prove(
             )?;
         }
     } else {
-        let rendered = if rows.is_empty() {
-            Some((copied(original, reader)?, old_active))
-        } else {
-            render(original, &entries, reader)?
-        };
         if let Some((after, active)) = rendered {
             if !staged.indexes.added.is_empty()
                 || !staged.indexes.promotions.is_empty()

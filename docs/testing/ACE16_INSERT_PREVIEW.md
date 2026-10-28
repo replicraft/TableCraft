@@ -23,14 +23,15 @@ This admission does not establish absence of unknown data macros.
 
 Exactly one physical unique, required, ascending Int32 primary index is admitted.
 Qualified logical aliases share that physical identity. An original root leaf
-may grow into a [retained root and two fresh leaves](ACE16_INSERT_ROOT_SPLITS.md)
-when those two halves fit; that root-leaf path retains its existing limit.
-An existing height-one source admits the
-[general routed-leaf continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md), with any
-nonempty number of leaf children and either tail-present or all-bounded root
-form. Fitting, multiple and repeated leaf splits share the original root when
-its final framing fits. Other physical indexes, ignored-NULL profiles, additional
-key fields, deeper source trees and final parent overflow refuse. Original records and their logical ROW references remain intact.
+uses the established [two-fitting-halves path](ACE16_INSERT_ROOT_SPLITS.md)
+first. Larger/repeated leaf overflow and arbitrary qualified NODE sources use the
+[recursive continuation](ACE16_INSERT_RECURSIVE.md), retaining the existing depth
+ceiling of 16 and requiring source/new heights below 16. Original tail-present
+and all-bounded forms retain their routing policy; internal overflows propagate
+through independently normalized child ranges. One root growth event is allowed
+per operation, and the resulting top must fit. Other physical indexes,
+ignored-NULL profiles and additional key fields remain refused. Original records
+and their logical ROW references remain intact.
 
 ## Placement, index membership and counters
 
@@ -48,13 +49,14 @@ the original map authority and represented global free-page coverage.
 The primary receives the exact new key/ROW pairs, preserving its root identity
 and unrelated residue bytes. Duplicate original or batch primary values retain
 typed uniqueness failures. Root-leaf growth uses a separate cardinality-aware
-continuation; it does not invoke UPDATE key preparation or its audit. Height-one
-insertion routes against the first original child maxima and clamps remaining
-pairs to the last child. Fitting children retain page identity; overflowing
-children normalize to fresh LEFT symbols and retained RIGHT pages, including
-repeated splits. Original source form is preserved, with all-bounded last maxima
-updated as needed. Deeper sources and final parent overflow remain explicit
-failures.
+continuation; it does not invoke UPDATE key preparation or its audit. Recursive
+insertion routes each assigned subtree range against the first original child
+maxima and clamps its remainder to the last child. Fitting pages retain identity;
+overflows normalize to fresh LEFT symbols and retained RIGHT pages. Existing
+source form is preserved, with all-bounded last maxima updated as needed. A grown
+NODE root becomes all-bounded; a grown LEAF root retains the established tail
+form. Fresh pages use zero seeds/padding, while the grown root keeps its original
+residue under a zero seed.
 
 The declared table count increases by the number of inserted rows. The actual
 [historical physical index counter](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
@@ -112,7 +114,8 @@ do not establish Microsoft Access conformance.
 ## Remaining work
 
 This profile does not finish general INSERT. Other scalar/complex fields,
-defaults and AutoNumber, additional index families and deeper splits, broader allocation
+defaults and AutoNumber, additional index families, nesting an oversized new top,
+broader allocation
 and reclamation, query INSERT planning, application events and normal native save
 qualification remain separate work. Native Microsoft Access comparison evidence
 is still deferred by the user.

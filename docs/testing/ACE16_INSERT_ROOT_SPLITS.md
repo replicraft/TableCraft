@@ -76,7 +76,10 @@ pages. [One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) now has a separate
 continuation that adds one left leaf and preserves the original right page and
 root identities. The later [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
 also admits multiple offenders, repeated leaf splits and arbitrary leaf-child
-counts when the final root fits. Recursive parent growth, deeper sources,
-arbitrary-tree cardinality growth, broader key/row profiles, defaults, generated fields, required data macros and normal
-native saves remain unfinished. Independent Java results
+counts when the final root fits. The later [recursive continuation](ACE16_INSERT_RECURSIVE.md)
+removes the two-fitting-halves limit for larger/repeated LEAF overflow and admits
+deeper NODE sources with internal splits and one root growth whose new top fits.
+This checkpoint's original-file evidence remains separately scoped. Further
+nesting of a still-oversized new top, broader key/row profiles, defaults, generated
+fields, required data macros and normal native saves remain unfinished. Independent Java results
 do not replace native Microsoft Access comparisons, which the user has deferred.

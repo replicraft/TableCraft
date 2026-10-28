@@ -1,10 +1,10 @@
-//! Independent height-one INSERT routing, normalization and complete wire proof.
+//! Independent recursive INSERT routing, normalization and complete wire proof.
 mod frames;
 mod normalize;
 mod source;
-mod split;
 #[cfg(test)]
 mod tests;
+mod write;
 
 use super::super::{ImageProof, copied, reserve};
 use super::split::PromotionExpected;
@@ -53,7 +53,7 @@ pub(super) fn derive(
     let source = source::Source::capture(image, index, definition, reader)?;
     source::membership(&source.entries, entries, reader)?;
     let normalized = normalize::prepare(&source, entries, reader)?;
-    split::derive(image, index, &source, entries, &normalized, proof, reader)
+    write::derive(image, index, &source, entries, &normalized, proof, reader)
 }
 
 impl Change {
@@ -71,7 +71,7 @@ impl Change {
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        split::compare(self, actual, proof, reader)
+        write::compare(self, actual, proof, reader)
     }
 }
 
@@ -80,4 +80,15 @@ fn raw(image: &NativeImage, number: u32) -> Result<&[u8], EditError> {
         .as_bytes()
         .get(page_range(number)?)
         .ok_or(EditError::Preservation)
+}
+
+fn copied_numbers(
+    values: &[u32],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<u32>, EditError> {
+    reader.work(values.len())?;
+    let mut result = Vec::new();
+    reserve(&mut result, values.len(), reader)?;
+    result.extend_from_slice(values);
+    Ok(result)
 }

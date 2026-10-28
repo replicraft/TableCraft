@@ -1,6 +1,6 @@
 //! Literal complete-image controls for general height-one INSERT routing.
 use super::model as base;
-use crate::{EditError, IndexConstraintViolation, InspectError, WriteBlocker, read_table};
+use crate::{EditError, IndexConstraintViolation, InspectError, read_table};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -220,7 +220,7 @@ fn index_bitmap_is_separate_from_members_and_aggregates_the_global_byte() {
 }
 
 #[test]
-fn parent_capacity_and_prefix_loss_refuse_even_when_child_pages_fit() {
+fn parent_capacity_and_prefix_loss_grow_root_with_exact_preserved_sources() {
     for code in [5, 6] {
         let mut groups = (0..301)
             .map(|index| {
@@ -256,16 +256,20 @@ fn parent_capacity_and_prefix_loss_refuse_even_when_child_pages_fit() {
             };
             run(&case, &[fitting]);
             assert!(model::expected(&case, std::slice::from_ref(&row)).is_none());
-            let result = base::capture(&case.before).preview_ace16_insert_rows(
-                "Items",
-                &[row.request()],
-                &mut base::budget(),
-                &|| false,
+            let expected = super::recursive_tree::expected_height_one(
+                &case.before,
+                &[(row.id, row.binary.clone())],
+                case.aliases,
             );
-            assert_eq!(
-                result.err(),
-                Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            );
+            checked(&case, &expected, std::slice::from_ref(&row));
+            assert_eq!(expected[13 * PAGE + 26], 2);
+            let result = base::capture(&case.before)
+                .preview_ace16_insert_rows("Items", &[row.request()], &mut base::budget(), &|| {
+                    false
+                })
+                .unwrap();
+            assert_eq!(result.changed_rows(), 1);
+            assert_eq!(result.candidate_bytes(), expected);
         }
     }
 }

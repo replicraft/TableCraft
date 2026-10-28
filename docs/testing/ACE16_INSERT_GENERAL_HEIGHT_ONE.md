@@ -6,7 +6,9 @@ one child. The table still has the same explicit Int32/Short Binary row profile
 and sole required, unique, ascending Int32 physical primary with genuine logical
 aliases. No scalar, metadata, constraint, map grammar or resource ceiling is
 widened. This is the existing non-journalable engineering API and example, with
-no new normal host write path or public preview method.
+no new normal host write path or public preview method. Its later
+[recursive continuation](ACE16_INSERT_RECURSIVE.md) extends internal splitting and
+root growth; the evidence below remains this height-one checkpoint's record.
 
 ## Source forms and INSERT routing
 
@@ -61,7 +63,8 @@ there are no intermediate orphan reservations. The original root keeps its page,
 height, owner, stamp and root-level links. All final bounds and leaf links are
 reconstructed. Parent capacity is checked even if every leaf fits: changing an
 all-bounded root's last maximum can reduce its prefix and overflow its bytes
-without allocating a child. Parent overflow refuses atomically in this stage.
+without allocating a child. Parent overflow refused atomically at this checkpoint;
+the later recursive continuation supplies an independently proved growth path.
 
 ## One append state and independent raw proof
 
@@ -149,9 +152,11 @@ separate. Windows/native Microsoft Access comparisons remain deferred by the use
 
 ## Remaining work
 
-The final root must remain height one and fit its page. Original root-leaf growth
-retains its separate two-fitting-halves limit. Recursive parent splitting
-and root growth, deeper source trees, wider key/record profiles, generated/defaulted
-values, required data macros and production native saves remain separate unfinished
-work. General height-one admission removes per-child-count restrictions; it does
-not redefine the existing full ACE 16 compatibility goal.
+The later [recursive continuation](ACE16_INSERT_RECURSIVE.md) admits qualified
+deeper sources and parent/root growth, including larger root-leaf overflow beyond
+two fitting halves. It preserves the unchanged depth ceiling and permits one root
+growth per operation only when the new top fits. The original-file evidence here
+qualifies the height-one forms described above, not those new recursive forms.
+Wider key/record profiles, generated/defaulted values, required data macros,
+additional nesting of an oversized new top and production native saves remain
+unfinished toward the full ACE 16 target.
