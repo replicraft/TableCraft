@@ -3,6 +3,7 @@ mod admission;
 mod execute;
 mod joined;
 mod projection;
+mod scalar;
 mod source;
 
 use super::{Runtime, cell::CellValue};
@@ -45,6 +46,9 @@ impl Runtime<'_, '_> {
             return Err(QueryError::Unsupported);
         };
         let input = self.collection_input(select)?;
+        if select.aggregate {
+            return self.scalar_collection_aggregate(select, plan, input);
+        }
         let mut rows = Vec::new();
         for frame in input {
             self.tick()?;

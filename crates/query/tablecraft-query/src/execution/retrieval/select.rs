@@ -57,7 +57,7 @@ impl Runtime<'_, '_> {
     }
 
     #[inline(never)]
-    fn finish_select(
+    pub(in crate::execution) fn finish_select(
         &mut self,
         input: Vec<Vec<CellValue>>,
         select: &SelectPlan,

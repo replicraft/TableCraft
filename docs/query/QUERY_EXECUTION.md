@@ -244,6 +244,18 @@ members](collections/MULTIVALUE_QUERIES.md#retained-members-of-named-and-derived
 preserving element text policies and proved collection lineage. Repeated aliases
 align; independent relation instances remain independent. Plans requiring this
 retained expansion use the typed API even when their final outputs are scalar.
+
+The same explicit API now supports [scalar totals over one direct list-bearing
+named/derived result](collections/MULTIVALUE_QUERIES.md#scalar-totals-above-a-list-bearing-derived-result).
+Selected inner lists and expressions complete eagerly before outer scalar
+WHERE/GROUP BY/HAVING/order/TOP processing. Completed scalar cells retain their
+types and text policies through the ordinary aggregate executor; no list is
+compared, grouped or aggregated. The initial outer profile excludes list outputs,
+DISTINCT/DISTINCTROW, expansion, collection-membership criteria and
+correlated/subquery/domain contexts. Ordinary scalar `execute` and progressive
+execution remain unchanged. The exact nested shape has engineering test coverage,
+not native Access execution qualification.
+
 Direct single-table scalar-parent WHERE membership additionally retains parent
 cardinality, with explicit nullable set semantics and scope limits.
 Scalar-only parent WHERE membership also composes across qualified joins under

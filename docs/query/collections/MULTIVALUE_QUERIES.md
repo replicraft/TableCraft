@@ -173,6 +173,22 @@ Microsoft Access SQL execution.
 
 ### Typed joins and products
 
+For a whole ON equality between opposite-input scalar fields with the same
+Boolean/Byte/Int16/Int32/Int64 descriptor, the executor now uses the existing
+[borrowed equality check](../QUERY_EQUIJOINS.md#whole-list-result-joins) before
+copying a combined row. Both complete inputs and selected lists validate first;
+rejected pairs avoid discarded scalar-row allocations. Matching rows still carry
+complete lists. No list comparison or candidate directory is introduced.
+Compound ON expressions retain eager evaluation. NULL scalar keys do not match
+each other, and outer extension retains explicit absent-parent list cells.
+
+The seven-test typed-list join target passes, including three new controls for
+the 80-by-80 bounded-allocation witness, NULL/outer-parent identity and full-source
+validation/eager failures. The witness uses 512 KiB and one actual match; its
+equivalent compound predicate retains the general allocated-pair path and reaches
+that allowance. These are query-engine checks, not native Access execution or
+timing qualification.
+
 List-producing SELECTs admit INNER/LEFT/RIGHT JOIN and comma-separated CROSS products,
 including nested trees, static named/derived list sources and scalar-only leaves.
 Scalar ON, WHERE, ORDER BY and TOP retain their ordinary evaluation services.
@@ -229,6 +245,47 @@ A focused typed outer-join Source test also exercises hidden named-container
 and present empty containers satisfy the former, while a present one-NULL
 container satisfies the latter. Adapter/CLI evidence and any native original
 replay remain separately scoped.
+
+### Scalar totals above a list-bearing derived result
+
+The collection-aware API now admits scalar-only totals over one direct static
+named or derived result that carries complete lists:
+
+```sql
+SELECT D.Id, Count(*) AS ParentCount, Sum(D.Seq) AS Total
+FROM (SELECT Id, Seq, Tags FROM Items) AS D
+WHERE D.Seq >= 0
+GROUP BY D.Id
+HAVING Count(*) > 1
+ORDER BY D.Id;
+```
+
+This counts parent rows, not list elements. Every selected inner list and scalar
+projection completes eagerly before outer filtering or aggregation. Invalid
+unmatched children, failed source suffixes and inner expression errors therefore
+remain visible even when the outer filter is false. Completed scalar cells move
+into the existing scalar grouping, HAVING, ordering and TOP services with their
+type declarations and text policies intact. List sidecars are then discarded;
+their validation and allocation costs are not refunded. Empty global totals retain
+the ordinary `Count(*) = 0` and NULL aggregate results.
+
+The initial outer profile requires scalar outputs, an unexpanded direct
+named/derived input and no collection-membership parent predicate. It admits
+local scalar fields, constants, parameters, scalar output aliases, unary/binary
+expressions, NULL tests and existing scalar aggregates. Whole-list outputs or
+keys, DISTINCT/DISTINCTROW, outer `.Value` expansion, membership criteria,
+correlated/subquery/domain contexts and other unreviewed call forms refuse before
+source scans. This does not add list aggregation or SQL list comparison.
+`execute_collections` remains required; ordinary scalar `execute` and progressive
+execution keep their existing refusal for list-bearing plans.
+
+Five focused controls pass within the twelve-test typed-list join target. They
+cover grouped WHERE/HAVING/order, named totals, empty input, complete eager inner
+validation, forbidden outer contexts, sticky resource limits, cancellation and
+plan reuse. Microsoft's [counting guidance](https://support.microsoft.com/en-us/access/count-data-by-using-a-query)
+distinguishes counting query records from aggregating multivalued-list fields.
+These tests qualify TableCraft's explicit composition profile; this exact nested
+list/aggregate shape has not been compared with native Access execution.
 
 ### Whole lists beside displayed members
 

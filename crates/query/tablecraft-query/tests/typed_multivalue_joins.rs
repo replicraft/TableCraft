@@ -11,6 +11,8 @@ use tablecraft_sql::{parse_query, query::Query};
 
 #[path = "typed_multivalue_joins/borrowed.rs"]
 mod borrowed;
+#[path = "typed_multivalue_joins/scalar_aggregate.rs"]
+mod scalar_aggregate;
 
 struct Data {
     columns: Vec<Column>,
