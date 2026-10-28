@@ -21,13 +21,13 @@ const INLINE_PAGES: u32 = 512;
 const BITMAP_PREFIX: [u8; 4] = [5, 1, 0, 0];
 const BITMAP_PAGES: u32 = ((PAGE_BYTES - BITMAP_PREFIX.len()) * 8) as u32;
 
-pub(super) struct ExpectedBitmap {
-    pub(super) number: u32,
-    pub(super) reference: u32,
-    pub(super) bytes: Vec<u8>,
+pub(in crate::table::mutation) struct ExpectedBitmap {
+    pub(in crate::table::mutation) number: u32,
+    pub(in crate::table::mutation) reference: u32,
+    pub(in crate::table::mutation) bytes: Vec<u8>,
 }
 
-pub(super) struct Hint {
+pub(in crate::table::mutation) struct Hint {
     reference: u32,
     offset: usize,
     original: Vec<u8>,
@@ -38,7 +38,7 @@ pub(super) struct Hint {
 }
 
 impl Hint {
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn capture(
         definition: u32,
         reference: u32,
         metadata: &Metadata,
@@ -107,7 +107,7 @@ impl Hint {
         }))
     }
 
-    pub(super) fn remove(
+    pub(in crate::table::mutation) fn remove(
         &mut self,
         number: u32,
         expected: &mut Vec<ExpectedByte>,
@@ -143,7 +143,7 @@ impl Hint {
         Ok(())
     }
 
-    pub(super) fn add(
+    pub(in crate::table::mutation) fn add(
         &mut self,
         number: u32,
         next_eof: &mut u32,
@@ -245,7 +245,7 @@ impl Hint {
         Ok(Some(metadata))
     }
 
-    pub(super) fn into_metadata(self) -> Option<ExpectedBitmap> {
+    pub(in crate::table::mutation) fn into_metadata(self) -> Option<ExpectedBitmap> {
         self.bitmap
     }
 

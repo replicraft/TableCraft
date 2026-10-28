@@ -34,7 +34,7 @@ pub(in crate::table::mutation) struct Maps {
 }
 
 impl Maps {
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
         schema: &TableSchema,
         budget: &mut ResourceBudget,
@@ -75,7 +75,7 @@ impl Maps {
         })
     }
 
-    pub(super) fn enable_hint_growth(
+    pub(in crate::table::mutation) fn enable_hint_growth(
         &mut self,
         image: &NativeImage,
         schema: &TableSchema,
@@ -133,7 +133,7 @@ impl Maps {
     }
 
     /// Highest hinted owned page, including already staged EOF pages.
-    pub(super) fn candidate(
+    pub(in crate::table::mutation) fn candidate(
         &self,
         image: &NativeImage,
         append: &State,
@@ -169,7 +169,7 @@ impl Maps {
         Ok(None)
     }
 
-    pub(super) fn failed_fit(
+    pub(in crate::table::mutation) fn failed_fit(
         &mut self,
         image: &NativeImage,
         number: u32,
@@ -200,7 +200,7 @@ impl Maps {
         append::clear_hint(&mut append.map_edits, cell, &mut reader)
     }
 
-    pub(super) fn allocate(
+    pub(in crate::table::mutation) fn allocate(
         &mut self,
         image: &NativeImage,
         number: u32,
@@ -257,7 +257,7 @@ impl Maps {
         Ok(())
     }
 
-    pub(super) fn audit_membership(
+    pub(in crate::table::mutation) fn audit_membership(
         &self,
         after: &[u8],
         schema: &TableSchema,
