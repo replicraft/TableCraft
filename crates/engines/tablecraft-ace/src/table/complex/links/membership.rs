@@ -1,6 +1,6 @@
 //! Snapshot-local key validation shared by full and metadata-only collections.
 use super::{ComplexReferenceViolation, metadata::ComplexParentLink};
-use crate::{InspectError, header::check};
+use crate::{InspectError, NativeRowReference, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -39,14 +39,19 @@ impl Membership {
 
 impl Parents {
     pub(in crate::table::complex) fn read(
-        rows: Vec<Vec<Value>>,
+        rows: Vec<(NativeRowReference, Vec<Value>)>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
         let mut parents = reserved::<ComplexParentLink>(rows.len(), budget)?;
         let mut keys = reserved::<(i32, usize)>(rows.len(), budget)?;
-        for (ordinal, row) in rows.into_iter().enumerate() {
+        let mut previous = None;
+        for (ordinal, (reference, row)) in rows.into_iter().enumerate() {
             check(budget, cancelled)?;
+            if previous.is_some_and(|value| value >= reference) {
+                return Err(InspectError::Malformed);
+            }
+            previous = Some(reference);
             let key = match row.as_slice() {
                 [Value::Int32(key)] if *key > 0 => {
                     keys.push((*key, ordinal));
@@ -56,7 +61,11 @@ impl Parents {
                 [Value::Null] => None,
                 _ => return Err(InspectError::Malformed),
             };
-            parents.push(ComplexParentLink { key, range: 0..0 });
+            parents.push(ComplexParentLink {
+                reference,
+                key,
+                range: 0..0,
+            });
         }
 
         sort(&mut keys, budget, cancelled)?;

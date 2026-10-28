@@ -6,6 +6,11 @@ pub(super) struct Root {
     number: u32,
     slot: u8,
 }
+impl Root {
+    pub(super) fn row_reference(&self) -> Result<crate::table::NativeRowReference, InspectError> {
+        crate::table::NativeRowReference::from_parts(self.number, self.slot)
+    }
+}
 struct CurrentPage {
     number: u32,
     bytes: [u8; PAGE_BYTES],

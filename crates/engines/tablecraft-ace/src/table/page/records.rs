@@ -1,6 +1,10 @@
 //! Complete batched records for feature-qualified carriers borrowed from a schema.
-use super::{TableSnapshotLimits, push, traversal::Traversal};
-use crate::{InspectError, format::reader::Reader, table::TableSchema};
+use super::{TableSnapshotLimits, traversal::Traversal};
+use crate::{
+    InspectError,
+    format::reader::Reader,
+    table::{NativeRowReference, TableSchema},
+};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::Column;
 
@@ -14,7 +18,7 @@ pub(in crate::table) fn read_records_batched<R: crate::NativeReadSource>(
     limits: TableSnapshotLimits,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<Vec<Value>>, InspectError> {
+) -> Result<Vec<(NativeRowReference, Vec<Value>)>, InspectError> {
     if schema.declared_rows() > limits.maximum_rows() {
         return Err(InspectError::StructureLimit);
     }
@@ -42,7 +46,12 @@ pub(in crate::table) fn read_records_batched<R: crate::NativeReadSource>(
                 break;
             };
             let values = traversal.values(&root, &mut reader, schema, columns, selected)?;
-            push(&mut rows, values, &mut reader)?;
+            let reference = root.row_reference()?;
+            reader
+                .budget
+                .charge_allocation(1, size_of::<(NativeRowReference, Vec<Value>)>() as u64)?;
+            rows.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+            rows.push((reference, values));
         }
         reader.tick()?;
         if traversal.ended() {

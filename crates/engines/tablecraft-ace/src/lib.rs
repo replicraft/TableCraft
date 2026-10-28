@@ -104,10 +104,13 @@ pub use table::{
 };
 pub use table::{IndexConstraintViolation, IndexConstraints};
 pub use table::{
+    IndexedTableSnapshot, NativeColumn, NativeRowReference, TableSchema, TableSnapshot,
+    inspect_table_schema, read_table,
+};
+pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
     read_multivalue_table_page_with_request,
 };
-pub use table::{NativeColumn, TableSchema, TableSnapshot, inspect_table_schema, read_table};
 pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{
     StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
@@ -138,7 +141,7 @@ pub use table::read_table_projection;
 
 pub use table::{
     IndexProjection, IndexProjectionSelection, IndexReadRequest, read_table_index_in_table_order,
-    read_table_index_projection, read_table_index_with_request,
+    read_table_index_projection, read_table_index_with_references, read_table_index_with_request,
 };
 
 pub use table::{

@@ -39,6 +39,7 @@ mod mutation;
 mod schema;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
+pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
@@ -54,6 +55,8 @@ pub use page::{
     read_table_page, read_table_projection_batched,
 };
 pub(crate) use security_identifiers::remask;
+mod row_reference;
+pub use row_reference::NativeRowReference;
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
 mod decimal;

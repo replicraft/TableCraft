@@ -87,11 +87,7 @@ pub(in crate::table::complex) fn qualify(
 ) -> Result<Columns, InspectError> {
     let template = column.type_table();
     check(budget, cancelled)?;
-    if flat.object_id() != column.flat_table().object_id()
-        || flat.definition_page() != column.flat_table().definition_page()
-        || flat.header != column.flat_table().header
-        || flat.layout != column.flat_table().layout
-    {
+    if !flat.same_definition(column.flat_table()) {
         return Err(InspectError::Malformed);
     }
     if template.columns().len() != FIELD_COUNT

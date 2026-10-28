@@ -1,4 +1,5 @@
 mod membership;
+mod references;
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
 use super::binary::BinaryIndexSelection;
@@ -16,7 +17,7 @@ use super::{
 };
 use super::{Int32IndexSelection, Int64IndexSelection, inspect_table_indexes, walk::Walker};
 use crate::{
-    InspectError, NativeReadSource, TableSnapshotLimits,
+    InspectError, NativeReadSource, NativeRowReference, TableSnapshotLimits,
     format::{
         allocation,
         reader::Reader,
@@ -25,6 +26,7 @@ use crate::{
     limits::MAX_LIVE_ROWS,
 };
 use membership::{DataPages, OwnershipStrategy};
+pub use references::{IndexedTableSnapshot, read_table_index_with_references};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -189,6 +191,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
             legacy_table_limit: false,
             table_order: false,
             eligible_rows: None,
+            row_references: None,
         },
         budget,
         cancelled,
@@ -224,6 +227,7 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
             legacy_table_limit: false,
             table_order: true,
             eligible_rows: None,
+            row_references: None,
         },
         budget,
         cancelled,
@@ -316,6 +320,7 @@ struct ReadOptions<'a> {
     table_order: bool,
     // Set only by the private complete physical-index consistency check.
     eligible_rows: Option<usize>,
+    row_references: Option<&'a mut Vec<NativeRowReference>>,
 }
 impl Default for ReadOptions<'_> {
     fn default() -> Self {
@@ -326,6 +331,7 @@ impl Default for ReadOptions<'_> {
             legacy_table_limit: true,
             table_order: false,
             eligible_rows: None,
+            row_references: None,
         }
     }
 }
@@ -337,6 +343,7 @@ struct ReadView<'a> {
     table_order: bool,
     expected_rows: usize,
     omitted_nulls: bool,
+    row_references: Option<&'a mut Vec<NativeRowReference>>,
 }
 
 pub(super) struct IgnoredMembershipCheck<'a> {
@@ -473,7 +480,7 @@ fn read_selected<R: crate::NativeReadSource>(
         return Err(InspectError::Unsupported);
     }
     let projection = RowProjection::new(schema, selected, options.columns, budget, cancelled)?;
-    let view = ReadView {
+    let mut view = ReadView {
         projection: &projection,
         maximum_rows: options.maximum_rows as usize,
         row_batch_size: (!options.legacy_table_limit)
@@ -482,11 +489,12 @@ fn read_selected<R: crate::NativeReadSource>(
         table_order: options.table_order,
         expected_rows,
         omitted_nulls,
+        row_references: options.row_references,
     };
     let rows = match profile {
         IndexProfile::EncodedTuple(profile) => {
             read_rows::<_, _, { super::encoded_tuple::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::Text(mut profile) => {
@@ -495,30 +503,30 @@ fn read_selected<R: crate::NativeReadSource>(
                 &mut KeyWork { budget, cancelled },
             )?;
             read_rows::<_, _, { super::text::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::Binary(mut profile) => {
             profile.selection = binary_selection.unwrap_or(BinaryIndexSelection::All);
             read_rows::<_, _, { super::binary::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::Single(mut profile) => {
             profile.selection = selection;
             read_rows::<_, _, { page::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::Composite(profile) => read_rows::<_, _, { composite::MAX_ENTRY_BYTES }>(
-            source, schema, selected, &view, profile, budget, cancelled,
+            source, schema, selected, &mut view, profile, budget, cancelled,
         )?,
         IndexProfile::Guid(mut profile) => {
             if let Some(ReadSelection::Guid(selection)) = options.selection {
                 profile.selection = selection;
             }
             read_rows::<_, _, { guid::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::Decimal(mut profile) => {
@@ -526,19 +534,19 @@ fn read_selected<R: crate::NativeReadSource>(
                 profile.selection = selection;
             }
             read_rows::<_, _, { decimal::MAX_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::GuidComposite(profile) => {
             read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
         IndexProfile::DecimalComposite(profile) => {
             // Decimal components are smaller than the qualified GUID maximum;
             // mixed Decimal/GUID tuples retain that same strict buffer ceiling.
             read_rows::<_, _, { composite::MAX_GUID_ENTRY_BYTES }>(
-                source, schema, selected, &view, profile, budget, cancelled,
+                source, schema, selected, &mut view, profile, budget, cancelled,
             )?
         }
     };
@@ -554,7 +562,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
     source: &mut R,
     schema: &TableSchema,
     selected: &NativeIndex,
-    view: &ReadView<'_>,
+    view: &mut ReadView<'_>,
     profile: P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -646,6 +654,15 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
             .budget
             .charge_allocation(1, size_of::<Vec<Value>>() as u64)?;
         rows.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+        if let Some(references) = view.row_references.as_mut() {
+            reader
+                .budget
+                .charge_allocation(1, size_of::<NativeRowReference>() as u64)?;
+            references
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            references.push(NativeRowReference::from_packed(entry.row));
+        }
         rows.push(values);
     }
     reader.tick()?;
