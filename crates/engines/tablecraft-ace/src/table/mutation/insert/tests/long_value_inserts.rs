@@ -10,6 +10,7 @@ const PAGE: usize = 4096;
 
 mod composition;
 pub(in crate::table::mutation::insert) mod external;
+pub(in crate::table::mutation::insert) mod growth;
 
 #[derive(Clone, Copy, Debug)]
 pub(in crate::table::mutation::insert) enum Family {

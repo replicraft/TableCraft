@@ -422,8 +422,12 @@ with independently replayed descriptors, column maps and typed reservations.
 Twelve boundary and four composition cases pass, including a LVAL→DATA→INDEX
 suffix and row-width fallback. All 180 table INSERT/audit functions and the full
 ACE library batch pass (516 functions
-with one existing ignored generator). LVAL map growth/initialization remain open;
-this checkpoint does not qualify normal saves or native Access behavior.
+with one existing ignored generator). The following LVAL map-growth continuation
+rebases or promotes existing column maps and fills missing indirect pointers
+within their original record capacity, using separately typed bitmap pages and
+independent original-byte replay. Its combined INSERT batch passes 194 functions.
+Missing-map initialization, global map growth and pointer-record expansion remain
+open; these checkpoints do not qualify normal saves or native Access behavior.
 
 Major gates still open before the full backend is complete:
 

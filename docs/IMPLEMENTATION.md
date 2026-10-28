@@ -49,9 +49,19 @@ while preserving its default and request-file budgets. Strict ACE Clippy across
 all targets/features, minimal compilation, formatting and documentation/dependency
 guards also pass.
 
-Existing represented column/global maps remain required; map growth and missing
-map initialization are unfinished. Authentic external-file comparisons, normal
-saves and native Access qualification remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
+Existing column maps can now grow without changing their declaration references:
+inline owned maps rebase or promote, and existing indirect records can fill a
+missing pointer within their original capacity. New bitmap pages have separate
+typed reservations and never become LVAL members. The independent audit derives
+complete row rewrites, original before-images and bitmap storage from source facts.
+Four public growth functions, three producer controls and seven forgery controls
+bring the combined INSERT batch to 194 passing functions. The full ACE library
+batch passes 530 functions with one existing ignored fixture generator; strict
+ACE Clippy across all targets/features, minimal compilation, formatting and
+documentation/dependency guards pass. Missing-map
+initialization, global map growth and pointer-record expansion remain unfinished.
+Authentic external-file comparisons, normal saves and native Access qualification
+remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
 
 ## Variable key and ROW comparison
 

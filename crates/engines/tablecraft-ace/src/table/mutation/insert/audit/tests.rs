@@ -1,6 +1,7 @@
 //! Healthy checked candidates distinguish authority failures from corrupt input.
 mod ignored;
 mod long_values;
+mod lval_growth;
 mod multiple;
 
 use super::super::{RowInsert, Staged, compose, finish, preflight, prepare, tests::model};

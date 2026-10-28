@@ -107,8 +107,11 @@ pub(super) fn compose(
         budget
             .charge(
                 Resource::Steps,
-                (data.pages.len() + staged.long_values.pages.len() + added_indexes + PAGE_BYTES)
-                    as u64,
+                (data.pages.len()
+                    + staged.long_values.pages.len()
+                    + staged.long_values.metadata.len()
+                    + added_indexes
+                    + PAGE_BYTES) as u64,
             )
             .map_err(InspectError::from)?;
         let number = u32::try_from(start / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
@@ -124,6 +127,22 @@ pub(super) fn compose(
                     cancelled,
                 )?;
                 if selected.replace(page.after.as_slice()).is_some() {
+                    return Err(EditError::Preservation);
+                }
+            }
+        }
+        for bitmap in &staged.long_values.metadata {
+            check(budget, cancelled)?;
+            if bitmap.number == number {
+                data.append.require_long_value_owned_bitmap(
+                    number,
+                    bitmap.column,
+                    bitmap.owned,
+                    bitmap.block,
+                    budget,
+                    cancelled,
+                )?;
+                if selected.replace(bitmap.bytes.as_slice()).is_some() {
                     return Err(EditError::Preservation);
                 }
             }

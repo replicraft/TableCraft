@@ -17,17 +17,23 @@ use crate::{
     header::check,
     table::{
         long_value::{maps as storage_maps, trace},
-        mutation::map_authority::{self, Census, Owner},
+        mutation::map_authority::{self, Census, Owner, RecordIdentity},
         record_layout,
     },
 };
-use std::io::Cursor;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 struct Claim {
     page: u32,
     definition: u32,
     column: usize,
+}
+
+#[derive(Clone, Copy)]
+pub(in crate::table::mutation) enum ColumnMapKind {
+    Owned,
+    Candidate,
 }
 
 pub(in crate::table::mutation) struct Inventory {
@@ -216,6 +222,35 @@ impl Inventory {
         }
 
         Ok(())
+    }
+
+    pub(in crate::table::mutation) fn require_record_rewrite(
+        &self,
+        schema: &TableSchema,
+        column: usize,
+        kind: ColumnMapKind,
+        record: (u32, Range<usize>),
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let definition = schema.definition_page();
+        let owner = match kind {
+            ColumnMapKind::Owned => Owner::ColumnOwned { definition, column },
+            ColumnMapKind::Candidate => Owner::ColumnCandidate { definition, column },
+        };
+        self.maps
+            .as_ref()
+            .ok_or(InspectError::Malformed)?
+            .require_record_rewrite(
+                &[Owner::GlobalFree, owner],
+                RecordIdentity {
+                    owner,
+                    reference: record.0,
+                    range: record.1,
+                },
+                budget,
+                cancelled,
+            )
     }
 
     pub fn require_exclusive(

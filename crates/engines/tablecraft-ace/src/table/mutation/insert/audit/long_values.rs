@@ -1,6 +1,7 @@
 //! Independently resolve full requests into LVAL pages and descriptor authority.
 mod choice;
 mod cursor;
+mod maps;
 
 use self::{choice::Storage, cursor::Cursor as Placement};
 use super::records::payload::long_value::Payload;
@@ -47,7 +48,15 @@ pub(super) fn derive(
             crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
         )
     }) {
-        if !staged.long_values.pages.is_empty() || staged.data.append.long_values().next().is_some()
+        if !staged.long_values.pages.is_empty()
+            || !staged.long_values.metadata.is_empty()
+            || staged.data.append.long_values().next().is_some()
+            || staged
+                .data
+                .append
+                .long_value_owned_bitmaps()
+                .next()
+                .is_some()
         {
             return Err(EditError::Preservation);
         }
@@ -104,7 +113,7 @@ pub(super) fn derive(
         Some(Placement::capture(
             checked.schema(),
             &declarations,
-            &inventory,
+            inventory,
             reader,
         )?)
     };
@@ -197,7 +206,14 @@ pub(super) fn derive(
         placement.compare(&staged.long_values, proof, reader)?;
         placement.require_purposes(staged, reader)?;
     } else if !staged.long_values.pages.is_empty()
+        || !staged.long_values.metadata.is_empty()
         || staged.data.append.long_values().next().is_some()
+        || staged
+            .data
+            .append
+            .long_value_owned_bitmaps()
+            .next()
+            .is_some()
     {
         return Err(EditError::Preservation);
     }

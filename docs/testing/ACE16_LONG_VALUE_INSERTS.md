@@ -40,6 +40,17 @@ reservations. Complete linked descriptors exist before ordinary DATA records are
 placed; INDEX normalization then consumes that same state. Requests needing no
 external LVAL retain their existing DATA-before-INDEX path.
 
+Existing 69-byte column-owned inline maps can retain their window, rebase to an
+aligned window covering all old and new members, or become indirect maps with
+fresh owned bitmap pages. Existing indirect rows can fill an unused pointer for
+a newly needed block. Each bitmap immediately follows the LVAL body that needs
+it on the shared cursor. It is globally allocated but never becomes an owned
+LVAL body, candidate LVAL page, ordinary DATA page or INDEX member. Subsequent
+chunks can reuse the new bitmap without allocating it again. Candidate inline
+rows can rebase after their old hints are exhausted, including an originally
+empty candidate row. These transitions preserve the original map references and
+record lengths; they do not initialize missing column maps.
+
 The independent audit derives payload choices, fallback, chunk bodies/links,
 descriptors, page placement and map transitions from original bytes and full
 requests. It shares only immutable source-ownership inspection. It compares the
@@ -47,6 +58,12 @@ exact touched-page inventory and typed reservations, then carries its independen
 derived EOF and map ledger through DATA and INDEX proof. Final whole-image
 comparison preserves unrelated records, deleted slots, old LVAL bodies and slack.
 Staged descriptors or planner page lists cannot authorize different data.
+Complete rewritten map rows retain their original before-images while absorbing
+earlier changes to the same record. Fresh bitmap bytes, column identity, owned
+reference and block number must match independent replay and the closed bitmap
+reservation. Neither an extra metadata page nor an unused reservation can hide
+outside the visible candidate suffix. The same emptiness checks apply when no
+column declares Memo/OLE or no request needs external storage.
 
 ## Current verification
 
@@ -67,10 +84,15 @@ requests, links, payloads, descriptor words, ownership and page inventories.
 Cumulative byte/row/work exhaustion and cancellation at the actual final healthy
 callback return no candidate.
 
-All 180 table INSERT/audit functions pass. The full ACE library batch passes 516
-functions with one existing ignored fixture generator; 36 focused existing
-long-value UPDATE/map/compression consumer checks also pass. These are engineering
-checks, not authentic external-file INSERT or native Access qualification.
+The initial external-payload milestone passed 180 table INSERT/audit functions
+and 516 full ACE library functions, with one existing ignored fixture generator.
+Its 36 focused existing long-value UPDATE/map/compression consumer checks also
+passed. The subsequent column-map growth batch passes 194 INSERT functions and
+530 full ACE library functions, with the same existing ignored generator. Strict
+ACE Clippy across all targets/features and minimal compilation also pass. Three
+later producer controls pass separately and retain strict Clippy and formatting.
+These are engineering checks,
+not authentic external-file INSERT or native Access qualification.
 
 ## Consumer controls and remaining scope
 
@@ -85,9 +107,36 @@ exposed a private helper boundary and an unused argument; both were corrected
 before the passing runtime batches, without changing the source or expected
 image bytes.
 
-Current external placement requires represented existing column-owned, candidate
-and global cells. LVAL map growth/rebasing/promotion and missing-map initialization
-remain unfinished. Other metadata, text-codec/BOM cases, Memo/OLE index keys,
-required unavailable validation/data macros and production saves keep their
-explicit refusals. Independent original-file comparisons are being prepared;
-no Windows Access execution is claimed.
+## Column-map growth controls
+
+Literal source and complete expected images cover both ACE 16 headers at the
+inline boundary (EOF527 versus528), owned-map promotion, a chained payload whose
+bitmap interrupts consecutive LVAL page numbers, and empty existing owned and
+candidate maps. A separate indirect-map control fills a zero pointer in an
+already declared row: body600 is owned, while bitmap601 remains metadata only.
+The source and expected images qualify before preview execution. These four
+focused growth functions and three producer composition controls passed their
+initial runtime batches.
+
+Seven independent audit controls additionally exercise foreign/self bitmap
+membership, wrong column/map/block/page identity, original-before and indirect
+pointer tampering, hidden metadata, extra reservations, DATA-purpose substitution
+and a chain pointing at its bitmap. Healthy controls first match complete literal
+images. The no-Memo/OLE and no-external-request cases keep candidate bytes
+unchanged while adding forbidden metadata. The first batch passed six controls;
+the remaining control stopped on a test-only assumption that the first staged
+page was appended page528, although visited original page16 precedes it. The test
+now selects page528 by identity; all seven controls passed in the combined
+194-function retry. No fixture or expected image changed, and this correction
+was not a production defect. The later producer controls exhaust each resource
+pool one unit before healthy completion, cancel at the actual final callback,
+refuse an otherwise checked source whose global map cannot represent the next
+page, and reject identical bytes under the wrong canonical map role/reference.
+
+Current external placement still requires existing declared column-map pairs and
+represented global free cells. Missing-map initialization, global map growth and
+map-record slot expansion remain unfinished. Other metadata, text-codec/BOM
+cases, Memo/OLE index keys, required unavailable validation/data macros and
+production saves keep their explicit refusals. Literal map-growth checks are not
+original-file or Windows Access qualification; independent original-file
+comparisons remain separate evidence.

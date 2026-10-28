@@ -1,16 +1,16 @@
 //! Bounded existing column hints and explicit new LVAL page reservations.
-use super::{Page, Plan, reserve};
+use super::{Page, Plan, maps::Maps, reserve};
 use crate::{
-    EditError, InspectError, LongValueMapReferences, NativeImage, WriteBlocker,
+    EditError, InspectError, LongValueMapReferences, NativeImage, TableSchema, WriteBlocker,
     format::{
-        allocation::{MapCell, RepresentedMap},
+        allocation::RepresentedMap,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::Reader,
         row::{MAX_SLOTS, OFFSET_MASK, ROW_COUNT_OFFSET, SLOT_BYTES, reference, slot_offset},
     },
     table::mutation::{
-        append::{self, State},
-        long_value::{maps::Scope, placement::geometry},
+        append::State,
+        long_value::{ownership::Inventory, placement::geometry},
     },
 };
 use std::{io::Cursor, ops::Range};
@@ -25,11 +25,13 @@ pub(super) struct Column {
     pub position: usize,
     pub number: usize,
     pub references: LongValueMapReferences,
-    pub scope: Scope,
+    pub maps: Maps,
 }
 
 pub(super) struct Builder<'a> {
     pub image: &'a NativeImage,
+    pub schema: &'a TableSchema,
+    pub inventory: Inventory,
     pub global: RepresentedMap,
     pub columns: Vec<Column>,
     pub plan: Plan,
@@ -43,38 +45,6 @@ pub(super) struct Location {
 }
 
 impl Builder<'_> {
-    fn cell(
-        &self,
-        map: &RepresentedMap,
-        number: u32,
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<MapCell, EditError> {
-        if number as usize >= self.append.original_length / PAGE_BYTES {
-            Ok(map.future_cell(reader, number)?)
-        } else {
-            Ok(map.cell(reader, number)?)
-        }
-    }
-
-    fn candidate(
-        &self,
-        column: usize,
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<Option<u32>, EditError> {
-        for &number in self.columns[column].scope.pages.iter().rev() {
-            reader.tick()?;
-            let cell = match self.cell(&self.columns[column].scope.hint, number, reader) {
-                Ok(cell) => cell,
-                Err(EditError::Inspect(InspectError::Unsupported)) => continue,
-                Err(error) => return Err(error),
-            };
-            if append::current(&self.append.map_edits, &cell, reader)? {
-                return Ok(Some(number));
-            }
-        }
-        Ok(None)
-    }
-
     fn page(
         &mut self,
         column: usize,
@@ -148,40 +118,28 @@ impl Builder<'_> {
         }
         // LVAL retains its existing bounded retry policy, independently of the
         // ordinary DATA allocator's single highest-candidate attempt.
-        while let Some(number) = self.candidate(column, reader)? {
+        while let Some(number) = self.columns[column].maps.highest(reader)? {
             let position = self.page(column, number, reader)?;
             let (count, end) = geometry(&self.plan.pages[position].after)?;
             if count < MAX_SLOTS && length + SLOT_BYTES <= end - slot_offset(count) {
                 return Ok(position);
             }
-            let cell = self.cell(&self.columns[column].scope.hint, number, reader)?;
-            append::clear_hint(&mut self.append.map_edits, cell, reader)?;
+            self.columns[column].maps.remove_hint(
+                number,
+                self.schema,
+                &self.inventory,
+                &mut self.append,
+                reader,
+            )?;
         }
-        self.append.preview(1)?;
-        let number = self.append.next()?;
-        let owned = self.cell(&self.columns[column].scope.owned, number, reader)?;
-        let hint = self.cell(&self.columns[column].scope.hint, number, reader)?;
-        let global = self.cell(&self.global, number, reader)?;
-        if append::current(&self.append.map_edits, &owned, reader)?
-            || append::current(&self.append.map_edits, &hint, reader)?
-            || !append::current(&self.append.map_edits, &global, reader)?
-        {
-            return Err(EditError::Preservation);
-        }
-        let references = self.columns[column].references;
-        self.append.reserve_long_value(
-            number,
-            self.columns[column].number,
-            references.owned(),
-            references.candidate(),
-            reader.budget,
-            reader.cancelled,
+        let number = self.columns[column].maps.allocate(
+            self.schema,
+            &self.inventory,
+            &self.global,
+            &mut self.append,
+            &mut self.plan.metadata,
+            reader,
         )?;
-        append::claim(&mut self.append.map_edits, owned, true, reader)?;
-        append::claim(&mut self.append.map_edits, hint, true, reader)?;
-        append::claim(&mut self.append.map_edits, global, false, reader)?;
-        reserve(&mut self.columns[column].scope.pages, 1, reader.budget)?;
-        self.columns[column].scope.pages.push(number);
         let mut initial = [0; PAGE_BYTES];
         initial[..DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
         initial[FREE_OFFSET..FREE_OFFSET + SLOT_BYTES]
