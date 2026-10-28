@@ -3,10 +3,8 @@ use super::{
     MAX_HASH_BYTES, MAX_KEY_BYTES,
 };
 use crate::{InspectError, format::page::PAGE_BYTES, header::check};
-use aes::cipher::{BlockModeDecrypt, KeyIvInit, block_padding::NoPadding};
-use sha2::Digest;
-use subtle::ConstantTimeEq;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_crypto::{CryptoError, Direction, HashAlgorithm, aes_cbc, constant_time_eq};
 use zeroize::{Zeroize, Zeroizing};
 
 const MAX_PASSWORD_UNITS: usize = 255;
@@ -136,7 +134,10 @@ pub(super) fn unlock(
         &mut verifier_hash[..hash_length],
     )?;
     let expected = digest(p.hash, &[&*verifier]);
-    if !bool::from(expected[..p.hash.bytes()].ct_eq(&verifier_hash[..p.hash.bytes()])) {
+    if !constant_time_eq(
+        &expected[..p.hash.bytes()],
+        &verifier_hash[..p.hash.bytes()],
+    ) {
         return Err(InspectError::IncorrectPassword);
     }
     check(budget, cancelled)?;
@@ -212,41 +213,20 @@ pub(super) fn digest(
     algorithm: AgileHashAlgorithm,
     parts: &[&[u8]],
 ) -> Zeroizing<[u8; MAX_HASH_BYTES]> {
-    fn run<D: Digest>(parts: &[&[u8]], out: &mut [u8]) {
-        let mut digest = D::new();
-        for part in parts {
-            digest.update(part);
-        }
-        let mut value = digest.finalize();
-        out[..value.len()].copy_from_slice(&value);
-        value.as_mut_slice().zeroize();
-    }
-    let mut out = Zeroizing::new([0; MAX_HASH_BYTES]);
-    match algorithm {
-        AgileHashAlgorithm::Sha1 => run::<sha1::Sha1>(parts, &mut *out),
-        AgileHashAlgorithm::Sha256 => run::<sha2::Sha256>(parts, &mut *out),
-        AgileHashAlgorithm::Sha384 => run::<sha2::Sha384>(parts, &mut *out),
-        AgileHashAlgorithm::Sha512 => run::<sha2::Sha512>(parts, &mut *out),
-    }
-    out
+    let algorithm = match algorithm {
+        AgileHashAlgorithm::Sha1 => HashAlgorithm::Sha1,
+        AgileHashAlgorithm::Sha256 => HashAlgorithm::Sha256,
+        AgileHashAlgorithm::Sha384 => HashAlgorithm::Sha384,
+        AgileHashAlgorithm::Sha512 => HashAlgorithm::Sha512,
+    };
+    tablecraft_crypto::digest(algorithm, parts)
 }
 
 fn decrypt(key: &[u8], iv: &[u8; AES_BLOCK_BYTES], data: &mut [u8]) -> Result<(), InspectError> {
-    macro_rules! decrypt {
-        ($cipher:ty) => {{
-            cbc::Decryptor::<$cipher>::new_from_slices(key, iv)
-                .map_err(|_| InspectError::MalformedEncryption)?
-                .decrypt_padded::<NoPadding>(data)
-                .map_err(|_| InspectError::MalformedEncryption)?;
-        }};
-    }
-    match key.len() {
-        16 => decrypt!(aes::Aes128),
-        24 => decrypt!(aes::Aes192),
-        32 => decrypt!(aes::Aes256),
-        _ => return Err(InspectError::UnsupportedEncryption),
-    }
-    Ok(())
+    aes_cbc(key, iv, data, Direction::Decrypt).map_err(|error| match error {
+        CryptoError::KeyLength => InspectError::UnsupportedEncryption,
+        CryptoError::BlockLength => InspectError::MalformedEncryption,
+    })
 }
 
 #[cfg(test)]

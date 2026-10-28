@@ -1,7 +1,6 @@
 //! Rewrap an existing file key without changing data pages or native SID masks.
 use super::{AES_BLOCK_BYTES, CipherParameters, MAX_KEY_BYTES, crypto, read_agile_encryption};
 use crate::{InspectError, header::check};
-use aes::cipher::{BlockModeEncrypt, KeyIvInit, block_padding::NoPadding};
 use base64::{Engine, engine::general_purpose::STANDARD};
 use quick_xml::{
     Reader, Writer,
@@ -9,6 +8,7 @@ use quick_xml::{
 };
 use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_crypto::{Direction, aes_cbc};
 use zeroize::Zeroizing;
 
 const BASE64_BUFFER_BYTES: usize = 128;
@@ -169,23 +169,12 @@ pub(super) fn encrypt(
     key: &[u8; MAX_KEY_BYTES],
     data: &mut [u8],
 ) -> Result<(), InspectError> {
-    macro_rules! encrypt {
-        ($cipher:ty) => {{
-            let length = data.len();
-            cbc::Encryptor::<$cipher>::new_from_slices(
-                &key[..crypto::key_bytes(params.key_bits)],
-                &params.salt,
-            )
-            .map_err(|_| InspectError::MalformedEncryption)?
-            .encrypt_padded::<NoPadding>(data, length)
-            .map_err(|_| InspectError::MalformedEncryption)?;
-        }};
-    }
-    match params.key_bits {
-        128 => encrypt!(aes::Aes128),
-        192 => encrypt!(aes::Aes192),
-        256 => encrypt!(aes::Aes256),
+    let length = match params.key_bits {
+        128 => 16,
+        192 => 24,
+        256 => 32,
         _ => return Err(InspectError::UnsupportedEncryption),
-    }
-    Ok(())
+    };
+    aes_cbc(&key[..length], &params.salt, data, Direction::Encrypt)
+        .map_err(|_| InspectError::MalformedEncryption)
 }

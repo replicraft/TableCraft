@@ -4,6 +4,7 @@ members = [
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
+    "crates/platform/tablecraft-crypto",
     "crates/backends/tablecraft-access",
     "crates/foundation/tablecraft-db",
     "crates/backends/tablecraft-sqlite",
@@ -128,6 +129,7 @@ tablecraft-db = { path = "crates/foundation/tablecraft-db", default-features = f
 
 # Platform I/O, native storage and built-in backends
 tablecraft-io = { path = "crates/platform/tablecraft-io", default-features = false }
+tablecraft-crypto = { path = "crates/platform/tablecraft-crypto", default-features = false }
 tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = false }
 tablecraft-access = { path = "crates/backends/tablecraft-access", default-features = false }
 tablecraft-sqlite = { path = "crates/backends/tablecraft-sqlite", default-features = false }
