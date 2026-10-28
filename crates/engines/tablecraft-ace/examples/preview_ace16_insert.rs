@@ -1,4 +1,6 @@
 //! Disposable ordinary-row INSERT candidate; never a native save.
+#[path = "support/fixed_values.rs"]
+mod fixed_values;
 #[path = "preview_ace16_insert/input.rs"]
 mod input;
 #[path = "preview_ace16_slot/output.rs"]

@@ -9,17 +9,23 @@ required data-macro semantics remain unqualified.
 
 ## Admitted physical profile
 
-The selected ordinary ACE 16 table has two current fields: one fixed Int32 and
-one variable Short Binary, in either declared order. Names do not select their
-roles. Each request supplies both exact carriers in native column order; no
-coercion, omitted values, defaults or generated identities are supplied. Binary
-NULL, present empty Binary and nonempty Binary remain distinct. Declared widths
-apply, with the native Short Binary ceiling of 255 bytes.
+The selected ordinary ACE 16 table now admits the
+[ordinary scalar-row profile](ACE16_ORDINARY_INSERTS.md): supported fixed scalars,
+Boolean masks and multiple Short Text/Binary fields, with complete current
+physical geometry. Each request supplies every exact carrier in native column
+order. The actual declared Int32 primary selects its key column, not the first
+Int32 or a name. NULL and present empty values remain distinct. Text bounds count
+UTF-16 units; Binary follows its positive native declared width through the
+existing 510-byte ceiling. The historical original-file fixtures below use the
+narrower two-field Int32/Binary255 schema; wider-schema qualification is unrun.
 
 DefaultValue presence refuses, even when every value is explicit or the batch
 is empty. AutoNumber, calculated and complex fields refuse. Existing active
 payload, catalog-child, unsupported-property and constraint blockers remain.
-This admission does not establish absence of unknown data macros.
+This admission does not establish absence of unknown data macros. Actual empty
+Text additionally requires an explicit AllowZeroLength declaration; stored false
+still rejects the value through normal constraints. Missing declarations are not
+inferred as native defaults.
 
 Exactly one physical unique, required, ascending Int32 primary index is admitted.
 Qualified logical aliases share that physical identity. An original root leaf

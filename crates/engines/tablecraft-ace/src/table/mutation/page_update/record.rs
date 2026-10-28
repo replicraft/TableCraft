@@ -1,13 +1,8 @@
 //! Rebuild one selected variable field while retaining physical capacity on fit.
 use super::super::{EditError, WriteBlocker, slot::storage};
 use crate::{
-    InspectError, NativeColumn, TableSchema,
-    format::{
-        data_type::SHORT_TEXT,
-        layout::UNICODE_COMPRESSION_FLAG,
-        row::{MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
-        text,
-    },
+    InspectError, TableSchema,
+    format::row::{MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
     header::check,
     table::record_layout,
 };
@@ -15,9 +10,6 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-
-const UTF16_BYTES: usize = size_of::<u16>();
-const COMPRESSION_MARKER_BYTES: usize = 2;
 
 pub(in crate::table::mutation) fn build(
     schema: &TableSchema,
@@ -28,7 +20,7 @@ pub(in crate::table::mutation) fn build(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     let frame = Frame::read(schema, column, before, budget)?;
-    let payload = preferred(&schema.columns[column], value, budget, cancelled)?;
+    let payload = storage::encode_preferred(&schema.columns[column], value, budget, cancelled)?;
     replace(
         frame,
         &payload,
@@ -187,60 +179,4 @@ fn replace(
     }
     record_layout::parse(&after, schema, budget)?;
     Ok(after)
-}
-
-fn preferred(
-    field: &NativeColumn,
-    value: &Value,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, EditError> {
-    storage::validate(field, value)?;
-    check(budget, cancelled)?;
-    let length = match value {
-        Value::Null => return Ok(Vec::new()),
-        Value::Binary(bytes) => bytes.len(),
-        Value::Text(value) => {
-            let count = value.encode_utf16().count();
-            let compact = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
-                && count > COMPRESSION_MARKER_BYTES
-                && value
-                    .encode_utf16()
-                    .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
-            if compact {
-                COMPRESSION_MARKER_BYTES + count
-            } else {
-                UTF16_BYTES * count
-            }
-        }
-        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-    };
-    // The exact-span chooser permits either valid form on equal size. Preferred
-    // row serialization uses raw UTF16 for the two-unit compression tie, as the
-    // independent public update observations establish. Never mask metadata to
-    // borrow a different encoder profile.
-    if field.native_type() == SHORT_TEXT
-        && field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
-        && let Value::Text(value) = value
-        && value.encode_utf16().count() == COMPRESSION_MARKER_BYTES
-    {
-        budget
-            .charge_allocation(length as u64, 1)
-            .map_err(InspectError::from)?;
-        budget
-            .charge(Resource::Steps, length as u64)
-            .map_err(InspectError::from)?;
-        let mut bytes = Vec::new();
-        bytes
-            .try_reserve_exact(length)
-            .map_err(|_| InspectError::Allocation)?;
-        for unit in value.encode_utf16() {
-            bytes.extend_from_slice(&unit.to_le_bytes());
-        }
-        if text::decode(&bytes, true, budget)? != *value {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
-        return Ok(bytes);
-    }
-    storage::encode_for_span(field, value, length, budget, cancelled)
 }
