@@ -789,3 +789,14 @@ unchanged 162-control plan: 124 full candidates and 38 typed atomic refusals.
 Actual stored fields, logical index orders, complete ancestor keys and permitted
 byte changes are checked independently. Public canonicalization, FEFF value
 discrepancies and expressions-disabled reference writes remain separate evidence.
+
+## Ordinary-row INSERT
+
+A separate [request-bound INSERT preview](ACE16_INSERT_PREVIEW.md) constructs
+qualified ordinary Int32/Short Binary rows, maintains a required Int32 primary
+leaf and increments the table and actual historical physical-index counters.
+It supports represented existing-page/EOF placement under independent complete
+image proof. The [quoted TSV example input](ACE16_INSERT_INPUT.md) supplies all
+values explicitly; defaults, generated fields, broader indexes and required
+splits remain refused. This adds no normal CLI write path or native Access
+qualification.
