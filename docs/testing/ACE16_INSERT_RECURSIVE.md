@@ -134,8 +134,8 @@ under the migrated controls.
 
 Existing original-file root-leaf, fitted-height-one, child-split and general-H1
 receipts remain separately scoped historical evidence. New two-field source
-preparation is recorded below. Actual recursive INSERT reference actions and
-original-file engineering candidates remain unrun.
+preparation, public references and original-file engineering candidates are
+recorded below as separate phases.
 Windows/native Microsoft Access comparisons remain deferred. Wider key/record
 profiles, generated/defaulted values, required data macros and production native
 saves remain unfinished work toward the full ACE 16 target.
@@ -186,6 +186,63 @@ be modeled from immutable sources rather than coerced to public placement.
 No new Microsoft Access comparison or recursive candidate acceptance follows
 from these source certificates.
 
+## Actual reference and engineering candidates
+
+Four source/request-only complete engineering images were frozen before the
+committed producer build or any candidate calls. All four first-attempt producer
+outputs match those complete images. Eight separate fresh read-only Jackcess
+getter/map calls pass on their first attempts, after all four full-image matches.
+They confirm model-derived records, ROWs, complete index trees/maps and unchanged
+sentinel data; public AFTER output does not supply expected bytes or placement.
+
+| Case | New ROW | Root height | New INDEX pages |
+| --- | --- | --- | --- |
+| V2016 root | 816:229 | 1 to 2 | 818, 819, 820 |
+| V2016 internal | 1180:9 | 2 retained | 1181, 1182 |
+| V2019 root | 834:229 | 1 to 2 | 836, 837, 838 |
+| V2019 internal | 1198:9 | 2 retained | 1199, 1200 |
+
+Every new 13-byte MAX/empty-Binary record fits an existing DATA page. Root cases
+split a leaf and grow the retained root through two fresh internal pages;
+internal cases split a leaf and its nonroot parent while retaining the height-two
+root. Across the four candidates, all 3,490 old ROWs survive and 3,494 final
+primary pairs agree. Ten INDEX pages add 40,960 bytes; no DATA or bitmap page is
+allocated. Table and actual historical physical counts each increase once.
+The [candidate record](results/ace16-insert-recursive-native-2026-10-28.json)
+keeps original sources, pre-build goldens, producer provenance and fresh getters
+separate from the source and public-reference phases. The
+[saved-only verifier](ace16_insert_recursive/README.md) requires the retained
+private artifacts, starts no fixture/JVM and reports missing evidence as
+unavailable rather than a pass.
+
+All twelve public reference child commands also succeed, but their first report
+is incomplete: three successful INSERT/getter/map commands were followed by a
+protected-prefix assertion on a relinked peer's unused bytes. Saved-only analysis
+proves that peer's original header, bitmap and active key/ROW payload unchanged
+except its required next pointer. The separate proof derivative allows only that
+source-framed unused suffix and records its changes. A frozen continuation then
+runs only the nine unattempted commands; no completed call repeats. In each root
+case the relinked peer changes 1,776 unused bytes. Internal cases change 1,859 and
+1,009 unused bytes in their two relinked peers. All other original prefix bytes
+remain protected by the closed transition proof.
+
+Public and engineering new ROWs happen to agree in all four actual cases: both
+append to the same fitting DATA page. Public ROWs were neither forced nor used
+to derive the engineering model. Jackcess moves the ceiling count-half to LEFT,
+producing root-case leaf populations 228/227 and internal populations 236/235.
+Engineering floor-halving produces 227/228 and 235/236 respectively. INDEX
+framing and unused bytes also differ: public scratch is an observation, while
+engineering policy retains source residue and zero fresh padding. Direct complete
+comparison finds differences only on INDEX pages: 12,328/12,329 bytes in the two
+root files and 15,674/15,673 in the internal files. DATA, counters, map effects and
+all other bytes agree in these actual outputs.
+
+The [public-reference record](results/ace16-insert-recursive-public-reference-2026-10-28.json)
+preserves the stopped first-three proof, separate saved recertification and
+remaining-nine continuation. These Jackcess observations and ACE engineering
+images do not establish Microsoft Access save/reopen compatibility. Required data
+macros and normal native saves remain unqualified.
+
 ## Preserved first-result history
 
 The first INSERT test batch retained 87 passes and one authored boundary-assertion
@@ -209,9 +266,8 @@ first formatting failure concerned module registration order and its scoped
 retry passes. These failures and before sources remain separately preserved.
 The preceding full integration-target inventory was not rerun for this slice.
 
-Actual recursive INSERT reference actions have not run. A producer build,
-source/request-only frozen engineering images and original-file candidate/getter
-qualification remain later phases, not completed by these checks.
+The source/request-only images, committed producer and candidate/getter phases
+above are separate evidence; these unit checks did not supply their outcomes.
 
 The root-residue adversary now mutates its existing patch in place, preserving
 canonical patch order so an unrelated order defect cannot explain rejection.

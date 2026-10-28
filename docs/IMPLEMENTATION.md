@@ -60,9 +60,9 @@ is included. Four public preview contracts, three compile-fail checks, minimal
 compilation, strict Clippy, rustdoc, formatting, the 15-package guard and 6,048
 documentation targets pass. Initial style-only lint and module-order formatting
 failures remain preserved before their passing retries. The preceding full
-integration-target inventory was not rerun. Actual recursive INSERT reference
-actions and original-file candidates remain unrun. Prior receipts
-remain separate; Windows/native Access comparisons remain deferred.
+integration-target inventory was not rerun. The original-file phases below remain
+separate from these code checks and prior receipts; Windows/native Access
+comparisons remain deferred.
 
 Four fresh two-field Jackcess sources now pass separate
 [source qualification](testing/results/ace16-insert-recursive-sources-2026-10-28.json).
@@ -74,8 +74,29 @@ two-LONG precedents were not retargeted. Five initial fixture commands passed
 before a checker rejected valid deleted/relocated tombstones; a separate corrected
 saved proof and twelve unattempted source commands then passed without repeating
 completed work or changing source inputs. The incomplete first report remains
-preserved. Actual recursive INSERT references, frozen engineering images,
-committed producer and candidate/getter qualification remain later phases.
+preserved.
+
+Four source/request-only images were frozen before the committed producer build;
+all four first-attempt candidates match those complete images. Eight fresh
+getter/map calls then pass first attempt, preserving all 3,490 old ROWs and
+confirming 3,494 final primary pairs. Each root case adds three INDEX pages and
+grows the retained root from height one to two; each internal case adds two INDEX
+pages and retains its height-two root. Every DATA record fits, with no DATA or
+bitmap allocation and 40,960 aggregate appended bytes. The
+[candidate record](testing/results/ace16-insert-recursive-native-2026-10-28.json)
+retains model-first authority and compiled-source binding.
+
+The twelve public reference commands also succeed, separately from a stopped
+first-three proof and a nine-command continuation. The initial verifier rejected
+unused-byte changes on a relinked peer; saved recertification proves identical
+source framing/header/active content except next, then records only that peer's
+original inactive suffix. No completed calls repeat. Public and engineering ROWs
+agree in these cases, but public ceiling-half leaf populations (228/227 or 236/235)
+differ from engineering floor-halves (227/228 or 235/236), as do INDEX framing and
+scratch. Differences are confined to INDEX pages; DATA, counts and maps agree.
+The [public-reference record](testing/results/ace16-insert-recursive-public-reference-2026-10-28.json)
+keeps the failed proof and continuation explicit; no public bytes supplied the
+engineering expected images.
 
 Additional nesting of an oversized new top, wider key/record profiles,
 generated/defaulted values, required data macros and normal native saves remain

@@ -10008,3 +10008,43 @@ retains all original source/request/model bytes and its frozen budgets. All 24
 first-attempt calls pass, including distinct ordinary candidate and index bitmap
 purposes. These are engineering candidate results, not production saves or
 Microsoft Access conformance.
+
+
+## Recursive Int32/Binary INSERT sources and copies
+
+Four fresh V2016/V2019 root/internal-pressure sources are produced by an original
+repository-owned public-builder helper using the already reviewed Jackcess 5.0.4
+JAR, SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No new third-party database fixtures or upstream implementation code are copied.
+The helper creates manual required Int32 ID, nullable Binary255, one primary and
+an inert sentinel. Public cursor deletion on fresh copies retains a dense right
+tail and every other leaf maximum; no raw source patching or old two-LONG
+fixture retargeting is used. Expressions and link resolution stay disabled.
+
+| Sparse original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016 root | 3,350,528 | `a344c10b8a81705a611ce7769c39754870d64d4b4e6c5df53bc9146375d57950` |
+| V2016 internal | 4,837,376 | `241e192b746f0f8b88e787d5b58407983fea37cacc8a997f7ccbb56377a95b71` |
+| V2019 root | 3,424,256 | `830aa0fc3b600b1655b9a5582e6b9c1113a2a46128897efa42ace259d50efe01` |
+| V2019 internal | 4,911,104 | `c3fc4d82f997163d764e5d8cd13f4362b6169167094b4c791d32d817e83065b7` |
+
+The [source record](results/ace16-insert-recursive-sources-2026-10-28.json)
+retains five successful initial calls, the tombstone-checker failure, saved-only
+recertification and twelve unattempted source commands. Actual historical counts
+remain 99,424/149,184 while live counts are 782/963. The four sources, larger
+originals, exact selectors and read-only captures remain ignored private evidence.
+No database/getter binary is bundled in the repository.
+
+Four separate [public INSERT copies](results/ace16-insert-recursive-public-reference-2026-10-28.json)
+retain their own first-three scratch-proof failure, saved proof and remaining-nine
+continuation; no completed command repeats. Four source/request-only engineering
+images were independently frozen before the
+[committed producer build](results/ace16-insert-recursive-example-build-2026-10-28.json).
+All four [engineering candidates](results/ace16-insert-recursive-native-2026-10-28.json)
+match those images on their first attempts, followed by eight first-attempt
+fresh read-only getter/map calls. Public half rounding and INDEX scratch differ
+from the engineering policy, despite equal new ROWs in these cases. Exact source,
+reference, candidate, tool and compiled-source identities are in those linked
+records. These observations qualify the
+[stated engineering profile](ACE16_INSERT_RECURSIVE.md), not normal native saves
+or Windows/Microsoft Access interoperability, which remains deferred.
