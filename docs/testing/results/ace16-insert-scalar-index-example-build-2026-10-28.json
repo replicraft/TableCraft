@@ -1,0 +1,42 @@
+{
+  "operation": "Build the INSERT engineering example from an isolated committed-source archive",
+  "commit": "242b289cb558b0484460d9225afca0cef79cd5ca",
+  "isolated_source": ".cache/ace16-insert-scalar-index-build-20261028/source",
+  "source_archive": {
+    "path": ".cache/ace16-insert-scalar-index-build-20261028/committed-source.tar",
+    "bytes": 89579520,
+    "sha256": "1ce6e6404b058bde19a77034c02e862569d019467356cf5759e399cab67d9c01"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/freeze.json",
+    "bytes": 44229,
+    "sha256": "39932ca2c7b36701016ebf00853e7bb6eba29ec3e89ec6d1c6517173e970e36d"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/target"
+  ],
+  "shared_cargo_cache": true,
+  "status": 0,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-scalar-index-20261028",
+    "bytes": 18528840,
+    "sha256": "d66ed9e5c40eed27da6bbe538c1b0f64a4400c4b8e4fb7143434e98c94ced2a8"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
