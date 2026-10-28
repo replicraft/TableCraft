@@ -2,6 +2,7 @@
 use std::cell::Cell;
 use std::cmp::Ordering;
 use tablecraft_core::values::{Decimal, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, StringComparisonProfile},
@@ -9,7 +10,7 @@ use tablecraft_expressions::{
 };
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, StreamError, prepare,
-    source::{CollationResolver, ProjectedRow, Source, TextCollationId},
+    source::{CollationResolver, Source, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

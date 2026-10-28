@@ -1,6 +1,7 @@
 //! Independent final-provider membership and retained Text group observations.
 use std::{cell::Cell, cmp::Ordering};
 use tablecraft_core::values::{Currency, Decimal, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, StringComparisonProfile},
@@ -9,7 +10,7 @@ use tablecraft_expressions::{
 use tablecraft_query::{
     ExecutionOptions, PreparationOptions, QueryError, QueryLimits, Source, StreamError,
     prepare_with_options,
-    source::{CollationResolver, ProjectedRow, TextCollationId},
+    source::{CollationResolver, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

@@ -1,9 +1,7 @@
 use super::Runtime;
+use crate::QueryError;
 use crate::execution::cell::CellValue;
-use crate::{
-    QueryError,
-    source::{MultivalueList, ProjectedRow},
-};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_schema::{CollectionMember, Column};
 mod expansion;
 mod parent;

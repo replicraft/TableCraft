@@ -4,9 +4,9 @@ use crate::{
     OutputType, QueryError,
     execution::cell::CellValue,
     plan::{CollectionOrigin, ReadPlan},
-    source::MultivalueList,
 };
 use tablecraft_core::limits::Resource;
+use tablecraft_db::MultivalueList;
 use tablecraft_schema::Column;
 
 impl Runtime<'_, '_> {

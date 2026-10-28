@@ -4,9 +4,9 @@ use crate::{
     MultivalueValue, QueryError,
     execution::multivalue::ParentCollections,
     plan::{Expr, RelationNode, SelectPlan},
-    source::{MultivalueList, ProjectedRow},
 };
 use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_schema::validate_row;
 
 impl Runtime<'_, '_> {

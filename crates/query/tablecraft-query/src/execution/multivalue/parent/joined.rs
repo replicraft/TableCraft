@@ -1,5 +1,5 @@
 //! Scalar join rows carry private handles to complete owned collection lists.
-use super::{MultivalueList, ParentCollections, Runtime};
+use super::{ParentCollections, Runtime};
 use crate::execution::cell::CellValue;
 use crate::execution::context::OuterScope;
 use crate::{
@@ -8,6 +8,7 @@ use crate::{
     plan::{Expr, ParentFilter, Relation, RelationNode},
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::MultivalueList;
 use tablecraft_sql::select::JoinKind;
 mod table;
 

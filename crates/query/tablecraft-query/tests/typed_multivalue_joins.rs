@@ -1,10 +1,10 @@
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{ExpressionValue, Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, QueryError, QueryValue, Source,
-    execute_collections_with_schema_discovery,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow},
+    execute_collections_with_schema_discovery, source::MultivalueVisitor,
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{parse_query, query::Query};

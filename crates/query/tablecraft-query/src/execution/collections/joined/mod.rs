@@ -9,9 +9,9 @@ use crate::{
     MultivalueValue, QueryError,
     execution::multivalue::ParentCollections,
     plan::{Expr, ParentFilter, Relation, SelectPlan},
-    source::MultivalueList,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::MultivalueList;
 
 struct JoinedFrame {
     frame: CollectionFrame,

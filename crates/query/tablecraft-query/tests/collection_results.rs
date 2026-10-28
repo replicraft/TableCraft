@@ -1,10 +1,10 @@
 use std::{cell::Cell, cmp::Ordering};
 use tablecraft_core::values::{Double, ExpressionValue, Single, Value};
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, OutputType, QueryError, QueryLimits, QueryValue,
-    Source, execute_collections_with_schema_discovery, prepare,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow},
+    Source, execute_collections_with_schema_discovery, prepare, source::MultivalueVisitor,
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{parse_query, query::Query};

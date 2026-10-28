@@ -1,10 +1,9 @@
 //! Shared child alignment and empty-parent expansion for collection scans.
 use super::Runtime;
 use crate::execution::cell::CellValue;
-use crate::{
-    QueryError, plan::CollectionOrigin, profile::SOURCE_SCHEMA_POLICY, source::MultivalueList,
-};
+use crate::{QueryError, plan::CollectionOrigin, profile::SOURCE_SCHEMA_POLICY};
 use tablecraft_core::values::Value;
+use tablecraft_db::MultivalueList;
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 

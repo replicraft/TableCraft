@@ -1,11 +1,11 @@
 //! Independent root-local models for static named and derived progressive stages.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::Value;
+use tablecraft_db::{ProjectedRow, validate_projection};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, PreparationOptions, QueryError, QueryLimits, Source, StreamError,
     StreamSummary, prepare, prepare_with_options,
-    source::{ProjectedRow, validate_projection},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};

@@ -6,11 +6,11 @@ mod values;
 
 use std::cell::Cell;
 use tablecraft_core::values::{Currency, Decimal, Double, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, PreparationOptions, QueryError, QueryLimits, StreamError, prepare,
-    prepare_with_options,
-    source::{ProjectedRow, Source},
+    prepare_with_options, source::Source,
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

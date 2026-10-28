@@ -1,10 +1,11 @@
 //! Independent values and populations across static stateful progressive stages.
 use std::cell::Cell;
 use tablecraft_core::values::{Currency, Decimal, Double, Value};
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, PreparationOptions, QueryError, Source, StreamError, StreamSummary,
-    prepare_with_options, source::ProjectedRow,
+    prepare_with_options,
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};

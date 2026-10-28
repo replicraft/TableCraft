@@ -1,10 +1,11 @@
 //! Independent scalar-key join models; no production directory or hash helpers.
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::Value;
+use tablecraft_db::{ProjectedRow, validate_projection};
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{
     ExecutionOptions, OutputType, QueryError, QueryLimits, Source, prepare,
-    source::{ProjectedRow, ScanConstraint, TextCollationId, validate_projection},
+    source::{ScanConstraint, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;

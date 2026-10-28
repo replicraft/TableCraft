@@ -10,8 +10,8 @@ use crate::{
     execution::{Environment, Runtime, cell::CellValue},
     external_sources::{ExternalBinding, SourceNamespace},
     plan::{ReadPlan, Relation, RelationNode, SelectPlan},
-    source::ProjectedRow,
 };
+use tablecraft_db::ProjectedRow;
 
 pub(super) struct Input<'p> {
     pub(super) leaf: &'p Relation,

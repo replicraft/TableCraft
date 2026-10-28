@@ -5,10 +5,8 @@ use tablecraft_ace::{
     read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_query::{
-    QueryError, Source,
-    source::{ProjectedRow, ScanConstraint, validate_projection},
-};
+use tablecraft_db::{ProjectedRow, validate_projection};
+use tablecraft_query::{QueryError, Source, source::ScanConstraint};
 
 pub(super) struct CachedProjection {
     indices: Vec<usize>,

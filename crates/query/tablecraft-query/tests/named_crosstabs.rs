@@ -3,10 +3,11 @@ use std::{
     cmp::Ordering,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryLimits, QueryResult, Source, prepare,
-    source::{MemorySource, MemoryTable, ProjectedRow, ScanConstraint},
+    source::{MemorySource, MemoryTable, ScanConstraint},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};

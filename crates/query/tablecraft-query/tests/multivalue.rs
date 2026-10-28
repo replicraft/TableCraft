@@ -1,9 +1,10 @@
 use proptest::prelude::*;
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::Value;
+use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     ExecutionOptions, QueryError, QueryResult, Source, prepare,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow, ScanConstraint},
+    source::{MultivalueVisitor, ScanConstraint},
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{ParseLimits, parse_query};

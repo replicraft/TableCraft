@@ -9,9 +9,10 @@ use tablecraft_ace::{
     VersionHistoryColumn, inspect_attachment_declarations, inspect_version_history_declarations,
 };
 use tablecraft_core::{limits::Resource, values::Value};
+use tablecraft_db::{MultivalueList, validate_projection};
 use tablecraft_query::{
     QueryError,
-    source::{MultivalueList, MultivalueVisitor, TextCollationId, validate_projection},
+    source::{MultivalueVisitor, TextCollationId},
 };
 use tablecraft_schema::{CollectionMember, SchemaName};
 

@@ -5,6 +5,7 @@ mod collation;
 mod collections;
 mod external;
 pub use external::{ExternalNativeSource, ExternalSourceError, NativeExternalMapping};
+mod forwarding;
 mod handle;
 pub use handle::{NativeSourceHandle, NativeTableIdentity};
 mod inventory;
@@ -27,10 +28,11 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_db::ProjectedRow;
 use tablecraft_model::{CatalogScope, ModelError};
 use tablecraft_query::{
     QueryError,
-    source::{ProjectedRow, ScanConstraint, Source},
+    source::{ScanConstraint, Source},
 };
 use tablecraft_schema::Column;
 

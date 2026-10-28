@@ -1,10 +1,8 @@
 use super::support::*;
 use std::cell::Cell;
 use tablecraft_core::values::Value;
-use tablecraft_query::{
-    QueryError, Source,
-    source::{MultivalueList, MultivalueVisitor, ProjectedRow},
-};
+use tablecraft_db::{MultivalueList, ProjectedRow};
+use tablecraft_query::{QueryError, Source, source::MultivalueVisitor};
 use tablecraft_schema::{CollectionMember, Column, ScalarType, SchemaName};
 
 struct Named {

@@ -3,9 +3,9 @@ use crate::{
     QueryError,
     plan::{ParentFilter, Relation, RelationNode},
     profile::SOURCE_SCHEMA_POLICY,
-    source::MultivalueList,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::MultivalueList;
 use tablecraft_schema::validate_row;
 
 impl Runtime<'_, '_> {
@@ -60,7 +60,7 @@ impl Runtime<'_, '_> {
         let (values, named) = self.collection_requests(&requested, multivalues.len())?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
-        let mut visitor = |scalars: crate::source::ProjectedRow<'_>,
+        let mut visitor = |scalars: tablecraft_db::ProjectedRow<'_>,
                            lists: &[&dyn MultivalueList]| {
             if let Some(error) = &failure {
                 return Err(error.clone());

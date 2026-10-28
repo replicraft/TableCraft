@@ -7,6 +7,12 @@ Connection discovery, native lock protocols and cursor/session runtime are not
 implemented here. The package exists for working edit consumers rather than a
 complete speculative database API.
 
+The shared borrowed `ProjectedRow` and `MultivalueList` views also live here.
+Consumers import them directly from `tablecraft-db`; query has no compatibility
+re-exports. Projection validation returns a storage-neutral `ProjectionError`.
+The query boundary converts it to its existing source error. Query-specific
+visitors, named SQL, collation provenance and `Source` remain in query.
+
 A snapshot consumes owned name/schema/rows under an explicit SchemaPolicy. It
 validates exact carriers and nullability without copying records, charging work
 and checking cancellation. Producers retain acquisition limits and allocation

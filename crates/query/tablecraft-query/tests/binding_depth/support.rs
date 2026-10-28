@@ -1,9 +1,10 @@
 use std::{cell::Cell, cmp::Ordering};
 use tablecraft_core::values::Value;
+use tablecraft_db::ProjectedRow;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
     BindingDepth, PreparationOptions, PreparedQuery, QueryError, Source, prepare_with_options,
-    source::{CollationResolver, MemorySource, MemoryTable, ProjectedRow, TextCollationId},
+    source::{CollationResolver, MemorySource, MemoryTable, TextCollationId},
 };
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Query};

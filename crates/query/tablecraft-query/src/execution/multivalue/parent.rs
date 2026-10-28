@@ -5,9 +5,10 @@ use crate::{
     QueryError,
     execution::Environment,
     plan::{ParentFilter, ParentPredicate, Relation, RelationNode},
-    source::{MultivalueList, MultivalueVisitor},
+    source::MultivalueVisitor,
 };
 use tablecraft_core::values::Value;
+use tablecraft_db::MultivalueList;
 use tablecraft_expressions::logic::Truth;
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{Column, validate_row};
@@ -108,7 +109,7 @@ impl Runtime<'_, '_> {
         let (values, named) = self.collection_requests(&parent.collections, multivalues.len())?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
-        let mut visit = |scalars: crate::source::ProjectedRow<'_>,
+        let mut visit = |scalars: tablecraft_db::ProjectedRow<'_>,
                          lists: &[&dyn MultivalueList]| {
             if let Some(error) = &failure {
                 return Err(error.clone());
