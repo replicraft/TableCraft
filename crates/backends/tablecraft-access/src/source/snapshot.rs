@@ -1,7 +1,7 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, TableCursor, TableSnapshot,
-    read_table_index_with_request,
+    read_stored_table_index_with_request, read_table_index_with_request,
 };
 use tablecraft_query::QueryError;
 
@@ -27,23 +27,36 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::Source)?;
             let table = if declared.has_cached(None) {
-                if entry.index.is_some() {
-                    return Err(QueryError::Unsupported);
-                }
                 let names = declared
                     .projection_names(&mut budget)
                     .map_err(query_error)?;
-                TableCursor::open_stored_projection(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    &names,
-                    &mut budget,
-                    self.cancelled,
-                )
-                .and_then(|cursor| {
-                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
-                })
+                if let Some(index) = &entry.index {
+                    read_stored_table_index_with_request(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        index.as_str(),
+                        IndexReadRequest {
+                            columns: Some(&names),
+                            selection: IndexProjectionSelection::All,
+                            maximum_rows: self.snapshot_limits.maximum_rows(),
+                        },
+                        &mut budget,
+                        self.cancelled,
+                    )
+                } else {
+                    TableCursor::open_stored_projection(
+                        &mut *source,
+                        self.scope,
+                        &entry.name,
+                        &names,
+                        &mut budget,
+                        self.cancelled,
+                    )
+                    .and_then(|cursor| {
+                        cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+                    })
+                }
             } else if let Some(index) = &entry.index {
                 let names = if !declared.unavailable.is_empty() {
                     Some(

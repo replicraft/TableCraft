@@ -1,7 +1,8 @@
 //! Required-index parents joined to complete collection snapshots by logical ROW.
 use super::{NativeField, NativeList, NativeSource, query_error};
 use tablecraft_ace::{
-    IndexProjectionSelection, IndexReadRequest, read_table_index_with_references,
+    IndexProjectionSelection, IndexReadRequest, read_stored_table_index_with_references,
+    read_table_index_with_references,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{MultivalueList, ProjectedRow};
@@ -17,9 +18,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     ) -> Result<(), QueryError> {
         let entry = self.entry(table)?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
-        if declared.has_cached(Some(indices)) {
-            return Err(QueryError::Unsupported);
-        }
         let index = entry.index.as_ref().ok_or(QueryError::Source)?;
         let mut budget = self
             .budget
@@ -32,7 +30,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             .source
             .try_borrow_mut()
             .map_err(|_| QueryError::Source)?;
-        let indexed = read_table_index_with_references(
+        let read_index = if declared.has_cached(Some(indices)) {
+            read_stored_table_index_with_references
+        } else {
+            read_table_index_with_references
+        };
+        let indexed = read_index(
             &mut *source,
             self.scope,
             &entry.name,

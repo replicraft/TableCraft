@@ -105,8 +105,12 @@ single-key indexes. TOP pushdown and cost-based optimization remain unimplemente
 Explicit required indexes also compose with
 [qualified stored collection members](INDEXED_COLLECTION_QUERIES.md), using
 logical row references rather than ordinal/value matching. That path validates a
-complete parent traversal; selected cached-calculation scalar projections with
-an index remain unsupported.
+complete parent traversal. Opted-in cached-calculation scalar outputs now use
+the explicit [stored-index reader](../calculations/CACHED_CALCULATION_QUERIES.md)
+through ordinary eligible keys, including beside collection members. It reads
+complete `All` snapshots, retains evaluator filters and does not extend range,
+automatic or progressive index selection. Calculated fields themselves remain
+ineligible index keys, following [Microsoft's Access restriction](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance).
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter
 still applies Binary predicates after complete snapshots; it does not automatically
@@ -469,19 +473,22 @@ including ownership, reference and 100-value limits. Caches remain separate from
 scalar/index projection snapshots. Unreferenced collections are not loaded, so
 unselected invalid floating payloads do not block an Int32 member query. Native
 constant-time child/value lookup borrows stored carriers without payload clones.
-Every parent callback pairs a sequential scalar projection with checked collection
-views; parent counts must agree. Scalar parent count queries retain original
+Sequential parent callbacks pair scalar projections with checked collection
+views. Required-index callbacks instead use a complete logical-ROW bijection,
+preserving actual index order and forwarded root identity; counts must agree.
+Scalar parent count queries retain original
 cardinality before/after expanded reads. The query layer owns duplication, NULL
 padding, filtering and grouping rather than the adapter.
 
-An explicitly selected index on an expanded parent table is Unsupported; other
-tables can retain their chosen indexes. Expansion does not silently change order,
+An explicitly selected parent index composes through the
+[checked reference contract](INDEXED_COLLECTION_QUERIES.md). Expansion does not silently change order,
 use partial scalar snapshots as complete data, or manufacture scalar parent keys.
 Stable/offline inputs and cumulative native/query/output budgets still apply.
 
 Three adapter tests cover all qualified ACE families, no-data binding, separate
-complete caches, parent counts, cancellation, malformed child data and explicit
-index refusal. Two CLI tests cover opt-in, actual buffered results, invalid scope,
+complete caches, parent counts, cancellation, malformed child data and the
+original index-refusal boundary. Current indexed coverage is recorded separately
+in the reference contract above. Two CLI tests cover opt-in, actual buffered results, invalid scope,
 criteria-only rejection and unchanged input bytes. A native test separately
 qualifies metadata inspection and direct value lookup. The
 [reference recipe](../../testing/compare_multivalue_queries.py) passes 75 controls over
@@ -598,8 +605,9 @@ with an explicit [32 MiB encoded allowance](../storage/LARGER_ENCODED_VALUES.md)
 [file allowances](../collections/LARGER_DECODED_ATTACHMENTS.md) can raise decoded file bytes to
 16 MiB; they do not raise encoded storage or cumulative pools. Changing an
 allowance clears decoded caches so a lower policy cannot reuse oversized values.
-Separate query Text and CLI output limits remain; see [larger payloads](../storage/LARGE_PAYLOADS.md). Selected parent indexes remain
-unsupported without fallback. Binary comparison, ordering and arbitrary Binary
+Separate query Text and CLI output limits remain; see [larger payloads](../storage/LARGE_PAYLOADS.md).
+Required parent indexes retain complete checked reference alignment without
+fallback. Binary comparison, ordering and arbitrary Binary
 function overloads are not introduced by the projection/Count/NULL-test profile.
 Hidden parent criteria retain their existing independent membership/negation
 policy, including the documented empty-set behavior; they are not ordinary
@@ -616,7 +624,7 @@ joined TOP/Boolean criteria do not conceal a later corrupt payload.
 [Crosstab WHERE membership](../../query/CROSSTABS.md#collection-membership-criteria) now uses
 the same explicit source views, preserving dynamic pre-WHERE heading discovery
 and fixed-IN filtering order. Native collection opt-in, decoder limits and
-selected-index refusals remain in force.
+required-index eligibility checks remain in force.
 [Subqueries in membership criteria](../../query/collections/MULTIVALUE_QUERIES.md#subqueries-inside-membership-criteria)
 also retain scoped collection items, complete snapshot caches and buffered late
 failures. Decoded Binary remains opt-in; no Binary comparison overload or native
@@ -675,7 +683,7 @@ With `--multivalues` or `--collections`, `--native-rows` now supplies the same
 explicit snapshot ceiling to complete parent-key and child-table loads. Native
 budgets stay cumulative and collection schemas/references still validate before
 cache publication. Defaults and the 100-value-per-parent multivalue policy remain
-unchanged. Metadata-only binding and selected-index refusal remain. See [larger
+unchanged. Metadata-only binding and required-index eligibility checks remain. See [larger
 collection limits and evidence](../collections/LARGER_NATIVE_COLLECTIONS.md).
 
 Explicit decoded attachment columns now reuse one budget-bound inflater session.

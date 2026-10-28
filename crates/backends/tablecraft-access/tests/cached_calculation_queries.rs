@@ -162,7 +162,7 @@ fn ordinary_projection_prunes_corrupt_caches_and_late_failures_never_become_comp
 }
 
 #[test]
-fn required_indexes_refuse_cached_reads_but_auto_indexes_do_not_change_results() {
+fn missing_required_indexes_fail_cached_reads_and_auto_indexes_keep_results() {
     let bytes = calculated_fixture::database(&[Some(999), Some(41)]);
     let source = NativeSource::new(
         Cursor::new(bytes.clone()),
@@ -177,8 +177,18 @@ fn required_indexes_refuse_cached_reads_but_auto_indexes_do_not_change_results()
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
+    let mut callbacks = 0;
+    assert_eq!(
+        source.scan_projected("Items", &[1], None, &mut |_| {
+            callbacks += 1;
+            Ok(())
+        }),
+        Err(QueryError::UnknownName)
+    );
+    assert_eq!(callbacks, 0);
+
     let source = NativeSource::new(Cursor::new(bytes), CatalogScope::new(1), budget(), &|| {
         false
     })
