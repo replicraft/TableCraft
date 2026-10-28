@@ -47,13 +47,21 @@ rules, and table/historical counters increase once per inserted row.
 
 The independent audit decodes the original tree and request-bound final pairs,
 rederives both leaf images and checks the exact patch inventory and complete
-image. The focused INSERT batch passes 55 runtime functions, including nine new
-builder, public-preview and audit controls. Thirteen independent reference calls
-also passed on their first attempts. The full-engine rerun is pending at this
-checkpoint; new engineering goldens and original-file candidate/getter acceptance
-for this branch are not yet complete. Existing child overflow, broader trees,
-other key profiles, defaults/generated values, required data macros and normal
-native saves remain unfinished. These results do not establish native Microsoft
+image. The full ACE batch passes 1,228 tests across 135 summaries, including
+three compile-fail checks; its unit summary is 350 passing functions and one
+existing ignored test. Seven example functions pass separately. Strict Clippy,
+minimal-feature compilation, rustdoc, formatting, documentation links and
+package boundaries pass. The 55-function INSERT subset includes nine new controls.
+
+Thirteen independent reference calls, four frozen complete-image candidate
+comparisons and eight fresh getter/map calls all passed on their first attempts.
+The [scoped record](testing/results/ace16-insert-height-one-native-2026-10-27.json)
+keeps those phases distinct. Actual original-file requests extend the right tail
+from 226 to 227 entries, preserving all 1,808 old ROWs across four results, with
+no new pages or map edits. Literal controls separately cover left/bulk routing.
+Existing child overflow, broader trees, other key profiles, defaults/generated
+values, required data macros and normal native saves remain unfinished. Jackcess
+and engineering results do not establish deferred Windows/native Microsoft
 Access qualification.
 
 ## Primary-root growth during INSERT

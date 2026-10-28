@@ -58,11 +58,36 @@ Literal controls cover empty, left-only, right-only and bulk insertions across
 both ACE 16 header profiles, including logical aliases and unchanged maps.
 Adversarial controls first prove healthy candidates and checked semantic contents,
 then require refusal for root residue changes, untouched-leaf residue changes
-and request drift. These are engineering literal checks. New original-file
-candidate/getter qualification for this branch has not yet been performed;
-the earlier [root-leaf growth evidence](ACE16_INSERT_ROOT_SPLITS.md) remains
-separate. Neither those Jackcess observations nor these literals establish
-native Microsoft Access save/reopen compatibility.
+and request drift. The full ACE batch passes 1,228 tests across 135 result
+summaries, including three compile-fail checks. Its unit summary is 350 passing
+functions with one existing ignored test; seven example functions pass separately.
+Strict all-target/feature Clippy, minimal-feature compilation, strict rustdoc,
+formatting, documentation links and dependency boundaries pass. The 55-function
+INSERT subset includes nine new builder, public-preview and audit controls.
+
+## Original-file qualification
+
+Thirteen bounded Jackcess reference calls passed on their first attempts.
+Independently frozen source/request-only engineering images then matched all
+four first-attempt candidates, before eight separate fresh read-only getter/map
+calls also passed. The [scoped evidence record](results/ace16-insert-height-one-native-2026-10-27.json)
+and [saved-only verifier](ace16_insert_height_one/verify.py) keep reference,
+engineering candidate and getter phases distinct. Saved verification starts no
+fixture, database or JVM and reports missing private evidence as unavailable.
+
+These four original-file requests insert ID 227 into the existing right tail,
+with either present empty Binary or 84-byte Binary. Each source has 452 rows;
+the final leaves contain 226 and 227 entries. Across the four results, all 1,808
+old ROWs remain intact and 1,812 complete primary key/ROW pairs agree. Every root,
+left leaf, sibling link and map remains unchanged; no page is allocated and image
+length stays fixed. Table and historical primary counts increase from 452 to 453
+once. Left-only and bulk routing are literal controls, not additional original-file
+qualification claims.
+
+The earlier [root-leaf growth evidence](ACE16_INSERT_ROOT_SPLITS.md) remains a
+separate checkpoint. These engineering candidates and Jackcess observations do
+not establish Windows/native Microsoft Access save/reopen compatibility, which
+remains deferred by the user.
 
 ## Remaining boundary
 

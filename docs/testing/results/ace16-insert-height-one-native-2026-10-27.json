@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-27",
+  "scope": "Optional fitted ordinary INSERT into a checked original height-one/two-leaf required unique ascending Int32 primary. Four actual right-tail ID227 cases; no normal native save or Microsoft Access qualification.",
+  "compiled_revision": "96a5e91e86948923cf382dd7c682c821aee71102",
+  "receipt_revision": "647cd9cbc226711a818efc7dbf1f1b607669042c",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-existing-leaf-example-build-2026-10-27.json",
+    "bytes": 150471,
+    "sha256": "1dedae0bf066b3068bda1335fac2b21043508b330d4ee1dd25f2ec428973394e"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-existing-leaf-20261027",
+    "bytes": 17788200,
+    "sha256": "aefb11f8522d0ff83ea68c4118c1157fd482e33ba04ff321f5a035fdc14ba278"
+  },
+  "compiled_source_objects": 751,
+  "raw_producer_report": {
+    "path": ".cache/ace16-insert-existing-leaf-candidates-first-20261027/report.json",
+    "bytes": 90348,
+    "sha256": "e11a3a4364aa5f1e083c26a33eae9debec6dc97fc7ee4abe784e452812b4d6c7"
+  },
+  "raw_getter_report": {
+    "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/report.json",
+    "bytes": 276130,
+    "sha256": "7159e35befe21c79beeadefb1cadc6f286595ff88218ba699912975dcb52f893"
+  },
+  "prior_reference_report": {
+    "path": ".cache/ace16-insert-existing-leaf-reference-first-20261027/report.json",
+    "bytes": 92894,
+    "sha256": "f4aa586c468621391b67f71bda320dbbf88283264e08b46783d6f8300f0c07e6"
+  },
+  "independent_plan": {
+    "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/plan.json",
+    "bytes": 11661,
+    "sha256": "cc727c7be34146262bd7bfb8f24df154d63e2ac4e87c6c8daa532ea3ae0ce634"
+  },
+  "independent_freeze": {
+    "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/freeze.json",
+    "bytes": 35282,
+    "sha256": "aeb503fd16eb6c408124fd8902dda17c4952d418ec238d8741de5dc8fbf946b1"
+  },
+  "producer_protocol": {
+    "path": ".cache/ace16-insert-existing-leaf-candidates-next-20261027/protocol-freeze.json",
+    "bytes": 37833,
+    "sha256": "72d3de9a0a4a9e996685a6d32ac18d0c95738b883c26b4b4c599b200cdd0385f"
+  },
+  "getter_protocol": {
+    "path": ".cache/ace16-insert-existing-leaf-getters-next-20261027/controller-freeze.json",
+    "bytes": 79367,
+    "sha256": "a0d238c5eadb8dd0c472041bb29a17d38156c39ca5ee602070b0ab46297d650f"
+  },
+  "producer_binding": {
+    "path": ".cache/ace16-insert-existing-leaf-candidates-next-20261027/binding-first.json",
+    "bytes": 149896,
+    "sha256": "63c91c3759bfaa3852eaa1902550431ae877a5d3e794c188d034858a65211dc2"
+  },
+  "getter_binding": {
+    "path": ".cache/ace16-insert-existing-leaf-getters-next-20261027/binding-first.json",
+    "bytes": 2014,
+    "sha256": "d2ea33ddc11f185cb94da82ef02d4de16ce27dfd557d192e9cea147efdae3dbf"
+  },
+  "all_actual_phases_first_attempt": true,
+  "actual_reference_commands": 13,
+  "actual_producer_commands": 4,
+  "actual_fresh_getter_map_commands": 8,
+  "new_fixture_calls_for_saved_verification": 0,
+  "whole_images_before_getters": true,
+  "source_request_golden_or_executed_controller_changes": false,
+  "after_pin_errors": [],
+  "cases": [
+    {
+      "id": "V2016-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-root-split-reference-first-20261027/V2016-fitted-reference.accdb",
+        "bytes": 397312,
+        "sha256": "d214a50333f2c7b24ad20ba48eef12bfe799e0e21f9e3ae0c20fc2fdf62cfc9a"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/requests/V2016-fitted.tsv",
+        "bytes": 18,
+        "sha256": "3df095670f9b8c872ccc0c2c36abec8ac702c1c0e8ffca684cf03e644399018b"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/expected/V2016-fitted.expected.bin",
+        "bytes": 397312,
+        "sha256": "20816080ee81bc2d4c54530cc8cd89f49e37f2517c94ec3b585a295d1a4580c8"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-existing-leaf-candidates-first-20261027/V2016-fitted.accdb",
+        "bytes": 397312,
+        "sha256": "20816080ee81bc2d4c54530cc8cd89f49e37f2517c94ec3b585a295d1a4580c8"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2016-fitted-getter.stdout",
+        "bytes": 60587,
+        "sha256": "62b6285aca678991043ff19ffa2d29d0d06a15ea8cedf9ed42105016d5f3f920"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2016-fitted-maps.stdout",
+        "bytes": 271,
+        "sha256": "ade6779618e606c0f7d5527fecf23ff757b90e68e551ff1f41d3ecdf9ec3e7cd"
+      },
+      "new_ROW": 24261,
+      "new_page": 94,
+      "new_slot": 197,
+      "record_bytes": 13,
+      "root": 91,
+      "left": 96,
+      "right": 95,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        227
+      ],
+      "right_prefix": 0,
+      "right_active": 2043,
+      "right_free": 1573,
+      "table_counter": [
+        452,
+        453
+      ],
+      "historical_physical_counter": [
+        452,
+        453
+      ],
+      "new_pages": 0,
+      "map_byte_effects": []
+    },
+    {
+      "id": "V2016-full84",
+      "source": {
+        "path": ".cache/ace16-insert-root-split-reference-first-20261027/V2016-full84-reference.accdb",
+        "bytes": 438272,
+        "sha256": "0918c3d76403b372e35eb30ad97a33608295ddc28e1723269b21b895a33ad29c"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/requests/V2016-full84.tsv",
+        "bytes": 186,
+        "sha256": "0468f3dc6a3b22cbb018937e024d06dbcd0c1d08883c0bdef18f4f0874773cbb"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/expected/V2016-full84.expected.bin",
+        "bytes": 438272,
+        "sha256": "a937eace745c2b982118ca0d02a6fa7e13f8178d20caf1292ff6c0f491c0edf1"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-existing-leaf-candidates-first-20261027/V2016-full84.accdb",
+        "bytes": 438272,
+        "sha256": "a937eace745c2b982118ca0d02a6fa7e13f8178d20caf1292ff6c0f491c0edf1"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2016-full84-getter.stdout",
+        "bytes": 213294,
+        "sha256": "3cfc63ca78f8cf125b88aac3c0f336d04988d7e6f80ab0e2c4a72833794affe4"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2016-full84-maps.stdout",
+        "bytes": 487,
+        "sha256": "ef988c85d3fee924a360443457c6955f65c64877556bea69b5ccad0280de4f28"
+      },
+      "new_ROW": 26625,
+      "new_page": 104,
+      "new_slot": 1,
+      "record_bytes": 97,
+      "root": 91,
+      "left": 106,
+      "right": 105,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        227
+      ],
+      "right_prefix": 0,
+      "right_active": 2043,
+      "right_free": 1573,
+      "table_counter": [
+        452,
+        453
+      ],
+      "historical_physical_counter": [
+        452,
+        453
+      ],
+      "new_pages": 0,
+      "map_byte_effects": []
+    },
+    {
+      "id": "V2019-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-root-split-reference-first-20261027/V2019-fitted-reference.accdb",
+        "bytes": 471040,
+        "sha256": "9ff1cf0d873629ac52e5d5bf50da16fc5a1a82414fd142fa7946729661abbf32"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/requests/V2019-fitted.tsv",
+        "bytes": 18,
+        "sha256": "3df095670f9b8c872ccc0c2c36abec8ac702c1c0e8ffca684cf03e644399018b"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/expected/V2019-fitted.expected.bin",
+        "bytes": 471040,
+        "sha256": "e64a8c551cca0428dc9482751d82f4b54ffcd970e326aa15b5aae0351e88d859"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-existing-leaf-candidates-first-20261027/V2019-fitted.accdb",
+        "bytes": 471040,
+        "sha256": "e64a8c551cca0428dc9482751d82f4b54ffcd970e326aa15b5aae0351e88d859"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2019-fitted-getter.stdout",
+        "bytes": 61042,
+        "sha256": "47f77be650386b1a5f6d5dd23820594e5ed7174f7e76831b455c532061e78847"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2019-fitted-maps.stdout",
+        "bytes": 516,
+        "sha256": "37ba3dc7151ca4db41bcc35afcf6a9ed4099f858de8cd384ffd567a2d35bbf89"
+      },
+      "new_ROW": 28869,
+      "new_page": 112,
+      "new_slot": 197,
+      "record_bytes": 13,
+      "root": 108,
+      "left": 114,
+      "right": 113,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        227
+      ],
+      "right_prefix": 0,
+      "right_active": 2043,
+      "right_free": 1573,
+      "table_counter": [
+        452,
+        453
+      ],
+      "historical_physical_counter": [
+        452,
+        453
+      ],
+      "new_pages": 0,
+      "map_byte_effects": []
+    },
+    {
+      "id": "V2019-full84",
+      "source": {
+        "path": ".cache/ace16-insert-root-split-reference-first-20261027/V2019-full84-reference.accdb",
+        "bytes": 512000,
+        "sha256": "3a4f512c2a6fe2766e389bd1a71e1723c77bd11ec1ee60c8c21ce0420aebcaae"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/requests/V2019-full84.tsv",
+        "bytes": 186,
+        "sha256": "0468f3dc6a3b22cbb018937e024d06dbcd0c1d08883c0bdef18f4f0874773cbb"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/expected/V2019-full84.expected.bin",
+        "bytes": 512000,
+        "sha256": "0e2eaf03e2db7410aba30f2caabfda6007645fad8ab42a690c320f98e3b2fe46"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-existing-leaf-candidates-first-20261027/V2019-full84.accdb",
+        "bytes": 512000,
+        "sha256": "0e2eaf03e2db7410aba30f2caabfda6007645fad8ab42a690c320f98e3b2fe46"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2019-full84-getter.stdout",
+        "bytes": 213583,
+        "sha256": "0dd45baede237b961d9d8c23fc0a2e58521c5a0873448284d64b58ffc94061ad"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-existing-leaf-getters-first-20261027/V2019-full84-maps.stdout",
+        "bytes": 733,
+        "sha256": "c78fbaf8482bc5e191ae705048ab7a3bb737acae97a2a2c1899966b9e1cf6550"
+      },
+      "new_ROW": 31233,
+      "new_page": 122,
+      "new_slot": 1,
+      "record_bytes": 97,
+      "root": 108,
+      "left": 124,
+      "right": 123,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        227
+      ],
+      "right_prefix": 0,
+      "right_active": 2043,
+      "right_free": 1573,
+      "table_counter": [
+        452,
+        453
+      ],
+      "historical_physical_counter": [
+        452,
+        453
+      ],
+      "new_pages": 0,
+      "map_byte_effects": []
+    }
+  ],
+  "totals": {
+    "final_typed_rows": 1812,
+    "final_raw_rows": 1812,
+    "final_primary_leaf_key_ROW_pairs": 1812,
+    "unchanged_root_bounds": 4,
+    "complete_graph_entries": 1816,
+    "original_ROWS_preserved": 1808,
+    "logical_indexes": 4,
+    "physical_indexes": 4,
+    "retained_index_pages": 12,
+    "new_DATA_INDEX_or_bitmap_pages": 0,
+    "bytes_added": 0,
+    "map_byte_effects": 0,
+    "table_counter_fields_incremented_once": 4,
+    "historical_physical_counter_fields_incremented_once": 4,
+    "retained_right_leaf_unused_residue_bytes": 6292,
+    "new_record_bytes": 220,
+    "new_empty_Binary_requests": 2,
+    "new_84byte_Binary_requests": 2,
+    "new_NULL_Binary_requests": 0,
+    "stored_NULL_Binary_rows_preserved": 452,
+    "stored_empty_Binary_rows_preserved": 452
+  },
+  "independent_saved_proof": {
+    "first_actual_exit": 0,
+    "private_source": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/verify.py",
+      "bytes": 14514,
+      "sha256": "1406f7504b4430358f69495992db8f1edb0471dc66ffe3d4dce9bfba23c0ed02"
+    },
+    "first_actual_result": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/actual-first.json",
+      "bytes": 2210,
+      "sha256": "d111b187b8349aee074c094cfb9ff4884c3779af5821d23b92eb76ae5394e5e0"
+    }
+  },
+  "maintained_saved_verification": {
+    "exit_code": 0,
+    "verified": true,
+    "pin_occurrences": 4168,
+    "distinct_paths": 1153,
+    "Git": {
+      "verified": true,
+      "compiled_sources": 751,
+      "receipt_objects": 1,
+      "metadata_processes": 1
+    },
+    "result": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/public-git-first.json",
+      "bytes": 2264,
+      "sha256": "a90f3a25ffaebbbdde1ebeebfb91b04333081e6f5afd244321b35d506faf00c8"
+    },
+    "default_result": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/public-retry.json",
+      "bytes": 2210,
+      "sha256": "1866b36567cac6d25131ba78cc70ea7d553eef6d01b376477c4a395121ea5319"
+    },
+    "unavailable_contract_exit": 2,
+    "unavailable_result": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/public-unavailable-first.json",
+      "bytes": 210,
+      "sha256": "99f939de6ca78fee5b8bbb7e9f62075baa055d61c16cae4b4d38dd6d1de6de55"
+    },
+    "history": "First maintained conversion failed from a report variable shadowing the directly imported parser module; exact initial source/error retained. Renamed only that local report variable. No native/database/model/oracle/controller changes.",
+    "initial_error": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/public-first.stderr",
+      "bytes": 849,
+      "sha256": "d29e2c66f08353076a4f0f252bf21de9163f434496ff109ac2e1257fa7856962"
+    },
+    "initial_source": {
+      "path": ".cache/ace16-insert-existing-leaf-saved-proof-next-20261027/public-before-report-name-correction/verify.py",
+      "bytes": 16990,
+      "sha256": "95dea49cb3b135cb1f3e264cc5b3a39fe68e303d54718b365f0635666a5f7b96"
+    }
+  },
+  "initial_pure_model_setup_history": {
+    "description": "First model preparation reused an execution-freshness check after root had already completed the reference phase. It stopped before any golden was produced. Only namespace coupling in preparation was removed; source/request/frame policy unchanged. Original source and log retained.",
+    "error": {
+      "path": ".cache/ace16-insert-existing-leaf-independent-next-20261027/prepare-first.stderr",
+      "bytes": 707,
+      "sha256": "ed61c46481a63f01f6c4da9e86919e22574b30fc16be9f1738776d17dd4d47e0"
+    }
+  },
+  "implementation_verification": {
+    "command_archive": {
+      "path": ".cache/ace16-insert-height-one-verification-20261027/checked-commands.json",
+      "bytes": 12975,
+      "sha256": "30d9bb393843a902be84774932ca7ac9f6607a16a67c5a3cc4830a235ff1d534"
+    },
+    "full_ACE": "135 summaries, 1228 passed, one ignored, including three intended compile-fail doctests; overlapping focused batches are not additional distinct functions.",
+    "focused": "Initial54 passed/one authored pressure failure; corrected adjacent key pressure, then55passed. Independent goldens unchanged.",
+    "additional_example_tests": 7,
+    "strict_minimal_rustdoc_format": "Passed; exact commands/statuses/logs in command archive.",
+    "guard_and_links": "Root-reported separately; not inferred from command archive."
+  },
+  "maintained_tools": [
+    {
+      "path": "docs/testing/ace16_insert_height_one/verify.py",
+      "bytes": 17025,
+      "sha256": "eae18c01aadd15646ba6fa1077f2af29f80301032cb667c14f1a5326fdbc69af"
+    },
+    {
+      "path": "docs/testing/ace16_insert_height_one/model.py",
+      "bytes": 5803,
+      "sha256": "14efb3dd1908a9225968ccb962b35c24364c089385899db2f815fb9dad58ab01"
+    },
+    {
+      "path": "docs/testing/ace16_insert_height_one/reference.py",
+      "bytes": 5563,
+      "sha256": "f3243bbd599ee4a98801dd3d3ec71b0e3735182882a84ee47e9a1533f015c063"
+    },
+    {
+      "path": "docs/testing/ace16_insert_height_one/README.md",
+      "bytes": 4365,
+      "sha256": "14689993dec8ba484eb830bd9a5b2c1f579a6962193d137d99c86231fa24cde6"
+    }
+  ],
+  "remaining": "Left-branch authentic requests, larger/deeper trees, allocation during existing-tree INSERT, broader key/row/schema profiles, defaults/generated fields, required data macros and normal native saves remain unqualified by these four cases. Separate literal controls do not establish original-file or Microsoft Access parity."
+}
