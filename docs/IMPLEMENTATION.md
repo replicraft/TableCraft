@@ -12,6 +12,28 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Shared ownership extraction
+
+The workspace now has fifteen packages. Working [cryptographic primitives](platform/CRYPTO.md),
+[inert Access package codecs](formats/ACCESS_PACKAGES.md) and
+[independent development fixtures](testing/TESTKIT.md) live in dedicated crates.
+Consumers import their actual owners directly; no old-path compatibility exports
+were added. DB owns borrowed row/collection views, SQL supplies bounded owned
+syntax constructors, and Access shares mechanical forwarding while retaining
+native qualification, query routing and namespace ownership.
+
+The [architecture review](architecture/ARCHITECTURE.md#implemented-follow-up)
+records these boundaries. This changes ownership rather than format coverage or
+write admission; unfinished INSERT work remains separate.
+
+Verification passes strict workspace Clippy across all targets/features,
+minimal-feature workspace compilation, strict rustdoc, formatting, the
+15-package dependency guard, 47 Python checks and local documentation links.
+The complete all-feature workspace test batch exposed stale expectations in four
+targets; their corrected focused reruns pass. The original failures are retained,
+and the corrections add positive coverage while preserving actual refusal/error
+controls. Native Microsoft Access comparisons were not run for this refactor.
+
 ## Explicit historical index counters
 
 The bounded [`inspect_table_index_counter` service](access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
