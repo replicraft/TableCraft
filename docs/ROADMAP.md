@@ -409,6 +409,13 @@ reversed tuples and genuine 585-byte Binary bounds; the full ACE library batch
 passes 491 functions with one ignored generator. Independent original-file
 variable-key INSERT comparisons and production write admission remain open.
 
+[Inline Memo/OLE INSERT records](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation)
+now reuse the actual long-value codec through its 64-byte preferred-inline
+profile, with independent descriptor/record reconstruction and complete-image
+controls. All 160 table INSERT/audit functions pass. External single/chained
+allocation on the shared append state remains the next implementation phase;
+this checkpoint does not qualify normal saves or native Access behavior.
+
 Major gates still open before the full backend is complete:
 
 - [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full

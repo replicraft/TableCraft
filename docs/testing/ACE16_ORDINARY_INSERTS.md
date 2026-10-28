@@ -108,12 +108,13 @@ New fixed padding is zero. No schema or resource ceiling changes.
 | Short Text | Text or NULL; positive even declared width up to 510 bytes/255 UTF-16 units |
 | Short Binary | Binary or NULL; positive declared width through the existing 510-byte native ceiling |
 | Decimal | Exact Decimal or NULL; qualified 17-byte variable NUMERIC, declared precision/scale retained |
+| Inline Memo/OLE | Qualified ordinary variable declarations, exact Text/Binary or NULL, preferred encoded payload through 64 bytes |
 
 Existing independent public-builder Binary fixtures declare 255 bytes; they do
 not qualify every larger native declaration. Fixed fields require the supported
 native type, true width, flags and zero extended flags. Text permits only the
 existing Unicode-compression flag; Binary and Decimal permit no extended flags.
-Date/Time Extended, Memo/OLE, complex/calculated fields and unsupported metadata
+Date/Time Extended, external Memo/OLE payloads, complex/calculated fields and unsupported metadata
 remain outside this record profile.
 
 The primary requires a non-NULL Int32. Other nullable fixed fields serialize
@@ -232,3 +233,42 @@ updated for this explicit new capability, retaining the other refused field
 families and adding positive/negative Decimal controls. No native Access or fresh
 independent-writer Decimal INSERT comparison was run. Historical broader-row
 receipts above retain their original scope.
+
+## Inline Memo/OLE continuation
+
+The same engineering INSERT service now constructs ordinary inline Memo and OLE
+fields. Qualified declarations are variable, normalized width zero, updatable
+flags, no complex identity, and either ordinary Memo/OLE or Memo's existing
+Unicode compression flag. The working long-value encoder is shared directly
+with existing mutation consumers; INSERT does not duplicate its storage codec.
+
+NULL occupies no variable payload. Present empty content occupies the complete
+12-byte INLINE descriptor; present content adds its exact encoded bytes. The
+descriptor carries an inline length tag, zero first reference and reserved zero.
+The current admitted preferred payload is at most 64 bytes. Memo uses checked
+UTF-16LE or the established qualified compact representation, retaining exact
+round trips; ambiguous BOM conversion refuses. Explicit empty Memo retains the
+existing typed `AllowZeroLength` requirement. OLE remains opaque binary data.
+
+The independent record audit derives its own request payload, compression
+decision, inline descriptor, footer and mask. Two public complete-image functions
+cover both ACE 16 layouts, old and new NULL/empty values, opaque OLE, exact
+64-byte limits, raw/compact Memo, NUL and non-BMP text, numeric physical indexes
+and logical aliases. Both independently constructed images are read and checked
+before the producer runs. Two separate audit functions check literal records,
+raw encoding ties, carrier errors and non-round-tripping BOM refusal.
+
+External single/chained LVAL allocation is the next implementation phase, using
+the same append state before DATA and INDEX placement. It is not supplied by
+this inline checkpoint. Memo/OLE indexes, required macro/constraint execution,
+normal saves and native Access save/reopen qualification remain separate gates.
+
+The focused table INSERT/audit batch passes all 160 functions. Strict ACE Clippy
+across all targets/features, minimal compilation, formatting and documentation/
+dependency guards pass. The first batch retained an outdated assertion that all
+Memo/OLE declarations must fail; it was replaced with explicit ordinary positives
+and reserved-flag/invalid-width negatives. Two redundant test String conversions
+were corrected after the first lint run. An initial public-test compile failure
+exposed a private fixture helper; that helper now lives in the shared test owner.
+These corrections change neither payload codecs nor independent expected bytes.
+The preceding 491-function full ACE batch predates this inline extension.

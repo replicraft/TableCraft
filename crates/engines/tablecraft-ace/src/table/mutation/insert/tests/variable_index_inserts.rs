@@ -5,7 +5,6 @@ use std::io::Cursor;
 use tablecraft_model::CatalogScope;
 
 mod model;
-mod properties;
 use model::{Case, Family, PAGE, Row, Settings};
 
 fn row(id: i32, group: Option<i32>, payload: Option<Vec<u8>>) -> Row {

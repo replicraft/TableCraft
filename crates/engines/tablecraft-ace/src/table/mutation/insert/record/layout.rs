@@ -2,7 +2,7 @@
 use super::{field, payload};
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker, format::row::COLUMN_COUNT_BYTES,
-    header::check,
+    header::check, table::long_value::profile as long_profile,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -75,7 +75,9 @@ pub(super) fn variables(
             }
         } else {
             payload::qualify(column)?;
-            if column.storage_length() == 0 || column.complex_type_id().is_some() {
+            if (column.storage_length() == 0 && !long_profile::ordinary(column))
+                || column.complex_type_id().is_some()
+            {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
             let selected = variables

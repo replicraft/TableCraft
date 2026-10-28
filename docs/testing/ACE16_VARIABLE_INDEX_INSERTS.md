@@ -44,8 +44,8 @@ indexes; a full row does not establish collision-free physical uniqueness.
 Nonunique digested keys retain complete row-derived NULL facts.
 
 New empty Text still requires an explicit typed `AllowZeroLength` declaration.
-An existing empty stored value does not authorize new empty Text. Memo/OLE and
-other unqualified record/index profiles, foreign indexes, general reclamation
+An existing empty stored value does not authorize new empty Text. External Memo/OLE and
+other unqualified record/index profiles, Memo/OLE indexes, foreign indexes, general reclamation
 and production saves retain their separate gates.
 
 ## Verification

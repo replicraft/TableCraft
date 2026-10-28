@@ -2,7 +2,7 @@
 mod admission;
 mod audit;
 mod authority;
-mod encode;
+pub(in crate::table::mutation) mod encode;
 mod finish;
 mod map_audit;
 mod maps;

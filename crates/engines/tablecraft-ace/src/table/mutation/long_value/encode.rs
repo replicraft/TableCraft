@@ -32,24 +32,24 @@ const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
 #[cfg(test)]
 mod tests;
 
-pub(super) enum Encoded {
+pub(in crate::table::mutation) enum Encoded {
     Null,
     Present(Vec<u8>),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum StorageChoice {
+pub(in crate::table::mutation) enum StorageChoice {
     Inline,
     Single,
     Chained,
 }
 
-pub(super) struct Chunk {
+pub(in crate::table::mutation) struct Chunk {
     pub payload: Range<usize>,
     pub linked: bool,
 }
 
-pub(super) fn qualify(field: &NativeColumn) -> Result<(), EditError> {
+pub(in crate::table::mutation) fn qualify(field: &NativeColumn) -> Result<(), EditError> {
     if !profile::ordinary(field) {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
@@ -57,7 +57,7 @@ pub(super) fn qualify(field: &NativeColumn) -> Result<(), EditError> {
     Ok(())
 }
 
-pub(super) fn encode(
+pub(in crate::table::mutation) fn encode(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,
