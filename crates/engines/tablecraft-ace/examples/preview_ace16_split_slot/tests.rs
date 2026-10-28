@@ -7,9 +7,7 @@ mod index_fixture;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_encoded_delete_contract/model.rs"]
 mod model;
-#[allow(dead_code)]
-#[path = "../../tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use super::*;
 use std::{

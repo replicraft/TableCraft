@@ -6,7 +6,7 @@ mod extended_carriers;
 mod fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::io::Cursor;

@@ -10,8 +10,7 @@ mod memo_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_access::NativeSource;

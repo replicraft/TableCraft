@@ -2,7 +2,7 @@
 mod calculated_fixture;
 #[path = "mutation/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{

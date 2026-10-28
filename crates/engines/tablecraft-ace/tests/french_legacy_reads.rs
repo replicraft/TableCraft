@@ -8,7 +8,7 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "french_legacy_reads/boundaries.rs"]
 mod boundaries;

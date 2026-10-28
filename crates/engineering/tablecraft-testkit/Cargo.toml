@@ -1,0 +1,12 @@
+[package]
+name = "tablecraft-testkit"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Independent raw fixtures shared by TableCraft tests"
+
+[lints]
+workspace = true

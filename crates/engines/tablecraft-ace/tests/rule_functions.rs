@@ -1,6 +1,6 @@
 #[path = "mutation/fixture.rs"]
 mod base;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use support::data_page;

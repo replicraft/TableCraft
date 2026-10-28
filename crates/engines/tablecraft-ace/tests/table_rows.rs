@@ -1,6 +1,5 @@
 #[path = "support/page_reads.rs"]
 mod page_reads;
-mod support;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use support::{data_page, image, put16, put32};
@@ -10,6 +9,7 @@ use tablecraft_core::{
     values::{Currency, Double, Single, Value},
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000)
 }

@@ -6,9 +6,7 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/composite_indexes/fixture.rs"]
 mod numeric_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

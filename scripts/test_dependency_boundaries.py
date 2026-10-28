@@ -75,6 +75,23 @@ class BoundaryTests(unittest.TestCase):
         data["packages"][3]["dependencies"].append({"name": "proptest", "kind": "dev"})
         self.assertEqual(violations(data), [])
 
+    def test_shared_fixtures_are_development_only(self):
+        for kind in [None, "build", "dev"]:
+            with self.subTest(kind=kind):
+                data = deepcopy(self.base)
+                helper = package("tablecraft-testkit", "crates/engineering/tablecraft-testkit")
+                data["packages"].append(helper)
+                data["workspace_members"].append(helper["id"])
+                data["packages"][3]["dependencies"].append({
+                    "name": "tablecraft-testkit", "kind": kind,
+                    "optional": True, "rename": "fixtures",
+                })
+                errors = violations(data)
+                if kind == "dev":
+                    self.assertEqual(errors, [])
+                else:
+                    self.assertTrue(any("development-only" in error for error in errors))
+
     def test_library_placement_is_checked(self):
         data = deepcopy(self.base)
         data["packages"][0]["manifest_path"] = "/repo/apps/core/Cargo.toml"

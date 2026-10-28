@@ -8,8 +8,7 @@ mod int64_index_fixture;
 mod narrow_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     path::PathBuf,

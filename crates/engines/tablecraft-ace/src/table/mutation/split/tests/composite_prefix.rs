@@ -6,7 +6,6 @@ use crate::{
     table::{indexes::IndexDataPatch, mutation::gates},
     test_support::{
         split_model::{budget, capture},
-        support,
         tuples::{decimal_fixture, mixed_fixture, numeric_fixture},
     },
 };
@@ -16,6 +15,7 @@ use tablecraft_core::{
     values::{Guid, Value},
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 14;

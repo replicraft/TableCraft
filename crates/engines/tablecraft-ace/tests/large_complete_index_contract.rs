@@ -7,7 +7,7 @@ mod base;
 mod composite_fixture;
 #[path = "large_index_selections/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "large_complete_index_contract/complete.rs"]
 mod complete;

@@ -6,7 +6,7 @@ mod complex_fixture;
 #[path = "attachments/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

@@ -5,8 +5,7 @@ mod calculated_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "progressive_queries/boundaries.rs"]
 mod boundaries;

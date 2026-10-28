@@ -9,8 +9,7 @@ mod map_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/composite_indexes/fixture.rs"]
 mod numeric_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use fixture as base;
 use std::{cell::RefCell, io::Cursor};

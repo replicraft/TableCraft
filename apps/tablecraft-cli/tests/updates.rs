@@ -1,5 +1,4 @@
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod native_support;
+use tablecraft_testkit::access as native_support;
 // The independent golden builder uses its owner's support module name.
 use native_support as support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]

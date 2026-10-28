@@ -4,8 +4,6 @@ mod base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 mod fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -16,6 +14,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access as support;
 
 const USER_DATA_PAGE: u64 = 12;
 struct Counting {

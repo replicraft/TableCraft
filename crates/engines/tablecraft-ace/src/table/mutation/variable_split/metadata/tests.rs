@@ -2,12 +2,12 @@
 use super::Metadata;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker, check_table,
-    table::mutation::map_authority::Owner,
-    test_support::{map_growth::model, support},
+    table::mutation::map_authority::Owner, test_support::map_growth::model,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

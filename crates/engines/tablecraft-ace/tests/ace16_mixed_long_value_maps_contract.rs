@@ -2,7 +2,7 @@
 #[path = "mutation/fixture.rs"]
 mod fixture;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[cfg(feature = "ace16-write-preview")]
 #[allow(dead_code)]

@@ -5,8 +5,7 @@ mod base;
 mod cli_support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 mod fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "saved_query_definitions/crosstabs.rs"]
 mod crosstabs;

@@ -1,11 +1,9 @@
 use super::*;
-use crate::{
-    inspect_table_indexes, inspect_table_schema,
-    test_support::{index_fixture, support},
-};
+use crate::{inspect_table_indexes, inspect_table_schema, test_support::index_fixture};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10;

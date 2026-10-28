@@ -1,14 +1,13 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::io::Cursor;
 use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const OWNER_PAGE: usize = 10;

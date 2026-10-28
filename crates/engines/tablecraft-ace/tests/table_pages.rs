@@ -17,7 +17,6 @@ mod maps;
 mod materialize;
 #[path = "support/page_reads.rs"]
 mod page_reads;
-mod support;
 use page_reads::PageReads;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
@@ -28,6 +27,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const TABLE_DEFINITION: usize = 10;

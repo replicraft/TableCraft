@@ -13,7 +13,7 @@ mod index_fixture;
 #[path = "ace16_split_int32_contract/model.rs"]
 mod root_model;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_index_map_growth_contract/authority.rs"]
 mod authority;

@@ -6,12 +6,13 @@ use crate::{
     check_table_constraints, read_table,
     test_support::{
         encoded::{model, split_model},
-        map_growth, support,
+        map_growth,
     },
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 13;

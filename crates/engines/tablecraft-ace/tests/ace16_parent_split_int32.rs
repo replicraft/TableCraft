@@ -12,7 +12,7 @@ mod model;
 #[allow(dead_code)]
 #[path = "ace16_split_int32_contract/model.rs"]
 mod root_model;
-mod support;
+use tablecraft_testkit::access as support;
 
 use model::*;
 use std::{cell::Cell, io::Cursor};

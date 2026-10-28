@@ -12,7 +12,7 @@ mod index_fixture;
 #[allow(dead_code)]
 #[path = "ace16_page_updates/model.rs"]
 mod page_model;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ace16_variable_updates/values.rs"]
 mod values;
 

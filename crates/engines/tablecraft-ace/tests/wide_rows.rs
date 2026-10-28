@@ -3,7 +3,6 @@
 mod base;
 #[path = "wide_rows/fixture.rs"]
 mod fixture;
-mod support;
 use std::{
     cell::Cell,
     io::{self, Cursor, Read, Seek, SeekFrom},
@@ -17,6 +16,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const SCOPE: CatalogScope = CatalogScope::new(1);

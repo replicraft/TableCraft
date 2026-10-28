@@ -7,7 +7,7 @@ mod fixture;
 #[path = "ace16_long_value_updates_contract/model.rs"]
 mod model;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 use model::*;
 use std::io::Cursor;

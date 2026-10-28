@@ -1,0 +1,47 @@
+{
+  "scope": "Independent literal fixture-builder extraction equivalence; no native compatibility or combined external-proof qualification.",
+  "date": "2026-10-27",
+  "baseline": {
+    "revision": "37b0a5076244f4b19b7047ada30f669b18f53f7c",
+    "path": "crates/engines/tablecraft-ace/tests/support/mod.rs",
+    "bytes": 3496,
+    "sha256": "395145db02a7fc23388bd6ba065ee62992e823df0306bff205a2ae2304438c99"
+  },
+  "moved_source": {
+    "path": "crates/engineering/tablecraft-testkit/src/access.rs",
+    "bytes": 3955,
+    "sha256": "25f4405d450dba9f63738f25d0b73ff9bebf3be397349fb8802f89ce17540ac4"
+  },
+  "source_comparison": "Identical token sequence after removing line comments and whitespace.",
+  "first_compile_exit": 0,
+  "first_runtime_exit": 0,
+  "byte_comparisons": {
+    "image_overflow_indirect_combinations": 4,
+    "catalog_records": 3,
+    "data_pages": 9,
+    "word_integer_buffer": 1,
+    "total": 17
+  },
+  "image_bytes_each": 28672,
+  "witness": {
+    "path": ".cache/tablecraft-testkit-independent-next-20261027/witness.rs",
+    "bytes": 1660,
+    "sha256": "66b6274c5ed9693e067509fbed57b51bc2e26eaf62a7cf0b2b122b5ec3ffa2a6"
+  },
+  "runtime_log": {
+    "path": ".cache/tablecraft-testkit-independent-next-20261027/runtime.log",
+    "bytes": 248,
+    "sha256": "8124354f2a6e941650a380e672034337a308632a5e1c4d3a9a820e2419c59c5b"
+  },
+  "saved_result": {
+    "path": ".cache/tablecraft-testkit-independent-next-20261027/result.json",
+    "bytes": 2436,
+    "sha256": "1b3622749dea85bf1052f35b95725398f3589da9100d031575b6236e0967c32e"
+  },
+  "commands": [
+    "rustc --edition=2024 .cache/tablecraft-testkit-independent-next-20261027/witness.rs -o .cache/tablecraft-testkit-independent-next-20261027/witness",
+    "./witness > runtime.log 2>&1 (working directory: .cache/tablecraft-testkit-independent-next-20261027)"
+  ],
+  "cargo_calls": 0,
+  "native_jvm_fixture_calls": 0
+}

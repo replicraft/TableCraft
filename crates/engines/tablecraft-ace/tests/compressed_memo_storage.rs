@@ -5,7 +5,7 @@ mod base;
 #[path = "long_value_storage_contract/model.rs"]
 mod model;
 #[allow(dead_code)]
-mod support;
+use tablecraft_testkit::access as support;
 
 use tablecraft_ace::LongValueCheckStatus;
 use tablecraft_core::values::Value;

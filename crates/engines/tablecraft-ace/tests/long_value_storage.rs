@@ -5,7 +5,7 @@ mod boundaries;
 mod fixture;
 #[path = "long_value_storage/model.rs"]
 mod model;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "long_value_storage/values.rs"]
 mod values;
 

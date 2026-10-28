@@ -3,11 +3,12 @@ use super::audit_global;
 use crate::{
     EditError,
     table::indexes::mutation::{RetiredPage, RetirementTable},
-    test_support::{base as fixture, support},
+    test_support::base as fixture,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const RETIRED: [usize; 2] = [14, 15];

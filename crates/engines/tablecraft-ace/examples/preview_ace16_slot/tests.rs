@@ -10,9 +10,7 @@ mod model;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_page_updates_contract/model.rs"]
 mod page_model;
-#[allow(dead_code)]
-#[path = "../../tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_variable_updates_contract/model.rs"]
 mod variable_model;

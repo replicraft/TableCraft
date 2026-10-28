@@ -4,7 +4,7 @@
 mod base;
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "integral_index_updates/trees.rs"]
 mod trees;
 

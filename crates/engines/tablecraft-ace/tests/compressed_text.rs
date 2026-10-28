@@ -1,7 +1,7 @@
 #[path = "mutation/fixture.rs"]
 #[allow(dead_code)]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, TableSnapshot, read_table};

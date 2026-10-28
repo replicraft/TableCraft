@@ -3,7 +3,7 @@
 mod base;
 #[path = "foreign_updates/fixture.rs"]
 mod foreign_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{EditError, FixedColumnUpdates, FixedScalarUpdate, NativeImage, read_table};

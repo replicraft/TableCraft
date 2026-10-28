@@ -1,5 +1,6 @@
 //! Repository-owned tuple fixtures shared by private read and mutation tests.
-use super::{base, support};
+use super::base;
+use tablecraft_testkit::access as support;
 
 #[allow(dead_code)]
 #[path = "../../tests/composite_indexes/fixture.rs"]

@@ -47,7 +47,7 @@ mod model {
         writable(super::encoded_model::composite())
     }
 }
-mod support;
+use tablecraft_testkit::access as support;
 
 use model::{Model, budget, capture, entries, wire};
 use std::io::Cursor;

@@ -4,7 +4,7 @@ mod fixture;
 mod index_fixture;
 #[path = "mutation/non_unique.rs"]
 mod non_unique;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "mutation/tree_fixture.rs"]
 mod tree_fixture;
 #[path = "mutation/unowned.rs"]

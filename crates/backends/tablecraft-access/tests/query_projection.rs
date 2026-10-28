@@ -4,8 +4,6 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
 mod index_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -17,6 +15,7 @@ use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, OutputType, QueryError, Source, prepare};
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const TABLE_PAGE: usize = 10;

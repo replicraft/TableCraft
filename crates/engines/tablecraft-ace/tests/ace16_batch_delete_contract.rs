@@ -6,7 +6,7 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod model;
-mod support;
+use tablecraft_testkit::access as support;
 
 #[path = "ace16_batch_delete_contract/trees.rs"]
 mod trees;

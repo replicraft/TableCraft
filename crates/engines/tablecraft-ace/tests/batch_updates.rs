@@ -11,7 +11,7 @@ mod multiple_tables;
 mod numeric_fixture;
 #[path = "batch_updates/rules.rs"]
 mod rules;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};

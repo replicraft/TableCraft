@@ -5,7 +5,7 @@ mod capacity;
 mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "mutation/tree_fixture.rs"]
 mod tree_fixture;
 

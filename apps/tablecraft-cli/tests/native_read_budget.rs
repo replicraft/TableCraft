@@ -5,14 +5,13 @@ mod cli_support;
 mod fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use cli_support::run;
 use std::{
     fs,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+use tablecraft_testkit::access as support;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Database {

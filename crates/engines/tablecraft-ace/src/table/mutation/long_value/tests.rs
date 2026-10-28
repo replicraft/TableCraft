@@ -3,12 +3,12 @@ use super::{Operation, admission, finish, maps::Edit as MapEdit, stage};
 use crate as tablecraft_ace;
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, check_table,
-    check_table_constraints, check_table_long_values, read_table,
-    test_support::{fixture, support},
+    check_table_constraints, check_table_long_values, read_table, test_support::fixture,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as support;
 
 #[allow(dead_code)]
 #[path = "../../../../tests/ace16_long_value_updates_contract/model.rs"]

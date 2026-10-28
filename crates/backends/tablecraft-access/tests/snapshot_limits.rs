@@ -4,9 +4,6 @@ mod fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
 mod index_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -19,6 +16,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare, source::ScanConstraint};
 use tablecraft_sql::parse_query;
+use tablecraft_testkit::access as support;
 
 struct Reads {
     input: Cursor<Vec<u8>>,

@@ -8,7 +8,7 @@ mod index_fixture;
 #[allow(dead_code)]
 #[path = "composite_indexes/fixture.rs"]
 mod numeric_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use fixture as base;
 

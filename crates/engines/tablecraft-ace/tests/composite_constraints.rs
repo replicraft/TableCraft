@@ -8,7 +8,7 @@ mod currency;
 mod decimal;
 #[path = "composite_constraints/guid.rs"]
 mod guid;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use support::{data_page, put16, put32};

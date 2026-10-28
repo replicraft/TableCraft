@@ -21,7 +21,7 @@ mod index_fixture;
 mod numeric_fixture;
 #[path = "ignored_index_checks/payloads.rs"]
 mod payloads;
-mod support;
+use tablecraft_testkit::access as support;
 #[path = "ignored_index_checks/tuples.rs"]
 mod tuples;
 

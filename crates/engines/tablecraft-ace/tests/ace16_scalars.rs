@@ -8,7 +8,7 @@ mod int64_indexes;
 mod int64_ranges;
 #[path = "ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, inspect_table_schema, read_table};

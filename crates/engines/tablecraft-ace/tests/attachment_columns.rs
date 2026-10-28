@@ -3,7 +3,7 @@
 mod base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};
 

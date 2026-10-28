@@ -7,8 +7,7 @@ mod ignored;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
 mod index_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/mod.rs"]
-mod support;
+use tablecraft_testkit::access as support;
 
 use std::{
     cell::Cell,

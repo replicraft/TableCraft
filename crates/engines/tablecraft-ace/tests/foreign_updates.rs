@@ -6,7 +6,7 @@ mod base;
 mod boolean;
 #[path = "foreign_updates/fixture.rs"]
 mod fixture;
-mod support;
+use tablecraft_testkit::access as support;
 
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
