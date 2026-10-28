@@ -2,6 +2,7 @@
 mod ignored;
 mod long_values;
 mod lval_growth;
+mod lval_initialization;
 mod multiple;
 
 use super::super::{RowInsert, Staged, compose, finish, preflight, prepare, tests::model};

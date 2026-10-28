@@ -8,9 +8,9 @@ use crate::{
     format::{
         allocation::{self, MapCell, RepresentedMap},
         bytes::u32_at,
-        page::{PAGE_BYTES, USAGE_SIGNATURE},
+        page::{DATA_SIGNATURE, PAGE_BYTES, USAGE_SIGNATURE},
         reader::Reader,
-        row::{reference_page, reference_slot},
+        row::{ROW_COUNT_OFFSET, SLOT_BYTES, reference_page, reference_slot, slot_offset},
     },
     table::mutation::{
         append::{self, State},
@@ -22,6 +22,10 @@ use crate::{
 };
 use std::io::Cursor;
 
+const MAP_RECORDS: usize = 2;
+const OWNED_SLOT: usize = 0;
+const CANDIDATE_SLOT: usize = 1;
+const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const INLINE: u8 = 0;
 const INDIRECT: u8 = 1;
 const KIND_BYTES: usize = size_of::<u8>();
@@ -40,6 +44,7 @@ struct Record {
     offset: usize,
     before: Vec<u8>,
     after: Option<Vec<u8>>,
+    fresh: bool,
 }
 
 impl Record {
@@ -59,6 +64,7 @@ impl Record {
             offset: row.offset,
             before: row.data,
             after: None,
+            fresh: false,
         })
     }
 
@@ -74,6 +80,13 @@ impl Record {
         append: &mut State,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
+        if self.fresh {
+            if after.len() != self.before.len() {
+                return Err(EditError::Preservation);
+            }
+            self.after = Some(after);
+            return Ok(());
+        }
         let end = self
             .offset
             .checked_add(self.before.len())
@@ -99,7 +112,8 @@ impl Record {
 }
 
 pub(super) struct Maps {
-    scope: Scope,
+    scope: Option<Scope>,
+    pages: Vec<u32>,
     column: usize,
     references: LongValueMapReferences,
     owned: Record,
@@ -115,8 +129,10 @@ impl Maps {
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
         let hints = allocation::pages(reader, references.candidate())?;
+        let pages = copied_members(&scope.pages, reader)?;
         Ok(Self {
-            scope,
+            scope: Some(scope),
+            pages,
             column,
             references,
             owned: Record::capture(references.owned(), column, ColumnMapKind::Owned, reader)?,
@@ -128,6 +144,59 @@ impl Maps {
             )?,
             hints,
         })
+    }
+
+    pub(super) fn fresh(
+        column: usize,
+        references: LongValueMapReferences,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        let mut record = |reference, kind| -> Result<Record, EditError> {
+            let before = zeros(INLINE_RECORD_BYTES, reader)?;
+            let after = Some(zeros(INLINE_RECORD_BYTES, reader)?);
+            Ok(Record {
+                reference,
+                column,
+                kind,
+                offset: 0,
+                before,
+                after,
+                fresh: true,
+            })
+        };
+        Ok(Self {
+            scope: None,
+            pages: Vec::new(),
+            column,
+            references,
+            owned: record(references.owned(), ColumnMapKind::Owned)?,
+            candidate: record(references.candidate(), ColumnMapKind::Candidate)?,
+            hints: Vec::new(),
+        })
+    }
+
+    pub(super) fn initialized_bytes(
+        &self,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Vec<u8>, EditError> {
+        if self.scope.is_some() || !self.owned.fresh || !self.candidate.fresh {
+            return Err(EditError::Preservation);
+        }
+        let mut bytes = zeros(PAGE_BYTES, reader)?;
+        let first = PAGE_BYTES - INLINE_RECORD_BYTES;
+        let second = first - INLINE_RECORD_BYTES;
+        bytes[..DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
+        bytes[FREE_OFFSET..FREE_OFFSET + SLOT_BYTES]
+            .copy_from_slice(&((second - slot_offset(MAP_RECORDS)) as u16).to_le_bytes());
+        bytes[ROW_COUNT_OFFSET..ROW_COUNT_OFFSET + SLOT_BYTES]
+            .copy_from_slice(&(MAP_RECORDS as u16).to_le_bytes());
+        bytes[slot_offset(OWNED_SLOT)..slot_offset(OWNED_SLOT) + SLOT_BYTES]
+            .copy_from_slice(&(first as u16).to_le_bytes());
+        bytes[slot_offset(CANDIDATE_SLOT)..slot_offset(CANDIDATE_SLOT) + SLOT_BYTES]
+            .copy_from_slice(&(second as u16).to_le_bytes());
+        bytes[first..].copy_from_slice(self.owned.current());
+        bytes[second..first].copy_from_slice(self.candidate.current());
+        Ok(bytes)
     }
 
     pub(super) fn highest(
@@ -150,7 +219,12 @@ impl Maps {
             return Err(EditError::Preservation);
         }
         if self.candidate.after.is_none() {
-            let cell = source_cell(&self.scope.hint, append, number, reader)?;
+            let cell = source_cell(
+                &self.scope.as_ref().ok_or(EditError::Preservation)?.hint,
+                append,
+                number,
+                reader,
+            )?;
             append::clear_hint(&mut append.map_edits, cell, reader)?;
         } else {
             let base = u32_at(self.candidate.current(), KIND_BYTES)?;
@@ -178,11 +252,11 @@ impl Maps {
             return Err(EditError::Preservation);
         }
         let number = append.next()?;
-        reader.work(self.scope.pages.len())?;
-        if self.scope.pages.binary_search(&number).is_ok() {
+        reader.work(self.pages.len())?;
+        if self.pages.binary_search(&number).is_ok() {
             return Err(EditError::Preservation);
         }
-        let mut members = copied_members(&self.scope.pages, reader)?;
+        let mut members = copied_members(&self.pages, reader)?;
         reserve(&mut members, 1, reader.budget)?;
         members.push(number);
         let mut blocks = Vec::new();
@@ -192,7 +266,13 @@ impl Maps {
         match current.first().copied() {
             Some(INLINE) => {
                 if self.owned.after.is_none() {
-                    match self.scope.owned.future_cell(reader, number) {
+                    match self
+                        .scope
+                        .as_ref()
+                        .ok_or(EditError::Preservation)?
+                        .owned
+                        .future_cell(reader, number)
+                    {
                         Ok(cell) => represented = Some(cell),
                         Err(InspectError::Unsupported) => {}
                         Err(error) => return Err(error.into()),
@@ -270,7 +350,13 @@ impl Maps {
                         }
                         set_bitmap(&mut bitmap.bytes, number, block, reader)?;
                     } else {
-                        represented = Some(self.scope.owned.future_cell(reader, number)?);
+                        represented = Some(
+                            self.scope
+                                .as_ref()
+                                .ok_or(EditError::Preservation)?
+                                .owned
+                                .future_cell(reader, number)?,
+                        );
                     }
                 }
             }
@@ -350,7 +436,13 @@ impl Maps {
         }
 
         if self.candidate.after.is_none() {
-            match self.scope.hint.future_cell(reader, number) {
+            match self
+                .scope
+                .as_ref()
+                .ok_or(EditError::Preservation)?
+                .hint
+                .future_cell(reader, number)
+            {
                 Ok(cell) => {
                     if append::current(&append.map_edits, &cell, reader)? {
                         return Err(EditError::Preservation);
@@ -384,7 +476,7 @@ impl Maps {
         }
         reserve(&mut self.hints, 1, reader.budget)?;
         self.hints.push(number);
-        self.scope.pages = members;
+        self.pages = members;
         Ok(number)
     }
 }

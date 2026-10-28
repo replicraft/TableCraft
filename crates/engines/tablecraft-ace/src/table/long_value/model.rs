@@ -25,8 +25,8 @@ pub enum LongValueCheckStatus {
 /// Original packed column map references; inspection does not grant mutation.
 #[derive(Clone, Copy)]
 pub struct LongValueMapReferences {
-    pub(super) owned: u32,
-    pub(super) candidate: u32,
+    pub(in crate::table) owned: u32,
+    pub(in crate::table) candidate: u32,
 }
 
 impl LongValueMapReferences {

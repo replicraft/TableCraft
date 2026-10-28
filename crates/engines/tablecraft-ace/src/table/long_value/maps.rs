@@ -57,7 +57,66 @@ pub(in crate::table) fn declarations<R: NativeReadSource>(
         Err(error) => return Err(error),
     };
     let bytes = definition::read(reader, schema.definition)?;
-    parse(&bytes, definitions.tail, reader, schema)
+    parse(&bytes, definitions.tail, reader, schema, &[])
+}
+
+/// Explicit INSERT initialization parses zero pairs without treating unknown
+/// trailing bytes or missing declarations as an empty ownership claim.
+pub(in crate::table) fn declarations_for_initialization<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    schema: &TableSchema,
+    columns: &[usize],
+) -> Result<Declarations, InspectError> {
+    let definitions = indexes::definitions_with_tail(reader, schema)?;
+    let bytes = definition::read(reader, schema.definition)?;
+    let declarations = parse(&bytes, definitions.tail, reader, schema, columns)?;
+    if bytes.len() > PAGE_BYTES {
+        reader.work(declarations.entries.len())?;
+        if declarations
+            .entries
+            .iter()
+            .any(|entry| entry.references.owned() == 0 && entry.references.candidate() == 0)
+        {
+            return Err(InspectError::Unsupported);
+        }
+    }
+    Ok(declarations)
+}
+
+/// Exact original physical pointer span for one explicitly declared zero pair.
+pub(in crate::table) fn zero_pair_offset<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    schema: &TableSchema,
+    column: usize,
+) -> Result<usize, InspectError> {
+    let definitions = indexes::definitions_with_tail(reader, schema)?;
+    let bytes = definition::read(reader, schema.definition)?;
+    if bytes.len() > PAGE_BYTES {
+        return Err(InspectError::Unsupported);
+    }
+    let mut position = definitions.tail;
+    loop {
+        reader.tick()?;
+        let number = u16_at(&bytes, position)?;
+        if number == TERMINATOR {
+            return Err(InspectError::Unsupported);
+        }
+        let pair = bytes
+            .get(position..position + size_of::<Pair>())
+            .ok_or(InspectError::Truncated)?;
+        if usize::from(number) == column {
+            if pair[2..].iter().any(|byte| *byte != 0) {
+                return Err(InspectError::Unsupported);
+            }
+            return (schema.definition as usize)
+                .checked_mul(PAGE_BYTES)
+                .and_then(|base| base.checked_add(position + size_of::<u16>()))
+                .ok_or(InspectError::StructureLimit);
+        }
+        position = position
+            .checked_add(size_of::<Pair>())
+            .ok_or(InspectError::StructureLimit)?;
+    }
 }
 
 fn parse<R: NativeReadSource>(
@@ -65,6 +124,7 @@ fn parse<R: NativeReadSource>(
     mut position: usize,
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,
+    initializing: &[usize],
 ) -> Result<Declarations, InspectError> {
     let mut entries: Vec<Declaration> = Vec::new();
     for _ in 0..=MAX_COLUMNS {
@@ -123,7 +183,22 @@ fn parse<R: NativeReadSource>(
             .ok_or(InspectError::StructureLimit)?;
         // Zero pairs are absent/legacy leads, not permission to interpret an
         // arbitrary zero-filled definition suffix as a complete declaration list.
-        if pair.owned.get() == 0 || pair.candidate.get() == 0 {
+        let selected_zero =
+            if pair.owned.get() == 0 && pair.candidate.get() == 0 && !initializing.is_empty() {
+                reader.work(initializing.len())?;
+                reader.work(schema.columns.len())?;
+                initializing.contains(&number)
+                    && schema.columns.iter().any(|field| {
+                        field.number() == number
+                            && matches!(
+                                field.native_type(),
+                                crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
+                            )
+                    })
+            } else {
+                false
+            };
+        if (pair.owned.get() == 0 || pair.candidate.get() == 0) && !selected_zero {
             return Ok(Declarations {
                 entries,
                 complete: false,

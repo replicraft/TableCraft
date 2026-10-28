@@ -174,9 +174,11 @@ pool one unit before healthy completion, cancel at the actual final callback,
 refuse an otherwise checked source whose global map cannot represent the next
 page, and reject identical bytes under the wrong canonical map role/reference.
 
-Current external placement still requires existing declared column-map pairs and
-represented global free cells. Missing-map initialization, global map growth and
-map-record slot expansion remain unfinished. Other metadata, text-codec/BOM
+The later [zero-pair initialization continuation](ACE16_LONG_VALUE_INITIALIZATION.md)
+can add fresh column maps after source emptiness qualification. Other external
+placement still requires existing declared column-map pairs and represented
+global free cells. Missing declarations, legacy external migration, global map
+growth and map-record slot expansion remain unfinished. Other metadata, text-codec/BOM
 cases, Memo/OLE index keys, required unavailable validation/data macros and
 production saves keep their explicit refusals. Literal map-growth checks are not
 original-file or Windows Access qualification; independent original-file

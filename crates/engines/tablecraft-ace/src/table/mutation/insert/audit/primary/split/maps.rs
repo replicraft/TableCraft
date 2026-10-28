@@ -53,8 +53,9 @@ impl<'a> Allocation<'a> {
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
-        let census = map_authority::capture_catalog(
+        let census = map_authority::capture_catalog_for_initialization(
             image,
+            Some((owner, &proof.qualified_zero_columns)),
             reader.budget,
             reader.cancelled,
             |_, _, _, _| Ok(()),

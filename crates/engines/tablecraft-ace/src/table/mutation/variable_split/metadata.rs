@@ -5,7 +5,7 @@ use crate::{
     format::{definition, reader::Reader},
     header::check,
 };
-use std::ops::Range;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
 
 #[cfg(test)]
@@ -26,7 +26,7 @@ impl Metadata {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_selected(image, schema, indexes, Some(column), budget, cancelled)
+        Self::capture_selected(image, schema, indexes, Some(column), &[], budget, cancelled)
     }
 
     /// INSERT maintains every physical index. It must capture all mutable index
@@ -38,7 +38,30 @@ impl Metadata {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_selected(image, schema, indexes, None, budget, cancelled)
+        Self::capture_selected(image, schema, indexes, None, &[], budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn capture_for_insert_initialization(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: &[IndexCheck],
+        initializing: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        if initializing.is_empty() {
+            return Self::capture_for_insert(image, schema, indexes, budget, cancelled);
+        }
+
+        Self::capture_selected(
+            image,
+            schema,
+            indexes,
+            None,
+            initializing,
+            budget,
+            cancelled,
+        )
     }
 
     fn capture_selected(
@@ -46,6 +69,7 @@ impl Metadata {
         schema: &TableSchema,
         indexes: &[IndexCheck],
         column: Option<usize>,
+        initializing: &[usize],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -79,55 +103,65 @@ impl Metadata {
         mutable.extend_from_slice(&shared);
         let mut protected_pages = Vec::new();
         let mut selected_found = false;
-        let census = map_authority::capture_catalog(
-            image,
-            budget,
-            cancelled,
-            |local, native_indexes, _, reader| {
-                definition::read_with_pages(reader, local.definition_page(), |page, reader| {
-                    protect(&mut protected_pages, page, reader)
-                })?;
-                if local.definition_page() != definition {
-                    return Ok(());
-                }
-                selected_found = true;
-                reader.work(local.columns().len())?;
-                if number.is_some_and(|number| {
-                    !local.columns().iter().any(|field| field.number() == number)
-                }) || native_indexes.len() != indexes.len()
-                {
+        let mut payload = |local: &TableSchema,
+                           native_indexes: &[NativeIndex],
+                           _: &crate::table::long_value::maps::Declarations,
+                           reader: &mut Reader<'_, Cursor<&[u8]>>|
+         -> Result<(), EditError> {
+            definition::read_with_pages(reader, local.definition_page(), |page, reader| {
+                protect(&mut protected_pages, page, reader)
+            })?;
+            if local.definition_page() != definition {
+                return Ok(());
+            }
+            selected_found = true;
+            reader.work(local.columns().len())?;
+            if number
+                .is_some_and(|number| !local.columns().iter().any(|field| field.number() == number))
+                || native_indexes.len() != indexes.len()
+            {
+                return Err(EditError::Preservation);
+            }
+            for native in native_indexes {
+                reader.tick()?;
+                reader.work(indexes.len() + native.columns().len())?;
+                let checked = indexes
+                    .iter()
+                    .find(|checked| checked.index().number() == native.number())
+                    .ok_or(EditError::Preservation)?;
+                if !same_index(native, checked.index()) {
                     return Err(EditError::Preservation);
                 }
-                for native in native_indexes {
-                    reader.tick()?;
-                    reader.work(indexes.len() + native.columns().len())?;
-                    let checked = indexes
+                if number.is_some_and(|number| {
+                    !native
+                        .columns()
                         .iter()
-                        .find(|checked| checked.index().number() == native.number())
-                        .ok_or(EditError::Preservation)?;
-                    if !same_index(native, checked.index()) {
-                        return Err(EditError::Preservation);
-                    }
-                    if number.is_some_and(|number| {
-                        !native
-                            .columns()
-                            .iter()
-                            .any(|field| field.number() == number)
-                    }) {
-                        continue;
-                    }
-                    let owner = map_authority::Owner::IndexOwned {
-                        definition,
-                        physical: native.data_number(),
-                    };
-                    reader.work(mutable.len())?;
-                    if !mutable.contains(&owner) {
-                        mutable.push(owner);
-                    }
+                        .any(|field| field.number() == number)
+                }) {
+                    continue;
                 }
-                Ok(())
-            },
-        )?;
+                let owner = map_authority::Owner::IndexOwned {
+                    definition,
+                    physical: native.data_number(),
+                };
+                reader.work(mutable.len())?;
+                if !mutable.contains(&owner) {
+                    mutable.push(owner);
+                }
+            }
+            Ok(())
+        };
+        let census = if initializing.is_empty() {
+            map_authority::capture_catalog(image, budget, cancelled, &mut payload)?
+        } else {
+            map_authority::capture_catalog_for_initialization(
+                image,
+                Some((definition, initializing)),
+                budget,
+                cancelled,
+                &mut payload,
+            )?
+        };
         if !selected_found {
             return Err(EditError::Preservation);
         }

@@ -8,6 +8,10 @@ use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
     Data,
+    LongValueMapContainer {
+        definition: u32,
+        column: usize,
+    },
     LongValue {
         column: usize,
         owned: u32,
@@ -57,6 +61,12 @@ pub(in crate::table) struct LongValueOwnedBitmapReservation {
     pub block: u32,
 }
 
+pub(in crate::table) struct LongValueMapContainerReservation {
+    pub number: u32,
+    pub definition: u32,
+    pub column: usize,
+}
+
 pub(in crate::table) struct State {
     pub original_length: usize,
     pub length: usize,
@@ -86,6 +96,58 @@ impl State {
             .and_then(|added| self.length.checked_add(added))
             .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
             .ok_or_else(|| InspectError::StructureLimit.into())
+    }
+
+    pub(in crate::table) fn reserve_long_value_map_container(
+        &mut self,
+        number: u32,
+        column: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::LongValueMapContainer {
+                definition: self.owner,
+                column,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn require_long_value_map_container(
+        &self,
+        number: u32,
+        definition: u32,
+        column: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::LongValueMapContainer {
+                definition: actual,
+                column: actual_column,
+            } if actual == definition && actual_column == column => Ok(()),
+            _ => Err(EditError::Preservation),
+        }
+    }
+
+    pub(in crate::table) fn long_value_map_containers(
+        &self,
+    ) -> impl Iterator<Item = LongValueMapContainerReservation> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::LongValueMapContainer { definition, column } => {
+                    Some(LongValueMapContainerReservation {
+                        number: reservation.number,
+                        definition,
+                        column,
+                    })
+                }
+                _ => None,
+            })
     }
 
     pub(in crate::table) fn reserve_data(
@@ -253,6 +315,12 @@ impl State {
         for (position, purpose) in purposes.iter().enumerate() {
             let purpose = match purpose {
                 Purpose::Data => Purpose::Data,
+                Purpose::LongValueMapContainer { definition, column } => {
+                    Purpose::LongValueMapContainer {
+                        definition: *definition,
+                        column: *column,
+                    }
+                }
                 Purpose::LongValue {
                     column,
                     owned,

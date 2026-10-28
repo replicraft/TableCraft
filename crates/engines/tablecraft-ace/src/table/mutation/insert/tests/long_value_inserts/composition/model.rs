@@ -6,7 +6,7 @@ use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
 #[derive(Clone)]
-pub(super) struct Row {
+pub(in crate::table::mutation::insert::tests::long_value_inserts) struct Row {
     pub id: i32,
     pub blob: Option<Vec<u8>>,
     pub memo: Option<String>,
@@ -27,7 +27,7 @@ impl Row {
     }
 }
 
-pub(super) struct Case {
+pub(in crate::table::mutation::insert::tests::long_value_inserts) struct Case {
     pub before: Vec<u8>,
     pub rows: Vec<(Row, u32)>,
     pub added: Vec<Row>,
@@ -224,7 +224,10 @@ fn expected_indexes(before: &[u8], after: &mut [u8], rows: &[(Row, u32)], pressu
     );
 }
 
-pub(super) fn source_and_expected(code: u8, pressure: bool) -> Case {
+pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_expected(
+    code: u8,
+    pressure: bool,
+) -> Case {
     let mut before = external::original(code, Family::Memo).before;
     let fixed_offset = if pressure { 0 } else { 3970 };
     let histories = if pressure { [417, 829] } else { [17, 29] };

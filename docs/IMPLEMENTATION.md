@@ -12,6 +12,34 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Empty Memo/OLE map initialization
+
+The separate ACE 16 INSERT preview now initializes explicit zero/zero column-map
+pairs when a complete declaration grammar and independent source-value census
+prove that those columns contain only NULL or inline values. New typed map
+containers precede all LVAL bodies in physical variable-ordinal order, while
+bodies retain request/ordinal/chunk order. The producer patches exactly eight
+original TD pointer bytes per initialized column. Inline-only requests leave
+zero pairs and map storage untouched; ordinary no-zero requests retain their
+previous fast path and strict metadata policy.
+
+The independent audit reconstructs containers, source pointer spans, fresh
+references and bitmap membership without borrowing staged map bytes. Literal
+source/expected reads passed before the first complete 212-function INSERT batch.
+Fifteen new functions cover both headers, Memo/OLE single and chained payloads,
+two-owner ordering, source grammar, existing external values, aliases, resource
+and cancellation boundaries, and correlated metadata/TD/purpose forgeries.
+The full ACE library batch passes 548 functions with one existing ignored fixture
+generator; 36 existing LVAL consumer checks also pass. Strict ACE Clippy across
+all targets/features, minimal compilation, formatting and documentation/dependency
+guards pass. The 212-function INSERT batch also passes after the final strict
+metadata dispatch adjustment.
+
+Missing declarations, half-zero pairs, legacy external storage under zero pairs,
+continued TD initialization, global map growth and production saves remain
+separate work. These literal engineering checks are not original-file or native
+Access qualification. See the [initialization contract](testing/ACE16_LONG_VALUE_INITIALIZATION.md).
+
 ## Original-file variable-key INSERT comparisons
 
 Thirty-eight source/request-only variable-key images now match first-attempt
@@ -74,8 +102,8 @@ Four public growth functions, three producer controls and seven forgery controls
 bring the combined INSERT batch to 194 passing functions. The full ACE library
 batch passes 530 functions with one existing ignored fixture generator; strict
 ACE Clippy across all targets/features, minimal compilation, formatting and
-documentation/dependency guards pass. Missing-map
-initialization, global map growth and pointer-record expansion remain unfinished.
+documentation/dependency guards pass. Initialization of absent declarations,
+global map growth and pointer-record expansion remain unfinished.
 Authentic external-file comparisons, normal saves and native Access qualification
 remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
 

@@ -49,6 +49,28 @@ pub fn check_table_long_values<R: NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableLongValueCheck, InspectError> {
+    check_with_initialization(source, scope, table, None, budget, cancelled)
+}
+
+pub(in crate::table) fn check_table_long_values_for_initialization<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    columns: &[usize],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableLongValueCheck, InspectError> {
+    check_with_initialization(source, scope, table, Some(columns), budget, cancelled)
+}
+
+fn check_with_initialization<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    initializing: Option<&[usize]>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableLongValueCheck, InspectError> {
     let _span = tracing::debug_span!("native.table.long_value.check").entered();
     let schema = inspect_table_schema(source, scope, table, budget, cancelled)?;
     if schema.declared_rows() as usize > MAX_LIVE_ROWS {
@@ -75,7 +97,11 @@ pub fn check_table_long_values<R: NativeReadSource>(
             .iter()
             .any(|column| matches!(column.native_type(), LONG_TEXT | OLE))
     {
-        maps::declarations(&mut reader, &schema)?
+        if let Some(columns) = initializing {
+            maps::declarations_for_initialization(&mut reader, &schema, columns)?
+        } else {
+            maps::declarations(&mut reader, &schema)?
+        }
     } else {
         maps::Declarations {
             entries: Vec::new(),

@@ -32,6 +32,7 @@ struct ImageProof<'a> {
     original: &'a [u8],
     bytes: Vec<u8>,
     map_edits: Vec<ExpectedByte>,
+    qualified_zero_columns: Vec<usize>,
 }
 
 impl ImageProof<'_> {
@@ -87,8 +88,6 @@ pub(super) fn prove(
     records::qualify(schema, budget, cancelled)?;
     let id = primary_column::resolve(&checked, budget, cancelled)?;
     policies::require_text_declarations(image, schema, requests, budget, cancelled)?;
-    let metadata =
-        Metadata::capture_for_insert(image, schema, checked.indexes(), budget, cancelled)?;
 
     let mut source = image.reader();
     let mut reader = Reader {
@@ -103,9 +102,18 @@ pub(super) fn prove(
         original: image.as_bytes(),
         bytes,
         map_edits: Vec::new(),
+        qualified_zero_columns: Vec::new(),
     };
 
     let resolved = long_values::derive(image, &checked, requests, staged, &mut proof, &mut reader)?;
+    let metadata = Metadata::capture_for_insert_initialization(
+        image,
+        schema,
+        checked.indexes(),
+        &proof.qualified_zero_columns,
+        reader.budget,
+        reader.cancelled,
+    )?;
     let mut rows = records::derive(schema, id, requests, resolved.as_deref(), &mut reader)?;
 
     data::prove(

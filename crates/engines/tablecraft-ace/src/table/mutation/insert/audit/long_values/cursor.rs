@@ -1,5 +1,6 @@
 //! SOURCE-only LVAL candidate replay and exact append bytes on the shared EOF.
 use super::super::{ImageProof, reserve};
+use super::Declaration;
 use super::maps::{Allocation, Authority, Bitmap, Maps};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
@@ -33,7 +34,6 @@ struct Column {
     position: usize,
     number: usize,
     references: LongValueMapReferences,
-    scope: Scope,
     maps: Maps,
     states: Vec<State>,
 }
@@ -62,7 +62,8 @@ pub(super) struct Location {
 impl<'a> Cursor<'a> {
     pub(super) fn capture(
         schema: &'a TableSchema,
-        selected: &[(usize, LongValueMapReferences)],
+        selected: &[Declaration],
+        proof: &ImageProof<'_>,
         inventory: Inventory,
         reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     ) -> Result<Self, EditError> {
@@ -70,50 +71,55 @@ impl<'a> Cursor<'a> {
         global.require_allocated_storage(reader, &global)?;
         let mut columns = Vec::new();
         reserve(&mut columns, selected.len(), reader)?;
-        for &(position, references) in selected {
+        for declaration in selected {
+            let position = declaration.position;
+            let references = declaration.references;
             reader.tick()?;
             let field = schema
                 .columns()
                 .get(position)
                 .ok_or(EditError::Preservation)?;
-            let scope = Scope::capture(
-                reader,
-                references.owned(),
-                references.candidate(),
-                MapRole::LongValueCandidate,
-                &global,
-            )?;
-            inventory.require_exclusive(
-                schema,
-                field.number(),
-                &scope.pages,
-                reader.budget,
-                reader.cancelled,
-            )?;
             let mut states = Vec::new();
-            reserve(&mut states, scope.pages.len(), reader)?;
-            for &number in &scope.pages {
-                reader.tick()?;
-                let page = reader.page(number)?;
-                let (count, end) = geometry(&page)?;
-                let hinted = match scope.hint.cell(reader, number) {
-                    Ok(cell) => cell.before & cell.mask != 0,
-                    Err(InspectError::Unsupported) => false,
-                    Err(error) => return Err(error.into()),
-                };
-                states.push(State {
-                    number,
-                    count,
-                    end,
-                    hinted,
-                });
-            }
-            let maps = Maps::capture(references, reader)?;
+            let maps = if let Some(number) = declaration.initialized {
+                Maps::initialized(number, references, proof)?
+            } else {
+                let scope = Scope::capture(
+                    reader,
+                    references.owned(),
+                    references.candidate(),
+                    MapRole::LongValueCandidate,
+                    &global,
+                )?;
+                inventory.require_exclusive(
+                    schema,
+                    field.number(),
+                    &scope.pages,
+                    reader.budget,
+                    reader.cancelled,
+                )?;
+                reserve(&mut states, scope.pages.len(), reader)?;
+                for &number in &scope.pages {
+                    reader.tick()?;
+                    let page = reader.page(number)?;
+                    let (count, end) = geometry(&page)?;
+                    let hinted = match scope.hint.cell(reader, number) {
+                        Ok(cell) => cell.before & cell.mask != 0,
+                        Err(InspectError::Unsupported) => false,
+                        Err(error) => return Err(error.into()),
+                    };
+                    states.push(State {
+                        number,
+                        count,
+                        end,
+                        hinted,
+                    });
+                }
+                Maps::capture(references, reader)?
+            };
             columns.push(Column {
                 position,
                 number: field.number(),
                 references,
-                scope,
                 maps,
                 states,
             });
@@ -216,7 +222,6 @@ impl<'a> Cursor<'a> {
                         inventory: &self.inventory,
                         column: selected.number,
                     },
-                    scope: &selected.scope,
                     global: &self.global,
                     members: &[],
                 },
@@ -241,7 +246,6 @@ impl<'a> Cursor<'a> {
                         inventory: &self.inventory,
                         column: selected.number,
                     },
-                    scope: &selected.scope,
                     global: &self.global,
                     members: &members,
                 },
