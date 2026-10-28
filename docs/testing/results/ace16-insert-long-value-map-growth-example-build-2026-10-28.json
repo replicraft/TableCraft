@@ -1,0 +1,73 @@
+{
+  "operation": "Committed column-map growth INSERT example in a fresh isolated target",
+  "commit": "18bbfee7cd6bb229c68a936f3c023d04b111bdd5",
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/.cache/ace16-insert-long-value-map-growth-build-20261028/target"
+  ],
+  "isolated_source": ".cache/ace16-insert-long-value-map-growth-build-20261028/source",
+  "target_directory": ".cache/ace16-insert-long-value-map-growth-build-20261028/target",
+  "fresh_target_was_absent": true,
+  "owning_engine_compilation_observed": true,
+  "source_archive": {
+    "path": ".cache/ace16-insert-long-value-map-growth-build-20261028/committed-source.tar",
+    "bytes": 90818560,
+    "sha256": "ad44dadf50d6f106f4c6e60ef159ae13af923150f806065c283e833228d4b743"
+  },
+  "source_manifest": {
+    "path": ".cache/ace16-insert-long-value-map-growth-build-20261028/archive-source-manifest.json",
+    "bytes": 1045541,
+    "sha256": "13aebf26d65cb0e9df632edd38d784c3f57291a621fb2393a630d6531033174a"
+  },
+  "exported_file_count": 4542,
+  "all_exported_files_match_git_objects": true,
+  "source_inventory_unchanged_after_build": true,
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-insert-long-value-map-growth-source-next-20261028/model-freeze.json",
+    "bytes": 16416,
+    "sha256": "3a53288ea177cd3186678e12e3765f02b808c8bbf93a67e2c7799d962823b695"
+  },
+  "expected_report_frozen_before_build": {
+    "path": ".cache/ace16-insert-long-value-map-growth-expected-first-20261028/report.json",
+    "bytes": 92113,
+    "sha256": "afe4b883d1fe8ef14dbe9bff93d9b755e47ef83c2e24645f218003dd826ddf79"
+  },
+  "build_driver": {
+    "path": ".cache/ace16-insert-long-value-map-growth-build-20261028/build.py",
+    "bytes": 9764,
+    "sha256": "fdef0d7361be8fc3cd338a6d8ec8c6f84ac846e797ff4af58732e556d7c1f8a2"
+  },
+  "build_freeze": {
+    "path": ".cache/ace16-insert-long-value-map-growth-build-20261028/freeze.json",
+    "bytes": 22653,
+    "sha256": "3fa0c65fe6e9fa6b11fe97a54ed914d9039e7c63dec0538118fc8d1e3062b426"
+  },
+  "build_log": {
+    "path": ".cache/ace16-insert-long-value-map-growth-build-20261028/committed-build.log",
+    "bytes": 4883,
+    "sha256": "1ba2484064a839c77bbd57299a51a5204157612a0d26ecc77e04047032f78fa3"
+  },
+  "fresh_target_policy": "Initially absent dedicated target; archived mtimes cannot reuse shared artifacts",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "status": 0,
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-long-value-map-growth-20261028",
+    "bytes": 22577512,
+    "sha256": "4bad3f9b37b16e426fb3ade44458df8a80e3fd3dc726a9dc49874d2a8e14b020"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
