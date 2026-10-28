@@ -11,6 +11,8 @@ pub(crate) enum Error {
     Copy(std::io::ErrorKind),
     NewPasswordRequired,
     PasswordMismatch,
+    NoUserTables,
+    AmbiguousUserTable,
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -28,6 +30,12 @@ impl fmt::Display for Error {
             ),
             Self::PasswordMismatch => {
                 f.write_str("new database password confirmation does not match")
+            }
+            Self::NoUserTables => {
+                f.write_str("no user tables found; specify TABLE explicitly or use --all")
+            }
+            Self::AmbiguousUserTable => {
+                f.write_str("more than one user table found; specify TABLE or use --all")
             }
         }
     }

@@ -87,8 +87,6 @@ fn stream_ranges_and_conflicting_modes_fail_before_opening_sources() {
         vec!["--stream", "--multivalues"],
         vec!["--stream", "--stored-calculations"],
         vec!["--column", "Id"],
-        vec!["--native-rows", "10"],
-        vec!["--native-steps", "10"],
         vec!["--native-bytes", "0"],
         vec!["--stream", "--native-rows", "0"],
         vec!["--stream", "--native-rows", "1000001"],

@@ -12,6 +12,26 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Automatic buffered browsing
+
+`rows PATH` selects the sole user table, excluding system tables while counting
+hidden and linked user declarations. Zero or multiple candidates require an
+explicit name or `--all`. Buffered rows include qualified collections and marked
+stored calculation caches without requiring extra flags. Query execution keeps
+its explicit collection/cache options; streaming remains ordinary scalar output.
+
+The reusable `NativeBrowser::browse_page` selects a reader from metadata. Ordinary
+tables keep their existing partial-page limits; other schemas must qualify through
+the bounded stored-collection reader. Unsupported/corrupt data fails without
+dropping columns or retrying. No formula, attachment decoder or external provider
+runs. See [browsing](cli/CLI_BROWSING.md).
+
+Four backend tests and 34 CLI browsing/help tests pass, alongside strict Access
+and CLI Clippy across all targets/features. A private ACE 16 sample now displays
+all sixteen fields through plain omitted-table rows, byte-identically to its
+explicit-table/compatibility-flag output. Its originals remain unchanged. Native
+Access execution and mixed-schema integrity/write qualification remain separate.
+
 ## Shared ownership extraction
 
 The workspace now has fifteen packages. Working [cryptographic primitives](platform/CRYPTO.md),

@@ -1,12 +1,10 @@
-use super::{Command, FileCopy, calculated_fixture, fixture as base, success, support};
+use super::{Command, FileCopy, calculated_fixture, complex_fixture, success, support};
 
-#[path = "../../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "../../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 
 #[test]
-fn mixed_multivalue_browsing_is_explicit_and_keeps_null_empty_and_paging_distinctions() {
+fn buffered_multivalue_browsing_keeps_null_empty_and_paging_distinctions() {
     let mut bytes = links_fixture::populated();
     const PAGE_BYTES: usize = 4096;
     const PARENT_DATA_PAGE: usize = 12;
@@ -20,7 +18,11 @@ fn mixed_multivalue_browsing_is_explicit_and_keeps_null_empty_and_paging_distinc
     ) as usize;
     bytes[PARENT_DATA_PAGE * PAGE_BYTES + row + NULL_MASK_OFFSET] = 1;
     let file = FileCopy::new(bytes);
-    let ordinary = file.run("rows", &["Items"]);
+    assert_eq!(
+        success(file.run("rows", &["Items"])),
+        b"Id\tScore [multivalue]\n1\t[100, 101]\n2\t[200]\n3\tNULL\n"
+    );
+    let ordinary = file.run("rows", &["Items", "--stream"]);
     assert_eq!(ordinary.status.code(), Some(2));
     assert!(ordinary.stdout.is_empty());
     assert_eq!(
@@ -80,26 +82,26 @@ fn all_collection_mode_retains_multivalue_contents_and_rejects_conflicting_opt_i
 #[test]
 fn explicit_collection_read_pools_preserve_rendering_and_refuse_invalid_scope_before_io() {
     let file = FileCopy::new(links_fixture::populated());
-    for mode in ["--multivalues", "--collections"] {
-        let expected = success(file.run("rows", &["Items", mode]));
-        assert_eq!(
-            success(file.run(
-                "rows",
-                &[
-                    "Items",
-                    mode,
-                    "--native-bytes",
-                    "67108864",
-                    "--native-rows",
-                    "100000",
-                    "--native-steps",
-                    "10000000"
-                ]
-            )),
-            expected
-        );
+    for mode in [None, Some("--multivalues"), Some("--collections")] {
+        let mut arguments = vec!["Items"];
+        if let Some(mode) = mode {
+            arguments.push(mode);
+        }
+        let expected = success(file.run("rows", &arguments));
+        let mut bounded = arguments.clone();
+        bounded.extend([
+            "--native-bytes",
+            "67108864",
+            "--native-rows",
+            "100000",
+            "--native-steps",
+            "10000000",
+        ]);
+        assert_eq!(success(file.run("rows", &bounded)), expected);
         for flag in ["--native-bytes", "--native-rows", "--native-steps"] {
-            let result = file.run("rows", &["Items", mode, flag, "1"]);
+            let mut limited = arguments.clone();
+            limited.extend([flag, "1"]);
+            let result = file.run("rows", &limited);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }

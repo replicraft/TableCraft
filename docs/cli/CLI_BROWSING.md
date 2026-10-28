@@ -1,6 +1,6 @@
 # Native table browsing
 
-The `tables` and `rows` CLI commands provide read-only discovery and paged scalar
+The `tables` and `rows` CLI commands provide read-only discovery and paged stored
 contents without requiring SQL. Both consume the reusable
 `tablecraft-access::NativeBrowser`; the CLI owns only argument handling, explicit
 file opening and display formatting. Backend table
@@ -21,6 +21,7 @@ tablecraft tables example.accdb
 tablecraft tables example.accdb --details
 tablecraft rows example.accdb "Customers" --limit 25
 tablecraft rows example.mdb "Customers" --limit 25 --offset 25
+tablecraft rows example.accdb
 ```
 
 When running from source, replace `tablecraft` with
@@ -38,6 +39,12 @@ names are not used for classification. `User` does not prove who created a table
 The engine interprets these flags and the shared inventory exposes `is_system()`.
 The flag interpretation follows the reviewed Jackcess `DatabaseImpl`
 `SYSTEM_OBJECT_FLAGS`/`isSystemObject` reference recorded in [fixtures](../testing/FIXTURES.md).
+
+The table argument to `rows` is optional when exactly one user table exists.
+System tables do not count; hidden user tables and linked user declarations do.
+The CLI uses the existing inventory and never chooses the first of several
+tables or silently opens a linked provider. Zero or multiple user tables require
+an explicit table name or `--all`. The same selection rule applies to streaming.
 
 System tables are hidden by default. `tables --show-system` includes system-marked
 tables; hidden user tables and user tables whose names happen to begin with MSys
@@ -74,12 +81,19 @@ column subsets and cumulative controls beyond snapshot/buffered-output caps.
 Late failures may leave prior output; the following default page contract remains
 buffered.
 
-`rows` prints column names followed by live scalar rows in physical traversal
+`rows` prints column names followed by live stored rows in physical traversal
 order. The default displayed limit is 100; `--limit` accepts 1–16,384 and
 `--offset` accepts 0–4,294,967,295. Offsets count live rows, not page slots or
 bookmarks. Empty tables and offsets beyond the end produce column headers only.
 Names are passed directly to the reader, so brackets and quote characters do not
 become SQL syntax. Normal reader name-resolution rules apply.
+
+Buffered browsing uses `NativeBrowser::browse_page`. It selects the ordinary
+scalar reader from metadata when every field qualifies, preserving existing
+paging and limits. Other schemas must qualify through the stored-collection
+reader, including cached calculations. There is no retry after a record failure,
+no omitted unsupported field and no implicit formula or attachment decoding.
+Collection views retain their complete parent/child snapshot limits.
 
 The display uses comfy-table Unicode borders when stdout is a terminal and
 TSV encoded by `csv::WriterBuilder` when redirected. Global `--format table` and `--format tsv` override
@@ -149,17 +163,19 @@ Microsoft documents [TableDef.Name](https://learn.microsoft.com/en-us/office/cli
 and lists [Access-defined DAO properties](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/set-properties-of-data-access-objects-in-visual-basic)
 with Caption under Field. No automatic table alias mapping is implemented.
 
-## Explicit stored calculations
+## Stored calculations in buffered rows
 
-`rows COPY.accdb TABLE --stored-calculations` permits the qualified ACE 16-family
+Buffered `rows COPY.accdb TABLE` includes the qualified ACE 16-family
 stored Boolean, Int32, Double, Currency, legacy DateTime, [Decimal](../access/calculations/CACHED_DECIMAL_CALCULATIONS.md)
 and Short Text/[Long Text](../access/calculations/CACHED_MEMO_CALCULATIONS.md) calculation
 storage alongside ordinary scalar columns. Both display formats append
 ` [cached]` to calculated column headers. These are stored results, potentially
 stale or inconsistent with other columns; no formula, VBA or active content runs.
 For example a cache of 42 is displayed unchanged even when its formula and current
-input would yield 2. Ordinary `rows` and default query sources retain their prior
-eligibility. A separate [cached-query opt-in](../access/calculations/CACHED_CALCULATION_QUERIES.md) exposes
+input would yield 2. `--stored-calculations` remains accepted for compatibility;
+it is no longer needed for buffered browsing. Ordinary scalar library reads and
+`rows --stream` retain their narrower eligibility. Default query sources still
+require the separate [cached-query opt-in](../access/calculations/CACHED_CALCULATION_QUERIES.md), which exposes
 qualified stored results to `query run` without recalculation. Calculated ACE
 2007 columns remain unqualified.
 
@@ -182,6 +198,9 @@ DATE display is checked from independently retained serial bits using an explici
 nanosecond calendar model, avoiding the Java calendar carrier's millisecond
 rounding. Fixtures include deliberately stale results; formulas stay disabled.
 See [provenance](../testing/FIXTURES.md#cached-calculation-page-regression).
+Those results and the linked recipe describe the historical explicit-opt-in CLI;
+its default-row refusal controls require that recorded CLI. Current buffered
+defaults are tested separately by the automatic-browsing and CLI regressions.
 
 ## Explicit multivalue cells
 
@@ -195,7 +214,8 @@ This does not implement Access SQL `.Value` expansion or scalar collection coerc
 
 `--multivalues --stored-calculations` also permits qualified cached scalar results
 in the same page, with the existing `[cached]` header and no freshness guarantee.
-Either opt-in alone still rejects unsupported columns; no columns are omitted.
+The explicit `--multivalues` view still requires `--stored-calculations` when
+calculated columns are present; no columns are omitted.
 Attachments/history and unqualified complex templates fail explicitly in this
 profile. They retain separate stored-content APIs and explicit inspection views. Current complex
 key/collection qualification includes ACE 2007 and both ACE 16 families.
@@ -233,6 +253,9 @@ NaN display is `NaN` and does not encode payload bits; borrowed core values reta
 those original bits. [Fixture provenance](../testing/FIXTURES.md#mixed-multivalue-page-inputs)
 records immutable sources and qualification scope. The optional `--matrix2007`
 adds eleven ACE 2007 controls while retaining the original 46-control matrix;
+these historical comparisons likewise use their recorded explicit-opt-in CLI,
+including its default-row refusal controls. Current default browsing has separate
+automatic-browsing and CLI regression coverage.
 [ACE 2007 evidence](../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) also
 checks raw links and exact collection APIs.
 
@@ -264,9 +287,9 @@ table or deep offset can exceed these limits even when requesting one displayed 
 Skipped live roots consume steps, not the decoded-row allowance.
 
 Every column must have a qualified layout for the selected operation. Ordinary
-scalar browsing rejects calculations; the explicit cached option above enables
-only its stated stored-result profile; the multivalue option above enables
-explicit collection cells under its separate snapshot limits. Linked tables, encrypted files and
+scalar APIs reject calculations; default buffered CLI browsing selects the
+qualified stored profile automatically. The explicit multivalue mode retains
+its narrower collection profile and separate snapshot limits. Linked tables and
 unsupported calculated/complex/attachment layouts fail explicitly rather than
 silently hiding columns or replacing values with NULL. Their specialized inert
 inspection APIs remain separate. All requested decoding/formatting must finish before
@@ -369,10 +392,11 @@ tablecraft rows example.accdb Customers --collections --limit 25
 tablecraft rows example.accdb Customers --collections --stored-calculations
 ```
 
-`--collections` permits all qualified stored multivalue, attachment and hidden
-Memo-history columns beside ordinary scalars. It conflicts with `--multivalues`;
-the existing narrower mode keeps its prior behavior. `--stored-calculations`
-remains separately required for qualified cached results. Unsupported columns
+Buffered `rows` automatically includes qualified stored multivalue, attachment
+and hidden Memo-history columns beside ordinary scalars and cached calculations.
+`--collections` and `--stored-calculations` remain accepted compatibility flags.
+`--collections` still conflicts with the explicit narrower `--multivalues` mode.
+Unsupported columns
 still fail the complete request; none are omitted or coerced to NULL.
 
 The engine's `read_stored_collection_table_page` and shared
@@ -437,7 +461,7 @@ headers. Linked/unknown entries get a Status section saying the source was not
 opened. System tables remain excluded. Default page size is 100 per local table;
 `--limit` and `--offset` apply independently to each table, not to the combined
 result. This displays pages from all tables, not an unbounded full-database dump.
-Existing `--stored-calculations`, `--multivalues` and `--collections` profiles and
+Automatic stored-value browsing and the explicit `--multivalues` profile and
 conflicts also apply in this mode. Unsupported local fields fail explicitly;
 no local table is silently skipped. Table names are passed as data, never SQL.
 

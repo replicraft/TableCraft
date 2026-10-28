@@ -51,6 +51,8 @@ tablecraft rows example.mdb --all --limit 5
 tablecraft query run --database example.accdb 'SELECT TOP 10 * FROM Customers'
 ```
 
+Omit the table name in `rows` when the database has exactly one user table.
+
 Tables display with borders in terminals and as TSV when redirected. Use
 `--format table` or `--format tsv` to choose explicitly. System tables are hidden
 from listings by default; add `--show-system` to `tables` or `inspect --catalog`

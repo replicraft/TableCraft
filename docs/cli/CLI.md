@@ -29,6 +29,7 @@ tablecraft inspect example.accdb --table Customers --indexes
 tablecraft inspect example.accdb --table Customers --check
 tablecraft tables example.accdb --details --count
 tablecraft rows example.accdb Customers --limit 25 --offset 25
+tablecraft rows example.accdb
 tablecraft rows example.mdb --all --limit 5
 ```
 
@@ -37,6 +38,14 @@ indexes and reports unchecked coverage. `tables --count` shows declared stored
 row counts, not a record-integrity audit. `rows` uses physical encounter order;
 use an SQL `ORDER BY` when ordering matters. `rows --all` emits a separate page
 per local user table and leaves linked targets unopened.
+
+When the database has exactly one user table, `rows PATH` selects it automatically;
+system tables do not count. With zero or multiple user tables, supply a table
+name or use `--all`. Buffered rows include qualified stored calculations and
+collections automatically. Calculated headers say `[cached]`: values may be stale,
+and no formula runs. Attachments remain encoded and are displayed as stored
+metadata; no files or URLs are opened. Query execution retains its explicit
+stored-calculation and collection options.
 
 Output uses bordered tables in terminals and TSV when redirected. Select
 `--format table` or `--format tsv` explicitly. TSV uses CSV quoting with a tab
