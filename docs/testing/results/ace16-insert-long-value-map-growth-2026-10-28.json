@@ -1,0 +1,253 @@
+{
+  "scope": "Sixteen original-file owned-map rebase/promotion engineering INSERT candidates; no native Access save claim",
+  "date": "2026-10-28",
+  "source": {
+    "report": {
+      "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/report.json",
+      "bytes": 45616,
+      "sha256": "a800e5cee4f8bc13e76be65f487557a5e0780e849f941946276f3a78f852ec25"
+    },
+    "capture_commands": 17,
+    "first_attempt": true,
+    "qualification_by_capture": false,
+    "saved_gates": {
+      "path": ".cache/ace16-insert-long-value-map-growth-source-next-20261028/source-gates-first.json",
+      "bytes": 406839,
+      "sha256": "d26176d3e5750bf1fad360c0111052f712d8c9598419b2457a1d44a907acb3d8"
+    },
+    "originals": [
+      {
+        "id": "V2016-raw-pad430",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad430-source.accdb",
+          "bytes": 2224128,
+          "sha256": "03475aaacce434a8bb1866ba4d7662ef1887a76ad73c084a3f56f7a67ec0cb2f"
+        }
+      },
+      {
+        "id": "V2016-raw-pad700",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad700-source.accdb",
+          "bytes": 3330048,
+          "sha256": "a880b7ad5b692b2760db00877e488848c059533104ac7465ba276c31b086870c"
+        }
+      },
+      {
+        "id": "V2016-compressed-pad430",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad430-source.accdb",
+          "bytes": 2224128,
+          "sha256": "91bfd01b7820019378be9babc34856ddf03a770f1f3b48595e3328e0aee70244"
+        }
+      },
+      {
+        "id": "V2016-compressed-pad700",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad700-source.accdb",
+          "bytes": 3330048,
+          "sha256": "71a44a6576962165fc49f92eb099f991cf40852a0994246bb106f05e79bc5c39"
+        }
+      },
+      {
+        "id": "V2019-raw-pad430",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad430-source.accdb",
+          "bytes": 2297856,
+          "sha256": "6d90bfdfcc38ddb9dd33a578f24082fc298cd93151fff016bd2d82ebc0b2eda7"
+        }
+      },
+      {
+        "id": "V2019-raw-pad700",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad700-source.accdb",
+          "bytes": 3403776,
+          "sha256": "4b9f82b73c95cc20f64539805185d954b7eb1d93d651a50bbf93377e82c92190"
+        }
+      },
+      {
+        "id": "V2019-compressed-pad430",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad430-source.accdb",
+          "bytes": 2297856,
+          "sha256": "a494a63d6b9090327714e5af58ea6144a4fe009b3c536da03b84dc0e6f4c8abd"
+        }
+      },
+      {
+        "id": "V2019-compressed-pad700",
+        "image": {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad700-source.accdb",
+          "bytes": 3403776,
+          "sha256": "f04df2d45a57eb1adcb35fc9933fde8ce7a35d25faa10fa23425b6128b9a1066"
+        }
+      }
+    ],
+    "fixed_padding_rows": [
+      430,
+      700
+    ],
+    "actual_eof": {
+      "V2016": [
+        543,
+        813
+      ],
+      "V2019": [
+        561,
+        831
+      ]
+    }
+  },
+  "source_request_expectations": {
+    "freeze": {
+      "path": ".cache/ace16-insert-long-value-map-growth-source-next-20261028/model-freeze.json",
+      "bytes": 16416,
+      "sha256": "3a53288ea177cd3186678e12e3765f02b808c8bbf93a67e2c7799d962823b695"
+    },
+    "report": {
+      "path": ".cache/ace16-insert-long-value-map-growth-expected-first-20261028/report.json",
+      "bytes": 92113,
+      "sha256": "afe4b883d1fe8ef14dbe9bff93d9b755e47ef83c2e24645f218003dd826ddf79"
+    },
+    "images": 16,
+    "public_AFTER_inputs": 0,
+    "producer_inputs": 0
+  },
+  "public_reference": {
+    "report": {
+      "path": ".cache/ace16-insert-long-value-map-growth-reference-first-20261028/report.json",
+      "bytes": 157210,
+      "sha256": "0b9b95f6894cef06d10d83125a73f4cd240bd4d89fb077b99dbe9fdb26438ef2"
+    },
+    "calls": 32,
+    "transition_proofs": 16,
+    "first_attempt": true,
+    "repeated_calls": 0,
+    "model_public_differing_bytes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "build": {
+    "path": "docs/testing/results/ace16-insert-long-value-map-growth-example-build-2026-10-28.json",
+    "bytes": 2957,
+    "sha256": "b57fe38a0defbf348969ec1558285242781af0b2f74abe31ab8018cf7134322b"
+  },
+  "native": {
+    "report": {
+      "path": ".cache/ace16-insert-long-value-map-growth-candidate-first-20261028/report.json",
+      "bytes": 65656,
+      "sha256": "c273b7def8aa6ed452f25e9530f97c921e16d10dd4e1f03cc5f4db0881d00524"
+    },
+    "calls": 16,
+    "complete_image_matches": 16,
+    "first_attempt": true,
+    "value_bytes": 16384
+  },
+  "fresh_readonly": {
+    "report": {
+      "path": ".cache/ace16-insert-long-value-map-growth-getters-first-20261028/report.json",
+      "bytes": 123772,
+      "sha256": "b47b6fe5a52c139a9eb0decc92329fce1e1d8d9d2b3745bfd8d7a9fd448810a3"
+    },
+    "calls": 16,
+    "combined_typed_rows_and_maps": true,
+    "all_complete_images_before_first": true,
+    "first_attempt": true
+  },
+  "observations": {
+    "new_LVAL_body_pages": 64,
+    "new_owned_bitmap_pages": 16,
+    "new_DATA_pages": 0,
+    "new_INDEX_pages": 0,
+    "inserted_parents": 16,
+    "old_selected_ROW_preservation_checks": 96,
+    "final_typed_user_rows": 9168,
+    "physical_key_ROW_pairs": 224,
+    "unique_source_orphan_chunks": 16,
+    "owned_rebase_column_transitions": 16,
+    "owned_promotion_column_transitions": 16,
+    "candidate_inline_rebases": 32
+  },
+  "maintained_verification": {
+    "initial_default": {
+      "path": ".cache/ace16-insert-long-value-map-growth-maintained-proof-20261028/default-first.json",
+      "bytes": 77,
+      "sha256": "444ad1235e5beee748d1229095691c8c943e0378867ae3c00299d0d3f040798f"
+    },
+    "initial_default_issue": "Raw census tuple identities compared with JSON list identities; first code/output retained",
+    "correction": "JSON-normalize only the current saved-fact equality boundary; no physical/source/model changes",
+    "corrected_default": {
+      "path": ".cache/ace16-insert-long-value-map-growth-maintained-proof-20261028/default-corrected-first.json",
+      "bytes": 59530,
+      "sha256": "11661ab9fef0b4415952a239dcfcaf8d234c2c481183d1635faaa2bbf5823499"
+    },
+    "git_first": {
+      "path": ".cache/ace16-insert-long-value-map-growth-maintained-proof-20261028/git-first.json",
+      "bytes": 59590,
+      "sha256": "155db509cb0bf3ac138d42130b4414c9c8a17e68aac6ed24bff7a2086380e799"
+    },
+    "unavailable_first": {
+      "path": ".cache/ace16-insert-long-value-map-growth-maintained-proof-20261028/unavailable-first.json",
+      "bytes": 224,
+      "sha256": "e78dcc642d6354d6d402cd5a570fc54ae3051d2115ccd6852d93e342bd46266a"
+    },
+    "default_subprocesses": 0,
+    "optional_Git_children": 1,
+    "committed_archive_blobs": 4542,
+    "committed_receipt_blobs": 1,
+    "source_pins": [
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/LongValueMapGrowthFixture.java",
+        "bytes": 20523,
+        "sha256": "711ff2a896b635fb8b5a475609e74467596c06f057d2f027f231676e13251469"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/build.py",
+        "bytes": 3378,
+        "sha256": "1f377e2c1049cc483e0b49a34706a2a965b46d1d68ea0045eac953e267eb140d"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/model.py",
+        "bytes": 8388,
+        "sha256": "15d6375008d0f0fcbf3d202ccd9c5a7b61de00ce3548e19aeec2396533bfdd13"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/reference.py",
+        "bytes": 13011,
+        "sha256": "0078129debbd37910abfb066a60134671e2983d1cc00511f1aef7806a67f2a4b"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/requests.py",
+        "bytes": 762,
+        "sha256": "7cd1ea65c37a0ebeadd28146a6a0da83b4b2f6e6339602ecbed8c2624269fe1c"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/source.py",
+        "bytes": 19683,
+        "sha256": "a7e4b812970fa7e86bb03b5fe11dec86d10c21010d65dae5d0f3420df6133467"
+      },
+      {
+        "path": "docs/testing/ace16_insert_long_value_map_growth/verify.py",
+        "bytes": 11577,
+        "sha256": "73850d0a1d3c52fd6805d49716f1c77695d7c0a55cafb7e414ee496adc7ea590"
+      }
+    ]
+  },
+  "authentic_missing_next_bitmap_pointer_qualified": false,
+  "missing_map_initialization_qualified": false,
+  "native_Access_Windows_save_reopen_qualified": false,
+  "normal_save_admission": false
+}

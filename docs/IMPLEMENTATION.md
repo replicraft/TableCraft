@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Original-file Memo/OLE column-map growth
+
+Sixteen source/request-only images on eight immutable ACE 16 originals now match
+the committed map-growth producer, followed by sixteen fresh combined typed-row
+and map inspections. Fixed 430/700-row Padding tables place original EOF at
+543/813 for V2016 and 561/831 for V2019, producing observed rebases and owned-map
+promotions across raw/compressed Memo policies. The corpus adds 64 LVAL bodies
+and 16 owned bitmap pages; readers verify 9,168 user rows including unchanged
+Padding and Sentinel. No fresh DATA or INDEX page is needed in this corpus.
+
+SOURCE17 capture, eight saved gates, sixteen prebuild images, 32 public-reference
+calls, an isolated committed-source build, sixteen candidate comparisons and
+sixteen fresh reads retain separate evidence. Every runtime phase passes first
+attempt; the first maintained replay's tuple/list comparison error and its
+transport-only correction remain preserved. The [maintained growth proof](testing/ace16_insert_long_value_map_growth/README.md)
+does not qualify genuine next-block missing pointers, declaration initialization
+or native Access saves.
+
 ## Missing Memo/OLE declaration insertion
 
 The separate ACE 16 INSERT preview now appends absent ordinary Memo/OLE map
