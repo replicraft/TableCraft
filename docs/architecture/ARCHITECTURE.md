@@ -219,8 +219,8 @@ empty runtime/edit package in anticipation. Optional locale/error catalogs and
 evaluated-operand kernels can remain feature slices within expressions for now.
 
 Each accepted extraction needs a working consumer, preserved public behavior,
-focused checks and updated workspace/dependency rules. INSERT source files remain
-pending and are not moved by this review.
+focused checks and updated workspace/dependency rules. INSERT source files were
+pending during this review and were not moved by the ownership extraction.
 
 ### Implemented follow-up
 
