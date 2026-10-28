@@ -9,7 +9,7 @@ use tablecraft_ace::{QueryAttribute as A, SavedQueryDefinition, SavedQueryRow};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     ParseLimits,
-    query::{ReadBody, Statement},
+    query::Query,
     select::{Projection, Select, SortKey},
 };
 
@@ -34,20 +34,10 @@ pub fn reconstruct_saved_select(
     context.check()?;
     let rows = ordering::read(&definition, &mut context)?;
     let fragments = fragments::validate(&definition, &rows, &mut context)?;
-    let mut select = select_body(&rows, &fragments, &mut context)?;
+    let select = select_body(&rows, &fragments, &mut context)?;
     let parameters = parameters::read(&rows, fragments.parameters, &mut context)?;
-    // The bounded parser supplies the owned boxed statement carrier. Move the
-    // compiled SELECT into it; do not add unchecked Box allocation or AST clones.
-    let mut query = context.query(&["SELECT 0"])?;
-    let Statement::Read(read) = &mut query.statement else {
-        return Err(SavedSelectError::InvalidMetadata);
-    };
-    let ReadBody::Select(body) = &mut read.body else {
-        return Err(SavedSelectError::InvalidMetadata);
-    };
-    read.order_by = std::mem::take(&mut select.order_by);
-    read.owner_access = std::mem::replace(&mut select.owner_access, false);
-    **body = select;
+    context.construction("SELECT 0".len(), 2)?;
+    let mut query = Query::from_select(select);
     query.parameters = parameters;
     context.check()?;
     Ok(SavedSelect { definition, query })

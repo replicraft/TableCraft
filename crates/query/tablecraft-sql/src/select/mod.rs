@@ -120,3 +120,24 @@ pub struct ExternalDatabase {
     /// Whether the connection was bracket-delimited rather than quoted text.
     pub connection_bracketed: bool,
 }
+
+impl Select {
+    /// Compose owned projection and source syntax with default SELECT ALL clauses.
+    /// No parsing, profile validation or binding is performed; callers retain
+    /// responsibility for the supplied syntax and its resource limits.
+    pub fn from_projection(projection: Vec<Projection>, from: Vec<TableSource>) -> Self {
+        Self {
+            predicate: SelectPredicate::All,
+            projection,
+            from,
+            group_by: Vec::new(),
+            having: None,
+            into: None,
+            into_external: None,
+            external: None,
+            owner_access: false,
+            selection: None,
+            order_by: Vec::new(),
+        }
+    }
+}

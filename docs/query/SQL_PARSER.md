@@ -28,6 +28,26 @@ remain syntax-only and do not open databases or evaluate expressions.
 `query run` separately invokes [bounded retrieval](QUERY_EXECUTION.md) over inline
 sources; it does not add execution to parser APIs.
 
+## Owned syntax composition
+
+`Name::from_contents(contents, limits)` copies one checked identifier's contents
+without tokenizing SQL. It retains spelling and punctuation, rejects empty names,
+bracket delimiters and controls, and checks the clamped byte ceiling and
+nonzero token allowance before copying. Consumers still enforce their own object,
+prompt and field policies; an owned name grants no lookup or database capability.
+`Name::from_identifier` additionally enforces the parser's object/alias-name
+restriction on path punctuation, keeping prompt contents separate from object names.
+
+`Select::from_projection`, `Query::from_select` and `Query::from_crosstab` compose
+already-owned syntax. They do not validate arbitrary expression trees or replace
+parser limits for untrusted SQL. Producers remain responsible for allocation,
+syntax and cancellation budgets. SELECT construction moves final ordering and
+owner-access syntax to the read-query carrier without cloning the supplied tree.
+The query domain-source service and Access saved-query/calculation consumers use
+these constructors instead
+of parsing dummy SELECT/TRANSFORM carriers, retaining their conservative model
+allowances and existing stored-fragment parser guards.
+
 ## Standalone expressions
 
 `parse_expression(source, limits)` returns exactly one owned expression.

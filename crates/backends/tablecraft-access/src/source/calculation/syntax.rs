@@ -3,10 +3,10 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::QueryError;
 use tablecraft_schema::Column;
 use tablecraft_sql::{
-    ParseLimits, parse_expression_strict, parse_query,
-    query::{Query, ReadBody, ReadQuery, Statement},
+    ParseError, ParseErrorKind, ParseLimits, SourceLocation, parse_expression_strict,
+    query::{Query, ReadQuery},
     select::{
-        BinaryOperator, Expression, FunctionArgument, Name, Projection, Select, TableSource,
+        BinaryOperator, Expression, FunctionArgument, Name, Projection, Select, Table, TableSource,
         UnaryOperator,
     },
 };
@@ -63,11 +63,11 @@ pub(super) fn prepare_expression(
     let mut dependencies = Vec::new();
     validate(&expression, columns, &mut dependencies, budget, cancelled)?;
 
-    // The parser currently has no public arbitrary Name constructor. Admit only
-    // a single checked bracket token; never interpolate a formula into SQL text.
+    // Preserve the existing table-selector policy and conservative model charge.
     if table.contains(']') || table.chars().any(char::is_control) {
         return Err(CalculationError::Unsupported);
     }
+
     let length = QUERY_PREFIX
         .len()
         .checked_add(table.len())
@@ -82,27 +82,30 @@ pub(super) fn prepare_expression(
     budget
         .charge_allocation((table.len() + "Recomputed".len()) as u64, 1)
         .map_err(QueryError::from)?;
-    let mut skeleton = String::new();
-    skeleton
-        .try_reserve_exact(length)
-        .map_err(|_| QueryError::Allocation)?;
-    skeleton.push_str(QUERY_PREFIX);
-    skeleton.push_str(table);
-    skeleton.push(']');
-    let mut query = parse_query(&skeleton, ParseLimits::default())?.into_query();
-    let Statement::Read(read) = &mut query.statement else {
-        return Err(CalculationError::Unsupported);
-    };
-    let ReadBody::Select(select) = &mut read.body else {
-        return Err(CalculationError::Unsupported);
-    };
-    let Some(Projection::Expression {
-        expression: slot, ..
-    }) = select.projection.first_mut()
-    else {
-        return Err(CalculationError::Unsupported);
-    };
-    *slot = expression;
+
+    if length > ParseLimits::MAX_BYTES {
+        return Err(ParseError {
+            kind: ParseErrorKind::Limit,
+            message: "SQL byte limit exceeded",
+            location: SourceLocation { line: 1, column: 1 },
+        }
+        .into());
+    }
+
+    let table = Name::from_identifier(table, ParseLimits::default())?;
+    let alias = Name::from_identifier("Recomputed", ParseLimits::default())?;
+    let query = Query::from_select(Select::from_projection(
+        vec![Projection::Expression {
+            expression,
+            alias: Some(alias),
+        }],
+        vec![TableSource::Table(Table {
+            database: None,
+            name: table,
+            alias: None,
+        })],
+    ));
+
     check(budget, cancelled)?;
     Ok((query, dependencies))
 }

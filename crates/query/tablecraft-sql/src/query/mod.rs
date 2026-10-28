@@ -37,3 +37,31 @@ pub enum Statement {
     /// DELETE query.
     Delete(Box<Delete>),
 }
+
+impl Query {
+    /// Wrap already-owned SELECT syntax, moving final ordering to the read query.
+    ///
+    /// This performs no parsing, validation, binding or execution. The producer
+    /// remains responsible for its syntax and allocation budgets.
+    pub fn from_select(mut select: crate::select::Select) -> Self {
+        let order_by = std::mem::take(&mut select.order_by);
+        let owner_access = std::mem::replace(&mut select.owner_access, false);
+        Self {
+            parameters: Vec::new(),
+            statement: Statement::Read(Box::new(ReadQuery {
+                body: ReadBody::Select(Box::new(select)),
+                order_by,
+                owner_access,
+            })),
+        }
+    }
+
+    /// Wrap already-owned crosstab syntax without parsing or validating it.
+    /// The producer remains responsible for its syntax and allocation budgets.
+    pub fn from_crosstab(crosstab: Crosstab) -> Self {
+        Self {
+            parameters: Vec::new(),
+            statement: Statement::Crosstab(Box::new(crosstab)),
+        }
+    }
+}

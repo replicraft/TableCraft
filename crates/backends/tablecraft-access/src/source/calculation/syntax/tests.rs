@@ -7,7 +7,7 @@ use tablecraft_query::{
     source::{MemorySource, MemoryTable},
 };
 use tablecraft_schema::{Column, ScalarType};
-use tablecraft_sql::ParseLimits;
+use tablecraft_sql::{ParseLimits, parse_query};
 
 #[test]
 fn ordinary_text_dependencies_are_deduplicated_and_concatenation_executes() {
@@ -227,4 +227,41 @@ fn predicate_previews_keep_text_comparison_an_explicit_host_policy() {
         result.rows(),
         [vec![Value::Boolean(false)], vec![Value::Boolean(true)]]
     );
+}
+
+#[test]
+fn owned_calculation_source_preserves_literal_name_restrictions() {
+    let mut budget = ResourceBudget::new(1 << 24, 100, 1 << 20);
+    let (query, dependencies) = prepare(
+        "Order Details",
+        "1",
+        &[],
+        ParseLimits::default(),
+        &mut budget,
+        &|| false,
+    )
+    .unwrap();
+    let expected = parse_query(
+        "SELECT 1 AS [Recomputed] FROM [Order Details]",
+        ParseLimits::default(),
+    )
+    .unwrap()
+    .into_query();
+    assert_eq!(query, expected);
+    assert!(dependencies.is_empty());
+
+    for table in ["", "a.b", "a!b", "a`b", "a[b", "a]b", "a\nb"] {
+        assert!(
+            prepare(
+                table,
+                "1",
+                &[],
+                ParseLimits::default(),
+                &mut budget,
+                &|| false,
+            )
+            .is_err(),
+            "unexpected source admission: {table:?}"
+        );
+    }
 }
