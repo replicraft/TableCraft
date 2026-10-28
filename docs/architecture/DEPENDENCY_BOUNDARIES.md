@@ -1,7 +1,7 @@
 # Enforced dependency boundaries
 
 [The checker](../../scripts/check_dependency_boundaries.py) uses locked/offline
-Cargo metadata and an explicit allowlist for the twelve existing packages. It
+Cargo metadata and an explicit allowlist for the fifteen existing packages. It
 checks every declared workspace edge, including optional, renamed, target-specific,
 build and development dependencies. Libraries cannot import application packages;
 unreviewed packages/local dependencies fail rather than silently inheriting access.
@@ -15,9 +15,19 @@ but never DB, adapters or hosts. Access/SQLite adapt engines into shared/query
 contracts, and CLI composes these libraries. The allowlist is slightly broader
 than today's graph for already accepted directions; it is not a feature claim.
 
-Access also consumes `tablecraft-io` for bounded deployment-package reads. CAB
-parsing/decompression stays in Access; the generic I/O crate gains no container
-or native-format knowledge. ACE and query have no CAB dependency.
+`tablecraft-formats` owns bounded CAB and ZIP/OPC/XML/template decoding, consuming
+core/I/O/schema/model without importing ACE, DB, query or hosts. Access retains
+native payload qualification and the `TemplateSource` query adapter. CLI package
+inspection imports formats directly. Generic I/O gains no format knowledge.
+
+`tablecraft-crypto` owns checked shared cryptographic primitives without local
+package dependencies. ACE retains native encryption policy, KDF/page mapping,
+header rewriting and preservation. The engine consumes crypto directly.
+
+`tablecraft-testkit` owns independent raw fixtures and has no dependencies.
+Its ACE, Access and CLI consumers use development dependencies; the guard rejects
+normal and build-dependency edges, including renamed/optional declarations.
+Production codecs must not consume these independent expected-byte builders.
 
 Access also consumes the existing expression crate directly for its working
 `GeneralCollation` implementation of the backend-neutral `Collation` contract.

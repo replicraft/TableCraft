@@ -1,5 +1,21 @@
 # Adopted dependency and licensing baseline
 
+## Workspace ownership extraction (27 October 2026)
+
+Three working local packages now separate existing responsibilities:
+`tablecraft-crypto` owns checked cipher/hash integration; `tablecraft-formats`
+owns inert Access package codecs; `tablecraft-testkit` owns development-only
+independent raw fixtures. Shared borrowed row/collection views moved to the
+existing DB package. Consumers import the owning packages directly.
+
+No registry version, checksum or third-party license changes. Registry versions
+and shared feature choices remain inherited from workspace declarations. ACE
+keeps native crypto policy and independent development cipher fixtures; Access
+keeps native payload qualification and query adaptation. The package boundaries
+are enforced by the dependency guard, including dev-only testkit edges.
+See [crypto](../platform/CRYPTO.md), [package formats](../formats/ACCESS_PACKAGES.md)
+and [testkit](../testing/TESTKIT.md). Existing license notices remain applicable.
+
 ## Shared exact Decimal aggregate totals (24 October 2026)
 
 The existing bounded wider mean total now has SUM/DSum as a second working

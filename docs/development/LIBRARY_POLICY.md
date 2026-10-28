@@ -22,12 +22,19 @@ independent of this deferral.
 
 ## Adopted now
 
+Cryptographic primitives are integrated through the working
+[`tablecraft-crypto`](../platform/CRYPTO.md) package; native policy remains ACE-owned.
+ZIP/OPC/XML/CAB codecs belong to
+[`tablecraft-formats`](../formats/ACCESS_PACKAGES.md), with native/query adaptation
+in Access. These are local ownership changes using the existing selected
+libraries and feature choices, not adoption of new algorithm implementations.
+
 - Reviewed Jackcess General weight data and an Apache-2.0 Rust encoder adaptation:
   native General legacy/General 2010 index payloads, with static borrowed zerocopy
   lookups and independent key checks. Retain the bundled licenses/notices. This
   does not select a generic Unicode/OS sort order or implement SQL collation.
 
-- `cab`: Access backend CAB deployment metadata/decompression after bounded
+- `cab`: formats-owned CAB deployment metadata/decompression after bounded
   geometry checks. Package signatures stay unverified; no installation or
   active content runs. Its transitive `time` metadata dependency does not replace
   Jiff's selected calendar role.
