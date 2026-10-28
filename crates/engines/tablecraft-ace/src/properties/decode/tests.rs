@@ -1,5 +1,8 @@
 use super::*;
 use proptest::prelude::*;
+use std::io::Cursor;
+use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access as raw;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_048_576, 1000, 100_000)
@@ -87,6 +90,126 @@ fn golden_properties_preserve_flags_unknown_values_and_separate_scopes() {
 }
 
 #[test]
+fn four_byte_ui_booleans_are_preserved_without_semantic_coercion() {
+    let bytes = [
+        b"MR2\0".as_slice(),
+        &block(0x80, &[name("TotalsRow"), name("HideNewField")].concat()),
+        &group(
+            0,
+            "",
+            &[value(0, 1, 0, &[0, 0, 0, 0]), value(1, 1, 0, &[0, 0, 0, 0])].concat(),
+        ),
+    ]
+    .concat();
+    assert_eq!(bytes.len(), 92);
+    let original = bytes.clone();
+    let groups = decode(&bytes, &mut budget(), &|| false).unwrap();
+    assert_eq!(groups.len(), 1);
+    assert_eq!(groups[0].kind(), PropertyGroupKind::Table);
+    assert_eq!(groups[0].name(), "");
+    for label in ["TotalsRow", "HideNewField"] {
+        let property = groups[0].get(label).unwrap();
+        assert_eq!(property.native_type(), 1);
+        assert_eq!(property.flags(), 0);
+        assert_eq!(property.raw_value(), &[0, 0, 0, 0]);
+        assert_eq!(property.boolean(), Err(InspectError::Malformed));
+    }
+    assert_eq!(bytes, original);
+
+    let mut truncated = bytes;
+    truncated.pop();
+    assert!(matches!(
+        decode(&truncated, &mut budget(), &|| false),
+        Err(InspectError::Truncated)
+    ));
+}
+
+#[test]
+fn opaque_boolean_payloads_do_not_qualify_required_constraints() {
+    for payload in [vec![], vec![1, 2], vec![0, 0, 0, 0], vec![1, 0, 0, 0]] {
+        let properties = [
+            b"MR2\0".as_slice(),
+            &block(0x80, &name("Required")),
+            &group(1, "Score", &value(0, 1, 0, &payload)),
+        ]
+        .concat();
+        let decoded = decode(&properties, &mut budget(), &|| false).unwrap();
+        let required = decoded[0].get("Required").unwrap();
+        assert_eq!(required.raw_value(), payload.as_slice());
+        assert_eq!(required.boolean(), Err(InspectError::Malformed));
+        let mut source = Cursor::new(database_with_properties(&properties));
+        let original = source.get_ref().clone();
+        let report = crate::check_table_constraints(
+            &mut source,
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(report.rows(), 3);
+        let score = report
+            .fields()
+            .iter()
+            .find(|field| field.name() == "Score")
+            .unwrap();
+        assert_eq!(score.required(), crate::RuleCheckStatus::Unsupported);
+        assert_eq!(source.get_ref(), &original);
+    }
+
+    let properties = [
+        b"MR2\0".as_slice(),
+        &block(0x80, &name("Required")),
+        &group(1, "Score", &value(0, 1, 0, &[1])),
+    ]
+    .concat();
+    let report = crate::check_table_constraints(
+        &mut Cursor::new(database_with_properties(&properties)),
+        CatalogScope::new(1),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let score = report
+        .fields()
+        .iter()
+        .find(|field| field.name() == "Score")
+        .unwrap();
+    assert_eq!(score.required(), crate::RuleCheckStatus::Checked);
+}
+
+fn database_with_properties(properties: &[u8]) -> Vec<u8> {
+    let mut item = raw::record(10, 0, 1, 0, b"\xff\xfeItems");
+    item.truncate(item.len() - 7);
+    item[..2].copy_from_slice(&6_u16.to_le_bytes());
+    let property_start = item.len() as u16;
+    item.extend_from_slice(&(0x80000000 | properties.len() as u32).to_le_bytes());
+    item.extend_from_slice(&[0; 8]);
+    item.extend_from_slice(properties);
+    item.extend_from_slice(&(item.len() as u16).to_le_bytes());
+    item.extend_from_slice(&property_start.to_le_bytes());
+    item.extend_from_slice(&16_u16.to_le_bytes());
+    item.extend_from_slice(&2_u16.to_le_bytes());
+    item.push(0x3f);
+
+    let page = raw::data_page(
+        2,
+        &[
+            (0, raw::record(2, 0, 1, 0x80000002, b"\xff\xfeMSysObjects")),
+            (
+                0,
+                raw::record(7, 0, 1, 0x80000002, b"\xff\xfeMSysRelationships"),
+            ),
+            (0, item),
+        ],
+    );
+    let mut bytes = crate::test_support::base::database();
+    bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
+    bytes
+}
+
+#[test]
 fn invalid_lengths_names_references_and_duplicates_do_not_fabricate_properties() {
     let names = block(0x80, &name("Required"));
     for invalid in [
@@ -96,18 +219,6 @@ fn invalid_lengths_names_references_and_duplicates_do_not_fabricate_properties()
             b"MR2\0".as_slice(),
             &names,
             &group(1, "X", &value(1, 1, 0, &[1])),
-        ]
-        .concat(),
-        [
-            b"MR2\0".as_slice(),
-            &names,
-            &group(1, "X", &value(0, 1, 0, &[])),
-        ]
-        .concat(),
-        [
-            b"MR2\0".as_slice(),
-            &names,
-            &group(1, "X", &value(0, 1, 0, &[1, 2])),
         ]
         .concat(),
         [

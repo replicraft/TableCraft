@@ -177,9 +177,10 @@ pub(super) fn decode(
                 return Err(InspectError::Malformed);
             }
             let raw = copy(value.take(data_size)?, budget)?;
-            if native_type == data_type::BOOLEAN && raw.len() != size_of::<u8>() {
-                return Err(InspectError::Malformed);
-            }
+            // Property framing retains opaque native payloads. In particular,
+            // Access UI Boolean properties can occupy four bytes. Keep their
+            // original bytes here; NativeProperty::boolean still requires the
+            // qualified one-byte representation for semantic consumers.
             let decoded_text = match native_type {
                 data_type::SHORT_TEXT | data_type::LONG_TEXT => {
                     Some(text::decode_long(&raw, budget)?)

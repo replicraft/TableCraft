@@ -17,7 +17,10 @@ metadata retention, not qualification of native save preservation.
 
 Framing, name indexes, lengths and UTF-16 names are checked. Column/index scopes
 may share a name. Duplicate keys/groups/names fail. Missing streams/keys remain
-absent. Property Booleans use one payload byte, independently of row null masks.
+absent. Semantic Boolean access requires one payload byte, independently of row
+null masks. Inert framing also retains unusual Boolean payloads as opaque bytes:
+four-byte `TotalsRow` and `HideNewField` UI properties have been observed in an
+ACE 16 database. They do not acquire Boolean semantics through coercion.
 Text/Memo values remain inert expression text. Typed access rejects wrong carriers;
 Required is never guessed false because its payload has an unexpected type.
 Ordinary schema/row APIs keep their conservative nullability policy.
@@ -55,6 +58,14 @@ Real-fixture tests retain Required/AllowZeroLength/opaque GUID metadata without
 changing bytes. Independent goldens cover shared column/index names, unknown
 values/flags, malformed framing/references, duplicates, cancellation and budgets;
 a 256-case fixed-seed arbitrary-stream property checks bounded decoding.
+Synthetic UI-property regression cases preserve four-byte payloads without using
+private database bytes. Constraint checks retain unsupported coverage for opaque
+zero-, two- and four-byte Required values; a qualified one-byte control is checked.
+The six decoder tests, two property integration tests and four record-constraint
+tests pass. A private ACE 16 sample now passes property/feature inspection and
+explicit stored-calculation projection without changing its original bytes.
+Its attachment-bearing full-row and complex-field paths still refuse; this
+metadata fix does not qualify those read profiles or native writes.
 
 Generated files/JARs are not tracked or CI inputs. [Fixtures](../../testing/FIXTURES.md) identifies
 the observed inputs. [Bounded rule audits](NATIVE_CONSTRAINTS.md) are now implemented separately.
