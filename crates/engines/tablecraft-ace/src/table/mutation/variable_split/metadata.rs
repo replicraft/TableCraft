@@ -26,12 +26,39 @@ impl Metadata {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_selected(image, schema, indexes, Some(column), budget, cancelled)
+    }
+
+    /// INSERT maintains every physical index. It must capture all mutable index
+    /// map roles, rather than borrow the authority of one updated field.
+    pub(in crate::table::mutation) fn capture_for_insert(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: &[IndexCheck],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_selected(image, schema, indexes, None, budget, cancelled)
+    }
+
+    fn capture_selected(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: &[IndexCheck],
+        column: Option<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
-        let number = schema
-            .columns()
-            .get(column)
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?
-            .number();
+        let number = column
+            .map(|position| {
+                schema
+                    .columns()
+                    .get(position)
+                    .map(|column| column.number())
+                    .ok_or(EditError::Unsupported(WriteBlocker::Column))
+            })
+            .transpose()?;
         let definition = schema.definition_page();
         let shared = [
             map_authority::Owner::GlobalFree,
@@ -65,8 +92,9 @@ impl Metadata {
                 }
                 selected_found = true;
                 reader.work(local.columns().len())?;
-                if !local.columns().iter().any(|field| field.number() == number)
-                    || native_indexes.len() != indexes.len()
+                if number.is_some_and(|number| {
+                    !local.columns().iter().any(|field| field.number() == number)
+                }) || native_indexes.len() != indexes.len()
                 {
                     return Err(EditError::Preservation);
                 }
@@ -80,11 +108,12 @@ impl Metadata {
                     if !same_index(native, checked.index()) {
                         return Err(EditError::Preservation);
                     }
-                    if !native
-                        .columns()
-                        .iter()
-                        .any(|field| field.number() == number)
-                    {
+                    if number.is_some_and(|number| {
+                        !native
+                            .columns()
+                            .iter()
+                            .any(|field| field.number() == number)
+                    }) {
                         continue;
                     }
                     let owner = map_authority::Owner::IndexOwned {

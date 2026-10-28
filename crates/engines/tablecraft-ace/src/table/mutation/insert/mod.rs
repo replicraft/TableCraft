@@ -133,11 +133,10 @@ fn prepare(
         records.push(profile.build(request.values(), budget, cancelled)?);
     }
 
-    let metadata = Metadata::capture(
+    let metadata = Metadata::capture_for_insert(
         image,
         structural.schema(),
         structural.indexes(),
-        id,
         budget,
         cancelled,
     )?;
