@@ -2,25 +2,18 @@
 pub(super) mod keys;
 mod qualification;
 use super::super::{
-    IndexCheck, NativeIndex, binary, encoded_tuple,
-    key::{KeyProfile, KeyRow, KeyWork},
-    profile::Coverage,
-    text,
+    IndexCheck, NativeIndex, binary, encoded_tuple, key::KeyRow, profile::Coverage, text,
 };
-use super::IndexDataPatch;
+use super::{IndexDataPatch, row_key::RowKeyProfile};
 use crate::{
-    EditError, InspectError, NativeImage, TableSchema, WriteBlocker,
+    EditError, NativeImage, TableSchema, WriteBlocker,
     format::{
         data_type::{SHORT_BINARY, SHORT_TEXT},
         reader::Reader,
     },
-    header::check,
 };
 pub(in crate::table) use qualification::qualify;
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 pub(in crate::table) struct SlotKeyUpdate<'a> {
     pub reference: u32,
@@ -57,59 +50,6 @@ impl KeyRow for Original<'_> {
             .iter()
             .position(|position| *position == column)
             .and_then(|position| self.0.before.get(position))
-    }
-}
-
-pub(super) trait ReplacementProfile: KeyProfile {
-    fn encoded_row(
-        &self,
-        row: &(impl KeyRow + ?Sized),
-        work: &mut KeyWork<'_>,
-    ) -> Result<Vec<u8>, InspectError>;
-}
-
-impl ReplacementProfile for text::TextProfile {
-    fn encoded_row(
-        &self,
-        row: &(impl KeyRow + ?Sized),
-        work: &mut KeyWork<'_>,
-    ) -> Result<Vec<u8>, InspectError> {
-        self.row_key(row, work).map(|key| key.into_bytes())
-    }
-}
-
-impl ReplacementProfile for encoded_tuple::EncodedTupleProfile<'_> {
-    fn encoded_row(
-        &self,
-        row: &(impl KeyRow + ?Sized),
-        work: &mut KeyWork<'_>,
-    ) -> Result<Vec<u8>, InspectError> {
-        self.row_key(row, work).map(|key| key.into_bytes())
-    }
-}
-
-impl ReplacementProfile for binary::BinaryProfile<'_> {
-    fn encoded_row(
-        &self,
-        row: &(impl KeyRow + ?Sized),
-        work: &mut KeyWork<'_>,
-    ) -> Result<Vec<u8>, InspectError> {
-        let mut encoded = [0; binary::MAX_ENTRY_BYTES];
-        let length = binary::encode_component(
-            row.get(self.column).ok_or(InspectError::Malformed)?,
-            self.maximum,
-            self.descending,
-            &mut encoded,
-        )?;
-        check(work.budget, work.cancelled)?;
-        work.budget.charge_allocation(length as u64, 1)?;
-        work.budget.charge(Resource::Steps, length as u64)?;
-        let mut bytes = Vec::new();
-        bytes
-            .try_reserve_exact(length)
-            .map_err(|_| InspectError::Allocation)?;
-        bytes.extend_from_slice(&encoded[..length]);
-        Ok(bytes)
     }
 }
 
@@ -196,7 +136,7 @@ pub(in crate::table) fn patches(
     Ok(patches)
 }
 
-fn edit<P: ReplacementProfile, const N: usize>(
+fn edit<P: RowKeyProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     owner: u32,

@@ -1,9 +1,10 @@
 //! Paid owned-key preparation shared by fitting replacement and split consumers.
 use super::super::{
     retained::{Preserved, PreservedKey},
+    row_key::RowKeyProfile,
     tree::Tree,
 };
-use super::{Original, ReplacementProfile, SlotKeyUpdate};
+use super::{Original, SlotKeyUpdate};
 use crate::{
     EditError, NativeImage, NativeIndex,
     format::reader::Reader,
@@ -14,13 +15,13 @@ use crate::{
 };
 use std::{cmp::Ordering, io::Cursor};
 
-pub(in crate::table::indexes::mutation) struct Prepared<P: ReplacementProfile> {
+pub(in crate::table::indexes::mutation) struct Prepared<P: RowKeyProfile> {
     pub tree: Tree,
     pub entries: Vec<KeyRef<PreservedKey<P::Key>>>,
     pub profile: Preserved<P>,
 }
 
-pub(in crate::table::indexes::mutation) fn prepare<P: ReplacementProfile, const N: usize>(
+pub(in crate::table::indexes::mutation) fn prepare<P: RowKeyProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     owner: u32,

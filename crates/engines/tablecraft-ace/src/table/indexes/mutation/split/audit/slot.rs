@@ -1,5 +1,8 @@
 //! Reprepare encoded replacement keys from immutable slot request authority.
-use super::super::super::replacement::{self, ReplacementProfile, SlotKeyChanges};
+use super::super::super::{
+    replacement::{self, SlotKeyChanges},
+    row_key::RowKeyProfile,
+};
 use super::super::Plan;
 use super::retained;
 use crate::{
@@ -57,7 +60,7 @@ pub(super) fn prove(
     }
 }
 
-fn prepared<P: ReplacementProfile, const N: usize>(
+fn prepared<P: RowKeyProfile, const N: usize>(
     operation: &Operation<'_>,
     original: P,
     plan: &Plan,

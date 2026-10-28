@@ -1242,3 +1242,22 @@ Independent original-file comparisons cover [Int32 membership and ordering](../.
 and [exact Currency/Int64 node trees](../../testing/IGNORED_NULL_WIDE_INDEXES.md).
 The latter passes 96 CLI controls over six actual tables, including signed
 extrema, adjacent values above 2^53, shared aliases and automatic table order.
+
+
+## Shared mutation row-key encoding
+
+Paid encoding of complete row keys now lives in the internal `row_key` module
+beside the native mutation profiles. Existing Text, Short Binary and encoded
+mixed-tuple UPDATE preparation, split construction and split auditing consume
+that owner directly. The extraction preserves their codecs, NULL rules,
+allocation/work accounting and source retention. It adds no index family or
+normal write admission. INSERT's broader owned-key integration remains separate.
+
+
+Twenty existing slot/variable UPDATE contract functions and nine encoded-split
+functions pass after extraction, including nullable mixed keys, overflow,
+nonroot siblings, complete image proofs, quotas and cancellation. Library
+Clippy with warnings denied, minimal compilation and formatting pass. The first
+compile exposed a removed module import and leftover imports; the import-only
+correction precedes these checks. No new compatibility claim follows from this
+internal ownership change.
