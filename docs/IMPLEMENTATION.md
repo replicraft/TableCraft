@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Additional scalar secondary INSERT keys
+
+The separate ACE 16 INSERT preview now maintains single Boolean, Single, Double
+and legacy DateTime secondary indexes through the existing native codecs and
+shared allocator. Its independent final audit reconstructs exact key bits;
+Boolean false remains non-NULL, IEEE payloads/zeros remain distinct physical
+families and DATE serials retain validated bits. Required ascending Int32 primary
+and normal-save gates are unchanged.
+
+Eight genuine complete-image functions and four independent audit functions now
+cover both layouts/directions, aliases, nullable/ignored/unique rules, secondary
+root growth, resource failures and cancellation. All 158 INSERT regression
+functions and strict all-target/all-feature ACE Clippy pass. The prior 443-function
+full ACE batch predates this extension; no new full-workspace run is claimed.
+Fresh independent file comparisons and native Access qualification remain
+separate. See [the scalar key scope](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#boolean-ieee-and-legacy-date-secondary-keys).
+
 ## Secondary Ignore-NULL INSERT indexes
 
 The separate ACE 16 INSERT engineering preview now supports non-Required

@@ -380,6 +380,9 @@ qualification remain unfinished.
   before twenty fresh independent getter/map calls pass. Defaults/generated
   fields, primary/Required Ignore-NULL profiles and other key families,
   LVAL/extended dates, required data macros and normal saves remain unfinished.
+  Boolean/IEEE/legacy DATE secondary INSERT keys now have eight complete-image
+  and four independent audit functions; all 158 INSERT regressions pass. Their
+  fresh original-file comparisons remain separate from the earlier Int32 corpus.
 
 Major gates still open before the full backend is complete:
 

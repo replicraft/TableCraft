@@ -301,11 +301,15 @@ pub(in crate::table::indexes) fn qualify<'a>(
     if !matches!(
         field.scalar_type(),
         Some(
-            ScalarType::Byte
+            ScalarType::Boolean
+                | ScalarType::Byte
                 | ScalarType::Int16
                 | ScalarType::Int32
                 | ScalarType::Int64
                 | ScalarType::Currency
+                | ScalarType::Single
+                | ScalarType::Double
+                | ScalarType::DateTime
         )
     ) {
         return Err(EditError::Unsupported(WriteBlocker::Column));

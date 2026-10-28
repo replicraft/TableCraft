@@ -17,7 +17,8 @@ there is no partial index-maintenance mode.
 
 A required unique ascending Int32 primary remains mandatory. Its
 physical slot need not be zero. Secondary single-key indexes admit Byte, Int16,
-Int32, Int64 and Currency fields in either direction, including represented NULLs
+Int32, Int64, Currency, Boolean, Single, Double and legacy DateTime fields in
+either direction, including represented NULLs where the carrier supports them
 and ordinary or unique constraints. Key carriers remain exact; no SQL coercion
 or floating conversion supplies native keys. Existing constraint services retain
 required-key and nullable-unique behavior.
@@ -177,3 +178,37 @@ retain those phases separately. Default replay starts no child process and
 reports missing private evidence explicitly. The
 [isolated build receipt](results/ace16-insert-ignored-index-example-build-2026-10-28.json)
 binds the committed producer to the previously frozen expected images.
+
+
+## Boolean, IEEE and legacy DATE secondary keys
+
+The same preview now admits single Boolean, Single, Double and legacy DateTime
+secondary indexes. Physical key construction uses the existing native codecs;
+the final audit owns an independent bit-order implementation and validates
+inverse DATE serials. No new runtime, dependency or public preview API is needed.
+The mandatory primary remains required unique ascending Int32.
+
+Boolean false is a real non-NULL value even when its stored mask bit is clear.
+Its key payload is distinct from true; an explicit Boolean NULL is refused.
+A non-Required Ignore-NULL Boolean index therefore retains complete membership.
+Single and Double preserve signed zeros, subnormals, infinities and individual
+NaN payloads as physical bit families. Legacy DATE preserves validated serial
+bits, including negative civil aliases and sub-millisecond values. These are
+native storage-key rules, not SQL numeric equality or calendar conversion.
+
+Eight new end-to-end functions construct genuine width/mask-aware original and
+expected whole images before invoking the preview. Both ACE 16 layouts and both
+directions cover logical aliases, unique duplicate refusal, represented/omitted
+NULLs, historical deltas, malformed carriers, unsupported Required+Ignore-NULL
+flags, all resource pools and terminal cancellation. Pressure cases split Single
+401-to-403-entry and Double/DATE 278-to-279-entry secondary leaves through the
+shared allocator while preserving the primary. Four new independent audit
+functions additionally reject corrupt Boolean payloads, invalid DATE wires and
+impossible narrow atoms. All 158 INSERT regressions, including these twelve
+functions, pass; strict all-target/all-feature ACE Clippy also passes.
+
+These synthetic controls extend the working engineering profile. The ten
+original-file candidates above qualify Int32 Ignore-NULL cases only. Fresh
+independent file comparisons for these additional scalar key families and native
+Access save/reopen qualification remain separate work. The new pressure goldens
+cover root growth; deeper scalar-specific reference observations are not claimed.
