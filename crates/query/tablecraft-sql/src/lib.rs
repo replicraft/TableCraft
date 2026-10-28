@@ -23,3 +23,6 @@ pub use parser::{
     ParseError, ParseErrorKind, ParseLimits, ParsedQuery, ParsedSelect, SourceLocation,
     parse_expression, parse_expression_strict, parse_field_rule, parse_query, parse_select,
 };
+
+#[cfg(test)]
+mod construction_tests;

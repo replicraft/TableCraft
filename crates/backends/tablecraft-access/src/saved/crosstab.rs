@@ -6,7 +6,10 @@ use super::{
     ordering, parameters,
 };
 use tablecraft_ace::{SavedQueryDefinition, SavedQueryRow};
-use tablecraft_sql::{query::Statement, select::Expression};
+use tablecraft_sql::{
+    query::{Crosstab, Query},
+    select::Expression,
+};
 
 pub(super) const FAMILY: u32 = 0x10;
 pub(super) const TYPE: i16 = 6;
@@ -68,18 +71,14 @@ pub(super) fn reconstruct(
     }
     let select = compile::select_body(&rows, &fragments, context)?;
     let parameters = parameters::read(&rows, fragments.parameters, context)?;
-    // Reuse a bounded parser-owned boxed carrier, avoiding an unchecked Box or
-    // clones of native fragments/expressions. Full clauses already passed their
-    // individual guards and shared cumulative syntax/work/allocation ceilings.
-    let mut query = context.query(&["TRANSFORM Count(*) SELECT 0 GROUP BY 0 PIVOT 0"])?;
-    let Statement::Crosstab(cross) = &mut query.statement else {
-        return Err(E::InvalidMetadata);
-    };
-    cross.transform = transform;
-    cross.transform_alias = transform_alias;
-    cross.select = select;
-    cross.pivot = pivot;
-    cross.headings = headings;
+    context.construction("TRANSFORM Count(*) SELECT 0 GROUP BY 0 PIVOT 0".len(), 12)?;
+    let mut query = Query::from_crosstab(Crosstab {
+        transform,
+        transform_alias,
+        select,
+        pivot,
+        headings,
+    });
     query.parameters = parameters;
     context.check()?;
     Ok(SavedRead { definition, query })

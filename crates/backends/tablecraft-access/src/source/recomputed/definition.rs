@@ -5,9 +5,9 @@ use tablecraft_ace::{NativeReadSource, NativeTableStorage};
 use tablecraft_core::limits::Resource;
 use tablecraft_query::QueryError;
 use tablecraft_sql::{
-    ParseLimits, parse_query,
+    ParseError, ParseErrorKind, ParseLimits, SourceLocation,
     query::{Query, ReadBody, ReadQuery, Statement},
-    select::{Expression, Projection, Select},
+    select::{Expression, FieldReference, Name, Projection, Select, Table, TableSource},
 };
 
 struct Selected {
@@ -143,8 +143,8 @@ fn query<R: NativeReadSource>(
     selected: Vec<Selected>,
     limits: ParseLimits,
 ) -> Result<Query, CalculationError> {
-    // Every selector is one checked bracket identifier. Only these identifiers
-    // enter the skeleton; each formula remains a separately validated owned AST.
+    // Retain the former carrier allowance for checked names and owned formulas.
+    // Identifiers and expressions now enter the owned model directly.
     let mut length = "SELECT "
         .len()
         .checked_add(" FROM []".len())
@@ -169,26 +169,9 @@ fn query<R: NativeReadSource>(
         selected.len(),
         size_of::<Projection>() + size_of::<Expression>(),
     )?;
-    // Retained identifier copies (including aliases for replaced formulas) and
-    // the FROM model are bounded separately from the temporary parser skeleton.
+    // Retained identifier copies (including formula aliases) and the FROM model
+    // keep the existing conservative allocation allowance.
     charge(source, length, size_of::<char>())?;
-    let mut skeleton = String::new();
-    skeleton
-        .try_reserve_exact(length)
-        .map_err(|_| QueryError::Allocation)?;
-    skeleton.push_str("SELECT ");
-    for (index, value) in selected.iter().enumerate() {
-        RecomputedNativeSource::tick(source)?;
-        if index != 0 {
-            skeleton.push(',');
-        }
-        skeleton.push('[');
-        skeleton.push_str(&value.name);
-        skeleton.push(']');
-    }
-    skeleton.push_str(" FROM [");
-    skeleton.push_str(table);
-    skeleton.push(']');
 
     source
         .budget
@@ -196,34 +179,66 @@ fn query<R: NativeReadSource>(
         .map_err(|_| QueryError::Source)?
         .charge(Resource::Steps, length as u64)
         .map_err(QueryError::from)?;
-    let mut query = parse_query(&skeleton, limits)?.into_query();
-    let Statement::Read(read) = &mut query.statement else {
-        return Err(CalculationError::Unsupported);
+
+    // Keep the former SELECT carrier's input/token ceilings without reparsing
+    // identifiers or already-validated formula trees.
+    let tokens = selected
+        .len()
+        .checked_mul(2)
+        .and_then(|count| count.checked_add(2))
+        .ok_or(QueryError::StructureLimit)?;
+    // The old reservation included one unused trailing comma byte.
+    let syntax_bytes = length.checked_sub(1).ok_or(QueryError::StructureLimit)?;
+    let message = if syntax_bytes > limits.max_bytes.min(ParseLimits::MAX_BYTES) {
+        Some("SQL byte limit exceeded")
+    } else if tokens > limits.max_tokens.min(ParseLimits::MAX_TOKENS) {
+        Some("SQL token limit exceeded")
+    } else if limits.max_depth == 0 {
+        Some("SQL expression depth limit exceeded")
+    } else {
+        None
     };
-    let ReadBody::Select(select) = &mut read.body else {
-        return Err(CalculationError::Unsupported);
-    };
-    for (projection, selected) in select.projection.iter_mut().zip(selected) {
-        RecomputedNativeSource::tick(source)?;
-        if let Some(expression) = selected.expression {
-            // Keep the canonical field token as the result alias. The retained
-            // formula never supplies SQL syntax or a name constructor.
-            let original = std::mem::replace(
-                projection,
-                Projection::Expression {
-                    expression,
-                    alias: None,
-                },
-            );
-            let Projection::Field { field, .. } = original else {
-                return Err(CalculationError::Unsupported);
-            };
-            let Projection::Expression { alias, .. } = projection else {
-                return Err(CalculationError::Unsupported);
-            };
-            *alias = Some(field.name);
+    if let Some(message) = message {
+        return Err(ParseError {
+            kind: ParseErrorKind::Limit,
+            message,
+            location: SourceLocation { line: 1, column: 1 },
         }
+        .into());
     }
+
+    let mut projections = Vec::new();
+    projections
+        .try_reserve_exact(selected.len())
+        .map_err(|_| QueryError::Allocation)?;
+    for selected in selected {
+        RecomputedNativeSource::tick(source)?;
+        let name = Name::from_identifier(&selected.name, limits)?;
+        let projection = match selected.expression {
+            Some(expression) => Projection::Expression {
+                expression,
+                alias: Some(name),
+            },
+            None => Projection::Field {
+                field: FieldReference {
+                    qualifier: None,
+                    name,
+                },
+                alias: None,
+            },
+        };
+        projections.push(projection);
+    }
+
+    let query = Query::from_select(Select::from_projection(
+        projections,
+        vec![TableSource::Table(Table {
+            database: None,
+            name: Name::from_identifier(table, limits)?,
+            alias: None,
+        })],
+    ));
+
     RecomputedNativeSource::tick(source)?;
     Ok(query)
 }

@@ -1,7 +1,8 @@
 use super::{SavedSelectError, identifier};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
-    ParseLimits, parse_expression, parse_query, parse_select,
+    ParseError, ParseErrorKind, ParseLimits, SourceLocation, parse_expression, parse_query,
+    parse_select,
     query::Query,
     select::{Expression, Name, Projection, Select, SelectPredicate, TableSource},
 };
@@ -131,23 +132,59 @@ impl<'a> Context<'a> {
         }
     }
 
+    // Retain the former parser carrier's conservative syntax/work allowance,
+    // without allocating or parsing synthetic SQL. Stored clauses still parse.
+    pub fn construction(&mut self, bytes: usize, tokens: usize) -> Result<(), SavedSelectError> {
+        if bytes > self.limits.max_bytes {
+            return Err(SavedSelectError::SyntaxLimit);
+        }
+        self.syntax(bytes)?;
+        self.budget.charge(Resource::Bytes, bytes as u64)?;
+        self.parsing(bytes)?;
+
+        let message = if tokens > self.limits.max_tokens {
+            Some("SQL token limit exceeded")
+        } else if self.limits.max_depth == 0 {
+            Some("SQL expression depth limit exceeded")
+        } else {
+            None
+        };
+
+        if let Some(message) = message {
+            return Err(ParseError {
+                kind: ParseErrorKind::Limit,
+                message,
+                location: SourceLocation { line: 1, column: 1 },
+            }
+            .into());
+        }
+
+        Ok(())
+    }
+
     pub fn name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
         let value = identifier::literal(value)?;
-        let mut query = self.select(&["SELECT 0 AS [", value, "]"])?;
-        match query.projection.pop() {
-            Some(Projection::Expression {
-                alias: Some(name), ..
-            }) => Ok(name),
-            _ => Err(SavedSelectError::InvalidMetadata),
-        }
+        let bytes = "SELECT 0 AS []"
+            .len()
+            .checked_add(value.len())
+            .ok_or(SavedSelectError::SyntaxLimit)?;
+        self.construction(bytes, 4)?;
+        let name = Name::from_identifier(value, self.limits)?;
+        self.check()?;
+        Ok(name)
     }
+
     pub fn parameter_name(&mut self, value: &str) -> Result<Name, SavedSelectError> {
-        let mut query = self.query(&["PARAMETERS [", value, "] LONG; SELECT 0"])?;
-        match query.parameters.pop() {
-            Some(parameter) if query.parameters.is_empty() => Ok(parameter.name),
-            _ => Err(SavedSelectError::InvalidMetadata),
-        }
+        let bytes = "PARAMETERS [] LONG; SELECT 0"
+            .len()
+            .checked_add(value.len())
+            .ok_or(SavedSelectError::SyntaxLimit)?;
+        self.construction(bytes, 6)?;
+        let name = Name::from_contents(value, self.limits)?;
+        self.check()?;
+        Ok(name)
     }
+
     pub fn select(&mut self, parts: &[&str]) -> Result<Select, SavedSelectError> {
         let text = self.text(parts)?;
         self.parsing(text.len())?;
@@ -184,5 +221,59 @@ impl<'a> Context<'a> {
             .try_reserve_exact(count)
             .map_err(|_| SavedSelectError::Allocation)?;
         Ok(values)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn owned_names_keep_literal_and_prompt_policies() {
+        let mut budget = ResourceBudget::new(1 << 24, 100, 1 << 20);
+        let mut context = Context::new(&mut budget, &|| false, ParseLimits::default());
+        assert_eq!(
+            context.name("[Order Details]").unwrap().as_str(),
+            "Order Details"
+        );
+        assert_eq!(
+            context.parameter_name("Enter a value!").unwrap().as_str(),
+            "Enter a value!"
+        );
+
+        for value in ["a.b", "Forms!Value", "a]b", ""] {
+            assert_eq!(context.name(value), Err(SavedSelectError::Unsupported));
+        }
+    }
+
+    #[test]
+    fn owned_name_construction_retains_cancellation_and_parser_ceilings() {
+        let mut budget = ResourceBudget::new(1 << 24, 100, 1 << 20);
+        let mut context = Context::new(&mut budget, &|| true, ParseLimits::default());
+        assert_eq!(context.name("Valid"), Err(SavedSelectError::Cancelled));
+
+        for limits in [
+            ParseLimits {
+                max_tokens: 3,
+                ..ParseLimits::default()
+            },
+            ParseLimits {
+                max_depth: 0,
+                ..ParseLimits::default()
+            },
+        ] {
+            let mut context = Context::new(&mut budget, &|| false, limits);
+            assert!(
+                matches!(context.name("Valid"), Err(SavedSelectError::Parse(error))
+                if error.kind == ParseErrorKind::Limit)
+            );
+        }
+
+        let mut budget = ResourceBudget::new(0, 100, 1 << 20);
+        let mut context = Context::new(&mut budget, &|| false, ParseLimits::default());
+        assert!(matches!(
+            context.name("Valid"),
+            Err(SavedSelectError::Limit(_))
+        ));
     }
 }
