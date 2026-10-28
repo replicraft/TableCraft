@@ -1,0 +1,1392 @@
+{
+  "operation": "Independent complete-image and fresh-reader qualification for ignored-NULL secondary INSERT",
+  "date": "2026-10-28",
+  "scope": {
+    "original_files": 8,
+    "case_count": 10,
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "table": "Items",
+    "native_columns": [
+      "ID Int32 required manual",
+      "Group Int32 nullable",
+      "Score ShortBinary255"
+    ],
+    "physical_indexes": 2,
+    "logical_indexes": 4,
+    "actual_secondary": "ASC nonunique IgnoreNULL and not Required",
+    "literal_only_variants": "DESC/unique and other supported numeric carriers have separate Rust coverage, not authentic corpus claims",
+    "qualification": "Engineering candidate and independent-reader evidence only; normal saves/native Access/Windows/data macros remain unqualified"
+  },
+  "lineage": {
+    "first_reference_report": {
+      "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/report.json",
+      "bytes": 14770,
+      "sha256": "c43538a17a74d8be0abbcf96a32d67895e057ccc35fa2ec35d411e48ab30743c"
+    },
+    "first_controller_completed": false,
+    "first_child_statuses": [
+      0,
+      0
+    ],
+    "first_failure": "Strict empty-stderr assertion after generated mixed source; no getter/source gate/reference append had run",
+    "continuation_report": {
+      "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/report.json",
+      "bytes": 316646,
+      "sha256": "2d7442904058e4ac257690048244b9b263fbd5e9d34f8400363e3a1af734c8df"
+    },
+    "continuation_children": 53,
+    "all_source_gates_before_reference_append": true,
+    "distinct_child_inventory": 55,
+    "completed_calls_repeated": 0,
+    "warning_policy": "Exact two-line JUL framing/context and NULL-derived counts; raw stderr retained. No blanket warning suppression."
+  },
+  "source_only_construction": {
+    "freeze": {
+      "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/freeze.json",
+      "bytes": 34077,
+      "sha256": "ff6076fce53ffed22089ad46ab2748cbd409cfb318236c5a1f8d7e3c18b6e0c7"
+    },
+    "plan": {
+      "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/plan.json",
+      "bytes": 16928,
+      "sha256": "b0bb595163d7083835fc56f2b7982c0c4c16275c337a5cdc9992b34c577c2611"
+    },
+    "preparation_report": {
+      "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/report.json",
+      "bytes": 51159,
+      "sha256": "8ba7928b08dd973fea11b93aaa1d96443bcd514525d9cebe2a8c67fb321889b9"
+    },
+    "first_status": 0,
+    "reverify": {
+      "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/verify-first.json",
+      "bytes": 67,
+      "sha256": "1e3d847e99380d50b3e68e242ea8752ef62dae1793c5d7132429cab07d4e52be"
+    },
+    "inputs": 132,
+    "outputs": 22,
+    "source_gates_before_any_derivation": 8,
+    "expected_images": 10,
+    "public_after_image_or_candidate_inputs": 0,
+    "before_committed_producer_build": true
+  },
+  "compiled_producer": {
+    "commit": "1670f7be9943d67fc562aecf0f4a8cd56cdeaec0",
+    "receipt_commit": "348b7317bc4eb4d4e64102ce6e35b468a0f8f129",
+    "receipt": {
+      "path": "docs/testing/results/ace16-insert-ignored-index-example-build-2026-10-28.json",
+      "bytes": 1392,
+      "sha256": "2219c5389085a2f5264c412642498acc46c4ab60732959962f0600b853c891c0"
+    },
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-insert-ignored-index-20261028",
+      "bytes": 18520776,
+      "sha256": "3fc831baa85032e828aa5f0b1a7ad09b70869db82cf128bea201a6b419573a5d"
+    },
+    "source_archive": {
+      "path": ".cache/ace16-insert-ignored-index-build-20261028/committed-source.tar",
+      "bytes": 89415680,
+      "sha256": "9749cdbaf1464a4374417999184eb83e85a605219e9a9af2ea13d3830562532d"
+    },
+    "optional_git_check": {
+      "archive_files": 4449,
+      "receipt_blobs": 1,
+      "metadata_children": 1
+    }
+  },
+  "actual_candidate_phase": {
+    "report": {
+      "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/report.json",
+      "bytes": 99019,
+      "sha256": "216b3e4bbf21a6760ad06762595cce9618ed296bb6133d750f0a9084a332933f"
+    },
+    "binding": {
+      "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/binding-first.json",
+      "bytes": 6692,
+      "sha256": "65c34201324fbc6cf3fe677ef07583639c7abd1d3952c007f1a41cb853e0d2bb"
+    },
+    "freeze": {
+      "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/protocol-freeze.json",
+      "bytes": 35262,
+      "sha256": "4cadd1cbdcb1480c841acb797efdb2d6ca95cd68175aea15eb65337f258d0a6c"
+    },
+    "first_status": 0,
+    "commands": 10,
+    "whole_images_matched": 10,
+    "limits": {
+      "children": 10,
+      "deadline_seconds": 30,
+      "stream_bytes": 8388608,
+      "native_bytes": 268435456,
+      "native_rows": 100000,
+      "native_steps": 100000000
+    }
+  },
+  "actual_fresh_readback": {
+    "report": {
+      "path": ".cache/ace16-ignored-index-insert-getters-first-20261028/report.json",
+      "bytes": 305896,
+      "sha256": "98364665430015eefa2f74ab524d430a15e5ab14323c9e5ae0affea0250e89e8"
+    },
+    "binding": {
+      "path": ".cache/ace16-ignored-index-insert-getters-next-20261028/binding-first.json",
+      "bytes": 14941,
+      "sha256": "1c6e8790b2fd4684c3eb1974c228b2da180c6c568dbf8cec0141732583f54be7"
+    },
+    "freeze": {
+      "path": ".cache/ace16-ignored-index-insert-getters-next-20261028/controller-freeze.json",
+      "bytes": 35891,
+      "sha256": "18869f258b4c5c6a296d02255a240af0a0c5cd131fab9d22fe8f8ea269c6da2a"
+    },
+    "first_status": 0,
+    "commands": 20,
+    "whole_ten_images_before_any_getter": true,
+    "limits": {
+      "children": 20,
+      "deadline_seconds": 30,
+      "stream_bytes": 16777216,
+      "java_heap_mib": 512
+    }
+  },
+  "totals": {
+    "final_rows": 1950,
+    "old_rows_preserved": 1818,
+    "inserted_rows": 132,
+    "final_physical_key_ROW_pairs": 3868
+  },
+  "sources": [
+    {
+      "id": "V2016-mixed",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-mixed-source.accdb",
+        "bytes": 389120,
+        "sha256": "44b7b2375515020dcd0c7ab67fbe1050870e77441818be08914f6863558e1df9"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2016-mixed-source-proof.json",
+        "bytes": 6459,
+        "sha256": "ed720100ed43cebe92eeeb3956708911ece958e7f8846a808d8b4a1c8cbc30b4"
+      },
+      "rows": 3,
+      "physical": [
+        {
+          "root": 91,
+          "usage": 23042,
+          "history": 364611
+        },
+        {
+          "root": 92,
+          "usage": 23043,
+          "history": 364623
+        }
+      ],
+      "data_pages": [
+        93
+      ],
+      "index_pages": [
+        [
+          91
+        ],
+        [
+          92
+        ]
+      ],
+      "historical_distinct_counters": [
+        3,
+        1
+      ],
+      "maps": {
+        "owned": {
+          "reference": 23040,
+          "range": [
+            372667,
+            372736
+          ],
+          "member_count": 1
+        },
+        "hint": {
+          "reference": 23041,
+          "range": [
+            372598,
+            372667
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 418
+        },
+        "index0": {
+          "reference": 23042,
+          "range": [
+            372529,
+            372598
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 23043,
+          "range": [
+            372460,
+            372529
+          ],
+          "member_count": 1
+        }
+      }
+    },
+    {
+      "id": "V2016-empty",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-empty-source.accdb",
+        "bytes": 389120,
+        "sha256": "83b25e14681208b5ed75a81740927a125b63589f99233261cc81be15dda13dff"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2016-empty-source-proof.json",
+        "bytes": 6459,
+        "sha256": "702870313dcd27f51ae41ece173d1ca6b1deeac3d5ff87bfcdbb9db662d3022c"
+      },
+      "rows": 3,
+      "physical": [
+        {
+          "root": 91,
+          "usage": 23042,
+          "history": 364611
+        },
+        {
+          "root": 92,
+          "usage": 23043,
+          "history": 364623
+        }
+      ],
+      "data_pages": [
+        93
+      ],
+      "index_pages": [
+        [
+          91
+        ],
+        [
+          92
+        ]
+      ],
+      "historical_distinct_counters": [
+        3,
+        0
+      ],
+      "maps": {
+        "owned": {
+          "reference": 23040,
+          "range": [
+            372667,
+            372736
+          ],
+          "member_count": 1
+        },
+        "hint": {
+          "reference": 23041,
+          "range": [
+            372598,
+            372667
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 418
+        },
+        "index0": {
+          "reference": 23042,
+          "range": [
+            372529,
+            372598
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 23043,
+          "range": [
+            372460,
+            372529
+          ],
+          "member_count": 1
+        }
+      }
+    },
+    {
+      "id": "V2016-all-null-node",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-all-null-node-source.accdb",
+        "bytes": 405504,
+        "sha256": "88cf8bd5873f47caea18dc9890f09073fec999ab0582a35aeb0fe4ac9deae0d8"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2016-all-null-node-source-proof.json",
+        "bytes": 6501,
+        "sha256": "ba57b1029201779aa272a440a11e84ef4b9d0c6fb6dbe2298b3508614b473ec1"
+      },
+      "rows": 500,
+      "physical": [
+        {
+          "root": 91,
+          "usage": 23042,
+          "history": 364611
+        },
+        {
+          "root": 92,
+          "usage": 23043,
+          "history": 364623
+        }
+      ],
+      "data_pages": [
+        93,
+        95,
+        96
+      ],
+      "index_pages": [
+        [
+          91
+        ],
+        [
+          92,
+          97,
+          98
+        ]
+      ],
+      "historical_distinct_counters": [
+        500,
+        500
+      ],
+      "maps": {
+        "owned": {
+          "reference": 23040,
+          "range": [
+            372667,
+            372736
+          ],
+          "member_count": 3
+        },
+        "hint": {
+          "reference": 23041,
+          "range": [
+            372598,
+            372667
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 414
+        },
+        "index0": {
+          "reference": 23042,
+          "range": [
+            372529,
+            372598
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 23043,
+          "range": [
+            372460,
+            372529
+          ],
+          "member_count": 3
+        }
+      }
+    },
+    {
+      "id": "V2016-both-root-pressure",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-both-root-pressure-source.accdb",
+        "bytes": 393216,
+        "sha256": "92ecbaea84d4eb6477559818759fccac33bd195f98a46d3a5e27881eace00aa5"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2016-both-root-pressure-source-proof.json",
+        "bytes": 6473,
+        "sha256": "54b536db885406a0a98b2a5463fe009a77de48fab1517e22059a67e88ee77446"
+      },
+      "rows": 400,
+      "physical": [
+        {
+          "root": 91,
+          "usage": 23042,
+          "history": 364611
+        },
+        {
+          "root": 92,
+          "usage": 23043,
+          "history": 364623
+        }
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "index_pages": [
+        [
+          91
+        ],
+        [
+          92
+        ]
+      ],
+      "historical_distinct_counters": [
+        400,
+        399
+      ],
+      "maps": {
+        "owned": {
+          "reference": 23040,
+          "range": [
+            372667,
+            372736
+          ],
+          "member_count": 2
+        },
+        "hint": {
+          "reference": 23041,
+          "range": [
+            372598,
+            372667
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 417
+        },
+        "index0": {
+          "reference": 23042,
+          "range": [
+            372529,
+            372598
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 23043,
+          "range": [
+            372460,
+            372529
+          ],
+          "member_count": 1
+        }
+      }
+    },
+    {
+      "id": "V2019-mixed",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-mixed-source.accdb",
+        "bytes": 462848,
+        "sha256": "6338f7daa1aadc02c9ae3f1f0124b5b4012caed509832853c5825ea5bd2cc70d"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2019-mixed-source-proof.json",
+        "bytes": 6340,
+        "sha256": "6cb83859b44a56994cdbd1f212712325304f4f125ee51e3c2a0f12f60f4f6655"
+      },
+      "rows": 3,
+      "physical": [
+        {
+          "root": 108,
+          "usage": 27394,
+          "history": 434243
+        },
+        {
+          "root": 109,
+          "usage": 27395,
+          "history": 434255
+        }
+      ],
+      "data_pages": [
+        111
+      ],
+      "index_pages": [
+        [
+          108
+        ],
+        [
+          109
+        ]
+      ],
+      "historical_distinct_counters": [
+        3,
+        1
+      ],
+      "maps": {
+        "owned": {
+          "reference": 27392,
+          "range": [
+            442299,
+            442368
+          ],
+          "member_count": 1
+        },
+        "hint": {
+          "reference": 27393,
+          "range": [
+            442230,
+            442299
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 408
+        },
+        "index0": {
+          "reference": 27394,
+          "range": [
+            442161,
+            442230
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 27395,
+          "range": [
+            442092,
+            442161
+          ],
+          "member_count": 1
+        }
+      }
+    },
+    {
+      "id": "V2019-empty",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-empty-source.accdb",
+        "bytes": 462848,
+        "sha256": "0cd83de927c8417212ba14abea4fbe3df7d0f00c436e2e2739dabe7fc4862f00"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2019-empty-source-proof.json",
+        "bytes": 6340,
+        "sha256": "f45af0cf56660798c659c227cdd96678584d7de7b6d1df99572b8d92948049b8"
+      },
+      "rows": 3,
+      "physical": [
+        {
+          "root": 108,
+          "usage": 27394,
+          "history": 434243
+        },
+        {
+          "root": 109,
+          "usage": 27395,
+          "history": 434255
+        }
+      ],
+      "data_pages": [
+        111
+      ],
+      "index_pages": [
+        [
+          108
+        ],
+        [
+          109
+        ]
+      ],
+      "historical_distinct_counters": [
+        3,
+        0
+      ],
+      "maps": {
+        "owned": {
+          "reference": 27392,
+          "range": [
+            442299,
+            442368
+          ],
+          "member_count": 1
+        },
+        "hint": {
+          "reference": 27393,
+          "range": [
+            442230,
+            442299
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 408
+        },
+        "index0": {
+          "reference": 27394,
+          "range": [
+            442161,
+            442230
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 27395,
+          "range": [
+            442092,
+            442161
+          ],
+          "member_count": 1
+        }
+      }
+    },
+    {
+      "id": "V2019-all-null-node",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-all-null-node-source.accdb",
+        "bytes": 479232,
+        "sha256": "fceda1890802b0df221b66b87d452ad18775cc0175d6fc639f9d8bad8a05c071"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2019-all-null-node-source-proof.json",
+        "bytes": 6386,
+        "sha256": "6a6cf6833f4cde4f972ca8a71b57283428603c251358bc382dc2706b0a8ad6e7"
+      },
+      "rows": 500,
+      "physical": [
+        {
+          "root": 108,
+          "usage": 27394,
+          "history": 434243
+        },
+        {
+          "root": 109,
+          "usage": 27395,
+          "history": 434255
+        }
+      ],
+      "data_pages": [
+        111,
+        113,
+        114
+      ],
+      "index_pages": [
+        [
+          108
+        ],
+        [
+          109,
+          115,
+          116
+        ]
+      ],
+      "historical_distinct_counters": [
+        500,
+        500
+      ],
+      "maps": {
+        "owned": {
+          "reference": 27392,
+          "range": [
+            442299,
+            442368
+          ],
+          "member_count": 3
+        },
+        "hint": {
+          "reference": 27393,
+          "range": [
+            442230,
+            442299
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 404
+        },
+        "index0": {
+          "reference": 27394,
+          "range": [
+            442161,
+            442230
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 27395,
+          "range": [
+            442092,
+            442161
+          ],
+          "member_count": 3
+        }
+      }
+    },
+    {
+      "id": "V2019-both-root-pressure",
+      "image": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-both-root-pressure-source.accdb",
+        "bytes": 466944,
+        "sha256": "bcf28a8fddae8c19c8a97dd1834fd71b33a2eea4ece8d41d354fa1c9494781a9"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-ignored-index-insert-continuation-first-20261028/V2019-both-root-pressure-source-proof.json",
+        "bytes": 6355,
+        "sha256": "1aec7ecbe00c4d3978a5cb7b246bf26851789751ad70a2db4cfa2aa91a9875e8"
+      },
+      "rows": 400,
+      "physical": [
+        {
+          "root": 108,
+          "usage": 27394,
+          "history": 434243
+        },
+        {
+          "root": 109,
+          "usage": 27395,
+          "history": 434255
+        }
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "index_pages": [
+        [
+          108
+        ],
+        [
+          109
+        ]
+      ],
+      "historical_distinct_counters": [
+        400,
+        399
+      ],
+      "maps": {
+        "owned": {
+          "reference": 27392,
+          "range": [
+            442299,
+            442368
+          ],
+          "member_count": 2
+        },
+        "hint": {
+          "reference": 27393,
+          "range": [
+            442230,
+            442299
+          ],
+          "member_count": 1
+        },
+        "global": {
+          "reference": 256,
+          "range": [
+            8123,
+            8192
+          ],
+          "member_count": 407
+        },
+        "index0": {
+          "reference": 27394,
+          "range": [
+            442161,
+            442230
+          ],
+          "member_count": 1
+        },
+        "index1": {
+          "reference": 27395,
+          "range": [
+            442092,
+            442161
+          ],
+          "member_count": 1
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-mixed",
+      "source_id": "V2016-mixed",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-mixed-source.accdb",
+        "bytes": 389120,
+        "sha256": "44b7b2375515020dcd0c7ab67fbe1050870e77441818be08914f6863558e1df9"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2016-mixed.tsv",
+        "bytes": 97,
+        "sha256": "542602c8c749cd73e518885cfb6fc2b9052da17848871b892c59fed4fcb800ba"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-mixed.accdb",
+        "bytes": 389120,
+        "sha256": "38cbe394d2458689429a02efb3b56ca875e1dbe2edaa83601afae9780661fc8c"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2016-mixed.accdb",
+        "bytes": 389120,
+        "sha256": "38cbe394d2458689429a02efb3b56ca875e1dbe2edaa83601afae9780661fc8c"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-mixed-facts.json",
+        "bytes": 1116,
+        "sha256": "b85f4dd8d078120966e264ac5e39724ec3554c7c4bc75eb318497904fc148045"
+      },
+      "rows": 7,
+      "eligible_secondary": 5,
+      "counter_deltas": [
+        4,
+        1
+      ],
+      "unchanged_physical": [],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-empty",
+      "source_id": "V2016-empty",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-empty-source.accdb",
+        "bytes": 389120,
+        "sha256": "83b25e14681208b5ed75a81740927a125b63589f99233261cc81be15dda13dff"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2016-empty.tsv",
+        "bytes": 44,
+        "sha256": "e4c1cf070538dba59e7461bd50d65efae9068b5b4b9790f33bf193bffb2e0cd6"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-empty.accdb",
+        "bytes": 389120,
+        "sha256": "351fc40ba8591626a49eebca44a412462ec1d5d3515eec4de82760d9c24e37dc"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2016-empty.accdb",
+        "bytes": 389120,
+        "sha256": "351fc40ba8591626a49eebca44a412462ec1d5d3515eec4de82760d9c24e37dc"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-empty-facts.json",
+        "bytes": 845,
+        "sha256": "e90728722a82c45bd388485e58b825285e2215e3474d48f651b17f7946e0b599"
+      },
+      "rows": 5,
+      "eligible_secondary": 0,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "unchanged_physical": [
+        1
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-empty-first-nonnull",
+      "source_id": "V2016-empty",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-empty-source.accdb",
+        "bytes": 389120,
+        "sha256": "83b25e14681208b5ed75a81740927a125b63589f99233261cc81be15dda13dff"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2016-empty-first-nonnull.tsv",
+        "bytes": 47,
+        "sha256": "f5aa226715bc6203ac115700408e5a17993fc6a3e7d4a37a2867fe6e539c4ccd"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-empty-first-nonnull.accdb",
+        "bytes": 389120,
+        "sha256": "a879e407762c74df9844478972f9c94ad043f5faca72ddc06ffd38dba10f3878"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2016-empty-first-nonnull.accdb",
+        "bytes": 389120,
+        "sha256": "a879e407762c74df9844478972f9c94ad043f5faca72ddc06ffd38dba10f3878"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-empty-first-nonnull-facts.json",
+        "bytes": 836,
+        "sha256": "2171f547851d7c80f1d0b85400a2844da744717be5995d2c66b74739366cce97"
+      },
+      "rows": 5,
+      "eligible_secondary": 1,
+      "counter_deltas": [
+        2,
+        1
+      ],
+      "unchanged_physical": [],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-all-null-node",
+      "source_id": "V2016-all-null-node",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-all-null-node-source.accdb",
+        "bytes": 405504,
+        "sha256": "88cf8bd5873f47caea18dc9890f09073fec999ab0582a35aeb0fe4ac9deae0d8"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2016-all-null-node.tsv",
+        "bytes": 48,
+        "sha256": "f9947fd8125724c1a4d2f82d74a8034a2c47f2c5f24cadc60955c83f12f1c111"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-all-null-node.accdb",
+        "bytes": 405504,
+        "sha256": "432ccda11ef46848adc881221e13849b0e745da48ee1de6990c9f2120cab9a5d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2016-all-null-node.accdb",
+        "bytes": 405504,
+        "sha256": "432ccda11ef46848adc881221e13849b0e745da48ee1de6990c9f2120cab9a5d"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-all-null-node-facts.json",
+        "bytes": 871,
+        "sha256": "da195622f86412eefe057f6a3e863100afaeaf422facad2bfcf341892b9012f2"
+      },
+      "rows": 502,
+      "eligible_secondary": 500,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "unchanged_physical": [
+        1
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-both-root-pressure",
+      "source_id": "V2016-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2016-both-root-pressure-source.accdb",
+        "bytes": 393216,
+        "sha256": "92ecbaea84d4eb6477559818759fccac33bd195f98a46d3a5e27881eace00aa5"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2016-both-root-pressure.tsv",
+        "bytes": 1560,
+        "sha256": "1f47bcc89b0f08b594f5fb0eb64b7e5721082f13293e99e4528bd4d7453e0c86"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-both-root-pressure.accdb",
+        "bytes": 413696,
+        "sha256": "2a47f6cebeeed2acefab0bb2c21911721a7cd81c061f11310eb3550959ca9901"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2016-both-root-pressure.accdb",
+        "bytes": 413696,
+        "sha256": "2a47f6cebeeed2acefab0bb2c21911721a7cd81c061f11310eb3550959ca9901"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2016-both-root-pressure-facts.json",
+        "bytes": 10571,
+        "sha256": "79f75025e831d8dbd1838f2d11b681f3fbc38a23da15288baeb22fc4e87ca76e"
+      },
+      "rows": 456,
+      "eligible_secondary": 453,
+      "counter_deltas": [
+        56,
+        54
+      ],
+      "unchanged_physical": [],
+      "new_data": [
+        96
+      ],
+      "index_allocations": [
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 97
+        },
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 98
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 99
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 100
+        }
+      ]
+    },
+    {
+      "id": "V2019-mixed",
+      "source_id": "V2019-mixed",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-mixed-source.accdb",
+        "bytes": 462848,
+        "sha256": "6338f7daa1aadc02c9ae3f1f0124b5b4012caed509832853c5825ea5bd2cc70d"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2019-mixed.tsv",
+        "bytes": 97,
+        "sha256": "542602c8c749cd73e518885cfb6fc2b9052da17848871b892c59fed4fcb800ba"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-mixed.accdb",
+        "bytes": 462848,
+        "sha256": "6256c179a5e531a1448db3dd4f86b25216793b62fedfee53918096e92eb2f514"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2019-mixed.accdb",
+        "bytes": 462848,
+        "sha256": "6256c179a5e531a1448db3dd4f86b25216793b62fedfee53918096e92eb2f514"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-mixed-facts.json",
+        "bytes": 1124,
+        "sha256": "e9948257db676c2842018b72b246a31c6e1f78be7ca2e1accd83adf32cb5b982"
+      },
+      "rows": 7,
+      "eligible_secondary": 5,
+      "counter_deltas": [
+        4,
+        1
+      ],
+      "unchanged_physical": [],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-empty",
+      "source_id": "V2019-empty",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-empty-source.accdb",
+        "bytes": 462848,
+        "sha256": "0cd83de927c8417212ba14abea4fbe3df7d0f00c436e2e2739dabe7fc4862f00"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2019-empty.tsv",
+        "bytes": 44,
+        "sha256": "e4c1cf070538dba59e7461bd50d65efae9068b5b4b9790f33bf193bffb2e0cd6"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-empty.accdb",
+        "bytes": 462848,
+        "sha256": "8b3c78acfe5be0bcf17ee55f4f3413327c51d245be8bef22357db100d96c095e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2019-empty.accdb",
+        "bytes": 462848,
+        "sha256": "8b3c78acfe5be0bcf17ee55f4f3413327c51d245be8bef22357db100d96c095e"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-empty-facts.json",
+        "bytes": 851,
+        "sha256": "b712e70b69d59e64ff61979c57d8a10537f79f91023de9a4d51f1994bf93ee01"
+      },
+      "rows": 5,
+      "eligible_secondary": 0,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "unchanged_physical": [
+        1
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-empty-first-nonnull",
+      "source_id": "V2019-empty",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-empty-source.accdb",
+        "bytes": 462848,
+        "sha256": "0cd83de927c8417212ba14abea4fbe3df7d0f00c436e2e2739dabe7fc4862f00"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2019-empty-first-nonnull.tsv",
+        "bytes": 47,
+        "sha256": "f5aa226715bc6203ac115700408e5a17993fc6a3e7d4a37a2867fe6e539c4ccd"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-empty-first-nonnull.accdb",
+        "bytes": 462848,
+        "sha256": "53fb76872a132ecd75e5620314902432bf057a9f56152ecbc7100257bdb5da2d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2019-empty-first-nonnull.accdb",
+        "bytes": 462848,
+        "sha256": "53fb76872a132ecd75e5620314902432bf057a9f56152ecbc7100257bdb5da2d"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-empty-first-nonnull-facts.json",
+        "bytes": 842,
+        "sha256": "0bd85942d635a1a361fdc20985f30532ec889a94723e696b0ff7401909201063"
+      },
+      "rows": 5,
+      "eligible_secondary": 1,
+      "counter_deltas": [
+        2,
+        1
+      ],
+      "unchanged_physical": [],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-all-null-node",
+      "source_id": "V2019-all-null-node",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-all-null-node-source.accdb",
+        "bytes": 479232,
+        "sha256": "fceda1890802b0df221b66b87d452ad18775cc0175d6fc639f9d8bad8a05c071"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2019-all-null-node.tsv",
+        "bytes": 48,
+        "sha256": "f9947fd8125724c1a4d2f82d74a8034a2c47f2c5f24cadc60955c83f12f1c111"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-all-null-node.accdb",
+        "bytes": 479232,
+        "sha256": "fa6de4d5df10c691d51dcd402d8e08ad45f292207855cb59686074dac9c9ddbb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2019-all-null-node.accdb",
+        "bytes": 479232,
+        "sha256": "fa6de4d5df10c691d51dcd402d8e08ad45f292207855cb59686074dac9c9ddbb"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-all-null-node-facts.json",
+        "bytes": 878,
+        "sha256": "43610ca0ac2cd5d9a351a772e25835365162e011aa738ded05928523c051e33a"
+      },
+      "rows": 502,
+      "eligible_secondary": 500,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "unchanged_physical": [
+        1
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-both-root-pressure",
+      "source_id": "V2019-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-ignored-index-insert-reference-first-20261028/V2019-both-root-pressure-source.accdb",
+        "bytes": 466944,
+        "sha256": "bcf28a8fddae8c19c8a97dd1834fd71b33a2eea4ece8d41d354fa1c9494781a9"
+      },
+      "request": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-next-20261028/requests/V2019-both-root-pressure.tsv",
+        "bytes": 1560,
+        "sha256": "1f47bcc89b0f08b594f5fb0eb64b7e5721082f13293e99e4528bd4d7453e0c86"
+      },
+      "expected": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-both-root-pressure.accdb",
+        "bytes": 487424,
+        "sha256": "137d77ac4809b9bf956a1406683f7097741fc220b88f729339d7b17ce97ff038"
+      },
+      "candidate": {
+        "path": ".cache/ace16-ignored-index-insert-candidates-first-20261028/V2019-both-root-pressure.accdb",
+        "bytes": 487424,
+        "sha256": "137d77ac4809b9bf956a1406683f7097741fc220b88f729339d7b17ce97ff038"
+      },
+      "facts": {
+        "path": ".cache/ace16-ignored-index-insert-expected-first-20261028/V2019-both-root-pressure-facts.json",
+        "bytes": 10637,
+        "sha256": "52e4afbb4f16d6dedf1385afc6c48a1342611089b4e9629e1b6d6015da85b78b"
+      },
+      "rows": 456,
+      "eligible_secondary": 453,
+      "counter_deltas": [
+        56,
+        54
+      ],
+      "unchanged_physical": [],
+      "new_data": [
+        114
+      ],
+      "index_allocations": [
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 115
+        },
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 116
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 117
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 118
+        }
+      ]
+    }
+  ],
+  "maintained_proof": {
+    "command": [
+      "python3",
+      "-B",
+      "docs/testing/ace16_insert_ignored_indexes/verify.py"
+    ],
+    "default_check": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/final-default.json",
+      "bytes": 10304,
+      "sha256": "bae1585ae11b111b444822754c9c52f7e9e5ae908071c93a835e5f7dbdd75758"
+    },
+    "default_status": 0,
+    "default_child_processes": 0,
+    "pin_occurrences": 3425,
+    "distinct_paths": 942,
+    "git_check": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/git-first.json",
+      "bytes": 10383,
+      "sha256": "fb94a3db21ee4436a4acc8c7995919dbc4e7f4f1773a50a159cf9e5cf0890f52"
+    },
+    "git_status": 0,
+    "git_metadata_children": 1,
+    "missing_evidence_check": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/missing-first.json",
+      "bytes": 353,
+      "sha256": "8422e0315ee22fcb38aab7ad96bcace07d9850ad8ce926b3ba93da5b5fd51c72"
+    },
+    "missing_evidence_status": 2,
+    "missing_evidence_available": false,
+    "identity": "Reference bootstrap only; constructor function bodies unchanged except private loader removal/direct owners; warning functions exact after module-name normalization; Java helper exact bytes",
+    "files": [
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/IgnoredIndexInsertReference.java",
+        "bytes": 10027,
+        "sha256": "ee474a058990ce8e90a40cd7cb6c58432b3acb422458487489f374be3d9b7fc1"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/README.md",
+        "bytes": 4665,
+        "sha256": "954890ff9a3d855f34f8911c923164a974838c44b0ea63d8f98757e454e07d41"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/model.py",
+        "bytes": 10470,
+        "sha256": "269aebda40d040b2660905ea39d68308811c656bd0fde70f18f32f51536884be"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/omission_warnings.py",
+        "bytes": 1329,
+        "sha256": "856de5edba55af80f060c54c85a562d7ff14dabb47debc9dfe2aeb931243a1bf"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/reference.py",
+        "bytes": 17383,
+        "sha256": "62cb6cc662077d3e7d7917d02c42fe24c9c5317b0e6af0673cf75cc23055a677"
+      },
+      {
+        "path": "docs/testing/ace16_insert_ignored_indexes/verify.py",
+        "bytes": 16469,
+        "sha256": "c37cc88cac88873361ee1e5798920482fc633751a952cb188aa9be0ca7441281"
+      }
+    ],
+    "readability_history": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/before-verifier-line-wrapping/history.json",
+      "bytes": 175,
+      "sha256": "44c69f01827b58e7427ad59e606650ec9f0e8e81c6b08a9927ba8c1c82bb6fae"
+    }
+  },
+  "maintained_authoring_history": {
+    "first_status": 1,
+    "phase": "Import only, before saved source/image interpretation",
+    "failure": "Public warnings.py shadowed Python standard library warnings",
+    "correction": "Rename actual owner omission_warnings.py and direct imports only",
+    "history": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/before-stdlib-name-correction/history.json",
+      "bytes": 328,
+      "sha256": "f72f3a28d79bed26a5109a8d19788a11ee8489174ebedb4f6c144d4c9b92365d"
+    },
+    "initial_error": {
+      "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/before-stdlib-name-correction/first.stderr",
+      "bytes": 1166,
+      "sha256": "c86ff1ee5618263691de2d9f6f8e8ce24245c16ca382bd6ed9e14643b0f18f19"
+    },
+    "initial_files": [
+      {
+        "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/before-stdlib-name-correction/verify.py",
+        "bytes": 16195,
+        "sha256": "c03545df9b29a00662e0870a085345e9697fdb8ddce6743ebec4422f049e449e"
+      },
+      {
+        "path": ".cache/ace16-ignored-index-insert-maintained-proof-20261028/before-stdlib-name-correction/warnings.py",
+        "bytes": 1329,
+        "sha256": "856de5edba55af80f060c54c85a562d7ff14dabb47debc9dfe2aeb931243a1bf"
+      }
+    ]
+  },
+  "source_provenance": {
+    "helper": {
+      "path": ".cache/ace16-ignored-index-insert-reference-next-20261028/IgnoredIndexInsertReference.java",
+      "bytes": 10027,
+      "sha256": "ee474a058990ce8e90a40cd7cb6c58432b3acb422458487489f374be3d9b7fc1"
+    },
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "source_jar": {
+      "path": ".cache/ace16-insert-candidates-next-20261027/first-actual/executed-inputs/139-jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    "source_warning_contract": "IndexData.java667\u2013671 and730\u2013743; ignored all-NULL pending entry is left null and commit logs its no-op",
+    "saved_postcheck": {
+      "path": ".cache/ace16-ignored-index-insert-continuation-next-20261028/saved-postcheck-first.json",
+      "bytes": 2916,
+      "sha256": "551fdd63d6860c47a513e5ef1fc2d4bd2c3027ce398b59a379bac56bd8e92555"
+    }
+  },
+  "originals_and_frozen_inputs_changed": false,
+  "further_fixture_calls": 0
+}

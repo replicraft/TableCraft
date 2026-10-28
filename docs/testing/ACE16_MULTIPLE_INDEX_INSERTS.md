@@ -147,5 +147,33 @@ all admitted numeric widths, both directions, empty and NODE trees, unique keys,
 forwarded roots and shared DATA/index growth. Negative controls reject malformed
 membership, forged no-op changes, counter overflow, unsupported flags, exhausted
 budgets and cancellation. Strict ACE Clippy across all targets/features and
-minimal-feature compilation pass. Independent reference/candidate qualification
-is tracked separately; these unit checks do not establish native Access writes.
+minimal-feature compilation pass.
+
+Ten first-attempt candidates from the committed isolated producer match ten
+independently frozen source/request images before any independent reader runs.
+Twenty fresh read-only Jackcess getter/map calls then pass typed/raw rows, exact
+physical membership, counters, maps and protected-byte proofs. Across these
+cases, 1,818 original logical ROWs remain and 132 rows are added. Cases include
+mixed nullable keys, an empty secondary with either all-NULL or first non-NULL
+requests, an unchanged secondary NODE, and shared DATA/two-owner root growth.
+Both ACE 16 layouts are represented. Authentic references cover ascending
+nonunique Int32 secondary keys; unique, descending and wider numeric coverage
+comes from the separate synthetic whole-image controls.
+
+The independent reference controller first stopped after two successful child
+calls because it rejected a Jackcess warning emitted for omitted NULL keys.
+The pinned library source explains that unchanged-entry commit path. The
+failed controller and raw warning remain preserved. A frozen continuation
+accepts only that exact warning context and its recipe-derived occurrence count;
+it executes the remaining 53 calls once, with all eight source gates before
+any of ten reference appends. Unrecognized warnings still fail. No source or
+candidate was repaired, and no completed call was repeated. These checks do
+not establish native Access writes.
+
+
+The [maintained saved proof](ace16_insert_ignored_indexes/README.md) and
+[candidate receipt](results/ace16-insert-ignored-index-native-2026-10-28.json)
+retain those phases separately. Default replay starts no child process and
+reports missing private evidence explicitly. The
+[isolated build receipt](results/ace16-insert-ignored-index-example-build-2026-10-28.json)
+binds the committed producer to the previously frozen expected images.
