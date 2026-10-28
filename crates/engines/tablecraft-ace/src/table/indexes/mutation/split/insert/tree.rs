@@ -4,10 +4,7 @@ mod source;
 mod write;
 
 use super::super::{AllocationPolicy, Plan, allocation, leaf_entries, pages, seal};
-use super::{
-    ENTRY_BUFFER, Operation, physical_index, prior_allocations, require_prior_owners,
-    retained_members,
-};
+use super::{Operation, physical_index, prior_allocations, require_prior_owners, retained_members};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -16,7 +13,7 @@ use crate::{
     table::{
         indexes::{
             header::IndexHeader,
-            mutation::{IndexDataPatch, NumericKey, profile::SingleProfile},
+            mutation::{IndexDataPatch, insertion::membership, retained::RetainedProfile},
             page::{LEAF, NODE},
         },
         mutation::{
@@ -30,8 +27,8 @@ use tablecraft_core::limits::ResourceBudget;
 
 /// Bind original topology and immutable final membership, preflight all levels,
 /// then resolve the same DATA cursor into final INDEX/bitmap reservations.
-pub(super) fn continue_primary(
-    operation: Operation<'_>,
+pub(super) fn continue_index<P: RetainedProfile, const N: usize>(
+    operation: Operation<'_, P>,
     append: State,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -49,7 +46,7 @@ pub(super) fn continue_primary(
         || (append.length - append.original_length) / PAGE_BYTES != append.reservations_len()
         || append
             .indexes()
-            .any(|prior| prior.physical >= operation.physical)
+            .any(|prior| prior.physical >= operation.index.data_number())
     {
         return Err(EditError::Preservation);
     }
@@ -58,15 +55,7 @@ pub(super) fn continue_primary(
     if operation.final_keys.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
-    let profile = SingleProfile {
-        column: checked.schema().columns()[operation.id].number(),
-        kind: NumericKey::new(
-            checked.schema().columns()[operation.id]
-                .scalar_type()
-                .ok_or(InspectError::Unsupported)?,
-        )?,
-        descending: index.columns()[0].descending(),
-    };
+    let profile = operation.profile;
     let header = IndexHeader::read(raw(image, index.root_page())?)?;
     if !matches!(header.kind, NODE | LEAF) || header.previous.get() != 0 || header.next.get() != 0 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
@@ -79,24 +68,23 @@ pub(super) fn continue_primary(
         cancelled,
         reads: 0,
     };
-    let source =
-        source::capture::<_, ENTRY_BUFFER>(image, index, definition, &profile, &mut reader)?;
-    super::super::super::insertion::require_population(
-        index,
-        &source.keys,
-        checked.rows(),
-        &mut reader,
-    )?;
+    let source = source::capture::<_, N>(image, index, definition, profile, &mut reader)?;
+    membership::require_population(index, &source.keys, profile, checked.rows(), &mut reader)?;
     if operation.final_keys.len() == source.keys.len() {
         reader.work(source.keys.len())?;
-        if operation.final_keys != source.keys {
+        if operation
+            .final_keys
+            .iter()
+            .zip(&source.keys)
+            .any(|(left, right)| !left.compare_with(right, profile).is_eq())
+        {
             return Err(EditError::Conflict);
         }
     } else {
-        retained_members(
+        retained_members::<_, N>(
             &source.keys,
             operation.final_keys,
-            &profile,
+            profile,
             index,
             &append,
             &mut reader,
@@ -105,11 +93,11 @@ pub(super) fn continue_primary(
     let layout = if operation.final_keys.is_empty() {
         None
     } else {
-        Some(layout::prepare::<_, ENTRY_BUFFER>(
+        Some(layout::prepare::<_, N>(
             image,
             &source,
             operation.final_keys,
-            &profile,
+            profile,
             &mut reader,
         )?)
     };
@@ -167,11 +155,11 @@ pub(super) fn continue_primary(
         reader.tick()?;
         numbers[fresh] = allocation::reserve(image, index, &mut plan, &mut reader)?;
     }
-    write::emit::<_, ENTRY_BUFFER>(
+    write::emit::<_, N>(
         write::Operation {
             image,
             keys: operation.final_keys,
-            profile: &profile,
+            profile,
             layout: &layout,
             numbers: &numbers,
         },

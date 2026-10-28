@@ -12,6 +12,26 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fixed GUID and tuple INSERT keys
+
+The separate ACE 16 INSERT preview now maintains single GUID secondary indexes
+and two-to-ten-component fixed numeric/GUID indexes through typed preparation
+and the shared physical allocator. The final audit independently reconstructs
+complete component wires, all/partial NULL rules, source membership and historical
+families. Wider audit bytes and branch copies are explicitly charged; short keys
+retain inline storage. Normal save and required data-macro gates remain intact.
+
+All 171 INSERT regression functions pass, and the full ACE unit batch passes 468
+with one existing ignored generator. New genuine complete-image controls cover
+both layouts, reversed/mixed directions, aliases, primary physical swaps, partial
+NULL uniqueness, ignored membership and 198-byte ten-GUID node bounds. An initial
+projection-order defect was corrected without changing source/expected images;
+an independent source control now rejects same-count wrong-field membership.
+Strict ACE Clippy across all targets/features, minimal compilation, formatting
+and dependency/documentation guards pass. Independent original-file comparisons
+for these keys remain preparation work; no native Access qualification is claimed.
+See [the fixed-key contract](testing/ACE16_FIXED_TUPLE_INSERTS.md).
+
 ## Additional scalar secondary INSERT keys
 
 The separate ACE 16 INSERT preview now maintains single Boolean, Single, Double

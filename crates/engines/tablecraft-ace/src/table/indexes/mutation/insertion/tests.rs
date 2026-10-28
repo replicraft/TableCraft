@@ -11,6 +11,37 @@ use tablecraft_testkit::access as support;
 const PAGE: usize = 4096;
 const ROOT_START: usize = 13 * 4096;
 
+struct ScoreRequest<'a> {
+    reference: u32,
+    value: &'a Value,
+}
+
+fn numeric_preflight(
+    image: &NativeImage,
+    checked: &TableCheck,
+    physical: u32,
+    requests: &[ScoreRequest<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<preparation::Prepared<SingleProfile>, EditError> {
+    let values = requests
+        .iter()
+        .map(|request| vec![Value::Int32(4), request.value.clone()])
+        .collect::<Vec<_>>();
+    let rows = requests
+        .iter()
+        .zip(&values)
+        .map(|(request, values)| InsertRow {
+            reference: request.reference,
+            values,
+        })
+        .collect::<Vec<_>>();
+    match super::prepare(image, checked, physical, &rows, budget, cancelled)?.kind {
+        PreparedKind::Numeric(plan) => Ok(plan),
+        _ => panic!("this independent fixture has one numeric Score key"),
+    }
+}
+
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
 }
@@ -95,9 +126,9 @@ fn literal_leaf(original: &[u8], keys: &[(i32, u32)]) -> Vec<u8> {
     bytes
 }
 
-fn compose_root(before: &[u8], plan: &IndexInsertion) -> Vec<u8> {
+fn compose_root(before: &[u8], plan: &preparation::Prepared<SingleProfile>) -> Vec<u8> {
     let mut bytes = before.to_vec();
-    for patch in &plan.patches {
+    for patch in &plan.result.patches {
         assert_eq!(
             &bytes[patch.offset..patch.offset + patch.before.len()],
             patch.before
@@ -117,7 +148,7 @@ fn genuine_primary_insertion_grows_cardinality_once_for_logical_aliases() {
             let before = source(code, alias);
             let check = checked(&before);
             let value = Value::Int32(25);
-            let request = [InsertKey {
+            let request = [ScoreRequest {
                 reference: (12 << 8) | 3,
                 value: &value,
             }];
@@ -130,18 +161,22 @@ fn genuine_primary_insertion_grows_cardinality_once_for_logical_aliases() {
             let expected_root =
                 literal_leaf(&before[ROOT_START..ROOT_START + PAGE], &expected_entries);
             let image = split_model::capture(&before);
-            let plan = prepare(&image, &check, 1, 0, &request, &mut budget(), &|| false).unwrap();
+            let plan =
+                numeric_preflight(&image, &check, 0, &request, &mut budget(), &|| false).unwrap();
             assert_eq!(
                 (
-                    plan.physical(),
-                    plan.root(),
-                    plan.usage(),
-                    plan.original_count()
+                    plan.result.physical(),
+                    plan.result.root(),
+                    plan.result.usage(),
+                    plan.result.original_count()
                 ),
                 (0, 13, 14 << 8, 3)
             );
             assert_eq!(
-                plan.expected().collect::<Vec<_>>(),
+                plan.keys
+                    .iter()
+                    .map(|entry| (entry.key, entry.row))
+                    .collect::<Vec<_>>(),
                 expected_entries
                     .iter()
                     .map(|(key, row)| (Some(i64::from(*key)), *row))
@@ -182,7 +217,7 @@ fn unordered_new_keys_keep_exact_signed_domain_and_complete_row_ties() {
     let requests = values
         .iter()
         .enumerate()
-        .map(|(slot, value)| InsertKey {
+        .map(|(slot, value)| ScoreRequest {
             reference: (15 << 8) | slot as u32,
             value,
         })
@@ -197,10 +232,13 @@ fn unordered_new_keys_keep_exact_signed_domain_and_complete_row_ties() {
     ];
     let expected = literal_leaf(&before[ROOT_START..ROOT_START + PAGE], &expected_entries);
     let image = split_model::capture(&before);
-    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-    assert_eq!(plan.expected().len(), 6);
+    let plan = numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+    assert_eq!(plan.keys.len(), 6);
     assert_eq!(
-        plan.expected().collect::<Vec<_>>(),
+        plan.keys
+            .iter()
+            .map(|entry| (entry.key, entry.row))
+            .collect::<Vec<_>>(),
         expected_entries
             .iter()
             .map(|(key, row)| (Some(i64::from(*key)), *row))
@@ -218,74 +256,74 @@ fn null_wrong_carriers_duplicate_keys_and_reused_logical_rows_are_refused() {
     let check = checked(&before);
     let image = split_model::capture(&before);
     let null = Value::Null;
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (12 << 8) | 3,
         value: &null,
     }];
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::NullKey
         )))
     ));
     for value in [Value::Int64(40), Value::Binary(vec![40])] {
-        let requests = [InsertKey {
+        let requests = [ScoreRequest {
             reference: (12 << 8) | 3,
             value: &value,
         }];
         assert!(matches!(
-            prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+            numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
             Err(EditError::Inspect(InspectError::Malformed))
         ));
     }
     let duplicate = Value::Int32(20);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (12 << 8) | 3,
         value: &duplicate,
     }];
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::DuplicateKey
         )))
     ));
     let value = Value::Int32(40);
     for reference in [12 << 8, 0, (12 << 8) | 255] {
-        let requests = [InsertKey {
+        let requests = [ScoreRequest {
             reference,
             value: &value,
         }];
         assert!(matches!(
-            prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+            numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
             Err(EditError::Conflict)
         ));
     }
     let requests = [
-        InsertKey {
+        ScoreRequest {
             reference: (12 << 8) | 3,
             value: &value,
         },
-        InsertKey {
+        ScoreRequest {
             reference: (12 << 8) | 3,
             value: &duplicate,
         },
     ];
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Conflict)
     ));
     let requests = [
-        InsertKey {
+        ScoreRequest {
             reference: (12 << 8) | 3,
             value: &value,
         },
-        InsertKey {
+        ScoreRequest {
             reference: (12 << 8) | 4,
             value: &value,
         },
     ];
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::DuplicateKey
         )))
@@ -305,13 +343,13 @@ fn all_index_profiles_and_existing_write_headers_are_qualified_without_fallback(
         }
         let check = checked(&before);
         let image = split_model::capture(&before);
-        let request = [InsertKey {
+        let request = [ScoreRequest {
             reference: (12 << 8) | 3,
             value: &value,
         }];
-        let column = if mode == 3 { 0 } else { 1 };
+        let physical = u32::from(mode == 3);
         assert!(matches!(
-            prepare(&image, &check, column, 0, &request, &mut budget(), &|| {
+            numeric_preflight(&image, &check, physical, &request, &mut budget(), &|| {
                 false
             }),
             Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
@@ -328,15 +366,16 @@ fn overflow_prepares_no_leaf_patch_before_explicit_split_continuation() {
     assert_eq!(check.rows(), 500);
     let image = split_model::capture(&before);
     let value = Value::Int32(i32::MAX);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (15 << 8) | 250,
         value: &value,
     }];
-    let pending = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+    let pending =
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
     assert!(pending.requires_continuation);
-    assert_eq!(pending.expected().len(), 501);
-    assert!(pending.patches.is_empty());
-    assert!(pending.added.is_empty());
+    assert_eq!(pending.keys.len(), 501);
+    assert!(pending.result.patches.is_empty());
+    assert!(pending.result.added.is_empty());
     assert_eq!(image.as_bytes(), before);
 }
 
@@ -346,7 +385,7 @@ fn pools_late_cancellation_retry_and_empty_requests_preserve_source_bytes() {
     let check = checked(&before);
     let image = split_model::capture(&before);
     let value = Value::Int32(40);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (12 << 8) | 3,
         value: &value,
     }];
@@ -357,7 +396,7 @@ fn pools_late_cancellation_retry_and_empty_requests_preserve_source_bytes() {
             _ => unreachable!(),
         };
         assert!(
-            matches!(prepare(&image, &check, 1, 0, &requests, &mut allowance, &|| false), Err(EditError::Inspect(InspectError::Limit(LimitError { resource: actual, .. }))) if actual == resource)
+            matches!(numeric_preflight(&image, &check, 0, &requests, &mut allowance, &|| false), Err(EditError::Inspect(InspectError::Limit(LimitError { resource: actual, .. }))) if actual == resource)
         );
     }
     let calls = Cell::new(0);
@@ -367,14 +406,15 @@ fn pools_late_cancellation_retry_and_empty_requests_preserve_source_bytes() {
         prior >= 10
     };
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &cancelled),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &cancelled),
         Err(EditError::Inspect(InspectError::Cancelled))
     ));
-    let healthy = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-    assert_eq!(healthy.expected().len(), 4);
-    let noop = prepare(&image, &check, 1, 0, &[], &mut budget(), &|| false).unwrap();
-    assert!(noop.patches.is_empty());
-    assert_eq!(noop.expected().len(), 3);
+    let healthy =
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+    assert_eq!(healthy.keys.len(), 4);
+    let noop = numeric_preflight(&image, &check, 0, &[], &mut budget(), &|| false).unwrap();
+    assert!(noop.result.patches.is_empty());
+    assert_eq!(noop.keys.len(), 3);
     assert_eq!(image.as_bytes(), before);
 }
 
@@ -421,27 +461,38 @@ fn selected_physical_plans_bind_each_owner_without_claiming_coordinator_coverage
     assert_eq!(check.indexes()[1].index().data_number(), 1);
     let image = split_model::capture(&before);
     let value = Value::Int32(40);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (12 << 8) | 3,
         value: &value,
     }];
-    let first = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-    let second = prepare(&image, &check, 1, 1, &requests, &mut budget(), &|| false).unwrap();
+    let first = numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+    let second = numeric_preflight(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
     assert_eq!(
-        (first.physical(), first.root(), first.usage()),
+        (
+            first.result.physical(),
+            first.result.root(),
+            first.result.usage()
+        ),
         (0, 13, 14 << 8)
     );
     assert_eq!(
-        (second.physical(), second.root(), second.usage()),
+        (
+            second.result.physical(),
+            second.result.root(),
+            second.result.usage()
+        ),
         (1, 16, 17 << 8)
     );
-    assert_eq!(first.source_pages(), &[13]);
-    assert_eq!(second.source_pages(), &[16]);
+    assert_eq!(first.result.source_pages(), &[13]);
+    assert_eq!(second.result.source_pages(), &[16]);
     for plan in [&first, &second] {
-        assert_eq!(plan.original_count(), 3);
-        assert_eq!(plan.distinct_added(), 1);
+        assert_eq!(plan.result.original_count(), 3);
+        assert_eq!(plan.result.distinct_added(), 1);
         assert_eq!(
-            plan.expected().collect::<Vec<_>>(),
+            plan.keys
+                .iter()
+                .map(|entry| (entry.key, entry.row))
+                .collect::<Vec<_>>(),
             vec![
                 (Some(10), 12 << 8),
                 (Some(20), (12 << 8) | 1),
@@ -449,18 +500,19 @@ fn selected_physical_plans_bind_each_owner_without_claiming_coordinator_coverage
                 (Some(40), (12 << 8) | 3),
             ]
         );
-        assert!(plan.added.is_empty());
-        assert!(plan.promotions.is_empty());
-        assert!(plan.rebases.is_empty());
-        assert!(!plan.patches.is_empty());
+        assert!(plan.result.added.is_empty());
+        assert!(plan.result.promotions.is_empty());
+        assert!(plan.result.rebases.is_empty());
+        assert!(!plan.result.patches.is_empty());
         assert!(
-            plan.patches
+            plan.result
+                .patches
                 .iter()
-                .all(|patch| patch.offset / PAGE == plan.root() as usize)
+                .all(|patch| patch.offset / PAGE == plan.result.root() as usize)
         );
     }
     assert!(matches!(
-        prepare(&image, &check, 1, 2, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 2, &requests, &mut budget(), &|| false),
         Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
     ));
     assert_eq!(image.as_bytes(), before);
@@ -479,11 +531,11 @@ fn empty_primary_leaf_accepts_its_first_key_without_reallocating_or_canonicalizi
     let check = checked(&before);
     assert_eq!(check.rows(), 0);
     let image = split_model::capture(&before);
-    let noop = prepare(&image, &check, 1, 0, &[], &mut budget(), &|| false).unwrap();
-    assert_eq!(noop.original_count(), 0);
-    assert!(noop.patches.is_empty());
+    let noop = numeric_preflight(&image, &check, 0, &[], &mut budget(), &|| false).unwrap();
+    assert_eq!(noop.result.original_count(), 0);
+    assert!(noop.result.patches.is_empty());
     let value = Value::Int32(i32::MIN);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: 12 << 8,
         value: &value,
     }];
@@ -491,9 +543,12 @@ fn empty_primary_leaf_accepts_its_first_key_without_reallocating_or_canonicalizi
         &before[ROOT_START..ROOT_START + PAGE],
         &[(i32::MIN, 12 << 8)],
     );
-    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+    let plan = numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
     assert_eq!(
-        plan.expected().collect::<Vec<_>>(),
+        plan.keys
+            .iter()
+            .map(|entry| (entry.key, entry.row))
+            .collect::<Vec<_>>(),
         [(Some(i64::from(i32::MIN)), 12 << 8)]
     );
     assert_eq!(
@@ -528,15 +583,19 @@ fn ordinary_duplicate_and_null_families_increment_history_once() {
         let requests = values
             .iter()
             .enumerate()
-            .map(|(position, value)| InsertKey {
+            .map(|(position, value)| ScoreRequest {
                 reference: (12 << 8) | (3 + position as u32),
                 value,
             })
             .collect::<Vec<_>>();
-        let plan = prepare(&image, &report, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-        assert_eq!(plan.distinct_added(), if flags == 0x80 { 2 } else { 1 });
-        assert_eq!(plan.source_pages(), &[13]);
-        assert_eq!(plan.expected().len(), 3 + values.len());
+        let plan =
+            numeric_preflight(&image, &report, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(
+            plan.result.distinct_added(),
+            if flags == 0x80 { 2 } else { 1 }
+        );
+        assert_eq!(plan.result.source_pages(), &[13]);
+        assert_eq!(plan.keys.len(), 3 + values.len());
         assert_eq!(image.as_bytes(), before);
     }
 }
@@ -561,27 +620,31 @@ fn ignored_null_requests_validate_references_without_adding_entries_or_history()
         assert_eq!(check.rows(), 3);
         let image = split_model::capture(&before);
         let null = Value::Null;
-        let requests = [InsertKey {
+        let requests = [ScoreRequest {
             reference: (12 << 8) | 3,
             value: &null,
         }];
-        let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-        assert_eq!(plan.original_count(), 2);
+        let plan =
+            numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(plan.result.original_count(), 2);
         assert_eq!(
-            plan.expected().collect::<Vec<_>>(),
+            plan.keys
+                .iter()
+                .map(|entry| (entry.key, entry.row))
+                .collect::<Vec<_>>(),
             vec![(Some(20), (12 << 8) | 1), (Some(30), (12 << 8) | 2),]
         );
-        assert_eq!(plan.distinct_added(), 0);
-        assert!(plan.patches.is_empty());
+        assert_eq!(plan.result.distinct_added(), 0);
+        assert!(plan.result.patches.is_empty());
         assert!(!plan.requires_continuation);
         assert_eq!(compose_root(&before, &plan), before);
         for references in [[0, (12 << 8) | 4], [(12 << 8) | 3, (12 << 8) | 3]] {
-            let requests = references.map(|reference| InsertKey {
+            let requests = references.map(|reference| ScoreRequest {
                 reference,
                 value: &null,
             });
             assert!(matches!(
-                prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+                numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
                 Err(EditError::Conflict)
             ));
         }
@@ -597,14 +660,14 @@ fn ignored_unique_keys_keep_nonnull_constraints_and_omit_null_batch_members() {
     let requests = values
         .iter()
         .enumerate()
-        .map(|(position, value)| InsertKey {
+        .map(|(position, value)| ScoreRequest {
             reference: (12 << 8) | (3 + position as u32),
             value,
         })
         .collect::<Vec<_>>();
-    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-    assert_eq!(plan.distinct_added(), 1);
-    assert_eq!(plan.expected().len(), 3);
+    let plan = numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+    assert_eq!(plan.result.distinct_added(), 1);
+    assert_eq!(plan.keys.len(), 3);
     let expected = literal_leaf(
         &before[ROOT_START..ROOT_START + PAGE],
         &[
@@ -618,12 +681,12 @@ fn ignored_unique_keys_keep_nonnull_constraints_and_omit_null_batch_members() {
         expected
     );
     let duplicate = Value::Int32(20);
-    let requests = [InsertKey {
+    let requests = [ScoreRequest {
         reference: (12 << 8) | 3,
         value: &duplicate,
     }];
     assert!(matches!(
-        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
         Err(EditError::Inspect(InspectError::IndexConstraint(
             IndexConstraintViolation::DuplicateKey
         )))
@@ -641,16 +704,17 @@ fn ignored_node_allnull_batch_has_no_continuation_and_required_forms_stay_refuse
         let check = checked(&before);
         let image = split_model::capture(&before);
         let null = Value::Null;
-        let requests = [InsertKey {
+        let requests = [ScoreRequest {
             reference: (12 << 8) | 3,
             value: &null,
         }];
-        let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
-        assert_eq!(plan.source_pages(), &[13, 15, 16]);
+        let plan =
+            numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(plan.result.source_pages(), &[13, 15, 16]);
         assert!(!plan.requires_continuation);
-        assert!(plan.patches.is_empty());
-        assert!(plan.added.is_empty());
-        assert_eq!(plan.distinct_added(), 0);
+        assert!(plan.result.patches.is_empty());
+        assert!(plan.result.added.is_empty());
+        assert_eq!(plan.result.distinct_added(), 0);
         assert_eq!(compose_root(&before, &plan), before);
         for (flags, logical_kind) in [(0x8a, 0), (0x8b, 1)] {
             let mut unsupported = before.clone();
@@ -659,7 +723,7 @@ fn ignored_node_allnull_batch_has_no_continuation_and_required_forms_stay_refuse
             let check = checked(&unsupported);
             let image = split_model::capture(&unsupported);
             assert!(matches!(
-                prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+                numeric_preflight(&image, &check, 0, &requests, &mut budget(), &|| false),
                 Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
             ));
         }

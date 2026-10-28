@@ -1,4 +1,6 @@
+use super::super::ENTRY_BUFFER;
 use super::*;
+use crate::table::indexes::mutation::{NumericKey, profile::SingleProfile};
 use crate::{
     IndexCheckStatus, check_table, check_table_constraints,
     format::allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
@@ -61,12 +63,13 @@ fn operation<'a>(
     image: &'a NativeImage,
     checked: &'a crate::TableCheck,
     keys: &'a [KeyRef],
-) -> Operation<'a> {
+    profile: &'a SingleProfile,
+) -> Operation<'a, SingleProfile> {
     Operation {
         image,
         checked,
-        id: 0,
-        physical: 0,
+        index: checked.indexes()[0].index(),
+        profile,
         final_keys: keys,
     }
 }
@@ -129,6 +132,11 @@ fn compose(before: &[u8], plan: &Plan) -> Vec<u8> {
 
 #[test]
 fn left_or_right_child_splits_once_with_fitting_peer_bulk_and_aliases() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         for aliases in [false, true] {
             for right in [false, true] {
@@ -138,8 +146,8 @@ fn left_or_right_child_splits_once_with_fitting_peer_bulk_and_aliases() {
                     let image = capture(&source.bytes);
                     let keys = model::final_keys(&source, false, peer);
                     let expected = model::expected(&source, &keys, false);
-                    let plan = continue_primary(
-                        operation(&image, &check, &keys),
+                    let plan = continue_index::<_, ENTRY_BUFFER>(
+                        operation(&image, &check, &keys, &profile),
                         State::new(&image, 10),
                         &mut budget(),
                         &|| false,
@@ -161,6 +169,11 @@ fn left_or_right_child_splits_once_with_fitting_peer_bulk_and_aliases() {
 
 #[test]
 fn prior_data_reservation_and_new_index_share_the_same_global_byte() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for right in [false, true] {
         let source = model::source(6, true, right, false);
         let check = checked(&source.bytes, true);
@@ -170,8 +183,8 @@ fn prior_data_reservation_and_new_index_share_the_same_global_byte() {
         for row in [4027, 3958] {
             expected[11 * 4096 + row + 5 + 20 / 8] |= 1 << (20 % 8);
         }
-        let plan = continue_primary(
-            operation(&image, &check, &keys),
+        let plan = continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &keys, &profile),
             seeded(&image),
             &mut budget(),
             &|| false,
@@ -188,6 +201,11 @@ fn prior_data_reservation_and_new_index_share_the_same_global_byte() {
 
 #[test]
 fn distant_child_allocation_keeps_bitmap_metadata_outside_index_members() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         for right in [false, true] {
             let source = model::source(code, false, right, true);
@@ -195,8 +213,8 @@ fn distant_child_allocation_keeps_bitmap_metadata_outside_index_members() {
             let image = capture(&source.bytes);
             let keys = model::final_keys(&source, false, false);
             let expected = model::expected(&source, &keys, false);
-            let plan = continue_primary(
-                operation(&image, &check, &keys),
+            let plan = continue_index::<_, ENTRY_BUFFER>(
+                operation(&image, &check, &keys, &profile),
                 State::new(&image, 10),
                 &mut budget(),
                 &|| false,
@@ -219,6 +237,11 @@ fn distant_child_allocation_keeps_bitmap_metadata_outside_index_members() {
 
 #[test]
 fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let source = model::source(5, true, false, false);
     let check = checked(&source.bytes, true);
     let image = capture(&source.bytes);
@@ -227,8 +250,8 @@ fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse(
         key: Some(2),
         row: (15 << 8) | 197,
     });
-    let fitted = continue_primary(
-        operation(&image, &check, &fitting),
+    let fitted = continue_index::<_, ENTRY_BUFFER>(
+        operation(&image, &check, &fitting, &profile),
         State::new(&image, 10),
         &mut budget(),
         &|| false,
@@ -240,8 +263,8 @@ fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse(
     let mut changed = model::final_keys(&source, false, false);
     changed[0].row = (19 << 8) | 1;
     assert!(
-        continue_primary(
-            operation(&image, &check, &changed),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &changed, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| false
@@ -251,8 +274,8 @@ fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse(
     let mut duplicate = model::final_keys(&source, false, false);
     duplicate[1].row = duplicate[0].row;
     assert_eq!(
-        continue_primary(
-            operation(&image, &check, &duplicate),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &duplicate, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| false
@@ -265,8 +288,8 @@ fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse(
     let nonfree_image = capture(&nonfree);
     let keys = model::final_keys(&source, false, false);
     assert!(
-        continue_primary(
-            operation(&nonfree_image, &check, &keys),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&nonfree_image, &check, &keys, &profile),
             State::new(&nonfree_image, 10),
             &mut budget(),
             &|| false
@@ -277,6 +300,11 @@ fn fitted_continuation_preserves_cursor_and_invalid_pairs_or_nonfree_eof_refuse(
 
 #[test]
 fn quotas_and_late_cancellation_leave_source_retryable() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let source = model::source(6, true, true, false);
     let check = checked(&source.bytes, true);
     let image = capture(&source.bytes);
@@ -287,8 +315,8 @@ fn quotas_and_late_cancellation_leave_source_retryable() {
             .charge(resource, allowance.remaining(resource))
             .unwrap();
         assert!(
-            continue_primary(
-                operation(&image, &check, &keys),
+            continue_index::<_, ENTRY_BUFFER>(
+                operation(&image, &check, &keys, &profile),
                 State::new(&image, 10),
                 &mut allowance,
                 &|| false
@@ -298,8 +326,8 @@ fn quotas_and_late_cancellation_leave_source_retryable() {
     }
     let calls = Cell::new(0);
     assert!(
-        continue_primary(
-            operation(&image, &check, &keys),
+        continue_index::<_, ENTRY_BUFFER>(
+            operation(&image, &check, &keys, &profile),
             State::new(&image, 10),
             &mut budget(),
             &|| {
@@ -309,8 +337,8 @@ fn quotas_and_late_cancellation_leave_source_retryable() {
         )
         .is_err()
     );
-    let plan = continue_primary(
-        operation(&image, &check, &keys),
+    let plan = continue_index::<_, ENTRY_BUFFER>(
+        operation(&image, &check, &keys, &profile),
         State::new(&image, 10),
         &mut budget(),
         &|| false,

@@ -5,6 +5,7 @@ mod child_split;
 mod decimal;
 mod empty;
 mod general_height_one;
+pub(in crate::table::mutation::insert) mod guid_tuple_indexes;
 mod height_one;
 pub(in crate::table::mutation::insert) mod ignored_index_inserts;
 pub(super) mod model;

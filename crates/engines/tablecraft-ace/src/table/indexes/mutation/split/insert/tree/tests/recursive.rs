@@ -117,6 +117,11 @@ fn root_source(code: u8, aliases: bool) -> (Vec<u8>, Vec<KeyRef>) {
 
 #[test]
 fn prefix_loss_grows_original_root_into_two_fresh_internal_siblings() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     for code in [5, 6] {
         for aliases in [false, true] {
             let (before, mut keys) = root_source(code, aliases);
@@ -140,8 +145,8 @@ fn prefix_loss_grows_original_root_into_two_fresh_internal_siblings() {
                 key: Some(i64::from(i32::MAX)),
                 row: (15 << 8) | 106,
             });
-            let plan = continue_primary(
-                operation(&image, &check, &keys),
+            let plan = continue_index::<_, ENTRY_BUFFER>(
+                operation(&image, &check, &keys, &profile),
                 State::new(&image, 10),
                 &mut budget(),
                 &|| false,
@@ -207,6 +212,11 @@ fn prefix_loss_grows_original_root_into_two_fresh_internal_siblings() {
 
 #[test]
 fn root_leaf_bulk_continuation_normalizes_beyond_the_legacy_two_halves() {
+    let profile = SingleProfile {
+        column: 0,
+        kind: NumericKey::new(tablecraft_schema::ScalarType::Int32).unwrap(),
+        descending: false,
+    };
     let mut before = super::routing::source(6, true);
     let original = [
         KeyRef {
@@ -261,12 +271,12 @@ fn root_leaf_bulk_continuation_normalizes_beyond_the_legacy_two_halves() {
         row: ((19 + position as u32 / 250) << 8) | (position as u32 % 250),
     }));
     keys.sort_by_key(|key| (key.key, key.row));
-    let plan = continue_primary(
+    let plan = continue_index::<_, ENTRY_BUFFER>(
         Operation {
             image: &image,
             checked: &check,
-            id: 1,
-            physical: 0,
+            index: check.indexes()[0].index(),
+            profile: &profile,
             final_keys: &keys,
         },
         append,

@@ -182,7 +182,7 @@ fn decode_root(
     for wire in wires {
         reader.work(wire.len() + 1)?;
         let end = wire.len() - size_of::<u32>();
-        let key = Wire::read(&wire[..end])?;
+        let key = Wire::read_paid(&wire[..end], reader)?;
         if bounds.last().is_some_and(|(previous, _)| *previous >= key) {
             return Err(EditError::Preservation);
         }

@@ -122,7 +122,12 @@ pub(super) fn derive(
                         let maximum = normalized.nodes[*child]
                             .maximum
                             .ok_or(EditError::Preservation)?;
-                        maxima.push(*entries.get(maximum).ok_or(EditError::Preservation)?);
+                        maxima.push(
+                            entries
+                                .get(maximum)
+                                .ok_or(EditError::Preservation)?
+                                .copy_paid(reader)?,
+                        );
                         numbers.push(ids[*child].ok_or(EditError::Preservation)?);
                     }
                     let tail_number = if *tail {

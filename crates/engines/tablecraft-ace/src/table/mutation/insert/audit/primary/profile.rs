@@ -1,178 +1,204 @@
-//! Independent numeric wire and request-carrier qualification.
-use super::{Wire, reference};
-use crate::{EditError, NativeIndex, table::schema::NativeColumn};
-use tablecraft_core::values::Value;
-use tablecraft_schema::ScalarType;
-
+//! Independent complete fixed-key components and tuple NULL facts.
 mod floating;
+mod guid;
+mod numeric;
 
 #[cfg(test)]
 mod tests;
 
-const MARKER_BYTES: usize = size_of::<u8>();
+use super::{Wire, reserve};
+use crate::{EditError, InspectError, NativeIndex, TableSchema, format::reader::Reader};
+use std::io::Cursor;
+use tablecraft_core::values::Value;
+use tablecraft_schema::ScalarType;
+
+const MAX_COMPONENTS: usize = 10;
 const ROW_BYTES: usize = size_of::<u32>();
-const MAX_LEAF_WIRE_BYTES: usize = MARKER_BYTES + size_of::<i64>() + ROW_BYTES;
-const ASC_VALUE: u8 = 0x7f;
-const DESC_VALUE: u8 = 0x80;
+const MARKER_BYTES: usize = size_of::<u8>();
 const ASC_NULL: u8 = 0;
 const DESC_NULL: u8 = 0xff;
-const ASC_TRUE: u8 = 0;
-const ASC_FALSE: u8 = 0xff;
-const TRUE_ATOM: i64 = -1;
-const FALSE_ATOM: i64 = 0;
 
 #[derive(Clone, Copy)]
+enum Kind {
+    Numeric(numeric::Profile),
+    Guid { descending: bool },
+}
+
+struct Component {
+    column: usize,
+    kind: Kind,
+}
+
 pub(super) struct Profile {
-    kind: ScalarType,
-    width: usize,
-    descending: bool,
+    components: Vec<Component>,
     pub required: bool,
     pub unique: bool,
     pub ignore_nulls: bool,
 }
 
+#[derive(Clone, Copy)]
+pub(super) struct Nulls {
+    pub all: bool,
+    pub any: bool,
+}
+
 impl Profile {
-    pub(super) fn bind(index: &NativeIndex, field: &NativeColumn) -> Result<Self, EditError> {
-        let [column] = index.columns() else {
-            return Err(EditError::Preservation);
-        };
-        let kind = field.scalar_type().ok_or(EditError::Preservation)?;
-        let width = match kind {
-            ScalarType::Boolean | ScalarType::Byte => size_of::<u8>(),
-            ScalarType::Int16 => size_of::<i16>(),
-            ScalarType::Int32 | ScalarType::Single => size_of::<i32>(),
-            ScalarType::Int64
-            | ScalarType::Currency
-            | ScalarType::Double
-            | ScalarType::DateTime => size_of::<i64>(),
-            _ => return Err(EditError::Preservation),
-        };
-        let constraints = index.constraints().ok_or(EditError::Preservation)?;
-        if column.number() != field.number()
-            || (constraints.ignore_nulls() && constraints.required())
-        {
+    pub(super) fn bind(
+        index: &NativeIndex,
+        schema: &TableSchema,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Self, EditError> {
+        if !(1..=MAX_COMPONENTS).contains(&index.columns().len()) {
             return Err(EditError::Preservation);
         }
+        let constraints = index.constraints().ok_or(EditError::Preservation)?;
+        if constraints.ignore_nulls() && constraints.required() {
+            return Err(EditError::Preservation);
+        }
+        let mut components = Vec::new();
+        reserve(&mut components, index.columns().len(), reader)?;
+        for key in index.columns() {
+            let mut selected = None;
+            for (position, field) in schema.columns().iter().enumerate() {
+                reader.tick()?;
+                if field.number() == key.number() && selected.replace(position).is_some() {
+                    return Err(EditError::Preservation);
+                }
+            }
+            let column = selected.ok_or(EditError::Preservation)?;
+            let scalar = schema.columns()[column]
+                .scalar_type()
+                .ok_or(EditError::Preservation)?;
+            let kind = if scalar == ScalarType::Guid {
+                Kind::Guid {
+                    descending: key.descending(),
+                }
+            } else {
+                let width = match scalar {
+                    ScalarType::Boolean | ScalarType::Byte => size_of::<u8>(),
+                    ScalarType::Int16 => size_of::<i16>(),
+                    ScalarType::Int32 | ScalarType::Single => size_of::<i32>(),
+                    ScalarType::Int64
+                    | ScalarType::Currency
+                    | ScalarType::Double
+                    | ScalarType::DateTime => size_of::<i64>(),
+                    _ => return Err(EditError::Preservation),
+                };
+                let numeric = numeric::Profile {
+                    kind: scalar,
+                    width,
+                    descending: key.descending(),
+                    required: false,
+                };
+                Kind::Numeric(numeric)
+            };
+            components.push(Component { column, kind });
+        }
         Ok(Self {
-            kind,
-            width,
-            descending: column.descending(),
+            components,
             required: constraints.required(),
             unique: constraints.unique(),
             ignore_nulls: constraints.ignore_nulls(),
         })
     }
 
-    pub(super) fn request(self, value: &Value) -> Result<Option<i64>, EditError> {
-        let result = match (self.kind, value) {
-            (_, Value::Null) if !self.required && self.kind != ScalarType::Boolean => None,
-            (ScalarType::Boolean, Value::Boolean(true)) => Some(TRUE_ATOM),
-            (ScalarType::Boolean, Value::Boolean(false)) => Some(FALSE_ATOM),
-            (ScalarType::Byte, Value::Byte(value)) => Some(i64::from(*value)),
-            (ScalarType::Int16, Value::Int16(value)) => Some(i64::from(*value)),
-            (ScalarType::Int32, Value::Int32(value)) => Some(i64::from(*value)),
-            (ScalarType::Int64, Value::Int64(value)) => Some(*value),
-            (ScalarType::Currency, Value::Currency(value)) => Some(value.scaled()),
-            (ScalarType::Single, Value::Single(value)) => Some(floating::single(value.to_bits())),
-            (ScalarType::Double, Value::Double(value)) => Some(floating::double(value.to_bits())),
-            (ScalarType::DateTime, Value::DateTime(value)) => {
-                Some(floating::double(value.to_bits()))
-            }
-            _ => return Err(EditError::Preservation),
-        };
-        Ok(result)
-    }
-
-    pub(super) fn encode(self, value: Option<i64>, row: u32) -> Result<Wire, EditError> {
-        let mut bytes = [0; MAX_LEAF_WIRE_BYTES];
-        let key_length = if let Some(value) = value {
-            let valid_atom = match self.kind {
-                ScalarType::Byte => u8::try_from(value).is_ok(),
-                ScalarType::Int16 => i16::try_from(value).is_ok(),
-                ScalarType::Int32 | ScalarType::Single => i32::try_from(value).is_ok(),
-                _ => true,
-            };
-            if !valid_atom {
-                return Err(EditError::Preservation);
-            }
-            bytes[0] = ASC_VALUE;
-            let bits = if self.kind == ScalarType::Boolean {
-                match value {
-                    TRUE_ATOM => u64::from(ASC_TRUE),
-                    FALSE_ATOM => u64::from(ASC_FALSE),
-                    _ => return Err(EditError::Preservation),
-                }
-            } else if self.kind == ScalarType::Byte {
-                value as u64
-            } else {
-                (value as u64) ^ (1_u64 << (self.width * u8::BITS as usize - 1))
-            };
-            if self.kind == ScalarType::DateTime {
-                floating::validate_datetime(bits)?;
-            }
-            let encoded = bits.to_be_bytes();
-            bytes[MARKER_BYTES..MARKER_BYTES + self.width]
-                .copy_from_slice(&encoded[encoded.len() - self.width..]);
-            MARKER_BYTES + self.width
-        } else {
-            if self.required || self.kind == ScalarType::Boolean {
-                return Err(EditError::Preservation);
-            }
-            MARKER_BYTES
-        };
-        if self.descending {
-            for byte in &mut bytes[..key_length] {
-                *byte = !*byte;
-            }
+    pub(super) fn columns(
+        &self,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Vec<usize>, EditError> {
+        let mut columns = Vec::new();
+        reserve(&mut columns, self.components.len(), reader)?;
+        for component in &self.components {
+            reader.tick()?;
+            columns.push(component.column);
         }
-        bytes[key_length..key_length + ROW_BYTES].copy_from_slice(&row.to_be_bytes());
-        Wire::read(&bytes[..key_length + ROW_BYTES])
+        Ok(columns)
     }
 
-    pub(super) fn value(self, wire: &Wire) -> Result<Option<i64>, EditError> {
-        let null_marker = if self.descending { DESC_NULL } else { ASC_NULL };
-        let marker = if self.descending {
-            DESC_VALUE
-        } else {
-            ASC_VALUE
-        };
-        let value = if wire.first() == Some(&null_marker) {
-            if self.required
-                || self.kind == ScalarType::Boolean
-                || wire.len() != MARKER_BYTES + ROW_BYTES
-            {
-                return Err(EditError::Preservation);
-            }
-            None
-        } else {
-            if wire.first() != Some(&marker) || wire.len() != MARKER_BYTES + self.width + ROW_BYTES
-            {
-                return Err(EditError::Preservation);
-            }
-            let mut bits = 0_u64;
-            for byte in &wire[MARKER_BYTES..MARKER_BYTES + self.width] {
-                bits = (bits << u8::BITS) | u64::from(if self.descending { !*byte } else { *byte });
-            }
-            if self.kind == ScalarType::Boolean {
-                Some(match bits {
-                    value if value == u64::from(ASC_TRUE) => TRUE_ATOM,
-                    value if value == u64::from(ASC_FALSE) => FALSE_ATOM,
-                    _ => return Err(EditError::Preservation),
-                })
-            } else if self.kind == ScalarType::Byte {
-                Some(bits as i64)
-            } else {
-                if self.kind == ScalarType::DateTime {
-                    floating::validate_datetime(bits)?;
+    pub(super) fn request(
+        &self,
+        values: &[Value],
+        row: u32,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<Wire, EditError> {
+        if let [component] = self.components.as_slice() {
+            let value = values
+                .get(component.column)
+                .ok_or(EditError::Preservation)?;
+            let encoded = match component.kind {
+                Kind::Numeric(profile) => profile.encode(profile.request(value)?, row)?,
+                Kind::Guid { descending } => guid::encode(value, descending, row, reader)?,
+            };
+            self.value(&encoded)?;
+            return Ok(encoded);
+        }
+
+        let mut bytes = Vec::new();
+        for component in &self.components {
+            reader.tick()?;
+            let value = values
+                .get(component.column)
+                .ok_or(EditError::Preservation)?;
+            let encoded = match component.kind {
+                Kind::Numeric(profile) => {
+                    let atom = profile.request(value)?;
+                    profile.encode(atom, 0)?
                 }
-                bits ^= 1_u64 << (self.width * u8::BITS as usize - 1);
-                let shift = (size_of::<i64>() - self.width) * u8::BITS as usize;
-                Some(((bits << shift) as i64) >> shift)
-            }
+                Kind::Guid { descending } => guid::encode(value, descending, 0, reader)?,
+            };
+            let key = &encoded[..encoded.len() - ROW_BYTES];
+            reserve(&mut bytes, key.len(), reader)?;
+            reader.work(key.len())?;
+            bytes.extend_from_slice(key);
+        }
+        reserve(&mut bytes, ROW_BYTES, reader)?;
+        bytes.extend_from_slice(&row.to_be_bytes());
+        let wire = Wire::read_paid(&bytes, reader)?;
+        self.value(&wire)?;
+        Ok(wire)
+    }
+
+    pub(super) fn value(&self, wire: &Wire) -> Result<Nulls, EditError> {
+        let end = wire
+            .len()
+            .checked_sub(ROW_BYTES)
+            .ok_or(EditError::Preservation)?;
+        let mut offset = 0;
+        let mut nulls = Nulls {
+            all: true,
+            any: false,
         };
-        if self.encode(value, reference(wire))? != *wire {
+        for component in &self.components {
+            let bytes = wire.get(offset..end).ok_or(EditError::Preservation)?;
+            let (null, length) = match component.kind {
+                Kind::Numeric(profile) => {
+                    let null_marker = if profile.descending {
+                        DESC_NULL
+                    } else {
+                        ASC_NULL
+                    };
+                    let length = if bytes.first() == Some(&null_marker) {
+                        MARKER_BYTES
+                    } else {
+                        MARKER_BYTES + profile.width
+                    };
+                    let mut encoded = [0; 1 + size_of::<i64>() + ROW_BYTES];
+                    encoded[..length]
+                        .copy_from_slice(bytes.get(..length).ok_or(EditError::Preservation)?);
+                    let leaf = Wire::read(&encoded[..length + ROW_BYTES])?;
+                    (profile.value(&leaf)?.is_none(), length)
+                }
+                Kind::Guid { descending } => guid::validate(bytes, descending)?,
+            };
+            nulls.all &= null;
+            nulls.any |= null;
+            offset = offset
+                .checked_add(length)
+                .ok_or(InspectError::StructureLimit)?;
+        }
+        if offset != end || (self.required && nulls.any) {
             return Err(EditError::Preservation);
         }
-        Ok(value)
+        Ok(nulls)
     }
 }

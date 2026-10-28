@@ -4,6 +4,7 @@ use super::super::{
     key::{KeyProfile, KeyRow, KeyWork},
     text,
 };
+use super::profile::WriteProfile;
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::Resource;
 
@@ -13,6 +14,31 @@ pub(super) trait RowKeyProfile: KeyProfile {
         row: &(impl KeyRow + ?Sized),
         work: &mut KeyWork<'_>,
     ) -> Result<Vec<u8>, InspectError>;
+}
+
+impl<P: WriteProfile> RowKeyProfile for P {
+    fn encoded_row(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<Vec<u8>, InspectError> {
+        let key = self.row_key(row, work)?;
+        check(work.budget, work.cancelled)?;
+        let capacity = self.max_key_bytes();
+        work.budget.charge_allocation(capacity as u64, 1)?;
+        work.budget.charge(Resource::Steps, capacity as u64)?;
+        let mut bytes = Vec::new();
+        bytes
+            .try_reserve_exact(capacity)
+            .map_err(|_| InspectError::Allocation)?;
+        bytes.resize(capacity, 0);
+        let length = self.encode(key, &mut bytes)?;
+        if length == 0 || length > capacity {
+            return Err(InspectError::Malformed);
+        }
+        bytes.truncate(length);
+        Ok(bytes)
+    }
 }
 
 impl RowKeyProfile for text::TextProfile {

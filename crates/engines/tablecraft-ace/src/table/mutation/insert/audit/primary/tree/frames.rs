@@ -120,7 +120,7 @@ pub(super) fn branch(
     for (maximum, child) in maxima.iter().zip(children) {
         reader.tick()?;
         reader.work(maximum.len() + size_of::<u32>())?;
-        wires.push(maximum.child(*child)?);
+        wires.push(maximum.child_paid(*child, reader)?);
     }
     let actual = measure(&wires, seed, reader)?;
     if !actual.fits() || actual.prefix != predicted.prefix || actual.active != predicted.active {

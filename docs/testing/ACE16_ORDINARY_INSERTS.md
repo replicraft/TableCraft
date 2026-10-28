@@ -8,8 +8,10 @@ name does not select it. [Additional physical indexes](ACE16_MULTIPLE_INDEX_INSE
 now retain their own checked trees and distinct-key counter deltas, with logical
 aliases sharing one physical owner. Qualified non-Required secondary
 Ignore-NULL indexes omit NULL keys; their complete original eligible membership
-is independently derived from stored records. No new public preview method or
-normal save path is introduced.
+is independently derived from stored records. The later
+[fixed GUID/tuple key continuation](ACE16_FIXED_TUPLE_INSERTS.md) adds complete
+component membership without changing record admission. No new public preview
+method or normal save path is introduced.
 
 The complete focused INSERT batch passes 108 functions, including the previous
 88 and six new builder, four independent record-proof and ten end-to-end

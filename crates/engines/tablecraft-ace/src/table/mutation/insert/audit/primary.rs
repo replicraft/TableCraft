@@ -86,7 +86,7 @@ pub(super) fn prove(
         selections.iter().zip(&staged.indexes).zip(sources)
     {
         let index = selection.index;
-        let profile = selection.profile;
+        let profile = &selection.profile;
         let original_count = entries.len();
         if actual.source_pages() != pages {
             return Err(EditError::Preservation);
@@ -112,12 +112,8 @@ pub(super) fn prove(
         reserve(&mut entries, rows.len(), reader)?;
         for (request, row) in requests.iter().zip(rows) {
             reader.tick()?;
-            let value = profile.request(
-                request
-                    .values()
-                    .get(selection.column)
-                    .ok_or(EditError::Preservation)?,
-            )?;
+            let wire = profile.request(request.values(), row.reference, reader)?;
+            let nulls = profile.value(&wire)?;
             reader.work(entries.len() * REFERENCE_BYTES)?;
             if reference_page(row.reference) == 0
                 || reference_page(row.reference) as usize >= proof.bytes.len() / PAGE_BYTES
@@ -128,19 +124,20 @@ pub(super) fn prove(
             {
                 return Err(EditError::Preservation);
             }
-            if profile.ignore_nulls && value.is_none() {
+            if profile.ignore_nulls && nulls.all {
                 continue;
             }
             let mut found = false;
             for entry in &entries {
                 reader.work(entry.len())?;
-                found |= profile.value(entry)? == value;
+                found |=
+                    entry[..entry.len() - REFERENCE_BYTES] == wire[..wire.len() - REFERENCE_BYTES];
             }
             if !found {
                 distinct += 1;
             }
             reader.work(size_of::<Wire>())?;
-            entries.push(profile.encode(value, row.reference)?);
+            entries.push(wire);
         }
         let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
         reader.work(
@@ -155,8 +152,9 @@ pub(super) fn prove(
             reader.work(pair[0].len() + pair[1].len())?;
             if pair[0] >= pair[1]
                 || (profile.unique
-                    && profile.value(&pair[0])?.is_some()
-                    && profile.value(&pair[0])? == profile.value(&pair[1])?)
+                    && !profile.value(&pair[0])?.all
+                    && pair[0][..pair[0].len() - REFERENCE_BYTES]
+                        == pair[1][..pair[1].len() - REFERENCE_BYTES])
             {
                 return Err(EditError::Preservation);
             }
@@ -172,7 +170,7 @@ pub(super) fn prove(
         }
         for (expected, entry) in actual.expected().zip(&entries) {
             reader.work(entry.len())?;
-            if expected != (profile.value(entry)?, reference(entry)) {
+            if expected != (&entry[..entry.len() - REFERENCE_BYTES], reference(entry)) {
                 return Err(EditError::Preservation);
             }
         }
@@ -366,7 +364,7 @@ fn decode_page(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(Vec<Wire>, usize), EditError> {
     let prefix = usize::from(u16_at(page, PREFIX_OFFSET)?);
-    let maximum = 1 + size_of::<i64>() + REFERENCE_BYTES + usize::from(children) * size_of::<u32>();
+    let maximum = MAX_WIRE_BYTES - usize::from(!children) * size_of::<u32>();
     let minimum = 1 + REFERENCE_BYTES + usize::from(children) * size_of::<u32>();
     if prefix > maximum {
         return Err(EditError::Preservation);
@@ -396,7 +394,7 @@ fn decode_page(
         bytes[shared..length]
             .copy_from_slice(&page[ENTRY_START + previous_end..ENTRY_START + endpoint]);
         reserve(&mut entries, 1, reader)?;
-        entries.push(Wire::read(&bytes[..length])?);
+        entries.push(Wire::read_paid(&bytes[..length], reader)?);
         previous_end = endpoint;
     }
     if usize::from(u16_at(page, FREE_OFFSET)?) != PAGE_BYTES - ENTRY_START - previous_end {
