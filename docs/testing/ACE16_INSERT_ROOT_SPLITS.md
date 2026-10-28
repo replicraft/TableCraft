@@ -52,13 +52,25 @@ All 25 bounded reference calls passed on their first attempts.
 Four engineering expectations were independently derived and frozen from source
 bytes and requests before the new producer was built. Public-reference differences
 are confined to unused fresh-index padding, which the engineering policy zeros.
-Actual engineering candidate and fresh getter qualification is recorded separately;
-the reference experiment alone does not establish producer success.
+All four engineering candidates subsequently matched those complete images on
+their first attempts. Eight fresh read-only getter/map calls also passed, after
+the whole-image checks. The [scoped record](results/ace16-insert-root-splits-native-2026-10-27.json)
+pins the [committed producer](results/ace16-insert-root-split-example-build-2026-10-27.json),
+raw reports and checks. Across the four results, 1,808 primary entries and 1,804
+old ROWs agree, eight new index leaves and two new DATA pages are correctly owned,
+and all 15 map-byte changes match. The 12,656 unused fresh-index bytes are zero;
+14,412 bytes of retained-root residue remain unchanged.
+
+The [saved verifier](ace16_insert_root_split/README.md) rederives all four images
+and checks archived reference, candidate and getter evidence. Optional Git checks
+read the producer source closure in one batch. Private artifacts are required;
+their absence reports unavailable and is not a passing result or CI prerequisite.
+No database or JVM is started by saved verification.
 
 ## Remaining work
 
 An INSERT into an existing non-leaf source still refuses, including a second
 operation against this height-one result. Arbitrary-tree cardinality growth,
-larger cascades, broader key/row profiles, defaults, generated fields, required
+broader key/row profiles, defaults, generated fields, required
 data macros and normal native saves remain unfinished. Independent Java results
 do not replace native Microsoft Access comparisons, which the user has deferred.

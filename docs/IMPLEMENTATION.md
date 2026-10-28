@@ -34,6 +34,24 @@ targets; their corrected focused reruns pass. The original failures are retained
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
 
+## Primary-root growth during INSERT
+
+The optional [INSERT root-leaf continuation](testing/ACE16_INSERT_ROOT_SPLITS.md)
+now retains the original root as a height-one node and allocates two leaves when
+its final key/ROW list no longer fits. DATA and index allocation share one cursor;
+independent replay covers early/late bitmap promotion, source-seeded framing,
+map ownership, exact counter deltas and complete unchanged-byte preservation.
+Existing non-leaf sources and oversized halves remain explicit refusals.
+
+The scoped batch passes 341 ACE unit functions (one existing ignored test), four
+existing public preview contracts, seven example functions and three compile-fail
+checks. Strict all-target/feature lint, minimal-feature compilation and rustdoc
+pass. All 25 independent source/reference calls, four complete-image candidate
+comparisons and eight fresh getter/map calls passed first attempt. The
+[evidence record](testing/results/ace16-insert-root-splits-native-2026-10-27.json)
+keeps physical engine results separate from deferred Microsoft Access qualification.
+Normal native saves and required data-macro qualification remain unfinished.
+
 ## Request-bound ordinary-row INSERT preview
 
 The optional [INSERT engineering service](testing/ACE16_INSERT_PREVIEW.md) now
@@ -42,7 +60,7 @@ existing/EOF pages and maintains one required Int32 primary leaf, including
 logical aliases. Table and actual historical physical-index counters increase
 once per new row. Independent request-bound replay protects complete images,
 allocation purposes and map effects. Defaults, generated fields, broader index
-profiles and splits remain refused; normal native saves remain closed.
+profiles and deeper splits remain refused; normal native saves remain closed.
 
 Verification covers 328 distinct passing ACE unit functions across a full batch
 and a targeted hint-promotion check (one existing ignored test), four existing
