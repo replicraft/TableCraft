@@ -1,0 +1,485 @@
+{
+  "date": "2026-10-27",
+  "scope": "Optional original-root-leaf INSERT growth; retained height-one root and two fresh leaves. No normal native save or Microsoft Access qualification.",
+  "compiled_revision": "0739bc27f6eae90b15942e6171bd61aa1ba171e1",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-root-split-example-build-2026-10-27.json",
+    "bytes": 150089,
+    "sha256": "bba6826f161804dd0ae68ed67513e2ad27ad53f1364a0832a41089e7dc5a8d9f"
+  },
+  "reference_report": {
+    "path": ".cache/ace16-insert-root-split-reference-first-20261027/report.json",
+    "bytes": 63084,
+    "sha256": "817740cf99876188e4bd5aae50babe52f33b173dd0385d36f7481f358bde27e5"
+  },
+  "producer_report": {
+    "path": ".cache/ace16-insert-root-split-candidates-next-20261027/first-actual/report.json",
+    "bytes": 84754,
+    "sha256": "1e12ecb7c9e3440e38513a023fb6261d775e7038ce095599e2bb91615ca4ea0e"
+  },
+  "getter_report": {
+    "path": ".cache/ace16-insert-root-split-getters-next-20261027/first-actual/report.json",
+    "bytes": 179413,
+    "sha256": "8c29b22f1d4d44c97c737b3218e33c79068784171a05902eab6c5a5244407298"
+  },
+  "independent_plan": {
+    "path": ".cache/ace16-insert-root-split-independent-next-20261027/plan.json",
+    "bytes": 11933,
+    "sha256": "5e0ee62a85cf2f628c08b1009156cee34084666cf59ad8f76b3ff74aae88a773"
+  },
+  "independent_freeze": {
+    "path": ".cache/ace16-insert-root-split-independent-next-20261027/freeze.json",
+    "bytes": 31528,
+    "sha256": "6b2f764aad26a4c5de1037b6264835506b007675ff7ad4325e6e45dc6242db7f"
+  },
+  "independent_saved_review": {
+    "path": ".cache/ace16-insert-root-split-getters-next-20261027/independent-actual-saved-check.json",
+    "bytes": 6525,
+    "sha256": "7e4dea7f4be3476a6c26d034cab9a07eb4026240ce47517bfcbc00239f0bedf3"
+  },
+  "all_actual_calls_passed_first_attempt": true,
+  "actual_reference_calls": 25,
+  "actual_producer_calls": 4,
+  "actual_fresh_getter_map_calls": 8,
+  "whole_images_checked_before_getters": true,
+  "sources_requests_oracles_modified": false,
+  "after_pin_errors": [],
+  "cases": [
+    {
+      "id": "V2016-fitted",
+      "source_pages": 95,
+      "candidate_pages": 97,
+      "source_DATA_pages": [
+        92,
+        94
+      ],
+      "old_primary_root": 91,
+      "root_height": 1,
+      "root_prefix": 0,
+      "RIGHT": 95,
+      "LEFT": 96,
+      "new_DATA": [],
+      "new_ROW": 24260,
+      "new_page": 94,
+      "new_slot": 196,
+      "new_record_bytes": 13,
+      "typed_rows": 452,
+      "raw_rows": 452,
+      "primary_leaf_entries": 452,
+      "raw_graph_bound_entries": 1,
+      "old_ROWS_preserved": 451,
+      "counter_deltas": {
+        "table": 1,
+        "physical_primary_historical": 1
+      },
+      "map_byte_effects": [
+        {
+          "offset": 8139,
+          "before": 128,
+          "after": 0
+        },
+        {
+          "offset": 8140,
+          "before": 255,
+          "after": 254
+        },
+        {
+          "offset": 372534,
+          "before": 1,
+          "after": 49
+        }
+      ],
+      "zero_unused_fresh_index_bytes": 3164,
+      "bytes_added": 8192,
+      "logical_indexes": 1,
+      "physical_indexes": 1,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2016-full84",
+      "source_pages": 104,
+      "candidate_pages": 107,
+      "source_DATA_pages": [
+        92,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103
+      ],
+      "old_primary_root": 91,
+      "root_height": 1,
+      "root_prefix": 0,
+      "RIGHT": 105,
+      "LEFT": 106,
+      "new_DATA": [
+        104
+      ],
+      "new_ROW": 26624,
+      "new_page": 104,
+      "new_slot": 0,
+      "new_record_bytes": 97,
+      "typed_rows": 452,
+      "raw_rows": 452,
+      "primary_leaf_entries": 452,
+      "raw_graph_bound_entries": 1,
+      "old_ROWS_preserved": 451,
+      "counter_deltas": {
+        "table": 1,
+        "physical_primary_historical": 1
+      },
+      "map_byte_effects": [
+        {
+          "offset": 8141,
+          "before": 255,
+          "after": 248
+        },
+        {
+          "offset": 372535,
+          "before": 0,
+          "after": 192
+        },
+        {
+          "offset": 372615,
+          "before": 128,
+          "after": 0
+        },
+        {
+          "offset": 372616,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "offset": 380945,
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "zero_unused_fresh_index_bytes": 3164,
+      "bytes_added": 12288,
+      "logical_indexes": 1,
+      "physical_indexes": 1,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2019-fitted",
+      "source_pages": 113,
+      "candidate_pages": 115,
+      "source_DATA_pages": [
+        110,
+        112
+      ],
+      "old_primary_root": 108,
+      "root_height": 1,
+      "root_prefix": 0,
+      "RIGHT": 113,
+      "LEFT": 114,
+      "new_DATA": [],
+      "new_ROW": 28868,
+      "new_page": 112,
+      "new_slot": 196,
+      "new_record_bytes": 13,
+      "typed_rows": 452,
+      "raw_rows": 452,
+      "primary_leaf_entries": 452,
+      "raw_graph_bound_entries": 1,
+      "old_ROWS_preserved": 451,
+      "counter_deltas": {
+        "table": 1,
+        "physical_primary_historical": 1
+      },
+      "map_byte_effects": [
+        {
+          "offset": 8142,
+          "before": 254,
+          "after": 248
+        },
+        {
+          "offset": 442166,
+          "before": 1,
+          "after": 97
+        }
+      ],
+      "zero_unused_fresh_index_bytes": 3164,
+      "bytes_added": 8192,
+      "logical_indexes": 1,
+      "physical_indexes": 1,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2019-full84",
+      "source_pages": 122,
+      "candidate_pages": 125,
+      "source_DATA_pages": [
+        110,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121
+      ],
+      "old_primary_root": 108,
+      "root_height": 1,
+      "root_prefix": 0,
+      "RIGHT": 123,
+      "LEFT": 124,
+      "new_DATA": [
+        122
+      ],
+      "new_ROW": 31232,
+      "new_page": 122,
+      "new_slot": 0,
+      "new_record_bytes": 97,
+      "typed_rows": 452,
+      "raw_rows": 452,
+      "primary_leaf_entries": 452,
+      "raw_graph_bound_entries": 1,
+      "old_ROWS_preserved": 451,
+      "counter_deltas": {
+        "table": 1,
+        "physical_primary_historical": 1
+      },
+      "map_byte_effects": [
+        {
+          "offset": 8143,
+          "before": 252,
+          "after": 224
+        },
+        {
+          "offset": 442167,
+          "before": 0,
+          "after": 128
+        },
+        {
+          "offset": 442168,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "offset": 442250,
+          "before": 2,
+          "after": 4
+        },
+        {
+          "offset": 454675,
+          "before": 3,
+          "after": 7
+        }
+      ],
+      "zero_unused_fresh_index_bytes": 3164,
+      "bytes_added": 12288,
+      "logical_indexes": 1,
+      "physical_indexes": 1,
+      "normal_visible_flags": 0
+    }
+  ],
+  "totals": {
+    "typed_rows": 1808,
+    "raw_rows": 1808,
+    "primary_leaf_entries": 1808,
+    "raw_graph_bound_entries": 4,
+    "old_ROWS_preserved": 1804,
+    "zero_unused_fresh_index_bytes": 12656,
+    "bytes_added": 40960,
+    "new_record_bytes": 220,
+    "logical_indexes": 4,
+    "physical_indexes": 4
+  },
+  "additional_totals": {
+    "source_DATA_page_observations": 26,
+    "final_DATA_page_observations": 28,
+    "retained_index_roots": 4,
+    "new_INDEX_leaves": 8,
+    "final_index_page_observations": 12,
+    "new_DATA_pages": 2,
+    "new_bitmap_pages": 0,
+    "map_byte_effects": 15,
+    "table_counter_fields_incremented_once": 4,
+    "historical_physical_counter_fields_incremented_once": 4,
+    "preserved_old_root_residue_bytes": 14412,
+    "old_null_Binary_rows_preserved": 452,
+    "old_empty_Binary_rows_preserved": 450,
+    "new_empty_Binary_rows": 2,
+    "new_84byte_Binary_rows": 2,
+    "new_NULL_Binary_rows": 0
+  },
+  "reference_representation_difference": "6276 bytes differ only in public unused fresh INDEX padding; engineering images require zero padding. They are not rewritten to match public residue.",
+  "verification": {
+    "distinct_runtime_functions": 352,
+    "engine_unit_functions": 341,
+    "existing_ignored_tests": 1,
+    "existing_public_preview_contracts": 4,
+    "example_functions": 7,
+    "compile_fail_checks": 3,
+    "logs": [
+      {
+        "label": "production-first",
+        "exit_code": 101,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-production-first.log",
+          "bytes": 1155,
+          "sha256": "0eb7dd4d643cba2c7d8f5a182dba9972f3c6dccec4b9512d0aa3407b056f29f0"
+        }
+      },
+      {
+        "label": "production-retry",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-production-retry.log",
+          "bytes": 183,
+          "sha256": "bf2f0df5c5d55c3ef9954bbeaa01252e2039281727ef2acd7c93bbf86cc7fa67"
+        }
+      },
+      {
+        "label": "helper-first",
+        "exit_code": 101,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-helper-first.log",
+          "bytes": 14855224,
+          "sha256": "8eaeecb67193c8133de29b1b8f9e13a25795e4d3feb5691d44e095b744d5c121"
+        }
+      },
+      {
+        "label": "components-retry",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-components-retry.log",
+          "bytes": 5393,
+          "sha256": "9ad9ffa7be6ea8bb0e0fb69f1861f0dd9372e72341f8e2eda2b78f789a389b2a"
+        }
+      },
+      {
+        "label": "integrated-first",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-integrated-first.log",
+          "bytes": 6176,
+          "sha256": "36b6f8dac30e7e96ea1db842bd58d1a8cd1882d81e5bfeb9d1ab76888bfb7e77"
+        }
+      },
+      {
+        "label": "late-promotion-first",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-late-first.log",
+          "bytes": 519,
+          "sha256": "b028e173e1fcb50c4fa2b9197be96a2ed975a0ffa7c9348f2e1f38a3cf7287c9"
+        }
+      },
+      {
+        "label": "engine-public-example-batch",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-engine-batch.log",
+          "bytes": 41655,
+          "sha256": "de9f7c2acd7fb880c5fa04861cf3abc2513b106108335d90c92711a88ecf0fc2"
+        }
+      },
+      {
+        "label": "strict-first",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-clippy-first.log",
+          "bytes": 184,
+          "sha256": "fd49730a17175712c684aa2f1f1d3ce42d1e1b7f1ca9b9d5a9ac75eaf7bcf289"
+        }
+      },
+      {
+        "label": "minimal",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-minimal.log",
+          "bytes": 183,
+          "sha256": "5da6a4066b5d65c316ecb9eaaf84a52762d89ffb732b8a36b749a5ed4535d3c3"
+        }
+      },
+      {
+        "label": "rustdoc",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-split-rustdoc.log",
+          "bytes": 277,
+          "sha256": "df7162bc4780c080d2ac2b917d24eab2de2d286379341f2b7c4275e49971cfae"
+        }
+      },
+      {
+        "label": "doctests",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-root-split-doctests.log",
+          "bytes": 738,
+          "sha256": "15fd3e58869160b4c30218898e9a1009dd24fa18ff1adf990b67af4996cbb071"
+        }
+      },
+      {
+        "label": "format-final",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-root-split-verification-20261027/tablecraft-insert-root-split-fmt-final.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "preserved_failures": [
+      "First production compile used owned entries with borrowed_fits; corrected by reusing the existing borrowed leaf-entry builder.",
+      "First helper batch passed six of seven functions; the test-only composer omitted the declared 69-byte promotion-row write. Four differing bytes were diagnosed; builder and expected-image algorithm stayed unchanged.",
+      "Initial saved reference verifier expected an empty terminal active-command label; actual closed report retains its final label. Only the verifier assertion changed."
+    ],
+    "static_closing_edge": "Independent growth comparison now admits promotion while allocating either child. Source base88/root95/EOF599 validates RIGHT599/LEFT600/bitmap601; first targeted run and full batch pass."
+  },
+  "saved_replay": {
+    "exit_code": 0,
+    "report": {
+      "path": ".cache/ace16-insert-root-split-public-verifier-next-20261027/accepted-first.json",
+      "bytes": 103750,
+      "sha256": "7476cecb0cf514bc6c156b5b203f5340deeabaa91292ca50077e72621a99b66f"
+    },
+    "proof_pin_occurrences": 2002,
+    "terminal_rehashes": 718,
+    "distinct_artifacts": 718,
+    "git_source_objects": 749,
+    "git_receipt_objects": 1,
+    "git_processes": 1,
+    "fixture_JVM_Cargo_calls": 0,
+    "maintained_sources": [
+      {
+        "path": "docs/testing/ace16_insert_root_split/README.md",
+        "bytes": 5912,
+        "sha256": "da26d336b149d6159f23eda623fe27d5da7718b3f1865adcb86851fde2c20008"
+      },
+      {
+        "path": "docs/testing/ace16_insert_root_split/acceptance.py",
+        "bytes": 11880,
+        "sha256": "a604717f27f991b0384dad067d922197c454beaac3acc5c794ff6ddf78fb1734"
+      },
+      {
+        "path": "docs/testing/ace16_insert_root_split/model.py",
+        "bytes": 6888,
+        "sha256": "030dd64211bff766781b476a7b6b68cdece0ca252ecf1ca73f9c54989283e683"
+      },
+      {
+        "path": "docs/testing/ace16_insert_root_split/reference.py",
+        "bytes": 13203,
+        "sha256": "eeea3fae20ae3cab9ce43a11c46ecf664075ca1b32f4f0dcd1ee459697cf8a49"
+      },
+      {
+        "path": "docs/testing/ace16_insert_root_split/verify.py",
+        "bytes": 11945,
+        "sha256": "99f8462b427600b0d0b28c355ccd46d55f1bb6384730d04414414045d9f1687c"
+      }
+    ],
+    "total_pin_checks": 2720
+  },
+  "remaining": "Existing non-leaf sources, larger trees/halves, broader key/row profiles, defaults/generated fields, required data macros and normal native saves remain unfinished. Windows comparisons are deferred."
+}
