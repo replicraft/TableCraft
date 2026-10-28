@@ -10,17 +10,36 @@ use tablecraft_core::{
 };
 
 const MAX_INPUT_BYTES: u64 = 16 * 1024 * 1024;
+pub(super) const MAX_VALUE_BYTES: usize = MAX_INPUT_BYTES as usize;
 const MAX_REQUESTS: usize = 4096;
 const READ_BUFFER_BYTES: usize = 8192;
 const VALUE_PAIR_FIELDS: usize = 2;
 const CSV_RETAINED_RECORDS: usize = 3;
 const HEX_DIGITS_PER_BYTE: usize = 2;
 
+pub(super) fn value_bytes(value: &str) -> Result<usize, String> {
+    let bytes = value
+        .parse::<usize>()
+        .map_err(|_| "Value-byte limit must be a positive whole number".to_owned())?;
+    validate_value_bytes(bytes)?;
+    Ok(bytes)
+}
+
+fn validate_value_bytes(bytes: usize) -> Result<(), String> {
+    if !(1..=MAX_VALUE_BYTES).contains(&bytes) {
+        return Err(format!(
+            "Value-byte limit must be between 1 and {MAX_VALUE_BYTES}"
+        ));
+    }
+    Ok(())
+}
+
 pub(super) fn load(
     path: &Path,
     budget: &mut ResourceBudget,
     max_value_bytes: usize,
 ) -> Result<Vec<RowInsert>, Box<dyn Error>> {
+    validate_value_bytes(max_value_bytes)?;
     let mut file = File::open(path)?;
     let length = tablecraft_io::seek_to_end(&mut file, budget, &|| false)?;
     if length > MAX_INPUT_BYTES {
@@ -44,6 +63,7 @@ fn parse(
     budget: &mut ResourceBudget,
     max_value_bytes: usize,
 ) -> Result<Vec<RowInsert>, Box<dyn Error>> {
+    validate_value_bytes(max_value_bytes)?;
     if encoded.is_empty() {
         return Err("Insert-request file is empty".into());
     }

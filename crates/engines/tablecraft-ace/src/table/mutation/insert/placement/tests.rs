@@ -226,6 +226,7 @@ fn visible_existing_page_append_preserves_every_original_record_and_map_byte() {
             check.schema(),
             metadata(&image, &check),
             &records,
+            State::new(&image, check.schema().definition_page()),
             &mut budget(),
             &|| false,
         )
@@ -272,6 +273,7 @@ fn staged_page_reuse_then_one_highest_miss_allocates_one_visible_eof_page() {
         check.schema(),
         metadata(&image, &check),
         &records,
+        State::new(&image, check.schema().definition_page()),
         &mut budget(),
         &|| false,
     )
@@ -332,6 +334,7 @@ fn physical_slot_254_can_become_255_but_next_insert_uses_new_page_without_reuse(
         check.schema(),
         metadata(&image, &check),
         &records,
+        State::new(&image, check.schema().definition_page()),
         &mut budget(),
         &|| false,
     )
@@ -354,6 +357,7 @@ fn deleted_zero_length_slot_is_preserved_but_live_empty_or_bad_mask_geometry_ref
         check.schema(),
         metadata(&image, &check),
         &records,
+        State::new(&image, check.schema().definition_page()),
         &mut budget(),
         &|| false,
     )
@@ -405,6 +409,7 @@ fn candidate_bitmap_is_separate_from_visible_data_and_all_membership() {
         check.schema(),
         metadata(&image, &check),
         &records,
+        State::new(&image, check.schema().definition_page()),
         &mut budget(),
         &|| false,
     )
@@ -444,9 +449,21 @@ fn cumulative_pools_cancellation_and_retry_never_modify_the_original_image() {
             Resource::Rows => ResourceBudget::new(256 * 1024 * 1024, 0, 100_000_000),
             Resource::Steps => ResourceBudget::new(256 * 1024 * 1024, 100_000, 0),
         };
-        assert!(
-            matches!(prepare(&image, check.schema(), metadata(&image, &check), &records, &mut allowance, &|| false), Err(EditError::Inspect(InspectError::Limit(LimitError { resource: actual, .. }))) if actual == resource)
-        );
+        assert!(matches!(
+            prepare(
+                &image,
+                check.schema(),
+                metadata(&image, &check),
+                &records,
+                State::new(&image, check.schema().definition_page()),
+                &mut allowance,
+                &|| false,
+            ),
+            Err(EditError::Inspect(InspectError::Limit(LimitError {
+                resource: actual,
+                ..
+            }))) if actual == resource
+        ));
     }
     let calls = Cell::new(0);
     let cancelled = || {
@@ -460,6 +477,7 @@ fn cumulative_pools_cancellation_and_retry_never_modify_the_original_image() {
             check.schema(),
             metadata(&image, &check),
             &records,
+            State::new(&image, check.schema().definition_page()),
             &mut budget(),
             &cancelled
         ),
@@ -470,6 +488,7 @@ fn cumulative_pools_cancellation_and_retry_never_modify_the_original_image() {
         check.schema(),
         metadata(&image, &check),
         &records,
+        State::new(&image, check.schema().definition_page()),
         &mut budget(),
         &|| false,
     )
@@ -490,6 +509,7 @@ fn empty_request_keeps_all_pages_maps_and_cursor_unchanged() {
                 check.schema(),
                 metadata(&image, &check),
                 &[],
+                State::new(&image, check.schema().definition_page()),
                 &mut budget(),
                 &|| false,
             )

@@ -44,10 +44,19 @@ pub(super) fn prepare(
     schema: &TableSchema,
     metadata: Metadata,
     records: &[Vec<u8>],
+    append: State,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, EditError> {
     check(budget, cancelled)?;
+    if append.owner != schema.definition_page()
+        || append.original_length != image.as_bytes().len()
+        || append.length < append.original_length
+        || append.indexes().next().is_some()
+        || (append.length - append.original_length) / PAGE_BYTES != append.reservations_len()
+    {
+        return Err(EditError::Preservation);
+    }
     let mut maps = Maps::capture(image, schema, budget, cancelled)?;
     maps.enable_hint_growth(image, schema, &metadata, budget, cancelled)?;
     budget
@@ -59,7 +68,7 @@ pub(super) fn prepare(
     let mut plan = Plan {
         pages: Vec::new(),
         maps,
-        append: State::new(image, schema.definition_page()),
+        append,
         rows,
     };
     for record in records {

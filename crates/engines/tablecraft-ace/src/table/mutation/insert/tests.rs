@@ -9,7 +9,7 @@ mod general_height_one;
 pub(in crate::table::mutation::insert) mod guid_tuple_indexes;
 mod height_one;
 pub(in crate::table::mutation::insert) mod ignored_index_inserts;
-mod long_value_inserts;
+pub(in crate::table::mutation::insert) mod long_value_inserts;
 pub(super) mod model;
 pub(in crate::table::mutation::insert) mod multiple_indexes;
 mod multiple_numeric_indexes;

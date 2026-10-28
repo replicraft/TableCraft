@@ -1,6 +1,6 @@
 //! Requested preferred variable wires; no builder serializer supplies proof.
 mod decimal;
-mod long_value;
+pub(in crate::table::mutation::insert::audit) mod long_value;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{
@@ -18,7 +18,7 @@ use tablecraft_core::{
 const MARKER: [u8; 2] = [0xff, 0xfe];
 const UNIT_BYTES: usize = size_of::<u16>();
 
-pub(super) fn encode(
+pub(in crate::table::mutation::insert::audit) fn encode(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,

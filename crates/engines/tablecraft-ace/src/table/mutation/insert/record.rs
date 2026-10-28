@@ -1,5 +1,6 @@
 //! Construct a complete ordinary row from declared fields and explicit values.
 mod field;
+pub(in crate::table::mutation::insert) mod input;
 mod layout;
 mod payload;
 
@@ -54,7 +55,6 @@ impl<'a> Profile<'a> {
         payloads
             .try_reserve_exact(self.variables.len())
             .map_err(|_| InspectError::Allocation)?;
-        let mut payload_end = self.schema.layout.fixed_end;
         for &position in &self.variables {
             check(budget, cancelled)?;
             let payload = payload::encode(
@@ -63,10 +63,58 @@ impl<'a> Profile<'a> {
                 budget,
                 cancelled,
             )?;
+            payloads.push(payload);
+        }
+        self.assemble(values, payloads, budget, cancelled)
+    }
+
+    pub(super) fn variables(&self) -> &[usize] {
+        &self.variables
+    }
+
+    pub(super) fn build_prepared(
+        &self,
+        values: &[Value],
+        input: input::Input,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, EditError> {
+        if input.payloads.len() != self.variables.len() {
+            return Err(EditError::Preservation);
+        }
+        budget
+            .charge_allocation(input.payloads.len() as u64, size_of::<Vec<u8>>() as u64)
+            .map_err(InspectError::from)?;
+        let mut payloads = Vec::new();
+        payloads
+            .try_reserve_exact(input.payloads.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for payload in input.payloads {
+            check(budget, cancelled)?;
+            let input::Payload::Bytes(bytes) = payload else {
+                return Err(EditError::Preservation);
+            };
+            payloads.push(bytes);
+        }
+        self.assemble(values, payloads, budget, cancelled)
+    }
+
+    fn assemble(
+        &self,
+        values: &[Value],
+        payloads: Vec<Vec<u8>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, EditError> {
+        check(budget, cancelled)?;
+        if values.len() != self.schema.columns().len() || payloads.len() != self.variables.len() {
+            return Err(EditError::Preservation);
+        }
+        let mut payload_end = self.schema.layout.fixed_end;
+        for payload in &payloads {
             payload_end = payload_end
                 .checked_add(payload.len())
                 .ok_or(InspectError::StructureLimit)?;
-            payloads.push(payload);
         }
         let mask_bytes = self.schema.layout.max_columns.div_ceil(MASK_BITS);
         let variable_footer = if self.variables.is_empty() {

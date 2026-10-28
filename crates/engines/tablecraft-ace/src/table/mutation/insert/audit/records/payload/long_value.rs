@@ -21,12 +21,12 @@ const INLINE_TAG: u32 = 0x8000_0000;
 const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const CHECK_BYTES: usize = 256;
 
-pub(super) enum Payload {
+pub(in crate::table::mutation::insert::audit) enum Payload {
     Null,
     Present(Vec<u8>),
 }
 
-pub(super) fn requested(
+pub(in crate::table::mutation::insert::audit) fn requested(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,

@@ -15,13 +15,13 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
-pub(super) struct Shape {
+pub(in crate::table::mutation::insert::audit) struct Shape {
     pub fixed_end: usize,
     pub mask_bytes: usize,
     pub variables: Vec<usize>,
 }
 
-pub(super) fn capture(
+pub(in crate::table::mutation::insert::audit) fn capture(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

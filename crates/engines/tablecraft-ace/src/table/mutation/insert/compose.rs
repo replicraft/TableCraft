@@ -52,7 +52,8 @@ pub(super) fn compose(
     let mut count = data
         .pages
         .len()
-        .checked_add(data.append.map_edits.len())
+        .checked_add(staged.long_values.pages.len())
+        .and_then(|count| count.checked_add(data.append.map_edits.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
         .ok_or(InspectError::StructureLimit)?;
     let mut added_indexes = 0_usize;
@@ -73,6 +74,20 @@ pub(super) fn compose(
     spans
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
+    for page in &staged.long_values.pages {
+        check(budget, cancelled)?;
+        if !page.before.is_empty() {
+            spans.push(write(
+                original,
+                &mut after,
+                page.number as usize * PAGE_BYTES,
+                &page.before,
+                &page.after,
+                budget,
+                cancelled,
+            )?);
+        }
+    }
     for page in &data.pages {
         check(budget, cancelled)?;
         if !page.before.is_empty() {
@@ -92,11 +107,27 @@ pub(super) fn compose(
         budget
             .charge(
                 Resource::Steps,
-                (data.pages.len() + added_indexes + PAGE_BYTES) as u64,
+                (data.pages.len() + staged.long_values.pages.len() + added_indexes + PAGE_BYTES)
+                    as u64,
             )
             .map_err(InspectError::from)?;
         let number = u32::try_from(start / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
         let mut selected = None;
+        for page in &staged.long_values.pages {
+            if page.number == number && page.before.is_empty() {
+                data.append.require_long_value(
+                    number,
+                    page.column,
+                    page.owned,
+                    page.candidate,
+                    budget,
+                    cancelled,
+                )?;
+                if selected.replace(page.after.as_slice()).is_some() {
+                    return Err(EditError::Preservation);
+                }
+            }
+        }
         for page in &data.pages {
             if page.number == number && page.before.is_empty() {
                 data.append.require_data(number, budget, cancelled)?;

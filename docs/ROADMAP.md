@@ -412,8 +412,13 @@ variable-key INSERT comparisons and production write admission remain open.
 [Inline Memo/OLE INSERT records](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation)
 now reuse the actual long-value codec through its 64-byte preferred-inline
 profile, with independent descriptor/record reconstruction and complete-image
-controls. All 160 table INSERT/audit functions pass. External single/chained
-allocation on the shared append state remains the next implementation phase;
+controls. That inline checkpoint passed 160 table INSERT/audit functions. External single/chained
+allocation now uses the [shared append state](testing/ACE16_LONG_VALUE_INSERTS.md),
+with independently replayed descriptors, column maps and typed reservations.
+Twelve boundary and four composition cases pass, including a LVAL→DATA→INDEX
+suffix and row-width fallback. All 180 table INSERT/audit functions and the full
+ACE library batch pass (516 functions
+with one existing ignored generator). LVAL map growth/initialization remain open;
 this checkpoint does not qualify normal saves or native Access behavior.
 
 Major gates still open before the full backend is complete:

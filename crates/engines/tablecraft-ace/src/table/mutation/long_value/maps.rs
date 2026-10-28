@@ -29,7 +29,7 @@ pub(super) struct Edit {
     pub after: u8,
 }
 
-pub(super) struct Scope {
+pub(in crate::table::mutation) struct Scope {
     pub owned: RepresentedMap,
     pub hint: RepresentedMap,
     pub pages: Vec<u32>,
@@ -45,7 +45,7 @@ pub(super) struct Maps {
 }
 
 impl Scope {
-    fn capture(
+    pub(in crate::table::mutation) fn capture(
         reader: &mut Reader<'_, Cursor<&[u8]>>,
         owned_reference: u32,
         hint_reference: u32,
