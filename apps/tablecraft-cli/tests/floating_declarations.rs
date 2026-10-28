@@ -1,6 +1,6 @@
+use cli_support::run;
 #[path = "support/mod.rs"]
 mod cli_support;
-use cli_support::run;
 
 #[test]
 fn declared_arithmetic_and_legacy_alias_keep_single_failures_buffered() {

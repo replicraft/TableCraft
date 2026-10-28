@@ -304,8 +304,36 @@ fn late_cancellation_and_sink_rejection_publish_no_incomplete_count_or_poisoned_
 }
 
 #[test]
+fn supported_integral_grouped_counts_stream_past_snapshot_retention() {
+    let input = Watched::new(database(6, 4));
+    let pages = input.pages.clone();
+    let native = source(input, &|| false);
+    let query = plan("SELECT Score,Count(*) FROM Items GROUP BY Score", &native);
+    assert_eq!(
+        streamed(&query, &native).unwrap(),
+        (
+            vec![
+                vec![Value::Int32(10), Value::Int64(1)],
+                vec![Value::Int32(20), Value::Int64(1)],
+                vec![Value::Int32(30), Value::Int64(1)],
+                vec![Value::Int32(40), Value::Int64(1)],
+            ],
+            4,
+            4,
+        )
+    );
+    for page in FIRST_DATA_PAGE..FIRST_DATA_PAGE + 4 {
+        assert!(pages.borrow().contains(&page));
+    }
+    assert_eq!(
+        query.execute(&native, &[], Default::default()).err(),
+        Some(QueryError::StructureLimit),
+    );
+}
+
+#[test]
 fn unsupported_count_forms_and_required_indexes_never_fall_back_to_snapshots() {
-    let sql = "SELECT Score,Count(*) FROM Items GROUP BY Score";
+    let sql = "SELECT Score,Count(*) FROM Items GROUP BY Score ORDER BY Score";
     let input = Watched::new(database(6, 4));
     let pages = input.pages.clone();
     let native = source(input, &|| false);
