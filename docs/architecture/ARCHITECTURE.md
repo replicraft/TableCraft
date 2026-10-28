@@ -34,7 +34,12 @@ crates/
 │   ├── tablecraft-model/           # shared application-object catalog metadata
 │   └── tablecraft-db/              # shared snapshots and consuming edit contracts
 ├── platform/
-│   └── tablecraft-io/              # bounded format-independent synchronous reads
+│   ├── tablecraft-io/              # bounded format-independent synchronous reads
+│   └── tablecraft-crypto/          # checked cipher/hash and secret-buffer integration
+├── formats/
+│   └── tablecraft-formats/         # inert ZIP/OPC/XML/template and CAB codecs
+├── engineering/
+│   └── tablecraft-testkit/         # independent raw fixtures; development only
 ├── engines/
 │   └── tablecraft-ace/             # native storage, reads, checks and edit previews
 ├── backends/
@@ -50,7 +55,7 @@ The CLI depends on `tablecraft-sql`, core values/budgets and `tablecraft-express
 with `sql` enabled for scalar `query eval`; it also consumes `tablecraft-query`
 for `query run` over inline sources. `tablecraft-expressions` depends on core and
 optionally on `tablecraft-sql` through its `sql` tree-evaluation feature.
-Libraries build independently and never depend on an application. There are twelve
+Libraries build independently and never depend on an application. There are fifteen
 Cargo packages. The CLI provides `query parse`, source-free `query eval` and inline `query run`.
 The CLI also consumes `tablecraft-ace` and `tablecraft-model` for native catalog
 inspection. The engine consumes I/O and core/schema/model; I/O consumes core, and model consumes core/schema.
@@ -98,10 +103,11 @@ reusable query execution remains independent of physical index structures. See
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
 `tablecraft-query`, `tablecraft-model`, `tablecraft-db`, `tablecraft-io`,
-`tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
+`tablecraft-access`, `tablecraft-sqlite`, `tablecraft-ace`, `tablecraft-crypto`,
+`tablecraft-formats` and `tablecraft-testkit` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
-introduction. The active target map contains 43 prospective library packages across 16 groups;
-the count is descriptive, not a delivery target.
+introduction. The target map includes implemented and prospective owners across
+16 groups; it is not a package-count delivery target.
 
 | Domain | Package ownership |
 | --- | --- |
@@ -111,7 +117,7 @@ the count is descriptive, not a delivery target.
 | `backends/` | `tablecraft-access`: built-in integration over standalone ACE; `tablecraft-sqlite`: built-in SQLite integration |
 | `adapters/` | Future external providers: `tablecraft-access-msace`, `tablecraft-odbc`, `tablecraft-mssql`, `tablecraft-sharepoint`; later `tablecraft-postgres` and `tablecraft-mysql` |
 | `query/` | `tablecraft-sql`: parsing, formatting and owned syntax; `tablecraft-expressions`: Access coercion, operators, built-ins and expression evaluation; `tablecraft-query`: reusable binding, planning, execution, updateability and supported translation against lower-level contracts, independent of application services |
-| `formats/` | `tablecraft-project`: native `.tcraft` identity, metadata, packed/unpacked serialization, compatibility gates and internal migrations |
+| `formats/` | `tablecraft-formats`: working inert Access package/template codecs; future `tablecraft-project`: paused native `.tcraft` serialization and internal migrations |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-edit`: future reusable typed application mutations, changesets, semantic diffs and validation coordination; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
 | `presentation/` | `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
@@ -165,20 +171,21 @@ and [reusable data tasks](../features/IMPORT_EXPORT_TASKS.md) onto existing owne
 
 ## Ownership review — 27 October 2026
 
-The implemented workspace broadly follows the adopted domain chart. The dependency
-guard passes for all twelve packages; inspected query and foundation code retains
+The pre-extraction workspace broadly followed the adopted domain chart. The dependency
+guard passed for its twelve packages; inspected query and foundation code retained
 its engine/host separation. This verifies declared edges, not every source-level
 ownership decision. The older private pack and prospective package counts are
 planning history, not a requirement to create all listed packages.
 
-Tracked Rust files under `src/` currently contain 61,020 lines in ACE, 62,354 in
+Before extraction, tracked Rust files under `src/` contained 61,020 lines in ACE, 62,354 in
 expressions, 28,635 in query and 15,314 in Access. These figures include tests and
 exclude integration-test directories and unregistered INSERT work. File size alone
 does not establish an extraction boundary. ACE's mutation and index slices account
 for 38,953 of those lines; its encryption slice accounts for 3,654. Much of the
 engine's size therefore remains native storage work.
 
-The following are review findings and proposed work, not implemented extractions:
+The following table retains the review findings. The implemented follow-up below
+records their current status.
 
 | Priority | Change | Boundary and concrete benefit |
 | --- | --- | --- |
@@ -214,6 +221,24 @@ evaluated-operand kernels can remain feature slices within expressions for now.
 Each accepted extraction needs a working consumer, preserved public behavior,
 focused checks and updated workspace/dependency rules. INSERT source files remain
 pending and are not moved by this review.
+
+### Implemented follow-up
+
+The user-directed refactor implements `tablecraft-crypto`, `tablecraft-formats`
+and development-only `tablecraft-testkit`, with real consumers and no new registry
+versions. Package readers no longer depend on ACE's error type. CLI package
+inspection imports formats directly; Access retains native qualification and
+`TemplateSource`. The shared DB row/collection views are imported directly from
+DB, without query compatibility exports. SQL owns bounded name constructors;
+Access and query consumers no longer parse dummy carriers. Access shares fourteen
+mechanical forwarding methods while keeping each route and namespace policy
+explicit. Engineering artifact readers share a Python module; no empty Rust
+compatibility package was introduced.
+
+See [crypto](../platform/CRYPTO.md), [package formats](../formats/ACCESS_PACKAGES.md),
+[DB views](../foundation/DB.md), [SQL construction](../query/SQL_PARSER.md) and
+[testkit](../testing/TESTKIT.md) for implemented boundaries. Normal native saves,
+signature verification and paused project/runtime work retain their prior status.
 
 ## Dependency and ownership rules
 
@@ -356,7 +381,7 @@ Runtime composes approved apply; MCP/CLI/designers adapt the same services.
 [MCP direction](../interfaces/MCP.md) are requirements, not implemented tools.
 Existing native edit plans remain a distinct bounded capability. No agent path
 may bypass version, authorization, native format or preservation restrictions.
-The actual workspace still has twelve packages and no MCP runtime dependency.
+The actual workspace has fifteen packages and no MCP runtime dependency.
 
 ## Built-in backends and external data
 

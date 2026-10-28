@@ -180,6 +180,17 @@ dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not
 hide failures through silent defaults or unconditional retries.
 
+When extracting code, update consumers to import its owning crate directly.
+Avoid compatibility re-exports or wrappers whose only purpose is to retain an
+old import path. Keep re-exports that define a genuine public API boundary.
+
+`tablecraft-formats` owns inert package/template codecs; Access retains native
+payload qualification and query adapters. `tablecraft-crypto` owns checked
+shared primitives; native encryption policy and preservation remain in ACE.
+`tablecraft-testkit` is development-only, independent of production codecs.
+Keep query-neutral row/collection views in DB and query-specific Source contracts
+in query. See the [ownership contracts](docs/architecture/ARCHITECTURE.md).
+
 Write human-readable code from the first edit; do not write compressed drafts
 and defer readability to a later formatting pass. Use normal spacing around
 operators, after commas and in type annotations, with one statement or declaration

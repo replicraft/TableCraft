@@ -14,6 +14,7 @@ native Access behavior; SQLite and native-project implementation are paused.
 | [Expressions](expressions/README.md) | Built-ins, numeric/text/date behavior and formatting |
 | [Foundation](foundation/README.md) | Shared values, schemas, database contracts and I/O |
 | [Architecture](architecture/README.md) | Package boundaries and application contracts |
+| [Package formats](formats/ACCESS_PACKAGES.md) | Inert Access template and deployment codecs |
 | [Development](development/README.md) | Toolchain, dependencies, tracing and releasing |
 | [Other backends](backends/README.md) | SQLite integration |
 | [Application features](features/README.md) | Application and interoperability contracts |

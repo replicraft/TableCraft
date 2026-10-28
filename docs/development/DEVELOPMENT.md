@@ -1,5 +1,12 @@
 # Development baseline
 
+Original repository code uses the Apache-2.0 license in [LICENSE](../../LICENSE). Implemented behavior and its
+verification are recorded in [IMPLEMENTATION.md](../IMPLEMENTATION.md). Repository
+working guidance lives in [AGENTS.md](../../AGENTS.md). Private planning materials
+stay under the ignored `docs/temp/` directory and are not required to build or
+test. Extract applicable guidance into current documentation as functionality is
+implemented; keep the remaining plans private.
+
 ## Shared compatibility artifact helpers
 
 Maintained saved-evidence verifiers use
@@ -13,13 +20,6 @@ unchanged. Historical receipts retain their original maintained-tool hashes;
 the current verifier is a later implementation, not a replacement execution.
 Two helper tests and both saved twelve-case proof replays pass. The candidate
 verifier retains its explicit optional Git-object check.
-
-Original repository code uses the Apache-2.0 license in [LICENSE](../../LICENSE). Implemented behavior and its
-verification are recorded in [IMPLEMENTATION.md](../IMPLEMENTATION.md). Repository
-working guidance lives in [AGENTS.md](../../AGENTS.md). Private planning materials
-stay under the ignored `docs/temp/` directory and are not required to build or
-test. Extract applicable guidance into current documentation as functionality is
-implemented; keep the remaining plans private.
 
 ## Toolchain and commands
 
@@ -39,6 +39,9 @@ cargo check -p tablecraft-query --no-default-features --locked
 cargo check -p tablecraft-model --no-default-features --locked
 cargo check -p tablecraft-db --no-default-features --locked
 cargo check -p tablecraft-io --no-default-features --locked
+cargo check -p tablecraft-crypto --no-default-features --locked
+cargo check -p tablecraft-formats --no-default-features --locked
+cargo check -p tablecraft-testkit --no-default-features --locked
 cargo check -p tablecraft-ace --no-default-features --locked
 cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
 cargo test -p tablecraft-ace --all-features --locked
