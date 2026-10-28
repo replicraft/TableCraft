@@ -29,28 +29,39 @@ order. Selected cached fields use their qualified stored decoders, including
 Byte, Int16, Int64, Single, GUID, Decimal and Memo; ordinary-only and zero-width projections do not decode caches.
 Complete caches publish only after EOF, count/schema and cumulative control checks.
 A failed/advanced cursor suffix cannot become a complete table. TOP and WHERE do
-not suppress malformed selected cache values later in the native snapshot.
+not suppress malformed selected cache values later in a complete sequential or
+full-index snapshot. Qualified typed key selections have the separate partial
+read scope below.
 
 Stored Single/Double caches may be inspected or browsed with non-finite IEEE
 values, while query snapshots retain their existing finite-number admission
 policy. A selected non-finite source value therefore refuses the whole query
 snapshot before output; this is separate from malformed cached storage.
 
-An explicitly required ordinary native index can now return selected cached
-outputs through `read_stored_table_index_with_request`, or through
-`read_stored_table_index_with_references` when collection alignment needs logical
-ROW identity. Both stored readers require complete `All` traversal. They bind
-fresh qualified ResultType/Expression declarations to the indexed table schema,
-decode stored results without executing formulas, and validate ordinary physical
-index keys against the corresponding records. Missing, unsupported or corrupt
-required indexes never fall back to sequential reads.
+An explicitly required ordinary native index can return cached scalar outputs
+through `read_stored_table_index_with_request`, or through
+`read_stored_table_index_with_references` when logical ROW identity is needed.
+Both readers accept the existing qualified typed ordinary-key selections as well
+as complete `All` traversals. They bind fresh qualified ResultType/Expression
+declarations to the indexed table schema, decode stored results without executing
+formulas, and validate every physical key against its corresponding record,
+including unprojected keys. Missing, unsupported or corrupt required indexes
+never fall back to sequential reads.
 
-Full and projected query snapshots retain their existing schema and complete-cache
-checks. WHERE remains in the evaluator even when it supplied a source constraint;
-this stored-index path reads all selected cached values before publishing or
-caching results. It does not add range reads, automatic index selection or
-progressive indexed execution. Automatic selection retains its existing cached
-read behavior, and ordinary-only projections retain their existing eligibility.
+Only existing wholly safe source constraints select cached query candidates;
+WHERE remains in the evaluator. Selected reads cap returned rows rather than the
+whole table declaration, and validate traversed pages and returned records.
+Skipped subtrees and unselected payloads remain outside that partial coverage.
+Conservative duplicate-key boundaries can require visiting a neighboring subtree
+even when its returned rows do not match. An empty selection still qualifies
+selected cached declarations before publishing a result.
+
+Full and projected query snapshots retain their schema and complete-cache checks.
+Partial selections remain temporary and never become complete table/projection
+caches. A later unconstrained read must load the complete relation. Automatic
+index hints use `read_stored_table_index_in_table_order` to preserve original
+logical page/slot order; required indexes preserve their configured key order.
+Neither path executes formulas or adds progressive indexed execution.
 Cached scalars may also accompany [stored collection members](../queries/INDEXED_COLLECTION_QUERIES.md)
 through checked logical parent references. Per-field text
 identities and explicit host comparers retain the existing comparison contract.

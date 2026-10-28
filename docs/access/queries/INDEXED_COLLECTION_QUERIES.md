@@ -55,9 +55,11 @@ metadata, not row contents, property maps or an entire-file revision.
 - Selected cached-calculation scalars can accompany members through the explicit
   [stored-index reader](../calculations/CACHED_CALCULATION_QUERIES.md). Complete
   traversal, original evaluator filters and the same owner/reference bijection
-  remain required. No range or automatic indexed collection selection is added.
-- Automatic constrained scalar scans and their table-order requirements remain
-  unchanged. These references do not make collection execution progressive or
+  remain required, even though the scalar-only stored readers also support typed
+  key selections. No range or automatic indexed collection selection is added.
+- Scalar-only cached queries can use qualified key constraints and automatic
+  table-order reads. Collection expansion still uses the complete parent path
+  above. These references do not make collection execution progressive or
   provide live Access shared-file coherence.
 
 Microsoft's [index guidance](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance)

@@ -107,9 +107,13 @@ Explicit required indexes also compose with
 logical row references rather than ordinal/value matching. That path validates a
 complete parent traversal. Opted-in cached-calculation scalar outputs now use
 the explicit [stored-index reader](../calculations/CACHED_CALCULATION_QUERIES.md)
-through ordinary eligible keys, including beside collection members. It reads
-complete `All` snapshots, retains evaluator filters and does not extend range,
-automatic or progressive index selection. Calculated fields themselves remain
+through ordinary eligible keys, including beside collection members. Scalar-only
+cached queries can use the existing wholly safe typed key constraints. Required
+indexes retain key order, automatic hints retain original logical page/slot order,
+and the evaluator keeps the original predicate. Partial selected results never
+become complete caches; unselected payloads remain unchecked. Collection member
+expansion still requires complete `All` traversal and its checked parent bijection.
+No progressive indexed execution is added. Calculated fields themselves remain
 ineligible index keys, following [Microsoft's Access restriction](https://support.microsoft.com/en-us/access/create-and-use-an-index-to-improve-performance).
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter

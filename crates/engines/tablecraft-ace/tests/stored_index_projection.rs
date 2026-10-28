@@ -157,7 +157,7 @@ fn malformed_selected_cache_fails_but_unselected_cache_is_not_decoded() {
 }
 
 #[test]
-fn empty_declarations_calculated_keys_and_nonall_selections_remain_closed() {
+fn empty_declarations_calculated_keys_and_typed_output_selections_keep_their_boundaries() {
     let empty = indexed::database(&[], false, false);
     assert!(
         read(&empty, &["Score"])
@@ -203,24 +203,26 @@ fn empty_declarations_calculated_keys_and_nonall_selections_remain_closed() {
         Err(InspectError::Unsupported)
     ));
     let bytes = indexed::database(&[Some(77), None, Some(-4)], false, false);
-    assert!(matches!(
-        read_stored_table_index_with_request(
-            &mut Cursor::new(&bytes),
-            CatalogScope::new(1),
-            "Items",
-            "IdOrder",
-            IndexReadRequest {
-                selection: IndexProjectionSelection::Int32(Int32IndexSelection::Range {
-                    lower: Bound::Included(1),
-                    upper: Bound::Included(2)
-                }),
-                ..request(Some(&["Score"]))
-            },
-            &mut budget(),
-            &|| false,
-        ),
-        Err(InspectError::Unsupported)
-    ));
+    let selected = read_stored_table_index_with_request(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "Items",
+        "IdOrder",
+        IndexReadRequest {
+            selection: IndexProjectionSelection::Int32(Int32IndexSelection::Range {
+                lower: Bound::Included(1),
+                upper: Bound::Included(2),
+            }),
+            ..request(Some(&["Score"]))
+        },
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        selected.rows(),
+        &[vec![Value::Int32(77)], vec![Value::Null]]
+    );
 }
 
 struct SchemaDrift {

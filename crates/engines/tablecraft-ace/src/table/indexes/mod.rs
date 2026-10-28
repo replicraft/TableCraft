@@ -110,7 +110,10 @@ pub(in crate::table) use mutation::{
     SlotKeyChanges, SlotKeyUpdate, qualify_slot_indexes, slot_patches as index_slot_patches,
 };
 mod read;
-pub use read::{read_stored_table_index_with_references, read_stored_table_index_with_request};
+pub use read::{
+    read_stored_table_index_in_table_order, read_stored_table_index_with_references,
+    read_stored_table_index_with_request,
+};
 mod selection;
 mod walk;
 pub use read::{read_table_index, read_table_index_range, read_table_int64_index_range};
