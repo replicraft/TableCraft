@@ -4,6 +4,7 @@ pub(crate) use execution::ExecutionError;
 mod encryption;
 mod error;
 mod inspect;
+mod open;
 mod query;
 mod rows;
 mod tables;
@@ -13,6 +14,8 @@ use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Receive a file for inert header inspection; never executes database content.
+    Open(open::Args),
     /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables(tables::Args),
     /// Display a page or stream local scalar table contents without writing SQL.
@@ -35,8 +38,15 @@ pub(crate) enum Command {
 }
 
 impl Command {
+    pub(crate) fn waits_for_terminal(&self) -> bool {
+        matches!(self, Self::Open(args) if args.wait)
+    }
+
     pub(crate) fn run(self, format: Format, password: Option<&str>) -> Result<String, String> {
         match self {
+            Self::Open(args) => args
+                .run(format, password)
+                .map_err(|error| error.to_string()),
             Self::Encryption { command } => {
                 command.run(format, password).map_err(|e| e.to_string())
             }
