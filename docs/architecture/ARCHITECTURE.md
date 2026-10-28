@@ -36,7 +36,7 @@ crates/
 ├── platform/
 │   └── tablecraft-io/              # bounded format-independent synchronous reads
 ├── engines/
-│   └── tablecraft-ace/             # bounded native metadata/scalar reads
+│   └── tablecraft-ace/             # native storage, reads, checks and edit previews
 ├── backends/
 │   ├── tablecraft-access/          # native scalar Source and edit adapters
 │   └── tablecraft-sqlite/          # read-only SQLite Source adapter
@@ -97,7 +97,8 @@ reusable query execution remains independent of physical index structures. See
 ## Target domain map
 
 `tablecraft-core`, `tablecraft-schema`, `tablecraft-sql`, `tablecraft-expressions`,
-`tablecraft-query`, `tablecraft-model`, `tablecraft-io`, `tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
+`tablecraft-query`, `tablecraft-model`, `tablecraft-db`, `tablecraft-io`,
+`tablecraft-access`, `tablecraft-sqlite` and `tablecraft-ace` exist as library packages today. The
 remaining names identify intended ownership when working consumers justify their
 introduction. The active target map contains 43 prospective library packages across 16 groups;
 the count is descriptive, not a delivery target.
@@ -161,6 +162,58 @@ candidate and defines separate open/preserve/execute/edit/save evidence.
 The [roadmap](../ROADMAP.md) maps [analysis tools](../features/DATABASE_ANALYSIS.md),
 [wizards](../features/APP_TEMPLATES_WIZARDS.md), [expression editing](../features/EXPRESSION_BUILDER.md)
 and [reusable data tasks](../features/IMPORT_EXPORT_TASKS.md) onto existing owners.
+
+## Ownership review — 27 October 2026
+
+The implemented workspace broadly follows the adopted domain chart. The dependency
+guard passes for all twelve packages; inspected query and foundation code retains
+its engine/host separation. This verifies declared edges, not every source-level
+ownership decision. The older private pack and prospective package counts are
+planning history, not a requirement to create all listed packages.
+
+Tracked Rust files under `src/` currently contain 61,020 lines in ACE, 62,354 in
+expressions, 28,635 in query and 15,314 in Access. These figures include tests and
+exclude integration-test directories and unregistered INSERT work. File size alone
+does not establish an extraction boundary. ACE's mutation and index slices account
+for 38,953 of those lines; its encryption slice accounts for 3,654. Much of the
+engine's size therefore remains native storage work.
+
+The following are review findings and proposed work, not implemented extractions:
+
+| Priority | Change | Boundary and concrete benefit |
+| --- | --- | --- |
+| First crate candidate | `platform/tablecraft-crypto` | Extract useful checked cipher/digest integration and secret-buffer handling from ACE's Agile/legacy/SID consumers. Give it engine-neutral errors and explicit inputs; it must not import ACE. Retain native descriptor/profile interpretation, password policy, encoding keys/page-IV policy, header rewriting and source/preservation orchestration in ACE. Do not merely wrap individual RustCrypto calls or move the complete encryption tree wholesale. |
+| First small existing-crate moves | Query row views into `tablecraft-db` | `source/projection.rs` contains `ProjectedRow` and projection validation; `source/multivalue.rs` contains the borrowed `MultivalueList` view. They have real Access, SQLite and query consumers. Use lower-level validation errors and adapt them to `QueryError`; query-specific visitors remain in query. Preserve the paused SQLite scope. |
+| First API cleanup | Owned syntax constructors in `tablecraft-sql` | Saved-query/calculation consumers currently parse synthetic `SELECT 0` or skeleton queries to obtain owned names and statement shapes. Add bounded constructors in the existing syntax owner, then replace those construction workarounds without widening saved-query admission or exposing upstream parser ASTs. |
+| Engineering reuse | `tablecraft-testkit` and `tablecraft-compat`, progressively | Start with genuinely shared raw fixture builders, I/O failpoints and process/pin/report plumbing. ACE currently imports integration fixtures through `src/test_support.rs` path attributes; Access tests repeat reader probes. Keep private proof tests and independent goldens with their owners. Engine-free testkit code must not introduce testkit-to-ACE cycles or foreign-trait implementation problems. Consolidating Python/Java laboratory tools does not by itself require a Rust crate. |
+| Next independent format boundary | Access package readers under `formats/` | Access `template/` owns ZIP/OPC/XML/IRI parsing and `input/deployment*` owns CAB extraction. A working package-format library could isolate those dependencies for package-only consumers. Package errors must stop borrowing ACE's `InspectError`. Keep `TemplateSource`, native input routing, `NativeReadSource` integration and query adaptation in Access. Choose a package name with the extraction; this is not the paused `.tcraft` implementation. |
+| Module cleanup | Routed-source forwarding within Access | Linked, external and recomputed sources repeat capability delegation. Share the mechanical forwarding while keeping namespace ownership, selected-handle checks, source identity, cancellation and budgets explicit. This does not justify a provider or runtime crate. |
+
+Crypto extraction must preserve independent vectors, all supported encryption
+profiles, zeroization, budget/cancellation behavior and atomic buffer publication.
+Moving code supplies neither ciphertext authentication nor signer verification.
+`tablecraft-security` remains a distinct future policy/trust boundary. Current
+deployment signatures are unverified; there is no implemented signature verifier
+to relocate. The generic image journal's SHA-256 framing stays in I/O.
+
+Keep native pages, allocation, physical index keys, record layouts, constraints,
+preservation and backend transactions together in ACE. Keep Access expression
+semantics in expressions and relational planning/execution in query. The query
+`Source` contract includes named SQL, query errors, policy provenance and residual
+constraints; moving it wholesale into DB would invert the intended dependencies.
+Small core/schema/model/DB packages are not missing responsibilities merely because
+they are small; native physical types do not become shared schema types by moving
+files.
+
+CLI arguments, password prompting, paths, temporary files, output publication and
+table formatting remain host duties. A second writable host can justify extracting
+the shared edit workflow from composition into Access services; do not create an
+empty runtime/edit package in anticipation. Optional locale/error catalogs and
+evaluated-operand kernels can remain feature slices within expressions for now.
+
+Each accepted extraction needs a working consumer, preserved public behavior,
+focused checks and updated workspace/dependency rules. INSERT source files remain
+pending and are not moved by this review.
 
 ## Dependency and ownership rules
 
