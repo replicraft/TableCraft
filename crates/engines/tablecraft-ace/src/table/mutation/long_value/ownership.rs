@@ -92,25 +92,37 @@ pub(in crate::table::mutation) struct ZeroPair {
     pub offset: usize,
 }
 
+pub(in crate::table::mutation) struct MissingDeclaration {
+    pub column: usize,
+}
+
+pub(in crate::table::mutation) struct InitializationSources {
+    pub zeros: Vec<ZeroPair>,
+    pub missing: Vec<MissingDeclaration>,
+    pub tail: Option<storage_maps::DefinitionTail>,
+}
+
 impl Inventory {
     pub fn capture(
         image: &NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_inner(image, None, budget, cancelled).map(|(inventory, _)| inventory)
+        Self::capture_inner(image, None, &[], budget, cancelled).map(|(inventory, _)| inventory)
     }
 
-    pub(in crate::table::mutation) fn capture_for_initialization(
+    pub(in crate::table::mutation) fn capture_for_insert(
         image: &NativeImage,
         schema: &TableSchema,
-        columns: &[usize],
+        zero_columns: &[usize],
+        external_columns: &[usize],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(Self, Vec<ZeroPair>), EditError> {
+    ) -> Result<(Self, InitializationSources), EditError> {
         Self::capture_inner(
             image,
-            Some((schema.definition_page(), columns)),
+            Some((schema.definition_page(), zero_columns)),
+            external_columns,
             budget,
             cancelled,
         )
@@ -119,9 +131,10 @@ impl Inventory {
     fn capture_inner(
         image: &NativeImage,
         initializing: Option<(u32, &[usize])>,
+        external_columns: &[usize],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(Self, Vec<ZeroPair>), EditError> {
+    ) -> Result<(Self, InitializationSources), EditError> {
         let mut result = Self {
             claims: Vec::new(),
             live: Vec::new(),
@@ -129,6 +142,8 @@ impl Inventory {
             maps: None,
         };
         let mut zeros = Vec::new();
+        let mut missing = Vec::new();
+        let mut tail = None;
         let maps = map_authority::capture_catalog_for_initialization(
             image,
             initializing,
@@ -170,6 +185,51 @@ impl Inventory {
                         offset: storage_maps::zero_pair_offset(reader, schema, declaration.number)?,
                     });
                 }
+                if selected.is_some() {
+                    for field in schema.columns() {
+                        reader.tick()?;
+                        reader.work(external_columns.len() + declarations.entries.len())?;
+                        if !external_columns.contains(&field.number())
+                            || declarations
+                                .entries
+                                .iter()
+                                .any(|entry| entry.number == field.number())
+                        {
+                            continue;
+                        }
+                        if !matches!(field.native_type(), LONG_TEXT | OLE) {
+                            return Err(EditError::Unsupported(WriteBlocker::Column));
+                        }
+                        if tail.is_none() {
+                            tail = Some(storage_maps::definition_tail(reader, schema).map_err(
+                                |error| match error {
+                                    InspectError::Unsupported => {
+                                        EditError::Unsupported(WriteBlocker::RowLayout)
+                                    }
+                                    other => other.into(),
+                                },
+                            )?);
+                        }
+                        reader
+                            .budget
+                            .charge_allocation(1, size_of::<MissingDeclaration>() as u64)
+                            .map_err(InspectError::from)?;
+                        missing
+                            .try_reserve(1)
+                            .map_err(|_| InspectError::Allocation)?;
+                        missing.push(MissingDeclaration {
+                            column: field.number(),
+                        });
+                        reader
+                            .budget
+                            .charge_allocation(1, size_of::<usize>() as u64)
+                            .map_err(InspectError::from)?;
+                        empty_columns
+                            .try_reserve(1)
+                            .map_err(|_| InspectError::Allocation)?;
+                        empty_columns.push(field.number());
+                    }
+                }
                 result.table(schema, indexes, declarations, &empty_columns, reader)
             },
         )?;
@@ -183,7 +243,14 @@ impl Inventory {
         };
         maps.protect_storage(&mut result.protected, &mut reader)?;
         result.maps = Some(maps);
-        Ok((result, zeros))
+        Ok((
+            result,
+            InitializationSources {
+                zeros,
+                missing,
+                tail,
+            },
+        ))
     }
 
     fn table(

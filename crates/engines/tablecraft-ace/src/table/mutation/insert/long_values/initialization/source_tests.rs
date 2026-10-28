@@ -50,8 +50,8 @@ fn source(bytes: &[u8]) -> (NativeImage, TableSchema) {
 }
 
 fn qualify(image: &NativeImage, schema: &TableSchema) -> Result<Vec<ZeroPair>, EditError> {
-    Inventory::capture_for_initialization(image, schema, &[2], &mut budget(), &|| false)
-        .map(|(_, zeros)| zeros)
+    Inventory::capture_for_insert(image, schema, &[2], &[], &mut budget(), &|| false)
+        .map(|(_, declarations)| declarations.zeros)
 }
 
 fn later_declaration(bytes: &mut [u8], column: u16, owned: u32, candidate: u32) {

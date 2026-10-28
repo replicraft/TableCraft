@@ -3,6 +3,7 @@ mod choice;
 mod cursor;
 mod initialization;
 mod maps;
+mod tail;
 
 use self::{choice::Storage, cursor::Cursor as Placement};
 use super::records::payload::long_value::Payload;
@@ -62,6 +63,8 @@ pub(super) fn derive(
             || !staged.long_values.metadata.is_empty()
             || !staged.long_values.initializations.is_empty()
             || !staged.long_values.qualified_zero_columns.is_empty()
+            || !staged.long_values.qualified_missing_columns.is_empty()
+            || staged.long_values.definition_growth.is_some()
             || staged
                 .data
                 .append
@@ -120,16 +123,34 @@ pub(super) fn derive(
         true
     };
     let mut initializations = Vec::new();
+    let mut growth = None;
+    let mut qualified_missing = Vec::new();
     let mut placement = if needs_inventory {
-        let (inventory, zeros) = Inventory::capture_for_initialization(
+        let mut external_columns = Vec::new();
+        reserve(&mut external_columns, selected.len(), reader)?;
+        for &position in &selected {
+            reader.tick()?;
+            external_columns.push(schema.columns()[position].number());
+        }
+        let (inventory, sources) = Inventory::capture_for_insert(
             image,
             schema,
             &native_columns,
+            &external_columns,
             reader.budget,
             reader.cancelled,
         )?;
-        reserve(&mut proof.qualified_zero_columns, zeros.len(), reader)?;
-        for zero in &zeros {
+        reserve(&mut qualified_missing, sources.missing.len(), reader)?;
+        for missing in &sources.missing {
+            reader.tick()?;
+            qualified_missing.push(missing.column);
+        }
+        reserve(
+            &mut proof.qualified_zero_columns,
+            sources.zeros.len(),
+            reader,
+        )?;
+        for zero in &sources.zeros {
             reader.tick()?;
             proof.qualified_zero_columns.push(zero.column);
         }
@@ -150,7 +171,14 @@ pub(super) fn derive(
             let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
             global.require_allocated_storage(reader, &global)?;
             initializations =
-                initialization::derive(schema, &selected, &zeros, &global, proof, reader)?;
+                initialization::derive(schema, &selected, &sources, &global, proof, reader)?;
+            growth = tail::derive(
+                schema,
+                sources.tail.as_ref(),
+                &initializations,
+                proof,
+                reader,
+            )?;
             let mut declarations = Vec::new();
             reserve(&mut declarations, selected.len(), reader)?;
             for position in selected {
@@ -200,7 +228,10 @@ pub(super) fn derive(
         None
     };
     reader.work(proof.qualified_zero_columns.len())?;
-    if proof.qualified_zero_columns != staged.long_values.qualified_zero_columns {
+    reader.work(qualified_missing.len())?;
+    if proof.qualified_zero_columns != staged.long_values.qualified_zero_columns
+        || qualified_missing != staged.long_values.qualified_missing_columns
+    {
         return Err(EditError::Preservation);
     }
     let mut resolved = Vec::new();
@@ -304,5 +335,10 @@ pub(super) fn derive(
         return Err(EditError::Preservation);
     }
     initialization::compare(&initializations, staged, proof, reader)?;
+    tail::compare(
+        growth.as_ref(),
+        staged.long_values.definition_growth.as_ref(),
+        reader,
+    )?;
     Ok(Some(resolved))
 }

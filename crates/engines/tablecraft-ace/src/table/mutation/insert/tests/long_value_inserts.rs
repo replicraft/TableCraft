@@ -9,6 +9,7 @@ use tablecraft_testkit::access as raw;
 const PAGE: usize = 4096;
 
 mod composition;
+pub(in crate::table::mutation::insert) mod declarations;
 pub(in crate::table::mutation::insert) mod external;
 pub(in crate::table::mutation::insert) mod growth;
 pub(in crate::table::mutation::insert) mod initialization;

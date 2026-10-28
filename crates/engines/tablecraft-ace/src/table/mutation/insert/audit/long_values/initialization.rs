@@ -3,7 +3,7 @@ use super::super::{ImageProof, reserve};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
     format::{allocation::RepresentedMap, page::PAGE_BYTES, reader::Reader, row::reference},
-    table::mutation::{insert::Staged, long_value::ownership::ZeroPair},
+    table::mutation::{insert::Staged, long_value::ownership::InitializationSources},
 };
 use std::io::Cursor;
 
@@ -22,15 +22,15 @@ pub(super) struct Initialization {
     pub position: usize,
     pub number: u32,
     pub column: usize,
-    pub offset: usize,
+    pub offset: Option<usize>,
     pub references: LongValueMapReferences,
-    after: [u8; POINTER_PAIR_BYTES],
+    pub after: [u8; POINTER_PAIR_BYTES],
 }
 
 pub(super) fn derive(
     schema: &TableSchema,
     selected: &[usize],
-    zeros: &[ZeroPair],
+    sources: &InitializationSources,
     global: &RepresentedMap,
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -39,10 +39,13 @@ pub(super) fn derive(
     reserve(&mut ordered, selected.len(), reader)?;
 
     for &position in selected {
-        reader.work(zeros.len())?;
-        if zeros
-            .iter()
-            .any(|zero| zero.column == schema.columns()[position].number())
+        reader.work(sources.zeros.len() + sources.missing.len())?;
+        let column = schema.columns()[position].number();
+        if sources.zeros.iter().any(|zero| zero.column == column)
+            || sources
+                .missing
+                .iter()
+                .any(|missing| missing.column == column)
         {
             ordered.push(position);
         }
@@ -62,19 +65,21 @@ pub(super) fn derive(
     for position in ordered {
         reader.tick()?;
         let column = schema.columns()[position].number();
-        reader.work(zeros.len())?;
-        let zero = zeros
+        reader.work(sources.zeros.len() + sources.missing.len())?;
+        let offset = sources
+            .zeros
             .iter()
             .find(|zero| zero.column == column)
-            .ok_or(EditError::Preservation)?;
-        let end = zero
-            .offset
-            .checked_add(POINTER_PAIR_BYTES)
-            .ok_or(InspectError::StructureLimit)?;
-        if proof.original.get(zero.offset..end) != Some([0; POINTER_PAIR_BYTES].as_slice())
-            || proof.bytes.get(zero.offset..end) != Some([0; POINTER_PAIR_BYTES].as_slice())
-        {
-            return Err(EditError::Preservation);
+            .map(|zero| zero.offset);
+        if let Some(offset) = offset {
+            let end = offset
+                .checked_add(POINTER_PAIR_BYTES)
+                .ok_or(InspectError::StructureLimit)?;
+            if proof.original.get(offset..end) != Some([0; POINTER_PAIR_BYTES].as_slice())
+                || proof.bytes.get(offset..end) != Some([0; POINTER_PAIR_BYTES].as_slice())
+            {
+                return Err(EditError::Preservation);
+            }
         }
 
         let number = u32::try_from(proof.bytes.len() / PAGE_BYTES)
@@ -118,13 +123,15 @@ pub(super) fn derive(
         after[..POINTER_BYTES].copy_from_slice(&owned.to_le_bytes());
         after[POINTER_BYTES..].copy_from_slice(&candidate.to_le_bytes());
         reader.work(POINTER_PAIR_BYTES + SLOT_START + MAP_COUNT * SLOT_BYTES)?;
-        proof.bytes[zero.offset..end].copy_from_slice(&after);
+        if let Some(offset) = offset {
+            proof.bytes[offset..offset + POINTER_PAIR_BYTES].copy_from_slice(&after);
+        }
 
         result.push(Initialization {
             position,
             number,
             column,
-            offset: zero.offset,
+            offset,
             references: LongValueMapReferences { owned, candidate },
             after,
         });
@@ -150,9 +157,7 @@ pub(super) fn compare(
         let purpose = purposes.next().ok_or(EditError::Preservation)?;
         if actual.number != expected.number
             || actual.column != expected.column
-            || actual.offset != expected.offset
-            || actual.before != [0; POINTER_PAIR_BYTES]
-            || actual.after != expected.after
+            || !matches_binding(expected, &actual.binding)
             || actual.bytes != proof.bytes[base..base + PAGE_BYTES]
             || purpose.number != expected.number
             || purpose.column != expected.column
@@ -173,4 +178,27 @@ pub(super) fn compare(
         return Err(EditError::Preservation);
     }
     Ok(())
+}
+
+fn matches_binding(
+    expected: &Initialization,
+    actual: &crate::table::mutation::insert::long_values::DeclarationBinding,
+) -> bool {
+    use crate::table::mutation::insert::long_values::DeclarationBinding;
+    match (expected.offset, actual) {
+        (
+            Some(expected_offset),
+            DeclarationBinding::ZeroPair {
+                offset,
+                before,
+                after,
+            },
+        ) => {
+            *offset == expected_offset
+                && *before == [0; POINTER_PAIR_BYTES]
+                && *after == expected.after
+        }
+        (None, DeclarationBinding::MissingDeclaration) => true,
+        _ => false,
+    }
 }

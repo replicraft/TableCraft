@@ -19,10 +19,76 @@ use zerocopy::{
     little_endian::{U16, U32},
 };
 
+#[cfg(feature = "ace16-write-preview")]
+use crate::format::bytes::u32_at;
+
 const TERMINATOR: u16 = u16::MAX;
 const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
+
+#[cfg(feature = "ace16-write-preview")]
+const DEFINITION_FREE_OFFSET: usize = 2;
+#[cfg(feature = "ace16-write-preview")]
+const DEFINITION_NEXT_OFFSET: usize = 4;
+#[cfg(feature = "ace16-write-preview")]
+const DEFINITION_LENGTH_OFFSET: usize = 8;
+#[cfg(feature = "ace16-write-preview")]
+const DEFINITION_HEADER_BYTES: usize = 8;
+#[cfg(feature = "ace16-write-preview")]
+const TRAILER_BYTES: usize = size_of::<u16>();
+
+/// Complete original single-page tail, separate from any zero-pair patch.
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) struct DefinitionTail {
+    pub definition: u32,
+    pub terminal: usize,
+    pub old_length: usize,
+    pub old_free: u16,
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) fn definition_tail<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    schema: &TableSchema,
+) -> Result<DefinitionTail, InspectError> {
+    let definitions = indexes::definitions_with_tail(reader, schema)?;
+    let bytes = definition::read(reader, schema.definition)?;
+    if bytes.len() > PAGE_BYTES || u32_at(&bytes, DEFINITION_NEXT_OFFSET)? != 0 {
+        return Err(InspectError::Unsupported);
+    }
+    let old_length = u32_at(&bytes, DEFINITION_LENGTH_OFFSET)? as usize;
+    let old_free = u16_at(&bytes, DEFINITION_FREE_OFFSET)?;
+    if usize::from(old_free) != PAGE_BYTES.saturating_sub(old_length + DEFINITION_HEADER_BYTES) {
+        return Err(InspectError::Unsupported);
+    }
+    let mut position = definitions.tail;
+    for _ in 0..=MAX_COLUMNS {
+        reader.tick()?;
+        if u16_at(&bytes, position)? == TERMINATOR {
+            if position.checked_add(TRAILER_BYTES) != Some(old_length) {
+                return Err(InspectError::Unsupported);
+            }
+            let terminal = (schema.definition as usize)
+                .checked_mul(PAGE_BYTES)
+                .and_then(|base| base.checked_add(position))
+                .ok_or(InspectError::StructureLimit)?;
+            return Ok(DefinitionTail {
+                definition: schema.definition,
+                terminal,
+                old_length,
+                old_free,
+            });
+        }
+        position = position
+            .checked_add(size_of::<Pair>())
+            .ok_or(InspectError::StructureLimit)?;
+        if position > bytes.len() {
+            return Err(InspectError::Truncated);
+        }
+    }
+    Err(InspectError::StructureLimit)
+}
 
 #[derive(FromBytes, Immutable, KnownLayout, Unaligned)]
 #[repr(C)]

@@ -102,7 +102,8 @@ Minimal and all-feature compilation remain separate checks.
 
 ## Remaining boundaries
 
-Missing-declaration insertion, table-definition continuation growth, legacy
+The later [missing-declaration continuation](ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
+adds qualified single-page TD tails. Table-definition continuation growth, legacy
 external-page adoption or migration, map-container slot expansion and global map
 growth remain separate work. These tests qualify synthetic engineering sources
 and independent byte proofs; they do not establish original Access-file behavior,
