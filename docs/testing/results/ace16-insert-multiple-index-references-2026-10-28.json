@@ -1,0 +1,877 @@
+{
+  "scope": "Four independent Jackcess public-writer INSERT reference cases across V2016/V2019; no Rust candidate qualification or native Access comparison.",
+  "date": "2026-10-28",
+  "source_files": 4,
+  "cases": [
+    {
+      "id": "V2016-ordinary",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "141b281934a8004b638031d6366bab6c2667cd6d3245843e507e7c818d02b38d"
+      },
+      "reference": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-ordinary-reference.accdb",
+        "bytes": 389120,
+        "sha256": "2511e15e0702422fa58b16a845eb63e2733dd65b7febaf6fe71cf3434a3838f9"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-ordinary-before-getter.stdout",
+        "bytes": 1163,
+        "sha256": "4f002f53fc542585ea19ec6314f137cf31bcfb8ea22502ff9c4b4892a7a4ba99"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-ordinary-before-maps.stdout",
+        "bytes": 227,
+        "sha256": "912690841ecca7c4874d411f24d6e7a7985d97ddf6cd9633b28f75fb51b5001e"
+      },
+      "before": {
+        "rows": 3,
+        "physical": [
+          {
+            "root": 91,
+            "usage": 23042,
+            "history": 364611
+          },
+          {
+            "root": 92,
+            "usage": 23043,
+            "history": 364623
+          }
+        ],
+        "histories": [
+          3,
+          2
+        ],
+        "data_pages": [
+          93
+        ],
+        "index_pages": [
+          [
+            91
+          ],
+          [
+            92
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 23040,
+            "range": [
+              372667,
+              372736
+            ]
+          },
+          "hint": {
+            "reference": 23041,
+            "range": [
+              372598,
+              372667
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 23042,
+            "range": [
+              372529,
+              372598
+            ]
+          },
+          "index1": {
+            "reference": 23043,
+            "range": [
+              372460,
+              372529
+            ]
+          }
+        }
+      },
+      "after": {
+        "rows": 7,
+        "physical": [
+          {
+            "root": 91,
+            "usage": 23042,
+            "history": 364611
+          },
+          {
+            "root": 92,
+            "usage": 23043,
+            "history": 364623
+          }
+        ],
+        "histories": [
+          7,
+          3
+        ],
+        "data_pages": [
+          93
+        ],
+        "index_pages": [
+          [
+            91
+          ],
+          [
+            92
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 23040,
+            "range": [
+              372667,
+              372736
+            ]
+          },
+          "hint": {
+            "reference": 23041,
+            "range": [
+              372598,
+              372667
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 23042,
+            "range": [
+              372529,
+              372598
+            ]
+          },
+          "index1": {
+            "reference": 23043,
+            "range": [
+              372460,
+              372529
+            ]
+          }
+        }
+      },
+      "transition": {
+        "inserted_rows": 4,
+        "counter_deltas": [
+          4,
+          1
+        ],
+        "source_rows_preserved": 3,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      }
+    },
+    {
+      "id": "V2016-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-both-root-pressure-source.accdb",
+        "bytes": 393216,
+        "sha256": "3268104fb99de43ed8f001365697e9759711deb3ff161c2905489a5164936035"
+      },
+      "reference": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-both-root-pressure-reference.accdb",
+        "bytes": 413696,
+        "sha256": "2a2252f9d892ab2d74179c0f1d5d9d0fa97c913ca5a2dd106f28542b9614cbf5"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-both-root-pressure-before-getter.stdout",
+        "bytes": 85823,
+        "sha256": "0c9716033d62aa1179291702b832a8c9ad463a34ba56b1af90277baa3703bb6c"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-both-root-pressure-before-maps.stdout",
+        "bytes": 248,
+        "sha256": "cae0b987a2f4cdc19e4a23656ea443b01fa7a69a578a80436a1a07c9207a094a"
+      },
+      "before": {
+        "rows": 400,
+        "physical": [
+          {
+            "root": 91,
+            "usage": 23042,
+            "history": 364611
+          },
+          {
+            "root": 92,
+            "usage": 23043,
+            "history": 364623
+          }
+        ],
+        "histories": [
+          400,
+          400
+        ],
+        "data_pages": [
+          93,
+          95
+        ],
+        "index_pages": [
+          [
+            91
+          ],
+          [
+            92
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 23040,
+            "range": [
+              372667,
+              372736
+            ]
+          },
+          "hint": {
+            "reference": 23041,
+            "range": [
+              372598,
+              372667
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 23042,
+            "range": [
+              372529,
+              372598
+            ]
+          },
+          "index1": {
+            "reference": 23043,
+            "range": [
+              372460,
+              372529
+            ]
+          }
+        }
+      },
+      "after": {
+        "rows": 452,
+        "physical": [
+          {
+            "root": 91,
+            "usage": 23042,
+            "history": 364611
+          },
+          {
+            "root": 92,
+            "usage": 23043,
+            "history": 364623
+          }
+        ],
+        "histories": [
+          452,
+          452
+        ],
+        "data_pages": [
+          93,
+          95,
+          96
+        ],
+        "index_pages": [
+          [
+            91,
+            97,
+            98
+          ],
+          [
+            92,
+            99,
+            100
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 23040,
+            "range": [
+              372667,
+              372736
+            ]
+          },
+          "hint": {
+            "reference": 23041,
+            "range": [
+              372598,
+              372667
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 23042,
+            "range": [
+              372529,
+              372598
+            ]
+          },
+          "index1": {
+            "reference": 23043,
+            "range": [
+              372460,
+              372529
+            ]
+          }
+        }
+      },
+      "transition": {
+        "inserted_rows": 52,
+        "counter_deltas": [
+          52,
+          52
+        ],
+        "source_rows_preserved": 400,
+        "new_data": [
+          96
+        ],
+        "new_indexes": [
+          97,
+          98,
+          99,
+          100
+        ],
+        "suffix": [
+          96,
+          97,
+          98,
+          99,
+          100
+        ]
+      }
+    },
+    {
+      "id": "V2019-ordinary",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "c0aedb5c0ed0aae6412bf464326c8dc649432aa701614522a330eed59394f4ca"
+      },
+      "reference": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-ordinary-reference.accdb",
+        "bytes": 462848,
+        "sha256": "c7fc4360285fab5370b2b014d7e8c0f31b04a727e1ad780f177f61e5388d751e"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-multiple-index-continuation-first-20261028/V2019-ordinary-before-getter.stdout",
+        "bytes": 1171,
+        "sha256": "208a31b3ad26dddddc547378f3367546df8f17ef5f4d3218f9e40371f1cd3891"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-multiple-index-continuation-first-20261028/V2019-ordinary-before-maps.stdout",
+        "bytes": 469,
+        "sha256": "0bb0cb63e7aa2898d64a5ea6d3a4d41633bec2818f6bc31f27f00c46f4677eed"
+      },
+      "before": {
+        "rows": 3,
+        "physical": [
+          {
+            "root": 108,
+            "usage": 27394,
+            "history": 434243
+          },
+          {
+            "root": 109,
+            "usage": 27395,
+            "history": 434255
+          }
+        ],
+        "histories": [
+          3,
+          2
+        ],
+        "data_pages": [
+          111
+        ],
+        "index_pages": [
+          [
+            108
+          ],
+          [
+            109
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 27392,
+            "range": [
+              442299,
+              442368
+            ]
+          },
+          "hint": {
+            "reference": 27393,
+            "range": [
+              442230,
+              442299
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 27394,
+            "range": [
+              442161,
+              442230
+            ]
+          },
+          "index1": {
+            "reference": 27395,
+            "range": [
+              442092,
+              442161
+            ]
+          }
+        }
+      },
+      "after": {
+        "rows": 7,
+        "physical": [
+          {
+            "root": 108,
+            "usage": 27394,
+            "history": 434243
+          },
+          {
+            "root": 109,
+            "usage": 27395,
+            "history": 434255
+          }
+        ],
+        "histories": [
+          7,
+          3
+        ],
+        "data_pages": [
+          111
+        ],
+        "index_pages": [
+          [
+            108
+          ],
+          [
+            109
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 27392,
+            "range": [
+              442299,
+              442368
+            ]
+          },
+          "hint": {
+            "reference": 27393,
+            "range": [
+              442230,
+              442299
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 27394,
+            "range": [
+              442161,
+              442230
+            ]
+          },
+          "index1": {
+            "reference": 27395,
+            "range": [
+              442092,
+              442161
+            ]
+          }
+        }
+      },
+      "transition": {
+        "inserted_rows": 4,
+        "counter_deltas": [
+          4,
+          1
+        ],
+        "source_rows_preserved": 3,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      }
+    },
+    {
+      "id": "V2019-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-both-root-pressure-source.accdb",
+        "bytes": 466944,
+        "sha256": "0996a7ab566d805eaf9a25ef417afd0a5f775f6cdd5ccb90f2c971784de7bbd9"
+      },
+      "reference": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-both-root-pressure-reference.accdb",
+        "bytes": 487424,
+        "sha256": "9c33bb38fd26f26f283735c98891c57e83fa6f7e236fba1d0faaded3c7b5ec17"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-multiple-index-continuation-first-20261028/V2019-both-root-pressure-before-getter.stdout",
+        "bytes": 86228,
+        "sha256": "f66972705c783d76aa7272d341d620e08616d5b71c65bdbb9f719c35ff60abe8"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-multiple-index-continuation-first-20261028/V2019-both-root-pressure-before-maps.stdout",
+        "bytes": 491,
+        "sha256": "c85467a7dc1ea0d0fc3d3b270fbdb3d752f148d134cf23de254fe5f5725d2080"
+      },
+      "before": {
+        "rows": 400,
+        "physical": [
+          {
+            "root": 108,
+            "usage": 27394,
+            "history": 434243
+          },
+          {
+            "root": 109,
+            "usage": 27395,
+            "history": 434255
+          }
+        ],
+        "histories": [
+          400,
+          400
+        ],
+        "data_pages": [
+          111,
+          113
+        ],
+        "index_pages": [
+          [
+            108
+          ],
+          [
+            109
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 27392,
+            "range": [
+              442299,
+              442368
+            ]
+          },
+          "hint": {
+            "reference": 27393,
+            "range": [
+              442230,
+              442299
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 27394,
+            "range": [
+              442161,
+              442230
+            ]
+          },
+          "index1": {
+            "reference": 27395,
+            "range": [
+              442092,
+              442161
+            ]
+          }
+        }
+      },
+      "after": {
+        "rows": 452,
+        "physical": [
+          {
+            "root": 108,
+            "usage": 27394,
+            "history": 434243
+          },
+          {
+            "root": 109,
+            "usage": 27395,
+            "history": 434255
+          }
+        ],
+        "histories": [
+          452,
+          452
+        ],
+        "data_pages": [
+          111,
+          113,
+          114
+        ],
+        "index_pages": [
+          [
+            108,
+            115,
+            116
+          ],
+          [
+            109,
+            117,
+            118
+          ]
+        ],
+        "canonical_maps": {
+          "owned": {
+            "reference": 27392,
+            "range": [
+              442299,
+              442368
+            ]
+          },
+          "hint": {
+            "reference": 27393,
+            "range": [
+              442230,
+              442299
+            ]
+          },
+          "global": {
+            "reference": 256,
+            "range": [
+              8123,
+              8192
+            ]
+          },
+          "index0": {
+            "reference": 27394,
+            "range": [
+              442161,
+              442230
+            ]
+          },
+          "index1": {
+            "reference": 27395,
+            "range": [
+              442092,
+              442161
+            ]
+          }
+        }
+      },
+      "transition": {
+        "inserted_rows": 52,
+        "counter_deltas": [
+          52,
+          52
+        ],
+        "source_rows_preserved": 400,
+        "new_data": [
+          114
+        ],
+        "new_indexes": [
+          115,
+          116,
+          117,
+          118
+        ],
+        "suffix": [
+          114,
+          115,
+          116,
+          117,
+          118
+        ]
+      }
+    }
+  ],
+  "historical_calls": {
+    "distinct": 25,
+    "compile": 1,
+    "generate": 4,
+    "before_read_only": 8,
+    "append_disposable_copies": 4,
+    "after_read_only": 8,
+    "child_statuses_all_zero": true,
+    "original_controller_status": 1,
+    "original_children": 7,
+    "original_failure": "Authored fixed-prefix1 gate rejected valid pressure primary prefix0/active3600; no reference append attempted.",
+    "continuation_controller_status": 0,
+    "continuation_children": 18,
+    "completed_calls_repeated": 0,
+    "all_four_source_gates_before_any_append": true
+  },
+  "bounds": {
+    "original_process_cap": 25,
+    "continuation_process_cap": 18,
+    "seconds_per_child": 30,
+    "java_heap_mib": 512,
+    "bytes_per_stream": 16777216,
+    "bytes_per_database": 67108864
+  },
+  "original_report": {
+    "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/report.json",
+    "bytes": 32774,
+    "sha256": "c522a3d4dbc28bae00a0c2abf00337c2f3a4e7baf7b8beadba30aa983d056eeb"
+  },
+  "continuation_report": {
+    "path": ".cache/ace16-insert-multiple-index-continuation-first-20261028/report.json",
+    "bytes": 138346,
+    "sha256": "4cfff792faff4b4fe5e876c708ab9d09bedf4db37dd6b3997aca88b7311fa403"
+  },
+  "protocol_inputs": [
+    {
+      "path": ".cache/ace16-insert-multiple-index-independent-next-20261028/controller-freeze.json",
+      "bytes": 3863,
+      "sha256": "532c34eee7669d543b6c9d707ce96ec0d83899b505751d6866fc1ed54f619383"
+    },
+    {
+      "path": ".cache/ace16-insert-multiple-index-independent-next-20261028/plan.json",
+      "bytes": 18268,
+      "sha256": "925f5d31689b73a70bda1cf21e3779acec936dc330c1725a9fb4df2fe831f274"
+    },
+    {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/freeze.json",
+      "bytes": 14144,
+      "sha256": "0be65c53c66aa3cb21f1727e1a5527c258b0bb1799c57cf570137f155d5d5952"
+    },
+    {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/plan.json",
+      "bytes": 13994,
+      "sha256": "0685bb29cf2e7efadf4e062f2c2600f658ce9885239a760d773577205a7a61f8"
+    }
+  ],
+  "saved_proofs": {
+    "executed_continuation_proof": {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/proof.py",
+      "bytes": 15746,
+      "sha256": "84f51b01a3594b8d11921ddcee1155e67a8d5b34d7a16b6f22e0853b529473b2"
+    },
+    "initial_executed_proof": {
+      "path": ".cache/ace16-insert-multiple-index-independent-next-20261028/proof.py",
+      "bytes": 15322,
+      "sha256": "554d6a7a83066bf31118c1ac53cf9f21bb5cc3151e9c904cf81127b30cefcc83"
+    },
+    "saved_source_recheck": {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/saved-gate-first.json",
+      "bytes": 5435,
+      "sha256": "b18c3f2e60d14d40f92d27cb6eb4a8fd0fa3abc343aae164b5b510caffdf8a94"
+    },
+    "private_full_recheck": {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/saved-postcheck-first.json",
+      "bytes": 2634,
+      "sha256": "de130cb3b1273b81bd05a3da5920b064bf9aa703e5e912133658c927ecf5fb49"
+    },
+    "maintained_first": {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/maintained-first.json",
+      "bytes": 77209,
+      "sha256": "406d163ceac88882ea92b768065316ebbe00aedab27bcdd0c9f8a2365782af66"
+    },
+    "missing_evidence_first": {
+      "path": ".cache/ace16-insert-multiple-index-continuation-next-20261028/maintained-missing-first.json",
+      "bytes": 299,
+      "sha256": "571799f795e184fbe29948625e680b7e18c618415a4da7cbcbd398a595826425"
+    },
+    "maintained_first_exit": 0,
+    "missing_evidence_first_exit": 2,
+    "pin_occurrences": 401,
+    "distinct_paths": 176,
+    "old_rows_preserved": 806,
+    "inserted_rows": 112,
+    "native_java_child_processes_during_saved_replay": 0
+  },
+  "maintained_proof_identity": "Exact executed continuation proof except ROOT parents[2] to parents[3]; verifier checks textual identity. Public Java helper exact executed bytes.",
+  "tools": [
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/MultiIndexInsertReference.java",
+      "bytes": 8627,
+      "sha256": "ff48957e5b7cd5c11d1bbdb66e94a26512ff47be9ba5a7b5def0275c4073907c"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/README.md",
+      "bytes": 5614,
+      "sha256": "d2a7c46e5decd3bdf75479aa93a3b16237b056a95edb8bf259469925551cadab"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/reference.py",
+      "bytes": 15746,
+      "sha256": "e205ff811e399f553d82251d7bdf2be158ac71ccc9c8329b9572ab9010258c78"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/verify.py",
+      "bytes": 7978,
+      "sha256": "642383583b1051d36dcdf3a69a756642738fe8541dc1fdb94b50f132cd75afb1"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    }
+  ],
+  "reference_library": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "history": [
+    {
+      "stage": "Unexecuted pre-call gate draft",
+      "fact": "Canonical-zero assumption for old NULL fixed payload removed before any child call; prior draft preserved.",
+      "archive": ".cache/ace16-insert-multiple-index-independent-next-20261028/before-opaque-null-gate-correction"
+    },
+    {
+      "stage": "First source controller",
+      "fact": "Seven child successes then Python framing overconstraint failure; raw source/outputs retained unchanged."
+    },
+    {
+      "stage": "Saved-only correction",
+      "fact": "Complete-entry-derived actual prefix/active/free checks; no source edits or regeneration."
+    },
+    {
+      "stage": "Continuation",
+      "fact": "Only original eighteen unattempted calls; all reference proofs pass; old report remains completed:false."
+    }
+  ],
+  "limitations": [
+    "Public allocation/prefix/scratch is diagnostic; not an engineering byte golden.",
+    "No engine native-candidate call or normal CLI INSERT/save/reopen is established by this receipt.",
+    "No Microsoft Access or Windows application execution occurred.",
+    "Private artifact absence returns unavailable/exit2."
+  ]
+}

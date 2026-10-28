@@ -1,0 +1,559 @@
+{
+  "scope": "Four multi-physical-index INSERT engineering candidates compared against complete independent SOURCE+REQUEST images, followed by eight fresh read-only getter/map calls. Native Access save/reopen remains unqualified.",
+  "date": "2026-10-28",
+  "compiled_revision": "876a888924ee8e05f0c2e763db58695665c669a4",
+  "receipt_revision": "fa0aff0ef911eb1518cee2a0248710612ae3d8d7",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-multiple-index-20261028",
+    "bytes": 18493192,
+    "sha256": "77d86f0fb100529e81930ba130ff16769cb0efa132fbf43e9f59b19855b462aa"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-multiple-index-example-build-2026-10-28.json",
+    "bytes": 1377,
+    "sha256": "22cae4bbca096402b7579e3d00ac860a8c1d92f854b701bfba346dd082e6731f"
+  },
+  "source_archive": {
+    "path": ".cache/ace16-insert-multiple-index-build-20261028/committed-source.tar",
+    "bytes": 89231360,
+    "sha256": "51571ffd119b5b8f91987dbd0210faa459d8cbf396311e0fcd380c52aed02a0f"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/freeze.json",
+    "bytes": 7697,
+    "sha256": "3035a90dd5cf1b4033fd6b9222f3eb0e9613edce51f901e68a6c11829c72bceb"
+  },
+  "cases": [
+    {
+      "id": "V2016-ordinary",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "141b281934a8004b638031d6366bab6c2667cd6d3245843e507e7c818d02b38d"
+      },
+      "requests": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/requests/V2016-ordinary.tsv",
+        "bytes": 97,
+        "sha256": "542602c8c749cd73e518885cfb6fc2b9052da17848871b892c59fed4fcb800ba"
+      },
+      "expected": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2016-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "34df10563979d4e87e273f858e21a854960072bff4352a95273bd7f4c245e7c3"
+      },
+      "model_facts": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2016-ordinary-facts.json",
+        "bytes": 771,
+        "sha256": "7894301ade4539430a1cb7dee7c2f24ec8e17b34526ba3c0b5c6255796abdcad"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-first-20261028/V2016-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "34df10563979d4e87e273f858e21a854960072bff4352a95273bd7f4c245e7c3"
+      },
+      "before_rows": 3,
+      "after_rows": 7,
+      "changed_rows": 4,
+      "inserted_ROW_inventory": {
+        "count": 4,
+        "first": {
+          "id": 4,
+          "page": 93,
+          "slot": 3,
+          "ROW": 23811,
+          "record_hex": "0300040000000a0000000a000a00010007"
+        },
+        "last": {
+          "id": 7,
+          "page": 93,
+          "slot": 6,
+          "ROW": 23814,
+          "record_hex": "030007000000000000000a000a00010005"
+        }
+      },
+      "counter_deltas": [
+        4,
+        1
+      ],
+      "new_data": [],
+      "index_creation_order": [],
+      "independent_readback": {
+        "inserted_rows": 4,
+        "counter_deltas": [
+          4,
+          1
+        ],
+        "source_rows_preserved": 3,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      }
+    },
+    {
+      "id": "V2016-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2016-both-root-pressure-source.accdb",
+        "bytes": 393216,
+        "sha256": "3268104fb99de43ed8f001365697e9759711deb3ff161c2905489a5164936035"
+      },
+      "requests": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/requests/V2016-both-root-pressure.tsv",
+        "bytes": 1456,
+        "sha256": "2d43610cd186cf742382c999e92dd2b584a8b93d2b99d37bfcb36a480756206b"
+      },
+      "expected": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2016-both-root-pressure.accdb",
+        "bytes": 413696,
+        "sha256": "a43a0a8da681cc1143bee80abaf637e0ae0eb8e96a3c08ec4e61c6734a514910"
+      },
+      "model_facts": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2016-both-root-pressure-facts.json",
+        "bytes": 7990,
+        "sha256": "5eb8950c2d5155830aacb8fdeea9e29ac49fcf1070f77b6c7b70a6db58f2ec6b"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-first-20261028/V2016-both-root-pressure.accdb",
+        "bytes": 413696,
+        "sha256": "a43a0a8da681cc1143bee80abaf637e0ae0eb8e96a3c08ec4e61c6734a514910"
+      },
+      "before_rows": 400,
+      "after_rows": 452,
+      "changed_rows": 52,
+      "inserted_ROW_inventory": {
+        "count": 52,
+        "first": {
+          "id": 201,
+          "page": 95,
+          "slot": 186,
+          "ROW": 24506,
+          "record_hex": "0300c9000000c90000000a000a00010007"
+        },
+        "last": {
+          "id": 252,
+          "page": 96,
+          "slot": 23,
+          "ROW": 24599,
+          "record_hex": "0300fc000000fc0000000a000a00010007"
+        }
+      },
+      "counter_deltas": [
+        52,
+        52
+      ],
+      "new_data": [
+        96
+      ],
+      "index_creation_order": [
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 97
+        },
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 98
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 99
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 100
+        }
+      ],
+      "independent_readback": {
+        "inserted_rows": 52,
+        "counter_deltas": [
+          52,
+          52
+        ],
+        "source_rows_preserved": 400,
+        "new_data": [
+          96
+        ],
+        "new_indexes": [
+          97,
+          98,
+          99,
+          100
+        ],
+        "suffix": [
+          96,
+          97,
+          98,
+          99,
+          100
+        ]
+      }
+    },
+    {
+      "id": "V2019-ordinary",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "c0aedb5c0ed0aae6412bf464326c8dc649432aa701614522a330eed59394f4ca"
+      },
+      "requests": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/requests/V2019-ordinary.tsv",
+        "bytes": 97,
+        "sha256": "542602c8c749cd73e518885cfb6fc2b9052da17848871b892c59fed4fcb800ba"
+      },
+      "expected": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2019-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "0fffd2f9d3ff5450321db3b67e6cf8718dab78f5bfaf2c0787c0398a74b057f1"
+      },
+      "model_facts": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2019-ordinary-facts.json",
+        "bytes": 775,
+        "sha256": "3dbd6fccefe60476eef5ee68349d1a0d09415de85c775da6760960f9bb1a354e"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-first-20261028/V2019-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "0fffd2f9d3ff5450321db3b67e6cf8718dab78f5bfaf2c0787c0398a74b057f1"
+      },
+      "before_rows": 3,
+      "after_rows": 7,
+      "changed_rows": 4,
+      "inserted_ROW_inventory": {
+        "count": 4,
+        "first": {
+          "id": 4,
+          "page": 111,
+          "slot": 3,
+          "ROW": 28419,
+          "record_hex": "0300040000000a0000000a000a00010007"
+        },
+        "last": {
+          "id": 7,
+          "page": 111,
+          "slot": 6,
+          "ROW": 28422,
+          "record_hex": "030007000000000000000a000a00010005"
+        }
+      },
+      "counter_deltas": [
+        4,
+        1
+      ],
+      "new_data": [],
+      "index_creation_order": [],
+      "independent_readback": {
+        "inserted_rows": 4,
+        "counter_deltas": [
+          4,
+          1
+        ],
+        "source_rows_preserved": 3,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      }
+    },
+    {
+      "id": "V2019-both-root-pressure",
+      "source": {
+        "path": ".cache/ace16-insert-multiple-index-reference-first-20261028/V2019-both-root-pressure-source.accdb",
+        "bytes": 466944,
+        "sha256": "0996a7ab566d805eaf9a25ef417afd0a5f775f6cdd5ccb90f2c971784de7bbd9"
+      },
+      "requests": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/requests/V2019-both-root-pressure.tsv",
+        "bytes": 1456,
+        "sha256": "2d43610cd186cf742382c999e92dd2b584a8b93d2b99d37bfcb36a480756206b"
+      },
+      "expected": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2019-both-root-pressure.accdb",
+        "bytes": 487424,
+        "sha256": "42f3442edd99b2f8415cbe069d16871bf4ca1565123d7987fbcbbc748178a1e8"
+      },
+      "model_facts": {
+        "path": ".cache/ace16-insert-multiple-index-expected-second-20261028/V2019-both-root-pressure-facts.json",
+        "bytes": 8046,
+        "sha256": "3b04bccb2b6a5837e77cf47240f60fc615bcde2118aa6e5c2ff5924d5171b6ae"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-first-20261028/V2019-both-root-pressure.accdb",
+        "bytes": 487424,
+        "sha256": "42f3442edd99b2f8415cbe069d16871bf4ca1565123d7987fbcbbc748178a1e8"
+      },
+      "before_rows": 400,
+      "after_rows": 452,
+      "changed_rows": 52,
+      "inserted_ROW_inventory": {
+        "count": 52,
+        "first": {
+          "id": 201,
+          "page": 113,
+          "slot": 186,
+          "ROW": 29114,
+          "record_hex": "0300c9000000c90000000a000a00010007"
+        },
+        "last": {
+          "id": 252,
+          "page": 114,
+          "slot": 23,
+          "ROW": 29207,
+          "record_hex": "0300fc000000fc0000000a000a00010007"
+        }
+      },
+      "counter_deltas": [
+        52,
+        52
+      ],
+      "new_data": [
+        114
+      ],
+      "index_creation_order": [
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 115
+        },
+        {
+          "physical": 0,
+          "purpose": "INDEX",
+          "page": 116
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 117
+        },
+        {
+          "physical": 1,
+          "purpose": "INDEX",
+          "page": 118
+        }
+      ],
+      "independent_readback": {
+        "inserted_rows": 52,
+        "counter_deltas": [
+          52,
+          52
+        ],
+        "source_rows_preserved": 400,
+        "new_data": [
+          114
+        ],
+        "new_indexes": [
+          115,
+          116,
+          117,
+          118
+        ],
+        "suffix": [
+          114,
+          115,
+          116,
+          117,
+          118
+        ]
+      }
+    }
+  ],
+  "actual_phases": {
+    "producer": {
+      "report": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-first-20261028/report.json",
+        "bytes": 105950,
+        "sha256": "1ba25a485000d04a2ee3a3bf966a6e8db209ff7827d5c608ef9b3adaaf4f102b"
+      },
+      "calls": 4,
+      "all_first_status_zero": true,
+      "all_complete_images_matched": true,
+      "binding": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/binding-first.json",
+        "bytes": 3369,
+        "sha256": "f9b6c4ea1f088a431391bff6284343a931b386adc01dfb7403c0141544561890"
+      },
+      "protocol": {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/protocol-freeze.json",
+        "bytes": 45714,
+        "sha256": "e6f8eedf75828caf828738fe54a5eed105a20e20f3941952faa00488db2ae648"
+      }
+    },
+    "fresh_readback": {
+      "report": {
+        "path": ".cache/ace16-insert-multiple-index-getters-first-20261028/report.json",
+        "bytes": 258323,
+        "sha256": "9b6a87a431a675f8ce199e5de443e6d3d1f459fc342c17ffb9c0529132a5dcc6"
+      },
+      "calls": 8,
+      "all_first_status_zero": true,
+      "all_four_images_before_any_getter": true,
+      "all_typed_raw_ROW_tree_counter_map_proofs_passed": true,
+      "binding": {
+        "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/binding-first.json",
+        "bytes": 6486,
+        "sha256": "1aa833f2cff827f0beaa0529758a0183526e0b9a0353092d3e5b3dde8717b1af"
+      },
+      "protocol": {
+        "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/controller-freeze.json",
+        "bytes": 46486,
+        "sha256": "fd50cbd31428cf91fb343414c586d2cee6dd3e4390fe1c374964447e83a76f41"
+      }
+    },
+    "reference": "Separate original seven children succeeded before a Python prefix-gate failure; only the eighteen unattempted children then ran. All 25 distinct calls succeeded without completed-call repeats. Public AFTER bytes are not candidate authority."
+  },
+  "totals": {
+    "source_cases": 4,
+    "old_ROWS_preserved": 806,
+    "inserted_rows": 112,
+    "final_target_rows": 918,
+    "final_physical_key_ROW_pairs": 1836,
+    "logical_indexes_per_source": 4,
+    "physical_indexes_per_source": 2
+  },
+  "bounds": {
+    "producer_calls": 4,
+    "getter_calls": 8,
+    "child_seconds": 30,
+    "producer_stream_bytes": 8388608,
+    "getter_stream_bytes": 16777216,
+    "getter_heap_mib": 512,
+    "native_operation_bytes": 268435456,
+    "native_operation_rows": 100000,
+    "native_operation_steps": 100000000,
+    "request_file_bytes": 16777216,
+    "request_rows": 4096,
+    "request_value_bytes": 1024
+  },
+  "saved_verification": {
+    "default": {
+      "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/maintained-candidate-first.json",
+      "bytes": 3361,
+      "sha256": "e103d02ab94a028ac8235a25f299fc9f0be25a77f51877be560bc98fc27aa7f8"
+    },
+    "default_exit": 0,
+    "default_child_processes": 0,
+    "pin_occurrences": 2702,
+    "distinct_paths": 877,
+    "separate_reference_pin_occurrences": 401,
+    "optional_git": {
+      "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/maintained-candidate-git-first.json",
+      "bytes": 3440,
+      "sha256": "e3520d674808745e95f55934b7f934b7daa4db7dd7297ee8c2f419f29b723554"
+    },
+    "optional_git_exit": 0,
+    "git_archive_regular_files": 4433,
+    "git_receipt_blobs": 1,
+    "git_metadata_children": 1,
+    "optional_git_fixture_calls": 0,
+    "missing": {
+      "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/maintained-candidate-missing-first.json",
+      "bytes": 289,
+      "sha256": "41341fa3d17c809f605bc78a7378fd4e8f5a7d7b09d3cf24b04a6ffc88201bdc"
+    },
+    "missing_exit": 2
+  },
+  "maintained_identity": "model.py equals the frozen private model with only ROOT parents[2] changed to parents[3]; exact text and function ASTs checked. Actual reference owner reused directly.",
+  "tools": [
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/MultiIndexInsertReference.java",
+      "bytes": 8627,
+      "sha256": "ff48957e5b7cd5c11d1bbdb66e94a26512ff47be9ba5a7b5def0275c4073907c"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/README.md",
+      "bytes": 9377,
+      "sha256": "623fe870f12bded19035ea671a831ae8299c23871748fa6407b53a8ed2ea4118"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/model.py",
+      "bytes": 6578,
+      "sha256": "16cfd03c0b5f951d5272fc0b44dd2724c915039e376a35ded4279cc270ccbeae"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/reference.py",
+      "bytes": 15746,
+      "sha256": "e205ff811e399f553d82251d7bdf2be158ac71ccc9c8329b9572ab9010258c78"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/verify.py",
+      "bytes": 7978,
+      "sha256": "642383583b1051d36dcdf3a69a756642738fe8541dc1fdb94b50f132cd75afb1"
+    },
+    {
+      "path": "docs/testing/ace16_insert_multiple_indexes/verify_candidates.py",
+      "bytes": 14856,
+      "sha256": "89234ae9674de980542ca6fa83bcf3483867cdc7d8b2b4fdeeacd3fc1152b73a"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    }
+  ],
+  "preparation_history": {
+    "failure_1": "Pure preparation import bootstrap omitted repository ROOT; no images or fixture calls.",
+    "failure_2": "Pure model selfcheck passed bytearray to the set-based raw-tree validator; one ordinary image retained.",
+    "corrections": "Only actual ROOT import and bytes(raw) verification handoff. First partial ordinary image/facts equal final bytes. Fresh namespace; no source/request/wire-policy adaptation.",
+    "artifacts": [
+      {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/before-prepare-import-correction/prepare.py",
+        "bytes": 4264,
+        "sha256": "09d252efdc918a9ead9b2d027077f2528fcfa4467713e15767827f65534950a2"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/before-prepare-import-correction/history.json",
+        "bytes": 396,
+        "sha256": "281b819156d7c8eb44e56924092456757f73c9da32954b503af21a22bf61cebc"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/before-model-buffer-type-correction/model.py",
+        "bytes": 6571,
+        "sha256": "983b82e8cfc42231743c973d642df4f852b91e9eda2863f31c59df30e6d64056"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/before-model-buffer-type-correction/prepare.py",
+        "bytes": 4294,
+        "sha256": "1ad57a96283f82a898e04efb94b21e1e5a0bc354a34e4a6eaa3d2ce943ae701d"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-candidates-next-20261028/before-model-buffer-type-correction/prepare-retry.stderr",
+        "bytes": 1262,
+        "sha256": "21c76472dba986596de1bd1ee9f87518d1122dac24c444fa6c88e4bc1ab011ca"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-expected-first-20261028/V2016-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "34df10563979d4e87e273f858e21a854960072bff4352a95273bd7f4c245e7c3"
+      },
+      {
+        "path": ".cache/ace16-insert-multiple-index-expected-first-20261028/V2016-ordinary-facts.json",
+        "bytes": 771,
+        "sha256": "7894301ade4539430a1cb7dee7c2f24ec8e17b34526ba3c0b5c6255796abdcad"
+      }
+    ]
+  },
+  "receipt_authoring_history": {
+    "path": ".cache/ace16-insert-multiple-index-getters-next-20261028/receipt-authoring-first-error.json",
+    "bytes": 412,
+    "sha256": "2f267fbee6fb914f3d4b8523328a0771d1e246cf6d75fd58bce3a0041bae9fdc"
+  },
+  "reference_receipt": {
+    "path": "docs/testing/results/ace16-insert-multiple-index-references-2026-10-28.json",
+    "bytes": 22761,
+    "sha256": "3284d49118c6e654d64a55162481df29b01a70eaa41325ce0835cfd3aec73bff"
+  },
+  "preservation": {
+    "source_and_public_reference_files_unchanged": true,
+    "executed_protocols_requests_models_and_goldens_unchanged": true,
+    "candidate_bytes_unchanged_after_readback": true,
+    "first_failure_reports_retained": true,
+    "candidate_or_getter_retries": 0
+  },
+  "limitations": [
+    "Engineering previews remain separate from ordinary CLI/backend writes and native saves.",
+    "Public AFTER bytes never supply engineering expected images; public framing/scratch is diagnostic.",
+    "These are four actual sources and closed requests, not arbitrary table/index format qualification.",
+    "No Microsoft Access/Windows application execution or save/reopen occurred.",
+    "Missing private caches return unavailable/exit 2."
+  ]
+}
