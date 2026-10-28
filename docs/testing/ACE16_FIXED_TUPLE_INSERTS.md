@@ -11,7 +11,8 @@ edits, schema changes or required data-macro execution.
 The [ordinary record contract](ACE16_ORDINARY_INSERTS.md) still governs all
 supplied fields, including fields outside an index. Its contiguous-column,
 explicit-value, default/generated-field and payload restrictions remain intact.
-Text, Binary and other unqualified index profiles remain refused;
+Qualified [Short Text/Binary indexes](ACE16_VARIABLE_INDEX_INSERTS.md) now have
+a separate retained-key continuation; other unqualified index profiles remain refused;
 being able to store a value does not qualify an index on it. Foreign indexes and
 unsupported relationship or validation semantics retain their existing gates.
 

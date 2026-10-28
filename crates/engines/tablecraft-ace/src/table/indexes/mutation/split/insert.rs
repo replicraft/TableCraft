@@ -3,7 +3,12 @@
 mod tests;
 mod tree;
 
-use super::super::{insertion::membership, repack, retained::RetainedProfile, tree::Tree};
+use super::super::{
+    insertion::{binding::InsertProfile, membership},
+    repack,
+    retained::RetainedProfile,
+    tree::Tree,
+};
 use super::{AllocationPolicy, Plan, edit_prepared, leaf_entries, nonroot, seal};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
@@ -45,7 +50,7 @@ pub(in crate::table::indexes::mutation) struct Operation<'a, P: RetainedProfile>
 /// Continue a qualified overflowing root leaf or recursive original-bound tree.
 /// Existing fitted root-leaf INSERT remains a separate caller path. This
 /// does not invoke UPDATE key preparation or the unchanged-cardinality arena.
-pub(in crate::table::indexes::mutation) fn continue_index<P: RetainedProfile, const N: usize>(
+pub(in crate::table::indexes::mutation) fn continue_index<P: InsertProfile, const N: usize>(
     operation: Operation<'_, P>,
     append: State,
     budget: &mut ResourceBudget,
@@ -111,6 +116,7 @@ pub(in crate::table::indexes::mutation) fn continue_index<P: RetainedProfile, co
         0,
         &mut original_keys,
     )?;
+    profile.bind_source(checked.schema(), index, &mut original_keys, &mut reader)?;
     membership::require_population(index, &original_keys, profile, checked.rows(), &mut reader)?;
     if !tree.is_leaf() {
         return Err(EditError::Preservation);

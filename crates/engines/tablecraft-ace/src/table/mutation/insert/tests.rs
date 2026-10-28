@@ -17,3 +17,4 @@ mod recursive_tree;
 mod secondary_scalar_indexes;
 mod split;
 mod values;
+mod variable_index_inserts;

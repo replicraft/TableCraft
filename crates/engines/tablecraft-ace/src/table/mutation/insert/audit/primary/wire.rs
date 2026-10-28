@@ -1,17 +1,17 @@
 //! Short keys stay inline; wider fixed tuples own explicitly charged bytes.
 use crate::{EditError, InspectError, format::reader::Reader};
 use std::{cmp::Ordering, io::Cursor, ops::Deref};
-use tablecraft_core::values::Guid;
 
 const MARKER_BYTES: usize = size_of::<u8>();
 const TAG_BYTES: usize = size_of::<u8>();
 const ROW_BYTES: usize = size_of::<u32>();
 const CHILD_BYTES: usize = size_of::<u32>();
-const GUID_SEGMENTS: usize = 2;
 const INLINE_BYTES: usize = MARKER_BYTES + size_of::<i64>() + ROW_BYTES + CHILD_BYTES;
-const MAX_COMPONENTS: usize = 10;
-const GUID_KEY_BYTES: usize = MARKER_BYTES + Guid::BYTE_LEN + GUID_SEGMENTS * TAG_BYTES;
-pub(super) const MAX_WIRE_BYTES: usize = MAX_COMPONENTS * GUID_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
+const MAX_SHORT_BINARY: usize = 510;
+const BINARY_SEGMENT_BYTES: usize = 8;
+const MAX_BINARY_KEY_BYTES: usize = MARKER_BYTES
+    + MAX_SHORT_BINARY.div_ceil(BINARY_SEGMENT_BYTES) * (BINARY_SEGMENT_BYTES + TAG_BYTES);
+pub(super) const MAX_WIRE_BYTES: usize = MAX_BINARY_KEY_BYTES + ROW_BYTES + CHILD_BYTES;
 
 #[cfg_attr(test, derive(Debug))]
 pub(super) enum Wire {

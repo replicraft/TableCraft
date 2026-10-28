@@ -1,3 +1,5 @@
+mod variable;
+
 use super::*;
 use crate::{
     IndexConstraintViolation, check_table, check_table_constraints,

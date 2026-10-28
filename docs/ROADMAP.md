@@ -400,6 +400,13 @@ field's declared precision/scale. Eight complete-image functions and two separat
 audit controls bring the INSERT batch to 183 passing functions. Independent
 original-file Decimal INSERT evidence and normal-save qualification remain open.
 
+The [Short Text/Binary INSERT continuation](testing/ACE16_VARIABLE_INDEX_INSERTS.md)
+now retains non-Copy keys and complete row NULL facts through fitted/root/recursive
+normalization. Five public complete-image functions cover General text, digests,
+reversed tuples and genuine 585-byte Binary bounds; the full ACE library batch
+passes 491 functions with one ignored generator. Independent original-file
+variable-key INSERT comparisons and production write admission remain open.
+
 Major gates still open before the full backend is complete:
 
 - [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full

@@ -25,7 +25,7 @@ pub(super) fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
     run(&mut reader);
 }
 
-fn tuple(required: bool, ignored: bool) -> Profile {
+fn tuple(required: bool, ignored: bool) -> Profile<'static> {
     Profile {
         components: vec![
             Component {
@@ -142,5 +142,109 @@ fn owned_wire_allocations_are_charged_and_no_unpaid_wide_constructor_exists() {
             original.copy_paid(reader),
             Err(EditError::Inspect(InspectError::Limit(_)))
         ));
+    });
+}
+
+#[test]
+fn binary_literal_segments_keep_empty_distinct_from_null_and_descending_tags() {
+    with_reader(|reader| {
+        for (value, ascending, descending) in [
+            (Value::Null, vec![0], vec![255]),
+            (Value::Binary(Vec::new()), vec![127], vec![128]),
+            (
+                Value::Binary(vec![0, 128, 255]),
+                vec![127, 0, 128, 255, 0, 0, 0, 0, 0, 3],
+                vec![128, 255, 127, 0, 255, 255, 255, 255, 255, 252],
+            ),
+            (
+                Value::Binary(vec![0; 9]),
+                vec![127, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                vec![
+                    128, 255, 255, 255, 255, 255, 255, 255, 255, 9, 255, 255, 255, 255, 255, 255,
+                    255, 255, 254,
+                ],
+            ),
+        ] {
+            for (reverse, expected) in [(false, ascending), (true, descending)] {
+                let mut output = Vec::new();
+                variable::binary(510, reverse, &value, &mut output, reader).unwrap();
+                assert_eq!(output, expected);
+            }
+        }
+        let mut maximum = Vec::new();
+        variable::binary(
+            510,
+            false,
+            &Value::Binary(vec![0x80; 510]),
+            &mut maximum,
+            reader,
+        )
+        .unwrap();
+        assert_eq!(maximum.len(), 577);
+        assert_eq!(
+            &maximum[maximum.len() - 9..],
+            &[128, 128, 128, 128, 128, 128, 0, 0, 6]
+        );
+        assert!(matches!(
+            variable::binary(
+                510,
+                false,
+                &Value::Binary(vec![0; 511]),
+                &mut Vec::new(),
+                reader
+            ),
+            Err(EditError::Preservation)
+        ));
+    });
+}
+
+#[test]
+fn entry_digest_uses_discarded_tail_order_and_raw_wire_never_invents_null_facts() {
+    with_reader(|reader| {
+        let mut output = vec![127; 508];
+        output.extend([1, 2, 3]);
+        digest::truncate(&mut output, reader).unwrap();
+        assert_eq!(output.len(), 510);
+        assert_eq!(&output[..508], &[127; 508]);
+        assert_eq!(&output[508..], &[6, 130]);
+
+        let profile = Profile {
+            components: vec![
+                Component {
+                    column: 1,
+                    kind: Kind::Binary {
+                        maximum: 510,
+                        descending: false,
+                    },
+                },
+                Component {
+                    column: 0,
+                    kind: Kind::Numeric(numeric::Profile {
+                        kind: ScalarType::Int32,
+                        width: 4,
+                        descending: true,
+                        required: false,
+                    }),
+                },
+            ],
+            required: false,
+            unique: false,
+            ignore_nulls: true,
+        };
+        let values = [Value::Int32(7), Value::Binary(vec![0; 510])];
+        let wire = profile.request(&values, 12 << 8, reader).unwrap();
+        assert_eq!(wire.len(), 514);
+        assert!(!profile.exact_unique(&wire));
+        let nulls = profile.row_nulls(&values, reader).unwrap();
+        assert!(!nulls.all && !nulls.any);
+        assert!(matches!(profile.value(&wire), Err(EditError::Preservation)));
+
+        let partial = [Value::Null, Value::Binary(Vec::new())];
+        let nulls = profile.row_nulls(&partial, reader).unwrap();
+        assert!(!nulls.all && nulls.any);
+        let all = profile
+            .row_nulls(&[Value::Null, Value::Null], reader)
+            .unwrap();
+        assert!(all.all && all.any);
     });
 }

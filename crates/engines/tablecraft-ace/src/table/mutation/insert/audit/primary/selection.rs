@@ -6,7 +6,7 @@ use tablecraft_schema::ScalarType;
 
 pub(super) struct Selection<'a> {
     pub index: &'a NativeIndex,
-    pub profile: Profile,
+    pub profile: Profile<'a>,
     pub primary: bool,
 }
 
