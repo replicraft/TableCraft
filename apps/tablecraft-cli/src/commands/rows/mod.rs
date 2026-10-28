@@ -1,8 +1,7 @@
 //! Bounded native scalar and stored-collection row display.
 use super::error::Error;
 use crate::{native, output::TableOutput};
-use clap::ArgGroup;
-use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
+use tablecraft_access::{BrowsePage, CollectionPageRequest, NativeBrowser, TablePageRequest};
 use tablecraft_ace::{InspectError, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
@@ -16,12 +15,11 @@ pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;
 
 #[derive(clap::Args)]
-#[command(group(ArgGroup::new("rows_native_modes").args(["stream", "multivalues", "collections"]).multiple(true)))]
 pub(crate) struct Args {
     /// Explicit Access database/package/template path.
     pub(super) path: std::path::PathBuf,
-    /// Exact table name (quote names containing spaces in your shell).
-    #[arg(required_unless_present = "all", conflicts_with = "all")]
+    /// Exact table name; omitted only when there is exactly one user table.
+    #[arg(conflicts_with = "all")]
     pub(super) table: Option<String>,
     /// Display every user table in catalog order, with limit/offset per table.
     #[arg(long)]
@@ -36,10 +34,10 @@ pub(crate) struct Args {
     #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
     pub(super) native_bytes: Option<u64>,
     /// Cumulative native rows; collection pages also use this as the parent/child table ceiling.
-    #[arg(long, requires = "rows_native_modes", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_ROWS))]
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_ROWS))]
     pub(super) native_rows: Option<u64>,
-    /// Cumulative native work for streaming or collection pages.
-    #[arg(long, requires = "rows_native_modes", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_STEPS))]
+    /// Cumulative native work for buffered browsing or streaming.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_STEPS))]
     pub(super) native_steps: Option<u64>,
     /// Maximum displayed rows, or rows per batch with --stream; read/resource ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=MAX_PAGE_ROWS as i64))]
@@ -47,13 +45,13 @@ pub(crate) struct Args {
     /// Skip this many live roots; collection key/child validation still runs.
     #[arg(long, default_value_t = 0)]
     pub(super) offset: u32,
-    /// Include qualified stored calculations, marked as cached; may be stale, never recalculated.
+    /// Compatibility flag: buffered browsing already includes marked stored calculation caches.
     #[arg(long)]
     pub(super) stored_calculations: bool,
     /// Include qualified multivalue cells as stored lists; does not run lookup queries.
     #[arg(long)]
     pub(super) multivalues: bool,
-    /// Include qualified multivalues, attachment metadata and stored Memo history.
+    /// Compatibility flag: buffered browsing already includes qualified stored collections.
     #[arg(long, conflicts_with = "multivalues")]
     pub(super) collections: bool,
 }
@@ -72,7 +70,7 @@ impl Args {
             TableSnapshotLimits::new(maximum_rows, TableSnapshotLimits::default().batch_rows())
                 .map_err(Error::Read)?;
         let request = CollectionPageRequest::new(page, limits)
-            .with_stored_calculations(self.stored_calculations);
+            .with_stored_calculations(self.stored_calculations || self.collections);
         let mut budget = ResourceBudget::new(
             self.native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES),
             row_allowance,
@@ -88,11 +86,8 @@ impl Args {
         if self.all {
             all::run(&mut browser, &self, request, format)
         } else {
-            let table = self
-                .table
-                .as_deref()
-                .ok_or(Error::Read(tablecraft_ace::InspectError::Malformed))?;
-            let text = read_page(&mut browser, table, request, &self)?;
+            let table = selected_table(&mut browser, self.table.as_deref())?;
+            let text = read_page(&mut browser, &table, request, &self)?;
             format.render(text).map_err(Error::Output)
         }
     }
@@ -104,42 +99,45 @@ fn read_page<R: tablecraft_ace::NativeReadSource>(
     request: CollectionPageRequest,
     args: &Args,
 ) -> Result<String, Error> {
-    let Args {
-        collections,
-        multivalues,
-        stored_calculations,
-        ..
-    } = args;
-    if *collections {
-        let page = browser
-            .collection_page_with_request(table, request)
-            .map_err(Error::Read)?;
-        return collections::render(&page);
-    }
-    if *multivalues {
+    if args.multivalues {
         let page = browser
             .multivalue_page_with_request(table, request)
             .map_err(Error::Read)?;
         return multivalue::render(&page);
     }
-    if *stored_calculations {
-        let page = browser
-            .stored_page(table, request.page())
-            .map_err(Error::Read)?;
-        display_rows(
-            page.columns()
-                .iter()
-                .enumerate()
-                .map(|(i, c)| (c.name(), page.is_stored_calculation(i) == Some(true))),
-            page.rows(),
-        )
-    } else {
-        let page = browser.page(table, request.page()).map_err(Error::Read)?;
-        display_rows(
+    match browser.browse_page(table, request).map_err(Error::Read)? {
+        BrowsePage::Scalar(page) => display_rows(
             page.columns().iter().map(|c| (c.name(), false)),
             page.rows(),
-        )
+        ),
+        BrowsePage::Collections(page) => collections::render(&page),
     }
+}
+
+fn selected_table<R: tablecraft_ace::NativeReadSource>(
+    browser: &mut NativeBrowser<'_, R>,
+    supplied: Option<&str>,
+) -> Result<String, Error> {
+    if let Some(name) = supplied {
+        return Ok(name.to_owned());
+    }
+
+    let inventory = browser.tables().map_err(Error::Read)?;
+    let names = inventory
+        .entries()
+        .filter(|entry| !entry.is_system())
+        .map(|entry| entry.object().name().as_str());
+    sole_user_table(names).map(str::to_owned)
+}
+
+pub(in crate::commands) fn sole_user_table<'a>(
+    mut names: impl Iterator<Item = &'a str>,
+) -> Result<&'a str, Error> {
+    let name = names.next().ok_or(Error::NoUserTables)?;
+    if names.next().is_some() {
+        return Err(Error::AmbiguousUserTable);
+    }
+    Ok(name)
 }
 
 pub(super) fn display_rows<'a>(

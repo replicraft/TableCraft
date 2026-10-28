@@ -3,6 +3,13 @@ mod count_all;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;
+use fixture as base;
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
+mod attachment_fixture;
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
+mod complex_fixture;
 #[path = "browsing/large.rs"]
 mod large;
 #[allow(dead_code)]
@@ -62,6 +69,43 @@ fn success(result: Output) -> Vec<u8> {
     assert!(result.stderr.is_empty());
     result.stdout
 }
+
+#[test]
+fn buffered_attachments_are_displayed_without_decoding_or_explicit_flags() {
+    let file = FileCopy::new(attachment_fixture::database());
+    let expected = success(file.run("rows", &["Items"]));
+    let mut reader = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .from_reader(expected.as_slice());
+    assert_eq!(
+        reader.headers().unwrap(),
+        &["Id", "Score [attachments]"][..]
+    );
+    let rows = reader.records().collect::<Result<Vec<_>, _>>().unwrap();
+    assert_eq!(rows.len(), 3);
+    assert_eq!(rows[0].get(0), Some("1"));
+    let first = rows[0].get(1).unwrap();
+    assert!(first.starts_with("[{id: 1, url: \"../unsafe?query\", name: "));
+    assert!(first.contains("name: \"../é🦀\\u{0000}.bin\""));
+    assert!(first.contains("type: \"field/type\", encoded_bytes: 35"));
+    assert!(first.contains("flags: -2147483648}"));
+    assert!(first.contains("{id: 2, url: NULL, name: NULL, type: NULL, encoded_bytes: NULL"));
+    assert_eq!(rows[1].get(0), Some("2"));
+    assert_eq!(rows[2].get(0), Some("3"));
+    assert_eq!(rows[2].get(1), Some("[]"));
+    assert_eq!(
+        success(file.run("rows", &["Items", "--collections"])),
+        expected
+    );
+    assert_eq!(
+        success(file.run("rows", &["Items", "--stored-calculations"])),
+        expected
+    );
+    let scalar = file.run("rows", &["Items", "--stream"]);
+    assert_eq!(scalar.status.code(), Some(2));
+    assert!(scalar.stdout.is_empty());
+}
+
 #[test]
 fn jet4_discovery_rows_pagination_and_empty_pages_preserve_source() {
     let file = FileCopy::new(fixture::database());
@@ -228,9 +272,16 @@ fn explicit_table_format_renders_browsing_and_queries_while_tsv_remains_availabl
 mod calculated_fixture;
 
 #[test]
-fn cached_calculations_require_explicit_opt_in_and_are_labelled_in_both_formats() {
+fn buffered_calculations_are_cached_by_default_and_labelled_in_both_formats() {
     let file = FileCopy::new(calculated_fixture::database(&[Some(42), None, Some(-7)]));
-    let ordinary = file.run("rows", &["Items"]);
+    let automatic = success(file.run("rows", &["Items"]));
+    assert_eq!(automatic, b"Id\tScore [cached]\n1\t42\n2\tNULL\n3\t-7\n");
+    assert_eq!(success(file.run("rows", &[])), automatic);
+    assert_eq!(
+        success(file.run("rows", &["--all"])),
+        b"Table\tItems\nId\tScore [cached]\n1\t42\n2\tNULL\n3\t-7\n"
+    );
+    let ordinary = file.run("rows", &["Items", "--stream"]);
     assert_eq!(ordinary.status.code(), Some(2));
     assert!(ordinary.stdout.is_empty());
     assert_eq!(

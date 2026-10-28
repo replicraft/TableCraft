@@ -93,3 +93,75 @@ fn linked_sections_are_explicit_and_late_local_failures_publish_no_partial_outpu
     // Metadata counts do not require readable scalar carriers or payloads.
     assert!(success(broken.run("tables", &["--count"])).ends_with(b"Other\tUser\t0\n"));
 }
+
+#[test]
+fn omitted_table_selects_one_user_table_and_preserves_streaming_and_budgets() {
+    let file = FileCopy::new(fixture::database());
+    let expected = success(file.run("rows", &["Items"]));
+    assert_eq!(success(file.run("rows", &[])), expected);
+    assert_eq!(success(file.run("rows", &["--stream"])), expected);
+    assert_eq!(
+        success(file.run(
+            "rows",
+            &["--native-rows", "100000", "--native-steps", "10000000"]
+        )),
+        expected
+    );
+}
+
+#[test]
+fn omitted_table_counts_all_user_tables_including_links_and_hidden_tables() {
+    for linked in [false, true] {
+        let file = FileCopy::new(two_tables(linked));
+        for arguments in [&[][..], &["--stream"][..]] {
+            let result = file.run("rows", arguments);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(result.stdout.is_empty());
+            assert!(
+                String::from_utf8_lossy(&result.stderr)
+                    .contains("more than one user table found; specify TABLE or use --all")
+            );
+        }
+    }
+
+    let mut bytes = two_tables(false);
+    let objects = [
+        support::record(2, 0, 1, 0x80000002, b"\xff\xfeMSysObjects"),
+        support::record(7, 0, 1, 0x80000002, b"\xff\xfeMSysRelationships"),
+        support::record(10, 0, 1, 0, b"\xff\xfeItems"),
+        support::record(14, 0, 1, 1, b"\xff\xfeHiddenOther"),
+    ];
+    bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        2,
+        &objects.into_iter().map(|row| (0, row)).collect::<Vec<_>>(),
+    ));
+    let file = FileCopy::new(bytes);
+    let result = file.run("rows", &[]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("more than one user table"));
+}
+
+#[test]
+fn omitted_table_with_only_system_tables_has_clear_error_without_output() {
+    let mut bytes = fixture::database();
+    support::put32(&mut bytes, 2 * PAGE_BYTES + 16, 2);
+    let objects = [
+        support::record(2, 0, 1, 0x80000002, b"\xff\xfeMSysObjects"),
+        support::record(7, 0, 1, 0x80000002, b"\xff\xfeMSysRelationships"),
+    ];
+    bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&support::data_page(
+        2,
+        &objects.into_iter().map(|row| (0, row)).collect::<Vec<_>>(),
+    ));
+    let file = FileCopy::new(bytes);
+    for arguments in [&[][..], &["--stream"][..]] {
+        let result = file.run("rows", arguments);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(
+            String::from_utf8_lossy(&result.stderr)
+                .contains("no user tables found; specify TABLE explicitly or use --all")
+        );
+    }
+}

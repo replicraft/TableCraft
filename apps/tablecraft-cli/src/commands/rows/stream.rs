@@ -26,10 +26,6 @@ impl Args {
         if self.columns.len() > MAX_SELECTED_COLUMNS {
             return Err(operation("too many selected streaming columns"));
         }
-        let table = self
-            .table
-            .as_deref()
-            .ok_or_else(|| operation("streaming rows require one table"))?;
         let mut budget = ResourceBudget::new(
             self.native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES),
             self.native_rows.unwrap_or(native::DEFAULT_NATIVE_ROWS),
@@ -45,10 +41,12 @@ impl Args {
             .map_err(|_| operation("streaming column allocation failed"))?;
         names.extend(self.columns.iter().map(String::as_str));
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
+        let table =
+            super::selected_table(&mut browser, self.table.as_deref()).map_err(operation)?;
         let mut cursor = if names.is_empty() {
-            browser.cursor(table)
+            browser.cursor(&table)
         } else {
-            browser.projected_cursor(table, &names)
+            browser.projected_cursor(&table, &names)
         }
         .map_err(operation)?;
         publish(&mut cursor, self.limit, MAX_STREAM_OUTPUT_BYTES, writer)

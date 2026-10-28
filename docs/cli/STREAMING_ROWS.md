@@ -44,7 +44,8 @@ and `--collections`. Those commands retain their existing page contracts. `--col
 requires `--stream`. Native read limits also apply to explicit buffered
 `--collections`/`--multivalues` pages. `--native-bytes` also applies to ordinary
 buffered row pages, including container opening; `--native-rows` and
-`--native-steps` still require streaming or collection modes. Rejected combinations and numeric ranges fail before file I/O. See [larger
+`--native-steps` also apply to buffered browsing, which selects qualified stored
+collections automatically. Rejected combinations and numeric ranges fail before file I/O. See [larger
 collection pages](../access/collections/LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages).
 
 ## Output and errors

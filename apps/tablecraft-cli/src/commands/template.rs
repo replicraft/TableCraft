@@ -138,21 +138,31 @@ pub(super) fn rows(
     budget: &mut ResourceBudget,
     format: Format,
 ) -> Result<String, Error> {
-    if args.multivalues || args.collections || args.stored_calculations {
+    if args.multivalues {
         return Err(Error::Template(TemplateError::Unsupported));
     }
     let objects = package
         .objects(budget, &|| false)
         .map_err(Error::Template)?;
+    let requested = if args.all {
+        None
+    } else {
+        Some(match args.table.as_deref() {
+            Some(name) => name,
+            None => super::rows::sole_user_table(
+                objects
+                    .iter()
+                    .filter(|object| object.kind() == ObjectKind::Table)
+                    .map(|object| object.name()),
+            )?,
+        })
+    };
     let selected: Vec<_> = objects
         .iter()
         .filter(|object| {
             object.kind() == ObjectKind::Table
                 && (args.all
-                    || args
-                        .table
-                        .as_ref()
-                        .is_some_and(|name| object.name().eq_ignore_ascii_case(name)))
+                    || requested.is_some_and(|name| object.name().eq_ignore_ascii_case(name)))
         })
         .collect();
     if !args.all && selected.is_empty() {
