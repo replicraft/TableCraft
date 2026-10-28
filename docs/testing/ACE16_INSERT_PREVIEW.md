@@ -37,8 +37,10 @@ first. Larger/repeated leaf overflow and arbitrary qualified NODE sources use th
 ceiling of 16 and requiring source/new heights below 16. Original tail-present
 and all-bounded forms retain their routing policy; internal overflows propagate
 through independently normalized child ranges. One root growth event is allowed
-per physical tree, and the resulting top must fit. Ignore-NULL profiles,
-composite keys and other unqualified key families remain refused. Original records
+per physical tree, and the resulting top must fit. Qualified non-Required
+secondary Ignore-NULL indexes omit NULL keys through the same physical-owner
+service. Primary/Required Ignore-NULL profiles, composite keys and other
+unqualified key families remain refused. Original records
 and their logical ROW references remain intact.
 
 ## Placement, index membership and counters

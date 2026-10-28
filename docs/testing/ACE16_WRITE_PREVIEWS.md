@@ -799,6 +799,8 @@ remains mandatory. [Additional single-key integral/Currency indexes](ACE16_MULTI
 now retain nullable keys, direction, constraints and distinct-key counter deltas.
 DATA-first allocation and recursive index splits use one cursor and independent
 complete-image proof. The [quoted TSV example input](ACE16_INSERT_INPUT.md)
-supplies all values explicitly. Defaults, generated fields, Ignore-NULL indexes
-and other unqualified key families remain refused. Required data-macro semantics
+supplies all values explicitly. Qualified non-Required secondary Ignore-NULL
+indexes omit NULL keys while preserving complete DATA/primary membership.
+Defaults, generated fields, primary/Required Ignore-NULL indexes and other
+unqualified key families remain refused. Required data-macro semantics
 remain unqualified. This adds no normal CLI write path or native Access qualification.

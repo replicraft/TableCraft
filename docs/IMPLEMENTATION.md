@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Secondary Ignore-NULL INSERT indexes
+
+The separate ACE 16 INSERT engineering preview now supports non-Required
+secondary Ignore-NULL indexes over the admitted single integral/Currency keys.
+NULL rows remain in DATA and the primary index, while each ignored secondary
+receives only non-NULL keys. An all-NULL contribution preserves that owner's
+complete tree, map and historical counter, including existing NODE sources.
+The final image audit independently derives original eligible membership from
+stored records and the actual primary group's complete logical ROW universe.
+
+The ACE unit batch passes 443 functions with one existing ignored generator,
+including complete-image controls, both layouts/directions/widths, forwarding,
+shared growth and malformed/forged membership. Strict all-target/all-feature
+Clippy, minimal compilation, formatting and documentation/dependency guards pass.
+Independent candidate qualification remains separate from these checks. Primary
+or Required Ignore-NULL combinations, unsupported key families, data macros and
+normal saves retain their gates. See [the profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#secondary-indexes-omitting-null-keys).
+
 ## Multiple physical indexes during INSERT
 
 The separate ACE 16 engineering preview now maintains every admitted physical
@@ -19,8 +37,9 @@ index through one DATA-first allocator. Logical aliases share a physical owner;
 secondary Byte/Int16/Int32/Int64/Currency single keys retain direction, represented
 NULLs and ordinary/unique constraints. The required Int32 primary may occupy any
 physical slot. Cross-owner source-tree overlap refuses the operation, and each
-historical counter increases only for new key families. Normal save, Ignore-NULL,
-other key families and required data-macro gates remain separate.
+historical counter increases only for new key families. Normal save, other key
+families and required data-macro gates remain separate. The later Ignore-NULL
+continuation is described above.
 
 The full ACE unit batch passes 426 functions with one existing ignored generator,
 including independent complete-image and forged-stage controls. Strict ACE Clippy

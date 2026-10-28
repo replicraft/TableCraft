@@ -8,6 +8,7 @@ pub(super) struct Selection<'a> {
     pub index: &'a NativeIndex,
     pub column: usize,
     pub profile: Profile,
+    pub primary: bool,
 }
 
 pub(super) fn capture<'a>(
@@ -24,6 +25,7 @@ pub(super) fn capture<'a>(
     let mut primary_count = 0;
     for physical in 0..checked.schema().layout.physical_indexes {
         let mut selected: Option<&NativeIndex> = None;
+        let mut is_primary = false;
         for entry in checked.indexes() {
             reader.tick()?;
             let index = entry.index();
@@ -50,6 +52,7 @@ pub(super) fn capture<'a>(
             }
             let constraints = index.constraints().ok_or(EditError::Preservation)?;
             if constraints.primary_key() {
+                is_primary = true;
                 primary_count += 1;
                 let [key] = index.columns() else {
                     return Err(EditError::Preservation);
@@ -64,6 +67,7 @@ pub(super) fn capture<'a>(
                     || field.scalar_type() != Some(ScalarType::Int32)
                     || !constraints.required()
                     || !constraints.unique()
+                    || constraints.ignore_nulls()
                 {
                     return Err(EditError::Preservation);
                 }
@@ -85,6 +89,7 @@ pub(super) fn capture<'a>(
             index,
             column,
             profile: Profile::bind(index, &checked.schema().columns()[column])?,
+            primary: is_primary,
         });
     }
     if primary_count != 1 {

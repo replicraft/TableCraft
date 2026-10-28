@@ -540,3 +540,128 @@ fn ordinary_duplicate_and_null_families_increment_history_once() {
         assert_eq!(image.as_bytes(), before);
     }
 }
+
+fn ignored_source(code: u8, unique: bool) -> Vec<u8> {
+    let mut before = index_fixture::database(false, false, true);
+    before[4..20].copy_from_slice(b"Standard ACE DB\0");
+    before[20] = code;
+    before[10 * PAGE + 189] = if unique { 0x83 } else { 0x82 };
+    let original = before[ROOT_START..ROOT_START + PAGE].to_vec();
+    // The first genuine DATA row remains NULL, but has no physical index entry.
+    let root = literal_leaf(&original, &[(20, (12 << 8) | 1), (30, (12 << 8) | 2)]);
+    before[ROOT_START..ROOT_START + PAGE].copy_from_slice(&root);
+    before
+}
+
+#[test]
+fn ignored_null_requests_validate_references_without_adding_entries_or_history() {
+    for code in [5, 6] {
+        let before = ignored_source(code, false);
+        let check = checked(&before);
+        assert_eq!(check.rows(), 3);
+        let image = split_model::capture(&before);
+        let null = Value::Null;
+        let requests = [InsertKey {
+            reference: (12 << 8) | 3,
+            value: &null,
+        }];
+        let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(plan.original_count(), 2);
+        assert_eq!(
+            plan.expected().collect::<Vec<_>>(),
+            vec![(Some(20), (12 << 8) | 1), (Some(30), (12 << 8) | 2),]
+        );
+        assert_eq!(plan.distinct_added(), 0);
+        assert!(plan.patches.is_empty());
+        assert!(!plan.requires_continuation);
+        assert_eq!(compose_root(&before, &plan), before);
+        for references in [[0, (12 << 8) | 4], [(12 << 8) | 3, (12 << 8) | 3]] {
+            let requests = references.map(|reference| InsertKey {
+                reference,
+                value: &null,
+            });
+            assert!(matches!(
+                prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+                Err(EditError::Conflict)
+            ));
+        }
+    }
+}
+
+#[test]
+fn ignored_unique_keys_keep_nonnull_constraints_and_omit_null_batch_members() {
+    let before = ignored_source(6, true);
+    let check = checked(&before);
+    let image = split_model::capture(&before);
+    let values = [Value::Null, Value::Int32(40), Value::Null];
+    let requests = values
+        .iter()
+        .enumerate()
+        .map(|(position, value)| InsertKey {
+            reference: (12 << 8) | (3 + position as u32),
+            value,
+        })
+        .collect::<Vec<_>>();
+    let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+    assert_eq!(plan.distinct_added(), 1);
+    assert_eq!(plan.expected().len(), 3);
+    let expected = literal_leaf(
+        &before[ROOT_START..ROOT_START + PAGE],
+        &[
+            (20, (12 << 8) | 1),
+            (30, (12 << 8) | 2),
+            (40, (12 << 8) | 4),
+        ],
+    );
+    assert_eq!(
+        &compose_root(&before, &plan)[ROOT_START..ROOT_START + PAGE],
+        expected
+    );
+    let duplicate = Value::Int32(20);
+    let requests = [InsertKey {
+        reference: (12 << 8) | 3,
+        value: &duplicate,
+    }];
+    assert!(matches!(
+        prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+        Err(EditError::Inspect(InspectError::IndexConstraint(
+            IndexConstraintViolation::DuplicateKey
+        )))
+    ));
+}
+
+#[test]
+fn ignored_node_allnull_batch_has_no_continuation_and_required_forms_stay_refused() {
+    for code in [5, 6] {
+        let mut before = index_fixture::node_database();
+        before[4..20].copy_from_slice(b"Standard ACE DB\0");
+        before[20] = code;
+        before[10 * PAGE + 189] = 0x82;
+        before[10 * PAGE + 218] = 0;
+        let check = checked(&before);
+        let image = split_model::capture(&before);
+        let null = Value::Null;
+        let requests = [InsertKey {
+            reference: (12 << 8) | 3,
+            value: &null,
+        }];
+        let plan = prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false).unwrap();
+        assert_eq!(plan.source_pages(), &[13, 15, 16]);
+        assert!(!plan.requires_continuation);
+        assert!(plan.patches.is_empty());
+        assert!(plan.added.is_empty());
+        assert_eq!(plan.distinct_added(), 0);
+        assert_eq!(compose_root(&before, &plan), before);
+        for (flags, logical_kind) in [(0x8a, 0), (0x8b, 1)] {
+            let mut unsupported = before.clone();
+            unsupported[10 * PAGE + 189] = flags;
+            unsupported[10 * PAGE + 218] = logical_kind;
+            let check = checked(&unsupported);
+            let image = split_model::capture(&unsupported);
+            assert!(matches!(
+                prepare(&image, &check, 1, 0, &requests, &mut budget(), &|| false),
+                Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+            ));
+        }
+    }
+}

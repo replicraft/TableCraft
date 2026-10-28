@@ -22,6 +22,7 @@ pub(super) struct Profile {
     descending: bool,
     pub required: bool,
     pub unique: bool,
+    pub ignore_nulls: bool,
 }
 
 impl Profile {
@@ -38,7 +39,9 @@ impl Profile {
             _ => return Err(EditError::Preservation),
         };
         let constraints = index.constraints().ok_or(EditError::Preservation)?;
-        if column.number() != field.number() || constraints.ignore_nulls() {
+        if column.number() != field.number()
+            || (constraints.ignore_nulls() && constraints.required())
+        {
             return Err(EditError::Preservation);
         }
         Ok(Self {
@@ -47,6 +50,7 @@ impl Profile {
             descending: column.descending(),
             required: constraints.required(),
             unique: constraints.unique(),
+            ignore_nulls: constraints.ignore_nulls(),
         })
     }
 

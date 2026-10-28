@@ -148,9 +148,10 @@ fn before_with(
     );
     if structural.indexes().iter().any(|index| {
         index.status() != IndexCheckStatus::Checked
-            // Complete physical membership permits the separate DELETE request
-            // subset. Every UPDATE, including an empty one, retains its blocker.
-            || (!matches_delete(&admission)
+            // Complete physical membership permits the separate DELETE/INSERT
+            // consumers, whose planners still qualify their own key profiles.
+            // Every UPDATE, including an empty one, retains its blocker.
+            || (!has_ignored_index_consumer(&admission)
                 && index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls()))
             || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
     }) {
@@ -256,10 +257,10 @@ pub(super) fn qualified(report: &ConstraintReport) -> Result<(), EditError> {
     Ok(())
 }
 
-fn matches_delete(admission: &Admission) -> bool {
+fn has_ignored_index_consumer(admission: &Admission) -> bool {
     match admission {
         #[cfg(feature = "ace16-write-preview")]
-        Admission::Delete => true,
+        Admission::Delete | Admission::Insert => true,
         _ => false,
     }
 }

@@ -1,5 +1,6 @@
 //! Independently certified physical numeric index membership and framing.
 mod counters;
+mod eligible;
 mod profile;
 mod selection;
 mod split;
@@ -77,6 +78,7 @@ pub(super) fn prove(
         }
         sources.push(source);
     }
+    let primary_references = eligible::primary_references(checked, &selections, &sources, reader)?;
 
     let mut deltas = Vec::new();
     reserve(&mut deltas, selections.len(), reader)?;
@@ -86,7 +88,20 @@ pub(super) fn prove(
         let index = selection.index;
         let profile = selection.profile;
         let original_count = entries.len();
-        if original_count != checked.rows() || actual.source_pages() != pages {
+        if actual.source_pages() != pages {
+            return Err(EditError::Preservation);
+        }
+        if profile.ignore_nulls {
+            eligible::original(
+                checked,
+                selection,
+                primary_references
+                    .as_deref()
+                    .ok_or(EditError::Preservation)?,
+                &entries,
+                reader,
+            )?;
+        } else if original_count != checked.rows() {
             return Err(EditError::Preservation);
         }
         for entry in &entries {
@@ -112,6 +127,9 @@ pub(super) fn prove(
                     .any(|entry| reference(entry) == row.reference)
             {
                 return Err(EditError::Preservation);
+            }
+            if profile.ignore_nulls && value.is_none() {
+                continue;
             }
             let mut found = false;
             for entry in &entries {
@@ -161,7 +179,7 @@ pub(super) fn prove(
         prove_index(
             index,
             &entries,
-            rows.is_empty(),
+            entries.len() == original_count,
             actual,
             &operation,
             proof,

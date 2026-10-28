@@ -118,7 +118,13 @@ pub(in crate::table::indexes) fn continue_primary(
         0,
         &mut original_keys,
     )?;
-    if !tree.is_leaf() || original_keys.len() != checked.rows() {
+    super::super::insertion::require_population(
+        index,
+        &original_keys,
+        checked.rows(),
+        &mut reader,
+    )?;
+    if !tree.is_leaf() {
         return Err(EditError::Preservation);
     }
     retained_members(
@@ -238,6 +244,9 @@ fn retained_members(
         )?;
         if previous.is_some_and(|prior| !prior.compare_with(entry, profile).is_lt()) {
             return Err(EditError::Conflict);
+        }
+        if constraints.ignore_nulls() && entry.key.is_none() {
+            return Err(EditError::Preservation);
         }
         constraints
             .check_tuple(&mut previous_key, entry.key, entry.key.is_none())

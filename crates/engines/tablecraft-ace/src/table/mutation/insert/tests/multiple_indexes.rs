@@ -228,7 +228,7 @@ fn per_physical_counter_overflow_and_cancellation_return_no_candidate() {
 }
 
 #[test]
-fn descending_secondary_uses_key_direction_and_ignored_null_source_stays_refused() {
+fn descending_secondary_keeps_direction_and_ignored_null_insert_preserves_secondary() {
     for code in [5, 6] {
         let case = model::descending(model::source(code, false, false));
         run(
@@ -248,36 +248,43 @@ fn descending_secondary_uses_key_direction_and_ignored_null_source_stays_refused
         );
         let case = model::ignored_null_source(code);
         original::checked(&case.before, 3, 4);
-        // Complete read membership is qualified, but the shared mutation gate
-        // retains its ignore-NULL coverage refusal before index planning.
-        let image = original::capture(&case.before);
-        assert_eq!(
-            crate::table::mutation::gates::before_insert(
-                &image,
+        let rows = [Row {
+            id: 4,
+            group: None,
+            binary: None,
+        }];
+        let mut expected = model::expected(&case, &rows);
+        expected[14 * PAGE..15 * PAGE].copy_from_slice(&case.before[14 * PAGE..15 * PAGE]);
+        expected[10 * PAGE + 79..10 * PAGE + 83]
+            .copy_from_slice(&case.before[10 * PAGE + 79..10 * PAGE + 83]);
+        original::checked(&expected, 4, 4);
+        let candidate = original::capture(&case.before)
+            .preview_ace16_insert_rows(
                 "Items",
+                &[RowInsert::new(rows[0].values())],
                 &mut original::budget(),
                 &|| false,
             )
-            .err(),
+            .unwrap();
+        assert_eq!(candidate.candidate_bytes(), expected);
+        assert_eq!(
+            &expected[15 * PAGE..16 * PAGE],
+            &case.before[15 * PAGE..16 * PAGE]
+        );
+        // INSERT's complete omitted-key proof does not broaden either UPDATE API.
+        assert_eq!(
+            original::capture(&case.before)
+                .preview_ace16_int32_updates("Items", "ID", &[], &mut original::budget(), &|| false)
+                .err(),
             Some(EditError::Unsupported(
                 crate::WriteBlocker::ConstraintCoverage
-            )),
+            ))
         );
         assert_eq!(
             original::capture(&case.before)
-                .preview_ace16_insert_rows(
-                    "Items",
-                    &[RowInsert::new(
-                        Row {
-                            id: 4,
-                            group: Some(20),
-                            binary: None
-                        }
-                        .values()
-                    )],
-                    &mut original::budget(),
-                    &|| false
-                )
+                .preview_ace16_slot_updates("Items", "Score", &[], &mut original::budget(), &|| {
+                    false
+                })
                 .err(),
             Some(EditError::Unsupported(
                 crate::WriteBlocker::ConstraintCoverage

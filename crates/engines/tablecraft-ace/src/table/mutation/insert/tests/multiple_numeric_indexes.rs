@@ -1,4 +1,5 @@
 //! Public two-owner INSERT with independent narrow and eight-byte numeric wires.
+mod ignored;
 mod model;
 
 use super::model as original;

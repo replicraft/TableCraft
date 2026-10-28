@@ -1,4 +1,5 @@
 //! Healthy checked candidates distinguish authority failures from corrupt input.
+mod ignored;
 mod multiple;
 
 use super::super::{RowInsert, Staged, compose, finish, preflight, prepare, tests::model};

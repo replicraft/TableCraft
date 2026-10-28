@@ -80,9 +80,12 @@ pub(super) fn continue_primary(
         reads: 0,
     };
     let source = source::capture(image, index, definition, &profile, &mut reader)?;
-    if source.keys.len() != checked.rows() {
-        return Err(EditError::Preservation);
-    }
+    super::super::super::insertion::require_population(
+        index,
+        &source.keys,
+        checked.rows(),
+        &mut reader,
+    )?;
     if operation.final_keys.len() == source.keys.len() {
         reader.work(source.keys.len())?;
         if operation.final_keys != source.keys {

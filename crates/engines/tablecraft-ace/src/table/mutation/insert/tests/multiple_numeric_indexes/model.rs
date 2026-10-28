@@ -66,6 +66,7 @@ pub(super) struct Case {
     pub kind: Kind,
     pub descending: bool,
     pub histories: [u32; 2],
+    pub ignore_nulls: bool,
 }
 
 fn record(row: &Row, kind: Kind) -> Vec<u8> {
@@ -206,6 +207,7 @@ pub(super) fn source(code: u8, kind: Kind, descending: bool, large: bool) -> Cas
         kind,
         descending,
         histories,
+        ignore_nulls: false,
     }
 }
 
@@ -253,7 +255,11 @@ pub(super) fn expected(case: &Case, requests: &[Row]) -> Vec<u8> {
     }
     let mut members = [vec![13], vec![14]];
     for (physical, members) in members.iter_mut().enumerate() {
-        let entries = wires(&rows, case.kind, physical == 1, case.descending);
+        let mut entries = wires(&rows, case.kind, physical == 1, case.descending);
+        if physical == 1 && case.ignore_nulls {
+            let null_marker = if case.descending { 255 } else { 0 };
+            entries.retain(|entry| entry[0] != null_marker);
+        }
         let old = &case.before[(13 + physical) * PAGE..(14 + physical) * PAGE];
         let seed = u16::from_le_bytes(old[24..26].try_into().unwrap()) as usize;
         if frames::framing(&entries, seed).1 <= 3616 {
@@ -292,7 +298,7 @@ pub(super) fn expected(case: &Case, requests: &[Row]) -> Vec<u8> {
         .collect::<BTreeSet<_>>();
     let delta = requests
         .iter()
-        .filter(|row| known.insert(row.group))
+        .filter(|row| (!case.ignore_nulls || row.group.is_some()) && known.insert(row.group))
         .count();
     raw::put32(&mut bytes, 10 * PAGE + 16, rows.len() as u32);
     raw::put32(
@@ -343,4 +349,15 @@ pub(super) fn transpose_physical_owners(bytes: &mut [u8]) {
         assert!(physical < 2);
         raw::put32(bytes, offset, 1 - physical);
     }
+}
+
+/// Keep the same genuine typed DATA population while omitting its NULL key.
+pub(super) fn ignored(mut case: Case) -> Case {
+    case.ignore_nulls = true;
+    case.before[10 * PAGE + 290] = 0x82;
+    let mut entries = wires(&case.rows, case.kind, true, case.descending);
+    let null_marker = if case.descending { 255 } else { 0 };
+    entries.retain(|entry| entry[0] != null_marker);
+    frames::install(&mut case.before, 14, &frames::leaf(None, &entries, 0, 0, 0));
+    case
 }
