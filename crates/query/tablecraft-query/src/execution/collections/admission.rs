@@ -16,12 +16,12 @@ impl Runtime<'_, '_> {
         let ReadNode::Select(select) = &plan.node else {
             return Err(QueryError::Unsupported);
         };
-        if select.aggregate
-            || select.having.is_some()
-            || !select.group.is_empty()
-            || !select.record_keys.is_empty()
-            || plan.distinct
-        {
+        if !select.record_keys.is_empty() || plan.distinct {
+            return Err(QueryError::Unsupported);
+        }
+        if select.aggregate {
+            self.check_scalar_collection_aggregate(select, plan)?;
+        } else if select.having.is_some() || !select.group.is_empty() {
             return Err(QueryError::Unsupported);
         }
         if let Some(parent) = &select.parent {

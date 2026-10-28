@@ -8,7 +8,7 @@ use crate::{
 
 impl Runtime<'_, '_> {
     #[inline(never)]
-    pub(super) fn finish_read(
+    pub(in crate::execution) fn finish_read(
         &mut self,
         mut rows: Vec<OutputRow>,
         plan: &ReadPlan,
