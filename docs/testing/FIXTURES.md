@@ -10119,3 +10119,30 @@ passed. The [maintained proof](ace16_insert_ignored_indexes/README.md) preserves
 this ordering and source/proof identities, with no default child process. These
 are independent-reader/engineering observations, not native Microsoft Access
 save/reopen or production-write qualification.
+
+## Scalar secondary INSERT originals
+
+The repository-owned
+[ScalarIndexInsertReference.java](ace16_insert_scalar_indexes/ScalarIndexInsertReference.java)
+creates sixteen fresh originals with the reviewed Jackcess 5.0.4 JAR: V2016/V2019,
+ASC/DESC and Boolean/Single/Double/legacy DateTime. Each source has manual required
+Int32 ID, Group and Short Binary Bytes, with four logical names sharing exactly
+two physical indexes. The secondary is ordinary and nonunique. No third-party
+fixture or upstream implementation code is copied; original databases, JARs,
+classes and captures remain ignored private evidence.
+
+The [evidence record](results/ace16-insert-scalar-index-native-2026-10-28.json)
+pins raw sources, requests, independent expected images, tools and outcomes.
+All sixteen raw gates precede public appends in the first successful 97-command
+experiment. Actual createEntryBytes output is captured for old and requested
+operands using the reflected declared-method seam already used by repository
+encoded-key probes. The earlier pure static package-private API check failure is
+preserved separately; it preceded every compilation/generation call.
+
+Actual fields and getters preserve finite IEEE bits, Boolean false as mask data,
+and explicit UTC/LOCAL_DATE_TIME DATE projections. NaN/infinity and arbitrary DATE
+conversion are not inferred. Sixteen SOURCE+REQUEST images were frozen before
+the isolated committed build; sixteen candidate comparisons and thirty-two fresh
+read-only calls passed. The [maintained saved proof](ace16_insert_scalar_indexes/README.md)
+has no default child process. These observations do not qualify native Microsoft
+Access saves, Windows integration or production write paths.

@@ -1,0 +1,1677 @@
+{
+  "operation": "Complete source/request scalar secondary INSERT images and independent fresh readbacks",
+  "date": "2026-10-28",
+  "scope": {
+    "original_files": 16,
+    "cases": 16,
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "secondary_families": [
+      "Boolean",
+      "Single",
+      "Double",
+      "legacy DateTime"
+    ],
+    "directions": [
+      "ASC",
+      "DESC"
+    ],
+    "table": "Items",
+    "physical_indexes": 2,
+    "logical_indexes": 4,
+    "primary": "Manual Required unique ASC Int32",
+    "secondary": "Ordinary nonunique represented-NULL; Boolean has no NULL carrier",
+    "excluded_observations": [
+      "NaN/infinity public canonicalization",
+      "negative/adjacent-ULP DATE transport",
+      "native Access save/reopen",
+      "production save/data macros/Windows"
+    ],
+    "note": "Index wire comparisons do not establish SQL predicate coercion semantics"
+  },
+  "initial_pure_static_history": {
+    "status": 1,
+    "fixture_processes_before_correction": 0,
+    "failure": "Draft assumed public createEntryBytes; pinned IndexData declares it package-private",
+    "correction": "Existing reflected declared-method probe seam, same source/requests/key policy",
+    "history": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/before-package-private-encoder-correction/history.json",
+      "bytes": 305,
+      "sha256": "b940a3f5a999440b8b83633d5a237b9292fa415aeec19be609e7923c9639f559"
+    },
+    "initial_freeze": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/before-package-private-encoder-correction/controller-freeze.json",
+      "bytes": 4403,
+      "sha256": "b7a84f36fcedb16743f1110c9339bec4d01a21a3e111bad8239433f6c30145d2"
+    },
+    "initial_helper": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/before-package-private-encoder-correction/ScalarIndexInsertReference.java",
+      "bytes": 11080,
+      "sha256": "bdfd2130d98c153d2b3ad56cd5b1066c2f2b3a13c19d59a40b7bcb5238c030aa"
+    },
+    "initial_check": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/before-package-private-encoder-correction/static_validate.py",
+      "bytes": 4622,
+      "sha256": "66beb4f4721f8813101bab5620b361811133efbfccb4d5b31001fce90391fd63"
+    },
+    "initial_error": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/before-package-private-encoder-correction/static-first.stderr",
+      "bytes": 506,
+      "sha256": "7d7a2ce43c291cee5b86c6290aebb32f33fac579d683a5f42e9f182205382413"
+    },
+    "corrected_static": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/static-corrected-first.json",
+      "bytes": 139,
+      "sha256": "d30b516fa1060a57591847ec1d50b93246655111d369952b0081f5e779bb2c4b"
+    }
+  },
+  "source_reference_run": {
+    "report": {
+      "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/report.json",
+      "bytes": 560517,
+      "sha256": "fe881864777281e204ef894d043c5333ed76e4a29ccd264ce351d26abc9ef0fe"
+    },
+    "freeze": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/controller-freeze.json",
+      "bytes": 6152,
+      "sha256": "e86f3ef304807feb605379cb58feb3aaad58f478e50670b9b35d35618d0ffe4b"
+    },
+    "plan": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/plan.json",
+      "bytes": 83940,
+      "sha256": "0078fa44c8274789178d377b40d26189d5c71ae88827caa44db0cf01b3b6d258"
+    },
+    "first_status": 0,
+    "commands": 97,
+    "source_gates_before_any_append": 16,
+    "references": 16,
+    "completed_calls_repeated": 0,
+    "limits": {
+      "children": 97,
+      "deadline_seconds": 30,
+      "stream_bytes": 16777216,
+      "heap_mib": 512,
+      "database_bytes": 67108864
+    },
+    "saved_postcheck": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/saved-postcheck-first.json",
+      "bytes": 5883,
+      "sha256": "619ae7bdf3b605e2b0d1434e3ad79a94937f2b15a50839096edb6a7d9b1dd89d"
+    }
+  },
+  "source_request_images": {
+    "freeze": {
+      "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/freeze.json",
+      "bytes": 44229,
+      "sha256": "39932ca2c7b36701016ebf00853e7bb6eba29ec3e89ec6d1c6517173e970e36d"
+    },
+    "plan": {
+      "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/plan.json",
+      "bytes": 31161,
+      "sha256": "2eb0c8e6ea1a4140e8f479cfa65207f5e56bb1cb34d2ac0d913b65c0320de3a7"
+    },
+    "report": {
+      "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/report.json",
+      "bytes": 75548,
+      "sha256": "3031f9f4fa9b08450cb306d5ac345c846969db235f08706a0b43313d10541505"
+    },
+    "first_status": 0,
+    "reverify": {
+      "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/verify-first.json",
+      "bytes": 67,
+      "sha256": "576bc583990babadbf5d55ad0ea8c824a4b02a6ab78bc7757547891b846a2d0b"
+    },
+    "inputs": 165,
+    "outputs": 34,
+    "all_source_gates_before_derivation": 16,
+    "images": 16,
+    "public_after_or_native_candidate_image_inputs": 0,
+    "before_committed_producer_build": true,
+    "independent_new_record_and_tree_decode": true
+  },
+  "compiled_producer": {
+    "commit": "242b289cb558b0484460d9225afca0cef79cd5ca",
+    "receipt_commit": "825584950d6500c3065cdf7825a1825196263ab5",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-insert-scalar-index-20261028",
+      "bytes": 18528840,
+      "sha256": "d66ed9e5c40eed27da6bbe538c1b0f64a4400c4b8e4fb7143434e98c94ced2a8"
+    },
+    "receipt": {
+      "path": "docs/testing/results/ace16-insert-scalar-index-example-build-2026-10-28.json",
+      "bytes": 1388,
+      "sha256": "cfa9627e92302f190867fe5eaccc9ca9d492e8446c68ed1ec04e4730d545db57"
+    },
+    "source_archive": {
+      "path": ".cache/ace16-insert-scalar-index-build-20261028/committed-source.tar",
+      "bytes": 89579520,
+      "sha256": "1ce6e6404b058bde19a77034c02e862569d019467356cf5759e399cab67d9c01"
+    },
+    "optional_git_verification": {
+      "archive_files": 4462,
+      "receipt_blobs": 1,
+      "metadata_children": 1
+    }
+  },
+  "actual_candidates": {
+    "report": {
+      "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/report.json",
+      "bytes": 133988,
+      "sha256": "3ef739792286afc55504a294e5596893aec37a226f7b44792eb5201e2aec73c5"
+    },
+    "freeze": {
+      "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/protocol-freeze.json",
+      "bytes": 45422,
+      "sha256": "c080b257fa2002f4aaae5ab3d8ffd67634e8c0cfaab830f6794c142a7c696644"
+    },
+    "binding": {
+      "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/binding-first.json",
+      "bytes": 9999,
+      "sha256": "14ce9545aed0aec2a333a40067a5a3b805be53710042220b4aa0ba7fd60afbee"
+    },
+    "first_status": 0,
+    "commands": 16,
+    "complete_images_matched": 16,
+    "limits": {
+      "children": 16,
+      "deadline_seconds": 30,
+      "stream_bytes": 8388608,
+      "native_bytes": 268435456,
+      "native_rows": 100000,
+      "native_steps": 100000000
+    }
+  },
+  "fresh_readbacks": {
+    "report": {
+      "path": ".cache/ace16-scalar-index-insert-getters-first-20261028/report.json",
+      "bytes": 456581,
+      "sha256": "9d8cfb7e90d14174d332116994893c0814ed99c375efc7968741c9be2aff4010"
+    },
+    "freeze": {
+      "path": ".cache/ace16-scalar-index-insert-getters-next-20261028/controller-freeze.json",
+      "bytes": 46048,
+      "sha256": "ec1ba1f3eae717b33606f69da392b46594c27a11e01f3c4cffd8bc5de02182a2"
+    },
+    "binding": {
+      "path": ".cache/ace16-scalar-index-insert-getters-next-20261028/binding-first.json",
+      "bytes": 23314,
+      "sha256": "6b19dc892a2042a54ffa63d9028409fb4374234841577681163d72f7525629e1"
+    },
+    "first_status": 0,
+    "commands": 32,
+    "whole_sixteen_images_before_any_getter": true,
+    "limits": {
+      "children": 32,
+      "deadline_seconds": 30,
+      "stream_bytes": 16777216,
+      "heap_mib": 512
+    },
+    "saved_postcheck": {
+      "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/saved-postcheck-first.json",
+      "bytes": 6421,
+      "sha256": "e89de6290bd347f62c5e1315ea47445bab29accd9c47092bf2aa3633ae90aa78"
+    }
+  },
+  "totals": {
+    "old_rows_preserved": 3840,
+    "inserted_rows": 24,
+    "final_rows": 3864,
+    "physical_key_ROW_pairs": 7728,
+    "new_data_pages": 0,
+    "new_index_pages": 24,
+    "new_bitmap_pages": 0,
+    "historical_counter_deltas": {
+      "primary": 24,
+      "secondary_distinct_families": 16
+    }
+  },
+  "sources": [
+    {
+      "id": "V2016-Boolean-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-ASC-source.accdb",
+        "bytes": 389120,
+        "sha256": "f06008c0c05b00800690dc29541e752a8c8e088da9eb7ecedd59dd8ebb5e5388"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-ASC-source-proof.json",
+        "bytes": 7327,
+        "sha256": "1765e0ea7893e8cb938b21f982b55f495eb50e5461843475dd44796e270a17f5"
+      },
+      "rows": 3,
+      "historical_distinct_counters": [
+        3,
+        2
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93
+      ],
+      "actual_layout": {
+        "fixed_end": 6,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 0,
+          "declared_width": 1,
+          "physical_width": 0,
+          "variable_ordinal": 0,
+          "native_type": 1,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-Boolean-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-DESC-source.accdb",
+        "bytes": 389120,
+        "sha256": "6dd3e3aa97e14fd2bbd37c0bcdb3c619034359fa7e545a4e890030db1e093361"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-DESC-source-proof.json",
+        "bytes": 7327,
+        "sha256": "1765e0ea7893e8cb938b21f982b55f495eb50e5461843475dd44796e270a17f5"
+      },
+      "rows": 3,
+      "historical_distinct_counters": [
+        3,
+        2
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93
+      ],
+      "actual_layout": {
+        "fixed_end": 6,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 0,
+          "declared_width": 1,
+          "physical_width": 0,
+          "variable_ordinal": 0,
+          "native_type": 1,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-Single-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-ASC-source.accdb",
+        "bytes": 393216,
+        "sha256": "222aaa6ab1b50df6719845b695a588d03070b649da773dc03f3214271c5680a6"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-ASC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "6c55fbb9e74ff7c16aa474509689490d664832b563804d664d25d4acaa25bd3e"
+      },
+      "rows": 401,
+      "historical_distinct_counters": [
+        401,
+        401
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 10,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 4,
+          "physical_width": 4,
+          "variable_ordinal": 0,
+          "native_type": 6,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-Single-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-DESC-source.accdb",
+        "bytes": 393216,
+        "sha256": "487b411a45f06a397f97f58d50fb9e1a796b3685f955df569efecebfdf02ff0d"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-DESC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "6c55fbb9e74ff7c16aa474509689490d664832b563804d664d25d4acaa25bd3e"
+      },
+      "rows": 401,
+      "historical_distinct_counters": [
+        401,
+        401
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 10,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 4,
+          "physical_width": 4,
+          "variable_ordinal": 0,
+          "native_type": 6,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-Double-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-ASC-source.accdb",
+        "bytes": 393216,
+        "sha256": "605ec1eea7d28a605ed4582e4f0adf208192b211dd4a50c35307eaf1177467ff"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-ASC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "89d742cc5017b12f8c54679b84e97f7c6fbe3f95c5359fd2b75762d0d5584c07"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 7,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-Double-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-DESC-source.accdb",
+        "bytes": 393216,
+        "sha256": "5e680525f35867a7f8dfa36185b211e7f0dc5b1a44837b1628ff9c0d5f140d0a"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-DESC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "89d742cc5017b12f8c54679b84e97f7c6fbe3f95c5359fd2b75762d0d5584c07"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 7,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-DateTime-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-ASC-source.accdb",
+        "bytes": 393216,
+        "sha256": "cb1cd46898cd3d6d15b2d223e7905cd37d6a8ee9395ea00b471321b81b3efe10"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-ASC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "b44465dd2eb4ca194685353d0f00c6e4823bd7da1f78f4c7a2ff1cf9c3a5e437"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 8,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2016-DateTime-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-DESC-source.accdb",
+        "bytes": 393216,
+        "sha256": "278c5c852b6af39f27d62d08027dd0347142c8174985914ed0dddb4408f4d188"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-DESC-source-proof.json",
+        "bytes": 7342,
+        "sha256": "b44465dd2eb4ca194685353d0f00c6e4823bd7da1f78f4c7a2ff1cf9c3a5e437"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        91,
+        92
+      ],
+      "data_pages": [
+        93,
+        95
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 8,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Boolean-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-ASC-source.accdb",
+        "bytes": 462848,
+        "sha256": "33fa0441dfd4a9593585e14ce27b9a142fa87dd22174af4bf2d987c275639970"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-ASC-source-proof.json",
+        "bytes": 7208,
+        "sha256": "d315ee3165f205ce9e4b666f32420d401723b434b3148006bed03864529fb297"
+      },
+      "rows": 3,
+      "historical_distinct_counters": [
+        3,
+        2
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111
+      ],
+      "actual_layout": {
+        "fixed_end": 6,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 0,
+          "declared_width": 1,
+          "physical_width": 0,
+          "variable_ordinal": 0,
+          "native_type": 1,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Boolean-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-DESC-source.accdb",
+        "bytes": 462848,
+        "sha256": "b3d2ccd3a8722da3c925001b85e814354b83d3cb4190cd777bad676c2d8ee6b8"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-DESC-source-proof.json",
+        "bytes": 7208,
+        "sha256": "d315ee3165f205ce9e4b666f32420d401723b434b3148006bed03864529fb297"
+      },
+      "rows": 3,
+      "historical_distinct_counters": [
+        3,
+        2
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111
+      ],
+      "actual_layout": {
+        "fixed_end": 6,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 0,
+          "declared_width": 1,
+          "physical_width": 0,
+          "variable_ordinal": 0,
+          "native_type": 1,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Single-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-ASC-source.accdb",
+        "bytes": 466944,
+        "sha256": "4d34a22e91a680b46ac2e9a0c5ebdf094224be7dcfc698f4767a79ba1e9a59c6"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-ASC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "547d0cce957c0e33be2d98d917e08ec9155dce93b446ffe1211754a414cef7a6"
+      },
+      "rows": 401,
+      "historical_distinct_counters": [
+        401,
+        401
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 10,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 4,
+          "physical_width": 4,
+          "variable_ordinal": 0,
+          "native_type": 6,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Single-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-DESC-source.accdb",
+        "bytes": 466944,
+        "sha256": "6674cc4d65a9cf2807b3dec1734f7fa82dc0c5ad0469552cf2b706e6bd95af8a"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-DESC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "547d0cce957c0e33be2d98d917e08ec9155dce93b446ffe1211754a414cef7a6"
+      },
+      "rows": 401,
+      "historical_distinct_counters": [
+        401,
+        401
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 10,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 4,
+          "physical_width": 4,
+          "variable_ordinal": 0,
+          "native_type": 6,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Double-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-ASC-source.accdb",
+        "bytes": 466944,
+        "sha256": "041a18de195c60451bda68b450e32f3ab514779b851733379c3f9fcad1bef7ab"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-ASC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "14cd49f3527e5b44168be94ba5c0dbe0ff8aaace8115b6f239e466235b294577"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 7,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-Double-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-DESC-source.accdb",
+        "bytes": 466944,
+        "sha256": "dbf1f12b9460a09425ba7f1a539c8a096c06f4ba35b95f4be9166e578614a783"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-DESC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "14cd49f3527e5b44168be94ba5c0dbe0ff8aaace8115b6f239e466235b294577"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 7,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-DateTime-ASC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-ASC-source.accdb",
+        "bytes": 466944,
+        "sha256": "059a808113db26803e2d352378f90dea39da17083aeff81f7e17f9057f2f6782"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-ASC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "7d88559756817df76ce9e88cae6eed6c557e1d30573f1cbe139d547ed86ddc31"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 8,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    },
+    {
+      "id": "V2019-DateTime-DESC",
+      "image": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-DESC-source.accdb",
+        "bytes": 466944,
+        "sha256": "4f69d6f70431e542997c457717f8caa19a39cdbea44aec8fb203a03ccfd10ea2"
+      },
+      "saved_proof": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-DESC-source-proof.json",
+        "bytes": 7224,
+        "sha256": "7d88559756817df76ce9e88cae6eed6c557e1d30573f1cbe139d547ed86ddc31"
+      },
+      "rows": 278,
+      "historical_distinct_counters": [
+        278,
+        278
+      ],
+      "roots": [
+        108,
+        109
+      ],
+      "data_pages": [
+        111,
+        113
+      ],
+      "actual_layout": {
+        "fixed_end": 14,
+        "group": {
+          "name": "Group",
+          "number": 1,
+          "offset": 4,
+          "declared_width": 8,
+          "physical_width": 8,
+          "variable_ordinal": 0,
+          "native_type": 8,
+          "flags": 3,
+          "extended_flags": 0
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-Boolean-ASC",
+      "family": "Boolean",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Boolean-ASC.tsv",
+        "bytes": 59,
+        "sha256": "9254758e6b58f562f930627585290d616e06ef32ac8d80ef3d19a51361a88ab1"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-ASC-generate.stdout",
+        "bytes": 117,
+        "sha256": "74eb5a540be10f27a7a51a40c2e6e425cd2ca234bdabc88a077147fe5d15e1aa"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Boolean-ASC.accdb",
+        "bytes": 389120,
+        "sha256": "f08ffc14d9fd70db26b7abf178cd09bcdcffb51e8c7216b53dfcfbd855e4edd7"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Boolean-ASC.accdb",
+        "bytes": 389120,
+        "sha256": "f08ffc14d9fd70db26b7abf178cd09bcdcffb51e8c7216b53dfcfbd855e4edd7"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Boolean-ASC-facts.json",
+        "bytes": 760,
+        "sha256": "2194b0838d42b5a6261522185d6bbfdb1f999717247936cff174411407693a77"
+      },
+      "rows": 5,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Boolean-DESC",
+      "family": "Boolean",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Boolean-DESC.tsv",
+        "bytes": 59,
+        "sha256": "9254758e6b58f562f930627585290d616e06ef32ac8d80ef3d19a51361a88ab1"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Boolean-DESC-generate.stdout",
+        "bytes": 118,
+        "sha256": "eacae03d96782f8ac333c80e2852cefc92b01e97c31320dbdb5b54a98955b229"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Boolean-DESC.accdb",
+        "bytes": 389120,
+        "sha256": "166c72a12747632074537f80286456a3291a49ffbaebaefd53934082c6d22991"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Boolean-DESC.accdb",
+        "bytes": 389120,
+        "sha256": "166c72a12747632074537f80286456a3291a49ffbaebaefd53934082c6d22991"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Boolean-DESC-facts.json",
+        "bytes": 760,
+        "sha256": "2194b0838d42b5a6261522185d6bbfdb1f999717247936cff174411407693a77"
+      },
+      "rows": 5,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-Single-ASC",
+      "family": "Single",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Single-ASC.tsv",
+        "bytes": 78,
+        "sha256": "883623a031f8f371ca6f4b292d53ba693c4fcb082438f9fefe3498338a23b9b7"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-ASC-generate.stdout",
+        "bytes": 10390,
+        "sha256": "85a3b79e45b27e016b1b7ccbcf306a1892964440018d1841fac7dc505150c870"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Single-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "e9fb7c536ef097659f07a8f38a8fd9e0f05df866b97e73299c5154269f6f3c94"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Single-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "e9fb7c536ef097659f07a8f38a8fd9e0f05df866b97e73299c5154269f6f3c94"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Single-ASC-facts.json",
+        "bytes": 1505,
+        "sha256": "b65088123b79ce6fcc22908f55cbf61245b6a9ebcc5c3373ee5a7ba9f2b75693"
+      },
+      "rows": 403,
+      "counter_deltas": [
+        2,
+        2
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-Single-DESC",
+      "family": "Single",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Single-DESC.tsv",
+        "bytes": 78,
+        "sha256": "883623a031f8f371ca6f4b292d53ba693c4fcb082438f9fefe3498338a23b9b7"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Single-DESC-generate.stdout",
+        "bytes": 10391,
+        "sha256": "1005448b77c416c36085a730e6dc5c0254a023e93525342822f4ba5528e1ffb7"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Single-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "1c6a081c37877f73cfe7c62a0a4a103154127a58ba85a4e95f99e1f3310f878f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Single-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "1c6a081c37877f73cfe7c62a0a4a103154127a58ba85a4e95f99e1f3310f878f"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Single-DESC-facts.json",
+        "bytes": 1505,
+        "sha256": "b65088123b79ce6fcc22908f55cbf61245b6a9ebcc5c3373ee5a7ba9f2b75693"
+      },
+      "rows": 403,
+      "counter_deltas": [
+        2,
+        2
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-Double-ASC",
+      "family": "Double",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Double-ASC.tsv",
+        "bytes": 47,
+        "sha256": "f544bca118bf300b50fa9c861fa51db83db5351aef1f5b858733e8091727ebac"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-ASC-generate.stdout",
+        "bytes": 9390,
+        "sha256": "fccad99ac50815a4c54b52fe6f6c96d713870d049345afd86f8be72f285042fd"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Double-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "86b43735e8c8e6808103c9a57fe08abee5dd8be6535b6cfe7cc9779f30449f25"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Double-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "86b43735e8c8e6808103c9a57fe08abee5dd8be6535b6cfe7cc9779f30449f25"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Double-ASC-facts.json",
+        "bytes": 1369,
+        "sha256": "beedcdef94a6e66f7df90e2a5de38bf36e7eb63bad61bb6d22d7593773e6f4e6"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-Double-DESC",
+      "family": "Double",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-Double-DESC.tsv",
+        "bytes": 47,
+        "sha256": "f544bca118bf300b50fa9c861fa51db83db5351aef1f5b858733e8091727ebac"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-Double-DESC-generate.stdout",
+        "bytes": 9391,
+        "sha256": "9f261546a4cf5821f5694af3cdab75b4d70c103f5fb50cbdfd7cf51385f9a7fa"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Double-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "f855db7670a9ebaa74d04da76c93cc1c0a08aae4619a8128b86f85261f462a84"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-Double-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "f855db7670a9ebaa74d04da76c93cc1c0a08aae4619a8128b86f85261f462a84"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-Double-DESC-facts.json",
+        "bytes": 1369,
+        "sha256": "beedcdef94a6e66f7df90e2a5de38bf36e7eb63bad61bb6d22d7593773e6f4e6"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DateTime-ASC",
+      "family": "DateTime",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-DateTime-ASC.tsv",
+        "bytes": 45,
+        "sha256": "2288fe7ad34ef1155893965d1a7a6d3b0680aeb1a8c0779eb2f4b420f47b9052"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-ASC-generate.stdout",
+        "bytes": 9392,
+        "sha256": "09fb9f32d4dabdb3340b60971194c2c20a55bdf95487911c93674704777979c1"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-DateTime-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "0148b747b2d8d1979665c0d267ebfd169e2ec81dcc227be9c001832a2a8b6c7d"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-DateTime-ASC.accdb",
+        "bytes": 401408,
+        "sha256": "0148b747b2d8d1979665c0d267ebfd169e2ec81dcc227be9c001832a2a8b6c7d"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-DateTime-ASC-facts.json",
+        "bytes": 1369,
+        "sha256": "37c6b9e306c35871b11db4f112b25e0a10f67be7694e52e481b0026278120eca"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-DateTime-DESC",
+      "family": "DateTime",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2016-DateTime-DESC.tsv",
+        "bytes": 45,
+        "sha256": "2288fe7ad34ef1155893965d1a7a6d3b0680aeb1a8c0779eb2f4b420f47b9052"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2016-DateTime-DESC-generate.stdout",
+        "bytes": 9393,
+        "sha256": "73a34d1e19deea329afdc3a8c9fc797788833f3cba1feb43721c775364afb6d7"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-DateTime-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "272696a8b6f9da1d9ef92303a6b6891dae3e3156a51e92c9a063152df2e53d55"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2016-DateTime-DESC.accdb",
+        "bytes": 401408,
+        "sha256": "272696a8b6f9da1d9ef92303a6b6891dae3e3156a51e92c9a063152df2e53d55"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2016-DateTime-DESC-facts.json",
+        "bytes": 1369,
+        "sha256": "37c6b9e306c35871b11db4f112b25e0a10f67be7694e52e481b0026278120eca"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Boolean-ASC",
+      "family": "Boolean",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Boolean-ASC.tsv",
+        "bytes": 59,
+        "sha256": "9254758e6b58f562f930627585290d616e06ef32ac8d80ef3d19a51361a88ab1"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-ASC-generate.stdout",
+        "bytes": 117,
+        "sha256": "01d8c2a50d69ab4b11cf1ddf3f1a8433b5238c82b330a15f1b11b8b6c4b8f865"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Boolean-ASC.accdb",
+        "bytes": 462848,
+        "sha256": "489a3d081e329ad9f3b9e53e53a96d166ba4299db0dff04eea4fb52317671590"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Boolean-ASC.accdb",
+        "bytes": 462848,
+        "sha256": "489a3d081e329ad9f3b9e53e53a96d166ba4299db0dff04eea4fb52317671590"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Boolean-ASC-facts.json",
+        "bytes": 766,
+        "sha256": "71559093e4b935d8d8b03c27e8103af71c48cde8a2efdad6f3887bbe68650356"
+      },
+      "rows": 5,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Boolean-DESC",
+      "family": "Boolean",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Boolean-DESC.tsv",
+        "bytes": 59,
+        "sha256": "9254758e6b58f562f930627585290d616e06ef32ac8d80ef3d19a51361a88ab1"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Boolean-DESC-generate.stdout",
+        "bytes": 118,
+        "sha256": "edbc7458a0991bc06bbabd91194d3dfeb7ad758e70bfe9ed3757d51e385cab03"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Boolean-DESC.accdb",
+        "bytes": 462848,
+        "sha256": "892ecdbe4c6d4e2109ef8b10b4238cbeba7c3fe77343bf678cfc9b4744c44160"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Boolean-DESC.accdb",
+        "bytes": 462848,
+        "sha256": "892ecdbe4c6d4e2109ef8b10b4238cbeba7c3fe77343bf678cfc9b4744c44160"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Boolean-DESC-facts.json",
+        "bytes": 766,
+        "sha256": "71559093e4b935d8d8b03c27e8103af71c48cde8a2efdad6f3887bbe68650356"
+      },
+      "rows": 5,
+      "counter_deltas": [
+        2,
+        0
+      ],
+      "new_data": [],
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Single-ASC",
+      "family": "Single",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Single-ASC.tsv",
+        "bytes": 78,
+        "sha256": "883623a031f8f371ca6f4b292d53ba693c4fcb082438f9fefe3498338a23b9b7"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-ASC-generate.stdout",
+        "bytes": 10390,
+        "sha256": "dc8e136d6f48f234454eaa2ba3f3d1820f99c099ac6699c29e3f705be7bcfc65"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Single-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "b2333ed7af681abe9f81f35fbdb2797af3504a73ba9ba33faaee862bf37e7102"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Single-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "b2333ed7af681abe9f81f35fbdb2797af3504a73ba9ba33faaee862bf37e7102"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Single-ASC-facts.json",
+        "bytes": 1518,
+        "sha256": "fdebb9c3ee9cbca60c79bac376fc1adeb5b57cfd853667f770d6ea7700675d06"
+      },
+      "rows": 403,
+      "counter_deltas": [
+        2,
+        2
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Single-DESC",
+      "family": "Single",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Single-DESC.tsv",
+        "bytes": 78,
+        "sha256": "883623a031f8f371ca6f4b292d53ba693c4fcb082438f9fefe3498338a23b9b7"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Single-DESC-generate.stdout",
+        "bytes": 10391,
+        "sha256": "d0e890ae26dd3d08ee598a847b9633caabb48430f3b203b2bb06203dafe5a730"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Single-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "e5d1d35813b6a7427b01e8a2f619cece02b67c52c5c437165263609845d701fb"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Single-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "e5d1d35813b6a7427b01e8a2f619cece02b67c52c5c437165263609845d701fb"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Single-DESC-facts.json",
+        "bytes": 1518,
+        "sha256": "fdebb9c3ee9cbca60c79bac376fc1adeb5b57cfd853667f770d6ea7700675d06"
+      },
+      "rows": 403,
+      "counter_deltas": [
+        2,
+        2
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Double-ASC",
+      "family": "Double",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Double-ASC.tsv",
+        "bytes": 47,
+        "sha256": "f544bca118bf300b50fa9c861fa51db83db5351aef1f5b858733e8091727ebac"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-ASC-generate.stdout",
+        "bytes": 9390,
+        "sha256": "3de5794bd3409a78baed00d43ef9fbbdf75ec054f5fe52737d626fd98bf6471c"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Double-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "efe5d13f5d9acab7a8bbc9a8e66da72ed073ffd61c732bb77f3011473da56681"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Double-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "efe5d13f5d9acab7a8bbc9a8e66da72ed073ffd61c732bb77f3011473da56681"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Double-ASC-facts.json",
+        "bytes": 1381,
+        "sha256": "4a89213999b14a5874369357629761264b96c3fdad99e087f4ff7ef52e044ac4"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Double-DESC",
+      "family": "Double",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-Double-DESC.tsv",
+        "bytes": 47,
+        "sha256": "f544bca118bf300b50fa9c861fa51db83db5351aef1f5b858733e8091727ebac"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-Double-DESC-generate.stdout",
+        "bytes": 9391,
+        "sha256": "b06f3a735bc356c662aeec01111ee43c844b6bd818c87ed989407bbd10574d64"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Double-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "57e46c04a7ea3b31adb070fc58fbb13ee3212afe3fca8540aa0e0a9b101f945a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-Double-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "57e46c04a7ea3b31adb070fc58fbb13ee3212afe3fca8540aa0e0a9b101f945a"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-Double-DESC-facts.json",
+        "bytes": 1381,
+        "sha256": "4a89213999b14a5874369357629761264b96c3fdad99e087f4ff7ef52e044ac4"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DateTime-ASC",
+      "family": "DateTime",
+      "direction": "ASC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-DateTime-ASC.tsv",
+        "bytes": 45,
+        "sha256": "2288fe7ad34ef1155893965d1a7a6d3b0680aeb1a8c0779eb2f4b420f47b9052"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-ASC-generate.stdout",
+        "bytes": 9392,
+        "sha256": "0912acd551360a723e41b67c609653e0a0ddd52e478d418cb3e405561f73c9de"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-DateTime-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "fa2bb40b09d25e41ffbdf24226f20738c1e930297c0e6814740f6e9819188d3b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-DateTime-ASC.accdb",
+        "bytes": 475136,
+        "sha256": "fa2bb40b09d25e41ffbdf24226f20738c1e930297c0e6814740f6e9819188d3b"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-DateTime-ASC-facts.json",
+        "bytes": 1381,
+        "sha256": "2c720a1704d41831c5cbdb6f6cb2c24551eeb41ece9b38f4db0c0becadb23184"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-DateTime-DESC",
+      "family": "DateTime",
+      "direction": "DESC",
+      "request": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-next-20261028/requests/V2019-DateTime-DESC.tsv",
+        "bytes": 45,
+        "sha256": "2288fe7ad34ef1155893965d1a7a6d3b0680aeb1a8c0779eb2f4b420f47b9052"
+      },
+      "encoder": {
+        "path": ".cache/ace16-scalar-index-insert-reference-first-20261028/V2019-DateTime-DESC-generate.stdout",
+        "bytes": 9393,
+        "sha256": "f597520fe21fe8da742fabc2c0f532565a578468978abbb30edb49ef0b1f19ff"
+      },
+      "expected": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-DateTime-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "3f1947337ff4cdb7634b5a047eecf2edf418ea317931aff594eb4b8439d169b7"
+      },
+      "candidate": {
+        "path": ".cache/ace16-scalar-index-insert-candidates-first-20261028/V2019-DateTime-DESC.accdb",
+        "bytes": 475136,
+        "sha256": "3f1947337ff4cdb7634b5a047eecf2edf418ea317931aff594eb4b8439d169b7"
+      },
+      "facts": {
+        "path": ".cache/ace16-scalar-index-insert-expected-first-20261028/V2019-DateTime-DESC-facts.json",
+        "bytes": 1381,
+        "sha256": "2c720a1704d41831c5cbdb6f6cb2c24551eeb41ece9b38f4db0c0becadb23184"
+      },
+      "rows": 279,
+      "counter_deltas": [
+        1,
+        1
+      ],
+      "new_data": [],
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    }
+  ],
+  "maintained_proof": {
+    "command": [
+      "python3",
+      "-B",
+      "docs/testing/ace16_insert_scalar_indexes/verify.py"
+    ],
+    "default_check": {
+      "path": ".cache/ace16-scalar-index-insert-maintained-proof-20261028/first.json",
+      "bytes": 19067,
+      "sha256": "a9256762ed51c912910d0f6885d38c520ba428b59a101af9f720da391a836aba"
+    },
+    "default_first_status": 0,
+    "default_child_processes": 0,
+    "pin_occurrences": 4354,
+    "distinct_paths": 1198,
+    "optional_git_check": {
+      "path": ".cache/ace16-scalar-index-insert-maintained-proof-20261028/git-first.json",
+      "bytes": 19146,
+      "sha256": "586efcdd162dbb5dc535f880165622d41634130867dc0112dca5ebe42921ca4f"
+    },
+    "optional_git_first_status": 0,
+    "optional_git_metadata_children": 1,
+    "missing_check": {
+      "path": ".cache/ace16-scalar-index-insert-maintained-proof-20261028/missing-first.json",
+      "bytes": 348,
+      "sha256": "6eb1fca2ae08a5c7d2a2eb4237e59f64740c4ea70b250ba9fb7ae45d6a23093e"
+    },
+    "missing_first_status": 2,
+    "missing_available": false,
+    "identity": "Reference bootstrap only; constructor bodies unchanged except import-loader removal/direct frame owner; Java exact executed source",
+    "files": [
+      {
+        "path": "docs/testing/ace16_insert_scalar_indexes/README.md",
+        "bytes": 4584,
+        "sha256": "013aab1a631f6dbaf1f72350267c02b7227e2503f78e8fd0080055ac985d7d6f"
+      },
+      {
+        "path": "docs/testing/ace16_insert_scalar_indexes/ScalarIndexInsertReference.java",
+        "bytes": 11316,
+        "sha256": "4ceae7be418d8bb3947149d92187462196a4368622e449874814b625f63deb07"
+      },
+      {
+        "path": "docs/testing/ace16_insert_scalar_indexes/model.py",
+        "bytes": 13388,
+        "sha256": "ac97044f3eb6f12d578b5ab4945cec4f5fba5eef7d874c2a19f1f817a3c2196a"
+      },
+      {
+        "path": "docs/testing/ace16_insert_scalar_indexes/reference.py",
+        "bytes": 20866,
+        "sha256": "b6d6402d90ad59c2ba01e5b3d2e20400cb6354c7488e907d7c026a3c13df5ae3"
+      },
+      {
+        "path": "docs/testing/ace16_insert_scalar_indexes/verify.py",
+        "bytes": 16486,
+        "sha256": "18f4c8ff31689a6af5664c2d79fcb14d083cdb92bb722ea9d8335bc5701ec5af"
+      }
+    ]
+  },
+  "provenance": {
+    "helper": {
+      "path": ".cache/ace16-scalar-index-insert-source-next-20261028/ScalarIndexInsertReference.java",
+      "bytes": 11316,
+      "sha256": "4ceae7be418d8bb3947149d92187462196a4368622e449874814b625f63deb07"
+    },
+    "jar": {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    "source_jar": {
+      "path": ".cache/ace16-insert-candidates-next-20261027/first-actual/executed-inputs/139-jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    "existing_reflection_owner": {
+      "path": "docs/testing/encoded_index_split_sources/EncodedSplitProbe.java",
+      "bytes": 18451,
+      "sha256": "465c5786e078782908c8978fc2ce0f2520cba504bbf547b2067456a6a364e92c"
+    },
+    "date_policy": "New helper explicitly sets LOCAL_DATE_TIME/UTC; every read-only Java argv fixes actual DateTimeType system property and timezone"
+  },
+  "originals_and_frozen_inputs_changed": false,
+  "additional_fixture_calls_during_promotion": 0
+}

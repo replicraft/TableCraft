@@ -207,11 +207,30 @@ functions additionally reject corrupt Boolean payloads, invalid DATE wires and
 impossible narrow atoms. All 158 INSERT regressions, including these twelve
 functions, pass; strict all-target/all-feature ACE Clippy also passes.
 
-These synthetic controls extend the working engineering profile. The ten
-original-file candidates above qualify Int32 Ignore-NULL cases only. Fresh
-independent file comparisons for these additional scalar key families and native
-Access save/reopen qualification remain separate work. The new pressure goldens
-cover root growth; deeper scalar-specific reference observations are not claimed.
+The separate [scalar reference/candidate corpus](ace16_insert_scalar_indexes/README.md)
+now qualifies sixteen originals: both ACE 16 layouts and both directions for
+Boolean, Single, Double and legacy DATE. All 97 source/reference calls pass,
+with every original qualified before any public-writer append. Actual stored
+bits, getter projections and the independent encoder agree; authentic float
+cases use finite values and signed zeros. NaN/infinity coverage remains the
+separate synthetic evidence above.
+
+Sixteen source/request-derived complete images were frozen before an isolated
+committed producer build. All sixteen first-attempt candidates match those images
+before thirty-two fresh read-only getter/map calls pass. Across the cases, all
+3,840 original ROWs remain, 24 rows are added and 7,728 physical key/ROW pairs
+are checked. Boolean requests add no new secondary family; Single adds two,
+Double and DATE one each. Twelve pressure cases append two INDEX pages each,
+with no DATA growth; fitting primary changes retain their existing pages.
+
+The initial pure static API check exposed the independent encoder's package-private
+Java visibility before any fixture call. The corrected helper uses the existing
+narrow reflection probe pattern; failed static inputs remain preserved. No
+source recipe or expected image was repaired, and actual calls were not repeated.
+The [candidate receipt](results/ace16-insert-scalar-index-native-2026-10-28.json)
+and [producer receipt](results/ace16-insert-scalar-index-example-build-2026-10-28.json)
+keep build provenance and separate execution phases. Native Access save/reopen
+and deeper scalar-specific reference observations remain unqualified.
 
 
 ## Broader key preparation
