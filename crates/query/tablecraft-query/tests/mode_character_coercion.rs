@@ -80,12 +80,21 @@ fn eager_errors_pages_surrogates_and_unsupported_modes_remain_explicit() {
             Err(QueryError::Evaluation(EvalError::NumberFormatRequired))
         );
     }
+
+    // Exact Japanese LCID 1041 is supported by the complete string profile;
+    // its numeric-string argument still uses the explicit number format.
+    assert_eq!(
+        run("SELECT StrConv('abc',0,'1041')", Some(NumberFormat::EnUs)).unwrap(),
+        [vec![Value::Text("abc".into())]],
+    );
+
     for sql in [
         "SELECT Chr('128')",
         "SELECT ChrW('55296')",
         "SELECT InStrB(1,'abc','b','2')",
         "SELECT InStrRev('abc','b',-1,'1033')",
-        "SELECT StrConv('abc',0,'1041')",
+        // Alternate-sort 0x10411 must not collapse to Japanese 1041.
+        "SELECT StrConv('abc',0,'66577')",
     ] {
         assert!(run(sql, Some(NumberFormat::EnUs)).is_err(), "{sql}");
     }
