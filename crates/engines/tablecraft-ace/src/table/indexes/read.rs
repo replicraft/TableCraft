@@ -28,7 +28,10 @@ use crate::{
 };
 use membership::{DataPages, OwnershipStrategy};
 pub use references::{IndexedTableSnapshot, read_table_index_with_references};
-pub use stored::{read_stored_table_index_with_references, read_stored_table_index_with_request};
+pub use stored::{
+    read_stored_table_index_in_table_order, read_stored_table_index_with_references,
+    read_stored_table_index_with_request,
+};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,

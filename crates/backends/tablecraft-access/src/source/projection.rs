@@ -2,8 +2,8 @@
 use super::{Entry, NativeSource, query_error, schema::ScalarSchema, selection::chosen_index};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, TableCursor, TableSnapshot, inspect_table_indexes,
-    read_stored_table_index_with_request, read_table_index_in_table_order,
-    read_table_index_with_request,
+    read_stored_table_index_in_table_order, read_stored_table_index_with_request,
+    read_table_index_in_table_order, read_table_index_with_request,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{ProjectedRow, validate_projection};
@@ -172,39 +172,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
-        if declared.has_cached(Some(indices)) {
-            let snapshot = if let Some(index) = &entry.index {
-                // All is complete even when the evaluator supplied a constraint.
-                // The original predicate remains in the query plan.
-                read_stored_table_index_with_request(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    index.as_str(),
-                    IndexReadRequest {
-                        columns: Some(&names),
-                        selection: IndexProjectionSelection::All,
-                        maximum_rows: self.snapshot_limits.maximum_rows(),
-                    },
-                    &mut budget,
-                    self.cancelled,
-                )
-            } else {
-                TableCursor::open_stored_projection(
-                    &mut *source,
-                    self.scope,
-                    &entry.name,
-                    &names,
-                    &mut budget,
-                    self.cancelled,
-                )
-                .and_then(|cursor| {
-                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
-                })
-            }
-            .map_err(query_error)?;
-            return Ok((snapshot, true));
-        }
+        let stored = declared.has_cached(Some(indices));
         let inspection = if constraint.is_some() && (entry.index.is_some() || self.auto_indexes) {
             Some(
                 inspect_table_indexes(
@@ -235,10 +203,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         };
         if let Some((index, selection)) = chosen {
             let complete = selection == IndexProjectionSelection::All;
-            let read_index = if entry.index.is_none() {
-                read_table_index_in_table_order
-            } else {
-                read_table_index_with_request
+            let read_index = match (stored, entry.index.is_none()) {
+                (true, true) => read_stored_table_index_in_table_order,
+                (true, false) => read_stored_table_index_with_request,
+                (false, true) => read_table_index_in_table_order,
+                (false, false) => read_table_index_with_request,
             };
             let snapshot = read_index(
                 &mut *source,
@@ -256,7 +225,16 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             .map_err(query_error)?;
             Ok((snapshot, complete))
         } else {
-            Ok((
+            let cursor = if stored {
+                TableCursor::open_stored_projection(
+                    &mut *source,
+                    self.scope,
+                    &entry.name,
+                    &names,
+                    &mut budget,
+                    self.cancelled,
+                )
+            } else {
                 TableCursor::open_projection(
                     &mut *source,
                     self.scope,
@@ -265,10 +243,13 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     &mut budget,
                     self.cancelled,
                 )
-                .and_then(|cursor| {
-                    cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
-                })
-                .map_err(query_error)?,
+            };
+            Ok((
+                cursor
+                    .and_then(|cursor| {
+                        cursor.into_snapshot(self.snapshot_limits, &mut budget, self.cancelled)
+                    })
+                    .map_err(query_error)?,
                 true,
             ))
         }

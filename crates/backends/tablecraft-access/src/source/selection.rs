@@ -5,7 +5,9 @@ use tablecraft_ace::{
     DateTimeIndexSelection, DecimalIndexSelection, GeneralEqualityPrefix, GuidIndexSelection,
     IndexInspection, IndexProjectionSelection, IndexReadRequest, Int16IndexSelection,
     Int32IndexSelection, Int64IndexSelection, NativeIndex, TextIndexSelection,
-    inspect_table_indexes, read_table_index_in_table_order, read_table_index_with_request,
+    inspect_table_indexes, read_stored_table_index_in_table_order,
+    read_stored_table_index_with_request, read_table_index_in_table_order,
+    read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_query::{QueryError, Source, source::ScanConstraint};
@@ -27,9 +29,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         self.schema_columns(table)?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
-        if declared.has_cached(None) {
-            return self.scan(table, visitor);
-        }
+        let stored = declared.has_cached(None);
         if entry.table.get().is_some() {
             return self.scan(table, visitor);
         }
@@ -68,7 +68,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 drop(source);
                 return self.scan(table, visitor);
             }
-            let names = if !declared.unavailable.is_empty() {
+            let names = if stored || !declared.unavailable.is_empty() {
                 Some(
                     declared
                         .projection_names(&mut budget)
@@ -77,10 +77,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             } else {
                 None
             };
-            let read_index = if entry.index.is_none() {
-                read_table_index_in_table_order
-            } else {
-                read_table_index_with_request
+            let read_index = match (stored, entry.index.is_none()) {
+                (true, true) => read_stored_table_index_in_table_order,
+                (true, false) => read_stored_table_index_with_request,
+                (false, true) => read_table_index_in_table_order,
+                (false, false) => read_table_index_with_request,
             };
             read_index(
                 &mut *source,
