@@ -1,6 +1,6 @@
+use cli_support::run;
 #[path = "support/mod.rs"]
 mod cli_support;
-use cli_support::run;
 
 #[test]
 fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {

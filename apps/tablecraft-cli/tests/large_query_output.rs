@@ -1,6 +1,6 @@
+use cli_support::run;
 #[path = "support/mod.rs"]
 mod cli_support;
-use cli_support::run;
 
 #[test]
 fn explicit_text_limit_controls_generated_values_without_changing_eval() {

@@ -1,6 +1,6 @@
+use cli_support::run;
 #[path = "support/mod.rs"]
 mod cli_support;
-use cli_support::run;
 
 #[test]
 fn scalar_byte_functions_work_in_both_query_commands_with_explicit_formats() {

@@ -9,7 +9,6 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_expressions::comparison::Collation;
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_schema::Column;
