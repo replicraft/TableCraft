@@ -22,7 +22,7 @@ mod text;
 pub use constraints::{IndexConstraintViolation, IndexConstraints};
 mod encoded_tuple;
 mod entry_digest;
-mod header;
+pub(in crate::table) mod header;
 mod metadata;
 mod profile;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
@@ -97,8 +97,8 @@ pub use binary::BinaryIndexSelection;
 pub use read::read_table_binary_index_range;
 pub use read::read_table_text_index_range;
 pub use text::{GeneralEqualityPrefix, TextIndexSelection};
-mod mutation;
-mod page;
+pub(in crate::table) mod mutation;
+pub(in crate::table) mod page;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use mutation::{

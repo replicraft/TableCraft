@@ -1,6 +1,6 @@
 //! Independent placement replay derives map authority without planner masks.
 mod certified;
-mod hint;
+pub(in crate::table::mutation) mod hint;
 #[cfg(test)]
 mod tests;
 
@@ -36,10 +36,10 @@ struct State {
     hinted: bool,
 }
 
-struct ExpectedByte {
-    offset: usize,
-    before: u8,
-    after: u8,
+pub(in crate::table::mutation) struct ExpectedByte {
+    pub(in crate::table::mutation) offset: usize,
+    pub(in crate::table::mutation) before: u8,
+    pub(in crate::table::mutation) after: u8,
 }
 
 struct Replay {
@@ -50,7 +50,7 @@ struct Replay {
     metadata: Option<hint::ExpectedBitmap>,
 }
 
-fn expect(
+pub(in crate::table::mutation) fn expect(
     bytes: &mut Vec<ExpectedByte>,
     cell: MapCell,
     set: bool,

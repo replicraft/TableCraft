@@ -7,7 +7,7 @@ use zerocopy::{
 
 #[derive(FromBytes, Immutable, KnownLayout, Unaligned)]
 #[repr(C)]
-pub(super) struct IndexHeader {
+pub(in crate::table) struct IndexHeader {
     pub kind: u8,
     pub version: u8,
     pub free: U16,

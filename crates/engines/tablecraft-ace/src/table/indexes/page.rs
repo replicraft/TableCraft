@@ -10,11 +10,11 @@ use crate::{
 use std::cmp::Ordering;
 
 pub(super) const NODE: u8 = 3;
-pub(super) const LEAF: u8 = 4;
+pub(in crate::table) const LEAF: u8 = 4;
 const PAGE_VERSION: u8 = 1;
 const MASK_OFFSET: usize = size_of::<IndexHeader>();
 const MASK_BYTES: usize = 453;
-pub(super) const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
+pub(in crate::table) const ENTRY_START: usize = MASK_OFFSET + MASK_BYTES;
 pub(super) const ROW_BYTES: usize = size_of::<u32>();
 pub(super) const CHILD_BYTES: usize = size_of::<u32>();
 const MAX_KEY_BYTES: usize = size_of::<i64>();
