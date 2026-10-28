@@ -91,7 +91,7 @@ pub(super) fn prove(
         if actual.source_pages() != pages {
             return Err(EditError::Preservation);
         }
-        if profile.ignore_nulls {
+        let mut facts = if profile.ignore_nulls || profile.variable() {
             eligible::original(
                 checked,
                 selection,
@@ -100,20 +100,26 @@ pub(super) fn prove(
                     .ok_or(EditError::Preservation)?,
                 &entries,
                 reader,
-            )?;
-        } else if original_count != checked.rows() {
-            return Err(EditError::Preservation);
-        }
+            )?
+        } else {
+            if original_count != checked.rows() {
+                return Err(EditError::Preservation);
+            }
+            Vec::new()
+        };
         for entry in &entries {
             reader.work(entry.len())?;
-            profile.value(entry)?;
+            eligible::nulls(profile, entry, &facts, reader)?;
+            if profile.unique && !profile.exact_unique(entry) {
+                return Err(EditError::Preservation);
+            }
         }
         let mut distinct = 0;
         reserve(&mut entries, rows.len(), reader)?;
         for (request, row) in requests.iter().zip(rows) {
             reader.tick()?;
             let wire = profile.request(request.values(), row.reference, reader)?;
-            let nulls = profile.value(&wire)?;
+            let nulls = profile.row_nulls(request.values(), reader)?;
             reader.work(entries.len() * REFERENCE_BYTES)?;
             if reference_page(row.reference) == 0
                 || reference_page(row.reference) as usize >= proof.bytes.len() / PAGE_BYTES
@@ -127,6 +133,16 @@ pub(super) fn prove(
             if profile.ignore_nulls && nulls.all {
                 continue;
             }
+            if profile.unique && !profile.exact_unique(&wire) {
+                return Err(EditError::Preservation);
+            }
+            if profile.variable() {
+                reserve(&mut facts, 1, reader)?;
+                facts.push(eligible::RowFacts {
+                    reference: row.reference,
+                    nulls,
+                });
+            }
             let mut found = false;
             for entry in &entries {
                 reader.work(entry.len())?;
@@ -139,12 +155,15 @@ pub(super) fn prove(
             reader.work(size_of::<Wire>())?;
             entries.push(wire);
         }
+        if profile.variable() {
+            eligible::sort_facts(&mut facts, reader)?;
+        }
         wire::sort_paid(&mut entries, reader)?;
         for pair in entries.windows(2) {
             reader.work(pair[0].len() + pair[1].len())?;
             if pair[0] >= pair[1]
                 || (profile.unique
-                    && !profile.value(&pair[0])?.all
+                    && !eligible::nulls(profile, &pair[0], &facts, reader)?.all
                     && pair[0][..pair[0].len() - REFERENCE_BYTES]
                         == pair[1][..pair[1].len() - REFERENCE_BYTES])
             {

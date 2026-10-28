@@ -1,5 +1,5 @@
 //! Ignored membership derived from the complete primary logical-ROW universe.
-use super::{Wire, reference, reserve, selection::Selection};
+use super::{Profile, Wire, profile::Nulls, reference, reserve, selection::Selection};
 use crate::{
     EditError, InspectError, TableCheck,
     format::{
@@ -23,7 +23,7 @@ pub(super) fn primary_references(
     let mut ignored = false;
     for selection in selections {
         reader.tick()?;
-        ignored |= selection.profile.ignore_nulls;
+        ignored |= selection.profile.ignore_nulls || selection.profile.variable();
     }
     if !ignored {
         return Ok(None);
@@ -72,14 +72,62 @@ pub(super) fn primary_references(
     Ok(Some(references))
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub(super) struct RowFacts {
+    pub reference: u32,
+    pub nulls: Nulls,
+}
+
+pub(super) fn nulls(
+    profile: &Profile<'_>,
+    entry: &Wire,
+    facts: &[RowFacts],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Nulls, EditError> {
+    if !profile.variable() {
+        return profile.value(entry);
+    }
+    let levels = facts.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    reader.work(levels)?;
+    let position = facts
+        .binary_search_by_key(&reference(entry), |fact| fact.reference)
+        .map_err(|_| EditError::Preservation)?;
+    Ok(facts[position].nulls)
+}
+
+pub(super) fn sort_facts(
+    facts: &mut [RowFacts],
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let levels = facts.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    let work = facts
+        .len()
+        .checked_mul(levels)
+        .and_then(|work| work.checked_mul(size_of::<RowFacts>()))
+        .ok_or(InspectError::StructureLimit)?;
+    reader.work(work)?;
+    facts.sort_unstable_by_key(|fact| fact.reference);
+    for pair in facts.windows(2) {
+        reader.tick()?;
+        if pair[0].reference >= pair[1].reference {
+            return Err(EditError::Preservation);
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn original(
     checked: &TableCheck,
     selection: &Selection<'_>,
     references: &[u32],
     entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<(), EditError> {
+) -> Result<Vec<RowFacts>, EditError> {
     let mut expected = Vec::new();
+    let mut facts = Vec::new();
+    if selection.profile.variable() {
+        reserve(&mut facts, references.len(), reader)?;
+    }
     reserve(&mut expected, references.len(), reader)?;
     // The record decoder emits declaration order, independently of written
     // index component order. Decode/remap a sorted set; the profile retains its
@@ -125,8 +173,18 @@ pub(super) fn original(
             reader.tick()?;
             values[*column] = value;
         }
+        let nulls = selection.profile.row_nulls(&values, reader)?;
         let wire = selection.profile.request(&values, *reference, reader)?;
-        if !selection.profile.value(&wire)?.all {
+        if selection.profile.variable() {
+            if selection.profile.unique && !selection.profile.exact_unique(&wire) {
+                return Err(EditError::Preservation);
+            }
+            facts.push(RowFacts {
+                reference: *reference,
+                nulls,
+            });
+        }
+        if !selection.profile.ignore_nulls || !nulls.all {
             reader.work(size_of::<Wire>())?;
             expected.push(wire);
         }
@@ -138,5 +196,5 @@ pub(super) fn original(
     if expected != entries {
         return Err(EditError::Preservation);
     }
-    Ok(())
+    Ok(facts)
 }

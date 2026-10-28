@@ -1,5 +1,5 @@
 //! Fixed typed membership survives until physical continuation has completed.
-use super::{ExpectedKey, IndexInsertion, InsertRow, membership};
+use super::{ExpectedKey, IndexInsertion, InsertRow, binding::InsertProfile, membership};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{
@@ -14,9 +14,8 @@ use crate::{
             header::IndexHeader,
             key::KeyWork,
             mutation::{
-                profile::WriteProfile,
                 repack,
-                row_key::RowKeyProfile,
+                retained::RetainedProfile,
                 split::{self, insert::Operation},
                 tree::Tree,
             },
@@ -28,14 +27,14 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) struct Prepared<P: WriteProfile> {
+pub(super) struct Prepared<P: RetainedProfile> {
     pub(super) result: IndexInsertion,
     pub(super) profile: P,
     pub(super) keys: Vec<KeyRef<P::Key>>,
     pub(super) requires_continuation: bool,
 }
 
-pub(super) fn prepare<P: WriteProfile + RowKeyProfile, const N: usize>(
+pub(super) fn prepare<P: InsertProfile, const N: usize>(
     image: &NativeImage,
     checked: &TableCheck,
     index: &NativeIndex,
@@ -74,6 +73,7 @@ pub(super) fn prepare<P: WriteProfile + RowKeyProfile, const N: usize>(
         0,
         &mut keys,
     )?;
+    profile.bind_source(checked.schema(), index, &mut keys, &mut reader)?;
     membership::require_population(index, &keys, &profile, checked.rows(), &mut reader)?;
     if source_leaf != tree.is_leaf() {
         return Err(EditError::Preservation);
@@ -95,23 +95,13 @@ pub(super) fn prepare<P: WriteProfile + RowKeyProfile, const N: usize>(
     let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     for (position, request) in requests.iter().enumerate() {
         reader.tick()?;
-        let wire = profile.encoded_row(
+        let key = profile.request_key(
             request,
             &mut KeyWork {
                 budget: reader.budget,
                 cancelled,
             },
         )?;
-        let (key, consumed) = profile.decode(
-            &wire,
-            &mut KeyWork {
-                budget: reader.budget,
-                cancelled,
-            },
-        )?;
-        if consumed != wire.len() {
-            return Err(EditError::Preservation);
-        }
         let page = reference_page(request.reference);
         if page == 0
             || u64::from(page) >= MAX_IMAGE_BYTES / PAGE_BYTES as u64
@@ -196,7 +186,7 @@ pub(super) fn prepare<P: WriteProfile + RowKeyProfile, const N: usize>(
     })
 }
 
-impl<P: WriteProfile> Prepared<P> {
+impl<P: InsertProfile> Prepared<P> {
     pub(super) fn finish<const N: usize>(
         mut self,
         image: &NativeImage,
@@ -241,7 +231,7 @@ impl<P: WriteProfile> Prepared<P> {
         for entry in &self.keys {
             check(budget, cancelled)?;
             let mut encoded = [0; N];
-            let length = self.profile.encode(entry.key, &mut encoded)?;
+            let length = self.profile.encode_retained(&entry.key, &mut encoded)?;
             budget
                 .charge_allocation(length as u64, 1)
                 .map_err(InspectError::from)?;

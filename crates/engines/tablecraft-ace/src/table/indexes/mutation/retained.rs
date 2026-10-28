@@ -1,4 +1,4 @@
-//! DELETE transports checked original keys; it never pretends to update them.
+//! Transport checked original key bytes and explicitly bound row semantics.
 #[cfg(test)]
 mod tests;
 
@@ -8,6 +8,7 @@ use super::{
         page::KeyRef,
     },
     profile::WriteProfile,
+    row_key::RowKeyProfile,
 };
 use crate::{InspectError, header::check};
 use std::cmp::Ordering;
@@ -41,11 +42,19 @@ pub(super) fn reference<P: RetainedProfile>(
 
 pub(super) struct Preserved<P>(pub P);
 
-#[derive(Eq, PartialEq)]
 pub(super) struct PreservedKey<K> {
     semantic: K,
     wire: Vec<u8>,
+    row_nulls: Option<(bool, bool)>,
 }
+
+// Constraint facts do not alter physical key identity or separator comparison.
+impl<K: Eq> PartialEq for PreservedKey<K> {
+    fn eq(&self, other: &Self) -> bool {
+        self.semantic == other.semantic && self.wire == other.wire
+    }
+}
+impl<K: Eq> Eq for PreservedKey<K> {}
 
 impl<P: KeyProfile> KeyProfile for Preserved<P> {
     type Key = PreservedKey<P::Key>;
@@ -74,7 +83,14 @@ impl<P: KeyProfile> KeyProfile for Preserved<P> {
         wire.try_reserve_exact(bytes.len())
             .map_err(|_| InspectError::Allocation)?;
         wire.extend_from_slice(bytes);
-        Ok((PreservedKey { semantic, wire }, consumed))
+        Ok((
+            PreservedKey {
+                semantic,
+                wire,
+                row_nulls: None,
+            },
+            consumed,
+        ))
     }
 
     fn compare(&self, left: &Self::Key, right: &Self::Key) -> Ordering {
@@ -82,7 +98,10 @@ impl<P: KeyProfile> KeyProfile for Preserved<P> {
     }
 
     fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
-        self.0.constraint_nulls(&key.semantic)
+        match key.row_nulls {
+            Some(nulls) => Ok(nulls),
+            None => self.0.constraint_nulls(&key.semantic),
+        }
     }
 
     fn unique_key_is_exact(&self, key: &Self::Key) -> bool {
@@ -100,6 +119,7 @@ impl<P: KeyProfile> KeyProfile for Preserved<P> {
         Ok(PreservedKey {
             semantic: self.0.row_key(row, work)?,
             wire: Vec::new(),
+            row_nulls: None,
         })
     }
 }
@@ -108,7 +128,9 @@ impl<P: KeyProfile> RetainedProfile for Preserved<P> {
     fn retain(&self, key: &Self::Key, work: &mut KeyWork<'_>) -> Result<Self::Key, InspectError> {
         // Re-decode and copy the original bytes under the same paid decoder.
         // This creates no new Text weights or semantic Binary serialization.
-        self.decode(&key.wire, work).map(|(key, _)| key)
+        let (mut retained, _) = self.decode(&key.wire, work)?;
+        retained.row_nulls = key.row_nulls;
+        Ok(retained)
     }
 
     fn encode_retained(&self, key: &Self::Key, output: &mut [u8]) -> Result<usize, InspectError> {
@@ -120,5 +142,44 @@ impl<P: KeyProfile> RetainedProfile for Preserved<P> {
             .ok_or(InspectError::Malformed)?
             .copy_from_slice(&key.wire);
         Ok(key.wire.len())
+    }
+}
+
+impl<P: RowKeyProfile> Preserved<P> {
+    /// Bind a complete INSERT row, retaining NULL facts independently of any
+    /// whole-key truncation or digest. Separator decoding never calls this.
+    pub(super) fn row_key_with_wire(
+        &self,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<PreservedKey<P::Key>, InspectError> {
+        let semantic = self.0.row_key(row, work)?;
+        let row_nulls = self.0.constraint_nulls(&semantic)?;
+        let wire = self.0.encoded_row(row, work)?;
+        if wire.is_empty() || wire.len() > self.max_key_bytes() {
+            return Err(InspectError::Malformed);
+        }
+        Ok(PreservedKey {
+            semantic,
+            wire,
+            row_nulls: Some(row_nulls),
+        })
+    }
+
+    /// A source leaf must match the complete immutable row before its NULL facts
+    /// become authoritative. Keep the original physical wire byte for byte.
+    pub(super) fn bind_row(
+        &self,
+        original: &PreservedKey<P::Key>,
+        row: &(impl KeyRow + ?Sized),
+        work: &mut KeyWork<'_>,
+    ) -> Result<PreservedKey<P::Key>, InspectError> {
+        let bound = self.row_key_with_wire(row, work)?;
+        work.budget
+            .charge(Resource::Steps, original.wire.len() as u64)?;
+        if original.wire != bound.wire || !self.compare(original, &bound).is_eq() {
+            return Err(InspectError::Malformed);
+        }
+        Ok(bound)
     }
 }

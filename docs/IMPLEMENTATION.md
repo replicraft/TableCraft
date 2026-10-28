@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Short Text/Binary INSERT index keys
+
+The separate ACE 16 INSERT preview now maintains qualified General Short Text
+and Short Binary indexes and their mixed fixed tuples. Row-derived NULL facts
+survive non-Copy retention and whole-key digests; source leaves hydrate exact
+logical rows while separators stay comparison-only. The independent audit owns
+framing, digest, source membership and complete-row constraint facts. Unique
+uncertain digest keys, unqualified sort orders and normal saves remain refused.
+
+Five public complete-image, four internal producer and two audit functions cover
+NULL/empty distinctions, reversed tuples, ignored/unique rules, source drift,
+510-byte Binary payloads with 585-byte node bounds, Modern digest retention and
+paid work/cancellation. The full ACE library batch passes 491 functions with one
+existing ignored fixture generator. The initial empty-Text fixture refusal was
+resolved with an explicit typed source policy; its absence remains a causal
+refusal control. Thirty-seven shared DELETE/UPDATE and eight French boundary
+checks, strict ACE all-target/all-feature Clippy, minimal compilation, formatting
+and documentation/dependency guards also pass. See the [variable-key contract](testing/ACE16_VARIABLE_INDEX_INSERTS.md).
+
 ## Exact Decimal INSERT index keys
 
 The separate ACE 16 INSERT preview now maintains single Decimal secondary indexes

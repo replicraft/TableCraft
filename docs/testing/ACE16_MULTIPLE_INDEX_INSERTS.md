@@ -28,8 +28,10 @@ index is not Required. Primary Ignore-NULL and Required+Ignore-NULL combinations
 remain refused, as do foreign indexes and other unqualified key families.
 Qualified [fixed GUID/numeric tuples](ACE16_FIXED_TUPLE_INSERTS.md) now extend
 this service to two-to-ten components with independent directions. Storing a
-Decimal, Text, Binary or other unqualified key carrier does not authorize an
-index on that field. The ordinary record and physical key profiles remain
+value does not by itself authorize an index on that field. Qualified
+[Decimal indexes](ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
+and [Short Text/Binary indexes](ACE16_VARIABLE_INDEX_INSERTS.md) now have their
+own typed preparation and independent final audit. The ordinary record and physical key profiles remain
 separate requirements.
 
 Distinct physical trees must own disjoint original INDEX pages, including their
@@ -243,5 +245,5 @@ Its current numeric caller and exact allocation/image policy are unchanged.
 A non-Copy retained-key test brought that checkpoint to 159 passing INSERT
 functions. The later [fixed GUID/tuple continuation](ACE16_FIXED_TUPLE_INSERTS.md)
 now implements complete-row NULL rules, original membership and independent
-wire proof, with 171 passing INSERT functions. Variable-key and Decimal index
-continuations remain separate work.
+wire proof, with 171 passing INSERT functions. The later exact Decimal and variable-key continuations are documented above;
+normal save qualification remains separate work.

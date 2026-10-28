@@ -1,19 +1,24 @@
 //! Typed request membership, followed by physical-owner continuation and wire facts.
+pub(in crate::table::indexes::mutation) mod binding;
 pub(in crate::table::indexes) mod membership;
 mod preparation;
 mod profiles;
 #[cfg(test)]
 mod tests;
 
+use super::retained::Preserved;
 use super::split::{
     AddedPage,
     allocation::{Promotion, Rebase},
 };
 use super::{IndexDataPatch, NumericKey, composite::TupleProfile, profile::SingleProfile};
 use crate::table::indexes::{
+    binary::BinaryProfile,
     composite::{DecimalColumns, DecimalValue, MixedValue},
     decimal::DecimalProfile,
+    encoded_tuple::EncodedTupleProfile,
     guid::GuidProfile,
+    text::TextProfile,
 };
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
@@ -87,8 +92,11 @@ impl IndexInsertion {
 }
 
 /// Fixed profiles and typed keys stay owned until this phase is consumed.
-enum PreparedKind {
+enum PreparedKind<'a> {
     Numeric(Prepared<SingleProfile>),
+    Text(Prepared<Preserved<TextProfile>>),
+    Binary(Prepared<Preserved<BinaryProfile<'static>>>),
+    Encoded(Prepared<Preserved<EncodedTupleProfile<'a>>>),
     Decimal(Prepared<DecimalProfile>),
     Guid(Prepared<GuidProfile>),
     Tuple(Prepared<TupleProfile>),
@@ -96,14 +104,17 @@ enum PreparedKind {
     DecimalTuple(Prepared<TupleProfile<DecimalValue, DecimalColumns>>),
 }
 
-pub(in crate::table) struct PreparedIndex {
-    kind: PreparedKind,
+pub(in crate::table) struct PreparedIndex<'a> {
+    kind: PreparedKind<'a>,
 }
 
-impl PreparedIndex {
+impl PreparedIndex<'_> {
     pub(in crate::table) fn source_pages(&self) -> &[u32] {
         match &self.kind {
             PreparedKind::Numeric(plan) => &plan.result.source_pages,
+            PreparedKind::Text(plan) => &plan.result.source_pages,
+            PreparedKind::Binary(plan) => &plan.result.source_pages,
+            PreparedKind::Encoded(plan) => &plan.result.source_pages,
             PreparedKind::Decimal(plan) => &plan.result.source_pages,
             PreparedKind::Guid(plan) => &plan.result.source_pages,
             PreparedKind::Tuple(plan) => &plan.result.source_pages,
@@ -120,13 +131,21 @@ impl PreparedIndex {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(IndexInsertion, State), EditError> {
-        use crate::table::indexes::{composite, decimal, guid};
+        use crate::table::indexes::{binary, composite, decimal, encoded_tuple, guid, text};
         match self.kind {
             PreparedKind::Numeric(plan) => {
                 plan.finish::<ENTRY_BUFFER>(image, checked, append, budget, cancelled)
             }
             PreparedKind::Decimal(plan) => plan
                 .finish::<{ decimal::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled),
+            PreparedKind::Text(plan) => {
+                plan.finish::<{ text::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled)
+            }
+            PreparedKind::Binary(plan) => plan
+                .finish::<{ binary::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled),
+            PreparedKind::Encoded(plan) => plan.finish::<{ encoded_tuple::MAX_ENTRY_BYTES }>(
+                image, checked, append, budget, cancelled,
+            ),
             PreparedKind::Guid(plan) => {
                 plan.finish::<{ guid::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled)
             }
@@ -143,15 +162,15 @@ impl PreparedIndex {
     }
 }
 
-pub(in crate::table) fn prepare(
+pub(in crate::table) fn prepare<'a>(
     image: &NativeImage,
-    checked: &TableCheck,
+    checked: &'a TableCheck,
     physical: u32,
     requests: &[InsertRow<'_>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<PreparedIndex, EditError> {
-    use crate::table::indexes::{composite, decimal, guid};
+) -> Result<PreparedIndex<'a>, EditError> {
+    use crate::table::indexes::{binary, composite, decimal, encoded_tuple, guid, text};
     check(budget, cancelled)?;
     let index = qualify(checked, physical, budget, cancelled)?;
     match profiles::bind(checked, index, budget, cancelled)? {
@@ -167,6 +186,28 @@ pub(in crate::table) fn prepare(
             )
             .map(|plan| PreparedIndex {
                 kind: PreparedKind::Decimal(plan),
+            })
+        }
+        profiles::Profile::Text(profile) => preparation::prepare::<_, { text::MAX_ENTRY_BYTES }>(
+            image, checked, index, profile, requests, budget, cancelled,
+        )
+        .map(|plan| PreparedIndex {
+            kind: PreparedKind::Text(plan),
+        }),
+        profiles::Profile::Binary(profile) => {
+            preparation::prepare::<_, { binary::MAX_ENTRY_BYTES }>(
+                image, checked, index, profile, requests, budget, cancelled,
+            )
+            .map(|plan| PreparedIndex {
+                kind: PreparedKind::Binary(plan),
+            })
+        }
+        profiles::Profile::Encoded(profile) => {
+            preparation::prepare::<_, { encoded_tuple::MAX_ENTRY_BYTES }>(
+                image, checked, index, profile, requests, budget, cancelled,
+            )
+            .map(|plan| PreparedIndex {
+                kind: PreparedKind::Encoded(plan),
             })
         }
         profiles::Profile::Guid(profile) => preparation::prepare::<_, { guid::MAX_ENTRY_BYTES }>(

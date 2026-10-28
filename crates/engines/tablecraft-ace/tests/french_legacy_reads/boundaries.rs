@@ -53,6 +53,13 @@ fn french_reads_do_not_activate_general_comparison_hints_or_any_mutations() {
         Err(InspectError::Unsupported)
     ));
     #[cfg(feature = "ace16-write-preview")]
+    assert_eq!(
+        capture(&model.bytes)
+            .preview_ace16_insert_rows("Items", &[], &mut budget(), &|| false)
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+    );
+    #[cfg(feature = "ace16-write-preview")]
     for deleted in [vec![], vec![0], vec![4]] {
         assert_eq!(
             candidate(&model, &deleted).err(),

@@ -13,7 +13,10 @@ use crate::{
     table::{
         indexes::{
             header::IndexHeader,
-            mutation::{IndexDataPatch, insertion::membership, retained::RetainedProfile},
+            mutation::{
+                IndexDataPatch,
+                insertion::{binding::InsertProfile, membership},
+            },
             page::{LEAF, NODE},
         },
         mutation::{
@@ -27,7 +30,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 /// Bind original topology and immutable final membership, preflight all levels,
 /// then resolve the same DATA cursor into final INDEX/bitmap reservations.
-pub(super) fn continue_index<P: RetainedProfile, const N: usize>(
+pub(super) fn continue_index<P: InsertProfile, const N: usize>(
     operation: Operation<'_, P>,
     append: State,
     budget: &mut ResourceBudget,
@@ -68,7 +71,8 @@ pub(super) fn continue_index<P: RetainedProfile, const N: usize>(
         cancelled,
         reads: 0,
     };
-    let source = source::capture::<_, N>(image, index, definition, profile, &mut reader)?;
+    let mut source = source::capture::<_, N>(image, index, definition, profile, &mut reader)?;
+    profile.bind_source(checked.schema(), index, &mut source.keys, &mut reader)?;
     membership::require_population(index, &source.keys, profile, checked.rows(), &mut reader)?;
     if operation.final_keys.len() == source.keys.len() {
         reader.work(source.keys.len())?;
