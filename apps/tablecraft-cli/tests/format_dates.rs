@@ -54,6 +54,10 @@ fn date_masks_names_week_fields_and_intrinsic_formatting_work_in_both_commands()
         ]);
         assert!(result.status.success());
         assert_eq!(row(&result.stdout), ["\"1993-01-27\""]);
+
+        let result = run(&["query", mode, "SELECT Format(1,'yyyy;yyyy') AS Y"]);
+        assert!(result.status.success());
+        assert_eq!(row(&result.stdout), ["\"1899\""]);
     }
 }
 
@@ -64,7 +68,7 @@ fn date_format_errors_publish_no_partial_stdout() {
             "Format(#1993-01-27#,'dddd')",
             "Format(#1993-01-27#,'m/d/yyyy')",
             "Format(1,'yyyyy')",
-            "Format(1,'yyyy;yyyy')",
+            "Format(-2,'yyyy;yyyy')",
             "Format(Null,'yyyy',1/0)",
         ] {
             let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);

@@ -34,6 +34,13 @@ fn zero_quotients_report_the_selected_error_without_partial_output() {
             ("0 Mod CDbl(0.5)", "division by zero"),
             ("IsError(0/0)", "numeric overflow"),
         ] {
+            // Declared arithmetic promotes this Decimal/Double pair before
+            // division; its floating 0/0 result is overflow, unlike Variant mode.
+            let message = if declared && expression == "CDec(0)/CDbl(0)" {
+                "numeric overflow"
+            } else {
+                message
+            };
             let sql = format!("SELECT 42 AS BeforeFailure,{expression}");
             let mut command = Command::new(env!("CARGO_BIN_EXE_tablecraft"));
             command.args(["query", mode, &sql]);
@@ -43,7 +50,11 @@ fn zero_quotients_report_the_selected_error_without_partial_output() {
             let output = command.output().unwrap();
             assert_eq!(output.status.code(), Some(2));
             assert!(output.stdout.is_empty());
-            assert!(String::from_utf8_lossy(&output.stderr).contains(message));
+            assert!(
+                String::from_utf8_lossy(&output.stderr).contains(message),
+                "mode={mode}, declared={declared}, expression={expression}: {}",
+                String::from_utf8_lossy(&output.stderr),
+            );
         }
     }
 }
