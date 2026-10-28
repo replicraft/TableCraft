@@ -49,14 +49,23 @@ pub(super) fn compose(
         .map_err(InspectError::from)?;
     after.resize(data.append.length, 0);
 
-    let count = data
+    let mut count = data
         .pages
         .len()
         .checked_add(data.append.map_edits.len())
-        .and_then(|count| count.checked_add(staged.indexes.patches.len()))
-        .and_then(|count| count.checked_add(staged.indexes.promotions.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
         .ok_or(InspectError::StructureLimit)?;
+    let mut added_indexes = 0_usize;
+    for index in &staged.indexes {
+        check(budget, cancelled)?;
+        count = count
+            .checked_add(index.patches.len())
+            .and_then(|count| count.checked_add(index.promotions.len()))
+            .ok_or(InspectError::StructureLimit)?;
+        added_indexes = added_indexes
+            .checked_add(index.added.len())
+            .ok_or(InspectError::StructureLimit)?;
+    }
     budget
         .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
         .map_err(InspectError::from)?;
@@ -83,7 +92,7 @@ pub(super) fn compose(
         budget
             .charge(
                 Resource::Steps,
-                (data.pages.len() + staged.indexes.added.len() + PAGE_BYTES) as u64,
+                (data.pages.len() + added_indexes + PAGE_BYTES) as u64,
             )
             .map_err(InspectError::from)?;
         let number = u32::try_from(start / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
@@ -110,32 +119,35 @@ pub(super) fn compose(
                 }
             }
         }
-        for page in &staged.indexes.added {
-            if page.number != number {
-                continue;
-            }
-            if page.bytes.starts_with(&USAGE_SIGNATURE) {
-                data.append.require_index_bitmap(
-                    number,
-                    staged.indexes.physical(),
-                    staged.indexes.usage(),
-                    budget,
-                    cancelled,
-                )?;
-            } else {
-                budget
-                    .charge(Resource::Steps, data.append.reservations_len() as u64)
-                    .map_err(InspectError::from)?;
-                if !data.append.indexes().any(|reservation| {
-                    reservation.number == number
-                        && reservation.physical == staged.indexes.physical()
-                        && reservation.usage == staged.indexes.usage()
-                }) {
+        for index in &staged.indexes {
+            check(budget, cancelled)?;
+            for page in &index.added {
+                if page.number != number {
+                    continue;
+                }
+                if page.bytes.starts_with(&USAGE_SIGNATURE) {
+                    data.append.require_index_bitmap(
+                        number,
+                        index.physical(),
+                        index.usage(),
+                        budget,
+                        cancelled,
+                    )?;
+                } else {
+                    budget
+                        .charge(Resource::Steps, data.append.reservations_len() as u64)
+                        .map_err(InspectError::from)?;
+                    if !data.append.indexes().any(|reservation| {
+                        reservation.number == number
+                            && reservation.physical == index.physical()
+                            && reservation.usage == index.usage()
+                    }) {
+                        return Err(EditError::Preservation);
+                    }
+                }
+                if selected.replace(page.bytes.as_slice()).is_some() {
                     return Err(EditError::Preservation);
                 }
-            }
-            if selected.replace(page.bytes.as_slice()).is_some() {
-                return Err(EditError::Preservation);
             }
         }
         let bytes = selected
@@ -143,16 +155,19 @@ pub(super) fn compose(
             .ok_or(EditError::Preservation)?;
         after[start..start + PAGE_BYTES].copy_from_slice(bytes);
     }
-    for patch in &staged.indexes.patches {
-        spans.push(write(
-            original,
-            &mut after,
-            patch.offset,
-            &patch.before,
-            &patch.after,
-            budget,
-            cancelled,
-        )?);
+    for index in &staged.indexes {
+        check(budget, cancelled)?;
+        for patch in &index.patches {
+            spans.push(write(
+                original,
+                &mut after,
+                patch.offset,
+                &patch.before,
+                &patch.after,
+                budget,
+                cancelled,
+            )?);
+        }
     }
     for patch in &staged.counters {
         spans.push(write(
@@ -165,16 +180,19 @@ pub(super) fn compose(
             cancelled,
         )?);
     }
-    for promotion in &staged.indexes.promotions {
-        spans.push(write(
-            original,
-            &mut after,
-            promotion.offset,
-            &promotion.before,
-            &promotion.after,
-            budget,
-            cancelled,
-        )?);
+    for index in &staged.indexes {
+        check(budget, cancelled)?;
+        for promotion in &index.promotions {
+            spans.push(write(
+                original,
+                &mut after,
+                promotion.offset,
+                &promotion.before,
+                &promotion.after,
+                budget,
+                cancelled,
+            )?);
+        }
     }
     for edit in &data.append.map_edits {
         spans.push(write(

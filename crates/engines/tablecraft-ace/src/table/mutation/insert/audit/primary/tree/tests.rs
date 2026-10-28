@@ -155,9 +155,9 @@ fn original_inclusive_bound_routes_left_right_bulk_and_empty_requests() {
             let requests = request_rows(values);
             let checked = preflight(&image, "Items", &requests, &mut budget(), &|| false).unwrap();
             let staged = prepare(&image, &checked, &requests, &mut budget(), &|| false).unwrap();
-            assert!(staged.indexes.added.is_empty());
-            assert!(staged.indexes.promotions.is_empty());
-            assert!(staged.indexes.rebases.is_empty());
+            assert!(staged.indexes[0].added.is_empty());
+            assert!(staged.indexes[0].promotions.is_empty());
+            assert!(staged.indexes[0].rebases.is_empty());
 
             let candidate =
                 finish(image, "Items", &requests, &staged, &mut budget(), &|| false).unwrap();
@@ -214,7 +214,7 @@ fn semantically_checked_root_and_untouched_leaf_residue_remain_protected() {
         let original = before[number * PAGE..(number + 1) * PAGE].to_vec();
         let mut forged = original.clone();
         forged[3000] ^= 1;
-        staged.indexes.patches.push(IndexDataPatch {
+        staged.indexes[0].patches.push(IndexDataPatch {
             offset: number * PAGE,
             before: original,
             after: forged,
@@ -233,7 +233,7 @@ fn semantically_checked_root_and_untouched_leaf_residue_remain_protected() {
             ),
             Err(EditError::Preservation)
         );
-        staged.indexes.patches.pop();
+        staged.indexes[0].patches.pop();
     }
 
     let changed = request_rows(&[0]);

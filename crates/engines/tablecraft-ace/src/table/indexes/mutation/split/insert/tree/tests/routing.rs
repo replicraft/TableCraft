@@ -200,6 +200,7 @@ fn operation<'a>(
         image,
         checked,
         id: 1,
+        physical: 0,
         final_keys: keys,
     }
 }

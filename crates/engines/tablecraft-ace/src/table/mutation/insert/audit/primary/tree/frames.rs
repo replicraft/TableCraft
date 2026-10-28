@@ -1,5 +1,5 @@
 //! Audit-owned capacity and final complete-wire rendering.
-use super::super::{INDEX_VERSION, KEY_MARKER, WIRE_BYTES, render, value};
+use super::super::{INDEX_VERSION, Wire, layout, render};
 use super::{copied, reserve};
 use crate::{
     EditError, InspectError,
@@ -11,7 +11,6 @@ use crate::{
 };
 use std::{io::Cursor, mem::offset_of};
 
-const BOUND_BYTES: usize = WIRE_BYTES + size_of::<u32>();
 const MASK: usize = size_of::<IndexHeader>();
 const BITS: usize = u8::BITS as usize;
 const FREE: usize = offset_of!(IndexHeader, free);
@@ -33,15 +32,31 @@ impl Layout {
     }
 }
 
-pub(super) fn measure<const N: usize>(
-    entries: &[[u8; N]],
+pub(super) fn measure(
+    entries: &[Wire],
     seed: usize,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Layout, EditError> {
-    let mut common = entries.first().map_or(0, |_| N);
-    if let Some(first) = entries.first() {
-        for entry in &entries[1..] {
-            reader.work(common + 1)?;
+    let (prefix, active) = layout(entries, seed, reader)?;
+    Ok(Layout { prefix, active })
+}
+
+pub(super) fn parent(
+    maxima: &[Wire],
+    seed: usize,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Layout, EditError> {
+    let mut total = 0_usize;
+    let mut common = maxima.first().map_or(0, |entry| entry.len());
+    for (position, entry) in maxima.iter().enumerate() {
+        reader.work(entry.len() + 1)?;
+        if position > 0 && maxima[position - 1] >= *entry {
+            return Err(EditError::Preservation);
+        }
+        total = total
+            .checked_add(entry.len() + size_of::<u32>())
+            .ok_or(InspectError::StructureLimit)?;
+        if let Some(first) = maxima.first() {
             common = first[..common]
                 .iter()
                 .zip(entry)
@@ -49,62 +64,27 @@ pub(super) fn measure<const N: usize>(
                 .count();
         }
     }
-    measured(entries.len(), N, common, seed)
-}
-
-fn measured(count: usize, width: usize, common: usize, seed: usize) -> Result<Layout, EditError> {
-    let total = count
-        .checked_mul(width)
-        .ok_or(InspectError::StructureLimit)?;
-    let saved = count.saturating_sub(1);
+    if maxima.len() == 1 {
+        common += size_of::<u32>();
+    }
+    // Distinct full key/ROW maxima differ before their child pointer. Therefore
+    // sizing uses actual maximum lengths without inventing child page numbers.
+    let saved = maxima.len().saturating_sub(1);
     let mut prefix = seed.min(common);
-    if total - prefix * saved > CAPACITY {
+    if total - saved * prefix > CAPACITY {
         prefix = common;
     }
     Ok(Layout {
         prefix,
-        active: total - prefix * saved,
+        active: total - saved * prefix,
     })
-}
-
-pub(super) fn parent(
-    maxima: &[[u8; WIRE_BYTES]],
-    seed: usize,
-    reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Layout, EditError> {
-    for (position, entry) in maxima.iter().enumerate() {
-        reader.tick()?;
-        if entry[0] != KEY_MARKER || (position > 0 && value(&maxima[position - 1]) >= value(entry))
-        {
-            return Err(EditError::Preservation);
-        }
-    }
-    let common = if maxima.len() == 1 {
-        BOUND_BYTES
-    } else {
-        let mut common = maxima.first().map_or(0, |_| WIRE_BYTES);
-        if let Some(first) = maxima.first() {
-            for maximum in &maxima[1..] {
-                reader.work(common + 1)?;
-                common = first[..common]
-                    .iter()
-                    .zip(maximum)
-                    .take_while(|(left, right)| left == right)
-                    .count();
-            }
-        }
-        common
-    };
-    // Distinct Int32 maxima differ within the known key bytes, before ROW/child.
-    // No dummy child identity is needed to preflight the full 13-byte entries.
-    measured(maxima.len(), BOUND_BYTES, common, seed)
 }
 
 pub(super) fn leaf(
     original: Option<&[u8]>,
     definition: u32,
     links: (u32, u32),
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<u8>, EditError> {
     let mut seed = match original {
@@ -125,7 +105,7 @@ pub(super) fn leaf(
 
 pub(super) fn branch(
     original: &[u8],
-    maxima: &[[u8; WIRE_BYTES]],
+    maxima: &[Wire],
     children: &[u32],
     tail: u32,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -139,10 +119,8 @@ pub(super) fn branch(
     reserve(&mut wires, maxima.len(), reader)?;
     for (maximum, child) in maxima.iter().zip(children) {
         reader.tick()?;
-        let mut wire = [0; BOUND_BYTES];
-        wire[..WIRE_BYTES].copy_from_slice(maximum);
-        wire[WIRE_BYTES..].copy_from_slice(&child.to_be_bytes());
-        wires.push(wire);
+        reader.work(maximum.len() + size_of::<u32>())?;
+        wires.push(maximum.child(*child)?);
     }
     let actual = measure(&wires, seed, reader)?;
     if !actual.fits() || actual.prefix != predicted.prefix || actual.active != predicted.active {

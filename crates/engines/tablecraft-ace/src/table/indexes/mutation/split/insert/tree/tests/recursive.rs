@@ -266,6 +266,7 @@ fn root_leaf_bulk_continuation_normalizes_beyond_the_legacy_two_halves() {
             image: &image,
             checked: &check,
             id: 1,
+            physical: 0,
             final_keys: &keys,
         },
         append,

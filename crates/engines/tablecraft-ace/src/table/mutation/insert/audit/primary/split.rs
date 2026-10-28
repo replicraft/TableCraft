@@ -5,11 +5,11 @@ pub(in crate::table::mutation::insert::audit::primary) mod maps;
 mod tests;
 
 use super::super::{ImageProof, copied, reserve};
-use super::{INDEX_VERSION, WIRE_BYTES, decode, reference, value};
+use super::{INDEX_VERSION, Wire, decode, reference};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex,
     format::{page::PAGE_BYTES, reader::Reader},
-    table::indexes::{header::IndexHeader, mutation::insertion::PrimaryInsertion, page::LEAF},
+    table::indexes::{header::IndexHeader, mutation::insertion::IndexInsertion, page::LEAF},
 };
 use std::io::Cursor;
 
@@ -30,7 +30,7 @@ pub(super) struct Growth {
 }
 
 pub(super) fn two_halves_fit(
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<bool, EditError> {
     reader.tick()?;
@@ -48,7 +48,7 @@ pub(super) fn derive(
     image: &NativeImage,
     index: &NativeIndex,
     owner: u32,
-    entries: &[[u8; WIRE_BYTES]],
+    entries: &[Wire],
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Growth, EditError> {
@@ -117,7 +117,7 @@ impl Growth {
     pub(super) fn compare(
         &self,
         index: &NativeIndex,
-        actual: &PrimaryInsertion,
+        actual: &IndexInsertion,
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {

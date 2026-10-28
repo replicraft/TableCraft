@@ -15,8 +15,6 @@ use crate::{
 };
 use std::{io::Cursor, ops::Range};
 
-const KEY_ROW_BYTES: usize = size_of::<u8>() + size_of::<i32>() + size_of::<u32>();
-const BOUND_BYTES: usize = KEY_ROW_BYTES + size_of::<u32>();
 const CAPACITY: usize = PAGE_BYTES - ENTRY_START;
 
 #[derive(Clone, Copy)]
@@ -337,30 +335,35 @@ fn fits(
                 .len()
                 .checked_sub(usize::from(*tail))
                 .ok_or(EditError::Preservation)?;
-            if count < 2 {
-                return Ok(count * BOUND_BYTES <= CAPACITY);
-            }
-            let mut first = [0; KEY_ROW_BYTES];
-            let mut common = KEY_ROW_BYTES;
+            let mut first = [0; ENTRY_BUFFER];
+            let mut common = 0;
+            let mut total = 0usize;
             for (position, &child) in children[..count].iter().enumerate() {
-                reader.work(KEY_ROW_BYTES)?;
+                reader.work(ENTRY_BUFFER)?;
                 let value = context.keys[layout.nodes[child].maximum];
                 let encoded = encoding::retained_entry::<_, ENTRY_BUFFER>(
                     &Entry { value, child: 0 },
                     context.profile,
                 )?;
-                if encoded.length != KEY_ROW_BYTES {
-                    return Err(EditError::Preservation);
-                }
+                let key_row_bytes = encoded.length;
+                total = total
+                    .checked_add(key_row_bytes + size_of::<u32>())
+                    .ok_or(InspectError::StructureLimit)?;
                 if position == 0 {
-                    first.copy_from_slice(&encoded.bytes[..KEY_ROW_BYTES]);
+                    first[..key_row_bytes].copy_from_slice(&encoded.bytes[..key_row_bytes]);
+                    common = key_row_bytes;
                 } else {
-                    common = first[..common]
+                    common = first[..common.min(key_row_bytes)]
                         .iter()
-                        .zip(&encoded.bytes[..common])
+                        .zip(&encoded.bytes[..common.min(key_row_bytes)])
                         .take_while(|(left, right)| left == right)
                         .count();
                 }
+            }
+            // Child references cannot extend the common prefix: every bound
+            // has a distinct complete key/ROW before its child pointer.
+            if count < 2 {
+                return Ok(total <= CAPACITY);
             }
             let seed = match node.origin {
                 Origin::Existing(number) => {
@@ -368,9 +371,6 @@ fn fits(
                 }
                 Origin::Fresh | Origin::GrownRoot(_) => 0,
             };
-            let total = count
-                .checked_mul(BOUND_BYTES)
-                .ok_or(InspectError::StructureLimit)?;
             let saved = count - 1;
             Ok(total - seed.min(common) * saved <= CAPACITY || total - common * saved <= CAPACITY)
         }

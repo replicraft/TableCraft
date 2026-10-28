@@ -2,6 +2,7 @@
 //! manufacture complete candidates; public tests own real records and ROWs.
 use super::*;
 use crate::table::indexes::mutation::profile::SingleProfile;
+use tablecraft_schema::ScalarType;
 
 fn layout_for(additions: &[i32], source_prefix: bool) -> layout::Layout {
     let mut before = super::routing::source(6, true);

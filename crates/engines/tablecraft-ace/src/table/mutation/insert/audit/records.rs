@@ -55,10 +55,9 @@ pub(super) fn derive(
         if request.values().len() != schema.columns().len() {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        let value = match request.values()[id] {
-            Value::Int32(value) => value,
-            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-        };
+        if !matches!(request.values()[id], Value::Int32(_)) {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
 
         let mut payloads = Vec::new();
         reserve(&mut payloads, shape.variables.len(), reader)?;
@@ -158,7 +157,6 @@ pub(super) fn derive(
         }
         reader.tick()?;
         rows.push(Row {
-            value,
             bytes,
             reference: 0,
             range: 0..0,

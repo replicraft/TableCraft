@@ -1,4 +1,4 @@
-//! Cardinality-growing primary continuation; DATA authority stays with INSERT.
+//! Cardinality-growing physical-index continuation; DATA authority stays with INSERT.
 #[cfg(test)]
 mod tests;
 mod tree;
@@ -6,8 +6,7 @@ mod tree;
 use super::super::{NumericKey, profile::SingleProfile, repack, tree::Tree};
 use super::{AllocationPolicy, Plan, edit_prepared, leaf_entries, nonroot, seal};
 use crate::{
-    EditError, IndexCheckStatus, IndexConstraintViolation, InspectError, NativeImage, NativeIndex,
-    TableCheck, WriteBlocker,
+    EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         page::PAGE_BYTES,
@@ -29,12 +28,8 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_schema::ScalarType;
 
-const PRIMARY_KIND: u8 = 1;
-const PHYSICAL_COUNT: usize = 1;
-const PHYSICAL_NUMBER: u32 = 0;
-const ENTRY_BUFFER: usize = size_of::<u8>() + size_of::<i32>() + 2 * size_of::<u32>();
+const ENTRY_BUFFER: usize = size_of::<u8>() + size_of::<i64>() + 2 * size_of::<u32>();
 
 /// Final sorted keys must come from immutable INSERT requests and certified DATA
 /// placements. This constructor does not certify new records or publish bytes.
@@ -42,6 +37,7 @@ pub(in crate::table::indexes) struct Operation<'a> {
     pub image: &'a NativeImage,
     pub checked: &'a TableCheck,
     pub id: usize,
+    pub physical: u32,
     pub final_keys: &'a [KeyRef],
 }
 
@@ -58,25 +54,32 @@ pub(in crate::table::indexes) fn continue_primary(
     let image = operation.image;
     let checked = operation.checked;
     let schema = checked.schema();
-    let index = primary(&operation, budget, cancelled)?;
+    let index = physical_index(&operation, budget, cancelled)?;
     if append.original_length != image.as_bytes().len()
         || append.owner != schema.definition_page()
         || append.length < append.original_length
         || append.length as u64 > MAX_IMAGE_BYTES
         || !append.length.is_multiple_of(PAGE_BYTES)
         || (append.length - append.original_length) / PAGE_BYTES != append.reservations_len()
-        || append.indexes().next().is_some()
+        || append
+            .indexes()
+            .any(|prior| prior.physical >= operation.physical)
     {
         return Err(EditError::Preservation);
     }
+    require_prior_owners(&operation, &append, budget, cancelled)?;
     append.preview(0)?;
     if operation.final_keys.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
     let profile = SingleProfile {
         column: schema.columns()[operation.id].number(),
-        kind: NumericKey::new(ScalarType::Int32)?,
-        descending: false,
+        kind: NumericKey::new(
+            schema.columns()[operation.id]
+                .scalar_type()
+                .ok_or(InspectError::Unsupported)?,
+        )?,
+        descending: index.columns()[0].descending(),
     };
     let mut source = image.reader();
     let mut reader = Reader {
@@ -118,7 +121,14 @@ pub(in crate::table::indexes) fn continue_primary(
     if !tree.is_leaf() || original_keys.len() != checked.rows() {
         return Err(EditError::Preservation);
     }
-    retained_members(&original_keys, operation.final_keys, &append, &mut reader)?;
+    retained_members(
+        &original_keys,
+        operation.final_keys,
+        &profile,
+        index,
+        &append,
+        &mut reader,
+    )?;
     let entries = leaf_entries(operation.final_keys, reader.budget, cancelled)?;
     if repack::borrowed_fits::<_, ENTRY_BUFFER>(
         original,
@@ -140,7 +150,7 @@ pub(in crate::table::indexes) fn continue_primary(
             return tree::continue_primary(operation, append, reader.budget, cancelled);
         }
     }
-    // Every role possibly changed by DATA plus the sole physical primary is
+    // Every role possibly changed by DATA plus the selected physical index is
     // selected explicitly. Canonical aliases remain one physical owner.
     let definition = schema.definition_page();
     let census =
@@ -187,55 +197,25 @@ pub(in crate::table::indexes) fn continue_primary(
     Ok(plan)
 }
 
-fn primary<'a>(
+fn physical_index<'a>(
     operation: &Operation<'a>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a NativeIndex, EditError> {
-    let checked = operation.checked;
-    let schema = checked.schema();
-    let field = schema
-        .columns()
-        .get(operation.id)
-        .filter(|field| field.scalar_type() == Some(ScalarType::Int32))
-        .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-    if schema.layout.physical_indexes != PHYSICAL_COUNT || checked.indexes().is_empty() {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
-    let first = checked.indexes()[0].index();
-    let mut primary = None;
-    for checked_index in checked.indexes() {
-        check(budget, cancelled)?;
-        let index = checked_index.index();
-        let constraints = index
-            .constraints()
-            .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
-        if checked_index.status() != IndexCheckStatus::Checked
-            || index.native_type() > PRIMARY_KIND
-            || index.data_number() != PHYSICAL_NUMBER
-            || index.root_page() != first.root_page()
-            || index.usage_map() != first.usage_map()
-            || index.flags() != first.flags()
-            || index.columns() != first.columns()
-            || index.columns().len() != 1
-            || index.columns()[0].number() != field.number()
-            || index.columns()[0].descending()
-            || !constraints.unique()
-            || !constraints.required()
-            || constraints.ignore_nulls()
-        {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-        if constraints.primary_key() && primary.replace(index).is_some() {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-    }
-    primary.ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    super::super::insertion::qualify(
+        operation.checked,
+        operation.id,
+        operation.physical,
+        budget,
+        cancelled,
+    )
 }
 
 fn retained_members(
     original: &[KeyRef],
     final_keys: &[KeyRef],
+    profile: &SingleProfile,
+    index: &NativeIndex,
     append: &State,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
@@ -243,22 +223,26 @@ fn retained_members(
         return Err(EditError::Conflict);
     }
     let mut position = 0;
-    let mut previous = None;
+    let mut previous: Option<&KeyRef> = None;
+    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+    let mut previous_key = None;
     for (number, entry) in final_keys.iter().enumerate() {
         reader.tick()?;
-        let value = entry
-            .key
-            .filter(|value| i32::try_from(*value).is_ok())
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        if previous == Some(value) {
-            return Err(
-                InspectError::IndexConstraint(IndexConstraintViolation::DuplicateKey).into(),
-            );
-        }
-        if previous.is_some_and(|prior| prior > value) {
+        // Re-encoding validates width and NULL marker for the bound profile.
+        super::super::encoding::retained_entry::<_, ENTRY_BUFFER>(
+            &crate::table::indexes::page::Entry {
+                value: *entry,
+                child: 0,
+            },
+            profile,
+        )?;
+        if previous.is_some_and(|prior| !prior.compare_with(entry, profile).is_lt()) {
             return Err(EditError::Conflict);
         }
-        previous = Some(value);
+        constraints
+            .check_tuple(&mut previous_key, entry.key, entry.key.is_none())
+            .map_err(InspectError::from)?;
+        previous = Some(entry);
         let page = reference_page(entry.row) as usize;
         if page == 0
             || page >= append.length / PAGE_BYTES
@@ -279,7 +263,7 @@ fn retained_members(
         }
         if original
             .get(position)
-            .is_some_and(|old| old.key <= entry.key)
+            .is_some_and(|old| !old.compare_with(entry, profile).is_gt())
         {
             return Err(EditError::Conflict);
         }
@@ -289,6 +273,27 @@ fn retained_members(
     }
     if position != original.len() {
         return Err(EditError::Conflict);
+    }
+    Ok(())
+}
+
+fn require_prior_owners(
+    operation: &Operation<'_>,
+    append: &State,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    for prior in append.indexes() {
+        check(budget, cancelled)?;
+        let mut matched = false;
+        for item in operation.checked.indexes() {
+            check(budget, cancelled)?;
+            let index = item.index();
+            matched |= index.data_number() == prior.physical && index.usage_map() == prior.usage;
+        }
+        if prior.physical >= operation.physical || !matched {
+            return Err(EditError::Preservation);
+        }
     }
     Ok(())
 }

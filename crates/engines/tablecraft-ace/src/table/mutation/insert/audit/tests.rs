@@ -1,4 +1,6 @@
 //! Healthy checked candidates distinguish authority failures from corrupt input.
+mod multiple;
+
 use super::super::{RowInsert, Staged, compose, finish, preflight, prepare, tests::model};
 use super::prove;
 use crate::{
@@ -226,7 +228,7 @@ fn structurally_valid_primary_recompression_and_slack_edits_still_refuse() {
             let mut root = before[PRIMARY..PRIMARY + PAGE].to_vec();
             root[27..480].fill(0);
             let mut end = 0;
-            for (position, (value, reference)) in forged.indexes.expected().enumerate() {
+            for (position, (value, reference)) in forged.indexes[0].expected().enumerate() {
                 let mut wire = vec![127];
                 wire.extend(((value.unwrap() as i32 as u32) ^ 0x80000000).to_be_bytes());
                 wire.extend(reference.to_be_bytes());
@@ -237,9 +239,9 @@ fn structurally_valid_primary_recompression_and_slack_edits_still_refuse() {
             }
             root[2..4].copy_from_slice(&((3616 - end) as u16).to_le_bytes());
             root[24..26].copy_from_slice(&1_u16.to_le_bytes());
-            forged.indexes.patches.clear();
+            forged.indexes[0].patches.clear();
             for range in [2..4, 24..26, 27..480 + end] {
-                forged.indexes.patches.push(IndexDataPatch {
+                forged.indexes[0].patches.push(IndexDataPatch {
                     offset: PRIMARY + range.start,
                     before: before[PRIMARY + range.start..PRIMARY + range.end].to_vec(),
                     after: root[range].to_vec(),
@@ -247,7 +249,7 @@ fn structurally_valid_primary_recompression_and_slack_edits_still_refuse() {
             }
         } else {
             let offset = PRIMARY + PAGE - 1;
-            forged.indexes.patches.push(IndexDataPatch {
+            forged.indexes[0].patches.push(IndexDataPatch {
                 offset,
                 before: vec![before[offset]],
                 after: vec![before[offset] ^ 1],

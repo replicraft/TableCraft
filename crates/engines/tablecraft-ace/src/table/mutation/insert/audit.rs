@@ -22,7 +22,6 @@ use tablecraft_core::limits::ResourceBudget;
 const COMPARISON_CHUNK: usize = 256;
 
 struct Row {
-    value: i32,
     bytes: Vec<u8>,
     reference: u32,
     range: Range<usize>,
@@ -114,7 +113,18 @@ pub(super) fn prove(
         &staged.data,
         &mut reader,
     )?;
-    primary::prove(image, &checked, id, &rows, staged, &mut proof, &mut reader)?;
+    primary::prove(
+        primary::Operation {
+            image,
+            checked: &checked,
+            id,
+            requests,
+            rows: &rows,
+            staged,
+        },
+        &mut proof,
+        &mut reader,
+    )?;
 
     if staged.data.append.length != proof.bytes.len()
         || staged.data.append.reservations_len()
