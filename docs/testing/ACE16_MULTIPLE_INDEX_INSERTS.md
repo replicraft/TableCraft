@@ -22,8 +22,9 @@ and ordinary or unique constraints. Key carriers remain exact; no SQL coercion
 or floating conversion supplies native keys. Existing constraint services retain
 required-key and nullable-unique behavior.
 
-Ignore-NULL indexes, foreign indexes, tuples and other key families remain
-refused. Carrying a Decimal, Text, Binary, floating or other admitted field in a
+Secondary Ignore-NULL indexes now admit the same single-key numeric profile
+when the index is not Required. Primary Ignore-NULL and Required+Ignore-NULL
+combinations remain refused, as do foreign indexes, tuples and other key families. Carrying a Decimal, Text, Binary, floating or other admitted field in a
 new record does not authorize an index on that field. The ordinary record profile
 and the physical key profile remain separate requirements.
 
@@ -118,3 +119,33 @@ checker. Their initial attempts are preserved; the already derived ordinary imag
 remains byte-identical. No candidate output or public-writer after-image repaired
 the expected model. Native Access save/reopen and production write admission
 remain unqualified.
+
+
+## Secondary indexes omitting NULL keys
+
+The INSERT preview now omits a NULL key from each qualified secondary
+Ignore-NULL index while still storing the complete row and primary entry.
+Non-NULL keys retain direction, uniqueness and logical aliases. This admission
+is specific to INSERT; ordinary UPDATE and slot-update coverage is unchanged.
+
+Before construction, a completed structural check must certify the original
+index. The final image audit independently locates the actual primary physical
+group, proves its complete unique logical ROW universe, decodes the selected
+secondary field from every original root and compares the exact eligible
+key/ROW stream. Forwarded payloads retain their original logical roots. A matching
+entry count alone cannot establish membership.
+
+NULL requests still undergo ROW geometry and duplicate-reference validation.
+Only represented non-NULL families affect that physical index's historical
+counter. If all inserted keys are NULL, its original tree, map and history
+remain byte-identical, including an existing NODE tree. Other owners and DATA
+may still change their shared global allocation bytes.
+
+The current ACE unit batch passes 443 functions with one existing ignored
+engineering generator. New complete-image controls cover both ACE 16 layouts,
+all admitted numeric widths, both directions, empty and NODE trees, unique keys,
+forwarded roots and shared DATA/index growth. Negative controls reject malformed
+membership, forged no-op changes, counter overflow, unsupported flags, exhausted
+budgets and cancellation. Strict ACE Clippy across all targets/features and
+minimal-feature compilation pass. Independent reference/candidate qualification
+is tracked separately; these unit checks do not establish native Access writes.

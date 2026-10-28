@@ -8,6 +8,7 @@ fn profile(kind: ScalarType, width: usize, descending: bool) -> Profile {
         descending,
         required: false,
         unique: false,
+        ignore_nulls: false,
     }
 }
 

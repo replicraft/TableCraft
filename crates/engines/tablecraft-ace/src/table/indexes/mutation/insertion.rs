@@ -167,10 +167,8 @@ pub(in crate::table) fn prepare(
         0,
         &mut expected,
     )?;
-    if expected.len() != checked.rows()
-        || (source_leaf && !tree.is_leaf())
-        || (source_node && tree.is_leaf())
-    {
+    require_population(index, &expected, checked.rows(), &mut reader)?;
+    if (source_leaf && !tree.is_leaf()) || (source_node && tree.is_leaf()) {
         return Err(EditError::Preservation);
     }
     let mut source_pages = Vec::new();
@@ -178,7 +176,7 @@ pub(in crate::table) fn prepare(
     let original_count = expected.len();
     reader.work(expected.len())?;
     let original_distinct = distinct(&expected);
-    let final_count = original_count
+    let capacity_count = original_count
         .checked_add(requests.len())
         .filter(|count| *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
@@ -189,7 +187,8 @@ pub(in crate::table) fn prepare(
     expected
         .try_reserve_exact(requests.len())
         .map_err(|_| InspectError::Allocation)?;
-    for request in requests {
+    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+    for (position, request) in requests.iter().enumerate() {
         reader.tick()?;
         let value = profile.kind.key_type().key(request.value)?;
         let page = reference_page(request.reference);
@@ -199,16 +198,24 @@ pub(in crate::table) fn prepare(
         {
             return Err(EditError::Conflict);
         }
-        reader.work(expected.len())?;
-        if expected.iter().any(|entry| entry.row == request.reference) {
+        reader.work(expected.len() + position)?;
+        if expected.iter().any(|entry| entry.row == request.reference)
+            || requests[..position]
+                .iter()
+                .any(|prior| prior.reference == request.reference)
+        {
             return Err(EditError::Conflict);
+        }
+        if constraints.ignore_nulls() && value.is_none() {
+            continue;
         }
         expected.push(KeyRef {
             key: value,
             row: request.reference,
         });
     }
-    if expected.len() != final_count {
+    let final_count = expected.len();
+    if final_count > capacity_count {
         return Err(EditError::Preservation);
     }
     let levels = final_count.checked_ilog2().unwrap_or(0) as usize + 1;
@@ -218,7 +225,6 @@ pub(in crate::table) fn prepare(
         .ok_or(InspectError::StructureLimit)?;
     reader.work(sort_work)?;
     expected.sort_unstable_by(|left, right| left.compare_with(right, &profile));
-    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     let mut previous = None;
     for entry in &expected {
         reader.tick()?;
@@ -229,8 +235,8 @@ pub(in crate::table) fn prepare(
     let mut patches = Vec::new();
     // NODE continuation also rebuilds bounded parent maxima when every leaf
     // fits; all NODE sources use that same owned service.
-    let mut requires_continuation = source_node && !requests.is_empty();
-    if !source_node && !requests.is_empty() {
+    let mut requires_continuation = source_node && final_count != original_count;
+    if !source_node && final_count != original_count {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(
             original,
@@ -332,7 +338,7 @@ pub(in crate::table::indexes) fn qualify<'a>(
             || index.columns() != first.columns()
             || index.columns().len() != 1
             || index.columns()[0].number() != field.number()
-            || constraints.ignore_nulls()
+            || (constraints.ignore_nulls() && (constraints.required() || constraints.primary_key()))
             || (constraints.primary_key()
                 && (primary
                     || field.scalar_type() != Some(ScalarType::Int32)
@@ -345,6 +351,31 @@ pub(in crate::table::indexes) fn qualify<'a>(
         primary |= constraints.primary_key();
     }
     Ok(first)
+}
+
+/// A fresh completed ignored-NULL check certifies the eligible subset. Its raw
+/// tree must still contain only represented non-NULL keys and fit the live total.
+pub(in crate::table::indexes) fn require_population(
+    index: &NativeIndex,
+    keys: &[KeyRef],
+    live_rows: usize,
+    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+    if constraints.ignore_nulls() {
+        if keys.len() > live_rows {
+            return Err(EditError::Preservation);
+        }
+        for entry in keys {
+            reader.tick()?;
+            if entry.key.is_none() {
+                return Err(EditError::Preservation);
+            }
+        }
+    } else if keys.len() != live_rows {
+        return Err(EditError::Preservation);
+    }
+    Ok(())
 }
 
 fn collect_pages(

@@ -6,7 +6,10 @@ Short Text/Binary fields. A required, unique, ascending Int32 primary selects
 its actual key column; an earlier Int32 companion or a field's
 name does not select it. [Additional physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
 now retain their own checked trees and distinct-key counter deltas, with logical
-aliases sharing one physical owner. No new public preview method or normal save path is introduced.
+aliases sharing one physical owner. Qualified non-Required secondary
+Ignore-NULL indexes omit NULL keys; their complete original eligible membership
+is independently derived from stored records. No new public preview method or
+normal save path is introduced.
 
 The complete focused INSERT batch passes 108 functions, including the previous
 88 and six new builder, four independent record-proof and ten end-to-end

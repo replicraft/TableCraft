@@ -33,7 +33,7 @@ pub struct Case {
     pub descending: bool,
 }
 
-fn record(row: &Row) -> Vec<u8> {
+pub(in crate::table::mutation::insert::tests) fn record(row: &Row) -> Vec<u8> {
     let mut bytes = 3_u16.to_le_bytes().to_vec();
     bytes.extend(row.id.to_le_bytes());
     bytes.extend(row.group.unwrap_or(0).to_le_bytes());

@@ -6,6 +6,7 @@ mod decimal;
 mod empty;
 mod general_height_one;
 mod height_one;
+pub(in crate::table::mutation::insert) mod ignored_index_inserts;
 pub(super) mod model;
 pub(in crate::table::mutation::insert) mod multiple_indexes;
 mod multiple_numeric_indexes;

@@ -373,9 +373,11 @@ qualification remain unfinished.
   now extend that profile. Four source/request-derived multiple-index images
   match four first-attempt committed-producer candidates before eight fresh
   independent getter/map calls; 426 ACE unit functions pass with one existing
-  ignored generator. Defaults/generated fields, Ignore-NULL and other key
-  families, LVAL/extended dates, required data macros and normal saves remain
-  unfinished.
+  ignored generator. Qualified non-Required secondary Ignore-NULL indexes now
+  omit NULL keys and independently prove original eligible membership; the later
+  ACE unit batch passes 443 functions with one ignored generator. Defaults/generated
+  fields, primary/Required Ignore-NULL profiles and other key families,
+  LVAL/extended dates, required data macros and normal saves remain unfinished.
 
 Major gates still open before the full backend is complete:
 
