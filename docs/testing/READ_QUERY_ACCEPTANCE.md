@@ -48,8 +48,13 @@ qualification recorded separately.
   now return complete bare-field lists beside scalar values through the query API
   and CLI. Row-local/static named/derived projections, scalar ordering/TOP and
   direct hidden-member criteria retain full lists. NULL children, duplicates and
-  empty membership remain distinct. Typed-list joins, UNION, aggregates and
-  list keys remain unfinished; existing scalar `.Value` operations are separate.
+  empty membership remain distinct. Qualified whole-list INNER/CROSS/LEFT/RIGHT
+  joins retain complete lists and outer-parent absence; see
+  [typed joins](../query/collections/MULTIVALUE_QUERIES.md#typed-joins-and-products).
+  Explicit typed scalar-only outer totals over direct list-bearing named/derived
+  queries now validate complete inner lists before grouping. Bare-list aggregate
+  operands, UNION and list keys remain refused; existing scalar `.Value`
+  operations are separate.
 - Independent comparisons include 20,000-row indexed inputs and 99,110-row
   sequential scalar histories with added columns, Memo growth and deleted roots.
   A separate [mixed scalar history corpus](MIXED_SCALAR_HISTORIES.md)
@@ -362,12 +367,12 @@ Direct outer slices can now retain raw-producing sources through selection and
 publish a representable final range without publishing an invalid intermediate.
 Materialized scalar sources retain their borrowed path and existing budgets.
 
-Ampersand now joins complete raw units without early publication, allowing two
-surrogate halves to form valid final Text. Scalar-only pairs retain their borrowed
-join, while bound raw intermediates retain runtime text/declaration provenance.
-Host-supplied Empty becomes empty Text; Error and Missing remain refused. Odd-byte
-concatenation, other raw operators and broader raw key semantics remain explicit
-gaps. See [concatenation scope](../expressions/text/CONCATENATION.md#lossless-utf-16-concatenation).
+Ampersand now joins exact active String bytes without early publication, allowing
+surrogate halves or paired odd fragments to form valid final Text. Scalar-only
+pairs retain their borrowed join, while bound raw intermediates retain runtime text/declaration provenance.
+Host-supplied Empty becomes empty Text; Error and Missing remain refused.
+Unicode consumers still validate the joined range. Other raw operators and broader
+raw key semantics remain explicit gaps. See [concatenation scope](../expressions/text/CONCATENATION.md#lossless-utf-16-concatenation).
 
 Explicit CStr now preserves existing raw string ranges without decoding or
 allocating another payload. Scalar conversion states/policies, odd-byte Unicode
@@ -379,7 +384,8 @@ The String/String branch of plus now retains raw units through joining and
 propagates NULL without forced decoding. Mixed raw String/numeric operands still
 use strict publication, explicit numeric policies and their original declaration
 categories. Scalar/Variant Date overflow and field/subquery text policies remain
-covered. This does not complete host Empty, odd-byte joins, general promotion or
+covered. Odd-byte joins now share the exact byte-copy path and strict final
+publication. This does not complete general promotion or
 native qualification. See [String addition](../expressions/text/CONCATENATION.md#lossless-string-addition).
 
 The shared expression API now admits host Empty with operator-specific arithmetic

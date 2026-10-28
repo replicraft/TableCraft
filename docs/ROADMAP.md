@@ -636,6 +636,16 @@ dependencies already work; they are not remaining scaffolding tasks.
 
 ### Current acceptance status
 
+Recent implemented continuations include selected cached-output index reads with
+safe residual filters and temporary partial caches, lossless odd-byte String
+joins, borrowed scalar rejection in typed-list joins, and explicit scalar-only
+totals over complete list-bearing derived results. These close concrete
+implementation gaps; they do not close native qualification or full P0 semantics.
+The separate engineering INSERT preview additionally admits exact nullable
+Decimal records. See [current implementation](IMPLEMENTATION.md) for scope and
+verification, rather than treating older refusal records as the current API.
+
+
 The [current acceptance checklist](testing/READ_QUERY_ACCEPTANCE.md) separates the working
 baseline, remaining priorities and prerequisites for broader writes.
 
