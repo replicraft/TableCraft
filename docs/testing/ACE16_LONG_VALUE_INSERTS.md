@@ -91,8 +91,49 @@ passed. The subsequent column-map growth batch passes 194 INSERT functions and
 530 full ACE library functions, with the same existing ignored generator. Strict
 ACE Clippy across all targets/features and minimal compilation also pass. Three
 later producer controls pass separately and retain strict Clippy and formatting.
-These are engineering checks,
-not authentic external-file INSERT or native Access qualification.
+Those literal checks alone do not establish original-file INSERT or native
+Access qualification. The separate original-file evidence below exercises
+existing declared maps, rather than the later map-growth/initialization scope.
+
+## Original-file external payload evidence
+
+Four fresh public-builder originals cross both ACE 16 layouts and raw/compressed
+Memo declarations, with two long columns, two physical I32 indexes and true
+logical aliases. SOURCE9 capture passed separately from the saved-only source
+gate. The gate decodes all original parent records, descriptors and chunk chains,
+checks both complete column-map pairs, and scans catalog-wide ownership/live
+references. Public deletion of a seventh seed row leaves six live parents and
+one observed orphan chunk per column. These bodies stay protected; no source
+patch, selector retargeting or regeneration forces that observation.
+
+The [maintained proof](ace16_insert_external_long_values/README.md) reconstructs
+sixteen complete images from only those originals and immutable full-row requests
+before producer execution. The cases cover OLE 65/4076/4077 bytes, Memo 66/4076/4078
+encoded bytes, mixed owners, NULL/empty/64-byte inline data and raw/compact `ABC`.
+They allocate 48 new LVAL pages and 52 chunk rows across all candidates; existing
+DATA pages and both original index leaves fit. The earlier literal corpus owns
+the separate LVAL→fresh DATA→INDEX composition and row-width fallback evidence.
+
+All sixteen native candidates match those whole images on their first attempts.
+Sixteen fresh combined typed-row/map inspections then pass, after every whole
+image was checked before the first reader. A separate public reference phase
+has 32 unique successful child calls and 16 transition proofs. Its initial two
+calls preceded a Python footer-offset assertion failure; a saved-only one-offset
+correction passed before the thirty unattempted calls continued. The failed
+report remains unchanged and no completed call was repeated. Public after-images
+were not constructor inputs; all sixteen nevertheless match the pre-existing
+engineering images exactly in this corpus.
+
+The first consumer build reused an older shared-target artifact and was declared
+unqualified before any native call. Its original report, artifact and relocated
+receipt remain preserved. A corrective build from the same committed `8374bad2`
+source used an initially absent isolated target and recorded actual engine
+compilation. The [compact build receipt](results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
+pins the full 4,526-file Git-bound archive/manifest and unchanged source inventory,
+with explicit failure/correction linkage. This is a build-freshness issue, not
+a native producer failure or a changed golden. The
+[result](results/ace16-insert-external-long-values-2026-10-28.json) retains all
+phase records. Native Access/Windows save/reopen remains unrun.
 
 ## Consumer controls and remaining scope
 

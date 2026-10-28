@@ -1,0 +1,221 @@
+{
+  "scope": "Sixteen source/request-derived external Memo/OLE INSERT candidates on four immutable ACE16 originals; engineering evidence only",
+  "date": "2026-10-28",
+  "profiles": [
+    "V2016",
+    "V2019"
+  ],
+  "memo_declarations": [
+    "raw",
+    "compressed"
+  ],
+  "source_capture": {
+    "report": {
+      "path": ".cache/ace16-insert-external-long-value-source-first-20261028/report.json",
+      "bytes": 25328,
+      "sha256": "2211a980e3230be24a8be46be1b9826e225e7f35ae0df87d87ad12f0ef078e30"
+    },
+    "commands": 9,
+    "first_attempt": true,
+    "qualification_performed_by_capture": false
+  },
+  "saved_source_gates": {
+    "path": ".cache/ace16-insert-external-long-value-source-next-20261028/source-gates-final-first.json",
+    "bytes": 63606,
+    "sha256": "5b3982ca52f7a56605932e10fbeb17e00eb822d36e937b2a45e7ed0d99137a18"
+  },
+  "originals": [
+    {
+      "id": "V2016-raw",
+      "image": {
+        "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-raw-source.accdb",
+        "bytes": 446464,
+        "sha256": "9a6b7e0e5b0984e51e1af3170ff92e641b48809db2f74c17ab634f80993c0359"
+      }
+    },
+    {
+      "id": "V2016-compressed",
+      "image": {
+        "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-compressed-source.accdb",
+        "bytes": 446464,
+        "sha256": "1f5c45d48680ef13c474ebe9b6a6a3e4a745ac7dcdca94c5f3b2b96d82d11c04"
+      }
+    },
+    {
+      "id": "V2019-raw",
+      "image": {
+        "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-raw-source.accdb",
+        "bytes": 520192,
+        "sha256": "986ddd0db110ef562ead874c3c27dbba514a6d2154cb49bf0836d17f3966f125"
+      }
+    },
+    {
+      "id": "V2019-compressed",
+      "image": {
+        "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-compressed-source.accdb",
+        "bytes": 520192,
+        "sha256": "e8c39e4b9e52f4204e5e58338d2180efaba980e193c4be078fc84aaf771454de"
+      }
+    }
+  ],
+  "source_request_model": {
+    "freeze": {
+      "path": ".cache/ace16-insert-external-long-value-source-next-20261028/model-freeze.json",
+      "bytes": 11535,
+      "sha256": "c0f0ec8a00a32c0c75b234ff191c34bc9fb6adba860b5efc873a4c2b2b06f5e0"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-insert-external-long-value-expected-first-20261028/report.json",
+      "bytes": 53059,
+      "sha256": "d7b0a3f86af739deb72e745e17bdf1bc46eebcbb8c74000df34af54230012f25"
+    },
+    "complete_images": 16,
+    "public_after_inputs": 0
+  },
+  "public_reference": {
+    "initial_report": {
+      "path": ".cache/ace16-insert-external-long-value-reference-first-20261028/report.json",
+      "bytes": 30099,
+      "sha256": "3715ff0cc7ebc8b32d6e15052fd5af780345d104e61fd713dd464d6c7f37ff52"
+    },
+    "continuation_report": {
+      "path": ".cache/ace16-insert-external-long-value-reference-continuation-first-20261028/report.json",
+      "bytes": 165790,
+      "sha256": "c59271de0e4a07ee0a5cdbf19ccae77335541df5d8d65af0dffc99cb77e44bed"
+    },
+    "initial_successful_children": 2,
+    "initial_proof_assembly_failure": "START offset was read at END position; preserved original, corrected saved-only one-offset derivative",
+    "remaining_unique_children": 30,
+    "total_unique_children": 32,
+    "transition_proofs": 16,
+    "repeated_completed_calls": 0,
+    "first_attempt_whole_phase": false,
+    "observed_complete_model_public_differences": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "build": {
+    "corrected_receipt": {
+      "path": "docs/testing/results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json",
+      "bytes": 3546,
+      "sha256": "924b761d0afb24d6342d9f16d1a3c48484e66919dc7753118714d2fb5ea7d115"
+    },
+    "shared_target_attempt": "Cargo0 reused older binary; declared unqualified before any native candidate call; unchanged report/artifact and relocated receipt retained",
+    "corrective_fresh_target": "Actual owning-engine compilation; full committed8374bad2 archive/manifest unchanged before/after"
+  },
+  "native": {
+    "report": {
+      "path": ".cache/ace16-insert-external-long-value-candidate-first-20261028/report.json",
+      "bytes": 61030,
+      "sha256": "5c738583ab7097f30cfed0d99ddeef52341e6ba17e31eb5cec92a0d7b43c8523"
+    },
+    "calls": 16,
+    "complete_image_matches": 16,
+    "first_attempt": true,
+    "value_bytes": 16384,
+    "default_value_bytes_unchanged": 1024
+  },
+  "fresh_readonly": {
+    "report": {
+      "path": ".cache/ace16-insert-external-long-value-getters-first-20261028/report.json",
+      "bytes": 110040,
+      "sha256": "48eb351bd4711d30144e1e37aa8d6c983f025bce065fb6fcf06780fcc153cc8d"
+    },
+    "calls": 16,
+    "combined_typed_rows_and_maps": true,
+    "first_attempt": true
+  },
+  "observations": {
+    "inserted_parent_rows": 32,
+    "preserved_old_parent_ROW_checks": 96,
+    "final_typed_user_rows": 144,
+    "physical_key_ROW_pairs": 256,
+    "new_LVAL_pages": 48,
+    "new_external_chunk_rows": 52,
+    "new_DATA_pages": 0,
+    "new_INDEX_pages": 0,
+    "unique_source_orphan_chunks": 8,
+    "old_orphan_bodies_preserved_in_each_candidate": true,
+    "public_index_unused_scratch_changed_bytes": 0
+  },
+  "maintained_verification": {
+    "default_first": {
+      "path": ".cache/ace16-insert-external-long-value-maintained-proof-20261028/default-first.json",
+      "bytes": 50919,
+      "sha256": "c83033fb6ef1559d427b8dcd049edcb5e8b7fe40c74c57cca183b7f5fabf0603"
+    },
+    "git_first": {
+      "path": ".cache/ace16-insert-external-long-value-maintained-proof-20261028/git-first.json",
+      "bytes": 50983,
+      "sha256": "06d705c44d8971b36a4d8d4e09c624c223fc28a20a71aa15ff0b65746dc6de05"
+    },
+    "unavailable_first": {
+      "path": ".cache/ace16-insert-external-long-value-maintained-proof-20261028/unavailable-first.json",
+      "bytes": 222,
+      "sha256": "a325f9dcba1803456117f207c5b24d0f59e0b7fb493ce30aab1a4b1b3f89a2dc"
+    },
+    "default_subprocesses": 0,
+    "optional_git_metadata_children": 1,
+    "committed_archive_blobs": 4526,
+    "committed_build_receipt_blobs": 1,
+    "sources": [
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/LongValueInsertFixture.java",
+        "bytes": 19526,
+        "sha256": "fd52226e9549287d0c1767d78c62777dfa58ea299d2dfcd5c4c2a0733eb3a17b"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/census.py",
+        "bytes": 5049,
+        "sha256": "867871b12f1ac319596eafc44c3fc1581f0bb6b3c504a4aefffacc86cfade4dc"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/evidence.py",
+        "bytes": 4356,
+        "sha256": "e9f62f7e42591a1d78bcadfbfb7a160fc9730e1b4589fac455d6c04c46096a59"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/model.py",
+        "bytes": 10577,
+        "sha256": "ee185e85faffd3cd5e194707ebc0343414b04fcce9f8b1a94164d5e1f605bec9"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/reference.py",
+        "bytes": 10769,
+        "sha256": "632006d85e12ab10d5d02297cc77b6c8060c9c6c667e28a336661a85de8ca23a"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/requests.py",
+        "bytes": 1848,
+        "sha256": "fbacad54f4a7266289e5bc3c7c1fdd6a5c918dceaca3dbcb371dad3e8ee4619b"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/source.py",
+        "bytes": 15735,
+        "sha256": "deaa135e3fc3d7f7b3c8952486dc8c84a8cc366bba5f6d177fb5e6d3d0254e67"
+      },
+      {
+        "path": "docs/testing/ace16_insert_external_long_values/verify.py",
+        "bytes": 15098,
+        "sha256": "5fdd13e4d1e36789b0f2a3cf551b0088f6ce0ece7491d14d9946fdf246aae651"
+      }
+    ]
+  },
+  "native_Access_save_reopen_qualification": false,
+  "normal_save_admission": false
+}
