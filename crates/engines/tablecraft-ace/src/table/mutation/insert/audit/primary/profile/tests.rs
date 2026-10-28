@@ -4,7 +4,7 @@ use crate::{NativeImage, table::mutation::insert::tests::multiple_indexes::model
 use tablecraft_core::{limits::ResourceBudget, values::Guid};
 use tablecraft_model::CatalogScope;
 
-fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
+pub(super) fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
     let source = model::source(6, false, false);
     let mut allowance = ResourceBudget::new(256 * 1024 * 1024, 1_000_000, 100_000_000);
     let image = NativeImage::capture(

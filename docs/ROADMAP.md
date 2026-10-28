@@ -394,6 +394,12 @@ qualification remain unfinished.
   commands. Ten-component native-file qualification and production saves remain
   unqualified.
 
+The [exact Decimal INSERT index continuation](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
+now maintains single Decimal and Decimal-bearing fixed tuples, retaining each
+field's declared precision/scale. Eight complete-image functions and two separate
+audit controls bring the INSERT batch to 183 passing functions. Independent
+original-file Decimal INSERT evidence and normal-save qualification remain open.
+
 Major gates still open before the full backend is complete:
 
 - [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full

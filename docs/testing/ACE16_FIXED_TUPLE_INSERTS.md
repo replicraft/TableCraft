@@ -11,7 +11,7 @@ edits, schema changes or required data-macro execution.
 The [ordinary record contract](ACE16_ORDINARY_INSERTS.md) still governs all
 supplied fields, including fields outside an index. Its contiguous-column,
 explicit-value, default/generated-field and payload restrictions remain intact.
-Decimal, Text, Binary and other unqualified index profiles remain refused;
+Text, Binary and other unqualified index profiles remain refused;
 being able to store a value does not qualify an index on it. Foreign indexes and
 unsupported relationship or validation semantics retain their existing gates.
 
@@ -118,3 +118,34 @@ cancellation refuses explicitly. All 173
 INSERT regression functions pass; the preceding full 468-function ACE batch is
 recorded separately above. Strict ACE library/test Clippy, minimal compilation
 and formatting pass after this work-accounting correction.
+
+## Exact Decimal index continuation
+
+The separate INSERT preview also maintains single Decimal indexes and fixed
+tuples containing Decimal, including GUID and independently declared Decimal
+components. Each Decimal field keeps its own precision (1–28), scale (0 through
+precision) and direction. Requests require the exact Decimal carrier and declared
+scale with magnitude below 10^precision; insertion never rescales, rounds or
+coerces another numeric carrier. The existing 17-byte variable FIELD storage is
+unchanged. A new NULL has an empty variable payload; opaque old NULL bytes remain
+preserved.
+
+A non-NULL Decimal index component has an 18-byte marker/sign/magnitude encoding,
+separate from FIELD storage. Scalar leaf entries are 22 bytes and node entries
+26 bytes; a Decimal/GUID leaf entry is 41 bytes with a 45-byte node bound.
+The producer uses the native Decimal profile; the final audit independently
+frames and validates exact sign, magnitude, direction, precision and NULL bytes.
+All-NULL unique exemptions, partial-NULL conflicts, required and IgnoreNULL rules
+remain those of the complete selected tuple.
+
+Eight complete-image regression functions cover both layouts/directions, declared
+precision/scale extremes, mixed/reversed GUID keys, two Decimal fields with
+different declarations, root growth, aliases, historical counters, NULL rules,
+invalid carriers, quotas and calibrated terminal cancellation. Two independent
+audit functions check literal wire bytes and reject invalid signs, negative zero
+and out-of-precision values. All 183 INSERT regression functions pass, together
+with strict all-target/all-feature ACE Clippy, minimal ACE compilation, formatting
+and documentation/dependency guards. These are a later batch than the full
+468-function checkpoint above. Independent original-file Decimal INSERT
+comparisons are being prepared; native Access save/reopen and production write
+admission remain unqualified.

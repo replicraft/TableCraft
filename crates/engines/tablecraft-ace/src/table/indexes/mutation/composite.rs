@@ -100,7 +100,7 @@ impl TupleProfile<DecimalValue, DecimalColumns> {
         )
     }
 
-    fn with_decimal_coverage(
+    pub(super) fn with_decimal_coverage(
         index: &NativeIndex,
         schema: &TableSchema,
         coverage: Coverage,
