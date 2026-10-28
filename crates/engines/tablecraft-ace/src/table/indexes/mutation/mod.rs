@@ -10,7 +10,7 @@ pub(in crate::table) use super::numeric::NumericKey;
 pub(in crate::table) use kind::MutationKey;
 mod plan;
 #[cfg(feature = "ace16-write-preview")]
-mod split;
+pub(in crate::table) mod split;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use plan::splitting_patches;
 #[cfg(feature = "ace16-write-preview")]

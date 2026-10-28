@@ -1,6 +1,7 @@
 //! Separate, bounded recursive splitting; ordinary replacement paths stay closed.
-mod allocation;
+pub(in crate::table) mod allocation;
 mod audit;
+pub(in crate::table::indexes) mod insert;
 mod maps;
 mod nonroot;
 mod pages;
@@ -313,7 +314,7 @@ fn borrowed_reference<K>(key: &KeyRef<K>) -> KeyRef<&K> {
     }
 }
 
-fn leaf_entries<'a, K>(
+pub(super) fn leaf_entries<'a, K>(
     keys: &'a [KeyRef<K>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

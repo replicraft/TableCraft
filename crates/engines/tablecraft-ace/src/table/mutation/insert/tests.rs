@@ -3,4 +3,5 @@ mod authority;
 mod bitmap;
 mod empty;
 pub(super) mod model;
+mod split;
 mod values;

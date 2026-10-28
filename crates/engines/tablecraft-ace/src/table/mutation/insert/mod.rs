@@ -53,9 +53,10 @@ impl NativeImage {
     ///
     /// The current profile constructs ordinary Int32/ShortBinary records with
     /// explicit values and maintains one required unique ascending Int32 primary
-    /// leaf, including logical aliases. Defaults, generated fields, additional
-    /// indexes and required splits refuse. Existing hinted space and qualified
-    /// EOF allocation use the shared native map allocator.
+    /// index, including logical aliases. An original root leaf may grow into a
+    /// retained root and two fresh leaves. Deeper sources, defaults, generated
+    /// fields, additional indexes and oversized halves refuse. DATA and index
+    /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or
     /// Microsoft Access behavior. Only explicit disposable offline copies should
@@ -169,6 +170,22 @@ fn prepare(
     }
 
     let indexes = insertion::prepare(image, structural, id, &keys, budget, cancelled)?;
+
+    let placement::Plan {
+        pages,
+        maps,
+        append,
+        rows,
+    } = data;
+    let (indexes, append) =
+        indexes.continue_with_append(image, structural, id, append, budget, cancelled)?;
+    let data = placement::Plan {
+        pages,
+        maps,
+        append,
+        rows,
+    };
+
     let counters = counters::capture(
         image,
         structural,

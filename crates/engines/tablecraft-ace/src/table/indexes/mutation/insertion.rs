@@ -1,4 +1,8 @@
-//! Explicit cardinality growth for one qualified physical Int32 primary leaf.
+//! Request membership and cardinality growth for one qualified Int32 primary.
+use super::split::{
+    self, AddedPage,
+    allocation::{Promotion, Rebase},
+};
 use super::{IndexDataPatch, NumericKey, profile::SingleProfile, repack, tree::Tree};
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
@@ -12,8 +16,9 @@ use crate::{
     table::indexes::{
         constraints::PRIMARY_INDEX,
         header::IndexHeader,
-        page::{Entry, KeyRef, LEAF},
+        page::{KeyRef, LEAF},
     },
+    table::mutation::append::State,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
@@ -31,6 +36,10 @@ pub(in crate::table) struct InsertKey<'a> {
 /// Builder comparison facts, not a sealed request or after-image certificate.
 pub(in crate::table) struct PrimaryInsertion {
     pub patches: Vec<IndexDataPatch>,
+    pub added: Vec<AddedPage>,
+    pub promotions: Vec<Promotion>,
+    pub rebases: Vec<Rebase>,
+    requires_split: bool,
     physical: u32,
     root: u32,
     usage: u32,
@@ -39,6 +48,42 @@ pub(in crate::table) struct PrimaryInsertion {
 }
 
 impl PrimaryInsertion {
+    /// Transfer the DATA cursor through index allocation and return its sole
+    /// final owner. A fitted leaf retains the exact existing serialization.
+    pub(in crate::table) fn continue_with_append(
+        mut self,
+        image: &NativeImage,
+        checked: &TableCheck,
+        id: usize,
+        append: State,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, State), EditError> {
+        check(budget, cancelled)?;
+        if !self.requires_split {
+            return Ok((self, append));
+        }
+
+        let plan = split::insert::continue_primary(
+            split::insert::Operation {
+                image,
+                checked,
+                id,
+                final_keys: &self.expected,
+            },
+            append,
+            budget,
+            cancelled,
+        )?;
+        self.patches = plan.patches;
+        self.added = plan.added;
+        self.promotions = plan.promotions;
+        self.rebases = plan.rebases;
+        self.requires_split = false;
+
+        Ok((self, plan.append))
+    }
+
     pub(in crate::table) fn physical(&self) -> u32 {
         self.physical
     }
@@ -164,41 +209,42 @@ pub(in crate::table) fn prepare(
             .map_err(InspectError::from)?;
     }
     let mut patches = Vec::new();
+    let mut requires_split = false;
     if !requests.is_empty() {
-        reader
-            .budget
-            .charge_allocation(final_count as u64, size_of::<Entry>() as u64)
-            .map_err(InspectError::from)?;
-        reader.work(final_count)?;
-        let mut entries = Vec::new();
-        entries
-            .try_reserve_exact(final_count)
-            .map_err(|_| InspectError::Allocation)?;
-        entries.extend(
-            expected
-                .iter()
-                .copied()
-                .map(|value| Entry { value, child: 0 }),
-        );
-        let after = repack::page::<_, ENTRY_BUFFER>(
+        let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
+        if repack::borrowed_fits::<_, ENTRY_BUFFER>(
             original,
             &entries,
             &profile,
             reader.budget,
             cancelled,
-        )?;
-        repack::patches(
-            original,
-            &after,
-            index.root_page(),
-            &mut patches,
-            reader.budget,
-            cancelled,
-        )?;
+        )? {
+            let after = repack::borrowed_page::<_, ENTRY_BUFFER>(
+                original,
+                &entries,
+                &profile,
+                reader.budget,
+                cancelled,
+            )?;
+            repack::patches(
+                original,
+                &after,
+                index.root_page(),
+                &mut patches,
+                reader.budget,
+                cancelled,
+            )?;
+        } else {
+            requires_split = true;
+        }
     }
     check(reader.budget, cancelled)?;
     Ok(PrimaryInsertion {
         patches,
+        added: Vec::new(),
+        promotions: Vec::new(),
+        rebases: Vec::new(),
+        requires_split,
         physical: index.data_number(),
         root: index.root_page(),
         usage: index.usage_map(),

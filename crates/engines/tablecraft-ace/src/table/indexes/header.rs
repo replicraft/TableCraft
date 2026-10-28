@@ -21,7 +21,7 @@ pub(in crate::table) struct IndexHeader {
 }
 
 #[cfg(feature = "ace16-write-preview")]
-pub(super) const LEVEL_OFFSET: usize = std::mem::offset_of!(IndexHeader, _level);
+pub(in crate::table) const LEVEL_OFFSET: usize = std::mem::offset_of!(IndexHeader, _level);
 
 impl IndexHeader {
     // Native mutation requires a zero write stamp and the exact subtree height

@@ -1,4 +1,5 @@
 //! Original-wire primary membership and historical-counter certification.
+mod split;
 use super::super::Staged;
 use super::{ImageProof, Row, copied, reserve};
 use crate::{
@@ -109,26 +110,66 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
-    let (after, active) = if rows.is_empty() {
-        (copied(original, reader)?, old_active)
+    let rendered = if rows.is_empty() {
+        Some((copied(original, reader)?, old_active))
     } else {
         render(original, &entries, reader)?
     };
-    patches(
-        original,
-        &after,
-        root.start,
-        old_active.max(active),
-        staged,
-        rows.is_empty(),
-        reader,
-    )?;
-    reader.work(PAGE_BYTES)?;
-    proof
-        .bytes
-        .get_mut(root)
-        .ok_or(EditError::Preservation)?
-        .copy_from_slice(&after);
+    if let Some((after, active)) = rendered {
+        if !staged.indexes.added.is_empty()
+            || !staged.indexes.promotions.is_empty()
+            || !staged.indexes.rebases.is_empty()
+        {
+            return Err(EditError::Preservation);
+        }
+        patches(
+            original,
+            &after,
+            root.start,
+            old_active.max(active),
+            staged,
+            rows.is_empty(),
+            reader,
+        )?;
+        reader.work(PAGE_BYTES)?;
+        proof
+            .bytes
+            .get_mut(root)
+            .ok_or(EditError::Preservation)?
+            .copy_from_slice(&after);
+    } else {
+        let growth = split::derive(
+            image,
+            index,
+            checked.schema().definition_page(),
+            &entries,
+            proof,
+            reader,
+        )?;
+        growth.compare(index, &staged.indexes, proof, reader)?;
+        let mut reservations = staged.data.append.indexes();
+        for expected in [growth.right, growth.left] {
+            let actual = reservations.next().ok_or(EditError::Preservation)?;
+            if actual.number != expected
+                || actual.physical != index.data_number()
+                || actual.usage != index.usage_map()
+            {
+                return Err(EditError::Preservation);
+            }
+        }
+        if reservations.next().is_some() {
+            return Err(EditError::Preservation);
+        }
+        if let Some(promotion) = &growth.promoted {
+            staged.data.append.require_index_bitmap(
+                promotion.number,
+                index.data_number(),
+                index.usage_map(),
+                reader.budget,
+                reader.cancelled,
+            )?;
+        }
+    }
     counters(image, checked, index, rows.len(), staged, proof, reader)
 }
 
@@ -224,7 +265,7 @@ fn render(
     original: &[u8],
     entries: &[[u8; WIRE_BYTES]],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<(Vec<u8>, usize), EditError> {
+) -> Result<Option<(Vec<u8>, usize)>, EditError> {
     let mut common = entries.first().map_or(0, |_| WIRE_BYTES);
     if let Some(first) = entries.first() {
         for entry in &entries[1..] {
@@ -249,7 +290,7 @@ fn render(
     }
     let active = total - prefix * saved;
     if active > capacity {
-        return Err(EditError::Preservation);
+        return Ok(None);
     }
     let mut after = copied(original, reader)?;
     reader.work(ENTRY_START - BITMAP_START + active)?;
@@ -267,7 +308,7 @@ fn render(
         .copy_from_slice(&((capacity - active) as u16).to_le_bytes());
     after[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()]
         .copy_from_slice(&(prefix as u16).to_le_bytes());
-    Ok((after, active))
+    Ok(Some((after, active)))
 }
 
 fn patches(

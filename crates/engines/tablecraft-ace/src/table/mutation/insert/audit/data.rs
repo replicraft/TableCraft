@@ -231,7 +231,10 @@ pub(super) fn prove(
             .ok_or(EditError::Preservation)? = byte.after;
     }
 
-    compare(proof, schema, rows, staged, &replay, reader)
+    compare(proof, schema, rows, staged, &replay, reader)?;
+    proof.map_edits = replay.edits;
+
+    Ok(())
 }
 
 fn visit(
@@ -285,13 +288,10 @@ fn compare(
 ) -> Result<(), EditError> {
     if staged.append.original_length != proof.original.len()
         || staged.append.owner != schema.definition
-        || staged.append.length != proof.bytes.len()
-        || staged.append.reservations_len()
-            != (proof.bytes.len() - proof.original.len()) / PAGE_BYTES
+        || staged.append.length < proof.bytes.len()
         || staged.rows.len() != rows.len()
         || staged.pages.len() != replay.visited.len()
         || staged.maps.owned_pages.len() != replay.states.len()
-        || staged.append.map_edits.len() != replay.edits.len()
     {
         return Err(EditError::Preservation);
     }
@@ -345,18 +345,5 @@ fn compare(
     if actual_metadata.next().is_some() {
         return Err(EditError::Preservation);
     }
-    for byte in &replay.edits {
-        reader.work(staged.append.map_edits.len())?;
-        let actual = staged
-            .append
-            .map_edits
-            .iter()
-            .find(|actual| actual.offset == byte.offset)
-            .ok_or(EditError::Preservation)?;
-        if actual.before != byte.before || actual.after != byte.after {
-            return Err(EditError::Preservation);
-        }
-    }
-
     Ok(())
 }
