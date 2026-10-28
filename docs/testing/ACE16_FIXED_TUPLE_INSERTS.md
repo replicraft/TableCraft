@@ -87,9 +87,16 @@ attempt stopped on exhausted Cargo-cache disk space before tests ran; only
 rebuildable incremental cache was cleared. These failures remain separate from
 the subsequent passing batch.
 
-Independent original-file GUID/tuple comparisons are being prepared separately.
-The [scalar file corpus](ace16_insert_scalar_indexes/README.md) qualifies earlier
-Boolean/IEEE/DATE cases from its recorded producer, not these additional keys.
+The [GUID/tuple file corpus](ace16_insert_guid_tuple_indexes/README.md) now
+compares 32 source/request-only expected images with the first 32 committed-source
+producer outputs, followed by 64 fresh independent getter/map calls. All 2,768
+old rows remain and 80 rows are added, with 5,684 physical key/ROW pairs. The
+separate public-writer source/reference protocol passes all 193 commands.
+Independent file coverage is single GUID and two-component GUID/Int32; the
+ten-component cases above remain literal engineering controls. The
+[recorded producer build](results/ace16-insert-guid-tuple-index-example-build-2026-10-28.json)
+and [result receipt](results/ace16-insert-guid-tuple-index-native-2026-10-28.json)
+retain the exact source and evidence pins.
 Native Microsoft Access save/reopen, data macros, shared-file behavior and
 production write admission remain unqualified.
 
