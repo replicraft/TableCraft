@@ -406,8 +406,12 @@ The [Short Text/Binary INSERT continuation](testing/ACE16_VARIABLE_INDEX_INSERTS
 now retains non-Copy keys and complete row NULL facts through fitted/root/recursive
 normalization. Five public complete-image functions cover General text, digests,
 reversed tuples and genuine 585-byte Binary bounds; the full ACE library batch
-passes 491 functions with one ignored generator. Independent original-file
-variable-key INSERT comparisons and production write admission remain open.
+passes 491 functions with one ignored generator. The later original-file corpus
+now passes 38 complete-image comparisons, four exact unique-digest refusal
+controls and 76 fresh independent getter/map calls. Its closed Binary255/General
+text/tuple scope and preserved failed/corrective phases are documented separately.
+Binary510/577-byte key file qualification and production write admission remain
+open.
 
 [Inline Memo/OLE INSERT records](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation)
 now reuse the actual long-value codec through its 64-byte preferred-inline

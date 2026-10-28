@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Original-file variable-key INSERT comparisons
+
+Thirty-eight source/request-only variable-key images now match first-attempt
+committed-producer outputs, and four separate unique-digest sources return the
+exact expected refusal without an output file. All image/refusal checks precede
+76 successful fresh independent getter/map calls. The corpus retains 206 old
+rows and adds 170, with 734 physical key/ROW pairs and separate historical
+counters. It covers the stated Binary255 and closed General text/tuple profiles;
+Binary510/577-byte key original-file qualification remains open.
+
+The public-writer lineage preserves two failed helper compilations and a proof
+stop after 133 successful calls. A corrected saved replay plus only the remaining
+120 calls completes the 253 distinct planned calls. It does not invent a combined
+first-pass result. Native Access qualification remains separate. See the
+[maintained variable-key proof](testing/ace16_insert_variable_indexes/README.md).
+
 ## External Memo/OLE INSERT allocation
 
 The separate ACE 16 INSERT preview now places ordinary external single/chained
