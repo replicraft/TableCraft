@@ -3,6 +3,7 @@ mod authority;
 mod bitmap;
 mod child_split;
 mod decimal;
+mod decimal_index_inserts;
 mod empty;
 mod general_height_one;
 pub(in crate::table::mutation::insert) mod guid_tuple_indexes;

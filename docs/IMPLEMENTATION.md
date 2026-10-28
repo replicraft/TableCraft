@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Exact Decimal INSERT index keys
+
+The separate ACE 16 INSERT preview now maintains single Decimal secondary indexes
+and Decimal-bearing fixed tuples. Every component retains its own declared
+precision and scale; exact carriers are required without rounding or rescaling.
+Existing Decimal record storage is reused. Independent audit code validates the
+18-byte index encoding separately from 17-byte FIELD storage, including signs,
+negative-zero refusal, magnitude and directions.
+
+Eight complete-image functions and two independent wire functions cover both
+layouts, per-field declarations, GUID mixtures, NULL/unique/IgnoreNULL behavior,
+root growth, historical counters, quotas and terminal cancellation. All 183
+INSERT regressions, strict ACE all-target/all-feature Clippy, minimal compilation,
+formatting and documentation/dependency guards pass. Independent original-file
+Decimal comparisons remain preparation work; normal saves and native Access
+qualification are unchanged. See the [exact Decimal index contract](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation).
+
 ## Fixed GUID and tuple INSERT keys
 
 The separate ACE 16 INSERT preview now maintains single GUID secondary indexes

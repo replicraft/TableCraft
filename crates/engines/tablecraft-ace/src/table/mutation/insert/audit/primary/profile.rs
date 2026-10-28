@@ -1,4 +1,5 @@
 //! Independent complete fixed-key components and tuple NULL facts.
+mod decimal;
 mod floating;
 mod guid;
 mod numeric;
@@ -21,6 +22,7 @@ const DESC_NULL: u8 = 0xff;
 #[derive(Clone, Copy)]
 enum Kind {
     Numeric(numeric::Profile),
+    Decimal(decimal::Profile),
     Guid { descending: bool },
 }
 
@@ -69,7 +71,12 @@ impl Profile {
             let scalar = schema.columns()[column]
                 .scalar_type()
                 .ok_or(EditError::Preservation)?;
-            let kind = if scalar == ScalarType::Guid {
+            let kind = if scalar == ScalarType::Decimal {
+                let (precision, scale) = schema.columns()[column]
+                    .decimal_parameters()
+                    .ok_or(EditError::Preservation)?;
+                Kind::Decimal(decimal::Profile::new(precision, scale, key.descending())?)
+            } else if scalar == ScalarType::Guid {
                 Kind::Guid {
                     descending: key.descending(),
                 }
@@ -127,6 +134,7 @@ impl Profile {
                 .ok_or(EditError::Preservation)?;
             let encoded = match component.kind {
                 Kind::Numeric(profile) => profile.encode(profile.request(value)?, row)?,
+                Kind::Decimal(profile) => profile.encode(value, row, reader)?,
                 Kind::Guid { descending } => guid::encode(value, descending, row, reader)?,
             };
             self.value(&encoded)?;
@@ -144,6 +152,7 @@ impl Profile {
                     let atom = profile.request(value)?;
                     profile.encode(atom, 0)?
                 }
+                Kind::Decimal(profile) => profile.encode(value, 0, reader)?,
                 Kind::Guid { descending } => guid::encode(value, descending, 0, reader)?,
             };
             let key = &encoded[..encoded.len() - ROW_BYTES];
@@ -188,6 +197,7 @@ impl Profile {
                     let leaf = Wire::read(&encoded[..length + ROW_BYTES])?;
                     (profile.value(&leaf)?.is_none(), length)
                 }
+                Kind::Decimal(profile) => profile.validate(bytes)?,
                 Kind::Guid { descending } => guid::validate(bytes, descending)?,
             };
             nulls.all &= null;

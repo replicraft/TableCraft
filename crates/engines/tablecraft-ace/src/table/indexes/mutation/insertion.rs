@@ -10,7 +10,11 @@ use super::split::{
     allocation::{Promotion, Rebase},
 };
 use super::{IndexDataPatch, NumericKey, composite::TupleProfile, profile::SingleProfile};
-use crate::table::indexes::{composite::MixedValue, guid::GuidProfile};
+use crate::table::indexes::{
+    composite::{DecimalColumns, DecimalValue, MixedValue},
+    decimal::DecimalProfile,
+    guid::GuidProfile,
+};
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     header::check,
@@ -85,9 +89,11 @@ impl IndexInsertion {
 /// Fixed profiles and typed keys stay owned until this phase is consumed.
 enum PreparedKind {
     Numeric(Prepared<SingleProfile>),
+    Decimal(Prepared<DecimalProfile>),
     Guid(Prepared<GuidProfile>),
     Tuple(Prepared<TupleProfile>),
     Mixed(Prepared<TupleProfile<MixedValue>>),
+    DecimalTuple(Prepared<TupleProfile<DecimalValue, DecimalColumns>>),
 }
 
 pub(in crate::table) struct PreparedIndex {
@@ -98,9 +104,11 @@ impl PreparedIndex {
     pub(in crate::table) fn source_pages(&self) -> &[u32] {
         match &self.kind {
             PreparedKind::Numeric(plan) => &plan.result.source_pages,
+            PreparedKind::Decimal(plan) => &plan.result.source_pages,
             PreparedKind::Guid(plan) => &plan.result.source_pages,
             PreparedKind::Tuple(plan) => &plan.result.source_pages,
             PreparedKind::Mixed(plan) => &plan.result.source_pages,
+            PreparedKind::DecimalTuple(plan) => &plan.result.source_pages,
         }
     }
 
@@ -112,11 +120,13 @@ impl PreparedIndex {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(IndexInsertion, State), EditError> {
-        use crate::table::indexes::{composite, guid};
+        use crate::table::indexes::{composite, decimal, guid};
         match self.kind {
             PreparedKind::Numeric(plan) => {
                 plan.finish::<ENTRY_BUFFER>(image, checked, append, budget, cancelled)
             }
+            PreparedKind::Decimal(plan) => plan
+                .finish::<{ decimal::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled),
             PreparedKind::Guid(plan) => {
                 plan.finish::<{ guid::MAX_ENTRY_BYTES }>(image, checked, append, budget, cancelled)
             }
@@ -124,6 +134,9 @@ impl PreparedIndex {
                 image, checked, append, budget, cancelled,
             ),
             PreparedKind::Mixed(plan) => plan.finish::<{ composite::MAX_GUID_ENTRY_BYTES }>(
+                image, checked, append, budget, cancelled,
+            ),
+            PreparedKind::DecimalTuple(plan) => plan.finish::<{ composite::MAX_GUID_ENTRY_BYTES }>(
                 image, checked, append, budget, cancelled,
             ),
         }
@@ -138,7 +151,7 @@ pub(in crate::table) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedIndex, EditError> {
-    use crate::table::indexes::{composite, guid};
+    use crate::table::indexes::{composite, decimal, guid};
     check(budget, cancelled)?;
     let index = qualify(checked, physical, budget, cancelled)?;
     match profiles::bind(checked, index, budget, cancelled)? {
@@ -148,6 +161,14 @@ pub(in crate::table) fn prepare(
         .map(|plan| PreparedIndex {
             kind: PreparedKind::Numeric(plan),
         }),
+        profiles::Profile::Decimal(profile) => {
+            preparation::prepare::<_, { decimal::MAX_ENTRY_BYTES }>(
+                image, checked, index, profile, requests, budget, cancelled,
+            )
+            .map(|plan| PreparedIndex {
+                kind: PreparedKind::Decimal(plan),
+            })
+        }
         profiles::Profile::Guid(profile) => preparation::prepare::<_, { guid::MAX_ENTRY_BYTES }>(
             image, checked, index, profile, requests, budget, cancelled,
         )
@@ -160,6 +181,14 @@ pub(in crate::table) fn prepare(
             )
             .map(|plan| PreparedIndex {
                 kind: PreparedKind::Tuple(plan),
+            })
+        }
+        profiles::Profile::DecimalTuple(profile) => {
+            preparation::prepare::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
+                image, checked, index, profile, requests, budget, cancelled,
+            )
+            .map(|plan| PreparedIndex {
+                kind: PreparedKind::DecimalTuple(plan),
             })
         }
         profiles::Profile::Mixed(profile) => {
