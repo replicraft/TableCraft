@@ -11,6 +11,8 @@ mod gates;
 #[cfg(feature = "ace16-write-preview")]
 mod index_append;
 #[cfg(feature = "ace16-write-preview")]
+mod insert;
+#[cfg(feature = "ace16-write-preview")]
 mod long_value;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod map_authority;
@@ -33,6 +35,8 @@ mod split_slot;
 mod variable_split;
 #[cfg(feature = "ace16-write-preview")]
 mod variable_update;
+#[cfg(feature = "ace16-write-preview")]
+pub use insert::RowInsert;
 #[cfg(feature = "ace16-write-preview")]
 pub use slot::SlotScalarUpdate;
 #[cfg(feature = "ace16-write-preview")]

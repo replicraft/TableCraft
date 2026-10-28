@@ -2,6 +2,8 @@ mod composite;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;
 mod encoding;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod insertion;
 mod kind;
 use super::composite::DecimalValue;
 pub(in crate::table) use super::numeric::NumericKey;
