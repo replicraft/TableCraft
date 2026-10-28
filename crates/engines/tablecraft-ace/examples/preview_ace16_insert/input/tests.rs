@@ -176,3 +176,42 @@ fn oversized_file_refuses_before_capture() {
             .contains("16 MiB")
     );
 }
+
+#[test]
+fn explicit_larger_values_bound_encoded_hex_and_utf8_bytes_without_coercion() {
+    let encoded = format!("binary\t{}\n", "85".repeat(4077));
+    let rows = parse(encoded.as_bytes(), &mut budget(), 8154).unwrap();
+    assert_eq!(rows[0].values(), &[Value::Binary(vec![0x85; 4077])]);
+    for limit in [1024, 8153] {
+        assert!(parse(encoded.as_bytes(), &mut budget(), limit).is_err());
+    }
+    let text = "Ā".repeat(2040);
+    assert_eq!(text.len(), 4080);
+    let encoded = format!("text\t{text}\n");
+    let rows = parse(encoded.as_bytes(), &mut budget(), 4080).unwrap();
+    assert_eq!(rows[0].values(), &[Value::Text(text)]);
+    assert!(parse(encoded.as_bytes(), &mut budget(), 4079).is_err());
+}
+
+#[test]
+fn explicit_value_limit_cannot_expand_file_capture_or_shared_byte_allowances() {
+    let directory = Directory::new();
+    let path = directory.file("large.tsv", b"");
+    File::options()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_len(MAX_INPUT_BYTES + 1)
+        .unwrap();
+    let error = load(&path, &mut budget(), MAX_VALUE_BYTES).err().unwrap();
+    assert!(error.to_string().contains("16 MiB input ceiling"));
+
+    let mut allowance = ResourceBudget::new(READ_BUFFER_BYTES as u64, ROW_BUDGET, STEP_BUDGET);
+    let error = parse(b"text\tx\n", &mut allowance, MAX_VALUE_BYTES)
+        .err()
+        .unwrap();
+    assert_eq!(
+        error.downcast_ref::<LimitError>().unwrap().resource,
+        Resource::Bytes
+    );
+}

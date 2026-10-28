@@ -69,23 +69,6 @@ impl Plan {
         }
     }
 
-    pub fn geometry(bytes: &[u8]) -> Result<(usize, usize), EditError> {
-        let count = row_count(bytes)?;
-        let end = if count == 0 {
-            PAGE_BYTES
-        } else {
-            row_range(bytes, count - 1)?.1
-        };
-        let free = end
-            .checked_sub(slot_offset(count))
-            .ok_or(InspectError::Malformed)?;
-        if usize::from(u16_at(bytes, FREE_OFFSET)?) != free {
-            return Err(InspectError::Malformed.into());
-        }
-
-        Ok((count, end))
-    }
-
     fn owner_matches(&self, bytes: &[u8], family: Family) -> Result<bool, EditError> {
         if bytes.get(..DATA_SIGNATURE.len()) != Some(DATA_SIGNATURE.as_slice()) {
             return Ok(false);
@@ -162,7 +145,7 @@ impl Plan {
         if !self.owner_matches(bytes, family)? {
             return Err(InspectError::Malformed.into());
         }
-        Self::geometry(bytes)?;
+        geometry(bytes)?;
         self.push(number, family, bytes, bytes, budget)
     }
 
@@ -182,7 +165,7 @@ impl Plan {
         }
         while let Some(number) = self.maps.candidate(image, family, budget, cancelled)? {
             let position = self.page(image, family, number, budget, cancelled)?;
-            let (count, end) = Self::geometry(&self.pages[position].after)?;
+            let (count, end) = geometry(&self.pages[position].after)?;
             let fitted = count < MAX_SLOTS && bytes + SLOT_BYTES <= end - slot_offset(count);
             budget
                 .charge_allocation(1, size_of::<Attempt>() as u64)
@@ -248,7 +231,7 @@ impl Plan {
         check(budget, cancelled)?;
         let position = self.destination(image, family, body.len(), budget, cancelled)?;
         let page = &mut self.pages[position];
-        let (count, end) = Self::geometry(&page.after)?;
+        let (count, end) = geometry(&page.after)?;
         let slot = u8::try_from(count).map_err(|_| InspectError::Malformed)?;
         let start = end.checked_sub(body.len()).ok_or(EditError::Preservation)?;
         let word = u16::try_from(start).map_err(|_| InspectError::Malformed)?
@@ -373,4 +356,21 @@ impl Plan {
             .get_mut(start..end)
             .ok_or(EditError::Preservation)
     }
+}
+
+pub(in crate::table::mutation) fn geometry(bytes: &[u8]) -> Result<(usize, usize), EditError> {
+    let count = row_count(bytes)?;
+    let end = if count == 0 {
+        PAGE_BYTES
+    } else {
+        row_range(bytes, count - 1)?.1
+    };
+    let free = end
+        .checked_sub(slot_offset(count))
+        .ok_or(InspectError::Malformed)?;
+    if usize::from(u16_at(bytes, FREE_OFFSET)?) != free {
+        return Err(InspectError::Malformed.into());
+    }
+
+    Ok((count, end))
 }

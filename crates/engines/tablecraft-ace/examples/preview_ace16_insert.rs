@@ -27,10 +27,14 @@ struct Args {
     /// 16 MiB and 4096 complete rows, under one shared operation budget.
     #[arg(value_name = "TSV")]
     requests: PathBuf,
+    /// Maximum encoded TSV DATA bytes per value; Binary counts hex digits.
+    /// The 16 MiB file ceiling and shared operation budget still apply.
+    #[arg(long, value_name = "BYTES", default_value_t = REQUEST_VALUE_BYTES, value_parser = input::value_bytes)]
+    value_bytes: usize,
 }
 
 fn run(args: Args, budget: &mut ResourceBudget) -> Result<usize, Box<dyn Error>> {
-    let requests = input::load(&args.requests, budget, REQUEST_VALUE_BYTES)?;
+    let requests = input::load(&args.requests, budget, args.value_bytes)?;
     let mut source = File::open(&args.source)?;
     let image = NativeImage::capture(&mut source, CatalogScope::new(1), budget, &|| false)?;
     let candidate = image.preview_ace16_insert_rows(&args.table, &requests, budget, &|| false)?;

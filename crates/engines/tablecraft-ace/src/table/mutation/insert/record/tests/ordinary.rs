@@ -1,4 +1,5 @@
 //! Literal complete rows, with fixture metadata independent of builder constants.
+mod long_values;
 use super::*;
 use tablecraft_core::values::{Decimal, Double, Guid, LegacyDateTime, Single};
 

@@ -30,7 +30,7 @@ struct Claim {
     column: usize,
 }
 
-pub(super) struct Inventory {
+pub(in crate::table::mutation) struct Inventory {
     claims: Vec<Claim>,
     live: Vec<Claim>,
     protected: Vec<u32>,

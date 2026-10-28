@@ -617,3 +617,54 @@ fn candidate_bitmap_reservation_pool_and_cancel_failures_preserve_cursor() {
         assert!(append.indexes().next().is_none());
     }
 }
+
+#[test]
+fn long_value_pages_bind_native_column_and_map_pair_before_data_and_indexes() {
+    let bytes = model::text(1, false, true).bytes;
+    let image = model::capture(&bytes);
+    let checked = checked(&bytes);
+    let index = checked.indexes()[0].index();
+    let mut state = State::new(&image, 10);
+    let first = (bytes.len() / PAGE) as u32;
+    state
+        .reserve_long_value(first, 2, 0x0f02, 0x0f03, &mut model::budget(), &|| false)
+        .unwrap();
+    state
+        .reserve_data(first + 1, &mut model::budget(), &|| false)
+        .unwrap();
+    state
+        .reserve_index(first + 2, index, &mut model::budget(), &|| false)
+        .unwrap();
+    assert_eq!(state.reservations_len(), 3);
+    assert_eq!(
+        state
+            .long_values()
+            .map(|page| (page.number, page.column, page.owned, page.candidate))
+            .collect::<Vec<_>>(),
+        [(first, 2, 0x0f02, 0x0f03)]
+    );
+    state
+        .require_long_value(first, 2, 0x0f02, 0x0f03, &mut model::budget(), &|| false)
+        .unwrap();
+    for (number, column, owned, candidate) in [
+        (first + 1, 2, 0x0f02, 0x0f03),
+        (first, 1, 0x0f02, 0x0f03),
+        (first, 2, 0x0f03, 0x0f02),
+    ] {
+        assert_eq!(
+            state.require_long_value(
+                number,
+                column,
+                owned,
+                candidate,
+                &mut model::budget(),
+                &|| false
+            ),
+            Err(EditError::Preservation)
+        );
+    }
+    assert_eq!(
+        state.require_data(first, &mut model::budget(), &|| false),
+        Err(EditError::Preservation)
+    );
+}

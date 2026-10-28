@@ -70,7 +70,7 @@ pub(super) fn prove(
     let mut replay = Replay {
         states: Vec::new(),
         visited: Vec::new(),
-        edits: Vec::new(),
+        edits: std::mem::take(&mut proof.map_edits),
         bitmap: None,
     };
     reserve(
@@ -102,7 +102,8 @@ pub(super) fn prove(
     }
 
     let original_eof = reader.header.page_count();
-    let mut next_eof = original_eof;
+    let mut next_eof =
+        u32::try_from(proof.bytes.len() / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
     for row in rows.iter_mut() {
         reader.tick()?;
         reader.work(replay.states.len())?;

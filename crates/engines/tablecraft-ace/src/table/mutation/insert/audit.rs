@@ -1,5 +1,6 @@
 //! Request-bound INSERT proof, separate from construction and composition.
 mod data;
+mod long_values;
 mod primary;
 mod records;
 #[cfg(test)]
@@ -97,13 +98,15 @@ pub(super) fn prove(
         cancelled,
         reads: 0,
     };
-    let mut rows = records::derive(schema, id, requests, &mut reader)?;
     let bytes = copied(image.as_bytes(), &mut reader)?;
     let mut proof = ImageProof {
         original: image.as_bytes(),
         bytes,
         map_edits: Vec::new(),
     };
+
+    let resolved = long_values::derive(image, &checked, requests, staged, &mut proof, &mut reader)?;
+    let mut rows = records::derive(schema, id, requests, resolved.as_deref(), &mut reader)?;
 
     data::prove(
         &mut proof,

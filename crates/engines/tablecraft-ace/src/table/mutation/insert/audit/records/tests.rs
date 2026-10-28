@@ -56,7 +56,7 @@ fn reconstruct(
         cancelled: &|| false,
         reads: 0,
     };
-    let rows = derive(schema, id, &[RowInsert::new(values)], &mut reader)?;
+    let rows = derive(schema, id, &[RowInsert::new(values)], None, &mut reader)?;
     assert_eq!(rows.len(), 1);
     Ok(rows.into_iter().next().unwrap().bytes)
 }

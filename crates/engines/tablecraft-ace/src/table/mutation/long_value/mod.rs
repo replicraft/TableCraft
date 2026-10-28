@@ -5,9 +5,9 @@ mod authority;
 pub(in crate::table::mutation) mod encode;
 mod finish;
 mod map_audit;
-mod maps;
-mod ownership;
-mod placement;
+pub(in crate::table::mutation) mod maps;
+pub(in crate::table::mutation) mod ownership;
+pub(in crate::table::mutation) mod placement;
 mod stage;
 #[cfg(test)]
 mod tests;

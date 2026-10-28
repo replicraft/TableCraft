@@ -1,7 +1,7 @@
 //! Reconstruct complete new rows independently from schema and explicit values.
 mod fixed;
-mod layout;
-mod payload;
+pub(super) mod layout;
+pub(super) mod payload;
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +9,7 @@ use super::{Row, reserve};
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, INT32},
+        data_type::{BOOLEAN, INT32, LONG_TEXT, OLE},
         page::PAGE_BYTES,
         reader::Reader,
         row::{
@@ -35,6 +35,7 @@ pub(super) fn derive(
     schema: &TableSchema,
     id: usize,
     requests: &[RowInsert],
+    resolved: Option<&[super::long_values::ResolvedRow]>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Row>, EditError> {
     let shape = layout::capture(schema, reader.budget, reader.cancelled)?;
@@ -46,7 +47,10 @@ pub(super) fn derive(
 
     let mut rows = Vec::new();
     reserve(&mut rows, requests.len(), reader)?;
-    for request in requests {
+    if resolved.is_some_and(|rows| rows.len() != requests.len()) {
+        return Err(EditError::Preservation);
+    }
+    for (row_number, request) in requests.iter().enumerate() {
         reader.tick()?;
         reader
             .budget
@@ -64,12 +68,26 @@ pub(super) fn derive(
         let mut end = shape.fixed_end;
         for position in &shape.variables {
             reader.tick()?;
-            let bytes = payload::encode(
-                &schema.columns()[*position],
-                &request.values()[*position],
-                reader.budget,
-                reader.cancelled,
-            )?;
+            let field = &schema.columns()[*position];
+            let bytes = if matches!(field.native_type(), LONG_TEXT | OLE)
+                && let Some(resolved) = resolved
+            {
+                let row = &resolved[row_number];
+                reader.work(row.fields.len())?;
+                let mut matching = row.fields.iter().filter(|field| field.column == *position);
+                let descriptor = matching.next().ok_or(EditError::Preservation)?;
+                if matching.next().is_some() {
+                    return Err(EditError::Preservation);
+                }
+                super::copied(&descriptor.descriptor, reader)?
+            } else {
+                payload::encode(
+                    field,
+                    &request.values()[*position],
+                    reader.budget,
+                    reader.cancelled,
+                )?
+            };
             end = end
                 .checked_add(bytes.len())
                 .ok_or(InspectError::StructureLimit)?;
@@ -152,7 +170,30 @@ pub(super) fn derive(
         }
 
         record_layout::parse(&bytes, schema, reader.budget)?;
-        if record::decode(&bytes, schema, reader)? != request.values() {
+        if let Some(resolved) = resolved {
+            let resolved = &resolved[row_number];
+            if resolved.record_length != length {
+                return Err(EditError::Preservation);
+            }
+            let mut selected = Vec::new();
+            reserve(&mut selected, schema.columns().len(), reader)?;
+            for (position, field) in schema.columns().iter().enumerate() {
+                reader.tick()?;
+                if !matches!(field.native_type(), LONG_TEXT | OLE) {
+                    selected.push(position);
+                }
+            }
+            let values = record::decode_selected(&bytes, schema, Some(&selected), reader)?;
+            if values.len() != selected.len() {
+                return Err(EditError::Preservation);
+            }
+            for (value, position) in values.iter().zip(selected) {
+                reader.tick()?;
+                if value != &request.values()[position] {
+                    return Err(EditError::Preservation);
+                }
+            }
+        } else if record::decode(&bytes, schema, reader)? != request.values() {
             return Err(EditError::Preservation);
         }
         reader.tick()?;

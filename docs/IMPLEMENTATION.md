@@ -12,6 +12,31 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## External Memo/OLE INSERT allocation
+
+The separate ACE 16 INSERT preview now places ordinary external single/chained
+Memo/OLE payloads before DATA and INDEX on one typed append state. Complete
+requests and record-width fallback qualify before reservations. Fresh source
+ownership capture and an independent placement/descriptor/map replay preserve
+old live/orphan storage and unrelated bytes; correlated staged data cannot
+authorize a different request.
+
+Twelve literal boundary cases and four two-column composition cases pass full
+source/expected checks before exact producer-image comparisons. The composition
+case allocates LVAL20/21, DATA22 and INDEX23/24, retaining 400 old parents and
+adding 52. First-ordinal fallback, NULL/empty distinctions, cumulative quotas and
+actual terminal cancellation have separate controls. All 180 table INSERT/audit
+functions and the full 516-function ACE library batch pass (one existing fixture
+generator ignored); 36 existing LVAL consumer checks and 13 engineering-example
+tests also pass. The example adds an explicit bounded `--value-bytes` control
+while preserving its default and request-file budgets. Strict ACE Clippy across
+all targets/features, minimal compilation, formatting and documentation/dependency
+guards also pass.
+
+Existing represented column/global maps remain required; map growth and missing
+map initialization are unfinished. Authentic external-file comparisons, normal
+saves and native Access qualification remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
+
 ## Variable key and ROW comparison
 
 The independent INSERT audit now orders complete key bytes before their ROW
@@ -34,8 +59,8 @@ Two public complete-image and two independent audit functions cover both layouts
 raw/compact UTF-16, NUL/non-BMP values, opaque OLE, limits and exact descriptors.
 All 160 table INSERT/audit functions, strict ACE all-target/all-feature Clippy,
 minimal compilation, formatting and documentation/dependency guards pass.
-External single/chained LVAL allocation is the next phase; normal saves and
-native Access qualification remain separate. See the [inline LVAL contract](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation).
+The later external single/chained continuation is recorded above; normal saves
+and native Access qualification remain separate. See the [inline LVAL contract](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation).
 
 ## Short Text/Binary INSERT index keys
 

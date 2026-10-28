@@ -53,3 +53,95 @@ fn invalid_complete_input_is_rejected_before_source_open_or_output_creation() {
     assert!(error.to_string().contains("invalid Binary hex"));
     assert!(!output.exists());
 }
+
+#[test]
+fn value_byte_argument_keeps_the_default_and_a_closed_explicit_range() {
+    let positional = [
+        "insert",
+        "source.accdb",
+        "output.accdb",
+        "Items",
+        "rows.tsv",
+    ];
+    assert_eq!(Args::try_parse_from(positional).unwrap().value_bytes, 1024);
+    for limit in [1, 1024, input::MAX_VALUE_BYTES] {
+        let text = limit.to_string();
+        let args = Args::try_parse_from([
+            "insert",
+            "--value-bytes",
+            text.as_str(),
+            "source.accdb",
+            "output.accdb",
+            "Items",
+            "rows.tsv",
+        ])
+        .unwrap();
+        assert_eq!(args.value_bytes, limit);
+    }
+    for invalid in [
+        "0",
+        "16777217",
+        "-1",
+        "1.5",
+        "large",
+        "18446744073709551616",
+    ] {
+        assert!(
+            Args::try_parse_from([
+                "insert",
+                "--value-bytes",
+                invalid,
+                "source.accdb",
+                "output.accdb",
+                "Items",
+                "rows.tsv",
+            ])
+            .is_err()
+        );
+    }
+}
+
+#[test]
+fn direct_invalid_value_limits_refuse_before_request_or_database_file_io() {
+    let directory = Directory::new();
+    for value_bytes in [0, input::MAX_VALUE_BYTES + 1] {
+        let output = directory.0.join("candidate.accdb");
+        let args = Args {
+            source: directory.0.join("absent.accdb"),
+            output: output.clone(),
+            table: "Items".into(),
+            requests: directory.0.join("absent.tsv"),
+            value_bytes,
+        };
+        let error = run(args, &mut budget()).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("Value-byte limit must be between")
+        );
+        assert!(!output.exists());
+    }
+}
+
+#[test]
+fn explicit_large_value_limit_reaches_the_source_only_after_complete_input_capture() {
+    let directory = Directory::new();
+    let encoded = format!("int32\t10\tbinary\t{}\n", "85".repeat(4077));
+    let requests = directory.file("rows.tsv", encoded.as_bytes());
+    let output = directory.0.join("candidate.accdb");
+    let arguments = |value_bytes| Args {
+        source: directory.0.join("absent.accdb"),
+        output: output.clone(),
+        table: "Items".into(),
+        requests: requests.clone(),
+        value_bytes,
+    };
+    let error = run(arguments(1024), &mut budget()).unwrap_err();
+    assert!(error.to_string().contains("value exceeds input ceiling"));
+    let error = run(arguments(8154), &mut budget()).unwrap_err();
+    assert_eq!(
+        error.downcast_ref::<std::io::Error>().unwrap().kind(),
+        std::io::ErrorKind::NotFound
+    );
+    assert!(!output.exists());
+}

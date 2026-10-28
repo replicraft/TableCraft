@@ -3,6 +3,7 @@ mod audit;
 mod compose;
 mod counters;
 mod indexes;
+mod long_values;
 mod placement;
 mod policies;
 mod primary_column;
@@ -18,7 +19,8 @@ use crate::{
     inspect_catalog,
     limits::MAX_LIVE_ROWS,
     table::{
-        indexes::mutation::insertion::IndexInsertion, mutation::variable_split::metadata::Metadata,
+        indexes::mutation::insertion::IndexInsertion,
+        mutation::{append::State, variable_split::metadata::Metadata},
     },
 };
 use std::io::Cursor;
@@ -45,6 +47,7 @@ impl RowInsert {
 
 struct Staged {
     data: placement::Plan,
+    long_values: long_values::Plan,
     indexes: Vec<IndexInsertion>,
     counters: Vec<counters::Patch>,
 }
@@ -52,20 +55,22 @@ struct Staged {
 impl NativeImage {
     /// Construct a separate, non-journalable ACE 16 INSERT engineering candidate.
     ///
-    /// The current profile constructs complete explicit ordinary fixed-scalar
-    /// and Short Text/Binary/Decimal records. Boolean uses its native value mask;
-    /// other fixed fields retain exact carriers and nullable presence bits.
-    /// One required unique ascending Int32 primary is selected from metadata,
-    /// independently of column order or physical slot. Additional single-key
-    /// Byte/Int16/Int32/Int64/Currency indexes admit either direction and represented
-    /// NULLs under their constraints. Logical aliases share one physical plan.
-    /// Leaf and branch trees admit recursive splits and a retained-root height
-    /// increase within existing limits. Every physical owner shares the same
-    /// DATA-first EOF cursor and map allocator. Historical counters increase only
-    /// for newly introduced key families, not every duplicate secondary entry.
-    /// Defaults, generated fields, Ignore-NULL indexes and other key profiles
-    /// remain refused. Decimal records require exact declared scale and precision
-    /// without conversion or rounding.
+    /// Construct complete explicit qualified fixed scalars, Decimal, Short
+    /// Text/Binary and ordinary Memo/OLE values without coercion or defaults.
+    /// Memo/OLE descriptors remain inline or use checked column-owned external
+    /// chunks. External long values, ordinary DATA and each physical INDEX owner
+    /// share one cursor in that order; requests without external long values
+    /// retain DATA-before-INDEX allocation.
+    ///
+    /// One required unique ascending Int32 primary is resolved from actual
+    /// metadata. Qualified fixed and variable secondary keys retain their own
+    /// directions, NULL rules and conservative digest-uniqueness restrictions.
+    /// Non-required Ignore-NULL secondary indexes omit only all-NULL keys;
+    /// Boolean values remain non-NULL. Logical aliases share each physical plan,
+    /// recursive splits and historical distinct-key counter changes.
+    ///
+    /// Unknown metadata, unsupported storage/maps, defaults, generated behavior
+    /// and required active validation remain explicit refusal boundaries.
     ///
     /// This does not enable normal saves or qualify required data macros or
     /// Microsoft Access behavior. Only explicit disposable offline copies should
@@ -134,14 +139,56 @@ fn prepare(
 
     for request in requests {
         check(budget, cancelled)?;
-        let record = profile.build(request.values(), budget, cancelled)?;
-        // The public INSERT identity remains an explicit non-NULL Int32. The
-        // generic physical planner separately admits nullable secondary keys.
         if !matches!(request.values().get(primary), Some(Value::Int32(_))) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        records.push(record);
     }
+    let has_long = structural
+        .schema()
+        .columns()
+        .iter()
+        .any(crate::table::long_value::profile::ordinary);
+    let (long_values, append) = if has_long {
+        budget
+            .charge_allocation(
+                requests.len() as u64,
+                size_of::<record::input::Input>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        let mut inputs = Vec::new();
+        inputs
+            .try_reserve_exact(requests.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for request in requests {
+            inputs.push(record::input::prepare(
+                structural.schema(),
+                profile.variables(),
+                request.values(),
+                budget,
+                cancelled,
+            )?);
+        }
+        let (long_values, append) = long_values::prepare(
+            image,
+            structural,
+            profile.variables(),
+            &mut inputs,
+            budget,
+            cancelled,
+        )?;
+        for (request, input) in requests.iter().zip(inputs) {
+            records.push(profile.build_prepared(request.values(), input, budget, cancelled)?);
+        }
+        (long_values, append)
+    } else {
+        for request in requests {
+            records.push(profile.build(request.values(), budget, cancelled)?);
+        }
+        (
+            long_values::Plan { pages: Vec::new() },
+            State::new(image, structural.schema().definition_page()),
+        )
+    };
 
     let metadata = Metadata::capture_for_insert(
         image,
@@ -156,6 +203,7 @@ fn prepare(
         structural.schema(),
         metadata,
         &records,
+        append,
         budget,
         cancelled,
     )?;
@@ -187,6 +235,7 @@ fn prepare(
 
     Ok(Staged {
         data,
+        long_values,
         indexes,
         counters,
     })

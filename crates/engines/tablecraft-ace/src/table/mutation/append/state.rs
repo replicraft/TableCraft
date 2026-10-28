@@ -8,9 +8,23 @@ use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
     Data,
-    OrdinaryCandidateBitmap { definition: u32, reference: u32 },
-    Index { physical: u32, usage: u32 },
-    IndexBitmap { physical: u32, usage: u32 },
+    LongValue {
+        column: usize,
+        owned: u32,
+        candidate: u32,
+    },
+    OrdinaryCandidateBitmap {
+        definition: u32,
+        reference: u32,
+    },
+    Index {
+        physical: u32,
+        usage: u32,
+    },
+    IndexBitmap {
+        physical: u32,
+        usage: u32,
+    },
 }
 
 struct Reservation {
@@ -22,6 +36,13 @@ pub(in crate::table) struct IndexReservation {
     pub number: u32,
     pub physical: u32,
     pub usage: u32,
+}
+
+pub(in crate::table) struct LongValueReservation {
+    pub number: u32,
+    pub column: usize,
+    pub owned: u32,
+    pub candidate: u32,
 }
 
 pub(in crate::table) struct State {
@@ -62,6 +83,27 @@ impl State {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         self.commit(number, &[Purpose::Data], budget, cancelled)
+    }
+
+    pub(in crate::table) fn reserve_long_value(
+        &mut self,
+        number: u32,
+        column: usize,
+        owned: u32,
+        candidate: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::LongValue {
+                column,
+                owned,
+                candidate,
+            }],
+            budget,
+            cancelled,
+        )
     }
 
     pub(in crate::table) fn reserve_index(
@@ -158,6 +200,15 @@ impl State {
         for (position, purpose) in purposes.iter().enumerate() {
             let purpose = match purpose {
                 Purpose::Data => Purpose::Data,
+                Purpose::LongValue {
+                    column,
+                    owned,
+                    candidate,
+                } => Purpose::LongValue {
+                    column: *column,
+                    owned: *owned,
+                    candidate: *candidate,
+                },
                 Purpose::OrdinaryCandidateBitmap {
                     definition,
                     reference,
@@ -229,6 +280,30 @@ impl State {
         Ok(())
     }
 
+    pub(in crate::table) fn require_long_value(
+        &self,
+        number: u32,
+        column: usize,
+        owned: u32,
+        candidate: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::LongValue {
+                column: actual_column,
+                owned: actual_owned,
+                candidate: actual_candidate,
+            } if actual_column == column
+                && actual_owned == owned
+                && actual_candidate == candidate =>
+            {
+                Ok(())
+            }
+            _ => Err(EditError::Preservation),
+        }
+    }
+
     pub(in crate::table) fn require_index_bitmap(
         &self,
         number: u32,
@@ -261,6 +336,24 @@ impl State {
             } if actual_definition == definition && actual_reference == reference => Ok(()),
             _ => Err(EditError::Preservation),
         }
+    }
+
+    pub(in crate::table) fn long_values(&self) -> impl Iterator<Item = LongValueReservation> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::LongValue {
+                    column,
+                    owned,
+                    candidate,
+                } => Some(LongValueReservation {
+                    number: reservation.number,
+                    column,
+                    owned,
+                    candidate,
+                }),
+                _ => None,
+            })
     }
 
     pub(in crate::table) fn indexes(&self) -> impl Iterator<Item = IndexReservation> + '_ {
