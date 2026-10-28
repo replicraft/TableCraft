@@ -1,0 +1,42 @@
+{
+  "operation": "Build the INSERT engineering example from an isolated committed-source archive",
+  "commit": "288aa53e1aa51129273d6609b2a002d3a2604dff",
+  "isolated_source": ".cache/ace16-insert-decimal-index-build-20261028/source",
+  "source_archive": {
+    "path": ".cache/ace16-insert-decimal-index-build-20261028/committed-source.tar",
+    "bytes": 90030080,
+    "sha256": "2c93196da556d0a6efc4ccfe945d89c46beced70a04a76b6c45b1ebbb641fe7a"
+  },
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-decimal-index-insert-expected-first-20261028/freeze.json",
+    "bytes": 129246,
+    "sha256": "3fc004c2edaa1711acb01fe43c8b421728f851455692939a56266f520d67b44f"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/target"
+  ],
+  "shared_cargo_cache": true,
+  "status": 0,
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-decimal-index-20261028",
+    "bytes": 20442408,
+    "sha256": "0757db079ea737415f9509bbf8a2f4d96bb7e6fe41b920b10054806aef0bae72"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
