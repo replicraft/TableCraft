@@ -10146,3 +10146,31 @@ the isolated committed build; sixteen candidate comparisons and thirty-two fresh
 read-only calls passed. The [maintained saved proof](ace16_insert_scalar_indexes/README.md)
 has no default child process. These observations do not qualify native Microsoft
 Access saves, Windows integration or production write paths.
+
+## GUID and GUID/Int32 secondary INSERT originals
+
+The repository-authored
+[GuidTupleIndexInsertReference.java](ace16_insert_guid_tuple_indexes/GuidTupleIndexInsertReference.java)
+creates 32 V2016/V2019 originals using the reviewed Jackcess 5.0.4 JAR. Each has
+manual required Int32 ID, nullable GUID Group and nullable Int32 Score, with four
+logical names sharing two physical owners. The finite corpus covers ordinary
+single-GUID pressure, both two-component GUID/Int32 orders and directions, and
+fitted mixed-direction ordinary/unique/unique-ignored tuples. No third-party
+fixture or implementation source is copied; databases, JARs, classes and raw
+captures remain ignored private evidence.
+
+The [compact result](results/ace16-insert-guid-tuple-index-native-2026-10-28.json)
+pins the source protocol, raw reports, requests, independent images and build.
+The first 193 public-writer calls completed with every source gate before any
+append. Exact known omitted-NULL warnings use the previously reviewed Jackcess
+IndexData warning contract; they are retained, counted and checked rather than
+suppressed. Reflected createEntryBytes results and actual raw mixed-endian GUID
+fields are separate source/key observations. Java String16 GUID projections do
+not establish a UUID runtime class claim.
+
+Thirty-two SOURCE+REQUEST images were frozen before the isolated producer build;
+32 complete candidate comparisons and 64 fresh read-only calls passed on their
+first attempts. The [maintained replay](ace16_insert_guid_tuple_indexes/README.md)
+starts no child process by default. Authentic evidence here covers single GUID
+and two-component GUID/Int32 profiles, not ten-component native compatibility or
+Microsoft Access save/reopen qualification.

@@ -1,0 +1,2064 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "operation": "ACE16 engineering GUID and two-component GUID/Int32 secondary INSERT qualification",
+  "scope": {
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "originals": 32,
+    "cases": 32,
+    "physical_indexes_per_table": 2,
+    "logical_index_names_per_table": 4,
+    "primary": "Required unique ascending manual Int32 ID, physical 0",
+    "secondary": "Single GUID ordinary nonunique pressure ASC/DESC; GUID/Int32 and Int32/GUID ordinary pressure in four direction combinations; fitted mixed-direction ordinary/unique/unique-ignored tuples.",
+    "not_qualified": [
+      "Ten-component native tuples",
+      "Single-GUID unique/IgnoreNULL independent-writer behavior",
+      "Native Microsoft Access save/reopen",
+      "Data macros",
+      "Normal production write paths"
+    ]
+  },
+  "ordering": [
+    "All 32 raw source gates before any public append",
+    "All 32 SOURCE+REQUEST expected images frozen before isolated committed producer build",
+    "All 32 candidate complete-image comparisons before any fresh getter",
+    "Public AFTER frames and padding are never construction authority"
+  ],
+  "phases": {
+    "public_writer": {
+      "commands": 193,
+      "compile": 1,
+      "generate": 32,
+      "before_reads": 64,
+      "append_disposable_copies": 32,
+      "after_reads": 64,
+      "first_attempt_completed": true,
+      "report": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/report.json",
+        "bytes": 1145808,
+        "sha256": "8f072158cd8511d112e79b1cd4717524461a1e0aa5dd307855ee0aecfdc9d3ec"
+      },
+      "controller_freeze": {
+        "path": ".cache/ace16-guid-tuple-index-insert-source-next-20261028/controller-freeze.json",
+        "bytes": 5692,
+        "sha256": "7be0b815e18d4d082d92b151cb99939dc151df9264cf575b50d9b9951f128b21"
+      },
+      "warnings": {
+        "commands_with_warnings": 8,
+        "omitted_NULL_events": 12,
+        "grammar": "Exact known two-line JUL warning using existing omission_warnings owner; every other stderr empty"
+      }
+    },
+    "native_candidates": {
+      "commands": 32,
+      "first_attempt_completed": true,
+      "full_images_matched": 32,
+      "report": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/report.json",
+        "bytes": 271035,
+        "sha256": "15cb490339b091f28db7be1e57cbf670538fcc41a9dd67e5a56802d3ce579b06"
+      },
+      "freeze": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/protocol-freeze.json",
+        "bytes": 89584,
+        "sha256": "9aa0f55e5ef3a61a6fc12f45554087b4dbc64c9c13fa1e8b25ad844d8153581e"
+      },
+      "binding": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/binding-first.json",
+        "bytes": 21495,
+        "sha256": "9752c5e25805b9c6a9f6a413127334c8fb6fd4dd479337017bff9355d5fa06ee"
+      },
+      "stream_bytes": 8388608,
+      "seconds_per_child": 30
+    },
+    "fresh_read_only": {
+      "commands": 64,
+      "first_attempt_completed": true,
+      "case_proofs": 32,
+      "report": {
+        "path": ".cache/ace16-guid-tuple-index-insert-getters-first-20261028/report.json",
+        "bytes": 913451,
+        "sha256": "36eefd5494f34c927ed7be42f809af369e35b6b8d317a13abed9245f4ddf4430"
+      },
+      "freeze": {
+        "path": ".cache/ace16-guid-tuple-index-insert-getters-next-20261028/controller-freeze.json",
+        "bytes": 90223,
+        "sha256": "4d08298c1a99d4b4073f34624101b73666cc2fc801183d45a8c5b8d5b60fa54e"
+      },
+      "binding": {
+        "path": ".cache/ace16-guid-tuple-index-insert-getters-next-20261028/binding-first.json",
+        "bytes": 50331,
+        "sha256": "4279f27b0d9484a476c56ce95e282ce7e7c716db3d58440a143781ba26cb693f"
+      },
+      "stream_bytes": 16777216,
+      "seconds_per_child": 30,
+      "java_heap_bytes": 536870912
+    }
+  },
+  "expected": {
+    "freeze": {
+      "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/freeze.json",
+      "bytes": 88373,
+      "sha256": "4a2ad33136da0fdab1cbc1f090850ed339f9d9154c9aae97dd779cb7a8047848"
+    },
+    "plan": {
+      "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/plan.json",
+      "bytes": 71060,
+      "sha256": "413ced3b4d1bf18a5885fd526b89fd989980dd4ce5a6ad701406ce3df81f3964"
+    },
+    "report": {
+      "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/report.json",
+      "bytes": 159569,
+      "sha256": "9923ce9bd8ee2428e53b98febbe5e10be21a4341ea5c64dd56e3e6436518d5b1"
+    },
+    "input_pins": 294,
+    "source_or_request_or_image_repairs": 0,
+    "initial_preparation_failures": 0
+  },
+  "producer": {
+    "compiled_revision": "dc2804326292682fed3fba74e32bca2aa0534ab2",
+    "receipt_revision": "32341a6f3e2802e8af36c7be1edba3c437cc6fe9",
+    "artifact": {
+      "path": ".cache/tablecraft-bin/ace16-insert-guid-tuple-index-20261028",
+      "bytes": 19712632,
+      "sha256": "126ddb700094fec96feb11e7cee754ce8df5ef597ce2c64b69170f9ad768a231"
+    },
+    "build_receipt": {
+      "path": "docs/testing/results/ace16-insert-guid-tuple-index-example-build-2026-10-28.json",
+      "bytes": 1404,
+      "sha256": "864c65adbbc5a61aee471104b9fce0bbdceadcca1131001bf256a2592b747f1b"
+    },
+    "source_archive": {
+      "path": ".cache/ace16-insert-guid-tuple-index-build-20261028/committed-source.tar",
+      "bytes": 89815040,
+      "sha256": "f77fc3e66654565156c052dc302834a2f2c2da93c548821158979c05f6129aea"
+    }
+  },
+  "totals": {
+    "candidate_images": 32,
+    "fresh_getter_calls_replayed": 64,
+    "old_rows_preserved": 2768,
+    "inserted_rows": 80,
+    "final_rows": 2848,
+    "final_physical_key_ROW_pairs": 5684
+  },
+  "saved_checks": {
+    "private_candidate_postcheck": {
+      "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/saved-postcheck-first.json",
+      "bytes": 12917,
+      "sha256": "df2735618f2dd97bd7c4150393bdbe776220f1cadc299da3cbcd74ca4cd94839"
+    },
+    "public_reference_postcheck": {
+      "path": ".cache/ace16-guid-tuple-index-insert-source-next-20261028/saved-postcheck-first.json",
+      "bytes": 11892,
+      "sha256": "3eca6f2629a70a8e475edaa7f39261ff260e6d69530e6463c1ba691703811e89"
+    },
+    "default": {
+      "status": 0,
+      "children": 0,
+      "pin_occurrences": 7906,
+      "distinct_paths": 2148
+    },
+    "explicit_git": {
+      "status": 0,
+      "archive_files": 4480,
+      "receipt_blobs": 1,
+      "metadata_children": 1
+    },
+    "missing_evidence": {
+      "status": 2,
+      "available": false
+    },
+    "artifacts": {
+      "default-first.json": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/default-first.json",
+        "bytes": 38071,
+        "sha256": "01e32fbccfb8c26e210a8ab882ac9f12e81c9a8d365c03b3e88d6002cedda7c1"
+      },
+      "default-first.stderr": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/default-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git-first.json": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/git-first.json",
+        "bytes": 38150,
+        "sha256": "f8021c6b9bbe716f613d7484fc18ed410f9edf6c7df3f71bca074aa013c16f78"
+      },
+      "git-first.stderr": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/git-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "missing-first.json": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/missing-first.json",
+        "bytes": 346,
+        "sha256": "9dd874d147b76b117824299b2811e481a154ad1fffd413504403bcefb6956781"
+      },
+      "missing-first.stderr": {
+        "path": ".cache/ace16-guid-tuple-index-insert-maintained-proof-20261028/missing-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "maintained_identity": {
+    "recipes_and_Java": "Exact private bytes",
+    "reference_and_stderr_policy": "Only repository-root bootstrap and owning recipes import change; all function ASTs exact",
+    "model": "Direct existing multiple-index model import replaces private loader; all other function ASTs and def n onward bytes exact"
+  },
+  "maintained_files": [
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/GuidTupleIndexInsertReference.java",
+      "bytes": 13821,
+      "sha256": "500c7d6a1ccab1a04502e2068965f4f80a7a0462785ca84ca7cbe42dc879a174"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/README.md",
+      "bytes": 4031,
+      "sha256": "91a2e57f40b4c2fac660e8297afe9daa15f3ad1b5271c9e8803c4fde3488c443"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/model.py",
+      "bytes": 14654,
+      "sha256": "159999c954395b125827674616b939ae60218d2f6fa574d18dd781fc9644343f"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/recipes.py",
+      "bytes": 3106,
+      "sha256": "9162e02e8a51619c1257a8752ba8c40acda6368a5106553b4dcc539b4e89dc72"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/reference.py",
+      "bytes": 20619,
+      "sha256": "83b15365bbde1f79068a4cae26f0657922893a70fdeb76308cf7cd0eeded0771"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/stderr_policy.py",
+      "bytes": 805,
+      "sha256": "028e9f9668595923a5a36a606b2faef740095fd086eaf79da15a70ca7823b4db"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/verify.py",
+      "bytes": 16743,
+      "sha256": "a879623fa2f5477e6e544c1476620a8e7ed901bd721dea49e5596f4674f4af14"
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-Guid-A-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-source.accdb",
+        "bytes": 393216,
+        "sha256": "4991ffbc914b22d3ae0769e10a7f4c497e8e3066ce8431735a294e620f2a2353"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-Guid-A-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "d6ce2b5c80c7b97f9a3e1e32021e0a3a9c49230df604a4244341d6800c490d76"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-generate.stdout",
+        "bytes": 8484,
+        "sha256": "90ff93205c004d662cd6b4901fb92fe085d82321e2f646c23c2e31591b1a4e14"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-Guid-A-pressure-ordinary.accdb",
+        "bytes": 401408,
+        "sha256": "f7a493e3ea43e48b21393b00931a8972017f599377d1380496669cfe7857b00c"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-Guid-A-pressure-ordinary-facts.json",
+        "bytes": 1409,
+        "sha256": "455d4b0c356d2ea62e8837b8f704e1d36ec8092bb8dafbdeae162984ee8f4009"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-Guid-A-pressure-ordinary.accdb",
+        "bytes": 401408,
+        "sha256": "f7a493e3ea43e48b21393b00931a8972017f599377d1380496669cfe7857b00c"
+      },
+      "rows": 159,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 158,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-Guid-D-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-source.accdb",
+        "bytes": 393216,
+        "sha256": "04abb49839ea396628571f6e47fb563311db061c082634215a8e175dab82f036"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-Guid-D-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "d6ce2b5c80c7b97f9a3e1e32021e0a3a9c49230df604a4244341d6800c490d76"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-generate.stdout",
+        "bytes": 8484,
+        "sha256": "fd78b0a21255f81c6eb3ee6cfecff34d1026dfb0c1ea242d49c25441c74b8fc6"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-Guid-D-pressure-ordinary.accdb",
+        "bytes": 401408,
+        "sha256": "09662f47e8c7e1c5e30b661feb3e4a2c03866df9adee169642f0941ab7e07dc4"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-Guid-D-pressure-ordinary-facts.json",
+        "bytes": 1409,
+        "sha256": "455d4b0c356d2ea62e8837b8f704e1d36ec8092bb8dafbdeae162984ee8f4009"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-Guid-D-pressure-ordinary.accdb",
+        "bytes": 401408,
+        "sha256": "09662f47e8c7e1c5e30b661feb3e4a2c03866df9adee169642f0941ab7e07dc4"
+      },
+      "rows": 159,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 158,
+        "new_data": [],
+        "new_indexes": [
+          96,
+          97
+        ],
+        "suffix": [
+          96,
+          97
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 97,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenScore-AA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AA-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "5dae08cbf71f2aace7ff088665f9bd27f02e042bb6a1150edb99f41ae4290062"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-AA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "380e2c53514af4fb0f768d6d0979b3fc6bf8692d13522c93d8cbeb861ddf6b2d"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "6422903050432f4613340a886d5e5faa7c3638f8850ac93234bfafdb5084b8bd"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AA-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-AA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "6422903050432f4613340a886d5e5faa7c3638f8850ac93234bfafdb5084b8bd"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenScore-AD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "5c5d4afa2f3c76ffa8c295344fb532a8d2f68e51638757fdcf2f24e7c98ff0e0"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-AD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "cbd11b31b63d926582d308ee5af997eedefeaf24acd8086e25b38777a5e4545e"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "e3e3537bf4341e10d6720b2d1d6d738d95179c5a4ddeb09ee4e5c2d2834bc8d4"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-AD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "e3e3537bf4341e10d6720b2d1d6d738d95179c5a4ddeb09ee4e5c2d2834bc8d4"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenScore-DA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-DA-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "b866068a6342e624e5599f2fdc75b3ef7b7071ace60a4ab180cfa5dbd7e87e74"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-DA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-DA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "1a7a00d9e1012fbdbe6816873c8964b814c81e3fec95c7657b78faa7642650ef"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-DA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "f9ab516155cb16f32186ff95d180c6d0e1ebd1a87e20d5135ffab1a9d4edd313"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-DA-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-DA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "f9ab516155cb16f32186ff95d180c6d0e1ebd1a87e20d5135ffab1a9d4edd313"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenScore-DD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-DD-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "5355e5df2845b09cecbf199ebba50fbfc08160dda2ed49d9312819fa49416152"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-DD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-DD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "7bcc8ea7c6ef9a3701e92430cafe6200c52aab6184032aa222aacd90fd9ae3e6"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-DD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "aeb2ec9c8573a2f202599cc046bda286c906e3e9dc31eb89d386961a62c4e72d"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-DD-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-DD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "aeb2ec9c8573a2f202599cc046bda286c906e3e9dc31eb89d386961a62c4e72d"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-ScoreThenGuid-AA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AA-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "0b09281ac9e1a0f00451660e0ea03682c4fb37629400d129adefccae2ecc3b50"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-AA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "754dab9c41e9ddadb43f0616491ee1efc3162403f8bb8adc7a16debbec9fb0e8"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "8269c8784ea938a757e121264b250656ab9e41b37b7c90b88ea4fcd70ad4ef09"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AA-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-AA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "8269c8784ea938a757e121264b250656ab9e41b37b7c90b88ea4fcd70ad4ef09"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-ScoreThenGuid-AD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "86d674ebe0a8dee88a2e209e28242332bba983393ab7707ece9c525b3c2e54c9"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-AD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "2747939356d151959c2f5a8bc7d86d3d8a4b19b3f6d4f48174daed0670362c0c"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "f037632cd91dca115a1e9f9267a9de4240fa53de06a5f2d2d51f6b8c11eb4089"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-AD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "f037632cd91dca115a1e9f9267a9de4240fa53de06a5f2d2d51f6b8c11eb4089"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-ScoreThenGuid-DA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-DA-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "edb8afccaae2353bba699d5ca6051c03686dff2872b5b44321acccdab9f7deda"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-DA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-DA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "c4566ecf02ddc18d8886c244e781a610636ae6c4e916226803ffad85c5fb68e5"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-DA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "7e842d1378f12b4a9184e513b9f674164fdbf5cf6523237ba085b2885853769a"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-DA-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-DA-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "7e842d1378f12b4a9184e513b9f674164fdbf5cf6523237ba085b2885853769a"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-ScoreThenGuid-DD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-DD-pressure-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "835045273db64c9c9d5968e2ec234ef1300719074cb109dcfd5d336a1e7318d4"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-DD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-DD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "ac3087db238f89e22822df91d7be39602b00335e4852716b6e90e2b776b6bf3c"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-DD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "0cafb5c57ab14ef4f601558192ed0fd8b270b4d696a18e93b7a3f3c2a3b0fde5"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-DD-pressure-ordinary-facts.json",
+        "bytes": 1407,
+        "sha256": "699129ccf85aa1b05f95ee38de36ebce5e3746c3998f51fd0932f371c6865dd9"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-DD-pressure-ordinary.accdb",
+        "bytes": 397312,
+        "sha256": "0cafb5c57ab14ef4f601558192ed0fd8b270b4d696a18e93b7a3f3c2a3b0fde5"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          95,
+          96
+        ],
+        "suffix": [
+          95,
+          96
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 95,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 96,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2016-GuidThenScore-AD-fitted-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "6db68d365572ccaca857cfa382352a5d2e84e7b4d2e2749580adc1b4880eae6f"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-AD-fitted-ordinary.tsv",
+        "bytes": 180,
+        "sha256": "8f7e9ffe0e3178b08788bd5f05c889b5029134c0796911efd884e37944096883"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary-generate.stdout",
+        "bytes": 512,
+        "sha256": "8c36a8d583b7e70ed59f1d74d3e9fb4d8678209d80f9abbbd1f0b68ebaf5de56"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "f6a88e75aead4eafa4e3e97daf2abeba9d5e93c3fc3e2b79817f2ffe5698f7c6"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary-facts.json",
+        "bytes": 1330,
+        "sha256": "9ff5511f944e7cb1b2ba9a3b0cbd00c606d26c69aa6baa71b6b54998b058ab8f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "f6a88e75aead4eafa4e3e97daf2abeba9d5e93c3fc3e2b79817f2ffe5698f7c6"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-GuidThenScore-AD-fitted-unique",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-source.accdb",
+        "bytes": 389120,
+        "sha256": "8e43c16c89129ea941bda825025dab0f9142aeed6c6b929a0083bc1cd3286c96"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-AD-fitted-unique.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-generate.stdout",
+        "bytes": 510,
+        "sha256": "513e08a466d591aacd59020334b5fdb5df5b8727740d01bf7a1426e3fc016ec7"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-unique.accdb",
+        "bytes": 389120,
+        "sha256": "c402974cca87d27ed29170a8ee9cdc1e6b767e817576101df2f80711594eb887"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-unique-facts.json",
+        "bytes": 1330,
+        "sha256": "cf66b2c4f4ece6c0e791050c5066af1fc9281a7b9247978ee1d2147c1bc66f85"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-AD-fitted-unique.accdb",
+        "bytes": 389120,
+        "sha256": "c402974cca87d27ed29170a8ee9cdc1e6b767e817576101df2f80711594eb887"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-GuidThenScore-AD-fitted-unique-ignored",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored-source.accdb",
+        "bytes": 389120,
+        "sha256": "7bf2a7f850d251c5bf05ba2b588c420cc80b9c1945d3724649fd388229a8a84a"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-GuidThenScore-AD-fitted-unique-ignored.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored-generate.stdout",
+        "bytes": 518,
+        "sha256": "36a7c5e4da9ccb3c4aeb20eea44f410256b13fdc5972232fc3cb3e0da522969a"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored.accdb",
+        "bytes": 389120,
+        "sha256": "abf9592d3e4997f26d587572d8f43741dd841160e4812b54796d2e5e64eb8a0f"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored-facts.json",
+        "bytes": 1328,
+        "sha256": "0f1cb006a71d58bb3158d5dfd2f2790021626a4f8a2689273cc9b7525ac84c09"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored.accdb",
+        "bytes": 389120,
+        "sha256": "abf9592d3e4997f26d587572d8f43741dd841160e4812b54796d2e5e64eb8a0f"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ScoreThenGuid-AD-fitted-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary-source.accdb",
+        "bytes": 389120,
+        "sha256": "faa5ec71349b21353449260a47f27832a13d77414b53bf96d7ec7a2773e8e4ca"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-AD-fitted-ordinary.tsv",
+        "bytes": 180,
+        "sha256": "8f7e9ffe0e3178b08788bd5f05c889b5029134c0796911efd884e37944096883"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary-generate.stdout",
+        "bytes": 512,
+        "sha256": "3a65eec152babc97a90e00a3fbf7ee21b1cf4503d605aceca6ab38ad30c1ce87"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "c53b30f3949c7b864c488d926e5305a8bdd8a44a790fcb0f05808ae207f090b8"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary-facts.json",
+        "bytes": 1330,
+        "sha256": "9ff5511f944e7cb1b2ba9a3b0cbd00c606d26c69aa6baa71b6b54998b058ab8f"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary.accdb",
+        "bytes": 389120,
+        "sha256": "c53b30f3949c7b864c488d926e5305a8bdd8a44a790fcb0f05808ae207f090b8"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ScoreThenGuid-AD-fitted-unique",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-source.accdb",
+        "bytes": 389120,
+        "sha256": "d39afd860d4b6e6072e575b29293c1a62f9e829c8cf5235dbd5ae6e882d65958"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-AD-fitted-unique.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-generate.stdout",
+        "bytes": 510,
+        "sha256": "0204f5f5adc48a1149b72d9c8f1124bcefc4b826717572f5f324f4dad3b2f932"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique.accdb",
+        "bytes": 389120,
+        "sha256": "af74a53ca37ca38e8a7fcafb1de77890a7d63956fbc1c80518b5a282f068ed40"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-facts.json",
+        "bytes": 1330,
+        "sha256": "cf66b2c4f4ece6c0e791050c5066af1fc9281a7b9247978ee1d2147c1bc66f85"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique.accdb",
+        "bytes": 389120,
+        "sha256": "af74a53ca37ca38e8a7fcafb1de77890a7d63956fbc1c80518b5a282f068ed40"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2016-ScoreThenGuid-AD-fitted-unique-ignored",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored-source.accdb",
+        "bytes": 389120,
+        "sha256": "83421aac0d51714f4293a013364bb71c0612659c93d33dbf0f9838c3a1e7e9f2"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2016-ScoreThenGuid-AD-fitted-unique-ignored.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored-generate.stdout",
+        "bytes": 518,
+        "sha256": "bfbc08c9fa5a009d3cd6ac963ca3ced0ee134c2839c709230d7c6d230c1875d7"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored.accdb",
+        "bytes": 389120,
+        "sha256": "3851c5b55ca23cfc44052cf716adc83172c8ee093cde4e8fbe49121406f40c5e"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored-facts.json",
+        "bytes": 1328,
+        "sha256": "0f1cb006a71d58bb3158d5dfd2f2790021626a4f8a2689273cc9b7525ac84c09"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored.accdb",
+        "bytes": 389120,
+        "sha256": "3851c5b55ca23cfc44052cf716adc83172c8ee093cde4e8fbe49121406f40c5e"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-Guid-A-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-source.accdb",
+        "bytes": 466944,
+        "sha256": "3ccecfaa6865cecdc932bf239dad0bdfeb770361ef90e0d0d149f91979b1837e"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-Guid-A-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "d6ce2b5c80c7b97f9a3e1e32021e0a3a9c49230df604a4244341d6800c490d76"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-generate.stdout",
+        "bytes": 8484,
+        "sha256": "bea4d6a824e60de56a0b29645dad15e9c32898786b50dcc83c1333645be962bf"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-Guid-A-pressure-ordinary.accdb",
+        "bytes": 475136,
+        "sha256": "f375a9d31da0d592f5acc91bbf6ab253f223a408249620ada1e92c93338c4a66"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-Guid-A-pressure-ordinary-facts.json",
+        "bytes": 1421,
+        "sha256": "64dcfe5c3ac5ed508a1d880c65495b3223e1605309928b89964ef82009048ab1"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-Guid-A-pressure-ordinary.accdb",
+        "bytes": 475136,
+        "sha256": "f375a9d31da0d592f5acc91bbf6ab253f223a408249620ada1e92c93338c4a66"
+      },
+      "rows": 159,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 158,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-Guid-D-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-source.accdb",
+        "bytes": 466944,
+        "sha256": "2cd3572d7ec08f5d538a4733d06edc4d8400838a76765bb0a828b343e4dc681d"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-Guid-D-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "d6ce2b5c80c7b97f9a3e1e32021e0a3a9c49230df604a4244341d6800c490d76"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-generate.stdout",
+        "bytes": 8484,
+        "sha256": "06023f36f487c524ccba01c72acf3753a9a3ea5f3c6e223e351e910fd9eb0589"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-Guid-D-pressure-ordinary.accdb",
+        "bytes": 475136,
+        "sha256": "fbc4b26cb35851d56fc71fb69ead074431497dda409ee8c3c217645e77129307"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-Guid-D-pressure-ordinary-facts.json",
+        "bytes": 1421,
+        "sha256": "64dcfe5c3ac5ed508a1d880c65495b3223e1605309928b89964ef82009048ab1"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-Guid-D-pressure-ordinary.accdb",
+        "bytes": 475136,
+        "sha256": "fbc4b26cb35851d56fc71fb69ead074431497dda409ee8c3c217645e77129307"
+      },
+      "rows": 159,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 158,
+        "new_data": [],
+        "new_indexes": [
+          114,
+          115
+        ],
+        "suffix": [
+          114,
+          115
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 115,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenScore-AA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AA-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "bc77c8ae9d5e9749e43f7ab3f443a9f61a2b2971a87ec55c828f4e2dbd9978ce"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-AA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "07d80b7b2bd82ea616d33df580b40efd1acbbefd83625cbe5cf8a8bfe7525188"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "ba69cb0cbc7045de6e97a286efbb2c45208cb4015e1bec5090a32872013ddc30"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AA-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-AA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "ba69cb0cbc7045de6e97a286efbb2c45208cb4015e1bec5090a32872013ddc30"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenScore-AD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "b3ac2cca95ef1a900ef38f40efeae61d4cf3b2eb2bab7643de92fb17667f37b7"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-AD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "ecbb59b1b47b714a1992ec7d63aac84b88e565b2865aa0c9a995e6be9782bb05"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "3567c9055863069a671d5d651544a0abc2e783c207626d918cefd182dcd6789c"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-AD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "3567c9055863069a671d5d651544a0abc2e783c207626d918cefd182dcd6789c"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenScore-DA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-DA-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "1f31f9ab3881cbcfb94f499daa9821adebdc0217a63e46975afc20add35e42f9"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-DA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-DA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "a409a9e8aa5ad54874d812b8b6daa5fe01f4f5b0f2b90802baf19a487a2e9b58"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-DA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "e945d594eb41dc71f0994b2356fad0970beb79e54be0fd4d0593f73f79bd795b"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-DA-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-DA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "e945d594eb41dc71f0994b2356fad0970beb79e54be0fd4d0593f73f79bd795b"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenScore-DD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-DD-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "7c015fa719d5d1d59800c35695d92aeca129b6e88be71d00aeda53ade68c0d0d"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-DD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-DD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "6289afbad896b0e97da7ceb99b6a66e64652c578f798abfcfac29b80da6d804c"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-DD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "2b32e11db9b18ec1d0dcef3bfe4c34a9ccfa26a2620b196d1506f2f3562f9b14"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-DD-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-DD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "2b32e11db9b18ec1d0dcef3bfe4c34a9ccfa26a2620b196d1506f2f3562f9b14"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-ScoreThenGuid-AA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AA-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "24ec3d5e1b6128508faa9c8884d8ee92723e703f1fa39c20bc6e8bd90651564c"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-AA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "8090aec0a3b8f8459bea98f8ddb1fdb23401cab36609b111dc37ab11119bde76"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "0c02910ba32f6a6786bedd395289aa10b53c842dcde10288dfeff2f770be98b3"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AA-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-AA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "0c02910ba32f6a6786bedd395289aa10b53c842dcde10288dfeff2f770be98b3"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-ScoreThenGuid-AD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "f1514f01fcac176a159316c5988b5b8b34098d63a0071e352f9b8bdaeba59744"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-AD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "bd92d957aad9c807cf636fcb057b8fb117b4210d17a7f7fd05b21413ed452f73"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "01dd756f8d853ef68c071423f9c2b56d336842d4b6141768372b081cec47f242"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-AD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "01dd756f8d853ef68c071423f9c2b56d336842d4b6141768372b081cec47f242"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-ScoreThenGuid-DA-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-DA-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "8bbd9d99b47200e4419e7ff532ac85409ff7f8d07299fb9f9e0659d9355eab94"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-DA-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-DA-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "f01051ebf2712f44e7d541f2b1980852e5d361891fb0e42e82d86b81f004ce39"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-DA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "3eb94b5223d6367287bdadb3ac1696e7e132b6119cdec6fb83dbb974a5c0a02e"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-DA-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-DA-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "3eb94b5223d6367287bdadb3ac1696e7e132b6119cdec6fb83dbb974a5c0a02e"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-ScoreThenGuid-DD-pressure-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-DD-pressure-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "a8fc1c0541ea8c19ecd8440c1d92e38c8917ec26cadbdf70c3b5eb0e8a864972"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-DD-pressure-ordinary.tsv",
+        "bytes": 61,
+        "sha256": "f2e3c00eb4826a8a49554f2821258f742dd20f4000196d1fdfc881da609a97d4"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-DD-pressure-ordinary-generate.stdout",
+        "bytes": 8220,
+        "sha256": "c002c9583af36828907203fba942fe13cd0aaa5abbd1ed5e5ab16210e82ef447"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-DD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "333244431913bd7cb7f2bb08bae8e5f6a08420d3dd9a9d29ee2c6e87b122ca9f"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-DD-pressure-ordinary-facts.json",
+        "bytes": 1422,
+        "sha256": "b30e3a82e09bab81b530351a932396631d19cf84780591ee8fdbd497c2b22b8e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-DD-pressure-ordinary.accdb",
+        "bytes": 471040,
+        "sha256": "333244431913bd7cb7f2bb08bae8e5f6a08420d3dd9a9d29ee2c6e87b122ca9f"
+      },
+      "rows": 130,
+      "transition": {
+        "inserted_rows": 1,
+        "counter_deltas": [
+          1,
+          1
+        ],
+        "source_rows_preserved": 129,
+        "new_data": [],
+        "new_indexes": [
+          113,
+          114
+        ],
+        "suffix": [
+          113,
+          114
+        ]
+      },
+      "index_allocations": [
+        {
+          "physical": 1,
+          "page": 113,
+          "purpose": "INDEX"
+        },
+        {
+          "physical": 1,
+          "page": 114,
+          "purpose": "INDEX"
+        }
+      ]
+    },
+    {
+      "id": "V2019-GuidThenScore-AD-fitted-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "b2b7eb48bc27933f6f12a7f704fd68cb20322c827150a42edc93b24b74fac565"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-AD-fitted-ordinary.tsv",
+        "bytes": 180,
+        "sha256": "8f7e9ffe0e3178b08788bd5f05c889b5029134c0796911efd884e37944096883"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary-generate.stdout",
+        "bytes": 512,
+        "sha256": "db26f9cab86e389bbb69ae5c5d1bda70c350c5bc958ba22113714fe51c3d8475"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "e7c2ddd0d59718bac95ae8855c6e58edfc5f16fa9be90952225e9da92b1ae5d9"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary-facts.json",
+        "bytes": 1339,
+        "sha256": "4c7d00a9579a14dab5a226f0fa8628cdc8958569eeaed5a49191424f71b7b2ba"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "e7c2ddd0d59718bac95ae8855c6e58edfc5f16fa9be90952225e9da92b1ae5d9"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-GuidThenScore-AD-fitted-unique",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-source.accdb",
+        "bytes": 462848,
+        "sha256": "3def0fe4cea48ca7e7d4e8da16bb37829ee6e43301d0c23bf840c56201891c3d"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-AD-fitted-unique.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-generate.stdout",
+        "bytes": 510,
+        "sha256": "c9db3318d4e59f55e9105af7aca448567978d63660d342e99f19a7309ff744ae"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-unique.accdb",
+        "bytes": 462848,
+        "sha256": "148e35425c9cf44ffaf52594c04cbffe7b8502fcb91821a25fc9b14378bc3709"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-unique-facts.json",
+        "bytes": 1339,
+        "sha256": "49ae0ae4a4e15eef257b5a6a0538a4835fc615746db79191de3b83050868ca52"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-AD-fitted-unique.accdb",
+        "bytes": 462848,
+        "sha256": "148e35425c9cf44ffaf52594c04cbffe7b8502fcb91821a25fc9b14378bc3709"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-GuidThenScore-AD-fitted-unique-ignored",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored-source.accdb",
+        "bytes": 462848,
+        "sha256": "8dc4610dd522482ae24f0ada1b81a031e6820562800485718fe2be2dccf860d2"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-GuidThenScore-AD-fitted-unique-ignored.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored-generate.stdout",
+        "bytes": 518,
+        "sha256": "888f2395226ab4d320771c15abf2312a53c3eda41648883e6c5de3482b2220f7"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored.accdb",
+        "bytes": 462848,
+        "sha256": "52cbe0d151bd21adf1836aed003891515e8408fd1bb6838f01ccd2d5635fec8c"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored-facts.json",
+        "bytes": 1337,
+        "sha256": "5feabf8ec5a5a31096ffb0386e75667be2f75fde648380fc626297f540b32d65"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored.accdb",
+        "bytes": 462848,
+        "sha256": "52cbe0d151bd21adf1836aed003891515e8408fd1bb6838f01ccd2d5635fec8c"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ScoreThenGuid-AD-fitted-ordinary",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary-source.accdb",
+        "bytes": 462848,
+        "sha256": "0f0e5f0bd500dc242e8ee9459c737eb660135cd20ba875e6649ecd69747dd565"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-AD-fitted-ordinary.tsv",
+        "bytes": 180,
+        "sha256": "8f7e9ffe0e3178b08788bd5f05c889b5029134c0796911efd884e37944096883"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary-generate.stdout",
+        "bytes": 512,
+        "sha256": "6deb51840ea45f2e29502fdf070d6a5a39ac6e8501770d200722d74249242925"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "aba95edc9d91fc1e910ed18f6483f489671aea2a8ad66266c81601ccff5cb808"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary-facts.json",
+        "bytes": 1339,
+        "sha256": "4c7d00a9579a14dab5a226f0fa8628cdc8958569eeaed5a49191424f71b7b2ba"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary.accdb",
+        "bytes": 462848,
+        "sha256": "aba95edc9d91fc1e910ed18f6483f489671aea2a8ad66266c81601ccff5cb808"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          0
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ScoreThenGuid-AD-fitted-unique",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-source.accdb",
+        "bytes": 462848,
+        "sha256": "1f4625574b692fddca25f9cc45cb058add8015d3ecbe0c01b38b738958e15beb"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-AD-fitted-unique.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-generate.stdout",
+        "bytes": 510,
+        "sha256": "190859119c7dd9e260c9a5e66f1eff5b63fa564655ca9c717c55bb9473eb6cc6"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique.accdb",
+        "bytes": 462848,
+        "sha256": "e70ff2bf7d2e7a250d4e003cea3157e99187e4265ac4f81afc9dcfe7dcbd92f8"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-facts.json",
+        "bytes": 1339,
+        "sha256": "49ae0ae4a4e15eef257b5a6a0538a4835fc615746db79191de3b83050868ca52"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique.accdb",
+        "bytes": 462848,
+        "sha256": "e70ff2bf7d2e7a250d4e003cea3157e99187e4265ac4f81afc9dcfe7dcbd92f8"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    },
+    {
+      "id": "V2019-ScoreThenGuid-AD-fitted-unique-ignored",
+      "source": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored-source.accdb",
+        "bytes": 462848,
+        "sha256": "9e6d9c446a4bd324b7ff430e95c0e7720b513cc79cbe593dfeef3ee75b832f30"
+      },
+      "requests": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-next-20261028/requests/V2019-ScoreThenGuid-AD-fitted-unique-ignored.tsv",
+        "bytes": 180,
+        "sha256": "cfe01e8f7f7b91a9107b2c8555e8ca3c3b02072415f7c0cf47295604df74e6f7"
+      },
+      "encoder_observations": {
+        "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored-generate.stdout",
+        "bytes": 518,
+        "sha256": "a224bacd106ea2da8ff34b2250bd9a8004aa51b154833ff363b6f6fa1d5f89c6"
+      },
+      "expected": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored.accdb",
+        "bytes": 462848,
+        "sha256": "e5a1c07055c134c8d72728920a5d20137c54ec58f3acb87286c1cc7c92580195"
+      },
+      "expected_facts": {
+        "path": ".cache/ace16-guid-tuple-index-insert-expected-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored-facts.json",
+        "bytes": 1337,
+        "sha256": "5feabf8ec5a5a31096ffb0386e75667be2f75fde648380fc626297f540b32d65"
+      },
+      "candidate": {
+        "path": ".cache/ace16-guid-tuple-index-insert-candidates-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored.accdb",
+        "bytes": 462848,
+        "sha256": "e5a1c07055c134c8d72728920a5d20137c54ec58f3acb87286c1cc7c92580195"
+      },
+      "rows": 11,
+      "transition": {
+        "inserted_rows": 5,
+        "counter_deltas": [
+          5,
+          3
+        ],
+        "source_rows_preserved": 6,
+        "new_data": [],
+        "new_indexes": [],
+        "suffix": []
+      },
+      "index_allocations": []
+    }
+  ]
+}

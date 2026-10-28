@@ -30,8 +30,13 @@ NULL uniqueness, ignored membership and 198-byte ten-GUID node bounds. An initia
 projection-order defect was corrected without changing source/expected images;
 an independent source control now rejects same-count wrong-field membership.
 Strict ACE Clippy across all targets/features, minimal compilation, formatting
-and dependency/documentation guards pass. Independent original-file comparisons
-for these keys remain preparation work; no native Access qualification is claimed.
+and dependency/documentation guards pass. Thirty-two original-file source/request
+images now match first-attempt committed-producer candidates before 64 fresh
+independent getter/map calls pass. They preserve 2,768 old rows and add 80, with
+5,684 physical key/ROW pairs. The source/reference phase separately passes 193
+commands. This file corpus covers single GUID and two-component GUID/Int32;
+ten-component coverage remains literal engineering controls. No native Access
+qualification is claimed.
 See [the fixed-key contract](testing/ACE16_FIXED_TUPLE_INSERTS.md).
 
 ## Additional scalar secondary INSERT keys
