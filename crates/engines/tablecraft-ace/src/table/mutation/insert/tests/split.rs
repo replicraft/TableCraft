@@ -1,11 +1,11 @@
 //! Public INSERT candidates checked against independent signed-key whole images.
 use super::model as base;
-use crate::{EditError, RowInsert, WriteBlocker, inspect_table_index_counter, read_table};
+use crate::{RowInsert, inspect_table_index_counter, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
-mod model;
+pub(super) mod model;
 
 fn checked(bytes: &[u8], expected: &[Vec<Value>], aliases: bool, counter: u32) {
     base::checked(bytes, expected.len(), if aliases { 2 } else { 1 });
@@ -79,7 +79,7 @@ fn full_data_insert_composes_data26_right27_left28_and_shared_global_bits() {
 }
 
 #[test]
-fn a_healthy_split_result_refuses_the_next_insert_into_its_height1_primary() {
+fn a_healthy_split_result_accepts_a_fitted_followup_without_changing_its_root() {
     for code in [5, 6] {
         let source = model::source(code, true, false);
         checked(&source.bytes, &source.rows, true, 451);
@@ -98,19 +98,25 @@ fn a_healthy_split_result_refuses_the_next_insert_into_its_height1_primary() {
             .unwrap();
         model::assert_image(candidate.candidate_bytes(), &expected);
         checked(candidate.candidate_bytes(), &rows, true, 452);
-        let error = base::capture(candidate.candidate_bytes())
+        let followup_values = vec![Value::Int32(227), Value::Binary(Vec::new())];
+        let followup = base::capture(candidate.candidate_bytes())
             .preview_ace16_insert_rows(
                 "Items",
-                &[RowInsert::new(vec![
-                    Value::Int32(227),
-                    Value::Binary(Vec::new()),
-                ])],
+                &[RowInsert::new(followup_values.clone())],
                 &mut base::budget(),
                 &|| false,
             )
-            .err()
             .unwrap();
-        assert_eq!(error, EditError::Unsupported(WriteBlocker::IndexedColumn));
+        rows.push(followup_values);
+        checked(followup.candidate_bytes(), &rows, true, 453);
+        assert_eq!(
+            followup.candidate_bytes().len(),
+            candidate.candidate_bytes().len()
+        );
+        assert!(
+            followup.candidate_bytes()[13 * base::PAGE..14 * base::PAGE]
+                == candidate.candidate_bytes()[13 * base::PAGE..14 * base::PAGE]
+        );
         model::assert_image(candidate.candidate_bytes(), &expected);
     }
 }

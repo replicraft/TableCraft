@@ -24,9 +24,11 @@ This admission does not establish absence of unknown data macros.
 Exactly one physical unique, required, ascending Int32 primary index is admitted.
 Qualified logical aliases share that physical identity. An original root leaf
 may grow into a [retained root and two fresh leaves](ACE16_INSERT_ROOT_SPLITS.md).
-Other physical indexes, ignored-NULL profiles, additional key fields, non-leaf
-source roots and splits whose halves cannot fit refuse. Original records and
-their logical ROW references remain intact.
+An existing height-one source with exactly two leaves also admits
+[fitted insertions under its original bound](ACE16_INSERT_HEIGHT_ONE.md).
+Other physical indexes, ignored-NULL profiles, additional key fields, broader
+source trees, overflowing existing child leaves and splits whose halves cannot
+fit refuse. Original records and their logical ROW references remain intact.
 
 ## Placement, index membership and counters
 
@@ -44,8 +46,10 @@ the original map authority and represented global free-page coverage.
 The primary receives the exact new key/ROW pairs, preserving its root identity
 and unrelated residue bytes. Duplicate original or batch primary values retain
 typed uniqueness failures. Root-leaf growth uses a separate cardinality-aware
-continuation; it does not invoke UPDATE key preparation or its audit. Larger
-trees and oversized halves remain explicit failures.
+continuation; it does not invoke UPDATE key preparation or its audit. Fitted
+height-one insertions preserve the original inclusive separator and both child
+identities; only affected fitting leaves change. Larger trees, existing child
+overflow and oversized halves remain explicit failures.
 
 The declared table count increases by the number of inserted rows. The actual
 [historical physical index counter](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)

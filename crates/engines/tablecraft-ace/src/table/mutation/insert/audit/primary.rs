@@ -1,4 +1,5 @@
 //! Original-wire primary membership and historical-counter certification.
+mod height_one;
 mod split;
 use super::super::Staged;
 use super::{ImageProof, Row, copied, reserve};
@@ -14,7 +15,7 @@ use crate::{
     inspect_table_index_counter,
     table::indexes::{
         header::IndexHeader,
-        page::{ENTRY_START, LEAF},
+        page::{ENTRY_START, LEAF, NODE},
     },
 };
 use std::{io::Cursor, mem::offset_of, ops::Range};
@@ -50,17 +51,26 @@ pub(super) fn prove(
         .get(root.clone())
         .ok_or(EditError::Preservation)?;
     let header = IndexHeader::read(original)?;
-    if header.kind != LEAF
+    let source_leaf =
+        header.kind == LEAF && header.tail.get() == 0 && header.qualified_for_update(0);
+    let source_height_one =
+        header.kind == NODE && header.tail.get() != 0 && header.qualified_for_update(1);
+    if (!source_leaf && !source_height_one)
         || header.version != INDEX_VERSION
         || header.owner.get() != checked.schema().definition_page()
         || header.previous.get() != 0
         || header.next.get() != 0
-        || header.tail.get() != 0
-        || !header.qualified_for_update(0)
     {
         return Err(EditError::Preservation);
     }
-    let (mut entries, old_active) = decode(original, reader)?;
+    let (mut entries, old_active) = if source_leaf {
+        decode(original, reader)?
+    } else {
+        (
+            height_one::original(image, index, checked.schema().definition_page(), reader)?,
+            0,
+        )
+    };
     let original_count = entries.len();
     if original_count != checked.rows() {
         return Err(EditError::Preservation);
@@ -110,35 +120,8 @@ pub(super) fn prove(
             return Err(EditError::Preservation);
         }
     }
-    let rendered = if rows.is_empty() {
-        Some((copied(original, reader)?, old_active))
-    } else {
-        render(original, &entries, reader)?
-    };
-    if let Some((after, active)) = rendered {
-        if !staged.indexes.added.is_empty()
-            || !staged.indexes.promotions.is_empty()
-            || !staged.indexes.rebases.is_empty()
-        {
-            return Err(EditError::Preservation);
-        }
-        patches(
-            original,
-            &after,
-            root.start,
-            old_active.max(active),
-            staged,
-            rows.is_empty(),
-            reader,
-        )?;
-        reader.work(PAGE_BYTES)?;
-        proof
-            .bytes
-            .get_mut(root)
-            .ok_or(EditError::Preservation)?
-            .copy_from_slice(&after);
-    } else {
-        let growth = split::derive(
+    if source_height_one {
+        let fitting = height_one::derive(
             image,
             index,
             checked.schema().definition_page(),
@@ -146,28 +129,70 @@ pub(super) fn prove(
             proof,
             reader,
         )?;
-        growth.compare(index, &staged.indexes, proof, reader)?;
-        let mut reservations = staged.data.append.indexes();
-        for expected in [growth.right, growth.left] {
-            let actual = reservations.next().ok_or(EditError::Preservation)?;
-            if actual.number != expected
-                || actual.physical != index.data_number()
-                || actual.usage != index.usage_map()
+        fitting.compare(&staged.indexes, proof, reader)?;
+        if staged.data.append.indexes().next().is_some() {
+            return Err(EditError::Preservation);
+        }
+    } else {
+        let rendered = if rows.is_empty() {
+            Some((copied(original, reader)?, old_active))
+        } else {
+            render(original, &entries, reader)?
+        };
+        if let Some((after, active)) = rendered {
+            if !staged.indexes.added.is_empty()
+                || !staged.indexes.promotions.is_empty()
+                || !staged.indexes.rebases.is_empty()
             {
                 return Err(EditError::Preservation);
             }
-        }
-        if reservations.next().is_some() {
-            return Err(EditError::Preservation);
-        }
-        if let Some(promotion) = &growth.promoted {
-            staged.data.append.require_index_bitmap(
-                promotion.number,
-                index.data_number(),
-                index.usage_map(),
-                reader.budget,
-                reader.cancelled,
+            patches(
+                original,
+                &after,
+                root.start,
+                old_active.max(active),
+                staged,
+                rows.is_empty(),
+                reader,
             )?;
+            reader.work(PAGE_BYTES)?;
+            proof
+                .bytes
+                .get_mut(root)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&after);
+        } else {
+            let growth = split::derive(
+                image,
+                index,
+                checked.schema().definition_page(),
+                &entries,
+                proof,
+                reader,
+            )?;
+            growth.compare(index, &staged.indexes, proof, reader)?;
+            let mut reservations = staged.data.append.indexes();
+            for expected in [growth.right, growth.left] {
+                let actual = reservations.next().ok_or(EditError::Preservation)?;
+                if actual.number != expected
+                    || actual.physical != index.data_number()
+                    || actual.usage != index.usage_map()
+                {
+                    return Err(EditError::Preservation);
+                }
+            }
+            if reservations.next().is_some() {
+                return Err(EditError::Preservation);
+            }
+            if let Some(promotion) = &growth.promoted {
+                staged.data.append.require_index_bitmap(
+                    promotion.number,
+                    index.data_number(),
+                    index.usage_map(),
+                    reader.budget,
+                    reader.cancelled,
+                )?;
+            }
         }
     }
     counters(image, checked, index, rows.len(), staged, proof, reader)

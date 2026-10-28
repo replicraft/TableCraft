@@ -69,8 +69,10 @@ No database or JVM is started by saved verification.
 
 ## Remaining work
 
-An INSERT into an existing non-leaf source still refuses, including a second
-operation against this height-one result. Arbitrary-tree cardinality growth,
-broader key/row profiles, defaults, generated fields, required
-data macros and normal native saves remain unfinished. Independent Java results
+A later fitted INSERT into this exact height-one, two-leaf form is supported by
+the [dedicated retained-tree continuation](ACE16_INSERT_HEIGHT_ONE.md). That
+branch keeps the entire root and original bound unchanged and allocates no index
+pages. Existing child overflow, arbitrary-tree cardinality growth, broader
+key/row profiles, defaults, generated fields, required data macros and normal
+native saves remain unfinished. Independent Java results
 do not replace native Microsoft Access comparisons, which the user has deferred.
