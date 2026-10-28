@@ -1,0 +1,546 @@
+{
+  "date": "2026-10-27",
+  "scope": "Optional ACE16 INSERT splitting one overflowing child of an original height-one/two-leaf required unique ascending Int32 primary. Four authentic right-child cases; no normal native save or Microsoft Access qualification.",
+  "compiled_revision": "f5168aa65085fb76cfbb979f2d7c1b8f7a8a52d7",
+  "receipt_revision": "b683fb1efacb73729bfbffba070d34b9e6cbb0e4",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-child-split-example-build-2026-10-27.json",
+    "bytes": 150909,
+    "sha256": "790b2ae49ed57d1dcd02beeaecba6bad39fadc2bdeeff3ecb9e27f3b7d72189f"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-insert-child-split-20261027",
+    "bytes": 17910184,
+    "sha256": "c868c08c0ba8f52c5322e6c6b97e609910ad0f2f868ea4c36e2063d96be8ba2f"
+  },
+  "compiled_source_objects": 753,
+  "all_actual_phases_first_attempt": true,
+  "actual_reference_commands": 25,
+  "actual_producer_commands": 4,
+  "actual_fresh_getter_map_commands": 8,
+  "raw_reference_report": {
+    "path": ".cache/ace16-insert-child-split-reference-first-20261027/report.json",
+    "bytes": 74898,
+    "sha256": "c609c29df9be74de0276e87a97adac2f5332283f12722407577ea215a928aa45"
+  },
+  "raw_producer_report": {
+    "path": ".cache/ace16-insert-child-split-candidates-first-20261027/report.json",
+    "bytes": 52190,
+    "sha256": "338e696136c3f51015e133a84ac8d9e1b6e092fe2eb6b17ed1f389deaa7fbe15"
+  },
+  "raw_getter_report": {
+    "path": ".cache/ace16-insert-child-split-getters-first-20261027/report.json",
+    "bytes": 163342,
+    "sha256": "b91f00b4336962dcc4111a51402ca4a626768dff17a86a15a6476e2bd4a240ab"
+  },
+  "independent_plan": {
+    "path": ".cache/ace16-insert-child-split-independent-next-20261027/plan.json",
+    "bytes": 11113,
+    "sha256": "daf819a5fa82dd616a59012ae5a2a86e4d4b46c41ca41c1638d5e2e09a190a50"
+  },
+  "independent_freeze": {
+    "path": ".cache/ace16-insert-child-split-independent-next-20261027/freeze.json",
+    "bytes": 16802,
+    "sha256": "59a0704eafe7fe347860bf46b4ef238d82ce832f59683acd4574b70a067e8d7d"
+  },
+  "producer_protocol": {
+    "path": ".cache/ace16-insert-child-split-candidates-next-20261027/protocol-freeze.json",
+    "bytes": 19550,
+    "sha256": "d6ccfced8e16b98cd44e5b7b99e54d771e16ee2ed4a3f1f88f79f14280ff7584"
+  },
+  "getter_protocol": {
+    "path": ".cache/ace16-insert-child-split-getters-next-20261027/controller-freeze.json",
+    "bytes": 43449,
+    "sha256": "9f019d7fd13caa1043b208ba1409cee3a2194e85868bf408dbd850029ae6c11c"
+  },
+  "producer_binding": {
+    "path": ".cache/ace16-insert-child-split-candidates-next-20261027/binding-first.json",
+    "bytes": 150334,
+    "sha256": "67febbbd40e31b770b72c4c14db34c7821d6d0db8f226ef7a8d3da8dd5171522"
+  },
+  "getter_binding": {
+    "path": ".cache/ace16-insert-child-split-getters-next-20261027/binding-first.json",
+    "bytes": 1998,
+    "sha256": "56f25640e53731167a8d9dabcb3ea91a59cad00ed49af4d0846d817fd1b18e0a"
+  },
+  "whole_images_before_fresh_getters": true,
+  "sources_requests_goldens_executed_controllers_modified": false,
+  "after_pin_errors": [],
+  "cases": [
+    {
+      "id": "V2016-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-fitted-source.accdb",
+        "bytes": 401408,
+        "sha256": "9d22e94ac54be0340d92ee52dc35c19046e3a456363e8480ccfc44e73ed8a135"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-fitted-before-getter.stdout",
+        "bytes": 97017,
+        "sha256": "e008dafddb43a756716519096ec8f4d643a2ed74291f4732c66dbf080bc15d99"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-fitted-before-maps.stdout",
+        "bytes": 292,
+        "sha256": "f50ece0a5a077c509dbb26e937fc87433441c9e0433cef5c73e55f3036d511eb"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/requests/V2016-fitted.tsv",
+        "bytes": 18,
+        "sha256": "3df095670f9b8c872ccc0c2c36abec8ac702c1c0e8ffca684cf03e644399018b"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/expected/V2016-fitted.expected.bin",
+        "bytes": 405504,
+        "sha256": "c5b3ffeb888d30a6dab885a8073718f349756b375723e4909fc077ceac9b0157"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-child-split-candidates-first-20261027/V2016-fitted.accdb",
+        "bytes": 405504,
+        "sha256": "c5b3ffeb888d30a6dab885a8073718f349756b375723e4909fc077ceac9b0157"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2016-fitted-getter.stdout",
+        "bytes": 97152,
+        "sha256": "87ac9450f924dd871776156b272f8f546e7b3d30300b4f157fb8d12557fa6a96"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2016-fitted-maps.stdout",
+        "bytes": 292,
+        "sha256": "a40de6854766ec5ab9253056c18a846c7cd613d2572dd2f09d806b41f9c23b31"
+      },
+      "new_ROW": 24999,
+      "new_page": 97,
+      "new_slot": 167,
+      "record_bytes": 13,
+      "root": 91,
+      "left_peer": 96,
+      "retained_RIGHT": 95,
+      "new_INDEX_LEFT": 98,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        226,
+        226
+      ],
+      "root_bounds": [
+        "7f7fffffff00005ce1",
+        "7f800000e200005ec4"
+      ],
+      "fresh_prefix": 0,
+      "retained_prefix": 1,
+      "retained_active_bytes": 1809,
+      "fresh_active_bytes": 2034,
+      "source_and_final_counts": [
+        677,
+        678
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8140,
+          "before": 252,
+          "after": 248
+        },
+        {
+          "offset": 372534,
+          "before": 49,
+          "after": 177
+        }
+      ],
+      "new_DATA_pages": []
+    },
+    {
+      "id": "V2016-full84",
+      "source": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-full84-source.accdb",
+        "bytes": 458752,
+        "sha256": "324376a34433aed5158249d1df2ae20da13611d915c332829006b233ec505959"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-full84-before-getter.stdout",
+        "bytes": 325040,
+        "sha256": "7576094f31a680f070bfc3a99ef2fee49561c75da7290da16be0dd92e86c5117"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2016-full84-before-maps.stdout",
+        "bytes": 597,
+        "sha256": "c3ce7b63299ea426283204f6dc5e097ee1546e7f160d51e0f42689fc62e2735f"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/requests/V2016-full84.tsv",
+        "bytes": 186,
+        "sha256": "0468f3dc6a3b22cbb018937e024d06dbcd0c1d08883c0bdef18f4f0874773cbb"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/expected/V2016-full84.expected.bin",
+        "bytes": 462848,
+        "sha256": "569be9c5063ff15b61fb0b23b7527ad42b9976840cf714a24862f3ce0ddd40ff"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-child-split-candidates-first-20261027/V2016-full84.accdb",
+        "bytes": 462848,
+        "sha256": "569be9c5063ff15b61fb0b23b7527ad42b9976840cf714a24862f3ce0ddd40ff"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2016-full84-getter.stdout",
+        "bytes": 325511,
+        "sha256": "6202c5a6c738629370b30b3ec58598080a99b77899a0ab82dbe7aa30038e4f1b"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2016-full84-maps.stdout",
+        "bytes": 599,
+        "sha256": "c0940e5c61ce1813531644e6059d659bd7bf41006c6268bc7261c0a131a2c52a"
+      },
+      "new_ROW": 28437,
+      "new_page": 111,
+      "new_slot": 21,
+      "record_bytes": 97,
+      "root": 91,
+      "left_peer": 106,
+      "retained_RIGHT": 105,
+      "new_INDEX_LEFT": 112,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        226,
+        226
+      ],
+      "root_bounds": [
+        "7f7fffffff00006214",
+        "7f800000e200006800"
+      ],
+      "fresh_prefix": 0,
+      "retained_prefix": 1,
+      "retained_active_bytes": 1809,
+      "fresh_active_bytes": 2034,
+      "source_and_final_counts": [
+        677,
+        678
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8142,
+          "before": 255,
+          "after": 254
+        },
+        {
+          "offset": 372536,
+          "before": 0,
+          "after": 32
+        }
+      ],
+      "new_DATA_pages": []
+    },
+    {
+      "id": "V2019-fitted",
+      "source": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-fitted-source.accdb",
+        "bytes": 475136,
+        "sha256": "70626b37f9bc5893837e8e3b567368ce928967b7868122cd241b89de75451db2"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-fitted-before-getter.stdout",
+        "bytes": 97696,
+        "sha256": "3bccdcc8074bdc66a5953d50a74607a6ef76b369c211f6bf2cc549f009432561"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-fitted-before-maps.stdout",
+        "bytes": 538,
+        "sha256": "e3d0862871901607d428eb862c028ecab929a26aac5ce9ac2e6fbe8206bf3375"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/requests/V2019-fitted.tsv",
+        "bytes": 18,
+        "sha256": "3df095670f9b8c872ccc0c2c36abec8ac702c1c0e8ffca684cf03e644399018b"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/expected/V2019-fitted.expected.bin",
+        "bytes": 479232,
+        "sha256": "ca9fb00e815658ed2fe7e873c1f5ab75fce0f76be69fe105f3165a33e619c49e"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-child-split-candidates-first-20261027/V2019-fitted.accdb",
+        "bytes": 479232,
+        "sha256": "ca9fb00e815658ed2fe7e873c1f5ab75fce0f76be69fe105f3165a33e619c49e"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2019-fitted-getter.stdout",
+        "bytes": 97832,
+        "sha256": "ef6aa1ae56bf6ea22d866543d00097e36e01fd7b658e791f2076462df2fe16db"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2019-fitted-maps.stdout",
+        "bytes": 538,
+        "sha256": "10db46c90018aa424d9a8ae68c76a7874728547bc580dcffdd0719f801415502"
+      },
+      "new_ROW": 29607,
+      "new_page": 115,
+      "new_slot": 167,
+      "record_bytes": 13,
+      "root": 108,
+      "left_peer": 114,
+      "retained_RIGHT": 113,
+      "new_INDEX_LEFT": 116,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        226,
+        226
+      ],
+      "root_bounds": [
+        "7f7fffffff00006ee1",
+        "7f800000e2000070c4"
+      ],
+      "fresh_prefix": 0,
+      "retained_prefix": 1,
+      "retained_active_bytes": 1809,
+      "fresh_active_bytes": 2034,
+      "source_and_final_counts": [
+        677,
+        678
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8142,
+          "before": 240,
+          "after": 224
+        },
+        {
+          "offset": 442167,
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "new_DATA_pages": []
+    },
+    {
+      "id": "V2019-full84",
+      "source": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-full84-source.accdb",
+        "bytes": 532480,
+        "sha256": "fc4d25855c2a004e8bff19621ec767f4272c632607f795d69fbbe319798d322f"
+      },
+      "source_getter": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-full84-before-getter.stdout",
+        "bytes": 325329,
+        "sha256": "18599b771b27b03dda2145330f8afa1f0270b94cfad43f14d8551ada6769f5aa"
+      },
+      "source_maps": {
+        "path": ".cache/ace16-insert-child-split-reference-first-20261027/V2019-full84-before-maps.stdout",
+        "bytes": 845,
+        "sha256": "199127121f041670099ae575171d8360691626dee0d140130f4dc53cb60eeb24"
+      },
+      "request": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/requests/V2019-full84.tsv",
+        "bytes": 186,
+        "sha256": "0468f3dc6a3b22cbb018937e024d06dbcd0c1d08883c0bdef18f4f0874773cbb"
+      },
+      "expected_image": {
+        "path": ".cache/ace16-insert-child-split-independent-next-20261027/expected/V2019-full84.expected.bin",
+        "bytes": 536576,
+        "sha256": "4b6a9a428c45134243c43fb934ee83d7055e296e1aaf69fa8cadc654808bbb7a"
+      },
+      "actual_candidate": {
+        "path": ".cache/ace16-insert-child-split-candidates-first-20261027/V2019-full84.accdb",
+        "bytes": 536576,
+        "sha256": "4b6a9a428c45134243c43fb934ee83d7055e296e1aaf69fa8cadc654808bbb7a"
+      },
+      "fresh_getter": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2019-full84-getter.stdout",
+        "bytes": 325800,
+        "sha256": "375b4d345a8d3ca9960a0a7ced6888608139d0a8c726944e530a3737f0b81375"
+      },
+      "fresh_maps": {
+        "path": ".cache/ace16-insert-child-split-getters-first-20261027/V2019-full84-maps.stdout",
+        "bytes": 845,
+        "sha256": "296f77a970c6696b9204d6ac03899f197720cec6af625ba5c29e1e6f9dfc315b"
+      },
+      "new_ROW": 33045,
+      "new_page": 129,
+      "new_slot": 21,
+      "record_bytes": 97,
+      "root": 108,
+      "left_peer": 124,
+      "retained_RIGHT": 123,
+      "new_INDEX_LEFT": 130,
+      "root_height": 1,
+      "leaf_entries": [
+        226,
+        226,
+        226
+      ],
+      "root_bounds": [
+        "7f7fffffff00007414",
+        "7f800000e200007a00"
+      ],
+      "fresh_prefix": 0,
+      "retained_prefix": 1,
+      "retained_active_bytes": 1809,
+      "fresh_active_bytes": 2034,
+      "source_and_final_counts": [
+        677,
+        678
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8144,
+          "before": 252,
+          "after": 248
+        },
+        {
+          "offset": 442168,
+          "before": 1,
+          "after": 65
+        }
+      ],
+      "new_DATA_pages": []
+    }
+  ],
+  "totals": {
+    "final_typed_rows": 2712,
+    "final_raw_rows": 2712,
+    "final_primary_leaf_key_ROW_pairs": 2712,
+    "root_bound_key_ROW_entries": 8,
+    "complete_graph_entries": 2720,
+    "old_ROWS_preserved": 2708,
+    "logical_indexes": 4,
+    "physical_indexes": 4,
+    "source_DATA_page_observations": 40,
+    "final_DATA_page_observations": 40,
+    "original_index_page_observations": 12,
+    "final_index_page_observations": 16,
+    "new_INDEX_LEFT_pages": 4,
+    "new_DATA_pages": 0,
+    "new_bitmap_pages": 0,
+    "bytes_added": 16384,
+    "map_byte_effects": 8,
+    "table_counter_fields_incremented_once": 4,
+    "historical_counter_fields_incremented_once": 4,
+    "zero_fresh_LEFT_unused_bytes": 6328,
+    "retained_RIGHT_source_residue_bytes": 7228,
+    "retained_root_source_residue_bytes": 14360,
+    "new_empty_Binary_requests": 2,
+    "new_84byte_Binary_requests": 2,
+    "new_NULL_Binary_requests": 0,
+    "old_NULL_Binary_rows_preserved": 452,
+    "old_empty_Binary_rows_preserved": 902
+  },
+  "reference_diagnostics": {
+    "record": {
+      "path": ".cache/ace16-insert-child-split-independent-next-20261027/reference-diagnostics.json",
+      "bytes": 4141,
+      "sha256": "da8b9613fb663e10fd9f5f8b0a5495f0c9569f0543675a983c1a34641da701aa"
+    },
+    "different_bytes": 22030,
+    "meaning": "Only root/retained-target framing or residue and fresh LEFT unused padding differ. Public target prefix0 never substitutes for source-seeded engineering prefix1; complete key/ROW maps and counters agree."
+  },
+  "independent_saved_proof": {
+    "actual_first_exit": 0,
+    "private_source": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/verify.py",
+      "bytes": 16019,
+      "sha256": "1efc996d50fbeb8f0c8af1591c6e21f2e88ac223bc59fe3ea6287c4cb3fefc4f"
+    },
+    "actual_first_result": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/actual-first.json",
+      "bytes": 2213,
+      "sha256": "4f71a40bd1f26a6529460fc89e851fe5cffd3355aa59c9c77a37ca891427133a"
+    },
+    "initial_preflight_history": "A per-case request lookup was invalid for the frozen source-protocol shape; replaced only that verifier lookup with explicit canonical request bytes before actual saved proof.",
+    "initial_preflight_source": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/before-source-request-shape-correction/verify.py",
+      "bytes": 15985,
+      "sha256": "048ddc07c49e145a20d1ebc40c3b78e1ce3e0ae4b3c21d59faa76306610bfd07"
+    },
+    "initial_preflight_result": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/preflight-first.json",
+      "bytes": 80,
+      "sha256": "9d4963d6882786f9811a3dec2592a2e82911fa2102785dbbed7d07f70bf15374"
+    }
+  },
+  "maintained_verification": {
+    "default_first_exit": 0,
+    "Git_first_exit": 0,
+    "missing_evidence_first_exit": 2,
+    "pin_occurrences": 2456,
+    "distinct_paths": 681,
+    "Git": {
+      "verified": true,
+      "compiled_sources": 753,
+      "receipt_objects": 1,
+      "metadata_processes": 1
+    },
+    "default_result": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/public-first.json",
+      "bytes": 2213,
+      "sha256": "f76ea1907c5a9d70ec6a51f6e226e58dcccbf5c8d4ed0c8e68a91ac9122329dc"
+    },
+    "Git_result": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/public-git-first.json",
+      "bytes": 2267,
+      "sha256": "b917f6f7d1442e5f68bce01de00fcf2be0a575f7013ed03513e920e511ab3308"
+    },
+    "unavailable_result": {
+      "path": ".cache/ace16-insert-child-split-saved-proof-next-20261027/public-unavailable-first.json",
+      "bytes": 208,
+      "sha256": "4455f6bd1e7d575ab0eac8a0f8702e08c8a045c7240892198cfda6975646e045"
+    },
+    "new_native_JVM_Cargo_fixture_calls": 0
+  },
+  "implementation_verification": {
+    "manifest": {
+      "path": ".cache/ace16-insert-child-split-verification-20261027/manifest.json",
+      "bytes": 5589,
+      "sha256": "247c7d3308993de7f1aa8186e5fb507dbfad16d75d5ea299a60bf7d1fb6ab86a"
+    },
+    "first_focused_tests": "68 passed, zero failed; sole warning was an exhaustive Resource wildcard, removed without logic/model change.",
+    "engine_unit": "363 passed, one ignored.",
+    "doctests": "Three intended compile-fail doctests passed.",
+    "public_contract": "Four new independent functions passed first runtime, including both headers/sides/aliases/peer-fit bulk/DATA-before-INDEX EOF and resource pools.",
+    "strict_history": "First strict rejected one unused KeyRef import in the owning height-one index builder; import-only correction, retry passed. The earlier exhaustive Resource warning was separately removed without test logic/model changes.",
+    "other_checks": "Root reported minimal/rustdoc/format/dependency guard15/doclinks6019 passed. Log-derived summaries and reported statuses remain distinct in the manifest.",
+    "overlap": "Focused, unit and public batches overlap; do not sum as distinct runtime functions."
+  },
+  "maintained_tools": [
+    {
+      "path": "docs/testing/ace16_insert_child_split/verify.py",
+      "bytes": 18770,
+      "sha256": "4f250356e36c5f5966b09b3650010db20397fc992c99c3aaddf7600e1c0f9b0e"
+    },
+    {
+      "path": "docs/testing/ace16_insert_child_split/model.py",
+      "bytes": 9303,
+      "sha256": "d96857a9aaf5a18e356e5082e69812c01f668067584273b24b9a7546d9984369"
+    },
+    {
+      "path": "docs/testing/ace16_insert_child_split/reference.py",
+      "bytes": 10591,
+      "sha256": "36c5d156fa0027fc15f49333e78757a71278d4f71fdeed5fee7882592bc3677e"
+    },
+    {
+      "path": "docs/testing/ace16_insert_child_split/README.md",
+      "bytes": 6971,
+      "sha256": "ac469787d92c9a7cc9d7dd60fb90f60ba5955f703aae72744a36f3daa98b33eb"
+    }
+  ],
+  "remaining": "Actual left-child requests, bulk originals, DATA allocation during this authentic child split, map promotion, both-child overflow, parent overflow/higher trees, broader row/key/schema profiles, defaults/generated fields, required data macros and native Access saves remain outside these four outcomes; long-term ACE16 target remains unchanged.",
+  "reference_helper_promotion": {
+    "history": "Separate saved-only helper promotion exposed module-name shadowing and a checker bootstrap-literal mismatch before correction. Exact first errors and the successful replay remain preserved; executed controllers, sources, requests, models and raw reports were unchanged.",
+    "initial_module_name_error": {
+      "path": ".cache/ace16-insert-child-split-reference-next-20261027/before-public-module-name-correction/public-reference-first-check.stderr",
+      "bytes": 876,
+      "sha256": "416c00da550fbea61b49c1a8fc8ccad4b4def3b61a2725bfaee195ffc844b2c7"
+    },
+    "checker_bootstrap_error": {
+      "path": ".cache/ace16-insert-child-split-reference-next-20261027/before-private-bootstrap-literal-correction/public-reference-retry-check.stderr",
+      "bytes": 473,
+      "sha256": "9e5a0ba2858fb84dd6b81be9d640b9816fe1599258d218cb133ed000ad8e29ad"
+    },
+    "final_saved_replay": {
+      "path": ".cache/ace16-insert-child-split-reference-next-20261027/public-reference-final-check.json",
+      "bytes": 1639,
+      "sha256": "1999565eef273bbd78e52567205936774f42b55a95af535494693ab92d548e77"
+    },
+    "new_fixture_calls": 0
+  }
+}

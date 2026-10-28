@@ -104,9 +104,19 @@ expectations must be independently derived from original bytes and requests;
 public page bytes, compression and scratch are observations rather than candidate
 goldens. The public writer also changes unused bytes in the retained root and
 right child and copies nonzero padding into fresh LEFT. Engineering policy keeps
-original retained residue and zero fresh padding. Independent original-file
-engineering expectations and a committed
-producer with fresh getter acceptance remain pending. The earlier
+original retained residue and zero fresh padding.
+
+Four source/request-only engineering images were frozen before the committed
+producer build and candidate calls. All four first-attempt candidates match
+those complete images, followed by eight successful fresh independent getter/map
+calls. Across the four candidates, all 2,708 original ROWs remain intact and
+2,712 complete primary key/ROW pairs agree. Each result adds one INDEX page;
+the aggregate growth is 16,384 bytes, with no DATA or bitmap allocation. Exact
+counter deltas and the engineering prefix/residue policy remain independently
+checked, rather than borrowed from public output. The
+[evidence record](results/ace16-insert-child-splits-native-2026-10-27.json) and
+[saved-only verifier](ace16_insert_child_split/verify.py) retain the source,
+reference, complete-image and getter phases separately. The earlier
 [fitting height-one qualification](ACE16_INSERT_HEIGHT_ONE.md) and
 [root-leaf growth qualification](ACE16_INSERT_ROOT_SPLITS.md) remain separate.
 Windows/native Microsoft Access comparisons remain deferred by the user.
