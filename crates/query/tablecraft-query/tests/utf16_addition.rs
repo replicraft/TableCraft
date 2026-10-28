@@ -31,7 +31,7 @@ fn string_addition_rebinds_raw_operands_without_publishing_them_early() {
         );
     }
 
-    for sql in ["SELECT 1,ChrW(55296)+'x'", "SELECT LenB(ChrB(65)+ChrB(0))"] {
+    for sql in ["SELECT 1,ChrW(55296)+'x'", "SELECT ChrB(65)+''"] {
         let parsed = parse_query(sql, Default::default()).unwrap();
         assert_eq!(
             prepare(parsed.query(), &source)

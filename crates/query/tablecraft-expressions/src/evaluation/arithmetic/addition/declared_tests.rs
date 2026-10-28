@@ -312,15 +312,22 @@ fn strings_states_and_malformed_ranges_keep_branch_specific_admission() {
     };
     assert_eq!(value.as_bytes(), [0, 216, b'1', 0]);
     let odd = ExpressionByteOperand::Bytes(ByteString::from_owned(vec![1]).unwrap());
-    assert!(matches!(
-        evaluator.prepare_declared_expression_addition(
+    let Some(PreparedAddition::StringResult(ByteOperand::Bytes(value))) = evaluator
+        .prepare_declared_expression_addition(
             odd,
             scalar(Value::Int16(1)),
             Some(OperandDeclaration::Scalar),
-            Some(OperandDeclaration::Variant)
-        ),
+            Some(OperandDeclaration::Variant),
+        )
+        .unwrap()
+    else {
+        panic!("raw concatenated result required");
+    };
+    assert_eq!(value.as_bytes(), [1, b'1', 0]);
+    assert_eq!(
+        evaluator.publish_byte_operand(ByteOperand::Bytes(value)),
         Err(EvalError::UnrepresentableText)
-    ));
+    );
     let bad = ExpressionByteOperand::Bytes(ByteString::from_owned(vec![0, 216]).unwrap());
     assert!(matches!(
         evaluator.prepare_declared_expression_addition(

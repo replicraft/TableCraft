@@ -29,7 +29,7 @@ fn raw_concatenation_rebinds_parameters_and_publishes_only_complete_results() {
         );
     }
 
-    for sql in ["SELECT 1,ChrW(55296)&'x'", "SELECT LenB(ChrB(65)&ChrB(0))"] {
+    for sql in ["SELECT 1,ChrW(55296)&'x'", "SELECT ChrB(65)&''"] {
         let parsed = parse_query(sql, Default::default()).unwrap();
         assert_eq!(
             prepare(parsed.query(), &source)

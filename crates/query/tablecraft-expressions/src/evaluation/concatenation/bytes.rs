@@ -1,4 +1,4 @@
-//! Concatenation retains complete UTF-16 units until an explicit publication.
+//! Concatenation retains exact String bytes until an explicit publication.
 use super::Evaluator;
 use crate::{
     EvalError,
@@ -13,7 +13,6 @@ use tablecraft_core::{
 };
 use tablecraft_sql::select::Expression;
 
-const UNIT_BYTES: i32 = size_of::<u16>() as i32;
 const COPY_CHUNK_BYTES: usize = 4096;
 
 impl Evaluator<'_> {
@@ -28,8 +27,10 @@ impl Evaluator<'_> {
         self.apply_expression_concatenation(left, right)
     }
 
-    /// Join already evaluated operands, retaining raw string units. Ordinary
-    /// scalar pairs keep the existing conversion and borrowed-source path.
+    /// Join already evaluated operands, retaining exact active String bytes.
+    /// Odd fragments may form complete units after joining; Unicode consumers
+    /// still validate the resulting range. Ordinary scalar pairs keep their
+    /// existing conversion and borrowed-source path.
     pub fn apply_expression_concatenation(
         &mut self,
         left: ExpressionByteOperand,
@@ -73,12 +74,7 @@ impl Evaluator<'_> {
         match value {
             ByteOperand::Scalar(Value::Null) => Ok(None),
             ByteOperand::Scalar(Value::Text(text)) => self.encode_byte_string(&text).map(Some),
-            ByteOperand::Bytes(bytes) => {
-                if bytes.len() % UNIT_BYTES != 0 {
-                    return Err(EvalError::UnrepresentableText);
-                }
-                Ok(Some(bytes))
-            }
+            ByteOperand::Bytes(bytes) => Ok(Some(bytes)),
             _ => Err(EvalError::TypeMismatch),
         }
     }

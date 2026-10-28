@@ -36,7 +36,7 @@ fn string_addition_retains_units_and_null_without_implicit_numeric_concatenation
     }
     for (sql, expected) in [
         ("ChrW(55296)+'x'", EvalError::UnrepresentableText),
-        ("LenB(ChrB(65)+ChrB(0))", EvalError::UnrepresentableText),
+        ("ChrB(65)+''", EvalError::UnrepresentableText),
         ("ChrW(55296)+CVErr(1)", EvalError::TypeMismatch),
         ("CVErr(1)+ChrW(55296)", EvalError::TypeMismatch),
         ("ChrW(55296)+(1/0)", EvalError::DivisionByZero),
