@@ -177,7 +177,15 @@ fn entries(rows: &[(Row, u32)], settings: Settings, primary: bool) -> Vec<Vec<u8
             Some(key)
         })
         .collect::<Vec<_>>();
-    entries.sort();
+    // A variable key can be a proper prefix of another key. The ROW suffix
+    // breaks ties only after complete key comparison, as in native entries.
+    entries.sort_by(|left, right| {
+        let left_key = left.len() - 4;
+        let right_key = right.len() - 4;
+        left[..left_key]
+            .cmp(&right[..right_key])
+            .then_with(|| left[left_key..].cmp(&right[right_key..]))
+    });
     entries
 }
 

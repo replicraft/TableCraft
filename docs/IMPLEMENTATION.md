@@ -12,6 +12,16 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Variable key and ROW comparison
+
+The independent INSERT audit now orders complete key bytes before their ROW
+suffix, correcting valid descending Binary prefix keys that previously failed
+with `Preservation`. Explicit leaf/branch wire kinds keep child pointers outside
+both logical components. A causal two-layout complete-image regression and four
+wire controls pass; the original source and expected image bytes remain intact.
+Typed native codecs and the reviewed UPDATE/DELETE comparison services are
+unchanged. See the [ordering contract](testing/ACE16_VARIABLE_INDEX_INSERTS.md#key-comparison-precedes-the-row-suffix).
+
 ## Inline Memo/OLE INSERT records
 
 The separate ACE 16 INSERT preview now accepts qualified ordinary Memo/OLE

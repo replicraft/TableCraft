@@ -73,3 +73,26 @@ pass. The first Clippy attempt found a redundant test-only String conversion;
 removing it did not change image construction or runtime behavior.
 Independent original-file variable-key INSERT comparisons
 and native Microsoft Access save/reopen qualification remain separate work.
+
+## Key comparison precedes the ROW suffix
+
+The independent INSERT audit now compares complete key bytes first and the
+ROW reference only when keys tie. Sorting the concatenated key/ROW wire was
+incorrect when one variable key prefixes another: descending Binary empty
+values and FF-prefixed values could be valid in the native reader yet refused
+by the final audit. The typed native key profile already used the correct order.
+
+Audit wires now distinguish leaf entries from branch entries with a child
+pointer. Branch comparisons retain the same key/ROW boundary; child bytes do
+not become key or ROW data. Copying retains that wire kind, and constructors
+refuse undersized or nested branch forms. Source bounds still strip the child
+pointer before strict qualification; duplicate logical bounds gain no authority.
+
+A two-layout whole-image control checks existing empty/FF/zero Binary values
+and inserted FF255, FF9, empty and NULL values. Its independently built source
+and expected image pass native reading/checks before the API call. The initial
+producer call failed with `Preservation`; it now succeeds without changing those
+bytes. Four independent wire functions additionally check leaf/branch ordering,
+ROW versus child ties, decoder kinds, paid copies and short-wire refusal.
+The fixture model also uses separate key/ROW ordering. No native storage codec
+or UPDATE/DELETE ordering was changed.
