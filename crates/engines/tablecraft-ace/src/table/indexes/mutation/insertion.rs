@@ -215,14 +215,18 @@ pub(in crate::table) fn prepare(
     let mut patches = Vec::new();
     let mut requires_split = false;
     if source_height_one {
-        patches = height_one::prepare(
+        if let Some(fitting) = height_one::prepare(
             image,
             checked,
             id_column,
             &expected,
             reader.budget,
             cancelled,
-        )?;
+        )? {
+            patches = fitting;
+        } else {
+            requires_split = true;
+        }
     } else if !requests.is_empty() {
         let entries = split::leaf_entries(&expected, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, ENTRY_BUFFER>(

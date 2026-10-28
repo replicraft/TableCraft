@@ -55,9 +55,9 @@ impl NativeImage {
     /// explicit values and maintains one required unique ascending Int32 primary
     /// index, including logical aliases. An original root leaf may grow into a
     /// retained root and two fresh leaves. An existing height-one root with one
-    /// bound and two leaves admits inserts that fit those original leaves.
-    /// Deeper sources, defaults, generated fields, additional indexes and
-    /// oversized target leaves refuse. DATA and index
+    /// bound and two leaves also admits one overflowing child when its two
+    /// halves and the expanded parent fit. Deeper sources, defaults, generated
+    /// fields, additional indexes and unsupported split shapes refuse. DATA and index
     /// growth share one qualified EOF cursor and native map allocator.
     ///
     /// This does not enable normal saves or qualify required data macros or

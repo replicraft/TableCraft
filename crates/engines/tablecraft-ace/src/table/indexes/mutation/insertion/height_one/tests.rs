@@ -171,8 +171,9 @@ fn original_bound_routes_left_right_and_both_without_changing_parent_or_maps() {
             for additions in [vec![5], vec![25], vec![40], vec![5, 25, 40], vec![]] {
                 let final_keys = keys(&additions);
                 let golden = expected(&before, &final_keys);
-                let patches =
-                    prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false).unwrap();
+                let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
+                    .unwrap()
+                    .unwrap();
                 let after = compose(&before, &patches);
                 assert_image(&after, &golden);
                 assert_eq!(&after[13 * PAGE..15 * PAGE], &before[13 * PAGE..15 * PAGE]);
@@ -188,7 +189,7 @@ fn original_bound_routes_left_right_and_both_without_changing_parent_or_maps() {
 }
 
 #[test]
-fn capacity_repair_is_leaf_local_and_overflow_refuses_without_new_pages() {
+fn capacity_repair_is_leaf_local_and_overflow_requests_continuation() {
     for code in [5, 6] {
         let before = source(code, true);
         let check = checked(&before);
@@ -201,9 +202,11 @@ fn capacity_repair_is_leaf_local_and_overflow_refuses_without_new_pages() {
             u16::from_le_bytes(golden[15 * PAGE + 24..15 * PAGE + 26].try_into().unwrap()),
             1
         );
-        let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false).unwrap();
+        let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
+            .unwrap()
+            .unwrap();
         assert_image(&compose(&before, &patches), &golden);
-        assert_eq!(
+        assert!(
             prepare(
                 &image,
                 &check,
@@ -212,8 +215,8 @@ fn capacity_repair_is_leaf_local_and_overflow_refuses_without_new_pages() {
                 &mut budget(),
                 &|| false
             )
-            .err(),
-            Some(EditError::Unsupported(WriteBlocker::IndexedColumn)),
+            .unwrap()
+            .is_none()
         );
     }
 }
@@ -268,6 +271,8 @@ fn quotas_late_cancellation_and_retry_do_not_change_original() {
         .is_err()
     );
     assert_eq!(image.as_bytes(), before);
-    let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false).unwrap();
+    let patches = prepare(&image, &check, 1, &final_keys, &mut budget(), &|| false)
+        .unwrap()
+        .unwrap();
     assert_image(&compose(&before, &patches), &expected(&before, &final_keys));
 }

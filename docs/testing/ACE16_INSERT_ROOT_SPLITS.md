@@ -72,7 +72,9 @@ No database or JVM is started by saved verification.
 A later fitted INSERT into this exact height-one, two-leaf form is supported by
 the [dedicated retained-tree continuation](ACE16_INSERT_HEIGHT_ONE.md). That
 branch keeps the entire root and original bound unchanged and allocates no index
-pages. Existing child overflow, arbitrary-tree cardinality growth, broader
-key/row profiles, defaults, generated fields, required data macros and normal
+pages. [One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) now has a separate
+continuation that adds one left leaf and preserves the original right page and
+root identities. Multiple offenders, oversized halves, arbitrary-tree
+cardinality growth, broader key/row profiles, defaults, generated fields, required data macros and normal
 native saves remain unfinished. Independent Java results
 do not replace native Microsoft Access comparisons, which the user has deferred.

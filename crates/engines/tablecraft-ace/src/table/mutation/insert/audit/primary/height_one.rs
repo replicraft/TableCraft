@@ -1,4 +1,5 @@
-//! Independent fitting INSERT proof for one retained bound and two old leaves.
+//! Independent INSERT proof for one original bound and two old leaves.
+mod split;
 #[cfg(test)]
 mod tests;
 
@@ -39,6 +40,11 @@ struct Leaf {
     changed: bool,
 }
 
+pub(super) enum Change {
+    Fitted(Fitting),
+    Split(split::Growth),
+}
+
 pub(super) struct Fitting {
     root: u32,
     leaves: [Leaf; CHILDREN],
@@ -60,7 +66,7 @@ pub(super) fn derive(
     entries: &[[u8; WIRE_BYTES]],
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<Fitting, EditError> {
+) -> Result<Change, EditError> {
     reader.tick()?;
     if !std::ptr::eq(proof.original, image.as_bytes())
         || proof.bytes.len() < proof.original.len()
@@ -90,8 +96,10 @@ pub(super) fn derive(
     for (leaf, partition) in source.leaves.iter().zip(partitions) {
         let range = page_range(leaf.number)?;
         let before = image.as_bytes().get(range).ok_or(EditError::Preservation)?;
-        let after = render(before, partition, reader)?.ok_or(EditError::Preservation)?;
-        rendered.push(after);
+        rendered.push(render(before, partition, reader)?);
+    }
+    if rendered.iter().any(Option::is_none) {
+        return split::derive(image, index, source, entries, proof, reader).map(Change::Split);
     }
 
     let root_range = page_range(source.root)?;
@@ -100,9 +108,8 @@ pub(super) fn derive(
         return Err(EditError::Preservation);
     }
     let mut start: usize = 0;
-    for ((leaf, partition), (after, active)) in
-        source.leaves.iter_mut().zip(partitions).zip(rendered)
-    {
+    for ((leaf, partition), rendered) in source.leaves.iter_mut().zip(partitions).zip(rendered) {
+        let (after, active) = rendered.ok_or(EditError::Preservation)?;
         let end = start
             .checked_add(leaf.count)
             .ok_or(EditError::Preservation)?;
@@ -128,10 +135,31 @@ pub(super) fn derive(
         return Err(EditError::Preservation);
     }
 
-    Ok(Fitting {
+    Ok(Change::Fitted(Fitting {
         root: source.root,
         leaves: source.leaves,
-    })
+    }))
+}
+
+impl Change {
+    pub(super) fn compare(
+        &self,
+        actual: &PrimaryInsertion,
+        proof: &ImageProof<'_>,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        match self {
+            Self::Fitted(fitting) => fitting.compare(actual, proof, reader),
+            Self::Split(growth) => growth.compare(actual, proof, reader),
+        }
+    }
+
+    pub(super) fn growth(&self) -> Option<&split::Growth> {
+        match self {
+            Self::Fitted(_) => None,
+            Self::Split(growth) => Some(growth),
+        }
+    }
 }
 
 impl Source {

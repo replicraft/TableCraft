@@ -91,8 +91,11 @@ remains deferred by the user.
 
 ## Remaining boundary
 
-The source must have exactly the admitted height-one, two-leaf form. Additional
-children, deeper trees, child overflow requiring allocation, broader index
-families, generated/defaulted values, required data macros and normal native
-saves remain separate work. Existing root-leaf fitting and two-fresh-leaf growth
-behavior is retained.
+The fitting source must have exactly the admitted height-one, two-leaf form.
+One overflowing child now uses a [separate cardinality-aware continuation](ACE16_INSERT_CHILD_SPLITS.md),
+which retains the original root and offender while adding one left leaf. That
+branch changes the root's bounds and necessary links; the whole-root preservation
+contract above applies to fitting insertions. Additional source children, deeper
+trees, multiple offenders, oversized halves, broader index families,
+generated/defaulted values, required data macros and normal native saves remain
+separate work. Existing root-leaf fitting and two-fresh-leaf growth is retained.

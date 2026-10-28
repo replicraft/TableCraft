@@ -120,7 +120,7 @@ fn left_right_and_both_leaf_inserts_preserve_parent_links_maps_and_all_old_rows(
 }
 
 #[test]
-fn duplicate_original_boundary_and_leaf_overflow_refuse_atomically() {
+fn duplicate_original_boundary_and_two_overflowing_leaves_refuse_atomically() {
     for code in [5, 6] {
         let (before, rows) = model::source(code, true);
         checked(&before, &rows, true);
@@ -139,12 +139,20 @@ fn duplicate_original_boundary_and_leaf_overflow_refuse_atomically() {
         // Spread the new values across the negative domain so the retained -1
         // bound limits their common prefix to the marker byte instead.
         let adjacent = (-526..-226).collect::<Vec<_>>();
-        assert_eq!(model::minimum_left_bytes(&before, &adjacent), 3159);
+        assert_eq!(model::minimum_leaf_bytes(&before, 17, &adjacent), 3159);
         let overflow = (0..300)
             .map(|position| i32::MIN + position * 65536)
             .collect::<Vec<_>>();
-        assert_eq!(model::minimum_left_bytes(&before, &overflow), 4209);
-        assert!(model::minimum_left_bytes(&before, &overflow) > 3616);
+        assert_eq!(model::minimum_leaf_bytes(&before, 17, &overflow), 4209);
+        assert!(model::minimum_leaf_bytes(&before, 17, &overflow) > 3616);
+        let peer_overflow = (1..=300)
+            .map(|position| position * 65536)
+            .collect::<Vec<_>>();
+        assert_eq!(model::minimum_leaf_bytes(&before, 16, &peer_overflow), 4209);
+        let overflow = overflow
+            .into_iter()
+            .chain(peer_overflow)
+            .collect::<Vec<_>>();
         let error = base::capture(&before)
             .preview_ace16_insert_rows("Items", &requests(&overflow), &mut base::budget(), &|| {
                 false

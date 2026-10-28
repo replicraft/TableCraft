@@ -121,7 +121,7 @@ pub(super) fn prove(
         }
     }
     if source_height_one {
-        let fitting = height_one::derive(
+        let change = height_one::derive(
             image,
             index,
             checked.schema().definition_page(),
@@ -129,8 +129,27 @@ pub(super) fn prove(
             proof,
             reader,
         )?;
-        fitting.compare(&staged.indexes, proof, reader)?;
-        if staged.data.append.indexes().next().is_some() {
+        change.compare(&staged.indexes, proof, reader)?;
+        let mut reservations = staged.data.append.indexes();
+        if let Some(growth) = change.growth() {
+            let actual = reservations.next().ok_or(EditError::Preservation)?;
+            if actual.number != growth.new_left
+                || actual.physical != index.data_number()
+                || actual.usage != index.usage_map()
+            {
+                return Err(EditError::Preservation);
+            }
+            if let Some(promotion) = &growth.promoted {
+                staged.data.append.require_index_bitmap(
+                    promotion.number,
+                    index.data_number(),
+                    index.usage_map(),
+                    reader.budget,
+                    reader.cancelled,
+                )?;
+            }
+        }
+        if reservations.next().is_some() {
             return Err(EditError::Preservation);
         }
     } else {

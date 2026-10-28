@@ -32,7 +32,7 @@ struct Record {
     original: Vec<u8>,
 }
 
-pub(super) struct Allocation<'a> {
+pub(in crate::table::mutation::insert::audit::primary) struct Allocation<'a> {
     index: &'a NativeIndex,
     owner: u32,
     owned: RepresentedMap,
@@ -46,7 +46,7 @@ pub(super) struct Allocation<'a> {
 }
 
 impl<'a> Allocation<'a> {
-    pub(super) fn capture(
+    pub(in crate::table::mutation::insert::audit::primary) fn capture(
         image: &NativeImage,
         index: &'a NativeIndex,
         owner: u32,
@@ -107,7 +107,7 @@ impl<'a> Allocation<'a> {
         })
     }
 
-    pub(super) fn reserve(
+    pub(in crate::table::mutation::insert::audit::primary) fn reserve(
         &mut self,
         proof: &mut ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -290,7 +290,7 @@ impl<'a> Allocation<'a> {
         Ok(())
     }
 
-    pub(super) fn finish(
+    pub(in crate::table::mutation::insert::audit::primary) fn finish(
         self,
         proof: &mut ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
