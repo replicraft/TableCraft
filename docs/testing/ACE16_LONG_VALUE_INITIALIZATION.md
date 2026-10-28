@@ -96,6 +96,9 @@ The initialization metadata service now dispatches an empty qualification list
 through the existing strict capture method, preserving behavior. Strict checks
 and formatting then passed. Minimal compilation passes, and the INSERT rerun
 after that dispatch adjustment again passes all 212 functions.
+The initial minimal build succeeded with three unused preview-helper warnings;
+the helpers and their internal export now share the preview feature gate.
+Minimal and all-feature compilation remain separate checks.
 
 ## Remaining boundaries
 

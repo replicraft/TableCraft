@@ -84,6 +84,7 @@ pub(in crate::table) fn declarations_for_initialization<R: NativeReadSource>(
 }
 
 /// Exact original physical pointer span for one explicitly declared zero pair.
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) fn zero_pair_offset<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     schema: &TableSchema,

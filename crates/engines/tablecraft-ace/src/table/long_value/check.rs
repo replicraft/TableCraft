@@ -52,6 +52,7 @@ pub fn check_table_long_values<R: NativeReadSource>(
     check_with_initialization(source, scope, table, None, budget, cancelled)
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) fn check_table_long_values_for_initialization<R: NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
