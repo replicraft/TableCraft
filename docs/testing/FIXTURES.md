@@ -1,5 +1,30 @@
 # Candidate Access fixtures
 
+## Original column-LVAL map growth INSERT inputs
+
+Original project helper
+[LongValueMapGrowthFixture.java](ace16_insert_long_value_map_growth/LongValueMapGrowthFixture.java)
+uses the same reviewed Jackcess 5.0.4 JAR and bounded channel as the external
+Memo/OLE corpus below. It establishes real early selected ownership, then writes
+an independent 430/700-row Padding table through public builders/DML. All payloads
+are generated, no upstream fixture/code is copied, and no source byte/map setter,
+padding search or selector change forces the observed transition. Expressions
+remain disabled and linked opens refuse. Originals stay private under
+`.cache/ace16-insert-long-value-map-growth-source-first-20261028/`.
+
+SOURCE17 capture and eight separate raw/catalog gates pass before construction.
+The [maintained proof](ace16_insert_long_value_map_growth/README.md) derives sixteen
+whole images before a fresh-target committed producer build, then verifies
+sixteen native candidates and sixteen fresh combined reader/map calls. A separate
+public32 phase also passes sixteen transitions without supplying golden bytes.
+Both layouts/Memo modes qualify actual owned-row rebase and promotion with chain
+links around new owned bitmap metadata. The
+[compact result](results/ace16-insert-long-value-map-growth-2026-10-28.json)
+pins all eight original identities and phase receipts. Old orphan chunks and
+all Padding/Sentinel rows remain preserved. Authentic next-block missing-pointer,
+missing-map initialization and native Access/Windows saves remain separate gaps;
+no such result is inferred from these small originals.
+
 ## Original external Memo/OLE INSERT inputs
 
 Original project helper

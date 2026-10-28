@@ -441,8 +441,12 @@ Access behavior.
 The external-payload profile additionally passes sixteen source/request-only
 complete-image comparisons and sixteen fresh independent typed-row/map reads.
 Its committed producer was rebuilt in a fresh target after a stale shared-cache
-artifact was rejected before execution. The later map-growth continuation retains
-its separate qualification gate.
+artifact was rejected before execution. The later [original-file growth corpus](testing/ace16_insert_long_value_map_growth/README.md)
+also passes sixteen complete-image comparisons and sixteen fresh combined reads,
+covering rebase/promotion across eight fixed-padding originals. Its 64 LVAL bodies
+and 16 owned bitmap pages retain source references and all old/Padding bytes.
+Genuine next-block missing pointers and declaration initialization retain separate
+qualification gates.
 
 Major gates still open before the full backend is complete:
 
