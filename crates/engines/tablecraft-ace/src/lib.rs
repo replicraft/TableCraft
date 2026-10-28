@@ -140,8 +140,10 @@ pub use table::{
 pub use table::read_table_projection;
 
 pub use table::{
-    IndexProjection, IndexProjectionSelection, IndexReadRequest, read_table_index_in_table_order,
-    read_table_index_projection, read_table_index_with_references, read_table_index_with_request,
+    IndexProjection, IndexProjectionSelection, IndexReadRequest,
+    read_stored_table_index_with_references, read_stored_table_index_with_request,
+    read_table_index_in_table_order, read_table_index_projection, read_table_index_with_references,
+    read_table_index_with_request,
 };
 
 pub use table::{

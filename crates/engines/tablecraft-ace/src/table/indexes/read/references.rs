@@ -8,8 +8,8 @@ use tablecraft_model::CatalogScope;
 /// They are meaningful only within the snapshot's schema and unchanged caller-owned
 /// source binding, never across independent files or revisions.
 pub struct IndexedTableSnapshot {
-    snapshot: TableSnapshot,
-    references: Vec<NativeRowReference>,
+    pub(super) snapshot: TableSnapshot,
+    pub(super) references: Vec<NativeRowReference>,
 }
 
 impl IndexedTableSnapshot {
@@ -59,6 +59,7 @@ pub fn read_table_index_with_references<R: NativeReadSource>(
             table_order: false,
             eligible_rows: None,
             row_references: Some(&mut references),
+            stored_features: None,
         },
         budget,
         cancelled,
