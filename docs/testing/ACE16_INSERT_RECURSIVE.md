@@ -133,11 +133,58 @@ The prior fitting, general height-one and one-child split images remain unchange
 under the migrated controls.
 
 Existing original-file root-leaf, fitted-height-one, child-split and general-H1
-receipts remain separately scoped historical evidence. No new recursive public
-source/reference or original-file engineering candidate is claimed here.
+receipts remain separately scoped historical evidence. New two-field source
+preparation is recorded below. Actual recursive INSERT reference actions and
+original-file engineering candidates remain unrun.
 Windows/native Microsoft Access comparisons remain deferred. Wider key/record
 profiles, generated/defaulted values, required data macros and production native
 saves remain unfinished work toward the full ACE 16 target.
+
+## New original-source preparation
+
+Four fresh Jackcess sources now qualify the exact Int32/Short Binary profile:
+V2016/V2019 crossed with root and nonroot internal-parent pressure. Existing
+two-LONG databases are geometry precedents only; they were not renamed,
+retargeted or patched into this profile. Public builders create the new tables,
+then public cursor deletion on fresh copies retains the selected dense tail and
+each other leaf's maximum. Every retained old key/ROW, bound, index page graph,
+height and per-level sibling chain remains exact.
+
+| Mode, in both profiles | Live rows | Historical physical counter | Retained INDEX pages | Required leaf/parent bytes after one MAX insertion |
+| --- | --- | --- | --- | --- |
+| Root pressure, height one | 782 | 99,424 | 330 | 3,641 / 3,621 |
+| Nonroot internal pressure, height two | 963 | 149,184 | 497 | 3,769 / 3,621 |
+
+These are source-capacity certificates against the 3,616-byte page payload;
+they are not observed post-INSERT allocation or topology. Actual historical
+counters are read separately from live rows after deletion, never reset to live
+count. The unchanged schema has manual required Int32 ID and nullable Binary255,
+a sole ascending required/unique primary, and an inert sentinel. Selected schema,
+full live records, deleted-slot geometry, complete index membership and existing
+future map cells pass the source gates. Reported selected/global map roles do
+not claim a complete native metadata census or writable-cell authority.
+
+The first source run completed five fixture commands successfully, then its
+Python source checker rejected ordinary public-delete tombstones. That initial
+report remains incomplete. The native words are `DELETED | RELOCATED` (`0xc000`),
+which the existing reader skips as deleted and the existing delete writer also
+emits. A separate proof derivative explicitly admits zero, DELETED, or
+DELETED|RELOCATED flags, retaining unknown-bit and live-relocation refusals.
+Saved-only recertification then passed the first source without repeating any
+completed command. A separately frozen continuation ran only the twelve
+unattempted source commands; all twelve and all remaining source gates pass.
+No helper, population, scalar, selector, cap or original source byte was changed.
+Across all four sources, ordinary DATA pages remain byte-exact to their larger
+originals except for the public deleted-slot tombstone words.
+
+The [source record](results/ace16-insert-recursive-sources-2026-10-28.json) keeps
+those first-five/checker-failure/saved-proof/remaining-twelve phases distinct.
+Total fixture work is one compile and sixteen generation/prune/read-only probe
+commands, with zero INSERT reference or native candidate calls. The later
+public writer may reuse deleted DATA slots; engineering append-only ROWs must
+be modeled from immutable sources rather than coerced to public placement.
+No new Microsoft Access comparison or recursive candidate acceptance follows
+from these source certificates.
 
 ## Preserved first-result history
 
@@ -162,7 +209,7 @@ first formatting failure concerned module registration order and its scoped
 retry passes. These failures and before sources remain separately preserved.
 The preceding full integration-target inventory was not rerun for this slice.
 
-New authentic recursive source/reference actions have not run. A producer build,
+Actual recursive INSERT reference actions have not run. A producer build,
 source/request-only frozen engineering images and original-file candidate/getter
 qualification remain later phases, not completed by these checks.
 

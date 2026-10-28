@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-28",
+  "scope": "Independent public-writer recursive INSERT sources only; not candidate or Microsoft Access qualification",
+  "source_processes": 17,
+  "public_insert_processes": 0,
+  "native_candidate_processes": 0,
+  "initial_phase": {
+    "report": {
+      "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/report.json",
+      "bytes": 19959,
+      "sha256": "fa9e39f45e672c77ed6e8bd2a08efeff0d94c4f7329eaf77642815076659ad98"
+    },
+    "completed": false,
+    "successful_processes": 5,
+    "later_python_failure": "AssertionError: ",
+    "cause": "Checker excluded native DELETED|RELOCATED tombstones; engine already permits them."
+  },
+  "saved_only_correction": {
+    "source_unchanged": true,
+    "fixture_processes": 0,
+    "derivative": {
+      "path": ".cache/ace16-insert-parent-growth-continuation-next-20261028/snapshot_deleted.py",
+      "bytes": 6658,
+      "sha256": "783aec629b15db090c2052dab5890b11596e0745bbd11764c10bd67930f4ac14"
+    },
+    "allowed_slot_flags": [
+      "0x0000",
+      "0x8000",
+      "0xc000"
+    ],
+    "unknown_or_live_relocation_refused": true
+  },
+  "continuation": {
+    "report": {
+      "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/report.json",
+      "bytes": 735065,
+      "sha256": "5ceb6d0f4b9148a65f25d9e5cae74b333af60c2a788519d808bc632110965ec5"
+    },
+    "completed": true,
+    "successful_processes": 12,
+    "completed_commands_repeated": 0,
+    "input_pin_errors": []
+  },
+  "freezes": [
+    {
+      "path": ".cache/ace16-insert-parent-growth-reference-next-20261028/source-freeze.json",
+      "bytes": 4304,
+      "sha256": "c6e53f58f5e1860b354f2d3e6c8a9b08a49d57b2ad9958cc2fe303b3c450cbc3"
+    },
+    {
+      "path": ".cache/ace16-insert-parent-growth-continuation-next-20261028/freeze.json",
+      "bytes": 15224,
+      "sha256": "7c139274e6634c1a88f08da359c7a475e8fe4235843e45ed3b665545e0f8ec34"
+    }
+  ],
+  "cases": [
+    {
+      "case": "V2016-root",
+      "profile": "V2016",
+      "mode": "root",
+      "source": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-root-source.accdb",
+        "bytes": 3350528,
+        "sha256": "a344c10b8a81705a611ce7769c39754870d64d4b4e6c5df53bc9146375d57950"
+      },
+      "large_original": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-root-large.accdb",
+        "bytes": 3350528,
+        "sha256": "a38d68b34bbde88b7cfa701d1ba2e3b479483a9621b3313441a07c0ece5613a5"
+      },
+      "selection": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-root-selection.tsv",
+        "bytes": 17982,
+        "sha256": "94988d8561201b6a35ffe3a7c8403377c589a2eb7b4caa04c91bb04710c1a739"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-root-before-getter.stdout",
+        "bytes": 112628,
+        "sha256": "77f554c85d1306dee8b9629c54e81b5ba9fe105e7ea6a9f927c684c9d7a43517"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-root-before-maps.stdout",
+        "bytes": 8766,
+        "sha256": "927e6750d6ae5f53dbb702d811d09dd6a80eede93e41ddf31181e833df5d69fd"
+      },
+      "raw_source_proof": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-next-20261028/first-source-recheck.json",
+        "bytes": 1905,
+        "sha256": "6a0d8e1bed159c37817fbf3b1097d39e4afff623d817d3e92812c7aba07201a1"
+      },
+      "facts": {
+        "generated_rows": 99424,
+        "live_rows": 782,
+        "historical_before": 99424,
+        "visited_slots": 99424,
+        "deleted_slots": 98642,
+        "retained_index_pages": 330,
+        "root_height": 1,
+        "leaf_insert_bytes": 3641,
+        "parent_insert_bytes": 3621
+      }
+    },
+    {
+      "case": "V2016-internal",
+      "profile": "V2016",
+      "mode": "internal",
+      "source": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-internal-source.accdb",
+        "bytes": 4837376,
+        "sha256": "241e192b746f0f8b88e787d5b58407983fea37cacc8a997f7ccbb56377a95b71"
+      },
+      "large_original": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-internal-large.accdb",
+        "bytes": 4837376,
+        "sha256": "1b2f5f765cd0a24cf15e2a6aa84ea5849cf02f13f1d6b1e7f8c581d77f7c1f83"
+      },
+      "selection": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2016-internal-selection.tsv",
+        "bytes": 25478,
+        "sha256": "623dcb036a9b7d3da97b178c8d78c86e4fc2ecd48192cd5b7c3ee2c92342f4f3"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2016-internal-before-getter.stdout",
+        "bytes": 141702,
+        "sha256": "183c7f42b4012c7e5e968f347b1b7ffa31be695f208b78d60a62cf5a22e6d7d0"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2016-internal-before-maps.stdout",
+        "bytes": 13179,
+        "sha256": "e4a68b7c6c2efd33237cba1f8f14fa7128207507abd154328dd5582e2d6b5da6"
+      },
+      "raw_source_proof": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2016-internal-source-proof.json",
+        "bytes": 479920,
+        "sha256": "22483c289df16a023c9efdf229892b3f7ab8cf9dc71e823031b9e052a82a9d83"
+      },
+      "facts": {
+        "generated_rows": 149184,
+        "live_rows": 963,
+        "historical_before": 149184,
+        "visited_slots": 149184,
+        "deleted_slots": 148221,
+        "retained_index_pages": 497,
+        "root_height": 2,
+        "leaf_insert_bytes": 3769,
+        "parent_insert_bytes": 3621
+      }
+    },
+    {
+      "case": "V2019-root",
+      "profile": "V2019",
+      "mode": "root",
+      "source": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-root-source.accdb",
+        "bytes": 3424256,
+        "sha256": "830aa0fc3b600b1655b9a5582e6b9c1113a2a46128897efa42ace259d50efe01"
+      },
+      "large_original": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-root-large.accdb",
+        "bytes": 3424256,
+        "sha256": "2be02f1156c896f8f0b1ddc7c91752a7f161a1c8525632730163b718c0b0c7a6"
+      },
+      "selection": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-root-selection.tsv",
+        "bytes": 17984,
+        "sha256": "ce623ecb1f9cbe0a42f174bb2fb73c5026932727f7026bc5ff62c591e668a2bb"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-root-before-getter.stdout",
+        "bytes": 112634,
+        "sha256": "bbd150b10725f2ac5c1446eb720954294fda8864de429d4464aa4f72d0b62a55"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-root-before-maps.stdout",
+        "bytes": 8771,
+        "sha256": "8001227da5bcbca339896501cd41c596582958897e2f5354eff3952284f58e51"
+      },
+      "raw_source_proof": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-root-source-proof.json",
+        "bytes": 479662,
+        "sha256": "661d6177882b11b61614cede693d7f0aa0d06015cf95796155bbf55c6b660587"
+      },
+      "facts": {
+        "generated_rows": 99424,
+        "live_rows": 782,
+        "historical_before": 99424,
+        "visited_slots": 99424,
+        "deleted_slots": 98642,
+        "retained_index_pages": 330,
+        "root_height": 1,
+        "leaf_insert_bytes": 3641,
+        "parent_insert_bytes": 3621
+      }
+    },
+    {
+      "case": "V2019-internal",
+      "profile": "V2019",
+      "mode": "internal",
+      "source": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-internal-source.accdb",
+        "bytes": 4911104,
+        "sha256": "c3fc4d82f997163d764e5d8cd13f4362b6169167094b4c791d32d817e83065b7"
+      },
+      "large_original": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-internal-large.accdb",
+        "bytes": 4911104,
+        "sha256": "8e828dd609f72a69866f18060cac75a96c5c2b9ab4ee05fc351e4f03214596b4"
+      },
+      "selection": {
+        "path": ".cache/ace16-insert-parent-growth-reference-first-20261028/V2019-internal-selection.tsv",
+        "bytes": 25487,
+        "sha256": "0c6319a31cf1f2346067ff26b7ffb3eecd3fcc6b0f5e06eb5d0297a34ac9ebec"
+      },
+      "getter": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-internal-before-getter.stdout",
+        "bytes": 141717,
+        "sha256": "5ba8e18637b67fea5e3183eba6d46ee51d75097e7be992a2865e62751b7685d1"
+      },
+      "maps": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-internal-before-maps.stdout",
+        "bytes": 13194,
+        "sha256": "5d0929a6fcdb48c08b4e8041903c4f620e7c92b0e71776845262516641cb78d9"
+      },
+      "raw_source_proof": {
+        "path": ".cache/ace16-insert-parent-growth-continuation-first-20261028/V2019-internal-source-proof.json",
+        "bytes": 479691,
+        "sha256": "f156af1acd838f04f1ce20d19956cbad3867d28631febf96bb92637b4584e34a"
+      },
+      "facts": {
+        "generated_rows": 149184,
+        "live_rows": 963,
+        "historical_before": 149184,
+        "visited_slots": 149184,
+        "deleted_slots": 148221,
+        "retained_index_pages": 497,
+        "root_height": 2,
+        "leaf_insert_bytes": 3769,
+        "parent_insert_bytes": 3621
+      }
+    }
+  ],
+  "proved": [
+    "Public builder/addRow/cursor-delete source generation under fixed bounds",
+    "Actual Int32/Binary native schema and inert independent getter records",
+    "Unchanged retained original key/ROWs, bounds, topology and sibling chains after public pruning",
+    "Selected ordinary DATA slot geometry and complete live membership",
+    "Separate actual historical counters and live counts",
+    "Selected map roles and represented future cells"
+  ],
+  "limitations": [
+    "First full source controller stopped on a checker assertion; no whole-phase first-pass success claimed",
+    "Reported map roles do not prove the complete native metadata census",
+    "Source capacity predicts pressure, not engine admission or public/engineering new ROW placement",
+    "Public INSERT transitions, independent candidate goldens, committed producer run and fresh candidate getters are later phases",
+    "Microsoft Access comparisons remain deferred; normal saves remain closed"
+  ],
+  "implementation_revision": "edaa55e1",
+  "independent_saved_source_review": {
+    "path": ".cache/ace16-insert-recursive-parent-next-20261028/all-four-source-review.json",
+    "bytes": 4453,
+    "sha256": "72c236b944f0dd8ba35ee3f7595ea5359905cd51e970cb54718fedbd99f7d184"
+  }
+}

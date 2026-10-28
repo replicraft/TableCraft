@@ -60,10 +60,22 @@ is included. Four public preview contracts, three compile-fail checks, minimal
 compilation, strict Clippy, rustdoc, formatting, the 15-package guard and 6,048
 documentation targets pass. Initial style-only lint and module-order formatting
 failures remain preserved before their passing retries. The preceding full
-integration-target inventory was not rerun. New authentic recursive source and
-reference actions have not run; no original-file candidate qualification is
-claimed. Prior receipts
+integration-target inventory was not rerun. Actual recursive INSERT reference
+actions and original-file candidates remain unrun. Prior receipts
 remain separate; Windows/native Access comparisons remain deferred.
+
+Four fresh two-field Jackcess sources now pass separate
+[source qualification](testing/results/ace16-insert-recursive-sources-2026-10-28.json).
+Both profiles retain 782 live rows/99,424 historical entries for root pressure,
+or 963 live rows/149,184 historical entries for nonroot parent pressure. Every
+retained key/ROW and complete tree graph survives public pruning; calculated
+leaf/parent overflow is source evidence, not observed INSERT topology. Old
+two-LONG precedents were not retargeted. Five initial fixture commands passed
+before a checker rejected valid deleted/relocated tombstones; a separate corrected
+saved proof and twelve unattempted source commands then passed without repeating
+completed work or changing source inputs. The incomplete first report remains
+preserved. Actual recursive INSERT references, frozen engineering images,
+committed producer and candidate/getter qualification remain later phases.
 
 Additional nesting of an oversized new top, wider key/record profiles,
 generated/defaulted values, required data macros and normal native saves remain
