@@ -30,5 +30,5 @@ pub use saved::{
     reconstruct_saved_select,
 };
 
-/// Inert, bounded Access template OPC inventory.
-pub mod template;
+mod template;
+pub use template::TemplateSource;

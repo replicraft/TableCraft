@@ -4,8 +4,7 @@ use clap::ValueEnum;
 use std::sync::{Arc, atomic::AtomicBool};
 use std::{cell::RefCell, ffi::OsString, path::Path};
 use tablecraft_access::{
-    ExternalNativeSource, LinkedNativeSource, NativeSource, RecomputedNativeSource,
-    template::TemplateSource,
+    ExternalNativeSource, LinkedNativeSource, NativeSource, RecomputedNativeSource, TemplateSource,
 };
 use tablecraft_ace::{
     LongTextReadLimits, LongValueReadLimits, LongValueReadSource, TableSnapshotLimits,

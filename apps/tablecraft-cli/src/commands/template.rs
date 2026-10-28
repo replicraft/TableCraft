@@ -1,8 +1,8 @@
-//! Template presentation only; package/schema/value interpretation stays in Access.
+//! Template presentation only; package/schema/value interpretation stays in Formats.
 use super::{error::Error, rows::Args};
 use crate::{output::TableOutput, presentation::Format};
-use tablecraft_access::template::{TemplateError, TemplatePackage};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_formats::template::{TemplateError, TemplatePackage};
 use tablecraft_model::ObjectKind;
 
 fn line(output: &mut TableOutput, values: &[&str]) -> Result<(), Error> {

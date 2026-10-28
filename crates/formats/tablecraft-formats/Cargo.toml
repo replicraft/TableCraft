@@ -1,0 +1,32 @@
+[package]
+name = "tablecraft-formats"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Bounded inert Access package, OPC and template data codecs"
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-core.workspace = true
+tablecraft-io.workspace = true
+tablecraft-model.workspace = true
+tablecraft-schema.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+cab.workspace = true
+zip.workspace = true
+iri-string.workspace = true
+flate2.workspace = true
+quick-xml.workspace = true
+jiff.workspace = true
+rust_decimal.workspace = true
+base64.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

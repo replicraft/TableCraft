@@ -14,6 +14,8 @@ ALLOWED = {
     "tablecraft-io": {"tablecraft-core"},
     "tablecraft-crypto": set(),
     "tablecraft-testkit": set(),
+    "tablecraft-formats": {"tablecraft-core", "tablecraft-io", "tablecraft-model",
+                           "tablecraft-schema"},
     "tablecraft-db": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-sql": set(),
     "tablecraft-expressions": {"tablecraft-core", "tablecraft-sql"},
@@ -24,13 +26,15 @@ ALLOWED = {
                        "tablecraft-query", "tablecraft-crypto", "tablecraft-testkit"},
     "tablecraft-access": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                           "tablecraft-db", "tablecraft-ace", "tablecraft-query",
-                          "tablecraft-sql", "tablecraft-io", "tablecraft-expressions", "tablecraft-testkit"},
+                          "tablecraft-sql", "tablecraft-io", "tablecraft-expressions",
+                          "tablecraft-formats", "tablecraft-testkit"},
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",
-                       "tablecraft-expressions", "tablecraft-query", "tablecraft-testkit"},
+                       "tablecraft-expressions", "tablecraft-query",
+                       "tablecraft-formats", "tablecraft-testkit"},
 }
 
 

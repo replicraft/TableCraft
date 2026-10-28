@@ -38,6 +38,9 @@ struct Spool {
     flush_failure: Option<io::ErrorKind>,
     cancel_on_flush: Option<Rc<Cell<bool>>>,
     seek_mismatch: bool,
+    prefix_read: bool,
+    final_rewind_failure: Option<io::ErrorKind>,
+    cancel_on_final_rewind: Option<Rc<Cell<bool>>>,
 }
 
 impl Spool {
@@ -52,6 +55,9 @@ impl Spool {
             flush_failure: None,
             cancel_on_flush: None,
             seek_mismatch: false,
+            prefix_read: false,
+            final_rewind_failure: None,
+            cancel_on_final_rewind: None,
         }
     }
 }
@@ -64,12 +70,22 @@ impl Drop for Spool {
 
 impl Read for Spool {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
-        self.inner.read(bytes)
+        let count = self.inner.read(bytes)?;
+        self.prefix_read |= count != 0;
+        Ok(count)
     }
 }
 
 impl Seek for Spool {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
+        if self.prefix_read && matches!(position, SeekFrom::Start(0)) {
+            if let Some(kind) = self.final_rewind_failure {
+                return Err(kind.into());
+            }
+            if let Some(cancelled) = &self.cancel_on_final_rewind {
+                cancelled.set(true);
+            }
+        }
         let actual = self.inner.seek(position)?;
         Ok(actual + u64::from(self.seek_mismatch && matches!(position, SeekFrom::Start(_))))
     }

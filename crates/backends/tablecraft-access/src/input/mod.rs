@@ -3,6 +3,7 @@ mod deployment;
 use std::io::{self, Cursor, Read, Seek, SeekFrom, Write};
 use tablecraft_ace::{InspectError, NativeReadSource};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_formats::deployment::Selected;
 use thiserror::Error;
 
 /// Input errors omit filenames, archive entry names and dependency diagnostics.
@@ -113,8 +114,8 @@ impl<R: Read + Seek, S: Read + Write + Seek> AccessInput<R, S> {
             .map_err(InspectError::from)?;
         let inner = if magic == *b"MSCF" {
             match deployment::read_with_spool(&mut source, make_spool, budget, cancelled)? {
-                deployment::Selected::Captured(bytes) => Input::Captured(Cursor::new(bytes)),
-                deployment::Selected::Spooled(storage) => Input::Deployment(storage),
+                Selected::Captured(bytes) => Input::Captured(Cursor::new(bytes)),
+                Selected::Spooled(storage) => Input::Deployment(storage.into_inner()),
             }
         } else {
             tablecraft_io::seek_absolute(&mut source, 0, budget, cancelled)

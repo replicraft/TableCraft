@@ -5,6 +5,7 @@ members = [
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
     "crates/platform/tablecraft-crypto",
+    "crates/formats/tablecraft-formats",
     "crates/engineering/tablecraft-testkit",
     "crates/backends/tablecraft-access",
     "crates/foundation/tablecraft-db",
@@ -135,14 +136,16 @@ tablecraft-ace = { path = "crates/engines/tablecraft-ace", default-features = fa
 tablecraft-access = { path = "crates/backends/tablecraft-access", default-features = false }
 tablecraft-sqlite = { path = "crates/backends/tablecraft-sqlite", default-features = false }
 
+# Inert package formats
+tablecraft-formats = { path = "crates/formats/tablecraft-formats", default-features = false }
+
+# Engineering-only shared fixtures (development dependencies)
+tablecraft-testkit = { path = "crates/engineering/tablecraft-testkit", default-features = false }
+
 # SQL parsing, scalar semantics and retrieval execution
 tablecraft-sql = { path = "crates/query/tablecraft-sql", default-features = false }
 tablecraft-expressions = { path = "crates/query/tablecraft-expressions", default-features = false }
 tablecraft-query = { path = "crates/query/tablecraft-query", default-features = false }
-
-
-# Engineering-only shared fixtures (development dependencies)
-tablecraft-testkit = { path = "crates/engineering/tablecraft-testkit", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
