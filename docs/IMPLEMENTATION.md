@@ -24,7 +24,7 @@ native qualification, query routing and namespace ownership.
 
 The [architecture review](architecture/ARCHITECTURE.md#implemented-follow-up)
 records these boundaries. This changes ownership rather than format coverage or
-write admission; unfinished INSERT work remains separate.
+write admission. Subsequent mutation capabilities are described separately below.
 
 Verification passes strict workspace Clippy across all targets/features,
 minimal-feature workspace compilation, strict rustdoc, formatting, the
@@ -33,6 +33,26 @@ The complete all-feature workspace test batch exposed stale expectations in four
 targets; their corrected focused reruns pass. The original failures are retained,
 and the corrections add positive coverage while preserving actual refusal/error
 controls. Native Microsoft Access comparisons were not run for this refactor.
+
+## Request-bound ordinary-row INSERT preview
+
+The optional [INSERT engineering service](testing/ACE16_INSERT_PREVIEW.md) now
+constructs complete Int32/Short Binary rows, places visible roots in qualified
+existing/EOF pages and maintains one required Int32 primary leaf, including
+logical aliases. Table and actual historical physical-index counters increase
+once per new row. Independent request-bound replay protects complete images,
+allocation purposes and map effects. Defaults, generated fields, broader index
+profiles and splits remain refused; normal native saves remain closed.
+
+Verification covers 328 distinct passing ACE unit functions across a full batch
+and a targeted hint-promotion check (one existing ignored test), four existing
+public preview contracts, seven example functions and three compile-fail checks.
+Strict all-target/feature lint passes after removing an
+unreachable test match arm; default-feature-free compilation also passes.
+Four first-attempt original-file candidates match independently derived complete
+images, followed by eight successful fresh independent getter/map calls. These
+comparisons use Jackcess, not Microsoft Access, and do not qualify data macros
+or production saves.
 
 ## Explicit historical index counters
 

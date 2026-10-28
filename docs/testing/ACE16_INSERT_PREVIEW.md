@@ -68,6 +68,35 @@ The explicit `preview_ace16_insert` example uses clap and the
 request input before opening the database and uses the existing fresh-output
 publisher. Ordinary CLI writes remain unchanged.
 
+## Verification and independent evidence
+
+[Scoped verification](results/ace16-insert-native-2026-10-27.json) covers 339
+distinct passing runtime functions, three compile-fail checks, strict lint,
+minimal-feature compilation and rustdoc. The end-to-end hint-promotion control
+constructs DATA page 600 and separate bitmap page 601, retains the lower untried
+hint and checks the complete expected image before invoking the API.
+
+The [committed producer](results/ace16-insert-example-build-2026-10-27.json)
+passed four first-attempt original-file comparisons. Each complete image matched
+its independently frozen source/request-derived expectation before fresh getters
+ran. Eight read-only Jackcess getter/map calls then agreed, covering 4,528 typed
+rows and 37,056 logical index entries across the four snapshots. Source files,
+requests and expected images remained unchanged.
+
+| Fixture | New visible root | Table/historical counts | Image growth |
+| --- | --- | --- | --- |
+| V2016 fitted | Page 200, slot 10 | 10 to 11 | None |
+| V2016 EOF | Page 255, slot 0 | 22 to 23 | 4,096 bytes |
+| V2019 fitted | Page 217, slot 10 | 10 to 11 | None |
+| V2019 EOF | Page 272, slot 0 | 22 to 23 | 4,096 bytes |
+
+The [saved-evidence verifier](ace16_insert_candidates/README.md) rederives the
+expectations and checks archived reports without executing a database or JVM.
+Its optional Git mode checks the producer's committed source closure. It requires
+the retained private engineering artifacts; absence is reported as unavailable
+and is not a passing result or a CI prerequisite. These independent comparisons
+do not establish Microsoft Access conformance.
+
 ## Remaining work
 
 This profile does not finish general INSERT. Other scalar/complex fields,

@@ -1,0 +1,372 @@
+{
+  "date": "2026-10-27",
+  "scope": "Optional request-bound ordinary Int32/Short Binary INSERT engineering preview; no production native saves or Microsoft Access qualification",
+  "engine_revision": "d27d3789",
+  "compiled_revision": "4f9ee2da2f38651ea145209e8d568f26bc15a58d",
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-insert-example-build-2026-10-27.json",
+    "bytes": 149123,
+    "sha256": "25229170a49a01831bd7391f1505a80d40d219226592511f71c29867125671ad"
+  },
+  "independent_original_plan": {
+    "path": ".cache/ace16-insert-independent-next-20261027/plan.json",
+    "bytes": 48687,
+    "sha256": "ff97ab60f64c8289b8fad4576aa25107b4cd085fb7bbbf4def03a0c76c502ffe"
+  },
+  "independent_original_freeze": {
+    "path": ".cache/ace16-insert-independent-next-20261027/freeze.json",
+    "bytes": 39672,
+    "sha256": "ba83843f9705046c95e032f10b0f681f30a0a7a2e7d0ee6c67055cbe5555d7d7"
+  },
+  "frozen_before_producer": true,
+  "producer_report": {
+    "path": ".cache/ace16-insert-candidates-next-20261027/first-actual/report.json",
+    "bytes": 97757,
+    "sha256": "88711524eeac10a8062b1d6e9971d64bfdecf9faf1b4b1cb3db1e0334e2b211a"
+  },
+  "getter_report": {
+    "path": ".cache/ace16-insert-getters-next-20261027/first-actual/report.json",
+    "bytes": 207130,
+    "sha256": "734e8e24b8571212ed1442f898c13f242d5ca7432020e972ed90ad70b9f02cc0"
+  },
+  "independent_saved_review": {
+    "path": ".cache/ace16-insert-getters-next-20261027/independent-actual-saved-check.json",
+    "bytes": 4114,
+    "sha256": "8fad1bc1df3b5437e9628ff50c1bcdf98a796ee192694e16a6a865032c93e81c"
+  },
+  "actual_first_attempt_producer_calls": 4,
+  "actual_first_attempt_readonly_getter_map_calls": 8,
+  "all_whole_images_checked_before_getters": true,
+  "sources_requests_oracles_modified": false,
+  "after_pin_errors": [],
+  "cases": [
+    {
+      "id": "V2016-fitted",
+      "all_tables": 17,
+      "all_rows": 1126,
+      "target_rows": 11,
+      "old_target_rows_preserved": 10,
+      "logical_index_entries": 9258,
+      "physical_index_entries": 7194,
+      "logical_indexes": 44,
+      "physical_indexes": 36,
+      "typed_ROW_lines": 1126,
+      "raw_ROW_lines": 1126,
+      "ENTRY_lines": 9258,
+      "inserted_ID": 10001,
+      "newROW": 51210,
+      "new_page": 200,
+      "new_slot": 10,
+      "table_counter": [
+        10,
+        11
+      ],
+      "historical_counter": [
+        10,
+        11
+      ],
+      "map_byte_effects": [],
+      "bytes_added": 0,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2016-EOF",
+      "all_tables": 17,
+      "all_rows": 1138,
+      "target_rows": 23,
+      "old_target_rows_preserved": 22,
+      "logical_index_entries": 9270,
+      "physical_index_entries": 7206,
+      "logical_indexes": 44,
+      "physical_indexes": 36,
+      "typed_ROW_lines": 1138,
+      "raw_ROW_lines": 1138,
+      "ENTRY_lines": 9270,
+      "inserted_ID": 10013,
+      "newROW": 65280,
+      "new_page": 255,
+      "new_slot": 0,
+      "table_counter": [
+        22,
+        23
+      ],
+      "historical_counter": [
+        22,
+        23
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8159,
+          "before": 128,
+          "after": 0
+        },
+        {
+          "offset": 814996,
+          "before": 1,
+          "after": 0
+        },
+        {
+          "offset": 815002,
+          "before": 0,
+          "after": 128
+        },
+        {
+          "offset": 823331,
+          "before": 0,
+          "after": 128
+        }
+      ],
+      "bytes_added": 4096,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2019-fitted",
+      "all_tables": 17,
+      "all_rows": 1126,
+      "target_rows": 11,
+      "old_target_rows_preserved": 10,
+      "logical_index_entries": 9258,
+      "physical_index_entries": 7194,
+      "logical_indexes": 44,
+      "physical_indexes": 36,
+      "typed_ROW_lines": 1126,
+      "raw_ROW_lines": 1126,
+      "ENTRY_lines": 9258,
+      "inserted_ID": 10001,
+      "newROW": 55562,
+      "new_page": 217,
+      "new_slot": 10,
+      "table_counter": [
+        10,
+        11
+      ],
+      "historical_counter": [
+        10,
+        11
+      ],
+      "map_byte_effects": [],
+      "bytes_added": 0,
+      "normal_visible_flags": 0
+    },
+    {
+      "id": "V2019-EOF",
+      "all_tables": 17,
+      "all_rows": 1138,
+      "target_rows": 23,
+      "old_target_rows_preserved": 22,
+      "logical_index_entries": 9270,
+      "physical_index_entries": 7206,
+      "logical_indexes": 44,
+      "physical_indexes": 36,
+      "typed_ROW_lines": 1138,
+      "raw_ROW_lines": 1138,
+      "ENTRY_lines": 9270,
+      "inserted_ID": 10013,
+      "newROW": 69632,
+      "new_page": 272,
+      "new_slot": 0,
+      "table_counter": [
+        22,
+        23
+      ],
+      "historical_counter": [
+        22,
+        23
+      ],
+      "map_byte_effects": [
+        {
+          "offset": 8162,
+          "before": 255,
+          "after": 254
+        },
+        {
+          "offset": 884630,
+          "before": 2,
+          "after": 0
+        },
+        {
+          "offset": 884637,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "offset": 892966,
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "bytes_added": 4096,
+      "normal_visible_flags": 0
+    }
+  ],
+  "totals": {
+    "all_tables": 68,
+    "all_rows": 4528,
+    "target_rows": 68,
+    "old_target_rows_preserved": 64,
+    "logical_index_entries": 37056,
+    "physical_index_entries": 28800,
+    "logical_indexes": 176,
+    "physical_indexes": 144,
+    "typed_ROW_lines": 4528,
+    "raw_ROW_lines": 4528,
+    "ENTRY_lines": 37056,
+    "bytes_added": 8192
+  },
+  "verification": {
+    "distinct_runtime_functions": 339,
+    "engine_unit_functions": 328,
+    "existing_public_preview_contracts": 4,
+    "example_functions": 7,
+    "compile_fail_checks": 3,
+    "existing_ignored_tests": 1,
+    "basis": "327 passing engine unit functions in full batch, one additional passing public bitmap-parent unit function; overlapping first29 INSERT run is not added again",
+    "logs": [
+      {
+        "label": "unit-insert-first",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-unit-first.log",
+          "bytes": 5326,
+          "sha256": "6a00f99d9256ea9413670c9b0c797f69aecec1cc711901d1204ce69fce7716bc"
+        },
+        "passed_functions": 29
+      },
+      {
+        "label": "engine-unit-and-public-preview",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-engine-batch-first.log",
+          "bytes": 40240,
+          "sha256": "8fa15d677957201801e357218bb6b22821a85ebe9b3a0e6f00a8a4e150ed55eb"
+        },
+        "passed_functions": 331
+      },
+      {
+        "label": "example",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-example-first.log",
+          "bytes": 983,
+          "sha256": "e6ff38659862c67a0130ba9ccf5901cd0570b53b7f9b92f7c8cd08b8defb8a1f"
+        },
+        "passed_functions": 7
+      },
+      {
+        "label": "clippy-first",
+        "exit_code": 101,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-clippy-first.log",
+          "bytes": 2018,
+          "sha256": "83546038f9d94fe569094146da8bf4c22deed8ff2e5885a451127ba71597990e"
+        }
+      },
+      {
+        "label": "clippy-retry",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-clippy-retry.log",
+          "bytes": 184,
+          "sha256": "001b240ed73a1d6912ddc2b35afcc3204a8f35519c8a72545fcdbcfcecd345e3"
+        }
+      },
+      {
+        "label": "minimal-check",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-minimal-check.log",
+          "bytes": 183,
+          "sha256": "781d59bd4805aee410eff7954aee753fc570550303504f878b74de78b3500b13"
+        }
+      },
+      {
+        "label": "doctests",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-doctests.log",
+          "bytes": 738,
+          "sha256": "6844d2383fba7111446eb2e849e4f80c184b805acbda2514dd7b0ad237e79b9d"
+        },
+        "passed_functions": 3
+      },
+      {
+        "label": "rustdoc",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-rustdoc.log",
+          "bytes": 277,
+          "sha256": "9f9c09ca110827b60ab96e55682c8886c60a5fc98ccf304410e0b3e26a5a51d5"
+        }
+      },
+      {
+        "label": "bitmap-parent-first",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-bitmap-first.log",
+          "bytes": 506,
+          "sha256": "31e2bc4aa6e21a331c38a02d2d072057b5a04672f4023265353903586d3d5dbe"
+        },
+        "passed_functions": 1
+      },
+      {
+        "label": "clippy-final",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-clippy-final.log",
+          "bytes": 183,
+          "sha256": "ed4bcfbe73e3392883839d901b62e1bfec1bb3570d0b76c6cc58506b48a367fe"
+        }
+      },
+      {
+        "label": "format-final",
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-insert-verification-20261027/tablecraft-insert-fmt-final.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "preserved_first_lint_failure": "Unreachable exhaustive Resource test match arm; removed without changing runtime behavior. No failed producer/getter call or candidate repair."
+  },
+  "remaining": "Broader INSERT/defaults/AutoNumber/index families and splits, query actions, required data macros and normal ACE save/reopen remain unfinished. Windows comparisons are user-deferred.",
+  "dependency_info_archive": {
+    "path": ".cache/ace16-insert-candidates-next-20261027/committed-dependency-info.d",
+    "bytes": 79924,
+    "sha256": "5b1c9de93592c1850972b99f68b81aac83cbe5a3e6005f31dbe76bf418a6dd17"
+  },
+  "additional_bitmap_test_revision": "cfed7357",
+  "saved_replay": {
+    "exit_code": 0,
+    "report": {
+      "path": ".cache/ace16-insert-verification-20261027/saved-verifier-git.json",
+      "bytes": 5023,
+      "sha256": "b2f9ab69f897f52364c11aa576abcc374b705521353dbf1915e037f5839c535b"
+    },
+    "proof_pin_occurrences": 2060,
+    "terminal_rehashes": 839,
+    "total_pin_checks": 2899,
+    "distinct_artifacts": 839,
+    "git_source_objects": 745,
+    "git_receipt_objects": 1,
+    "git_processes": 1,
+    "database_JVM_Cargo_calls": 0,
+    "maintained_sources": [
+      {
+        "path": "docs/testing/ace16_insert_candidates/README.md",
+        "bytes": 3556,
+        "sha256": "29e26539e862333f98bdb68fcea6fdc43f947637dea8328f897f46423766a7cd"
+      },
+      {
+        "path": "docs/testing/ace16_insert_candidates/model.py",
+        "bytes": 13121,
+        "sha256": "e25461040e1315054d2ce30771481262e0f59fa9b703b9cf5a8c294a942680be"
+      },
+      {
+        "path": "docs/testing/ace16_insert_candidates/verify.py",
+        "bytes": 19471,
+        "sha256": "4d058e1d6c151fa67e70de65fddc2d4136fb90a3baf333a10189c9fbdc34569d"
+      }
+    ]
+  }
+}
