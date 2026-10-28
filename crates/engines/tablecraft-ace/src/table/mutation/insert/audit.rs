@@ -11,7 +11,10 @@ use crate::{
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     limits::{MAX_IMAGE_BYTES, MAX_LIVE_ROWS},
-    table::mutation::{gates, preview, variable_split::metadata::Metadata},
+    table::mutation::{
+        gates, preview, variable_split::metadata::Metadata,
+        variable_update::map_audit::ExpectedByte,
+    },
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
@@ -28,6 +31,7 @@ struct Row {
 struct ImageProof<'a> {
     original: &'a [u8],
     bytes: Vec<u8>,
+    map_edits: Vec<ExpectedByte>,
 }
 
 impl ImageProof<'_> {
@@ -96,6 +100,7 @@ pub(super) fn prove(
     let mut proof = ImageProof {
         original: image.as_bytes(),
         bytes,
+        map_edits: Vec::new(),
     };
 
     data::prove(
@@ -107,6 +112,27 @@ pub(super) fn prove(
         &mut reader,
     )?;
     primary::prove(image, &checked, id, &rows, staged, &mut proof, &mut reader)?;
+
+    if staged.data.append.length != proof.bytes.len()
+        || staged.data.append.reservations_len()
+            != (proof.bytes.len() - proof.original.len()) / PAGE_BYTES
+        || staged.data.append.map_edits.len() != proof.map_edits.len()
+    {
+        return Err(EditError::Preservation);
+    }
+    for expected in &proof.map_edits {
+        reader.work(staged.data.append.map_edits.len())?;
+        let actual = staged
+            .data
+            .append
+            .map_edits
+            .iter()
+            .find(|actual| actual.offset == expected.offset)
+            .ok_or(EditError::Preservation)?;
+        if actual.before != expected.before || actual.after != expected.after {
+            return Err(EditError::Preservation);
+        }
+    }
 
     if after.len() != proof.bytes.len() {
         return Err(EditError::Preservation);

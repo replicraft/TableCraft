@@ -1,8 +1,11 @@
 //! Exact-before composition; independent final proof owns insertion authority.
 use super::Staged;
 use crate::{
-    EditError, InspectError, NativeImage, format::page::PAGE_BYTES, header::check,
-    limits::MAX_IMAGE_BYTES, preservation::COPY_CHUNK_BYTES,
+    EditError, InspectError, NativeImage,
+    format::page::{PAGE_BYTES, USAGE_SIGNATURE},
+    header::check,
+    limits::MAX_IMAGE_BYTES,
+    preservation::COPY_CHUNK_BYTES,
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -51,6 +54,7 @@ pub(super) fn compose(
         .len()
         .checked_add(data.append.map_edits.len())
         .and_then(|count| count.checked_add(staged.indexes.patches.len()))
+        .and_then(|count| count.checked_add(staged.indexes.promotions.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
         .ok_or(InspectError::StructureLimit)?;
     budget
@@ -77,7 +81,10 @@ pub(super) fn compose(
     for start in (original.len()..after.len()).step_by(PAGE_BYTES) {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, (data.pages.len() + PAGE_BYTES) as u64)
+            .charge(
+                Resource::Steps,
+                (data.pages.len() + staged.indexes.added.len() + PAGE_BYTES) as u64,
+            )
             .map_err(InspectError::from)?;
         let number = u32::try_from(start / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
         let mut selected = None;
@@ -103,6 +110,34 @@ pub(super) fn compose(
                 }
             }
         }
+        for page in &staged.indexes.added {
+            if page.number != number {
+                continue;
+            }
+            if page.bytes.starts_with(&USAGE_SIGNATURE) {
+                data.append.require_index_bitmap(
+                    number,
+                    staged.indexes.physical(),
+                    staged.indexes.usage(),
+                    budget,
+                    cancelled,
+                )?;
+            } else {
+                budget
+                    .charge(Resource::Steps, data.append.reservations_len() as u64)
+                    .map_err(InspectError::from)?;
+                if !data.append.indexes().any(|reservation| {
+                    reservation.number == number
+                        && reservation.physical == staged.indexes.physical()
+                        && reservation.usage == staged.indexes.usage()
+                }) {
+                    return Err(EditError::Preservation);
+                }
+            }
+            if selected.replace(page.bytes.as_slice()).is_some() {
+                return Err(EditError::Preservation);
+            }
+        }
         let bytes = selected
             .filter(|bytes| bytes.len() == PAGE_BYTES)
             .ok_or(EditError::Preservation)?;
@@ -126,6 +161,17 @@ pub(super) fn compose(
             patch.offset,
             &patch.before,
             &patch.after,
+            budget,
+            cancelled,
+        )?);
+    }
+    for promotion in &staged.indexes.promotions {
+        spans.push(write(
+            original,
+            &mut after,
+            promotion.offset,
+            &promotion.before,
+            &promotion.after,
             budget,
             cancelled,
         )?);

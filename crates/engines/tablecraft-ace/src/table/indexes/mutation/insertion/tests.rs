@@ -308,7 +308,7 @@ fn all_index_profiles_and_existing_write_headers_are_qualified_without_fallback(
 }
 
 #[test]
-fn genuine_five_hundred_key_overflow_remains_atomic_until_insert_splits_are_certified() {
+fn overflow_prepares_no_leaf_patch_before_explicit_split_continuation() {
     let mut before = split_model::source(6, false, true);
     before[10 * PAGE + 189] = 0x89;
     before[10 * PAGE + 218] = 1;
@@ -320,10 +320,11 @@ fn genuine_five_hundred_key_overflow_remains_atomic_until_insert_splits_are_cert
         reference: (15 << 8) | 250,
         value: &value,
     }];
-    assert!(matches!(
-        prepare(&image, &check, 1, &requests, &mut budget(), &|| false),
-        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-    ));
+    let pending = prepare(&image, &check, 1, &requests, &mut budget(), &|| false).unwrap();
+    assert!(pending.requires_split);
+    assert_eq!(pending.expected().len(), 501);
+    assert!(pending.patches.is_empty());
+    assert!(pending.added.is_empty());
     assert_eq!(image.as_bytes(), before);
 }
 
