@@ -10,9 +10,7 @@ on:
       - 'scripts/packaging/**'
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_file_associations.py'
-      - 'scripts/tests/test_file_associations.ps1'
-      - 'packaging/**'
-      - 'apps/tablecraft-cli/**'
+      - 'packaging/ThirdPartyLicenses.txt'
       - 'LICENSE'
       - 'Cargo.toml'
       - 'Cargo.lock'
@@ -101,25 +99,8 @@ jobs:
         run: '"RUSTFLAGS=-C target-feature=+crt-static" >> $env:GITHUB_ENV'
       - name: Build the headless CLI
         run: cargo build --locked --release -p tablecraft-cli --target ${{ matrix.target }}
-      - name: Build the Finder document receiver
-        if: runner.os == 'macOS'
-        env:
-          RELEASE_VERSION: ${{ needs.version.outputs.version }}
-          RELEASE_TARGET: ${{ matrix.target }}
-          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.executable }}
-        run: python scripts/packaging/build_macos_app.py --binary "$RELEASE_BINARY" --target "$RELEASE_TARGET" --version "$RELEASE_VERSION" --output dist-app/TableCraft.app
       - name: Test packaging on the native platform
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" = macOS ]; then
-            export TABLECRAFT_TEST_MACOS_RECEIVER="$PWD/dist-app/TableCraft.app/Contents/MacOS/TableCraft"
-          fi
-          python -m unittest discover -s scripts/tests -p 'test_package_*.py'
-          python -m unittest discover -s scripts/tests -p 'test_file_associations.py'
-      - name: Validate Windows registration syntax without changing associations
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: ./scripts/tests/test_file_associations.ps1
+        run: python -m unittest discover -s scripts/tests -p 'test_package_*.py'
       - name: Package and verify extracted version/help
         shell: bash
         env:
@@ -128,11 +109,7 @@ jobs:
           RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.executable }}
         run: |
           set -euo pipefail
-          macos_args=()
-          if [ "$RUNNER_OS" = macOS ]; then
-            macos_args=(--macos-app dist-app/TableCraft.app)
-          fi
-          python scripts/packaging/package_cli.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --output dist "${macos_args[@]}"
+          python scripts/packaging/package_cli.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --output dist
           archive=$(find dist -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) -print)
           python scripts/packaging/package_cli.py verify-archive --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --archive "$archive" --smoke
       - uses: actions/upload-artifact@v7

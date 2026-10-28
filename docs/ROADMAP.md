@@ -1178,7 +1178,7 @@ explicit user reprioritization and is excluded from the active sequence.
 | 7 | Query completion for editing | Bounded single-table/column UPDATE planning and CLI copies implemented; broader expressions, collations, actions and result-set updateability remain explicit gaps |
 | 8 | Native collaboration | Native Access shared-file coordination and mixed-client recovery testing; SQLite and native projects are paused |
 | 9 | Application runtime | Sessions, cursors, object lifecycle, bounded background work, cancellation and change notifications |
-| 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](architecture/TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, then qualified editing and visual builders |
+| 10 | Desktop UI | Accessible shell/navigation/ribbon using the selected [Selawik UI font](architecture/TECH_STACK.md#desktop-typography-decision), read-only datasheets and SQL editor, [MDB/ACCDB file handlers](architecture/FILE_ASSOCIATIONS.md), then qualified editing and visual builders |
 
 Compatibility experiments and behavioral trace planning can progress alongside
 this work. UI implementation follows the backend-first goal; its conformance

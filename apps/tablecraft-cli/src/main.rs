@@ -10,7 +10,6 @@ mod diagnostics;
 mod native;
 mod output;
 mod presentation;
-mod terminal_wait;
 
 #[derive(Parser)]
 #[command(
@@ -22,13 +21,12 @@ mod terminal_wait;
         "query eval calculates source-free SELECT expressions; query run executes bounded retrieval; ",
         "query preview-calculation explicitly recomputes a restricted stored formula without saving. ",
         "Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. ",
-        "Open receives a file for inert header inspection. ",
         "Inspect reports metadata or explicit checks without executing content. ",
         "In-place CLI editing and GUI hosts are not implemented."
     )
 )]
 struct Cli {
-    /// Output style for open, tables, rows, inspect and query run/eval/preview-calculation.
+    /// Output style for tables, rows, inspect and query run/eval/preview-calculation.
     #[arg(long, global = true, value_enum, default_value = "auto")]
     format: presentation::Format,
     /// Enable operation diagnostics on stderr; repeat for I/O detail.
@@ -42,7 +40,6 @@ struct Cli {
 }
 
 fn main() -> ExitCode {
-    let mut wait_for_terminal = false;
     let (result, status) = match Cli::try_parse() {
         Ok(Cli { command: None, .. }) => (Cli::command().print_help(), ExitCode::SUCCESS),
         Ok(Cli {
@@ -51,13 +48,12 @@ fn main() -> ExitCode {
             format,
             password,
         }) => {
-            wait_for_terminal = command.waits_for_terminal();
             if diagnostics::init(verbose).is_err() {
                 let _ = writeln!(
                     io::stderr().lock(),
                     "error: could not initialize diagnostics"
                 );
-                return finish(ExitCode::FAILURE, wait_for_terminal);
+                return ExitCode::FAILURE;
             }
             let _span = tracing::debug_span!("cli.command").entered();
             let password = password.map(zeroize::Zeroizing::new);
@@ -69,7 +65,7 @@ fn main() -> ExitCode {
         }
         Err(error) => (error.print(), ExitCode::from(error.exit_code() as u8)),
     };
-    let status = match result {
+    match result {
         Ok(()) => status,
         Err(error) if error.kind() == io::ErrorKind::BrokenPipe => ExitCode::SUCCESS,
         Err(error) => {
@@ -79,21 +75,7 @@ fn main() -> ExitCode {
             );
             ExitCode::FAILURE
         }
-    };
-
-    finish(status, wait_for_terminal)
-}
-
-fn finish(status: ExitCode, wait_for_terminal: bool) -> ExitCode {
-    if let Err(error) = terminal_wait::after_publication(wait_for_terminal) {
-        let _ = writeln!(
-            io::stderr().lock(),
-            "error: could not wait for terminal input: {error}"
-        );
-        return ExitCode::FAILURE;
     }
-
-    status
 }
 
 fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
