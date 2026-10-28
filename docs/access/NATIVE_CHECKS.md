@@ -23,6 +23,13 @@ gaps; it is not a database integrity certificate. A supported-path failure exits
 2 with no partial stdout. Existing escaped/buffered output and sanitized errors
 remain; original bytes are unchanged.
 
+The target table must qualify as a complete ordinary scalar snapshot. Successful
+buffered browsing of attachment collections or stored calculation caches does
+not satisfy that audit requirement. On such an unsupported target, the CLI
+explains the scalar prerequisite and suggests stored-value browsing or feature
+inspection; it still exits 2 without a partial report. This presentation does
+not turn unchecked fields into checked coverage or relax a native write gate.
+
 The CLI's explicit `--native-steps STEPS` can increase cumulative inspection work
 from the 1,000,000 default up to 100,000,000. It does not increase byte/row limits
 or turn unchecked index profiles into checked ones. Long payloads can be decoded

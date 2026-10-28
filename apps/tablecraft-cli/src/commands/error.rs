@@ -13,7 +13,18 @@ pub(crate) enum Error {
     PasswordMismatch,
     NoUserTables,
     AmbiguousUserTable,
+    ScalarAuditUnsupported,
 }
+
+impl Error {
+    pub(super) fn scalar_audit(error: InspectError) -> Self {
+        match error {
+            InspectError::Unsupported => Self::ScalarAuditUnsupported,
+            other => Self::Read(other),
+        }
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -37,6 +48,11 @@ impl fmt::Display for Error {
             Self::AmbiguousUserTable => {
                 f.write_str("more than one user table found; specify TABLE or use --all")
             }
+            Self::ScalarAuditUnsupported => f.write_str(concat!(
+                "this audit requires a qualified ordinary scalar table; calculated fields, ",
+                "collections and other unqualified layouts are not checked. Use rows for ",
+                "supported stored-value browsing or inspect --table TABLE --features for declarations"
+            )),
         }
     }
 }
