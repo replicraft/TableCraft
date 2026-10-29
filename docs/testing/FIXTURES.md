@@ -10437,3 +10437,32 @@ raw payload/group/property/text and native Id/ParentId/logical-root checks. The
 private original-file observations and consumer lineage through its manifest. No stored content,
 VBA, macro, startup action or external connection was executed. Native macro
 absence and native Access save/reopen remain unqualified.
+
+## Original nullable batch index-growth corpus
+
+The [allocating batch proof](results/ace16-nullable-split-batch-originals-2026-10-29.json)
+uses four fresh public-builder originals, created with the pinned Jackcess 5.0.4
+workflow. Each has Items and UniqueItems (500 original manual Int32 rows each),
+four logical declarations over two physical indexes per target, and one Sentinel
+record. All data and requests are original synthetic inputs. No application, VBA
+or macro body is copied or executed. Database binaries and dependency JARs remain
+private; this entry records provenance and observed engineering results.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016-ASC | 446464 | `9f88cf99ee1475aa78f6f6cbbe1100b023996de8cc72ac8498434fae30aa5ae1` |
+| V2016-DESC | 446464 | `2b01464e7e77460e09fa752b233d21fe5525387062a8495eef6f4e0b4d1c1709` |
+| V2019-ASC | 520192 | `b06f4f5761a4554072780fe6139e7d98fe968a044ed25d6dd94b1b8ff4aa4488` |
+| V2019-DESC | 520192 | `031fef299358a036eb0161f5b2b1e90416acf390b687228260966a73c0c251d1` |
+
+All originals pass their first nine creation/inspection calls and eight target/four
+Sentinel raw gates, with all known warnings preserved. Twenty expected images
+are frozen from original rows, mappings and requests before any public or native
+mutation. All twenty committed-producer candidates match all 9,928,704 bytes and
+pass twenty fresh independent SDK reads; original hashes remain unchanged.
+
+The separate public reference supplies semantic/preservation observations, not
+canonical image authority. Its page packing and recycled inactive NULL payloads
+differ and are recorded explicitly. These are V2016/V2019 stored-profile
+engineering results; native Microsoft Access save/reopen, required data-macro
+semantics and normal ACE saves remain unqualified.

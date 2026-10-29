@@ -1275,9 +1275,9 @@ nullable/IgnoreNULL populations and independently audits original requests,
 history, allocation and byte preservation. Its first API run matches 80 complete
 prefrozen images; 16 fitting comparisons remain exact. Adversarial controls include
 repeated families, request ordering, source ownership and correlated forgeries.
-Four public-builder originals now pass their
-[source-only gates](testing/results/ace16-nullable-split-batch-sources-2026-10-29.json);
-candidate comparisons, multi-table allocation, wider carriers, contraction,
+Four public-builder originals now pass
+[20 complete-image candidate comparisons and 20 fresh independent reads](testing/results/ace16-nullable-split-batch-originals-2026-10-29.json),
+with a separate 40-call public-reference phase. Multi-table allocation, wider carriers, contraction,
 broader map/height cases and normal ACE saves remain unfinished. This advances
 milestone 4 without completing it or changing the required data-macro gate.
 

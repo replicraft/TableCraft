@@ -1,0 +1,87 @@
+{
+  "operation": "Maintained saved original-file nullable split-batch proof",
+  "verified": true,
+  "canonical_images": 20,
+  "canonical_bytes": 9928704,
+  "exact_native_images": 20,
+  "fresh_typed_proofs": 20,
+  "public_proofs": 20,
+  "public_warnings": 1600,
+  "public_byte_exact_images": 4,
+  "public_bytes": 10092544,
+  "inactive_NULL_payload_differing_bytes": 11184,
+  "inactive_NULL_payload_policy": "opaque public observation; no canonical image changes",
+  "exact_own_program_copies": 24,
+  "default_replay": {
+    "verified": true,
+    "source_commands": 9,
+    "source_targets": 8,
+    "sentinels": 4,
+    "exact_maintained_programs": 24,
+    "reconstructed_images": 20,
+    "reconstructed_bytes": 9928704,
+    "action_compile_commands": 1,
+    "public_commands": 40,
+    "public_typed_proofs": 20,
+    "public_warnings": 1600,
+    "public_byte_exact": 4,
+    "native_candidates_exact": 20,
+    "fresh_typed_proofs": 20,
+    "native_Access_qualification": false,
+    "checked_pins": 9766,
+    "distinct_paths": 1001,
+    "archive_files": 4791,
+    "metadata_child_processes": 0
+  },
+  "phase_children": {
+    "source": 9,
+    "action_compile": 1,
+    "public_reference": 40,
+    "native": 20,
+    "fresh": 20
+  },
+  "pure_expected_images": 20,
+  "all_actual_fixture_phases_first_success": true,
+  "actual_default_subprocesses": 0,
+  "negative_controls": [
+    {
+      "name": "missing-consumer-read-boundary",
+      "status": 2
+    },
+    {
+      "name": "missing-native-output-read-boundary",
+      "status": 2
+    },
+    {
+      "name": "tampered-maintained-source-isolated-copy",
+      "status": 2
+    }
+  ],
+  "negative_control_method": "in-process command boundary with read-only missing-file proxies and isolated maintained-copy root",
+  "boundary_evidence": {
+    "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/boundary-checks-first.json",
+    "bytes": 1862,
+    "sha256": "b914fee2367c573d146ffaf0b4c91a06e6058389ba9a006442cd0539d6304d2f"
+  },
+  "boundary_harness": {
+    "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/check_boundaries.py",
+    "bytes": 3639,
+    "sha256": "9d0d1160bc8893f860feb9a6ed29ae30456b1dfc10527d5419a597dba266f463"
+  },
+  "first_maintained_authoring_failure": {
+    "evidence": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/first-default-failure.json",
+      "bytes": 1422,
+      "sha256": "ccbb56655589dbf4feb275a72927096435c4af4281bb35982ee4cbc902397683"
+    },
+    "failure": "new verifier used the source pin dictionary instead of its path when reconstructing argv",
+    "correction": "maintained checker uses pin.path and binds the original source/getter pins",
+    "executed_programs_or_fixture_bytes_changed": false
+  },
+  "archive_source_files": 4791,
+  "archived_Rust_witnesses": 16,
+  "disposable_target_required": false,
+  "optional_Git_check": "available; not run by this authoring task",
+  "native_Access_qualification": false,
+  "authoritative_result": "docs/testing/results/ace16-nullable-split-batch-originals-2026-10-29.json"
+}

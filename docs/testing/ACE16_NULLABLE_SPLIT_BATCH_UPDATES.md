@@ -49,7 +49,8 @@ The source is captured without modification and the candidate path must be new.
 The flag conflicts with `--cascade-updates` before any file is opened. Omitting
 both flags retains the fitted API; cascade dispatch remains separate. This does
 not expose normal CLI editing or permit native saves. Four focused example tests
-and strict example Clippy pass; original-file candidate calls remain pending.
+and strict example Clippy pass. The committed producer and original-file
+qualification are recorded below.
 
 ## One original operation and append ledger
 
@@ -141,10 +142,38 @@ contain 4,004 user records. Each target has the predicted four logical declarati
 over two physical owners, leaf packing and 201/200 histories. All 2,400 known
 creation warning records are preserved and classified exactly; no stderr is
 silently suppressed. No expected image, public UPDATE, native candidate or native
-Access comparison ran in that source phase. Twenty source/request-derived
-expected images must precede the reference and candidate phases.
+Access comparison ran in that source phase.
 
-Root-height growth, map-boundary variants, wider tuples/carriers,
+The [complete original-file proof](results/ace16-nullable-split-batch-originals-2026-10-29.json)
+now derives and independently reconstructs 20 whole expected images from those
+sources and immutable requests before either writer runs. All 20 first native
+candidate calls match all 9,928,704 expected bytes. Only after all full-image
+comparisons pass do 20 separately bound fresh SDK readers verify actual values,
+complete index/ROW streams, histories, maps and protected bytes. Every candidate
+is rehashed before and after every reader. No candidate or model adjustment was
+needed. The producer is an isolated fresh release build of commit `50d028cc`,
+bound by the [committed receipt](results/ace16-nullable-split-batch-example-build-2026-10-29.json).
+
+The separate public reference passes 20 ordered actions and 20 fresh reads over
+8,008 row updates, preserving all 1,600 exact Clear warnings. Four fitted
+duplicate-family images are byte-identical to the canonical expectations.
+Public growth packing differs: Full appends six INDEX pages and one FREE page;
+Clear appends five INDEX pages and one FREE page. The engine appends four INDEX
+pages in either case. Public NULL payloads are not zeroed: cleared fields contain
+opaque recycled scratch bytes, including 11,184 differing bytes. These and other
+inactive INDEX/FREE bytes stay explicitly opaque. No public AFTER image supplies
+canonical placement or expected payload authority. There are no unexplained
+typed-value, mask, counter, map or protected-prefix differences.
+
+Further root-height growth, map-boundary variants, wider tuples/carriers,
 cross-table allocation and contraction need their own acceptance. Required
 [data-macro semantics](DATA_MACROS.md), native Access save/reopen and recovery
 qualification remain open; this candidate has no journal or save operation.
+
+The [maintained saved replay](ace16_nullable_split_batch_updates/README.md) now
+reconstructs the complete expectations and rechecks all saved phases without
+starting children or rebuilding the producer. Its default root replay verifies
+9,766 pin occurrences, 1,001 distinct paths and all 4,791 archived source files.
+Missing consumer/output and tampered maintained-source controls refuse. The
+retained initial verifier-authoring failure concerns argv reconstruction only;
+executed programs, source bytes and canonical images remain unchanged.
