@@ -1,4 +1,5 @@
-//! INSERT-only ordinary-owned inline rebasing preserves the complete member set.
+//! INSERT-owned window growth and existing indirect block-zero initialization.
+mod record;
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,
     format::{
@@ -12,15 +13,12 @@ use crate::{
         variable_split::metadata::Metadata,
     },
 };
+use record::Record;
 use std::io::Cursor;
 
-const INLINE: u8 = 0;
 const BLOCK: u32 = 0;
 const BITMAP_PREFIX: usize = USAGE_SIGNATURE.len();
 const BITMAP_PAGES: u32 = ((PAGE_BYTES - BITMAP_PREFIX) * u8::BITS as usize) as u32;
-
-const INLINE_RECORD_BYTES: usize =
-    1 + size_of::<u32>() + QualifiedInlineRecord::PAGE_CAPACITY / u8::BITS as usize;
 
 struct Bitmap {
     number: u32,
@@ -28,7 +26,7 @@ struct Bitmap {
 }
 
 pub(super) struct Owned {
-    record: QualifiedInlineRecord,
+    record: Record,
     base: u32,
     rewritten: bool,
     bitmap: Option<Bitmap>,
@@ -42,14 +40,9 @@ impl Owned {
     ) -> Result<Option<Self>, EditError> {
         let usage = schema.layout.usage;
         let map = RepresentedMap::read(reader, usage, MapRole::Owned)?;
-        if map.kind() != INLINE {
+        let Some(record) = Record::capture(usage, map.kind(), reader)? else {
             return Ok(None);
-        }
-        let storage = RepresentedMap::read_storage(reader, usage, MapRole::Owned)?;
-        if storage.record.len() != INLINE_RECORD_BYTES {
-            return Ok(None);
-        }
-        let record = QualifiedInlineRecord::capture(reader, usage)?;
+        };
         metadata.require_record_rewrite(
             Owner::OrdinaryOwned {
                 definition: schema.definition_page(),
@@ -69,7 +62,8 @@ impl Owned {
     }
 
     pub(super) fn needs_rewrite(&self, number: u32) -> bool {
-        self.bitmap.is_some()
+        self.record.needs_initialization()
+            || self.bitmap.is_some()
             || self.rewritten
             || number
                 .checked_sub(self.base)
@@ -90,6 +84,9 @@ impl Owned {
         }
         if let Some(bitmap) = &mut self.bitmap {
             return set_member(&mut bitmap.bytes, number, bitmap.number, reader);
+        }
+        if self.record.needs_initialization() {
+            return self.promote(number, members, append, global, reader);
         }
         let minimum = members.first().copied().unwrap_or(number);
         let represented = number

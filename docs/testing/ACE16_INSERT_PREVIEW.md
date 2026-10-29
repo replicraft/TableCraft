@@ -57,6 +57,12 @@ New DATA pages and any required hint bitmap metadata have distinct reservations.
 The shared [allocation rules](ACE16_ALLOCATION_TRANSITIONS.md) remain bounded by
 the original map authority and represented global free-page coverage.
 
+A first INSERT into an empty table can initialize a qualified existing indirect
+ordinary-owned block-zero pointer. DATA and its separately typed owned bitmap
+share the cursor; higher pointers and unclaimed old pages stay unchanged. The
+[ordinary-owned continuation](ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer)
+records the source authority, literal checks and pending original-file evidence.
+
 The primary receives the exact new key/ROW pairs, preserving its root identity
 and unrelated residue bytes. Duplicate original or batch primary values retain
 typed uniqueness failures. Root-leaf growth uses a separate cardinality-aware
