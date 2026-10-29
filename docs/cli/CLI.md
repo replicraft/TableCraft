@@ -26,6 +26,7 @@ For installation, see the [README](../../README.md#install). From the repository
 tablecraft inspect example.accdb
 tablecraft inspect example.accdb --catalog
 tablecraft inspect example.accdb --table Customers --indexes
+tablecraft inspect example.accdb --table Customers --extra
 tablecraft inspect example.accdb --table Customers --check
 tablecraft tables example.accdb --details --count
 tablecraft rows example.accdb Customers --limit 25 --offset 25
@@ -38,6 +39,10 @@ indexes and reports unchecked coverage. `tables --count` shows declared stored
 row counts, not a record-integrity audit. `rows` uses physical encounter order;
 use an SQL `ORDER BY` when ordering matters. `rows --all` emits a separate page
 per local user table and leaves linked targets unopened.
+
+`inspect --table NAME --extra` explicitly reports bounded inert
+[table Extra metadata](../access/schema/NATIVE_TABLE_EXTRA.md). It retains numeric
+group/property facts without printing stored XML or certifying data-macro absence.
 
 When the database has exactly one user table, `rows PATH` selects it automatically;
 system tables do not count. With zero or multiple user tables, supply a table

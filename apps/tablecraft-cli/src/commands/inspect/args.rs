@@ -36,6 +36,15 @@ pub(crate) struct Args {
     /// Inspect inert native table/column/index properties without evaluating them.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "check"])]
     properties: bool,
+    /// Inspect inert table LvExtra framing and provenance without printing stored text.
+    #[arg(
+        long,
+        requires = "table",
+        conflicts_with_all = ["catalog", "query", "relationships", "indexes", "properties",
+            "features", "complex", "stored_calculation", "complex_links", "attachments",
+            "version_history", "check", "constraints"]
+    )]
+    extra: bool,
     /// Inspect inert calculated, complex and presentation field declarations.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
     features: bool,
@@ -79,6 +88,7 @@ impl Args {
             table,
             indexes,
             properties,
+            extra,
             features,
             complex,
             stored_calculation,
@@ -93,7 +103,9 @@ impl Args {
         } else if relationships {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
-            if let Some(column) = attachments.as_deref() {
+            if extra {
+                Mode::Extra(name)
+            } else if let Some(column) = attachments.as_deref() {
                 Mode::Attachments(name, column)
             } else if let Some(column) = version_history.as_deref() {
                 Mode::VersionHistory(name, column)

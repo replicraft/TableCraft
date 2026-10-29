@@ -4,8 +4,8 @@ use tablecraft_core::ids::ObjectId;
 /// One inert native binary payload. Undeclared columns, NULL and empty stored
 /// bytes remain distinct; no VBA/OLE/application content is interpreted.
 pub struct OpaquePayload {
-    pub(super) presence: PayloadPresence,
-    pub(super) bytes: Option<Vec<u8>>,
+    pub(in crate::preservation) presence: PayloadPresence,
+    pub(in crate::preservation) bytes: Option<Vec<u8>>,
 }
 impl OpaquePayload {
     /// Physical catalog-column presence, without a dependency/safety conclusion.

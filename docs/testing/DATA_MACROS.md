@@ -1,9 +1,10 @@
 # ACE 16 data-macro qualification
 
-Status: evidence requirements and current observations, 19 October 2026. Native
-data-macro detection, decoding and execution are not implemented or qualified.
-All production ACE writes remain blocked. This document does not supply an
-implemented macro API, positive fixture or passing native comparison.
+Status: evidence requirements and current observations, 29 October 2026.
+[Inert table Extra framing](../access/schema/NATIVE_TABLE_EXTRA.md) now has a
+bounded reader. Semantic data-macro detection, qualified absence and execution
+remain unfinished. All production ACE writes remain blocked. This document does
+not establish native Access qualification.
 
 ## Current evidence and the write gate
 
@@ -35,6 +36,28 @@ The existing [write gate](../access/writes/NATIVE_WRITES.md) and [preservation l
 therefore remain unchanged while positive native evidence is missing.
 
 ## Reference boundaries
+
+### Observed table Extra storage
+
+Desktop-origin examples acquired for inert investigation contain table-owned
+`MSysObjects.LvExtra` values with wide-MR2 framing. Their actual stored selector
+is ACE 2010, despite newer product/course labels. They are secondary evidence for
+discovering the carrier, not native ACE 16 qualification. Original files and
+extracted payloads remain private and unchanged.
+
+The bounded reader retains exact table identity, native parent and catalog row
+location, raw bytes, numeric groups and property names. It can expose validated
+UTF-16 text without parsing or executing XML. Observed property names and event
+names differ in some records; neither numeric group kind nor property name alone
+identifies an event. Desktop-origin text also uses the Access Services
+`2009/11/application` namespace. Namespace alone cannot classify a payload as a
+web-only feature.
+
+This advances carrier inspection. It does not establish absence, all supported
+namespaces/actions, event order, rollback, or safe ordinary saves. Names-only
+Extra values remain names-only observations. Missing or NULL Extra remains a
+physical presence fact, not an absence certificate. The existing narrow `LvProp`
+reader and normal write gates remain unchanged.
 
 Desktop references describe [Before Change](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event),
 [Before Delete](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-delete-macro-event),
@@ -96,9 +119,10 @@ identities before extending transactions or replay. Unavailable macro behavior
 cannot be bypassed by direct row patches. Keep native engineering comparisons
 separate from the deferred VBA/COM/Wine application compatibility implementation.
 
-Until the positive fixture/environment exists, evidence acquisition is the next
-dependency for macro detection and ACE write qualification. Independent read-only
-engine work can continue; it does not complete this gate or roadmap steps 1–9.
+Positive ACE 16 fixtures with recorded native build provenance remain a dependency
+for absence and write qualification. The secondary positive storage observations
+above support continued bounded decoder work; they do not complete this gate or
+roadmap steps 1–9.
 
 ## Engineering progress before Windows qualification
 

@@ -48,6 +48,12 @@ from inspection or the existing offline Jet 4 write gate.
 
 ## Bounded opaque catalog payload bytes
 
+Explicit [table Extra inspection](../schema/NATIVE_TABLE_EXTRA.md) can additionally
+decode the observed wide-MR2 framing for one captured local table. It projects
+only `LvExtra`, preserves numeric/raw provenance and never interprets XML as
+executable content. That separate operation does not weaken this all-payload
+reader or establish macro absence or normal write eligibility.
+
 `NativeImage::read_object_payloads` returns an owned `ObjectPayloadData` for one
 exact captured identity. `OpaquePayload` keeps Present/Absent/Uninspected separate
 from its optional assembled binary bytes. Valid empty inline storage returns

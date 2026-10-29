@@ -12,6 +12,33 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Inert table Extra storage inspection
+
+The bounded [table Extra reader](access/schema/NATIVE_TABLE_EXTRA.md) now retains
+exact captured table identity, native parent and catalog location, full raw
+payloads and observed wide-MR2 group/property facts. It reads only `LvExtra`,
+leaving unrelated bodies/modules unopened. Missing, NULL, empty, opaque and
+malformed states remain distinct. Strictly validated UTF-16 text stays inert.
+`inspect --table NAME --extra` publishes an explicit metadata summary without
+printing XML or claiming macro absence. The narrow `LvProp` reader and all normal
+write gates remain unchanged.
+
+Nine focused engine functions, seven shared payload/property regressions and four
+new CLI functions pass. The full engine library passes 675 tests with two existing
+generators ignored; strict ACE/CLI all-target/all-feature and minimal ACE Clippy,
+formatting, links and dependency checks pass. Local ACE library tests reduce debug
+information after a retained disk-space failure, without changing assertions,
+optimization or incremental compilation. A synthetic catalog-count defect was
+corrected before the identity reader could run; no production guard was weakened.
+
+Seven first-run original-file comparisons match all 14,266 payload bytes, nine
+property values and 54 complete output records against prior independent
+observations, with original hashes unchanged. These desktop-origin originals use
+the ACE 2010 stored profile. They support carrier discovery, not ACE 16 macro
+semantics, qualified absence or native Access save/reopen. The
+[verification record](testing/results/table-extra-inspection-2026-10-29.json)
+retains failed build, fixture and lint observations separately.
+
 ## Selected forwarded-record fixed and batch UPDATE previews
 
 The [resolved-record continuation](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)

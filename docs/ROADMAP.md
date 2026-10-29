@@ -1224,8 +1224,11 @@ Scoped complex child links/scalars, bounded original attachment payloads, stored
 scalar calculations and opaque catalog payload inspection now work. Continue
 complete advanced-field/collection semantics, exact physical index/constraint
 coverage and required data-macro handling before enabling ACE 16 writes. The
-[data-macro evidence dependency](testing/DATA_MACROS.md) requires positive ACE 16
-fixtures/native comparisons; current catalog/XML observations cannot permit writes. Continue
+[data-macro evidence dependency](testing/DATA_MACROS.md) now has bounded
+[table Extra framing inspection](access/schema/NATIVE_TABLE_EXTRA.md), motivated
+by positive desktop-origin ACE 2010 payloads. Positive ACE 16 fixtures, qualified
+absence, required event semantics and native comparisons remain unfinished;
+current catalog/XML observations cannot permit writes. Continue
 acquiring actual Microsoft Access fixtures with recorded builds and provenance;
 independent-reader evidence does not qualify native Access conformance.
 
