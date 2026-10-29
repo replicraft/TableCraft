@@ -49,6 +49,16 @@ pub(super) fn before_slot(
 }
 
 #[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_fixed_update(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(image, table, Admission::FixedUpdate, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn before_insert(
     image: &NativeImage,
     table: &str,
@@ -76,6 +86,8 @@ pub(super) fn before_incrementing_insert(
 
 enum Admission {
     Update,
+    #[cfg(feature = "ace16-write-preview")]
+    FixedUpdate,
     #[cfg(feature = "ace16-write-preview")]
     Delete,
     #[cfg(feature = "ace16-write-preview")]
@@ -110,7 +122,7 @@ fn before_with(
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
 
-    if matches!(admission, Admission::Update)
+    if blocks_binary_update(&admission)
         && structural.indexes().iter().any(|index| {
             index.index().columns().iter().any(|key| {
                 schema.columns().iter().any(|column| {
@@ -193,7 +205,8 @@ fn before_with(
         index.status() != IndexCheckStatus::Checked
             // Complete physical membership permits the separate DELETE/INSERT
             // consumers, whose planners still qualify their own key profiles.
-            // Every UPDATE, including an empty one, retains its blocker.
+            // Ordinary/slot/cascade UPDATE retains its blocker. The separately
+            // qualified fixed UPDATE consumer binds the complete omitted set.
             || (!has_ignored_index_consumer(&admission)
                 && index.index().constraints().is_some_and(|constraints| constraints.ignore_nulls()))
             || (!foreign_preview && index.index().native_type() == FOREIGN_INDEX)
@@ -303,7 +316,20 @@ pub(super) fn qualified(report: &ConstraintReport) -> Result<(), EditError> {
 fn has_ignored_index_consumer(admission: &Admission) -> bool {
     match admission {
         #[cfg(feature = "ace16-write-preview")]
-        Admission::Delete | Admission::Insert | Admission::IncrementingInsert => true,
+        Admission::Delete
+        | Admission::Insert
+        | Admission::IncrementingInsert
+        | Admission::FixedUpdate => true,
+        _ => false,
+    }
+}
+
+fn blocks_binary_update(admission: &Admission) -> bool {
+    match admission {
+        Admission::Update => true,
+        #[cfg(feature = "ace16-write-preview")]
+        Admission::FixedUpdate => true,
+        #[cfg(feature = "ace16-write-preview")]
         _ => false,
     }
 }

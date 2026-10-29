@@ -7,6 +7,8 @@ mod composite;
 mod delete;
 mod encoding;
 #[cfg(feature = "ace16-write-preview")]
+mod ignored;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod insertion;
 mod kind;
 use super::composite::DecimalValue;
@@ -43,6 +45,8 @@ pub(in crate::table) use retirement::{
 mod tree;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use plan::delete_patches;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use plan::fixed_patches;
 pub(in crate::table) use plan::patches;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use tree::audit_siblings;

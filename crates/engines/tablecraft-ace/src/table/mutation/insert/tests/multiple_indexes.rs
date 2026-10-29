@@ -7,7 +7,7 @@ use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
 
-pub(in crate::table::mutation::insert) mod model;
+pub(in crate::table::mutation) mod model;
 use model::{Case, PAGE, Row};
 
 fn run(case: &Case, rows: &[Row]) -> Vec<u8> {

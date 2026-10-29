@@ -6,6 +6,9 @@ pub(in crate::table::mutation) mod masked;
 mod preview;
 mod update;
 
+#[cfg(test)]
+mod ignored_updates;
+
 pub use batch::FixedColumnUpdates;
 pub use update::FixedScalarUpdate;
 

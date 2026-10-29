@@ -12,6 +12,26 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ignored-NULL fixed and batch UPDATE previews
+
+The separate [ACE 16 fixed/batch continuation](testing/ACE16_IGNORED_NULL_UPDATES.md)
+now maintains qualified secondary indexes that omit entirely NULL keys. It binds
+the complete original logical-row universe, checks the stored eligible stream,
+applies complete tuple assignments, and checks Required before omission and final
+uniqueness. Physical aliases share one transform and historical counter update;
+order-dependent family histories refuse. Fitting rewrites retain every original
+page and link, without allocation or retirement. NULL edits retain ignored payload
+bytes. Normal Jet 4, slot/cascade admission and normal ACE save gates are unchanged.
+
+The final 16 focused checks cover 44 complete independent images; 108 shared
+regressions across 16 targets and strict all-target/all-feature and minimal-library
+Clippy pass. The full engine library passes 657 tests with two existing generators
+ignored before the final state refactor and primary-group admission tightening;
+the final focused batch covers both changes. The [verification record](testing/results/ace16-ignored-null-fixed-updates-2026-10-29.json)
+retains oracle, compile and prior-integration failures separately. Public originals
+now pass source qualification only; UPDATE comparisons and native Access
+qualification remain open.
+
 ## Explicit incrementing AutoNumber INSERT preview
 
 The separate [incrementing INSERT service](testing/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)

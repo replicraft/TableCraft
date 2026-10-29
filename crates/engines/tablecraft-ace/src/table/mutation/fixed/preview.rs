@@ -1,13 +1,10 @@
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
-use super::{FixedScalarUpdate, encoding, masked, update::EncodedUpdate};
+use super::{FixedScalarUpdate, masked};
 use crate::{
     InspectError, NativeImage, format::data_type::NUMERIC_BYTES, header::check,
     inspect_table_schema, limits::MAX_LIVE_ROWS,
 };
-use tablecraft_core::{
-    limits::ResourceBudget,
-    values::{Guid, Value},
-};
+use tablecraft_core::{limits::ResourceBudget, values::Guid};
 use tablecraft_schema::ScalarType;
 
 impl NativeImage {
@@ -62,69 +59,28 @@ impl NativeImage {
             ScalarType::Boolean => {
                 masked::generate::<0>(self, table, column, updates, kind, budget, cancelled)
             }
-            ScalarType::Byte => generate::<{ size_of::<u8>() }>(
+            ScalarType::Byte => masked::generate::<{ size_of::<u8>() }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
-            ScalarType::Int16 => generate::<{ size_of::<i16>() }>(
+            ScalarType::Int16 => masked::generate::<{ size_of::<i16>() }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
-            ScalarType::Int32 | ScalarType::Single => generate::<{ size_of::<i32>() }>(
+            ScalarType::Int32 | ScalarType::Single => masked::generate::<{ size_of::<i32>() }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
             ScalarType::Int64
             | ScalarType::Currency
             | ScalarType::Double
-            | ScalarType::DateTime => generate::<{ size_of::<i64>() }>(
+            | ScalarType::DateTime => masked::generate::<{ size_of::<i64>() }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
             ScalarType::Decimal => masked::generate::<NUMERIC_BYTES>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
-            ScalarType::Guid => generate::<{ Guid::BYTE_LEN }>(
+            ScalarType::Guid => masked::generate::<{ Guid::BYTE_LEN }>(
                 self, table, column, updates, kind, budget, cancelled,
             ),
             _ => Err(EditError::Unsupported(WriteBlocker::Column)),
         }
     }
-}
-
-fn generate<const WIDTH: usize>(
-    image: NativeImage,
-    table: &str,
-    column: &str,
-    updates: &[FixedScalarUpdate],
-    kind: ScalarType,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Ace16WritePreview, EditError> {
-    let mut needs_mask = false;
-    for update in updates {
-        check(budget, cancelled)?;
-        needs_mask |=
-            matches!(update.expected(), Value::Null) || matches!(update.value(), Value::Null);
-    }
-    if needs_mask {
-        return masked::generate::<WIDTH>(image, table, column, updates, kind, budget, cancelled);
-    }
-    budget
-        .charge_allocation(
-            updates.len() as u64,
-            size_of::<EncodedUpdate<WIDTH>>() as u64,
-        )
-        .map_err(InspectError::from)?;
-    let mut encoded: Vec<EncodedUpdate<WIDTH>> = Vec::new();
-    encoded
-        .try_reserve_exact(updates.len())
-        .map_err(|_| InspectError::Allocation)?;
-    for update in updates {
-        check(budget, cancelled)?;
-        encoded.push(EncodedUpdate {
-            row: update.row(),
-            expected: encoding::encode(kind, update.expected())?,
-            value: encoding::encode(kind, update.value())?,
-        });
-    }
-    image
-        .plan_fixed_updates_inner(table, column, &encoded, kind, budget, cancelled)
-        .map(Ace16WritePreview::from_plan)
 }

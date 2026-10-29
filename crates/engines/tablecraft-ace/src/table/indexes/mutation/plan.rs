@@ -49,6 +49,30 @@ pub(in crate::table) fn patches(
 }
 
 #[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) fn fixed_patches(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: &[IndexCheck],
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    let result = patches_with(
+        image,
+        schema,
+        indexes,
+        Change::FixedUpdate(updates),
+        None,
+        budget,
+        cancelled,
+    )?;
+    if !result.retired.is_empty() || !result.siblings.is_empty() {
+        return Err(EditError::Preservation);
+    }
+    Ok(result.indexes)
+}
+
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) fn splitting_patches(
     image: &NativeImage,
     schema: &TableSchema,
@@ -96,6 +120,8 @@ pub(in crate::table) fn delete_patches(
 pub(super) enum Change<'a> {
     Update(&'a [IndexKeyUpdate]),
     #[cfg(feature = "ace16-write-preview")]
+    FixedUpdate(&'a [IndexKeyUpdate]),
+    #[cfg(feature = "ace16-write-preview")]
     Delete(&'a [u32]),
     #[cfg(feature = "ace16-write-preview")]
     DeleteUpdate(&'a [u32], &'a [IndexKeyUpdate]),
@@ -105,6 +131,8 @@ impl Change<'_> {
     fn len(self) -> usize {
         match self {
             Self::Update(updates) => updates.len(),
+            #[cfg(feature = "ace16-write-preview")]
+            Self::FixedUpdate(updates) => updates.len(),
             #[cfg(feature = "ace16-write-preview")]
             Self::Delete(references) => references.len(),
             #[cfg(feature = "ace16-write-preview")]
@@ -118,7 +146,7 @@ impl Change<'_> {
         match self {
             Self::Update(_) => false,
             #[cfg(feature = "ace16-write-preview")]
-            Self::Delete(_) | Self::DeleteUpdate(_, _) => true,
+            Self::Delete(_) | Self::DeleteUpdate(_, _) | Self::FixedUpdate(_) => true,
         }
     }
 
@@ -130,6 +158,8 @@ impl Change<'_> {
                     .iter()
                     .any(|key| key.number() == schema.columns[update.column].number())
             }),
+            #[cfg(feature = "ace16-write-preview")]
+            Self::FixedUpdate(updates) => Self::Update(updates).affects(index, schema),
             #[cfg(feature = "ace16-write-preview")]
             Self::Delete(_) | Self::DeleteUpdate(_, _) => true,
         }
@@ -188,6 +218,13 @@ pub(super) fn patches_with(
         let index = check.index();
         #[cfg(feature = "ace16-write-preview")]
         let change = match change {
+            Change::FixedUpdate(updates)
+                if !index
+                    .constraints()
+                    .is_some_and(|constraints| constraints.ignore_nulls()) =>
+            {
+                Change::Update(updates)
+            }
             Change::DeleteUpdate(references, updates)
                 if !Change::Update(updates).affects(index, schema) =>
             {
@@ -196,6 +233,22 @@ pub(super) fn patches_with(
             other => other,
         };
         reader.work(change.len() * index.columns().len())?;
+        #[cfg(feature = "ace16-write-preview")]
+        if matches!(change, Change::FixedUpdate(_)) {
+            reader.work(indexes.len())?;
+            if indexes.iter().any(|other| {
+                other.index().data_number() == index.data_number()
+                    && other
+                        .index()
+                        .constraints()
+                        .is_some_and(|constraints| constraints.primary_key())
+            }) {
+                // Admission belongs to the physical owner, not whichever logical
+                // alias happens to be traversed first. IgnoreNULL primary indexes
+                // remain outside this secondary-only UPDATE continuation.
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+        }
         if !change.affects(index, schema) {
             continue;
         }
@@ -291,7 +344,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -312,7 +365,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -343,7 +396,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -372,7 +425,7 @@ pub(super) fn patches_with(
                         reader.cancelled,
                     ),
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) | Change::FixedUpdate(_) => {
                         TupleProfile::<DecimalValue, DecimalColumns>::new_decimal_for_delete(
                             index,
                             schema,
@@ -385,7 +438,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -399,7 +452,7 @@ pub(super) fn patches_with(
                         reader.cancelled,
                     ),
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) | Change::FixedUpdate(_) => {
                         TupleProfile::<MixedValue>::new_for_delete(
                             index,
                             schema,
@@ -412,7 +465,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -423,7 +476,7 @@ pub(super) fn patches_with(
                         TupleProfile::<i64>::new(index, schema, reader.budget, reader.cancelled)
                     }
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) | Change::FixedUpdate(_) => {
                         TupleProfile::<i64>::new_for_delete(
                             index,
                             schema,
@@ -436,7 +489,7 @@ pub(super) fn patches_with(
                     image,
                     &mut reader,
                     index,
-                    schema.definition,
+                    schema,
                     change,
                     &profile,
                     &mut patches,
@@ -452,16 +505,22 @@ fn edit<P: WriteProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
     index: &NativeIndex,
-    owner: u32,
+    schema: &TableSchema,
     change: Change<'_>,
     profile: &P,
     patches: &mut PatchSet,
 ) -> Result<(), EditError> {
+    let owner = schema.definition_page();
     #[cfg(not(feature = "ace16-write-preview"))]
     let Change::Update(updates) = change;
     #[cfg(feature = "ace16-write-preview")]
     let updates = match change {
         Change::Update(updates) => updates,
+        Change::FixedUpdate(updates) => {
+            return super::ignored::edit::<P, N>(
+                image, reader, index, schema, updates, profile, patches,
+            );
+        }
         Change::Delete(references) => {
             return super::delete::edit::<P, N>(
                 image, reader, index, owner, references, profile, patches,

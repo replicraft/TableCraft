@@ -1,0 +1,339 @@
+{
+  "date": "2026-10-29",
+  "operation": "ACE 16 engineering fixed/batch UPDATE of qualified IgnoreNULL secondary indexes",
+  "baseline_commit": "7b67781c718443cb6d60707475e68f634a2ad2ec",
+  "entrypoints": [
+    "NativeImage::preview_ace16_fixed_updates",
+    "NativeImage::preview_ace16_batch_updates"
+  ],
+  "normal_ACE_save_enabled": false,
+  "normal_Jet4_slot_cascade_admission_changed": false,
+  "native_Access_qualification": false,
+  "public_UPDATE_comparisons_executed": false,
+  "passing_functions": {
+    "full_engine_library": 657,
+    "existing_generators_ignored": 2,
+    "final_focused_total": 16,
+    "final_focused_source_gates": 4,
+    "final_focused_preview_functions": 12,
+    "shared_regressions": 108,
+    "shared_targets": 16
+  },
+  "complete_expected_images": {
+    "total": 44,
+    "single": 16,
+    "tuple": 16,
+    "existing_nodes": 8,
+    "forwarded_source": 4
+  },
+  "scope": [
+    "Complete original logical-row eligible/omitted key certification",
+    "Complete tuple assignments, Required before all-NULL omission and final uniqueness",
+    "Physical alias dedup and group-primary refusal before affected-column filtering",
+    "Original-omitted new-family history increments; ambiguous ordering refuses",
+    "Retained topology, earlier leaf populations and final remainder; no allocation/retirement",
+    "Opaque NULL payload preservation and untouched forwarded root certification",
+    "Selected forwarded updates, unsupported capacity and empty-subtree transitions remain refused"
+  ],
+  "ordering": "Full library preceded final Population replay-state refactor and stricter primary guard. Final focused sixteen cover both changes. Shared regression migration changes only one old integration assertion; strict Clippy compiles the final code. Last formatter change wraps test/helper lines only.",
+  "verification": [
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/source-first.log",
+        "bytes": 501,
+        "sha256": "79d631e8b858640ef40322ad0adae0051eddf63562feb2ecce7336ad71de2304"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/source-after-tuple-annotation.log",
+        "bytes": 624,
+        "sha256": "a9a7ff4f60df01e5a92f259dc61a0e3852d588a4720046909ed9fc648d51b230"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/api-after-oracle-correction.log",
+        "bytes": 1269,
+        "sha256": "19463c99e0b896c67c056c86a5c2b6f7ee36e1d39b52d675e7c1bc8a7ad25cbb"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/node-constraints-source-first.log",
+        "bytes": 981,
+        "sha256": "0d0bb9e67121f54aec5a515f91ea454a946cc7d2f3d122f032e86e3447a4e08e"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/forwarded-source-first.log",
+        "bytes": 522,
+        "sha256": "5eda59b306bd5dfb4370ee20714edbcfa61a338086ccd6cbb8ad3b1d88dba993"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/api-final.log",
+        "bytes": 2503,
+        "sha256": "58d75c4cdeb9fcc9f0180f1bcb105f97333fbf2610e4dce6950ce4656fe26da5"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/library-first.log",
+        "bytes": 84335,
+        "sha256": "09e97a4881ba7e18bc06afffde4dc7017fb5656bea2a9cb2af092da2b8946f2d"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/shared-regressions-final.log",
+        "bytes": 12760,
+        "sha256": "e44dc6ceab706b382a194d69891e536c41ba2a845c683eb25b4b0e3b595204b6"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/clippy-first.log",
+        "bytes": 184,
+        "sha256": "5244ed755cac8f7714a8c7d2b48db865044b2b330d4cef5cace6906d1cfdbed7"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/minimal-first.log",
+        "bytes": 183,
+        "sha256": "4f52c4c000a03b7639d70957bb8315995fb40b673fd544ab7a556f63ee8909f5"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/public-source-first.log",
+        "bytes": 434,
+        "sha256": "5962573dbdb64476a02b889627afc896572e975b807775400ed156cef9c0e793"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/public-source-gates-first.log",
+        "bytes": 243,
+        "sha256": "65c5d609312aafad2723b21073a2d30da9e2cdf3d15a162edb8faa477e4a5c59"
+      }
+    }
+  ],
+  "preserved_failures": [
+    {
+      "status": 101,
+      "reason": "Three checks passed and two complete-image checks failed because the new oracle zeroed inactive NULL payload. Existing masked writer and prior documented preservation law retain those bytes; corrected expectation derivative without changing source or producer policy.",
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/api-first.log",
+        "bytes": 792100,
+        "sha256": "f3e9d892d2df09f72df3a771331aaa9d15bf39bd6bc0987e72f85c2639380daa"
+      }
+    },
+    {
+      "status": 101,
+      "reason": "Tuple source-only compile stopped on E0689 ambiguous integer annotations before runtime; explicit i32 fixture types changed no bytes.",
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/source-corrected-with-tuples.log",
+        "bytes": 885,
+        "sha256": "46ea8be585543e7c04d8e63051a1c3d2d7f4e5931ccd97ce4ad7f8c7e25428c3"
+      }
+    },
+    {
+      "status": 101,
+      "reason": "Old test grouped known IgnoreNULL marker flags 0x82 with unknown 0x90; migrated 0x82 empty preview to source-qualified complete-byte positive while retaining exact 0x90 refusal.",
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/shared-regressions-first.log",
+        "bytes": 3105,
+        "sha256": "8560e3f2400f60d36478fd559685813042b81250de7d4c9af51e514678e6ee93"
+      }
+    },
+    {
+      "status": 1,
+      "reason": "Final line wrapping in test helpers; formatting-only correction.",
+      "log": {
+        "path": ".cache/ace16-ignored-null-update-next-20261028/fmt-first.log",
+        "bytes": 1653,
+        "sha256": "e3f202a6d9842a487694e06024428822f2efe44251b5d69066e4922b9fbcb98f"
+      }
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 5143,
+      "sha256": "81ec2b2066018972e7a29fc9277343ed45e11e45bc26acaf5167e1a656ca90d9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored.rs",
+      "bytes": 6216,
+      "sha256": "789da6047a4b76f8420b19a79562d07021377794b0eebe2734f026f27b0ec81b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored/history.rs",
+      "bytes": 4007,
+      "sha256": "b2912bec6b9386ff0cface0c0f5ee2a37d2f398f226c5e2ab43f3540fd4faf41"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored/source.rs",
+      "bytes": 2640,
+      "sha256": "cebc0d9bba55ab15b91f36b08048119271b731d322243f853a1323acccd50942"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2417,
+      "sha256": "048cd82356f1daaed71d6fa869c52d7f61cd26fa87320006d8391553e0e6ac98"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 19950,
+      "sha256": "63518a10034ffedad4e96d9998a3ca79e5729c50f37a9cf1568444c89ef8bc20"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 9545,
+      "sha256": "c21e44c976ca57725622bc7c85bfb54ae63ec277df4e69d5063e3d81d47a658f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/population.rs",
+      "bytes": 3885,
+      "sha256": "a5ce7e274ceb03bf6734d56db75e5e3ffb303d27643d3ebe95237722493f4a04"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 9062,
+      "sha256": "9c76230d587a5ede5fa26050613b1e68faa1d39068e42f786c1cde8dd0731251"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates.rs",
+      "bytes": 12247,
+      "sha256": "fc7fe68757d811b68cdcbda934cff7a1317ba615e1e7ea229a19029eec80a32e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/boundaries.rs",
+      "bytes": 10496,
+      "sha256": "501ea06495f877a1b8da0fa127500447d631738a12e95d62593b54426fa3ca46"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/forwarded.rs",
+      "bytes": 5205,
+      "sha256": "e73574085ee5d7fb61a806a89ae7de69bc3249eaa5331ee7f26e97ea08b53bdd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/tuple.rs",
+      "bytes": 9169,
+      "sha256": "de99767eb1968edb7bc91ad373c6c3303a98f9a2f2faf7eedd91712b8255696b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "bytes": 9602,
+      "sha256": "a5898e8dd2c5a07739a11a5b9a9c814bd108ed2015dc7a326fe6f8c93b729928"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 353,
+      "sha256": "d02cc99638cef405fb016961155291532a3468d4ce659f06e09a53b8020c5025"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preview.rs",
+      "bytes": 4003,
+      "sha256": "4ff61e1b4bec9def0f24bdabb46412375775c8f60205a7ee7c524bbf54f54a10"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 12625,
+      "sha256": "b1013fd6b9b478d8dcbf30783f3b0b90ff8d58ff87583f00b2b9b07e9f1c3638"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "bytes": 881,
+      "sha256": "f36e90cd78f1fdec51957105417aaf886f54e896699ce07c1c2663f04c119fd8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/ignored_index_inserts.rs",
+      "bytes": 11696,
+      "sha256": "076113d181f65ac6d5da373f8071276b4513e22026a9ac995f797766e21d5feb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/multiple_indexes.rs",
+      "bytes": 10933,
+      "sha256": "48bcf530342e10fba1355e2e9c065907056d61f7c135f776d18427bdd1371648"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/multiple_indexes/model.rs",
+      "bytes": 14898,
+      "sha256": "7a544394d29dbd68655be6e7fa6d75d895f89348b082122ceb2c36eaccb6fefa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_updates.rs",
+      "bytes": 13782,
+      "sha256": "65ca40bf1990f60fc426ecc82e73d9115032ac23286c387d12b442a4ff4cdb57"
+    }
+  ],
+  "source_freezes": [
+    {
+      "path": ".cache/ace16-ignored-null-update-next-20261028/literal-source-freeze.json",
+      "bytes": 1499,
+      "sha256": "cb8f854207f70084ec89882c58a3f62795dc46a29d6d9259f8f9b1b4536fd2c7"
+    },
+    {
+      "path": ".cache/ace16-ignored-null-update-next-20261028/null-payload-corrected-source-freeze.json",
+      "bytes": 1079,
+      "sha256": "f75a28ff6988aa1e983c31e880b70d8446ce96249dea817fd726cb5d882f585d"
+    },
+    {
+      "path": ".cache/ace16-ignored-null-update-next-20261028/typed-tuple-source-freeze.json",
+      "bytes": 1242,
+      "sha256": "332577579e2852b03e165c15a0a9ffc5bc73dba320cd1091b0b7e486e4c80927"
+    },
+    {
+      "path": ".cache/ace16-ignored-null-update-next-20261028/node-constraints-source-freeze.json",
+      "bytes": 1490,
+      "sha256": "b72b031b9c9bbaa2a3ac0d4bde0df9e6ed2899906a4a98adbcfb7faf77097d4b"
+    },
+    {
+      "path": ".cache/ace16-ignored-null-update-next-20261028/forwarded-source-freeze.json",
+      "bytes": 1383,
+      "sha256": "fa5427ae49f2b341661cd1688b774fd4def4f44a3ef21e54ae23c7c5b081e6b7"
+    }
+  ],
+  "independent_original_preparation": {
+    "source_capture_calls": 5,
+    "target_tables": 12,
+    "Sentinels": 2,
+    "reference_UPDATE_calls": 0,
+    "source_freeze": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-warning-freeze.json",
+      "bytes": 7243,
+      "sha256": "78f4d06b5e45b2ea82904f447c0d0f58c8f1cc1d77d33d1bcf28cd73ec88078b"
+    },
+    "saved_gates": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-gates-first.json",
+      "bytes": 117316,
+      "sha256": "ccdb3b286a13de0efc1823c70418d872e601e2f21393815f0f01d7a50bf17269"
+    },
+    "note": "Original source-create stderr assumption corrected before any calls; separately frozen exact warning grammar preserved initial freeze. Source qualification does not establish UPDATE or native Access behavior."
+  }
+}
