@@ -326,5 +326,36 @@
       "sha256": "42b75da7716712873c814e9389fd087eb7349da3dbfd5d61cadc8749abc2a957"
     }
   ],
-  "ordering": "Full library and regressions precede an import-only relocation in the fixed42 test; strict Clippy compiles the final import layout. Example support is committed separately. Final formatting only reorders the audit module declaration before the cfg(test) companion module."
+  "ordering": "Full library and regressions precede an import-only relocation in the fixed42 test; strict Clippy compiles the final import layout. Example support is committed separately. Final formatting only reorders the audit module declaration before the cfg(test) companion module.",
+  "example_support": {
+    "passing_functions": 22,
+    "status": 0,
+    "log": {
+      "path": ".cache/ace16-incrementing-autonumber-root-20261028/example-final.log",
+      "bytes": 2355,
+      "sha256": "6ea18a62aed7bed625029217c80869aad1efddfaa25cd00ff17629fdd3bb301c"
+    },
+    "source_pins": [
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert.rs",
+        "bytes": 5113,
+        "sha256": "4564787dc4bb8669ce294ee5e05241cd46c50b53096846859fe7740288c29ec9"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert/input.rs",
+        "bytes": 7989,
+        "sha256": "6d069d6e74fccba21356d22c227f41ecdd35814344b9c3686b292ba29a73692b"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert/input/tests.rs",
+        "bytes": 11532,
+        "sha256": "62b1a18c12a99eb77c03128c071686cbb331c3901c15390e0e12b937f338a8ef"
+      },
+      {
+        "path": "crates/engines/tablecraft-ace/examples/preview_ace16_insert/tests.rs",
+        "bytes": 8638,
+        "sha256": "8ecc42a66348c73b5c4be986a6cdd6639483157f6c099b9d3822403395485d2a"
+      }
+    ]
+  }
 }

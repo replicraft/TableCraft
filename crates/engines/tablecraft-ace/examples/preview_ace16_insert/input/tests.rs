@@ -3,6 +3,7 @@ use crate::{
     BYTE_BUDGET, ROW_BUDGET, STEP_BUDGET,
     tests::{Directory, budget},
 };
+use tablecraft_ace::{AutoNumberRowInsert, RowInsert};
 use tablecraft_core::limits::LimitError;
 use tablecraft_core::values::{
     Currency, Decimal, Double, ExtendedDateTime, Guid, LegacyDateTime, Single,
@@ -18,7 +19,13 @@ fn extended_date_preserves_exact_civil_boundaries_and_seven_fraction_digits() {
         "extended-date\t2000-02-29T12:34:56.1234567\n",
         "extended-date\t9999-12-31T23:59:59.9999999\n",
     );
-    let rows = parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).unwrap();
+    let rows = parse(
+        encoded.as_bytes(),
+        &mut budget(),
+        VALUE_BYTES,
+        RowInsert::new,
+    )
+    .unwrap();
     for (row, expected) in rows.iter().zip([
         ExtendedDateTime::new(1, 1, 1, 0, 0, 0, 0).unwrap(),
         ExtendedDateTime::new(1, 1, 1, 0, 0, 0, 1).unwrap(),
@@ -28,8 +35,8 @@ fn extended_date_preserves_exact_civil_boundaries_and_seven_fraction_digits() {
         assert_eq!(row.values(), &[Value::DateTimeExtended(expected)]);
     }
     assert_eq!(rows.len(), 4);
-    assert!(parse(encoded.as_bytes(), &mut budget(), 26).is_err());
-    assert!(parse(encoded.as_bytes(), &mut budget(), 27).is_ok());
+    assert!(parse(encoded.as_bytes(), &mut budget(), 26, RowInsert::new).is_err());
+    assert!(parse(encoded.as_bytes(), &mut budget(), 27, RowInsert::new).is_ok());
 }
 
 #[test]
@@ -53,7 +60,13 @@ fn extended_date_refuses_calendar_precision_timezone_and_implicit_carriers() {
     ] {
         let encoded = format!("extended-date\t{value}\n");
         assert!(
-            parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).is_err(),
+            parse(
+                encoded.as_bytes(),
+                &mut budget(),
+                VALUE_BYTES,
+                RowInsert::new
+            )
+            .is_err(),
             "accepted {value:?}"
         );
     }
@@ -61,6 +74,7 @@ fn extended_date_refuses_calendar_precision_timezone_and_implicit_carriers() {
         b"text\t2000-02-29T12:34:56.1234567\tnull\t\n",
         &mut budget(),
         VALUE_BYTES,
+        RowInsert::new,
     )
     .unwrap();
     assert_eq!(
@@ -74,7 +88,8 @@ fn extended_date_refuses_calendar_precision_timezone_and_implicit_carriers() {
         parse(
             b"Extended-Date\t0001-01-01T00:00:00.0000000\n",
             &mut budget(),
-            VALUE_BYTES
+            VALUE_BYTES,
+            RowInsert::new
         )
         .is_err()
     );
@@ -85,7 +100,7 @@ fn ordered_carriers_preserve_quotes_empty_null_binary_and_int32() {
         b"int32\t-2147483648\tbinary\t00fF\ntext\t\"a\tb\0\n\"\tnull\t\ntext\t\"a\"\"b\"\tbinary\t\n",
         &mut budget(),
         VALUE_BYTES,
-    )
+     RowInsert::new)
     .unwrap();
     assert_eq!(rows.len(), 3);
     assert_eq!(
@@ -111,7 +126,13 @@ fn exact_fixed_carriers_keep_widths_scaled_units_bits_and_guid_order() {
         "double-bits\t3ff0000000000000\tdate-bits\t8000000000000000\t",
         "guid\t00112233-4455-6677-8899-aabbccddeeff\tdecimal\t-12345:4\tnull\t\n",
     );
-    let rows = parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).unwrap();
+    let rows = parse(
+        encoded.as_bytes(),
+        &mut budget(),
+        VALUE_BYTES,
+        RowInsert::new,
+    )
+    .unwrap();
 
     assert_eq!(rows.len(), 1);
     assert_eq!(
@@ -164,7 +185,7 @@ fn malformed_pairs_arity_values_and_carriers_refuse_the_complete_batch() {
         b"decimal\t1.5:2\n",
         b"decimal\tnull\n",
     ] {
-        assert!(parse(bad, &mut budget(), VALUE_BYTES).is_err());
+        assert!(parse(bad, &mut budget(), VALUE_BYTES, RowInsert::new).is_err());
     }
 }
 
@@ -172,7 +193,7 @@ fn malformed_pairs_arity_values_and_carriers_refuse_the_complete_batch() {
 fn row_and_value_limits_are_exact() {
     let full = "int32\t1\tbinary\t00\n".repeat(MAX_REQUESTS);
     assert_eq!(
-        parse(full.as_bytes(), &mut budget(), VALUE_BYTES)
+        parse(full.as_bytes(), &mut budget(), VALUE_BYTES, RowInsert::new)
             .unwrap()
             .len(),
         4096
@@ -181,7 +202,8 @@ fn row_and_value_limits_are_exact() {
         parse(
             (full + "int32\t2\tbinary\t00\n").as_bytes(),
             &mut budget(),
-            VALUE_BYTES
+            VALUE_BYTES,
+            RowInsert::new
         )
         .is_err()
     );
@@ -189,7 +211,8 @@ fn row_and_value_limits_are_exact() {
         parse(
             format!("text\t{}\n", "x".repeat(1024)).as_bytes(),
             &mut budget(),
-            VALUE_BYTES
+            VALUE_BYTES,
+            RowInsert::new
         )
         .is_ok()
     );
@@ -197,7 +220,8 @@ fn row_and_value_limits_are_exact() {
         parse(
             format!("text\t{}\n", "x".repeat(1025)).as_bytes(),
             &mut budget(),
-            VALUE_BYTES
+            VALUE_BYTES,
+            RowInsert::new
         )
         .is_err()
     );
@@ -219,9 +243,14 @@ fn parser_uses_shared_bytes_rows_and_steps_pools() {
             Resource::Steps,
         ),
     ] {
-        let error = parse(b"int32\t1\tbinary\t00\n", &mut allowance, VALUE_BYTES)
-            .err()
-            .unwrap();
+        let error = parse(
+            b"int32\t1\tbinary\t00\n",
+            &mut allowance,
+            VALUE_BYTES,
+            RowInsert::new,
+        )
+        .err()
+        .unwrap();
         assert_eq!(
             error.downcast_ref::<LimitError>().unwrap().resource,
             resource
@@ -240,7 +269,7 @@ fn oversized_file_refuses_before_capture() {
         .set_len(16 * 1024 * 1024 + 1)
         .unwrap();
     assert!(
-        load(&path, &mut budget(), VALUE_BYTES)
+        load(&path, &mut budget(), VALUE_BYTES, RowInsert::new)
             .err()
             .unwrap()
             .to_string()
@@ -251,17 +280,17 @@ fn oversized_file_refuses_before_capture() {
 #[test]
 fn explicit_larger_values_bound_encoded_hex_and_utf8_bytes_without_coercion() {
     let encoded = format!("binary\t{}\n", "85".repeat(4077));
-    let rows = parse(encoded.as_bytes(), &mut budget(), 8154).unwrap();
+    let rows = parse(encoded.as_bytes(), &mut budget(), 8154, RowInsert::new).unwrap();
     assert_eq!(rows[0].values(), &[Value::Binary(vec![0x85; 4077])]);
     for limit in [1024, 8153] {
-        assert!(parse(encoded.as_bytes(), &mut budget(), limit).is_err());
+        assert!(parse(encoded.as_bytes(), &mut budget(), limit, RowInsert::new).is_err());
     }
     let text = "Ā".repeat(2040);
     assert_eq!(text.len(), 4080);
     let encoded = format!("text\t{text}\n");
-    let rows = parse(encoded.as_bytes(), &mut budget(), 4080).unwrap();
+    let rows = parse(encoded.as_bytes(), &mut budget(), 4080, RowInsert::new).unwrap();
     assert_eq!(rows[0].values(), &[Value::Text(text)]);
-    assert!(parse(encoded.as_bytes(), &mut budget(), 4079).is_err());
+    assert!(parse(encoded.as_bytes(), &mut budget(), 4079, RowInsert::new).is_err());
 }
 
 #[test]
@@ -274,15 +303,86 @@ fn explicit_value_limit_cannot_expand_file_capture_or_shared_byte_allowances() {
         .unwrap()
         .set_len(MAX_INPUT_BYTES + 1)
         .unwrap();
-    let error = load(&path, &mut budget(), MAX_VALUE_BYTES).err().unwrap();
+    let error = load(&path, &mut budget(), MAX_VALUE_BYTES, RowInsert::new)
+        .err()
+        .unwrap();
     assert!(error.to_string().contains("16 MiB input ceiling"));
 
     let mut allowance = ResourceBudget::new(READ_BUFFER_BYTES as u64, ROW_BUDGET, STEP_BUDGET);
-    let error = parse(b"text\tx\n", &mut allowance, MAX_VALUE_BYTES)
-        .err()
-        .unwrap();
+    let error = parse(
+        b"text\tx\n",
+        &mut allowance,
+        MAX_VALUE_BYTES,
+        RowInsert::new,
+    )
+    .err()
+    .unwrap();
     assert_eq!(
         error.downcast_ref::<LimitError>().unwrap().resource,
         Resource::Bytes
     );
+}
+
+#[test]
+fn generic_constructor_retains_quoted_companions_and_explicit_null_identity() {
+    let encoded = "text\t\"α\tb\0\n\"\tnull\t\ntext\tnull\tbinary\t\n";
+    let generated = parse(
+        encoded.as_bytes(),
+        &mut budget(),
+        VALUE_BYTES,
+        AutoNumberRowInsert::new,
+    )
+    .unwrap();
+    assert_eq!(generated.len(), 2);
+    assert_eq!(
+        generated[0].values(),
+        &[Value::Text("α\tb\0\n".into()), Value::Null]
+    );
+    assert_eq!(
+        generated[1].values(),
+        &[Value::Text("null".into()), Value::Binary(Vec::new())]
+    );
+    let manual = parse(
+        encoded.as_bytes(),
+        &mut budget(),
+        VALUE_BYTES,
+        RowInsert::new,
+    )
+    .unwrap();
+    for (manual, generated) in manual.iter().zip(&generated) {
+        assert_eq!(manual.values(), generated.values());
+    }
+    for kind in ["generated", "autonumber", "empty"] {
+        let encoded = format!("{kind}\t\n");
+        assert!(
+            parse(
+                encoded.as_bytes(),
+                &mut budget(),
+                VALUE_BYTES,
+                AutoNumberRowInsert::new,
+            )
+            .is_err()
+        );
+    }
+}
+
+#[test]
+fn generated_companion_parsing_retains_independent_resource_pools() {
+    for (bytes, rows, steps, expected) in [
+        (1, ROW_BUDGET, STEP_BUDGET, Resource::Bytes),
+        (BYTE_BUDGET, 1, STEP_BUDGET, Resource::Rows),
+        (BYTE_BUDGET, ROW_BUDGET, 1, Resource::Steps),
+    ] {
+        let mut allowance = ResourceBudget::new(bytes, rows, steps);
+        let error = parse(
+            b"int32\t10\tnull\t\nint32\t11\tnull\t\n",
+            &mut allowance,
+            VALUE_BYTES,
+            AutoNumberRowInsert::new,
+        )
+        .err()
+        .expect("The selected cumulative pool must refuse");
+        let error = error.downcast_ref::<LimitError>().unwrap();
+        assert_eq!(error.resource, expected);
+    }
 }

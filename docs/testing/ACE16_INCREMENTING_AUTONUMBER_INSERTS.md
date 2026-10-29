@@ -126,8 +126,9 @@ regression verifies the checked preflight buffer and rejects a wrong carrier.
 Final library verification passes 641 tests with two existing ignored tests,
 including 280 INSERT functions. All 16 AutoNumber functions pass, covering signed
 counters, companions and private correlated audits; the fixed-42 regression also
-passes. The separate example batch passes 22 tests before the context correction,
-which does not change its input protocol. Strict all-target/all-feature and
+passes. The separate example batch passes all 22 tests again after the context
+correction; its [input contract](ACE16_INSERT_INPUT.md#explicit-incrementing-autonumber-requests)
+describes the explicit flag and companion ordering. Strict all-target/all-feature and
 minimal-library Clippy pass. The 76 shared write regression tests also pass.
 
 The original-file SOURCE17 capture and all eight saved raw source gates now pass.
