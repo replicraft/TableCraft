@@ -25,10 +25,7 @@ use crate::{
             header::IndexHeader,
             page::{KeyRef, LEAF, NODE},
         },
-        mutation::{
-            append::State,
-            map_authority::{self, Owner},
-        },
+        mutation::{append::State, map_authority::Owner},
     },
 };
 use std::io::Cursor;
@@ -142,9 +139,8 @@ pub(in crate::table::indexes::mutation) fn continue_index<P: InsertProfile, cons
     // Every role possibly changed by DATA plus the selected physical index is
     // selected explicitly. Canonical aliases remain one physical owner.
     let definition = schema.definition_page();
-    let census =
-        map_authority::capture_catalog(image, reader.budget, cancelled, |_, _, _, _| Ok(()))?;
-    census.require_exclusive(
+    append.require_source_map_exclusive(
+        image,
         &[
             Owner::GlobalFree,
             Owner::OrdinaryOwned { definition },
@@ -154,8 +150,7 @@ pub(in crate::table::indexes::mutation) fn continue_index<P: InsertProfile, cons
                 physical: index.data_number(),
             },
         ],
-        reader.budget,
-        cancelled,
+        &mut reader,
     )?;
     prior_allocations(&append, &mut reader)?;
 

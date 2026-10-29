@@ -9,7 +9,7 @@ use crate::{
     },
     table::mutation::{
         append,
-        map_authority::{self, Owner, RecordIdentity},
+        map_authority::{Owner, RecordIdentity},
     },
 };
 use std::io::Cursor;
@@ -183,25 +183,19 @@ fn rewrite_inline(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
 
-    let census = map_authority::capture_catalog(
-        image,
-        reader.budget,
-        reader.cancelled,
-        |_, _, _, _| Ok(()),
-    )?;
     let owner = Owner::IndexOwned {
         definition: plan.append.owner,
         physical: index.data_number(),
     };
-    census.require_record_rewrite(
+    plan.append.require_source_map_rewrite(
+        image,
         &[Owner::GlobalFree, owner],
         RecordIdentity {
             owner,
             reference: row.reference(),
             range: row.range(),
         },
-        reader.budget,
-        reader.cancelled,
+        reader,
     )?;
 
     if let Some(base) = inline_base {
@@ -371,12 +365,6 @@ pub(super) fn seal(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     if !plan.promotions.is_empty() || !plan.rebases.is_empty() {
-        let census = map_authority::capture_catalog(
-            image,
-            reader.budget,
-            reader.cancelled,
-            |_, _, _, _| Ok(()),
-        )?;
         let mut owners = Vec::new();
         reader
             .budget
@@ -409,7 +397,8 @@ pub(super) fn seal(
                 owners.push(owner);
             }
         }
-        census.require_exclusive(&owners, reader.budget, reader.cancelled)?;
+        plan.append
+            .require_source_map_exclusive(image, &owners, reader)?;
     }
 
     for promotion in &plan.promotions {

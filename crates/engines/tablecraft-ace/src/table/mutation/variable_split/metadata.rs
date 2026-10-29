@@ -6,12 +6,16 @@ use crate::{
     header::check,
 };
 use std::{io::Cursor, ops::Range};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 #[cfg(test)]
 mod tests;
 
 pub(in crate::table::mutation) struct Metadata {
+    // Operation-local identity of the immutable source buffer; never dereferenced.
+    source_address: usize,
+    source_length: usize,
+    definition: u32,
     protected_pages: Vec<u32>,
     census: map_authority::Census,
     mutable: Vec<map_authority::Owner>,
@@ -176,10 +180,47 @@ impl Metadata {
         };
         census.protect_storage(&mut protected_pages, &mut reader)?;
         Ok(Self {
+            source_address: image.as_bytes().as_ptr() as usize,
+            source_length: image.as_bytes().len(),
+            definition,
             protected_pages,
             census,
             mutable,
         })
+    }
+
+    pub(in crate::table::mutation) fn require_source(
+        &self,
+        image: &NativeImage,
+        definition: u32,
+    ) -> Result<(), EditError> {
+        if self.source_address != image.as_bytes().as_ptr() as usize
+            || self.source_length != image.as_bytes().len()
+            || self.definition != definition
+        {
+            return Err(EditError::Preservation);
+        }
+
+        Ok(())
+    }
+
+    pub(in crate::table::mutation) fn require_exclusive(
+        &self,
+        owners: &[map_authority::Owner],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        for owner in owners {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, self.mutable.len() as u64)
+                .map_err(InspectError::from)?;
+            if !self.mutable.contains(owner) {
+                return Err(EditError::Preservation);
+            }
+        }
+
+        self.census.require_exclusive(owners, budget, cancelled)
     }
 
     /// Deny only original definition/map storage. This grants no DATA owner,

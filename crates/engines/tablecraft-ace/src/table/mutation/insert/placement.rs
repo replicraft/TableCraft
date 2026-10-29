@@ -159,6 +159,7 @@ pub(super) fn prepare(
         )?;
     }
     check(budget, cancelled)?;
+    plan.append.retain_source_metadata(image, metadata)?;
     Ok(plan)
 }
 
