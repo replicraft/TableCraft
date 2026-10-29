@@ -1,16 +1,20 @@
 //! Owned heterogeneous spans; only disjoint edits to one row-mask byte merge.
-use super::super::super::{EditError, patch::BytePatch};
-use crate::{InspectError, format::data_type::NUMERIC_BYTES, header::check};
+use super::BytePatch;
+use crate::{EditError, InspectError, format::data_type::NUMERIC_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAX_FIXED_BYTES: usize = NUMERIC_BYTES;
 
-pub(super) struct Patch {
+#[cfg(test)]
+mod tests;
+
+pub(in crate::table::mutation) struct Patch {
     offset: usize,
     before: [u8; MAX_FIXED_BYTES],
     after: [u8; MAX_FIXED_BYTES],
     length: usize,
     mask: u8,
+    structural: bool,
 }
 impl BytePatch for Patch {
     fn offset(&self) -> usize {
@@ -25,9 +29,12 @@ impl BytePatch for Patch {
     fn is_mask(&self) -> bool {
         self.mask != 0
     }
+    fn requires_structural_check(&self) -> bool {
+        self.structural
+    }
 }
 
-pub(super) fn push<P: BytePatch>(
+pub(in crate::table::mutation) fn push<P: BytePatch>(
     patches: &mut Vec<Patch>,
     input: &P,
     budget: &mut ResourceBudget,
@@ -66,11 +73,12 @@ pub(super) fn push<P: BytePatch>(
         after,
         length,
         mask,
+        structural: input.requires_structural_check(),
     });
     Ok(())
 }
 
-pub(super) fn coalesce(
+pub(in crate::table::mutation) fn coalesce(
     patches: &mut Vec<Patch>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -97,6 +105,7 @@ pub(super) fn coalesce(
             }
             prior.after[0] = (prior.after[0] & !next.mask) | (next.after[0] & next.mask);
             prior.mask |= next.mask;
+            prior.structural |= next.structural;
         } else {
             if write > 0
                 && patches[write - 1]
