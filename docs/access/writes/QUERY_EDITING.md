@@ -8,8 +8,8 @@ checks/preservation to [ACE](NATIVE_WRITES.md).
 
 ## Supported profile
 
-One local table, optional alias and one SET assignment to an Int32 field are
-supported. Qualified/unqualified references use the existing ASCII-insensitive
+The ordinary `ExistingInt32` profile supports one local table, optional alias
+and one SET assignment to an Int32 field. Qualified/unqualified references use the existing ASCII-insensitive
 binder. Pure scalar expressions, BETWEEN, IN lists and three-valued WHERE reuse
 retrieval evaluation, including eager operand errors. Only Boolean TRUE selects a
 row; final numeric predicate coercion belongs to read-only retrieval. Shared
@@ -46,15 +46,22 @@ tablecraft query update 'UPDATE Items SET Score=Score+7 WHERE Id=2' --database o
 ```
 
 The explicit input opens read-only under a shared OS lock and must be offline.
-After full planning, the CLI creates a new output with create_new, writes/syncs
-the complete candidate and prints matched/changed counts. Existing outputs,
-including the input path, are never overwritten. The source is unchanged. No
+After full planning and report formatting, the CLI closes the source and publishes
+a fresh complete candidate before printing matched/changed counts. Existing
+outputs, including input aliases and destination symlinks, are never overwritten.
+The source is unchanged. No
 SQLite editing, VBA, macros or providers execute. CLI work ceilings are 256 MiB
 cumulative bytes, 100,000 rows and 100,000,000 steps; native structural caps remain.
 
-A write/sync failure after creation can leave an incomplete output and returns
-a diagnostic with no success stdout. The CLI neither promises atomic output
-publication/durable directory entries nor edits a live database in place. Optional
+The [common fresh-copy publisher](ENGINEERING_COPIES.md#bounds-and-publication)
+charges the complete output-byte allowance before creating an owned temporary in
+the output directory. It writes the complete candidate, syncs the file and
+publishes with `persist_noclobber`. Write, file-sync and publication failures clean
+only that temporary and produce no success stdout. A source-close failure occurs
+before publication. A later stdout failure may leave a complete published copy.
+File synchronization and no-clobber publication supply no directory-entry or
+power-loss durability guarantee. The CLI does not edit a live database in place
+or activate a journal. Optional
 [library journal integration](NATIVE_WRITES.md#optional-journaled-persistence)
 remains the separate explicit in-place persistence boundary.
 
@@ -77,3 +84,11 @@ statements/profiles, existing paths and reopening through query run. The indepen
 match byte for byte, reopen with Jackcess and retain native primary-index checks.
 Microsoft Access comparison, general result-set updateability and broader write
 profiles remain unqualified.
+
+The shared-publisher extraction passes seven publication unit functions and two
+normal Jet 4 host functions within the complete 28-function CLI unit run. The host
+controls qualify independent source/expected images before planning, verify
+source unlock before a single publication call, and inject write, sync and
+publication failures without retry or visible output. The four existing CLI
+update integration functions also pass in the current regression run (14 tests
+across three CLI integration targets).

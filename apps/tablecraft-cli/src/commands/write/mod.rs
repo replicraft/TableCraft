@@ -2,7 +2,6 @@
 mod args;
 mod error;
 mod input;
-mod publication;
 mod run;
 mod updates;
 mod values;

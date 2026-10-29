@@ -10,7 +10,7 @@ pub(super) enum Error {
     Source(AccessInputError),
     Native(InspectError),
     Preview(EngineeringError),
-    Publish(super::publication::Error),
+    Publish(crate::native::publication::Error),
     Encrypted,
     Deployment,
 }

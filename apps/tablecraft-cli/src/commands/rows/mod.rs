@@ -9,7 +9,7 @@ use tablecraft_core::values::Value;
 mod all;
 mod collections;
 mod multivalue;
-mod stream;
+pub(in crate::commands) mod stream;
 
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
 pub(crate) const MAX_PAGE_ROWS: u32 = TablePageRequest::MAX_ROWS;

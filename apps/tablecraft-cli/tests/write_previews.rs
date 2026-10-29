@@ -364,3 +364,63 @@ fn encrypted_source_refuses_before_password_prompt_or_plaintext_publication() {
     assert_eq!(fs::read(encrypted).unwrap(), captured);
     assert_eq!(fs::read(input).unwrap(), before);
 }
+
+#[test]
+fn explicit_incrementing_uses_the_captured_counter_and_matches_exact_policy_output() {
+    let directory = tempfile::tempdir().unwrap();
+    let before = model::fixed(true);
+    let input = source(directory.path(), &before);
+    let requests = directory.path().join("companions.tsv");
+    fs::write(&requests, b"int32\t4\nint32\t5\n").unwrap();
+    let from_source = directory.path().join("source-counter.accdb");
+    let explicit = directory.path().join("explicit-counter.accdb");
+    let report = success(invoke(&[
+        "write",
+        "preview-insert",
+        input.to_str().unwrap(),
+        from_source.to_str().unwrap(),
+        "Items",
+        requests.to_str().unwrap(),
+        "--incrementing",
+    ]));
+    assert!(String::from_utf8_lossy(&report).contains("Generated column\t1\n"));
+    assert!(String::from_utf8_lossy(&report).contains("Generated value[0]\t31\n"));
+    assert!(String::from_utf8_lossy(&report).contains("Generated value[1]\t32\n"));
+    success(invoke(&[
+        "write",
+        "preview-insert",
+        input.to_str().unwrap(),
+        explicit.to_str().unwrap(),
+        "Items",
+        requests.to_str().unwrap(),
+        "--incrementing-last",
+        "30",
+    ]));
+    let candidate = fs::read(&from_source).unwrap();
+    assert_eq!(candidate, fs::read(&explicit).unwrap());
+    let actual = rows(&candidate);
+    assert_eq!(
+        &actual[3..],
+        &[
+            vec![Value::Int32(4), Value::Int32(31)],
+            vec![Value::Int32(5), Value::Int32(32)],
+        ]
+    );
+    assert_eq!(fs::read(&input).unwrap(), before);
+
+    let unchanged = directory.path().join("stale-policy.accdb");
+    let refused = invoke(&[
+        "write",
+        "preview-insert",
+        input.to_str().unwrap(),
+        unchanged.to_str().unwrap(),
+        "Items",
+        requests.to_str().unwrap(),
+        "--incrementing-last",
+        "29",
+    ]);
+    assert_eq!(refused.status.code(), Some(2));
+    assert!(refused.stdout.is_empty());
+    assert!(!unchanged.exists());
+    assert_eq!(fs::read(input).unwrap(), before);
+}

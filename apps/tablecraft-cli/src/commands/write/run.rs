@@ -2,9 +2,9 @@
 use super::{
     args::{Command, Delete, Insert, Paths, Update},
     error::{Error, input as invalid},
-    input, publication, tick, updates,
+    input, tick, updates,
 };
-use crate::native;
+use crate::native::{self, publication};
 use std::fmt::Write;
 use tablecraft_access::engineering::{
     self, DeleteMode, EngineeringCopy, EngineeringRequest, UpdateMode,
@@ -19,6 +19,7 @@ const SUMMARY_HEADER_BYTES: usize = 512;
 const GENERATED_SUMMARY_BYTES: usize = 64;
 
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
+    let _span = tracing::debug_span!("cli.write.preview").entered();
     match command {
         Command::Update(args) => update(args, password),
         Command::Insert(args) => insert(args, password),
@@ -106,7 +107,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
 fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     let mut budget = args.paths.limits.budget();
     let bytes = input::capture(&args.requests, &mut budget, &|| false)?;
-    if let Some(last) = args.incrementing_last {
+    if args.incrementing || args.incrementing_last.is_some() {
         let rows = input::inserts(
             &bytes,
             args.value_bytes,
@@ -114,16 +115,18 @@ fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
             &mut budget,
             &|| false,
         )?;
-        publish(
-            &args.paths,
-            EngineeringRequest::IncrementingInsert {
+        let request = match args.incrementing_last {
+            Some(last) => EngineeringRequest::IncrementingInsert {
                 table: &args.table,
                 rows: &rows,
                 policy: IncrementingAutoNumber::new(last),
             },
-            password,
-            &mut budget,
-        )
+            None => EngineeringRequest::IncrementingInsertFromSource {
+                table: &args.table,
+                rows: &rows,
+            },
+        };
+        publish(&args.paths, request, password, &mut budget)
     } else {
         let rows = input::inserts(
             &bytes,

@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 #[path = "../../../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+pub(in crate::commands) mod fixture;
 use super::*;
 use std::{
     cell::Cell,

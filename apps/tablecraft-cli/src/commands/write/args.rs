@@ -86,8 +86,12 @@ pub(crate) struct Insert {
     pub(super) requests: PathBuf,
     /// Explicit increment policy and original LAST-issued counter precondition.
     /// TSV contains only companions excluding the generated primary column.
-    #[arg(long, allow_hyphen_values = true)]
+    #[arg(long, allow_hyphen_values = true, conflicts_with = "incrementing")]
     pub(super) incrementing_last: Option<i32>,
+    /// Explicitly select increment-by-one behavior using LAST from this captured
+    /// image. Stored Increment/Random mode is not detected. TSV supplies companions.
+    #[arg(long, conflicts_with = "incrementing_last")]
+    pub(super) incrementing: bool,
     /// Maximum TSV DATA bytes per value; binary counts encoded hexadecimal digits.
     #[arg(long, default_value_t = input::DEFAULT_VALUE_BYTES, value_parser = input::value_limit)]
     pub(super) value_bytes: usize,
