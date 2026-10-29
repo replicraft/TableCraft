@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-29",
+  "feature": "Shared no-clobber fresh-copy publisher and captured-counter INSERT host",
+  "checks": {
+    "complete_cli_unit_run": {
+      "exit_code": 0,
+      "functions": 28,
+      "publisher_functions": 7,
+      "normal_Jet4_host_functions": 2
+    },
+    "cli_regression": {
+      "exit_code": 0,
+      "functions": 14,
+      "targets": [
+        "updates",
+        "query_preview_updates",
+        "write_previews"
+      ]
+    },
+    "strict_all_targets_all_features_5_packages": {
+      "exit_code": 0
+    },
+    "minimal_4_packages": {
+      "exit_code": 0
+    }
+  },
+  "semantics": "One output Bytes charge before temporary creation; complete write/file-sync/no-clobber persist; clean only owned temporary. Normal Jet4 source close precedes publication. No directory durability, in-place transaction, journal, or normal ACE save qualification. Explicit --incrementing reads LAST from the same captured image; no stored-mode inference.",
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/src/native/publication.rs",
+      "bytes": 4076,
+      "sha256": "fc218ec52111df63195496d62930f114d008934d22431efa8feb8834f082f90e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/native/publication/tests.rs",
+      "bytes": 8860,
+      "sha256": "dd7d5b9b5940e86791370a64d35df5918d8a82b652d35eb7f9c852e9c7d6dc98"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/editing.rs",
+      "bytes": 3425,
+      "sha256": "9f85c787568b7e60377f070f9ed00f137b79762171810ddb74317b8852aa84e0"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/editing/tests.rs",
+      "bytes": 5573,
+      "sha256": "16b99978085e9ddcf48e7020917288ee706d9da8b1e0fcf6f9403f8819cde249"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/run.rs",
+      "bytes": 9415,
+      "sha256": "c2978343e108d3b1faa238d2f4e8e4d484debdf4cbb4ca7cbf84673a9c04fc77"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/args.rs",
+      "bytes": 5296,
+      "sha256": "8f227700618b37a98d8f8c8e788863f8bfb95f69d63e876cda54db425bc360d7"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-shared-fresh-copy-publisher-20261029/shared-owner-and-consumer-first-freeze.json",
+      "bytes": 4668,
+      "sha256": "272b16adab72e6c2810741d9e24d52544991a979c5d4fe6a872fc1f90b0844eb"
+    },
+    {
+      "path": ".cache/ace16-shared-fresh-copy-publisher-20261029/cli-unit-first-root.log",
+      "bytes": 1438,
+      "sha256": "50c8b0c22ea8555db7a46c805d4a4c2cfaae65a0167ddba30540adb5e094ee72"
+    },
+    {
+      "path": ".cache/ace16-shared-fresh-copy-publisher-20261029/cli-unit-second-root.log",
+      "bytes": 3168,
+      "sha256": "2ab2c876771484f3c37176d04b7db85577f2abb94ccc1704f9c3496d6353322e"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/cli-write-regression-first-root.log",
+      "bytes": 1922,
+      "sha256": "13a097fd3a0d9bcec232306e7ac6e4c068737f37e167aa80c46edddc7355c1af"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/clippy-first-root.log",
+      "bytes": 746,
+      "sha256": "19159ee3fab11c10c7e87eb92f056161c5a0454e6dd6a044016355bc29160ff2"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/minimal-check-root.log",
+      "bytes": 415,
+      "sha256": "046743b58e54146dd31ed754d375ebff423ed6a7b9b53d6080af3d54e2c590ec"
+    }
+  ],
+  "retained_failure": "First CLI unit compile failed before tests due to newly authored stale enum patterns; only two test patterns changed, then all28 passed.",
+  "post_check_change": "Logical blank lines in normal CLI editing host only; no behavior change.",
+  "native_Access_qualification": false
+}

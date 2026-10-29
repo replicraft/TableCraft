@@ -77,12 +77,24 @@ int32	5	text	Bob	null	""
 
 The engine validates the actual schema and requires its qualified primary/index
 profile. Values are never defaulted or coerced. Existing generated columns remain
-refused by the manual path. Explicit `--incrementing-last LAST` selects the
-separate incrementing AutoNumber engineering policy and pins the original
-LAST-issued counter. Its TSV contains companions only, excluding the generated
-primary column; it does not detect stored New Values mode or infer a seed from
-live MAX. Audited generated column/value facts print only after publication. The control
+refused by the manual path. Explicit `--incrementing` selects increment-by-one
+engineering behavior and obtains the original LAST-issued counter from the same
+captured image. Use `--incrementing-last LAST` instead to supply an exact counter
+precondition yourself. These flags are mutually exclusive; neither detects stored
+Increment/Random mode or derives a seed from live MAX. The existing engine preview
+independently revalidates the counter before returning its complete candidate.
+
+Both incrementing modes take companions only, excluding the generated primary
+column. Every companion must be supplied, including explicit NULLs. The current
+TSV protocol cannot represent a zero-companion row; generated-only tables require
+the engine API. Unqualified NewValues/default properties remain refused.
+Audited generated column/value facts print only after publication. The control
 report is TSV; the global row/table presentation option does not change it.
+The counter helper's two source gates and four API tests pass. Its CLI argument
+control and actual two-row command workflow also pass, including complete-byte
+parity with the existing explicit-LAST path, generated IDs 31 and 32, and stale
+explicit-counter refusal without output. This does not establish new native
+Access qualification.
 
 ## Source-bound DELETE
 
@@ -116,8 +128,12 @@ bytes. `--value-bytes` defaults to 1024 input bytes and can be raised up to the
 request-file ceiling. Binary counts encoded hex digits; UPDATE counts escape
 prefixes too.
 
-After complete preparation and bounded report formatting, the CLI writes a
-host-owned temporary in the output directory, syncs its file, and uses
+After complete preparation and bounded report formatting, the CLI uses the shared
+[host publisher](../../../apps/tablecraft-cli/src/native/publication.rs), also
+consumed by normal Jet 4 [query update](QUERY_EDITING.md#fresh-copy-cli) and the
+explicit [SQL engineering-copy command](SQL_ENGINEERING_COPIES.md). The publisher
+charges the complete requested output Bytes once before creating any temporary.
+It writes a host-owned temporary in the output directory, syncs its file, and uses
 `persist_noclobber` to publish a fresh final name. Existing files, source aliases
 and destination symlinks are never overwritten. Failed write/sync/publication
 cleans only the owned temporary, never an arbitrary final path. The publication
@@ -126,6 +142,14 @@ publication leaves no final copy. This does not install an OS signal handler.
 This supplies no directory-entry
 power-loss guarantee, durable transaction, in-place editing or automatic recovery.
 A later stdout failure can leave the already completed copy in place.
+
+Seven passing shared publication unit functions cover complete copies, injected
+write/sync/publication failures, existing files and symlink/hardlink aliases,
+final-callback cancellation, and exact versus one-below output-byte quotas. These
+and two normal Jet 4 host controls pass within the complete 28-function CLI unit
+run. The earlier workflow results below remain historical results for the original
+owner before extraction; the four existing normal CLI update integration functions
+are pending the current regression run.
 
 `tablecraft_access::engineering` exposes the same typed preparation for other
 hosts without opening or publishing files. `EngineeringCopy` has no journal,

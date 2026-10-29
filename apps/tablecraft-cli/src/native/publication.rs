@@ -7,7 +7,7 @@ use tempfile::NamedTempFile;
 const COPY_CHUNK_BYTES: usize = 64 * 1024;
 
 #[derive(Debug)]
-pub(super) enum Error {
+pub(crate) enum Error {
     Create(ErrorKind),
     Write(tablecraft_io::IoError),
     Sync(ErrorKind),
@@ -23,15 +23,15 @@ impl fmt::Display for Error {
             }
             Self::Write(error) => write!(
                 f,
-                "engineering copy write failed; no final output was published: {error}"
+                "database copy write failed; no final output was published: {error}"
             ),
             Self::Sync(kind) => write!(
                 f,
-                "engineering copy sync failed; no final output was published ({kind:?})"
+                "database copy sync failed; no final output was published ({kind:?})"
             ),
             Self::Persist(kind) => write!(
                 f,
-                "could not publish a fresh engineering copy; existing destinations are never overwritten ({kind:?})"
+                "could not publish a fresh database copy; existing destinations are never overwritten ({kind:?})"
             ),
             Self::Native(error) => error.fmt(f),
         }
@@ -84,12 +84,13 @@ impl Publication for Filesystem {
     }
 }
 
-pub(super) fn publish(
+pub(crate) fn publish(
     output: &Path,
     bytes: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
+    let _span = tracing::debug_span!("cli.native.copy.publish", bytes = bytes.len()).entered();
     publish_with(output, bytes, budget, cancelled, &Filesystem)
 }
 

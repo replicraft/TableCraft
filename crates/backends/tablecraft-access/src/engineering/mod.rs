@@ -72,6 +72,14 @@ pub enum EngineeringRequest<'a> {
         /// Caller-selected increment policy and original LAST-counter precondition.
         policy: IncrementingAutoNumber,
     },
+    /// Explicitly select incrementing behavior with LAST from this same image.
+    /// This does not detect the stored Increment/Random mode.
+    IncrementingInsertFromSource {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Companion values excluding the one generated primary column.
+        rows: &'a [AutoNumberRowInsert],
+    },
     /// Capture exact original records for snapshot-local ordinals, then delete.
     DeleteOrdinals {
         /// Exact selected table name.
@@ -168,6 +176,7 @@ pub fn preview(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<EngineeringCopy, EngineeringError> {
+    let _span = tracing::debug_span!("access.edit.engineering_preview").entered();
     let candidate = match request {
         EngineeringRequest::Update { groups, mode } => Candidate::Rows(match mode {
             UpdateMode::Fitted => image.preview_ace16_batch_updates(groups, budget, cancelled)?,
@@ -205,6 +214,15 @@ pub fn preview(
         } => Candidate::Generated(
             image.preview_ace16_incrementing_insert_rows(table, rows, policy, budget, cancelled)?,
         ),
+        EngineeringRequest::IncrementingInsertFromSource { table, rows } => {
+            let policy =
+                image.prepare_ace16_incrementing_insert_policy(table, budget, cancelled)?;
+            Candidate::Generated(
+                image.preview_ace16_incrementing_insert_rows(
+                    table, rows, policy, budget, cancelled,
+                )?,
+            )
+        }
         EngineeringRequest::DeleteOrdinals {
             table,
             ordinals,

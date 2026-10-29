@@ -1,4 +1,5 @@
 //! Explicit native inspection/retrieval host policy; not native format maxima.
+pub(crate) mod publication;
 mod source;
 pub(crate) use source::{NativeFile, open, open_raw};
 

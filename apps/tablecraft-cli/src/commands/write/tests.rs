@@ -258,3 +258,35 @@ fn typed_update_escapes_distinguish_null_from_literal_null_without_cloning() {
     assert_eq!(groups[0].rows[0].expected(), &Value::Int32(-2));
     assert_eq!(groups[0].rows[1].expected(), &Value::Null);
 }
+
+#[test]
+fn source_counter_increment_policy_is_explicit_and_conflicts_before_input_open() {
+    let args = [
+        "tablecraft",
+        "write",
+        "preview-insert",
+        "missing.accdb",
+        "out.accdb",
+        "Items",
+        "missing.tsv",
+        "--incrementing",
+    ];
+    match command(&args) {
+        Command::Insert(insert) => {
+            assert!(insert.incrementing);
+            assert!(insert.incrementing_last.is_none());
+        }
+        _ => panic!("expected INSERT command"),
+    }
+    let mut conflicting = args.to_vec();
+    conflicting.extend(["--incrementing-last", "0"]);
+    assert!(Cli::try_parse_from(conflicting).is_err());
+    let ordinary = &args[..args.len() - 1];
+    match command(ordinary) {
+        Command::Insert(insert) => {
+            assert!(!insert.incrementing);
+            assert!(insert.incrementing_last.is_none());
+        }
+        _ => panic!("expected INSERT command"),
+    }
+}

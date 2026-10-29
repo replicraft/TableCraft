@@ -98,4 +98,4 @@ fn publish<R: tablecraft_ace::NativeReadSource>(
 
 #[cfg(test)]
 #[path = "stream_tests.rs"]
-mod tests;
+pub(in crate::commands) mod tests;
