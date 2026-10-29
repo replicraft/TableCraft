@@ -223,3 +223,16 @@ cases, Memo/OLE index keys, required unavailable validation/data macros and
 production saves keep their explicit refusals. Literal map-growth checks are not
 original-file or Windows Access qualification; independent original-file
 comparisons remain separate evidence.
+
+## Original-file GLOBAL first crossing
+
+The [GLOBAL original-file proof](ace16_insert_global_bootstrap/README.md) now
+qualifies twelve engineering candidates on four immutable EOF 512 originals,
+followed by twelve fresh inert typed-row/map reads. Public Single 65/66 and chained
+8,145/8,146 requests place body 512 then GLOBAL 513; a separate 32-row inline 64+64
+batch instead allocates DATA 512 then GLOBAL 513 after 21 original-page placements.
+No INDEX growth is needed. Four source gates and twelve SOURCE/request images
+precede 24 public-reference calls and the isolated committed-producer build.
+Every actual runtime phase passes first attempt. Old orphan/hole bodies remain
+exact while the declared GLOBAL frontier policy retires old FREE membership.
+This comparison does not qualify Microsoft Access saves or wider global blocks.

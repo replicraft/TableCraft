@@ -10292,3 +10292,24 @@ process by default. Java fixtures and finite key oracles are repository-authored
 no third-party fixture or implementation source is copied. JARs, classes,
 databases and raw streams stay private/ignored. Native Microsoft Access saves
 and normal production writes remain unqualified by these observations.
+
+## Original-file GLOBAL INSERT bootstrap corpus
+
+The repository-authored [GlobalBootstrapFixture.java](ace16_insert_global_bootstrap/GlobalBootstrapFixture.java)
+uses the previously reviewed pinned Jackcess 5.0.4 fixture dependency and existing
+[bounded channel owner](parent_index_split_originals/BoundedFileChannel.java).
+Four original V2016/V2019 raw/compressed Memo files use fixed 400/382 Padding rows
+and all end at 512 pages. No source byte is patched or count tuned. Complete saved
+raw metadata, native records/chains, properties, aliases/counters, canonical
+GlobalFree and catalog-role gates qualify them separately from SOURCE9 capture.
+
+The [saved proof](ace16_insert_global_bootstrap/README.md) and
+[result](results/ace16-insert-global-bootstrap-2026-10-28.json) pin all four originals,
+twelve SOURCE/request-only prebuild images, 24 public-reference calls, the isolated
+committed `7c282f43` build, twelve complete candidate comparisons and twelve fresh
+inert typed-row/map inspections. All actual runtime phases pass first attempt;
+public outputs also match the already frozen images. GLOBAL 513 has a separate
+metadata purpose. Old FREE-hole membership retirement and final-four-byte fill
+quirk are declared reference policies; old hole bytes/orphan bodies remain exact.
+No donated content, Microsoft code/fixtures or machine-specific paths are tracked.
+Native Access save/reopen, block-one growth and arbitrary page reuse remain unqualified.

@@ -441,8 +441,13 @@ GLOBAL 513 with actual DATA/INDEX/LVAL/container/owned-bitmap IDs and independen
 replaying source identity, frontier retirement and the pinned fill policy.
 Forty complete literal images, 337 mutation functions and the full 580-function
 ACE library pass (one existing ignored generator); seven shared targets pass 49
-tests. Strict ACE Clippy, minimal compilation and formatting pass; original-file
-GLOBAL candidate qualification remains pending. Legacy external storage migration, continued TD initialization,
+tests. Strict ACE Clippy, minimal compilation and formatting pass. The
+[original-file GLOBAL proof](testing/ace16_insert_global_bootstrap/README.md) adds
+four saved EOF 512 source gates, twelve prebuild whole images, 24 public-reference
+calls, twelve exact candidates and twelve fresh typed-row/map reads, all runtime
+phases first attempt. LVAL and inline-DATA crossings preserve original hole bodies
+under the declared frontier-retirement policy; no new INDEX is required here.
+Legacy external storage migration, continued TD initialization,
 block-one global growth and pointer-record expansion remain open; these
 checkpoints do not qualify normal saves or native Access behavior.
 The external-payload profile additionally passes sixteen source/request-only

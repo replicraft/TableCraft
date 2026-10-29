@@ -112,7 +112,24 @@ compilation pass. The first strict pass reported four nested-if style issues
 and one test range expression; their style-only corrections changed no
 runtime semantics. Formatting also passes.
 
-Original-file GLOBAL producer/readback qualification is pending. These literal
-and independent-reader checks do not establish Windows Access execution, normal
-editing, native save/reopen compatibility, global block-one initialization,
-map-record expansion or arbitrary in-file page reuse.
+## Original-file comparison
+
+The [maintained original-file proof](ace16_insert_global_bootstrap/README.md) now
+records twelve exact engineering candidates on four unchanged originals, followed
+by twelve fresh combined typed-row/map inspections. V2016/V2019 and raw/compressed
+Memo use fixed public Padding counts 400/382, yielding original EOF 512 without
+patching or tuning. Four saved gates separately qualify canonical GLOBAL storage,
+complete column maps, records, aliases, history and catalog roles before any image.
+
+SOURCE9 capture, twelve prebuild SOURCE/request images, 24 public-reference calls,
+a fresh isolated committed `7c282f43` build, native12 and fresh12 retain distinct
+receipts. All runtime phases pass first attempt. Single and chained LVAL requests
+put the first body at 512 and GLOBAL at 513. The 32-row inline 64+64 batch places 21
+rows in original DATA and 11 at new DATA 512, with no external LVAL or new INDEX.
+Public and engineering outputs match all twelve prefrozen images in this corpus.
+Old free-hole membership is retired under the declared policy while every old
+hole body and the opaque adjacent global-container row remain unchanged.
+
+These literal and original-file independent-reader checks do not establish
+Windows Access execution, normal editing, native save/reopen compatibility,
+global block-one initialization, map-record expansion or arbitrary page reuse.
