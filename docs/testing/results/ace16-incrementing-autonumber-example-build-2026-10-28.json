@@ -1,0 +1,74 @@
+{
+  "operation": "Committed explicit incrementing INSERT example in a fresh isolated target",
+  "commit": "9e77ffcf5612734ec89e342aa304e17cb60be8fd",
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_insert",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/.cache/ace16-incrementing-autonumber-isolated-build-next-20261028/target"
+  ],
+  "isolated_source": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/source",
+  "target_directory": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/target",
+  "fresh_target_was_absent": true,
+  "owning_engine_compilation_observed": true,
+  "source_archive": {
+    "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/committed-source.tar",
+    "bytes": 92395520,
+    "sha256": "fedee5643d7c1ab80653d70bd3b56ac30c6894f1fb3c041a8f2e7f184aa77b66"
+  },
+  "source_manifest": {
+    "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/archive-source-manifest.json",
+    "bytes": 1084109,
+    "sha256": "3a6e97425c021a8a1ae324219aded950107a6f454631564084e67a8b234df73f"
+  },
+  "exported_file_count": 4702,
+  "all_exported_files_match_git_objects": true,
+  "source_inventory_unchanged_after_build": true,
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/model-bytes-freeze.json",
+    "bytes": 26230,
+    "sha256": "f835c275c02899da28b5176fc3a97b92ac907c68fe9c36b1c53e2b8d19a450ba"
+  },
+  "expected_report_frozen_before_build": {
+    "path": ".cache/ace16-incrementing-autonumber-insert-expected-bytes-first-20261028/report.json",
+    "bytes": 41659,
+    "sha256": "d83d6637ff249f176926becce40caca54bccfa426d2fe3a9bf62b15a9c540509"
+  },
+  "build_driver": {
+    "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/build.py",
+    "bytes": 11288,
+    "sha256": "9193eee80998a83a5bac2f1bd244c16ff097fdea69b155f37b7a61ac052b3570"
+  },
+  "build_freeze": {
+    "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/freeze.json",
+    "bytes": 30744,
+    "sha256": "20726cf4b1c3cc41a89fec8be663519cc6724e47eaf4a5575415217d1982f64f"
+  },
+  "build_log": {
+    "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/committed-build.log",
+    "bytes": 4954,
+    "sha256": "d0b0da3cf891664981f15134bf9dfa8a8d95176f9b4ed1658490c10d28c01f7d"
+  },
+  "fresh_target_policy": "Initially absent dedicated target; archived mtimes cannot reuse shared artifacts",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "status": 0,
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-incrementing-autonumber-insert-20261028",
+    "bytes": 6886608,
+    "sha256": "aa3498bbb05f887ab62d6f8f147570844ad041dc8b138e8b1791c2a23df86d74"
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}

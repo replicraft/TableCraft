@@ -139,3 +139,9 @@ with expected-freeze SHA-256
 Public-reference and native-candidate phases have not yet run. Stored mode
 qualification and Microsoft Access save/reopen remain separate from these literal
 engineering checks and independent original-file preparation.
+
+The [committed-producer build receipt](results/ace16-incrementing-autonumber-example-build-2026-10-28.json)
+binds the copied engineering example to commit `9e77ffcf`. Its initially absent
+isolated release target compiled the owning engine; all 4,702 exported files match
+the committed Git blobs. This establishes producer provenance, not candidate or
+native Access qualification.
