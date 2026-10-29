@@ -1,0 +1,765 @@
+{
+  "date": "2026-10-29",
+  "feature": "Original-file nullable batch UPDATE engineering qualification",
+  "producer_commit": "50d028cc19452c54046b1e1d23baa77ac80f491b",
+  "build_receipt_commit": "8ed3b162",
+  "qualification": "Independent engineering byte/value/index/map/preservation proof; not native Microsoft Access save, transaction or macro qualification.",
+  "source_phase": {
+    "path": "docs/testing/results/ace16-nullable-split-batch-sources-2026-10-29.json",
+    "bytes": 7101,
+    "sha256": "f5007cc499b1a576c7226572a99a23ebcd600540cc901b9396cdbde61a557d57"
+  },
+  "build_receipt": {
+    "path": "docs/testing/results/ace16-nullable-split-batch-example-build-2026-10-29.json",
+    "bytes": 3253,
+    "sha256": "f6ab6db1e0e3e1c0689e49bc568c81980c932892002beeece2f919414320f6b5"
+  },
+  "artifact": {
+    "path": ".cache/tablecraft-bin/ace16-nullable-split-batch-20261029",
+    "bytes": 6585392,
+    "sha256": "d939ec0c9d4bb86d3bbb9e792fa56081d40c2669e57dac9c561763d6027d1ed2"
+  },
+  "phases": [
+    {
+      "phase": "source compile/create/inspect",
+      "child_commands": 9,
+      "first_exit_code": 0
+    },
+    {
+      "phase": "separate reference-action compilation",
+      "child_commands": 1,
+      "first_exit_code": 0
+    },
+    {
+      "phase": "public reference actions and fresh reads",
+      "child_commands": 40,
+      "first_exit_code": 0
+    },
+    {
+      "phase": "native candidates, every full image before any fresh candidate read",
+      "child_commands": 20,
+      "first_exit_code": 0
+    },
+    {
+      "phase": "separately bound fresh candidate reads",
+      "child_commands": 20,
+      "first_exit_code": 0
+    }
+  ],
+  "before_after_order": {
+    "source_targets": 8,
+    "source_sentinels": 4,
+    "source_user_records": 4004,
+    "complete_expected_images_before_public_or_native": 20,
+    "expected_constructor_children": 0,
+    "ordered_public_row_updates": 8008,
+    "native_field_assignments": 16016,
+    "changed_field_values": 12816,
+    "native_changed_rows": 8008,
+    "native_complete_bytes": 9928704,
+    "native_new_index_pages": 64,
+    "native_new_free_pages": 0,
+    "fresh_images_rechecked_before_and_after_every_reader": true
+  },
+  "frozen_authorities": {
+    "model_inputs": {
+      "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/freeze.json",
+      "bytes": 29923,
+      "sha256": "e348dee129c323554b7b79be348747dfa0add239ff1b94c3014113e546f75f0d"
+    },
+    "expected_outputs": {
+      "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/freeze.json",
+      "bytes": 38966,
+      "sha256": "ee9f402cb997918905d1aa071fb5ddcb1cc68b256773e44f4ce6a1c81b039583"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/report.json",
+      "bytes": 44642,
+      "sha256": "c31e35dcb2458b357b120fac010ee82331a233df57b5f24341a5db93c048ce1b"
+    },
+    "independent_expected_postcheck": {
+      "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck-first.json",
+      "bytes": 9959,
+      "sha256": "d9990f9d46240eb88d0776d700a3915f55b4258917e85b039dbb8cdfb80792a2"
+    },
+    "reference_compile": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/compile-freeze.json",
+      "bytes": 42492,
+      "sha256": "2048e42cbe48ffb47a4dc48b037a31322cad05f0a29056ff6928103f29d96807"
+    },
+    "reference_inputs": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/reference-freeze.json",
+      "bytes": 89813,
+      "sha256": "b4cb5006a76c1bb6b790740f24006f4cb83700db23f5ab30875193f8ee673238"
+    },
+    "reference_report": {
+      "path": ".cache/ace16-nullable-split-batch-reference-first-20261029/report.json",
+      "bytes": 778474,
+      "sha256": "344497c0c6d55d4d66e51cdaa18352e8bcc016556116a4df53a6788e53ea7883"
+    },
+    "native_inputs": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/freeze.json",
+      "bytes": 205561,
+      "sha256": "99bc7caba75e0d709f4be96314cb40df77a1efc4f4bd142a00dcc122dba41bee"
+    },
+    "native_report": {
+      "path": ".cache/ace16-nullable-split-batch-native-first-20261029/report.json",
+      "bytes": 2238433,
+      "sha256": "28ae3d6db856d2c9d10fb109b1e172fe57c36733b3ced67d2bc342b58ab32991"
+    },
+    "fresh_binding": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/getter-binding.json",
+      "bytes": 220109,
+      "sha256": "dc2820d4eb9e15194d37701ee58254a951c94b73187820ffacccdc1c5c808ad9"
+    },
+    "fresh_report": {
+      "path": ".cache/ace16-nullable-split-batch-getters-first-20261029/report.json",
+      "bytes": 963553,
+      "sha256": "c070d00e73a9e3f0b703abe7e2a52ed5852c14dc20062d92d0153fb544023a3b"
+    }
+  },
+  "public_observations": {
+    "exact_complete_images": 4,
+    "growth_images_with_different_packing": 16,
+    "total_public_bytes": 10092544,
+    "total_canonical_bytes": 9928704,
+    "full_case_new_pages": {
+      "index": 6,
+      "free": 1
+    },
+    "clear_case_new_pages": {
+      "index": 5,
+      "free": 1
+    },
+    "canonical_growth_case_new_pages": {
+      "index": 4,
+      "free": 0
+    },
+    "known_clear_warning_records": 1600,
+    "all_warnings_preserved_and_exactly_classified": true,
+    "common_differing_bytes": 251885,
+    "common_known_framing_map_differences": 32255,
+    "common_explicitly_opaque_differences": 219630,
+    "public_only_bytes": 163840,
+    "public_only_known_frame_active_bytes": 102840,
+    "public_only_opaque_inactive_bytes": 61000,
+    "clear_inactive_null_differing_bytes": 11184,
+    "null_payload_observation": "Not zeroed: repeated public scratch bytes under cleared masks; explicitly opaque, never model authority.",
+    "unexplained_typed_mask_counter_map_or_protected_prefix_differences": 0,
+    "details": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/public-observations-first.json",
+      "bytes": 45166,
+      "sha256": "af2ee65f232cefa6d81fd6be67b86c6dccab7ae0248f025a335729cf7b332739"
+    },
+    "difference_details": {
+      "path": ".cache/ace16-nullable-split-batch-differences-20261029/first.json",
+      "bytes": 4114941,
+      "sha256": "f106be988242463bff60d07789bcad58a60b7e658936e938ddafce049c56d291"
+    },
+    "exhaustive_difference_summary": {
+      "path": ".cache/ace16-nullable-split-batch-differences-20261029/summary.json",
+      "bytes": 1377,
+      "sha256": "c73a176f7e79bb9d32bef5f282b617a83c4cf85f9efb59c7323142bec7bc3a13"
+    }
+  },
+  "independent_checks": {
+    "native_protocol_before_first_candidate": {
+      "path": ".cache/ace16-nullable-split-batch-native-protocol-peer-20261029/first.json",
+      "bytes": 2925,
+      "sha256": "5441c93aa9492714e06d7d9fe9d658ec4f8c643252ae1a2f6fd3bfe0f3bff89e"
+    },
+    "reference_saved_replay": {
+      "path": ".cache/ace16-nullable-split-batch-reference-peer-20261029/first.json",
+      "bytes": 461951,
+      "sha256": "505e7840c3517b57721c0722e9c1588d44d1b6347454f7c92e6c3c9da4418322"
+    },
+    "native_saved_replay": {
+      "path": ".cache/ace16-nullable-split-batch-native-saved-peer-20261029/second.json",
+      "bytes": 506887,
+      "sha256": "df565b2c30bee97b92c2e25efbd88e8db6f6b53b27cea32f36516c3e182b7867"
+    },
+    "native_saved_handoff": {
+      "path": ".cache/ace16-nullable-split-batch-native-saved-peer-20261029/handoff.json",
+      "bytes": 3069,
+      "sha256": "e9c2f1e61495381ef7cff37217d87b2f7e5dc35e3b1fc4c650449db708fa4ae7"
+    },
+    "pure_whole_byte_comparison": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-byte-comparison-first.json",
+      "bytes": 3901,
+      "sha256": "c0b6e43842db852c383e4bb502ae49496a8996107d14fdacf0266fd52d3e8171"
+    },
+    "acceptance_handoff": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-handoff.json",
+      "bytes": 3822,
+      "sha256": "3f4d32b5eec65ec7e702083c15d5fb4626cd9db6270c1e1e6302e86dc104445a"
+    }
+  },
+  "cases": [
+    {
+      "id": "V2016-ASC-Items-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-ASC-Items-Full.accdb",
+        "bytes": 462848,
+        "sha256": "97ea8a89b55159a2f6af3bd98c7bda134b85a2f17c8c2c4a0d5fc23cc8491554"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-ASC-Items-Full-native.accdb",
+        "bytes": 462848,
+        "sha256": "97ea8a89b55159a2f6af3bd98c7bda134b85a2f17c8c2c4a0d5fc23cc8491554"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-ASC-Items-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-ASC-Items-Clear.accdb",
+        "bytes": 462848,
+        "sha256": "c5ce69392a881f382d5cd3182a23e39f271947363d3eb43cf054f77a14fe0266"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-ASC-Items-Clear-native.accdb",
+        "bytes": 462848,
+        "sha256": "c5ce69392a881f382d5cd3182a23e39f271947363d3eb43cf054f77a14fe0266"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-ASC-UniqueItems-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-ASC-UniqueItems-Full.accdb",
+        "bytes": 462848,
+        "sha256": "efe147fa24e9f4b5a9cd9d11e089c0f84744e82415f2f3516a311abfb4d7603b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-ASC-UniqueItems-Full-native.accdb",
+        "bytes": 462848,
+        "sha256": "efe147fa24e9f4b5a9cd9d11e089c0f84744e82415f2f3516a311abfb4d7603b"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-ASC-UniqueItems-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-ASC-UniqueItems-Clear.accdb",
+        "bytes": 462848,
+        "sha256": "bf08c520f92f39038928e0744718b88593eb8c97b7588d96b039c60a36faeda7"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-ASC-UniqueItems-Clear-native.accdb",
+        "bytes": 462848,
+        "sha256": "bf08c520f92f39038928e0744718b88593eb8c97b7588d96b039c60a36faeda7"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-ASC-Items-DuplicateFamily",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-ASC-Items-DuplicateFamily.accdb",
+        "bytes": 446464,
+        "sha256": "bb4f0bf3e2f0df38985cb7d996ea7a0e540f767a748b29b91bd55728e3452f5b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-ASC-Items-DuplicateFamily-native.accdb",
+        "bytes": 446464,
+        "sha256": "bb4f0bf3e2f0df38985cb7d996ea7a0e540f767a748b29b91bd55728e3452f5b"
+      },
+      "changed_rows": 2,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 201
+      },
+      "new_index_pages": [],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-DESC-Items-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-DESC-Items-Full.accdb",
+        "bytes": 462848,
+        "sha256": "6951a7326b07089b32265e80f498310ad80e3ece9e19a30994fb97663f4f93f0"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-DESC-Items-Full-native.accdb",
+        "bytes": 462848,
+        "sha256": "6951a7326b07089b32265e80f498310ad80e3ece9e19a30994fb97663f4f93f0"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-DESC-Items-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-DESC-Items-Clear.accdb",
+        "bytes": 462848,
+        "sha256": "3f2040e5ec2f7b21d7d54baf467cdb9e4197aaeb536dd2296ae192010923a00b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-DESC-Items-Clear-native.accdb",
+        "bytes": 462848,
+        "sha256": "3f2040e5ec2f7b21d7d54baf467cdb9e4197aaeb536dd2296ae192010923a00b"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-DESC-UniqueItems-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-DESC-UniqueItems-Full.accdb",
+        "bytes": 462848,
+        "sha256": "34e36a0b1dc274835f6ceef089760026bd5ad078fcf567bb1389e6c7ba69bbf3"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-DESC-UniqueItems-Full-native.accdb",
+        "bytes": 462848,
+        "sha256": "34e36a0b1dc274835f6ceef089760026bd5ad078fcf567bb1389e6c7ba69bbf3"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-DESC-UniqueItems-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-DESC-UniqueItems-Clear.accdb",
+        "bytes": 462848,
+        "sha256": "3fefef6b281e1ec8ff9f27ac220265bc76c31a77279a52faf7f6e6b4bdd0c267"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-DESC-UniqueItems-Clear-native.accdb",
+        "bytes": 462848,
+        "sha256": "3fefef6b281e1ec8ff9f27ac220265bc76c31a77279a52faf7f6e6b4bdd0c267"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        109,
+        110,
+        111,
+        112
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2016-DESC-Items-DuplicateFamily",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2016-DESC-Items-DuplicateFamily.accdb",
+        "bytes": 446464,
+        "sha256": "d5b6264fbc92f32a96bdefcdc141a5dc7862230580be49296eb221d0d4aa0d1b"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2016-DESC-Items-DuplicateFamily-native.accdb",
+        "bytes": 446464,
+        "sha256": "d5b6264fbc92f32a96bdefcdc141a5dc7862230580be49296eb221d0d4aa0d1b"
+      },
+      "changed_rows": 2,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 201
+      },
+      "new_index_pages": [],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-ASC-Items-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-ASC-Items-Full.accdb",
+        "bytes": 536576,
+        "sha256": "51ed6905b982d1e8aa1f2d1c1171b3d742ad691e526ed37a57765f50ffa66672"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-ASC-Items-Full-native.accdb",
+        "bytes": 536576,
+        "sha256": "51ed6905b982d1e8aa1f2d1c1171b3d742ad691e526ed37a57765f50ffa66672"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-ASC-Items-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-ASC-Items-Clear.accdb",
+        "bytes": 536576,
+        "sha256": "8cc221afd1962900450e08e17d92d9e34b26d0243988699631c412552b3864f8"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-ASC-Items-Clear-native.accdb",
+        "bytes": 536576,
+        "sha256": "8cc221afd1962900450e08e17d92d9e34b26d0243988699631c412552b3864f8"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-ASC-UniqueItems-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-ASC-UniqueItems-Full.accdb",
+        "bytes": 536576,
+        "sha256": "68e36975a03f29237a52ef0ddb42cf463f1beea5394ee8c383c65cbc2ff42f8a"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-ASC-UniqueItems-Full-native.accdb",
+        "bytes": 536576,
+        "sha256": "68e36975a03f29237a52ef0ddb42cf463f1beea5394ee8c383c65cbc2ff42f8a"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-ASC-UniqueItems-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-ASC-UniqueItems-Clear.accdb",
+        "bytes": 536576,
+        "sha256": "7fc38dc9e1a7340ab0271010d7f25761fa57d43a3f82428a46570592e654402e"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-ASC-UniqueItems-Clear-native.accdb",
+        "bytes": 536576,
+        "sha256": "7fc38dc9e1a7340ab0271010d7f25761fa57d43a3f82428a46570592e654402e"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-ASC-Items-DuplicateFamily",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-ASC-Items-DuplicateFamily.accdb",
+        "bytes": 520192,
+        "sha256": "68f6f96b0f00dc3e52d2db54f30e1bf99771938b7680df578ab5049b76518814"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-ASC-Items-DuplicateFamily-native.accdb",
+        "bytes": 520192,
+        "sha256": "68f6f96b0f00dc3e52d2db54f30e1bf99771938b7680df578ab5049b76518814"
+      },
+      "changed_rows": 2,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 201
+      },
+      "new_index_pages": [],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-DESC-Items-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-DESC-Items-Full.accdb",
+        "bytes": 536576,
+        "sha256": "8ee7be41e72794e478b613c463e05b79335bc630b15bc0105b9f763a39429a96"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-DESC-Items-Full-native.accdb",
+        "bytes": 536576,
+        "sha256": "8ee7be41e72794e478b613c463e05b79335bc630b15bc0105b9f763a39429a96"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-DESC-Items-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-DESC-Items-Clear.accdb",
+        "bytes": 536576,
+        "sha256": "688716733efef9969057728c5d553dd5167bd81a4cb0e0e5bfe640213a4d1f08"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-DESC-Items-Clear-native.accdb",
+        "bytes": 536576,
+        "sha256": "688716733efef9969057728c5d553dd5167bd81a4cb0e0e5bfe640213a4d1f08"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-DESC-UniqueItems-Full",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-DESC-UniqueItems-Full.accdb",
+        "bytes": 536576,
+        "sha256": "8b9970d1e4a4267b9830cd8e4154bd9ffb1e50dcc34628d7df5c9ee6ecf51b86"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-DESC-UniqueItems-Full-native.accdb",
+        "bytes": 536576,
+        "sha256": "8b9970d1e4a4267b9830cd8e4154bd9ffb1e50dcc34628d7df5c9ee6ecf51b86"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-DESC-UniqueItems-Clear",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-DESC-UniqueItems-Clear.accdb",
+        "bytes": 536576,
+        "sha256": "64798b46e97fb81f0ec3824398286fc2a68e102b118883893e01b77324c3d218"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-DESC-UniqueItems-Clear-native.accdb",
+        "bytes": 536576,
+        "sha256": "64798b46e97fb81f0ec3824398286fc2a68e102b118883893e01b77324c3d218"
+      },
+      "changed_rows": 500,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 500
+      },
+      "new_index_pages": [
+        127,
+        128,
+        129,
+        130
+      ],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    },
+    {
+      "id": "V2019-DESC-Items-DuplicateFamily",
+      "expected": {
+        "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/V2019-DESC-Items-DuplicateFamily.accdb",
+        "bytes": 520192,
+        "sha256": "67f639169bb5dc576534a487120d32b7beef805aa5e40e6bf87e034d9fdfe959"
+      },
+      "candidate": {
+        "path": ".cache/ace16-nullable-split-batch-native-first-20261029/V2019-DESC-Items-DuplicateFamily-native.accdb",
+        "bytes": 520192,
+        "sha256": "67f639169bb5dc576534a487120d32b7beef805aa5e40e6bf87e034d9fdfe959"
+      },
+      "changed_rows": 2,
+      "histories": {
+        "LeftOrder": 201,
+        "PairOrder": 201
+      },
+      "new_index_pages": [],
+      "new_free_pages": [],
+      "fresh_read_exit_code": 0
+    }
+  ],
+  "unrun": [
+    "native Microsoft Access open/save/reopen and behavior comparisons",
+    "data-macro absence/required event semantics",
+    "cross-table allocation and broader carrier/layout profiles",
+    "normal save/journal qualification"
+  ],
+  "maintained_saved_replay": {
+    "entry_point": "docs/testing/ace16_nullable_split_batch_updates/verify.py",
+    "handoff": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/final-handoff.json",
+      "bytes": 7283,
+      "sha256": "84010ca2f38b1eb60a2a5edbeae7f667514270022311266efc3c8eb4bbe8556c"
+    },
+    "package_result": {
+      "path": "docs/testing/ace16_nullable_split_batch_updates/RESULT.json",
+      "bytes": 3079,
+      "sha256": "75d309e8225212060b460d6c26b5c2d7200f159e74182b440d65e6b1c6cc96a1"
+    },
+    "anchors": {
+      "path": "docs/testing/ace16_nullable_split_batch_updates/anchors.json",
+      "bytes": 15146,
+      "sha256": "05c3ccccb40ebbe55e8db5b937eccd4f313ec90d7a5aa706054b725d9b1b4df2"
+    },
+    "root_replay": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/default-root.log",
+      "bytes": 535,
+      "sha256": "7066d37ad5319819ae93f96ef748b8273ddd18ac648184b4d3ada5b5624d573d"
+    },
+    "root_replay_summary": {
+      "verified": true,
+      "source_commands": 9,
+      "source_targets": 8,
+      "sentinels": 4,
+      "exact_maintained_programs": 24,
+      "reconstructed_images": 20,
+      "reconstructed_bytes": 9928704,
+      "action_compile_commands": 1,
+      "public_commands": 40,
+      "public_typed_proofs": 20,
+      "public_warnings": 1600,
+      "public_byte_exact": 4,
+      "native_candidates_exact": 20,
+      "fresh_typed_proofs": 20,
+      "native_Access_qualification": false,
+      "checked_pins": 9766,
+      "distinct_paths": 1001,
+      "archive_files": 4791,
+      "metadata_child_processes": 0
+    },
+    "negative_controls": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/boundary-checks-first.json",
+      "bytes": 1862,
+      "sha256": "b914fee2367c573d146ffaf0b4c91a06e6058389ba9a006442cd0539d6304d2f"
+    },
+    "initial_verifier_authoring_failure": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-proof-next-20261029/first-default-failure.json",
+      "bytes": 1422,
+      "sha256": "ccbb56655589dbf4feb275a72927096435c4af4281bb35982ee4cbc902397683"
+    },
+    "executed_programs_or_fixture_bytes_changed": false,
+    "independent_review": {
+      "path": ".cache/ace16-nullable-split-batch-maintained-peer-20261029/first.json",
+      "bytes": 3031,
+      "sha256": "098d25e8c0821e3220682bfe6a93fbd695ab8bb9cdad4a14aa9fed3092eb2be9"
+    }
+  }
+}

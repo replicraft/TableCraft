@@ -34,10 +34,14 @@ tests retain the explicit test-debug-level-1 disk accommodation.
 
 The [record](testing/results/ace16-nullable-split-batch-updates-2026-10-29.json)
 keeps source/model freezes, static audit corrections and compile/lint observations.
-The first [original-file source phase](testing/results/ace16-nullable-split-batch-sources-2026-10-29.json)
-passes nine creation/inspection calls, eight table gates and four Sentinel gates
-across four fixed originals. Actual candidate comparisons remain unrun for this
-path. Cross-table
+The [original-file proof](testing/results/ace16-nullable-split-batch-originals-2026-10-29.json)
+now passes all 20 first-attempt candidate comparisons, matching 9,928,704 complete
+source/request-derived bytes, followed by 20 fresh independent SDK reads. The
+separate public-reference phase passes 20 actions and 20 reads over 8,008 row
+updates. Its different page packing and opaque inactive NULL payloads remain
+observations; the canonical expectations were frozen before either writer ran.
+Source files, expected images and all candidate hashes remain unchanged through
+verification. Native Microsoft Access qualification remains open. Cross-table
 allocation, wider carriers, contraction and broader map/height cases remain
 unfinished. Fitted, slot, cascade and normal save policies retain their separate
 admission; this is a non-journalable engineering candidate, not macro or native

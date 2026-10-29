@@ -1,0 +1,329 @@
+{
+  "programs": [
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source.py",
+        "bytes": 13512,
+        "sha256": "78d50b354f83926fe86555d2914d008c4b83d47a6477c3d419d2a7db68c4dcae"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/source.py"
+    },
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/bounded.py",
+        "bytes": 5006,
+        "sha256": "7f324f0ad91c0c607ccd074e4e91b37f56cacb946e596849f163b0f18745bdea"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/bounded.py"
+    },
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/capture.py",
+        "bytes": 6617,
+        "sha256": "2a97fdfef27ece48450b219e6afa66efb30260188468f33149ae02233c15355e"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/capture.py"
+    },
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/qualify.py",
+        "bytes": 3089,
+        "sha256": "cc55e79e377221f9ab4f1c3fa5add8f1e2405f8393c61159df7f25aa4bfede80"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/qualify.py"
+    },
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source_warnings.py",
+        "bytes": 964,
+        "sha256": "79001a4805750686fc3ede646c2a1d02fe2f8b1c6002bbbff73fd74897c837ec"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/source_warnings.py"
+    },
+    {
+      "phase": "source",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-source-next-20261029/NullableSplitBatchFixture.java",
+        "bytes": 16875,
+        "sha256": "9231a75f0e6e312ea32e28bde97d939256c4922a8b4c714bab9139def4517e58"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/source/NullableSplitBatchFixture.java"
+    },
+    {
+      "phase": "expected",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/model.py",
+        "bytes": 12577,
+        "sha256": "74b5269145d5763538d42b239ccfc99aea7ec5766ab6e1195b39b9dd68a8124c"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/expected/model.py"
+    },
+    {
+      "phase": "expected",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/check.py",
+        "bytes": 6153,
+        "sha256": "78cb6f2cf3505cf0c59b0e2225a0388ea3aab374ce8c6c6388c43b537e5ca451"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/expected/check.py"
+    },
+    {
+      "phase": "expected",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/prepare.py",
+        "bytes": 7320,
+        "sha256": "d1e780969416ec6e33a2dc184b211edbf34c48c392a4c65bc9aeeee5bd68221e"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/expected/prepare.py"
+    },
+    {
+      "phase": "expected",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck.py",
+        "bytes": 10434,
+        "sha256": "c5080504c9a0efec3076bebb0c400c684932dd9532ffac373b3b541d1fc9e4ae"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/expected/postcheck.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/intent.py",
+        "bytes": 4954,
+        "sha256": "7491094c2a2aa4753794a6150754753806d6dd5b7824b4878592544755b8526d"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/intent.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/reference.py",
+        "bytes": 15128,
+        "sha256": "2221694f45ad2b279a71121a37686c69767f234f0e7863261d8773a43e55cb53"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/reference.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/barriers.py",
+        "bytes": 6245,
+        "sha256": "17d22f90be1237ddcef3f574598a4fef7eaf92613c12bd2e71d71de166025978"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/barriers.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/compile_action.py",
+        "bytes": 4677,
+        "sha256": "679a3baec52cbb87d5998116c6ce6f28b8d908ae618bee226ab9d0d9b36883b9"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/compile_action.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/compile_bounded.py",
+        "bytes": 5006,
+        "sha256": "01b65ff32dd97dfffe4eef70df7feace25217e16a4751f1507f9179a4352afff"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/compile_bounded.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/reference_bounded.py",
+        "bytes": 5007,
+        "sha256": "877f69aa3c22c9c965e455d5de21a04718b03c34912b47861195d08588a1aedc"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/reference_bounded.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/capture_reference.py",
+        "bytes": 6303,
+        "sha256": "471469833f26b48fbc5c0712dbc3e78f93e94537cf37418652ac9edb76333ff3"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/capture_reference.py"
+    },
+    {
+      "phase": "reference",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/NullableSplitBatchAction.java",
+        "bytes": 5587,
+        "sha256": "6b05d83419dafaff9206c058699a03c41321899b7ea62e96921b85c928178602"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/reference/NullableSplitBatchAction.java"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/prepare.py",
+        "bytes": 7953,
+        "sha256": "15054768ffb5d81a67d9325c13fc31c2892eda7c972f8810b94979d68907f17b"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/prepare.py"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/capture.py",
+        "bytes": 8751,
+        "sha256": "c70f5db2c3ae44fbddd4ad93a54c3a613da9b0cb1e1441962b8ec0ebc3e7853e"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/capture.py"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/bounded.py",
+        "bytes": 5117,
+        "sha256": "ebfec010a7eb1c3d67b76affda49e18bf4685e63f8d517252afff8458f6dbfb2"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/bounded.py"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/bind_getters.py",
+        "bytes": 1598,
+        "sha256": "b56a28352235d07621a562a8513afae0f16eaf8416a1bdfa5e1eb414a2fecbcb"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/bind_getters.py"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/proof.py",
+        "bytes": 15410,
+        "sha256": "0981abf23e6d3b6006cc6eabc993f32c50c00f852ef7fb27faf891317219af78"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/proof.py"
+    },
+    {
+      "phase": "native",
+      "original": {
+        "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/verify_bytes.py",
+        "bytes": 4340,
+        "sha256": "89e78d1ecf4f5ba26bdb819aea008f20a5370660014be7301a54ff2495d6dcc1"
+      },
+      "maintained": "docs/testing/ace16_nullable_split_batch_updates/executed/native/verify_bytes.py"
+    }
+  ],
+  "phase_anchors": {
+    ".cache/ace16-nullable-split-batch-source-next-20261029/source-freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-freeze.json",
+      "bytes": 9470,
+      "sha256": "da0880c7c3a6432bf004b870e458b9acfafae800a9ccd481c096c73fad7dcf5f"
+    },
+    ".cache/ace16-nullable-split-batch-source-next-20261029/source-gates-first.json": {
+      "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-gates-first.json",
+      "bytes": 8517980,
+      "sha256": "af024b9896769525a2bb63eb8ddd2b9caf534243f701a9d0a90e1806489c6be8"
+    },
+    ".cache/ace16-nullable-split-batch-source-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-source-first-20261029/report.json",
+      "bytes": 35238,
+      "sha256": "aca41719de9db944792246afac807e44fc09707d99c62269b4019319ab2c6945"
+    },
+    ".cache/ace16-nullable-split-batch-expected-next-20261029/freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/freeze.json",
+      "bytes": 29923,
+      "sha256": "e348dee129c323554b7b79be348747dfa0add239ff1b94c3014113e546f75f0d"
+    },
+    ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck-freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck-freeze.json",
+      "bytes": 798,
+      "sha256": "a0e17359075c2f9894ae5ffaaef3b2f93fa0d57dcd8da16cf338edaeba732601"
+    },
+    ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck-first.json": {
+      "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/postcheck-first.json",
+      "bytes": 9959,
+      "sha256": "d9990f9d46240eb88d0776d700a3915f55b4258917e85b039dbb8cdfb80792a2"
+    },
+    ".cache/ace16-nullable-split-batch-expected-first-20261029/freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/freeze.json",
+      "bytes": 38966,
+      "sha256": "ee9f402cb997918905d1aa071fb5ddcb1cc68b256773e44f4ce6a1c81b039583"
+    },
+    ".cache/ace16-nullable-split-batch-expected-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/report.json",
+      "bytes": 44642,
+      "sha256": "c31e35dcb2458b357b120fac010ee82331a233df57b5f24341a5db93c048ce1b"
+    },
+    ".cache/ace16-nullable-split-batch-reference-next-20261029/compile-freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/compile-freeze.json",
+      "bytes": 42492,
+      "sha256": "2048e42cbe48ffb47a4dc48b037a31322cad05f0a29056ff6928103f29d96807"
+    },
+    ".cache/ace16-nullable-split-batch-action-compile-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-action-compile-first-20261029/report.json",
+      "bytes": 89588,
+      "sha256": "0583efc56982fe84e040bdab9fd60a877fa15c5becc2b92cd9c5f4819ac9e28a"
+    },
+    ".cache/ace16-nullable-split-batch-reference-next-20261029/reference-freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/reference-freeze.json",
+      "bytes": 89813,
+      "sha256": "b4cb5006a76c1bb6b790740f24006f4cb83700db23f5ab30875193f8ee673238"
+    },
+    ".cache/ace16-nullable-split-batch-reference-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-reference-first-20261029/report.json",
+      "bytes": 778474,
+      "sha256": "344497c0c6d55d4d66e51cdaa18352e8bcc016556116a4df53a6788e53ea7883"
+    },
+    ".cache/ace16-nullable-split-batch-reference-next-20261029/public-observations-first.json": {
+      "path": ".cache/ace16-nullable-split-batch-reference-next-20261029/public-observations-first.json",
+      "bytes": 45166,
+      "sha256": "af2ee65f232cefa6d81fd6be67b86c6dccab7ae0248f025a335729cf7b332739"
+    },
+    "docs/testing/results/ace16-nullable-split-batch-example-build-2026-10-29.json": {
+      "path": "docs/testing/results/ace16-nullable-split-batch-example-build-2026-10-29.json",
+      "bytes": 3253,
+      "sha256": "f6ab6db1e0e3e1c0689e49bc568c81980c932892002beeece2f919414320f6b5"
+    },
+    ".cache/ace16-nullable-split-batch-acceptance-next-20261029/freeze.json": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/freeze.json",
+      "bytes": 205561,
+      "sha256": "99bc7caba75e0d709f4be96314cb40df77a1efc4f4bd142a00dcc122dba41bee"
+    },
+    ".cache/ace16-nullable-split-batch-acceptance-next-20261029/getter-binding.json": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/getter-binding.json",
+      "bytes": 220109,
+      "sha256": "dc2820d4eb9e15194d37701ee58254a951c94b73187820ffacccdc1c5c808ad9"
+    },
+    ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-handoff.json": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-handoff.json",
+      "bytes": 3822,
+      "sha256": "3f4d32b5eec65ec7e702083c15d5fb4626cd9db6270c1e1e6302e86dc104445a"
+    },
+    ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-byte-comparison-first.json": {
+      "path": ".cache/ace16-nullable-split-batch-acceptance-next-20261029/final-byte-comparison-first.json",
+      "bytes": 3901,
+      "sha256": "c0b6e43842db852c383e4bb502ae49496a8996107d14fdacf0266fd52d3e8171"
+    },
+    ".cache/ace16-nullable-split-batch-native-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-native-first-20261029/report.json",
+      "bytes": 2238433,
+      "sha256": "28ae3d6db856d2c9d10fb109b1e172fe57c36733b3ced67d2bc342b58ab32991"
+    },
+    ".cache/ace16-nullable-split-batch-getters-first-20261029/report.json": {
+      "path": ".cache/ace16-nullable-split-batch-getters-first-20261029/report.json",
+      "bytes": 963553,
+      "sha256": "c070d00e73a9e3f0b703abe7e2a52ed5852c14dc20062d92d0153fb544023a3b"
+    },
+    ".cache/ace16-nullable-split-batch-differences-20261029/summary.json": {
+      "path": ".cache/ace16-nullable-split-batch-differences-20261029/summary.json",
+      "bytes": 1377,
+      "sha256": "c73a176f7e79bb9d32bef5f282b617a83c4cf85f9efb59c7323142bec7bc3a13"
+    }
+  },
+  "native_status": "native20 and separately bound fresh20 FIRST passed",
+  "status": "completed maintained saved proof; exact programs and actual phases bound"
+}
