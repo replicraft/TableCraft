@@ -114,10 +114,19 @@ and dictionary generators; they are not skipped acceptance checks.
 
 Existing represented cells, other record widths, table-definition growth,
 block-one initialization and general in-file reuse retain their earlier limits.
-These four cases are repository-authored native-format literals. An original-file
-INSERT comparison and fresh independent reads for this missing-pointer extension
-remain pending, even though a public Jackcess creator's empty-table map state
-motivated the regression.
+These four cases are repository-authored native-format literals. A subsequent
+[original-file proof](ace16_insert_empty_owned/README.md) qualifies this
+missing-pointer continuation on one immutable public-created V2016 empty table.
+SOURCE3 capture and a separate raw gate precede two complete SOURCE/request-only
+expected images. Four public reference calls pass two transition proofs; a fresh
+isolated build of committed `463853e1` then produces two byte-exact candidates,
+followed by two separately bound fresh reader checks. Both public files also
+match the earlier complete images with zero differing bytes. The batch reuses
+its owned bitmap across two DATA pages without adopting unrelated storage.
+The [result](results/ace16-insert-empty-owned-2026-10-28.json) and
+[build receipt](results/ace16-insert-empty-owned-example-build-2026-10-28.json)
+retain phase identities and preparation stops. Saved-only replay passes with
+subprocess creation blocked; missing evidence returns status 2.
 
 ## Qualification boundaries
 
@@ -128,7 +137,8 @@ ordinary ownership has been observed in an inert private sample, but that
 sample's schema is outside the INSERT write profile and is not an admitted write
 original. Its contents are not used as test fixtures.
 
-An original-file producer comparison followed by fresh independent reader checks
-has not yet qualified this continuation. Such comparisons would still be
-separate from actual Windows Access mutation and native save/reopen evidence.
+The original-file missing-pointer proof does not qualify the separate
+inline-origin promotion profile. Both forms of independent-reader evidence
+remain separate from actual Windows Access mutation and native save/reopen
+qualification.
 The [engineering preview boundary](ACE16_WRITE_PREVIEWS.md) remains unchanged.

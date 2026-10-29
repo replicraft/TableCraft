@@ -61,7 +61,10 @@ A first INSERT into an empty table can initialize a qualified existing indirect
 ordinary-owned block-zero pointer. DATA and its separately typed owned bitmap
 share the cursor; higher pointers and unclaimed old pages stay unchanged. The
 [ordinary-owned continuation](ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer)
-records the source authority, literal checks and pending original-file evidence.
+records source authority and literal checks. Its
+[original-file proof](ace16_insert_empty_owned/README.md) now passes two complete
+candidate comparisons and two fresh reads after a separate public REF4 phase;
+both public files also match the earlier SOURCE/request-derived images.
 
 The primary receives the exact new key/ROW pairs, preserving its root identity
 and unrelated residue bytes. Duplicate original or batch primary values retain

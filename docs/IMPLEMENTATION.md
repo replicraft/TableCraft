@@ -150,8 +150,15 @@ the corrected five-function batch passes, including correlated pointer erasure,
 resource and actual final-callback controls. The combined INSERT batch passes
 263 functions, the full ACE library passes 613 with two ignored, and the Access
 adapter suite passes 506. Strict ACE/Access Clippy, minimal builds, formatting
-and documentation/dependency guards pass. Original-file qualification remains
-pending. See the [empty-ownership contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
+and documentation/dependency guards pass. The subsequent
+[original-file proof](testing/ace16_insert_empty_owned/README.md) passes SOURCE3,
+a separate saved raw gate, two SOURCE/request-derived complete images, public
+REF4, a fresh committed-producer build, two exact native candidates and two
+fresh independent reads. Both public files also match the earlier images byte
+for byte. The sixteen-row case reuses the owned bitmap across two DATA pages.
+Preparation stops remain recorded separately; this qualifies the V2016 indirect
+missing-pointer origin, with Windows Access save/reopen still unqualified.
+See the [empty-ownership contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
 
 ## Original-file Extended Date/Time INSERT
 

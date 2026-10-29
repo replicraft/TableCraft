@@ -1,5 +1,26 @@
 # Candidate Access fixtures
 
+## Original empty ordinary-owned INSERT input
+
+The repository-authored
+[EmptyOwnedInsertFixture.java](ace16_insert_empty_owned/EmptyOwnedInsertFixture.java)
+uses the existing reviewed Jackcess 5.0.4 JAR to create one V2016 empty Items table
+and a separate Sentinel through public builders. No source patch, deletion,
+orphan construction or adaptive generation is used. The JAR SHA-256 is
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No third-party fixture or implementation is copied; generated database bytes
+remain private.
+
+The [maintained proof](ace16_insert_empty_owned/README.md) separates SOURCE3
+capture, a saved raw gate, two SOURCE/request-only complete images, public REF4,
+an isolated committed-producer build, two native candidates and two fresh inert
+reads. All executed runtime phases pass first attempt. Earlier preparation stops
+remain retained, and both public files have zero differing bytes from the
+pre-build images. The [result](results/ace16-insert-empty-owned-2026-10-28.json)
+and [build receipt](results/ace16-insert-empty-owned-example-build-2026-10-28.json)
+pin the source and all phases. This qualifies the existing indirect missing
+block-zero origin, not inline-origin promotion or Windows Access save/reopen.
+
 ## Original column-LVAL map growth INSERT inputs
 
 Original project helper

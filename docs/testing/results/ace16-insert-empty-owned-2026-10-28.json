@@ -1,0 +1,528 @@
+{
+  "scope": "One genuine public-created ACE2016 empty ordinary table; missing indirect ordinary-owned block-zero INSERT engineering comparisons; no Microsoft Access save qualification",
+  "date": "2026-10-28",
+  "source": {
+    "capture_report": {
+      "path": ".cache/ace16-empty-owned-insert-source-first-20261028/report.json",
+      "bytes": 18059,
+      "sha256": "40253335b1a3cb15049b82fb939bfa5853985b7f39134c6f43a33594922d00f8"
+    },
+    "capture_commands": 3,
+    "qualification_by_capture": false,
+    "saved_gate": {
+      "path": ".cache/ace16-empty-owned-insert-source-next-20261028/source-gates-first.json",
+      "bytes": 11737,
+      "sha256": "a239b157ab30e4bf6456f76458bce98826fdcdd47e82b7183f9e01cf8965bdb5"
+    },
+    "saved_gates": 1,
+    "original": {
+      "path": ".cache/ace16-empty-owned-insert-source-first-20261028/V2016-empty-owned-source.accdb",
+      "bytes": 393216,
+      "sha256": "2703fb519311de407e64e27819035283b60744b80132d19a3dbf5f779545a943"
+    },
+    "getter": {
+      "path": ".cache/ace16-empty-owned-insert-source-first-20261028/V2016-empty-owned-before-inspect.stdout",
+      "bytes": 40867,
+      "sha256": "4ea420bbe38abf1fe6d4f4db7c32935ad66eb92da6b2c94f1c409ae5d809b54b"
+    },
+    "facts": {
+      "definition": 89,
+      "source_pages": 96,
+      "rows": 0,
+      "primary_root": 91,
+      "primary_history": 0,
+      "owned_record": "010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "owned_members": [],
+      "candidate_members": []
+    }
+  },
+  "construction": {
+    "model": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/model.py",
+      "bytes": 9531,
+      "sha256": "a707d3acd6b6fc910f81166588fbca2dd12136dae926a1b40dc9145137a8b79e"
+    },
+    "model_freeze_before_images": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/model-freeze-v2.json",
+      "bytes": 15314,
+      "sha256": "0febe7f9b0ed162ce0b6fdad8a62004bbfd43d90d98d8d77d9b14eed1b58e1c7"
+    },
+    "expected_freeze": {
+      "path": ".cache/ace16-empty-owned-insert-expected-first-20261028/freeze.json",
+      "bytes": 16051,
+      "sha256": "14e90f8d175534352b91eead34dcb94d3987c48ee74e29afa75720bca6d8d331"
+    },
+    "report": {
+      "path": ".cache/ace16-empty-owned-insert-expected-first-20261028/report.json",
+      "bytes": 21194,
+      "sha256": "2c39572df927b435080a860511d2ac3809c152495864e9c52d32c472a06b0996"
+    },
+    "complete_images": 2,
+    "source_request_only": true,
+    "first_actual_derivation_pass": true,
+    "full_reverification": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/reverify-first.json",
+      "bytes": 1216,
+      "sha256": "38ad0e0307f2609c2edf3fa87b8bc00acab4f0c025291c0284622c5085f07864"
+    },
+    "preserved_static_stop": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/before-census-json-normalization/first-static-failure.txt",
+      "bytes": 272,
+      "sha256": "eb8445b66f05dfb292fa47e0f3b6d7731c68874444e432c6a559681e6b7b3641"
+    }
+  },
+  "public_reference": {
+    "freeze": {
+      "path": ".cache/ace16-empty-owned-insert-public-next-20261028/freeze.json",
+      "bytes": 15063,
+      "sha256": "b2eb96bce5067a2e0067628629b7eb7392676645ffcbec50725c189ab9d33119"
+    },
+    "report": {
+      "path": ".cache/ace16-empty-owned-insert-public-first-20261028/report.json",
+      "bytes": 46692,
+      "sha256": "30d72383cdda4a0003d4363711302077d65df3c7bd976d43be4b875b4ae48cb7"
+    },
+    "child_commands": 4,
+    "transitions": 2,
+    "first_attempt_pass": true,
+    "different_bytes_from_preexisting_expected": [
+      0,
+      0
+    ],
+    "preserved_pre_freeze_stop": {
+      "path": ".cache/ace16-empty-owned-insert-public-next-20261028/before-raw-owner-freeze-guard/first-static-stop.txt",
+      "bytes": 527,
+      "sha256": "d670b38e863e36d75f490b6c6fd87663748c862cc29ee92104e245d77cd6b1b0"
+    }
+  },
+  "build": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-insert-empty-owned-example-build-2026-10-28.json",
+      "bytes": 2930,
+      "sha256": "aed2dea58e362658b49c817b3b89acd174102a777ac09c10f8fda142f34a8515"
+    },
+    "producer_commit": "463853e1e2a7dae00bb549538b7a049e21d376cc",
+    "exported_files": 4620,
+    "fresh_target_required": true,
+    "actual_engine_compilation_observed": true
+  },
+  "native": {
+    "freeze": {
+      "path": ".cache/ace16-empty-owned-insert-acceptance-next-20261028/freeze.json",
+      "bytes": 39121,
+      "sha256": "55034fde7e0de641ba80725410fa52550fd6a4814f784a409fc1c6a338aff050"
+    },
+    "report": {
+      "path": ".cache/ace16-empty-owned-insert-candidate-first-20261028/report.json",
+      "bytes": 44307,
+      "sha256": "a753fadaee74c05ab25c366f45387be665676dcd40e48434033bd0a709a928a2"
+    },
+    "full_image_calls": 2,
+    "first_attempt_pass": true
+  },
+  "fresh": {
+    "binding": {
+      "path": ".cache/ace16-empty-owned-insert-acceptance-next-20261028/getter-binding.json",
+      "bytes": 1862,
+      "sha256": "5161c5e37349b2562efd3673701b584943c7dbc708f4342c603a91a4d814d505"
+    },
+    "report": {
+      "path": ".cache/ace16-empty-owned-insert-getters-first-20261028/report.json",
+      "bytes": 53068,
+      "sha256": "bdd40da34ee474f8d4a8a4b384690f226e409537b20b4e7e67beedfb79da7612"
+    },
+    "inert_inspections": 2,
+    "first_attempt_pass": true,
+    "all_full_images_before_reader_one": true,
+    "final_user_rows": 19,
+    "selected_physical_key_ROW_pairs": 17,
+    "old_Items_ROW_count": 0
+  },
+  "cases": [
+    {
+      "id": "V2016-empty-owned-single",
+      "expected": {
+        "path": ".cache/ace16-empty-owned-insert-expected-first-20261028/V2016-empty-owned-single-expected.accdb",
+        "bytes": 401408,
+        "sha256": "970e16d99143cd5ab8dcc67027e7af213cd3c979c2c1a3e192aef4307558366c"
+      },
+      "allocations": [
+        {
+          "page": 96,
+          "purpose": "DATA"
+        },
+        {
+          "page": 97,
+          "purpose": "ORDINARY_OWNED_BITMAP"
+        }
+      ],
+      "table_and_history": 1,
+      "fresh_facts": {
+        "rows": 1,
+        "source_pages": 96,
+        "final_pages": 98,
+        "sha256": "970e16d99143cd5ab8dcc67027e7af213cd3c979c2c1a3e192aef4307558366c",
+        "data_pages": [
+          96
+        ],
+        "owned_bitmap": 97,
+        "owned_reference": 23040,
+        "candidate_members": [
+          96
+        ],
+        "candidate_row_hex": "000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "higher_pointer_bytes_preserved": true,
+        "rows_and_references": [
+          {
+            "identity": 7,
+            "page": 96,
+            "slot": 0,
+            "reference": 24576,
+            "bytes": 16
+          }
+        ],
+        "physical_history": 1,
+        "root": 91,
+        "index_prefix": 0,
+        "index_active": 9,
+        "index_scratch_differences": 0,
+        "public_record_padding": {
+          "7": {
+            "before_variable": "",
+            "after_variable": ""
+          }
+        },
+        "catalog_long_tables": {
+          "MSysAccessStorage": {
+            "live_parent_rows": 23,
+            "live_chunk_references": 3,
+            "declared_map_columns": 1
+          },
+          "MSysComplexType_Attachment": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 2
+          },
+          "MSysObjects": {
+            "live_parent_rows": 36,
+            "live_chunk_references": 4,
+            "declared_map_columns": 7
+          },
+          "MSysQueries": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 1
+          },
+          "f_12D7448B56564D8AAE333BCC9B3718E5_Data": {
+            "live_parent_rows": 1,
+            "live_chunk_references": 1,
+            "declared_map_columns": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "V2016-empty-owned-batch",
+      "expected": {
+        "path": ".cache/ace16-empty-owned-insert-expected-first-20261028/V2016-empty-owned-batch-expected.accdb",
+        "bytes": 405504,
+        "sha256": "1b65f605de76791f3c869bed69b1fd80f2395aab274a7ba9261c857eed65496e"
+      },
+      "allocations": [
+        {
+          "page": 96,
+          "purpose": "DATA"
+        },
+        {
+          "page": 97,
+          "purpose": "ORDINARY_OWNED_BITMAP"
+        },
+        {
+          "page": 98,
+          "purpose": "DATA"
+        }
+      ],
+      "table_and_history": 16,
+      "fresh_facts": {
+        "rows": 16,
+        "source_pages": 96,
+        "final_pages": 99,
+        "sha256": "1b65f605de76791f3c869bed69b1fd80f2395aab274a7ba9261c857eed65496e",
+        "data_pages": [
+          96,
+          98
+        ],
+        "owned_bitmap": 97,
+        "owned_reference": 23040,
+        "candidate_members": [
+          98
+        ],
+        "candidate_row_hex": "000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "higher_pointer_bytes_preserved": true,
+        "rows_and_references": [
+          {
+            "identity": 100,
+            "page": 96,
+            "slot": 0,
+            "reference": 24576,
+            "bytes": 268
+          },
+          {
+            "identity": 101,
+            "page": 96,
+            "slot": 1,
+            "reference": 24577,
+            "bytes": 268
+          },
+          {
+            "identity": 102,
+            "page": 96,
+            "slot": 2,
+            "reference": 24578,
+            "bytes": 268
+          },
+          {
+            "identity": 103,
+            "page": 96,
+            "slot": 3,
+            "reference": 24579,
+            "bytes": 268
+          },
+          {
+            "identity": 104,
+            "page": 96,
+            "slot": 4,
+            "reference": 24580,
+            "bytes": 268
+          },
+          {
+            "identity": 105,
+            "page": 96,
+            "slot": 5,
+            "reference": 24581,
+            "bytes": 268
+          },
+          {
+            "identity": 106,
+            "page": 96,
+            "slot": 6,
+            "reference": 24582,
+            "bytes": 268
+          },
+          {
+            "identity": 107,
+            "page": 96,
+            "slot": 7,
+            "reference": 24583,
+            "bytes": 268
+          },
+          {
+            "identity": 108,
+            "page": 96,
+            "slot": 8,
+            "reference": 24584,
+            "bytes": 268
+          },
+          {
+            "identity": 109,
+            "page": 96,
+            "slot": 9,
+            "reference": 24585,
+            "bytes": 268
+          },
+          {
+            "identity": 110,
+            "page": 96,
+            "slot": 10,
+            "reference": 24586,
+            "bytes": 268
+          },
+          {
+            "identity": 111,
+            "page": 96,
+            "slot": 11,
+            "reference": 24587,
+            "bytes": 268
+          },
+          {
+            "identity": 112,
+            "page": 96,
+            "slot": 12,
+            "reference": 24588,
+            "bytes": 268
+          },
+          {
+            "identity": 113,
+            "page": 96,
+            "slot": 13,
+            "reference": 24589,
+            "bytes": 268
+          },
+          {
+            "identity": 114,
+            "page": 96,
+            "slot": 14,
+            "reference": 24590,
+            "bytes": 268
+          },
+          {
+            "identity": 115,
+            "page": 98,
+            "slot": 0,
+            "reference": 25088,
+            "bytes": 268
+          }
+        ],
+        "physical_history": 16,
+        "root": 91,
+        "index_prefix": 0,
+        "index_active": 144,
+        "index_scratch_differences": 0,
+        "public_record_padding": {
+          "100": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "101": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "102": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "103": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "104": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "105": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "106": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "107": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "108": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "109": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "110": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "111": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "112": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "113": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "114": {
+            "before_variable": "",
+            "after_variable": ""
+          },
+          "115": {
+            "before_variable": "",
+            "after_variable": ""
+          }
+        },
+        "catalog_long_tables": {
+          "MSysAccessStorage": {
+            "live_parent_rows": 23,
+            "live_chunk_references": 3,
+            "declared_map_columns": 1
+          },
+          "MSysComplexType_Attachment": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 2
+          },
+          "MSysObjects": {
+            "live_parent_rows": 36,
+            "live_chunk_references": 4,
+            "declared_map_columns": 7
+          },
+          "MSysQueries": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 1
+          },
+          "f_12D7448B56564D8AAE333BCC9B3718E5_Data": {
+            "live_parent_rows": 1,
+            "live_chunk_references": 1,
+            "declared_map_columns": 2
+          }
+        }
+      }
+    }
+  ],
+  "maintained": {
+    "verifier": {
+      "path": "docs/testing/ace16_insert_empty_owned/verify.py",
+      "bytes": 14071,
+      "sha256": "0c0773f9edb83667dbd97beba81a6646f106f2d4d62fa9d71f612f8fcfc41577"
+    },
+    "default_first": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-first.json",
+      "bytes": 8726,
+      "sha256": "5fcc5cd558d0d7daedf68dc1a0c6c83fb005a3f422f580cd3ce878c9a76394ba"
+    },
+    "subprocess_blocked_first": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-no-child-first.json",
+      "bytes": 8726,
+      "sha256": "5fcc5cd558d0d7daedf68dc1a0c6c83fb005a3f422f580cd3ce878c9a76394ba"
+    },
+    "missing_evidence_first": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-missing-first.json",
+      "bytes": 292,
+      "sha256": "1c837b6d5d3a7b31d1b2b8861d99ee1bc9e45d37d3c31ad1eddeb0bd854e6259"
+    },
+    "default_status": 0,
+    "missing_evidence_status": 2,
+    "actual_native_JVM_Cargo_calls_by_verifier": 0,
+    "default_final": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-final.json",
+      "bytes": 8726,
+      "sha256": "5fcc5cd558d0d7daedf68dc1a0c6c83fb005a3f422f580cd3ce878c9a76394ba"
+    },
+    "subprocess_blocked_final": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-no-child-final.json",
+      "bytes": 8726,
+      "sha256": "5fcc5cd558d0d7daedf68dc1a0c6c83fb005a3f422f580cd3ce878c9a76394ba"
+    },
+    "missing_evidence_final": {
+      "path": ".cache/ace16-empty-owned-insert-candidates-next-20261028/maintained-missing-final.json",
+      "bytes": 292,
+      "sha256": "1c837b6d5d3a7b31d1b2b8861d99ee1bc9e45d37d3c31ad1eddeb0bd854e6259"
+    },
+    "independent_root_default_status": 0,
+    "independent_root_optional_git_status": 0,
+    "independent_root_optional_git_metadata_children": 1
+  },
+  "qualification": {
+    "header": "ACE2016",
+    "ordinary_inline_origin_promotion_not_qualified_by_this_corpus": true,
+    "Microsoft_Access_execution": false,
+    "native_save_reopen": false,
+    "normal_backend_writes": false,
+    "fixture_binaries_committed": false
+  }
+}
