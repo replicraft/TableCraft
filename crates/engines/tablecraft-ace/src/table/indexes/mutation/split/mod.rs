@@ -1,6 +1,7 @@
 //! Separate, bounded recursive splitting; ordinary replacement paths stay closed.
 pub(in crate::table) mod allocation;
 mod audit;
+pub(in crate::table) mod fixed_batch;
 pub(in crate::table::indexes) mod insert;
 mod maps;
 mod nonroot;
@@ -72,6 +73,18 @@ pub(in crate::table) struct Plan {
 }
 
 impl Plan {
+    pub(in crate::table) fn audit_fixed_batch(
+        &self,
+        image: &NativeImage,
+        checked: &TableCheck,
+        updates: &[IndexKeyUpdate],
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<std::ops::Range<usize>>, EditError> {
+        audit::fixed_batch::prove(image, checked, updates, self, after, budget, cancelled)
+    }
+
     pub(super) fn new(image: &NativeImage, owner: u32) -> Self {
         Self::with_append(State::new(image, owner))
     }

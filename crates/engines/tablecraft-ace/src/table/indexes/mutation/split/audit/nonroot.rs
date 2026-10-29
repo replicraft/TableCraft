@@ -30,7 +30,15 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<Vec<u32>, EditError> {
-    replay::prove(operation, actual, progress)
+    replay::prove(operation, actual, progress, false)
+}
+
+pub(super) fn prove_population<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+    progress: &mut Progress<'_>,
+) -> Result<Vec<u32>, EditError> {
+    replay::prove(operation, actual, progress, true)
 }
 
 pub(super) fn fits<P: RetainedProfile, const N: usize>(
@@ -51,4 +59,26 @@ pub(super) fn layout<P: RetainedProfile, const N: usize>(
     actual: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<usize, EditError> {
     framing::layout::<P, N>(entries, seed, raw, profile, actual)
+}
+
+pub(super) fn existing<P: RetainedProfile, const N: usize>(
+    before: &[u8],
+    after: &[u8],
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    owner: u32,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    framing::prove::<P, N>(
+        &framing::Spec {
+            source: framing::Source::Existing(before),
+            after,
+            entries,
+            profile,
+            owner,
+            height: 0,
+            tail: 0,
+        },
+        actual,
+    )
 }

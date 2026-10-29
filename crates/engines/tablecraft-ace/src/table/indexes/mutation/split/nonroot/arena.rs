@@ -34,6 +34,7 @@ pub(super) struct Arena {
     pub root: usize,
     pub added: Vec<u32>,
     position: usize,
+    remaining_leaves: Option<usize>,
 }
 
 pub(super) fn prepare<P: RetainedProfile, const N: usize>(
@@ -42,14 +43,43 @@ pub(super) fn prepare<P: RetainedProfile, const N: usize>(
     plan: &mut Plan,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Arena, EditError> {
+    prepare_with(operation, tree, plan, reader, None)
+}
+
+pub(super) fn prepare_population<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
+    tree: &Tree,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Arena, EditError> {
+    let leaves = tree.leaf_count(reader.budget, reader.cancelled)?;
+    if operation.keys.len() < leaves {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    prepare_with(operation, tree, plan, reader, Some(leaves))
+}
+
+fn prepare_with<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
+    tree: &Tree,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    remaining_leaves: Option<usize>,
+) -> Result<Arena, EditError> {
     let mut arena = Arena {
         nodes: Vec::new(),
         root: 0,
         added: Vec::new(),
         position: 0,
+        remaining_leaves,
     };
     let result = build(operation, tree, true, &mut arena, plan, reader)?;
-    if result.len() != 1 || arena.position != operation.keys.len() {
+    if result.len() != 1
+        || arena.position != operation.keys.len()
+        || arena
+            .remaining_leaves
+            .is_some_and(|remaining| remaining != 0)
+    {
         return Err(EditError::Preservation);
     }
     arena.root = result[0];
@@ -68,8 +98,25 @@ fn build<P: RetainedProfile, const N: usize>(
     let original = raw(operation.image, tree.number())?;
     let (contents, maximum) = if tree.is_leaf() {
         let start = arena.position;
+        let count = if let Some(remaining) = arena.remaining_leaves {
+            let reserved = remaining.checked_sub(1).ok_or(EditError::Preservation)?;
+            let available = operation
+                .keys
+                .len()
+                .checked_sub(start)
+                .and_then(|count| count.checked_sub(reserved))
+                .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
+            arena.remaining_leaves = Some(reserved);
+            if reserved == 0 {
+                available
+            } else {
+                tree.count().min(available)
+            }
+        } else {
+            tree.count()
+        };
         let end = start
-            .checked_add(tree.count())
+            .checked_add(count)
             .filter(|end| start < *end && *end <= operation.keys.len())
             .ok_or(EditError::Preservation)?;
         arena.position = end;
