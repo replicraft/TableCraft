@@ -1,6 +1,6 @@
 //! Explicit ordinary/LVAL page owners share only bounded physical append framing.
 use super::super::{
-    EditError, WriteBlocker,
+    EditError, SlotScalarUpdate, WriteBlocker,
     page_update::{roots::Root, space::Space},
 };
 use super::maps::{Family, Maps};
@@ -270,7 +270,7 @@ impl Plan {
     pub fn ordinary(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_>,
+        root: &Root<'_, SlotScalarUpdate>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,

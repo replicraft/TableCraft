@@ -1264,6 +1264,17 @@ The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
 and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
 comparison is independent evidence, not Microsoft Access conformance.
 
+## Selected forwarded fixed UPDATE continuation
+
+The [explicit fixed/batch service](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)
+now patches qualified final records while retaining logical index ROWs, original
+pointers and physical layout. Shared capture verifies owned targets and exclusive
+logical ownership before callbacks. UPDATE cascades use a separate strict policy,
+correcting the prior public-batch delegation leak. Full library, shared regressions,
+focused authority controls and strict/minimal checks pass. Broader allocation,
+original-file forwarding comparisons, normal saves and native Access qualification
+remain unfinished.
+
 ## Ignored-NULL fixed UPDATE continuation
 
 The [fixed/batch engineering service](testing/ACE16_IGNORED_NULL_UPDATES.md)
@@ -1271,9 +1282,12 @@ now adds and removes qualified secondary index membership as complete keys becom
 represented or entirely NULL. Original-row certification, final tuple constraints,
 physical-alias ownership and checked historical deltas remain mandatory.
 Order-dependent history, capacity and empty-subtree transitions refuse; existing
-topology is retained. Forty-four complete literal images pass. Normal editing,
-slot/cascade admission and ACE save gates are unchanged. Broader topology changes,
-public UPDATE comparisons and native Access qualification remain unfinished.
+topology is retained. Forty-four complete literal images pass. Normal editing and
+ACE save gates remain unchanged. The later forwarding continuation corrects the
+transitive cascade-policy leak in the original checkpoint. Its
+[original-file proof](testing/ace16_fixed_ignore_null_updates/README.md) now passes
+16 complete images and 18 exact refusals followed by 16 fresh readers. Broader
+topology changes and native Access qualification remain unfinished.
 
 ## Explicit AutoNumber generation continuation
 

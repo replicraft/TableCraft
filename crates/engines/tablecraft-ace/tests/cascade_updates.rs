@@ -3,6 +3,8 @@
 mod base;
 #[path = "foreign_updates/fixture.rs"]
 mod foreign_fixture;
+#[path = "cascade_updates/policy.rs"]
+mod policy;
 use tablecraft_testkit::access as support;
 
 use std::{cell::Cell, io::Cursor};

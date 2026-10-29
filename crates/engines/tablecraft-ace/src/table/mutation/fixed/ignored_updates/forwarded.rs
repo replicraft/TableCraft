@@ -1,7 +1,7 @@
 //! Source keys retain logical identity when an untouched row is forwarded.
 use super::{PAGE, assert_image, budget, capture, example, model, qualify};
 use crate::table::mutation::insert::tests::ignored_index_inserts::model as forwarding;
-use crate::{EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError, WriteBlocker};
+use crate::{EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError};
 use tablecraft_core::values::Value;
 
 struct Case {
@@ -59,7 +59,7 @@ fn qualify_untouched_forwarded_omitted_roots_and_whole_images_before_preview() {
 }
 
 #[test]
-fn untouched_forwarded_omitted_roots_remain_logical_and_selected_forwarding_stays_refused() {
+fn untouched_forwarded_omitted_roots_remain_logical() {
     for code in [5, 6] {
         for descending in [false, true] {
             let case = case(code, descending);
@@ -72,15 +72,6 @@ fn untouched_forwarded_omitted_roots_remain_logical_and_selected_forwarding_stay
                 .preview_ace16_fixed_updates("Items", "Group", &updates, &mut budget(), &|| false)
                 .unwrap();
             assert_image(result.candidate_bytes(), &case.expected);
-            let updates = [FixedScalarUpdate::new(2, Value::Null, Value::Int32(30))];
-            assert_eq!(
-                capture(&case.before)
-                    .preview_ace16_fixed_updates("Items", "Group", &updates, &mut budget(), &|| {
-                        false
-                    },)
-                    .err(),
-                Some(EditError::Unsupported(WriteBlocker::RowLayout))
-            );
         }
     }
 }

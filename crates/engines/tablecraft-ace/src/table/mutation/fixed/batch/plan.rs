@@ -7,7 +7,7 @@ use crate::{
     format::data_type::NUMERIC_BYTES,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
-    table::indexes::{IndexKeyUpdate, fixed_index_patches},
+    table::indexes::{IndexKeyUpdate, fixed_index_patches, index_patches},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -40,6 +40,20 @@ impl NativeImage {
     /// Atomicity here means that failed planning returns no candidate; this is
     /// not a file commit or a claim about native Access transaction semantics.
     pub fn preview_ace16_batch_updates(
+        self,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
+        self.preview_fixed_batch_inner::<true>(groups, budget, cancelled)
+    }
+
+    // There are two real consumers: the explicit fixed/batch preview selects
+    // extended admission, while UPDATE cascades retain their previous policy.
+    // Keep metadata admission, index membership and record access together.
+    pub(in crate::table::mutation::fixed) fn preview_fixed_batch_inner<
+        const EXTENDED_FIXED: bool,
+    >(
         self,
         groups: &[FixedColumnUpdates<'_>],
         budget: &mut ResourceBudget,
@@ -81,7 +95,11 @@ impl NativeImage {
             {
                 tables.push(Table {
                     name: group.table(),
-                    before: gates::before_fixed_update(&self, group.table(), budget, cancelled)?,
+                    before: if EXTENDED_FIXED {
+                        gates::before_fixed_update(&self, group.table(), budget, cancelled)?
+                    } else {
+                        gates::before(&self, group.table(), budget, cancelled)?
+                    },
                     keys: Vec::new(),
                 });
             }
@@ -108,7 +126,7 @@ impl NativeImage {
                 .find(|column| column.name().eq_ignore_ascii_case(group.column()))
                 .and_then(|column| column.scalar_type())
                 .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-            let mut target = Target {
+            let mut target = Target::<EXTENDED_FIXED> {
                 table,
                 patches: &mut patches,
                 changed: &mut changed,
@@ -143,14 +161,25 @@ impl NativeImage {
         let mut indexes = Vec::new();
         for table in &tables {
             check(budget, cancelled)?;
-            let staged = fixed_index_patches(
-                &self,
-                table.before.schema(),
-                table.before.indexes(),
-                &table.keys,
-                budget,
-                cancelled,
-            )?;
+            let staged = if EXTENDED_FIXED {
+                fixed_index_patches(
+                    &self,
+                    table.before.schema(),
+                    table.before.indexes(),
+                    &table.keys,
+                    budget,
+                    cancelled,
+                )?
+            } else {
+                index_patches(
+                    &self,
+                    table.before.schema(),
+                    table.before.indexes(),
+                    &table.keys,
+                    budget,
+                    cancelled,
+                )?
+            };
             budget
                 .charge_allocation(
                     staged.len() as u64,
@@ -182,12 +211,12 @@ impl NativeImage {
     }
 }
 
-struct Target<'a, 'b> {
+struct Target<'a, 'b, const EXTENDED_FIXED: bool> {
     table: &'a mut Table<'b>,
     patches: &'a mut Vec<spans::Patch>,
     changed: &'a mut Vec<(u32, u32)>,
 }
-impl Target<'_, '_> {
+impl<const EXTENDED_FIXED: bool> Target<'_, '_, EXTENDED_FIXED> {
     fn stage<const WIDTH: usize>(
         &mut self,
         image: &NativeImage,
@@ -196,7 +225,7 @@ impl Target<'_, '_> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        let column = masked::stage::<WIDTH>(
+        let column = masked::stage::<WIDTH, EXTENDED_FIXED>(
             image,
             &self.table.before,
             group.column(),

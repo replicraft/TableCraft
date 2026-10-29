@@ -89,7 +89,7 @@ pub fn database(code: u8, descending: bool, cascade: bool) -> Vec<u8> {
     bytes
 }
 
-fn index(keys: &[Option<i32>], descending: bool) -> Vec<u8> {
+pub(super) fn index(keys: &[Option<i32>], descending: bool) -> Vec<u8> {
     let mut page = vec![0xa7; 4096];
     page[..480].fill(0);
     page[..2].copy_from_slice(&[4, 1]);

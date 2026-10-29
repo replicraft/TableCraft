@@ -14,6 +14,8 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 mod directory;
+#[cfg(feature = "ace16-write-preview")]
+pub(super) mod final_record;
 
 pub(super) use directory::Directory;
 
@@ -37,6 +39,8 @@ pub(super) fn unique<U: RowAssignment>(
 }
 
 pub(super) struct Row<'a> {
+    // Payload/offset describe the selected physical record. Identity and slot
+    // metadata always describe its original logical root.
     pub data: &'a [u8],
     pub reference: u32,
     pub offset: usize,

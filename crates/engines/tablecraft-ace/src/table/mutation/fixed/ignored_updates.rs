@@ -1,6 +1,7 @@
 //! Independent SOURCE and complete-image expectations for omitted UPDATE keys.
 mod boundaries;
 mod forwarded;
+mod selected_forwarded;
 mod tuple;
 
 use crate::table::mutation::insert::tests::multiple_indexes::model::{self, Case, PAGE};

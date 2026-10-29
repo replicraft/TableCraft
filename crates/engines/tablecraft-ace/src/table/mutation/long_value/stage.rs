@@ -28,7 +28,7 @@ const REFERENCE_BYTES: usize = size_of::<u32>();
 const MAX_ORDINARY_BODY_BYTES: usize = PAGE_BYTES - slot_offset(1);
 
 pub(super) struct Change<'u> {
-    pub root: Root<'u>,
+    pub root: Root<'u, SlotScalarUpdate>,
     pub encoded: Encoded,
     pub choice: StorageChoice,
     pub descriptor: Vec<u8>,
