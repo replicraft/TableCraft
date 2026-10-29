@@ -30,7 +30,7 @@ pub(crate) enum Mode<'a> {
     Table(&'a str),
     Indexes(&'a str),
     Properties(&'a str),
-    Extra(&'a str),
+    Extra(&'a str, bool),
     Features(&'a str),
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
@@ -95,8 +95,8 @@ pub(crate) fn run(
         Mode::Properties(name) => {
             properties::run(&mut source, name, &mut output, budget)?;
         }
-        Mode::Extra(name) => {
-            extra::run(&mut source, name, &mut output, budget)?;
+        Mode::Extra(name, macro_xml) => {
+            extra::run(&mut source, name, macro_xml, &mut output, budget)?;
         }
         Mode::Indexes(name) => {
             let inspection = tablecraft_ace::inspect_table_indexes(

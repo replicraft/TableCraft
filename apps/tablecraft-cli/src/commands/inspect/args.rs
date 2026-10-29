@@ -45,6 +45,9 @@ pub(crate) struct Args {
             "version_history", "check", "constraints"]
     )]
     extra: bool,
+    /// Explicitly inspect stored data-macro XML envelopes; does not execute actions.
+    #[arg(long, requires = "extra")]
+    macro_xml: bool,
     /// Inspect inert calculated, complex and presentation field declarations.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
     features: bool,
@@ -89,6 +92,7 @@ impl Args {
             indexes,
             properties,
             extra,
+            macro_xml,
             features,
             complex,
             stored_calculation,
@@ -104,7 +108,7 @@ impl Args {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
             if extra {
-                Mode::Extra(name)
+                Mode::Extra(name, macro_xml)
             } else if let Some(column) = attachments.as_deref() {
                 Mode::Attachments(name, column)
             } else if let Some(column) = version_history.as_deref() {

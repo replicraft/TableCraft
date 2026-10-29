@@ -12,6 +12,30 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit data-macro XML envelopes
+
+The [envelope reader](access/schema/NATIVE_DATA_MACRO_XML.md) now explicitly reads
+normalized XML Event/Name and namespace facts from validated Extra property text.
+It supports the observed single-root and documented wrapper profiles, checks
+namespace/name/character/declaration boundaries and meters parser allocations,
+namespace work, depth and counts. Body grammar, actions and expressions remain
+uninterpreted; execution, qualified absence and normal ACE save gates are unchanged.
+
+`inspect --table NAME --extra --macro-xml` prints envelope metadata without body
+text. Names-only bags explicitly report zero documents inspected without
+certifying absence. Opaque/missing/NULL/empty payload profiles refuse the XML
+operation; plain Extra inspection retains its physical-state report. Malformed
+later XML publishes no earlier envelope rows.
+
+Eight focused engine and eight final CLI tests pass, alongside 30 earlier browsing
+regressions, strict ACE/CLI all-target/all-feature and minimal ACE Clippy,
+formatting, links and dependency checks. Seven first original-file calls match
+all 130 expected TSV records: nine documents/definitions and two names-only
+reports. All four originals retain their hashes and use ACE 2010 stored profiles;
+these results do not qualify ACE 16 macro semantics. The
+[record](testing/results/data-macro-xml-envelopes-2026-10-29.json) preserves captured
+consumer/input pins and the original preparation observations.
+
 ## Inert table Extra storage inspection
 
 The bounded [table Extra reader](access/schema/NATIVE_TABLE_EXTRA.md) now retains

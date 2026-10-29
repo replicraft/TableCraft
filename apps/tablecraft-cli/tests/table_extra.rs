@@ -15,6 +15,169 @@ use tablecraft_testkit::access as support;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
+#[test]
+fn later_invalid_xml_does_not_publish_an_earlier_valid_envelope() {
+    let text = "<DataMacro xmlns=\"http://schemas.microsoft.com/office/accessservices/2009/11/application\" Event=\"AfterInsert\"><Statements/></DataMacro>";
+    let raw = extra_fixture::bag(&[
+        extra_fixture::names(&["AfterInsert", "AfterUpdate"]),
+        extra_fixture::group(
+            3,
+            &[
+                extra_fixture::property(0, 1, 12, &extra_fixture::text(text)),
+                extra_fixture::property(1, 1, 12, &extra_fixture::text("<invalid")),
+            ],
+        ),
+    ]);
+    let database = Database::new(local_table(payload_fixture::inline(&raw), false));
+    let output = cli_support::run(&[
+        "inspect",
+        database.path(),
+        "--table",
+        "Items",
+        "--extra",
+        "--macro-xml",
+    ]);
+    assert!(!output.status.success());
+    assert!(output.stdout.is_empty());
+    assert!(!output.stderr.is_empty());
+}
+
+#[test]
+fn names_only_and_empty_groups_report_no_xml_inspected_without_absence_claims() {
+    for groups in [Vec::new(), vec![extra_fixture::group(3, &[])]] {
+        let mut blocks = vec![extra_fixture::names(&["AfterUpdate"])];
+        blocks.extend(groups);
+        let raw = extra_fixture::bag(&blocks);
+        let database = Database::new(local_table(payload_fixture::inline(&raw), false));
+        let output = cli_support::run(&[
+            "inspect",
+            database.path(),
+            "--table",
+            "Items",
+            "--extra",
+            "--macro-xml",
+        ]);
+        assert!(output.status.success(), "{:?}", output.stderr);
+        assert!(output.stderr.is_empty());
+        let text = String::from_utf8(output.stdout).unwrap();
+        assert!(text.contains("XML documents inspected\t0\n"));
+        assert!(text.contains("XML envelope definitions\t0\n"));
+        assert!(text.contains("No XML documents inspected; absence not certified"));
+        assert!(text.contains("Data-macro absence\tNot certified\n"));
+    }
+}
+
+#[test]
+fn macro_xml_requires_explicit_selection_and_reports_envelopes_without_bodies() {
+    let namespace = "http://schemas.microsoft.com/office/accessservices/2009/11/application";
+    let event = format!(
+        "<DataMacro xmlns=\"{namespace}\" Event=\"BeforeChange\">\
+         <Statements><Action Name=\"NeverExecute\"><Argument Name=\"Value\">\
+         private-body-marker</Argument></Action></Statements></DataMacro>"
+    );
+    let named =
+        format!("<DataMacro xmlns=\"{namespace}\" Name=\"NamedOnly\"><Statements/></DataMacro>");
+    let raw = extra_fixture::bag(&[
+        extra_fixture::names(&["ValidateUpdate", "StoredName"]),
+        extra_fixture::group(
+            3,
+            &[extra_fixture::property(
+                0,
+                1,
+                12,
+                &extra_fixture::text(&event),
+            )],
+        ),
+        extra_fixture::group(
+            4,
+            &[extra_fixture::property(
+                1,
+                1,
+                12,
+                &extra_fixture::text(&named),
+            )],
+        ),
+    ]);
+    let database = Database::new(local_table(payload_fixture::inline(&raw), false));
+    let base = ["inspect", database.path(), "--table", "Items", "--extra"];
+    let ordinary = cli_support::run(&base);
+    assert!(ordinary.status.success());
+    let text = String::from_utf8(ordinary.stdout).unwrap();
+    assert!(!text.contains("BeforeChange"));
+    assert!(!text.contains("NamedOnly"));
+
+    let mut arguments = base.to_vec();
+    arguments.push("--macro-xml");
+    let output = cli_support::run(&arguments);
+    assert!(output.status.success(), "{:?}", output.stderr);
+    assert!(output.stderr.is_empty());
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains(&format!("3\tValidateUpdate\t{namespace}\tBeforeChange\t\n")));
+    assert!(text.contains(&format!("4\tStoredName\t{namespace}\t\tNamedOnly\n")));
+    assert!(text.contains("Data-macro absence\tNot certified\n"));
+    assert!(!text.contains("NeverExecute"));
+    assert!(!text.contains("private-body-marker"));
+    assert!(!text.contains("<DataMacro"));
+}
+
+#[test]
+fn malformed_or_unrecognized_macro_xml_keeps_stdout_empty() {
+    let database = Database::new(local_table(
+        payload_fixture::inline(&extra_fixture::golden()),
+        false,
+    ));
+    let output = cli_support::run(&[
+        "inspect",
+        database.path(),
+        "--table",
+        "Items",
+        "--extra",
+        "--macro-xml",
+    ]);
+    assert!(!output.status.success());
+    assert!(output.stdout.is_empty());
+    assert!(!output.stderr.is_empty());
+
+    let opaque = Database::new(local_table(payload_fixture::inline(b"future"), false));
+    let output = cli_support::run(&[
+        "inspect",
+        opaque.path(),
+        "--table",
+        "Items",
+        "--extra",
+        "--macro-xml",
+    ]);
+    assert!(!output.status.success());
+    assert!(output.stdout.is_empty());
+
+    for arguments in [
+        vec!["inspect", "never-open.accdb", "--macro-xml"],
+        vec![
+            "inspect",
+            "never-open.accdb",
+            "--table",
+            "Items",
+            "--macro-xml",
+        ],
+        vec![
+            "inspect",
+            "never-open.accdb",
+            "--table",
+            "Items",
+            "--extra",
+            "--macro-xml",
+            "--indexes",
+        ],
+    ] {
+        let output = cli_support::run(&arguments);
+        assert!(!output.status.success());
+        assert!(output.stdout.is_empty());
+        let stderr = String::from_utf8(output.stderr).unwrap();
+        assert!(stderr.contains("required") || stderr.contains("cannot be used"));
+        assert!(!stderr.contains("database I/O"));
+    }
+}
+
 struct Database {
     path: PathBuf,
     bytes: Vec<u8>,

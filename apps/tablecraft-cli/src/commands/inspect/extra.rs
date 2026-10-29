@@ -8,6 +8,7 @@ use tablecraft_model::ObjectKind;
 pub(super) fn run<R: Read + Seek>(
     source: &mut R,
     name: &str,
+    macro_xml: bool,
     output: &mut TableOutput,
     mut budget: ResourceBudget,
 ) -> Result<(), Error> {
@@ -109,6 +110,69 @@ pub(super) fn run<R: Read + Seek>(
                 )?;
             }
         }
+    }
+    if macro_xml {
+        if extra.coverage() != TableExtraCoverage::WideMr2 {
+            return Err(Error::Read(InspectError::Unsupported));
+        }
+        output.table_section().map_err(Error::Output)?;
+        line(
+            output,
+            &[
+                "Group kind",
+                "Property",
+                "XML namespace",
+                "Event",
+                "Macro name",
+            ],
+        )?;
+        let mut documents = 0_usize;
+        let mut definitions = 0_usize;
+        for group in extra.groups() {
+            let properties = group
+                .properties()
+                .ok_or(Error::Read(InspectError::Unsupported))?;
+            for property in properties {
+                let document = property
+                    .inspect_macro_xml(&mut budget, &|| false)
+                    .map_err(Error::Read)?;
+                documents = documents
+                    .checked_add(1)
+                    .ok_or(Error::Read(InspectError::StructureLimit))?;
+                definitions = definitions
+                    .checked_add(document.definitions().len())
+                    .ok_or(Error::Read(InspectError::StructureLimit))?;
+                for definition in document.definitions() {
+                    line(
+                        output,
+                        &[
+                            &group.kind().to_string(),
+                            property.name(),
+                            document.namespace().uri(),
+                            definition.event().unwrap_or(""),
+                            definition.name().unwrap_or(""),
+                        ],
+                    )?;
+                }
+            }
+        }
+        output.table_section().map_err(Error::Output)?;
+        line(output, &["XML documents inspected", &documents.to_string()])?;
+        line(
+            output,
+            &["XML envelope definitions", &definitions.to_string()],
+        )?;
+        line(
+            output,
+            &[
+                "XML envelope coverage",
+                if documents == 0 {
+                    "No XML documents inspected; absence not certified"
+                } else {
+                    "Envelope metadata only; runtime semantics not validated"
+                },
+            ],
+        )?;
     }
     Ok(())
 }

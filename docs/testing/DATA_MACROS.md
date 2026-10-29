@@ -1,9 +1,10 @@
 # ACE 16 data-macro qualification
 
 Status: evidence requirements and current observations, 29 October 2026.
-[Inert table Extra framing](../access/schema/NATIVE_TABLE_EXTRA.md) now has a
-bounded reader. Semantic data-macro detection, qualified absence and execution
-remain unfinished. All production ACE writes remain blocked. This document does
+[Inert table Extra framing](../access/schema/NATIVE_TABLE_EXTRA.md) and explicit
+[XML envelope metadata](../access/schema/NATIVE_DATA_MACRO_XML.md) now have bounded
+readers. Complete semantic detection, qualified absence and execution remain
+unfinished. All production ACE writes remain blocked. This document does
 not establish native Access qualification.
 
 ## Current evidence and the write gate
@@ -58,6 +59,13 @@ namespaces/actions, event order, rollback, or safe ordinary saves. Names-only
 Extra values remain names-only observations. Missing or NULL Extra remains a
 physical presence fact, not an absence certificate. The existing narrow `LvProp`
 reader and normal write gates remain unchanged.
+
+Explicit XML inspection now distinguishes normalized Event/Name declarations
+from native property names in the supported envelope profiles. Nine original
+documents compare exactly through seven inert CLI calls, with two additional
+names-only carriers explicitly reporting zero inspected documents. Neither empty
+coverage nor a recognized envelope establishes absence, supported actions,
+required event behavior or normal save eligibility.
 
 Desktop references describe [Before Change](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event),
 [Before Delete](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-delete-macro-event),
