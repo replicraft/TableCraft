@@ -10,6 +10,9 @@ fn edge(parent: usize, child: usize) -> Link {
         parent,
         child,
         matches: Vec::new(),
+        action: tablecraft_schema::ReferentialAction::Cascade,
+        children: [0; INDEX_KEY_COLUMNS],
+        width: 1,
     }
 }
 

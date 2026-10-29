@@ -130,13 +130,23 @@ headers or residuals. Lint, minimal compilation and scoped formatting pass.
 Original-file multi-table comparisons and native Access action/save qualification
 remain separate evidence work.
 
-## Separate acyclic cascading deletions
+## Separate acyclic cascading deletions and SET NULL
 
 `NativeImage::preview_ace16_cascading_deletes` accepts the same borrowed
 `TableRowDeletes` groups and returns the same non-journalable `Ace16DeletePreview`.
 It is a separate action-expanding service. The existing single-table and explicit
 batch entrypoints retain their RESTRICT-only admission, including empty requests.
 No normal CLI/backend DELETE or native save is enabled.
+
+The [atomic SET NULL continuation](ACE16_SET_NULL_DELETES.md) now also captures
+original associations for qualified delete SET NULL edges. After deletion closure,
+it nulls every matched surviving child's foreign-key components, retaining fixed
+payloads and composing each physical index once with any deletions. The same
+lookup carrier/primary requirements and final constraints apply. Self/cyclic
+actions and parent-key changes requiring further UPDATE cascades remain refused.
+The ordinary single-table and explicit batch entrypoints keep their existing
+RESTRICT-only boundary. The historical cascade results below remain distinct
+from this continuation's implementation checks.
 
 The new service checks every explicit seed against its original ordinary root and
 complete expected record before closure deduplication. It follows only enforced,

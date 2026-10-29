@@ -1,6 +1,6 @@
 //! Cardinality changes preserve retained original keys and qualified page ownership.
-mod requests;
-use super::super::{NativeIndex, header::IndexHeader, page};
+pub(super) mod requests;
+use super::super::{NativeIndex, header::IndexHeader, page, page::KeyRef};
 use super::{
     PatchSet, repack,
     retained::RetainedProfile,
@@ -126,7 +126,33 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
         reader.tick()?;
         return Ok(());
     }
-    let mut original = keys.as_slice();
+    finish_tree::<P, N>(
+        image,
+        reader,
+        index,
+        &tree,
+        &keys,
+        Deletion {
+            profile,
+            references,
+            removed: 0,
+        },
+        patches,
+    )
+}
+
+pub(super) fn finish_tree<P: RetainedProfile, const N: usize>(
+    image: &NativeImage,
+    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+    index: &NativeIndex,
+    tree: &Tree,
+    keys: &[KeyRef<P::Key>],
+    mut deletion: Deletion<'_, P>,
+    patches: &mut PatchSet,
+) -> Result<(), EditError> {
+    let references = deletion.references;
+    let profile = deletion.profile;
+    let mut original = keys;
     let contraction =
         tree.needs_contraction(&mut original, references, reader.budget, reader.cancelled)?;
     if !original.is_empty() {
@@ -134,7 +160,7 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
     }
     if contraction {
         let mut siblings = tree.sibling_chains(image, index, reader.budget, reader.cancelled)?;
-        let mut remaining = keys.as_slice();
+        let mut remaining = keys;
         let mut state = Contraction {
             profile,
             references,
@@ -180,21 +206,16 @@ fn edit_tree<P: RetainedProfile, const N: usize>(
         )?;
         return Ok(());
     }
-    let mut remaining = keys.as_slice();
-    let mut state = Deletion {
-        profile,
-        references,
-        removed: 0,
-    };
+    let mut remaining = keys;
     tree.delete::<P, N>(
         image,
         &mut remaining,
-        &mut state,
+        &mut deletion,
         &mut patches.indexes,
         reader.budget,
         reader.cancelled,
     )?;
-    if !remaining.is_empty() || state.removed != references.len() {
+    if !remaining.is_empty() || deletion.removed != references.len() {
         return Err(EditError::Preservation);
     }
     reader.tick()?;

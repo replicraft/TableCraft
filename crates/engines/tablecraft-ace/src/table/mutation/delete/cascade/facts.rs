@@ -29,10 +29,13 @@ pub(super) fn read(
         let declaration = relationship.declaration();
         // Admission remains in State::expand, with its existing error phases.
         // Unenforced/unknown declarations do not invent new lookup work here.
-        if !declaration
-            .rules()
-            .is_some_and(|rules| rules.enforced && rules.on_delete == ReferentialAction::Cascade)
-        {
+        if !declaration.rules().is_some_and(|rules| {
+            rules.enforced
+                && matches!(
+                    rules.on_delete,
+                    ReferentialAction::Cascade | ReferentialAction::SetNull
+                )
+        }) {
             continue;
         }
         let parent = declaration

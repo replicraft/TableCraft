@@ -1,3 +1,4 @@
+#[cfg(feature = "ace16-write-preview")]
 pub(super) mod spans;
 
 pub(super) trait BytePatch {

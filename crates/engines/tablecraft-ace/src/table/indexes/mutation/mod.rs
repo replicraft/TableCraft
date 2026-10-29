@@ -1,3 +1,7 @@
+#[cfg(feature = "ace16-write-preview")]
+mod combined;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use combined::index_delete_update_patches;
 mod composite;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;

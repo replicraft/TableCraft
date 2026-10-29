@@ -93,10 +93,12 @@ pub(in crate::table) fn delete_patches(
 }
 
 #[derive(Clone, Copy)]
-enum Change<'a> {
+pub(super) enum Change<'a> {
     Update(&'a [IndexKeyUpdate]),
     #[cfg(feature = "ace16-write-preview")]
     Delete(&'a [u32]),
+    #[cfg(feature = "ace16-write-preview")]
+    DeleteUpdate(&'a [u32], &'a [IndexKeyUpdate]),
 }
 
 impl Change<'_> {
@@ -105,6 +107,10 @@ impl Change<'_> {
             Self::Update(updates) => updates.len(),
             #[cfg(feature = "ace16-write-preview")]
             Self::Delete(references) => references.len(),
+            #[cfg(feature = "ace16-write-preview")]
+            Self::DeleteUpdate(references, updates) => {
+                references.len().saturating_add(updates.len())
+            }
         }
     }
 
@@ -112,7 +118,7 @@ impl Change<'_> {
         match self {
             Self::Update(_) => false,
             #[cfg(feature = "ace16-write-preview")]
-            Self::Delete(_) => true,
+            Self::Delete(_) | Self::DeleteUpdate(_, _) => true,
         }
     }
 
@@ -125,12 +131,12 @@ impl Change<'_> {
                     .any(|key| key.number() == schema.columns[update.column].number())
             }),
             #[cfg(feature = "ace16-write-preview")]
-            Self::Delete(_) => true,
+            Self::Delete(_) | Self::DeleteUpdate(_, _) => true,
         }
     }
 }
 
-fn patches_with(
+pub(super) fn patches_with(
     image: &NativeImage,
     schema: &TableSchema,
     indexes: &[IndexCheck],
@@ -180,6 +186,15 @@ fn patches_with(
     for (position, check) in indexes.iter().enumerate() {
         reader.tick()?;
         let index = check.index();
+        #[cfg(feature = "ace16-write-preview")]
+        let change = match change {
+            Change::DeleteUpdate(references, updates)
+                if !Change::Update(updates).affects(index, schema) =>
+            {
+                Change::Delete(references)
+            }
+            other => other,
+        };
         reader.work(change.len() * index.columns().len())?;
         if !change.affects(index, schema) {
             continue;
@@ -357,7 +372,7 @@ fn patches_with(
                         reader.cancelled,
                     ),
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) => {
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
                         TupleProfile::<DecimalValue, DecimalColumns>::new_decimal_for_delete(
                             index,
                             schema,
@@ -384,12 +399,14 @@ fn patches_with(
                         reader.cancelled,
                     ),
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) => TupleProfile::<MixedValue>::new_for_delete(
-                        index,
-                        schema,
-                        reader.budget,
-                        reader.cancelled,
-                    ),
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
+                        TupleProfile::<MixedValue>::new_for_delete(
+                            index,
+                            schema,
+                            reader.budget,
+                            reader.cancelled,
+                        )
+                    }
                 }?;
                 edit::<_, { composite::MAX_GUID_ENTRY_BYTES }>(
                     image,
@@ -406,12 +423,14 @@ fn patches_with(
                         TupleProfile::<i64>::new(index, schema, reader.budget, reader.cancelled)
                     }
                     #[cfg(feature = "ace16-write-preview")]
-                    Change::Delete(_) => TupleProfile::<i64>::new_for_delete(
-                        index,
-                        schema,
-                        reader.budget,
-                        reader.cancelled,
-                    ),
+                    Change::Delete(_) | Change::DeleteUpdate(_, _) => {
+                        TupleProfile::<i64>::new_for_delete(
+                            index,
+                            schema,
+                            reader.budget,
+                            reader.cancelled,
+                        )
+                    }
                 }?;
                 edit::<_, { composite::MAX_ENTRY_BYTES }>(
                     image,
@@ -446,6 +465,17 @@ fn edit<P: WriteProfile, const N: usize>(
         Change::Delete(references) => {
             return super::delete::edit::<P, N>(
                 image, reader, index, owner, references, profile, patches,
+            );
+        }
+        Change::DeleteUpdate(references, updates) => {
+            return super::combined::edit::<P, N>(
+                image,
+                reader,
+                index,
+                owner,
+                (references, updates),
+                profile,
+                patches,
             );
         }
     };

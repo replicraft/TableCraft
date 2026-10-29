@@ -1,0 +1,351 @@
+{
+  "operation": "ACE 16 separate atomic DELETE and SET NULL engineering preview",
+  "baseline_commit": "c1e9a61a8604728b2034035af8262ebd43d20c1b",
+  "source_contract": "https://support.microsoft.com/en-us/access/constraint-clause",
+  "public_entrypoint": "NativeImage::preview_ace16_cascading_deletes",
+  "normal_native_save_enabled": false,
+  "native_Access_qualification": false,
+  "data_macro_semantics_qualified": false,
+  "scope": {
+    "original_association_delete_closure_before_surviving_null_assignments": true,
+    "fixed_null_presence_only_with_opaque_payload_preserved": true,
+    "one_combined_transform_per_physical_index": true,
+    "all_changed_tables_final_constraints_required": true,
+    "deleted_rows_excludes_surviving_null_edits": true,
+    "self_and_cyclic_actions_refused": true,
+    "further_update_cascade_propagation_refused": true,
+    "index_allocation_not_added": true
+  },
+  "passing_functions": {
+    "engine_library_before_direct_test_registration": 617,
+    "existing_engine_generators_ignored": 2,
+    "new_direct_planner_including_source_gate": 7,
+    "independent_set_null_integration_including_source_gates": 13,
+    "existing_integration_regressions_in_ten_targets": 76,
+    "shared_spans_already_included_in_engine_library": 4
+  },
+  "verification": [
+    {
+      "name": "initial_source_expected_gate",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/source-gates-first.log",
+        "bytes": 512,
+        "sha256": "9b0b48ba094dbdb6eca855c26a5ab7b6d6113ee5d0d6860d39ac6c1688fc4bea"
+      }
+    },
+    {
+      "name": "expanded_source_expected_gate_after_limit_error_conversion",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/source-gates-after-limit-conversion.log",
+        "bytes": 688,
+        "sha256": "1bdf7d58f07cd4dd3e94fae411e6a1dbf3550d3d9be2be9d71b075ad337df5d5"
+      }
+    },
+    {
+      "name": "first_mutation_calls",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/api-first.log",
+        "bytes": 1310,
+        "sha256": "16e74e6515f69a2c4504ea4e9f755b156194141a490bbdf9d3f961501fd7e8a4"
+      }
+    },
+    {
+      "name": "shared_span_controls",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/spans-first.log",
+        "bytes": 846,
+        "sha256": "04508421bd36c0bf3722f0d2cf2df7aa712c3658066f56235f9e743e8d91e303"
+      }
+    },
+    {
+      "name": "ten_existing_regression_targets",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/regressions-first.log",
+        "bytes": 9436,
+        "sha256": "f5c89bcc80e51d29f24628092e5a6c5ec7a136e6d1a41becd145a9e6dc9d25e4"
+      }
+    },
+    {
+      "name": "corrected_alternate_parent_source_gate",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/role-source-ordinary-alias.log",
+        "bytes": 507,
+        "sha256": "423c02433c69002ead069e658bb6f9070eb76776578573647cd882fbbeb4f594"
+      }
+    },
+    {
+      "name": "all_thirteen_integration_functions",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/api-with-role-boundary.log",
+        "bytes": 1500,
+        "sha256": "32082f6dcf51d21ac083a7294e86c6db7fb02bc5389b3ff6e184c1d9a12a6991"
+      }
+    },
+    {
+      "name": "full_engine_library_before_seven_direct_controls_were_registered",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/lib-first.log",
+        "bytes": 79170,
+        "sha256": "d7504f7e0c1109c3fc26ad969c2f591182a825c894c295261ad10d436ce7ee00"
+      }
+    },
+    {
+      "name": "direct_source_expected_gate_after_cache_cleanup",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/direct-source-after-cache-clean.log",
+        "bytes": 505,
+        "sha256": "15134cf3211fbe10416cc55d5ca0ee869f81f4758530846f6df4211bf817900b"
+      }
+    },
+    {
+      "name": "first_direct_physical_planner_calls",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/direct-api-first.log",
+        "bytes": 1107,
+        "sha256": "e4f4d02ec84c404baf724431b15dd6ca81d12e5162f15dadcbcea844d39e18cd"
+      }
+    },
+    {
+      "name": "strict_all_targets_all_features",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/clippy-final.log",
+        "bytes": 184,
+        "sha256": "fdd41f3249bb6ab3ebb160c603e8b1578571186ba71f733edc46535332d4bd95"
+      }
+    },
+    {
+      "name": "strict_minimal_library",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/minimal-final.log",
+        "bytes": 183,
+        "sha256": "1a1ebc18115255b5fcb520ef28f33342b7ba08527abe0c320c8fc5393e426bcd"
+      }
+    },
+    {
+      "name": "workspace_format",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "preserved_earlier_attempts": [
+    {
+      "observation": "three missing typed allocation-limit conversions before tests",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/source-gates-expanded-first.log",
+        "bytes": 4471,
+        "sha256": "4c31ead2c0550b843c2e12c3a88abacad2fe3687e8932f4b5c203a4c62efc93c"
+      }
+    },
+    {
+      "observation": "alternate-parent fixture lacked an ordinary UNIQUE alias and refused before mutation",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/role-api-first.log",
+        "bytes": 1100,
+        "sha256": "f732677bd84e245787083fb0078f80e9face7adec3772c7554f6be37b7872990"
+      }
+    },
+    {
+      "observation": "diagnostic attempted Debug on a non-Debug relationship declaration",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/role-source-coverage.log",
+        "bytes": 1183,
+        "sha256": "78d5fdb60f8217ad23b03a9e354ad59b52a90beb3dd9e8e71a0d292a85203bc2"
+      }
+    },
+    {
+      "observation": "stronger source gate exposed Unsupported alternate-parent relationship coverage",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/role-source-coverage-after-diagnostic.log",
+        "bytes": 1188,
+        "sha256": "0233002d3d3e281cd1b2648b199bfd935310f6809a5387fb50eba1f41f3ef906"
+      }
+    },
+    {
+      "observation": "two test style lints before direct controls were registered",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/clippy-first.log",
+        "bytes": 1574,
+        "sha256": "709bd2940753e080d166f04611914b7d33eea97fdc584ef71e13801e4dd45615"
+      }
+    },
+    {
+      "observation": "two redundant casts in the new direct fixture generator",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/clippy-after-test-style.log",
+        "bytes": 1268,
+        "sha256": "9f1e5134d0d791894da058582bdc5206a4b4ab8bcfd3a3e3a94a69177e3d0ce9"
+      }
+    },
+    {
+      "observation": "minimal build exposed four preview-only dead-code warnings; module feature gate corrected",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/minimal-first.log",
+        "bytes": 1190,
+        "sha256": "5b7ba41fdd9ae6c65cc6974dc75d369b9c19fe0a5ac77bb0e798c28eb9e6d6bc"
+      }
+    },
+    {
+      "observation": "direct test compile ran out of disk before tests; generated ACE build cache reclaimed",
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/direct-source-first.log",
+        "bytes": 4524,
+        "sha256": "1f3771e47a47925ede2a6ceb3d21a2f5d935715b2cf195d3b824ca59fcb7e295"
+      }
+    }
+  ],
+  "production_and_test_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 5040,
+      "sha256": "5188c09f3cee088da2f16f21175a47abae194cdbcc11480b7bf8eb6260c3bb56"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete.rs",
+      "bytes": 6477,
+      "sha256": "de7fa6fe1ac45cfaa8a6d999da5b5d9409c4aefd98872953126695b7db48e51d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/delete/requests.rs",
+      "bytes": 2364,
+      "sha256": "53e4ffb7c8e31fe3294e0843d08731db5d5257a9abe2c41f5a1cc6ba6ce1b88a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2278,
+      "sha256": "7c8ffb0258c927d6522704d8b6753d5685c87790d518abc4e24858779ad343a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs",
+      "bytes": 17681,
+      "sha256": "e19d7922095ad3721e536fe8d7c6cfdf5b29ae15e071f7eed76999a73d5c2cb2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree.rs",
+      "bytes": 9478,
+      "sha256": "e8136ba1af3a1bd2cc57ffff48fe5d01ec96c2b6ffd68d347d3630cfd572f807"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/batch.rs",
+      "bytes": 9385,
+      "sha256": "eaab69ffff3602685042c4edbe4886197c74725e9b30d006ce0ed43010f3ad56"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+      "bytes": 4918,
+      "sha256": "83079643ed24fed5eea5435a4c063963f329717f07cead3944aec88c94840b3d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/facts.rs",
+      "bytes": 3941,
+      "sha256": "a3c6649b3d91193ad1ea8aab4ad4467daac78607ab426490c4b57bcf940e990f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+      "bytes": 8686,
+      "sha256": "3a0328d7422eff3fa25539fed1d13adeeb503772408b9e0c2c60d8b79d3b6526"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph/tests.rs",
+      "bytes": 1594,
+      "sha256": "fd0573c1958483107dcee80602bd5b49bd8eaf5418596601adf15b392db8fdbc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+      "bytes": 15761,
+      "sha256": "977abb5695ea6e4da2f01c3e3dd6577396df188afb403d137e6d1ba4797903a4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "bytes": 9577,
+      "sha256": "d08dfb6a982b6988dee8b5dcc5a83d8cfa82d86791ae021fd8bba8494588f548"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 318,
+      "sha256": "c9a3cf22c1dd92be9dde05a0b21c0cb73cea99cb1429d114e2f14dabbd156dab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/patch.rs",
+      "bytes": 317,
+      "sha256": "719068268ad7482703a95ddf78ba8b28edcfce3132788215217d7fa375925918"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_cascading_delete_contract/boundaries.rs",
+      "bytes": 10076,
+      "sha256": "6c5e472b1d47ccfd87d2188744e1f25683029f2f123d61a55da798b9706f91c9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/combined.rs",
+      "bytes": 7384,
+      "sha256": "7099d04da7fd487a7425d5f1d5c7777185fb1358e6eb5ae0f92edcde17b5976b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/combined/tests.rs",
+      "bytes": 9070,
+      "sha256": "baea445fd41935337050ac24208c6908ec22b238c185c227efbda16bf898a2a8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/combined/tests/model.rs",
+      "bytes": 6008,
+      "sha256": "d0098dee82f600218e74cd223d129e7aa0025daab12cebce705d511f69d2a803"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/tree/partition.rs",
+      "bytes": 2002,
+      "sha256": "201a127ed249452ca9d931a99d55b77361bbcce70e61f540cc3dab48c3feb530"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/nulls.rs",
+      "bytes": 4735,
+      "sha256": "b47311ec386d830c693ac2db82bf87fa288f4d0433c9e14aae1bd5bd48666c51"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract.rs",
+      "bytes": 670,
+      "sha256": "5be930bb020da8baf6909e39269c5c4c0b217dda794c6a64d63e883dcfc41020"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/model.rs",
+      "bytes": 7965,
+      "sha256": "57ca64bd51149e91c0a92b5672f70ffa633f46177cc7dc19b89774939c9ef47e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/role_boundary.rs",
+      "bytes": 8756,
+      "sha256": "d6c55adf77b72d646805f9e846bf724a4274bc745dca7654be51b0868aea46be"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/trees.rs",
+      "bytes": 5397,
+      "sha256": "536c18dcce6d27b5468220215a6cc67d4f222ed53cf4003a4a46dcdd0c0f4684"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/values.rs",
+      "bytes": 5295,
+      "sha256": "98ba54981828a92f3f45fae9cd529ec9128e94da6c9e34fcab9ba88b1c978630"
+    }
+  ],
+  "evidence_limits": [
+    "Literal full-image comparisons are independent engineering checks, not native Access mutation.",
+    "Full library ran before seven additional direct tests; those ran separately without production changes.",
+    "Test-only chunk iteration, loop spelling and redundant cast cleanup changed no expected bytes.",
+    "Original-file SET NULL captures and saved raw gates are separate ongoing work; no candidate qualification claimed here.",
+    "Copied committed producers and source/proof images were retained when generated build caches were reclaimed."
+  ]
+}

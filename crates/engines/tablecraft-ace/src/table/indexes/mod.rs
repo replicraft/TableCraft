@@ -104,6 +104,7 @@ pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches a
 pub(super) use mutation::{
     PatchSet as DeleteIndexPlan, RetirementTable, audit_global, audit_retirements, audit_siblings,
     compose as compose_retirements, delete_patches as index_delete_patches,
+    index_delete_update_patches,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use mutation::{
