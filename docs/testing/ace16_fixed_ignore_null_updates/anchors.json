@@ -1,0 +1,121 @@
+{
+  "early": {
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-freeze.json",
+      "bytes": 5443,
+      "sha256": "fb0b3051f13d716195bceefc742a362945e3c700bf3dee22a233b5603bfe1221"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-warning-freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-warning-freeze.json",
+      "bytes": 7243,
+      "sha256": "78f4d06b5e45b2ea82904f447c0d0f58c8f1cc1d77d33d1bcf28cd73ec88078b"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-gates-first.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-gates-first.json",
+      "bytes": 117316,
+      "sha256": "ccdb3b286a13de0efc1823c70418d872e601e2f21393815f0f01d7a50bf17269"
+    },
+    ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/freeze.json",
+      "bytes": 33914,
+      "sha256": "fb2f33780ea0c40b6f6873a95f0271f98d6f093f981924f7f281f4f332b98bbf"
+    },
+    ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/classification.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/classification.json",
+      "bytes": 34237,
+      "sha256": "00acf43fa36483b39a01cd528121390cdc2714d745d3a9c3ccbeb1f132612a7b"
+    },
+    ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/freeze.json",
+      "bytes": 35425,
+      "sha256": "0ae738fadd0b358f110e858e64079e17866bbdea7d950de756ef7443d40d1fd7"
+    },
+    ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/report.json",
+      "bytes": 45071,
+      "sha256": "fa2b42e9f8d997f1e6eec9f77ab3cbe011ac2421da8aef8c5a11e11ee3171947"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-first-20261029/report.json",
+      "bytes": 25977,
+      "sha256": "e9124cbcabd01f629fa15071d44393c2d04975bc08e9335e4d73ed46c4020e82"
+    }
+  },
+  "late": {
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-freeze.json",
+      "bytes": 20657,
+      "sha256": "8e79fe24f4454e5ad43d4cf770f8f66210c167f1d892815a344e944a6e21aae5"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-freeze.json",
+      "bytes": 63172,
+      "sha256": "0cd26bde55a212d91cee27c81881c9974f0146d0a6bb2f93851c2d2e1ae316b0"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/saved-first-counter-proof.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/saved-first-counter-proof.json",
+      "bytes": 1312,
+      "sha256": "691e8875c9701028e1ac31eac858de179d680fdeabd1e28a7086981721431ef8"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-plan.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-plan.json",
+      "bytes": 70805,
+      "sha256": "581ecf42d143e49d5575d19a08fa65bde0cfecd7856ff7f51a4b8704b8a53518"
+    },
+    ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-plan.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-plan.json",
+      "bytes": 69246,
+      "sha256": "e3ff162cafed9dac97352b80a225895f08e3e68488a9d2ba1e8f39cf685591e7"
+    },
+    ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/freeze.json",
+      "bytes": 39995,
+      "sha256": "95a5e46396343925909bce08565749fe80a337008865e7264c1b4ae84d8d3489"
+    },
+    ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/plan.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/plan.json",
+      "bytes": 122462,
+      "sha256": "52d62ea07bd22764e4f8469297edf9d1e143a573727780035a1f864136c8a104"
+    },
+    ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/getter-binding.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/getter-binding.json",
+      "bytes": 20313,
+      "sha256": "24d1d020195eb3cf364c35f66341f1319b6ed62199109d9624fb3a57208f8f6f"
+    },
+    ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/freeze.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/freeze.json",
+      "bytes": 37522,
+      "sha256": "aae38bc0ddd8dfcfb3a9df2670686dc1e5e6bd972124b6c4030dcc49b28c0b93"
+    },
+    ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/build-attempt.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/build-attempt.json",
+      "bytes": 1697,
+      "sha256": "7468c2610a32bad4374643df62d21b76c118d357d7be086f2973335df118e56c"
+    },
+    ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/report.json",
+      "bytes": 47821,
+      "sha256": "dc9917058a09f98ebdb8b7e53f7e21507dce456606733a072234f0cef50d8573"
+    },
+    ".cache/ace16-fixed-ignore-null-update-reference-continuation-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-reference-continuation-first-20261029/report.json",
+      "bytes": 307075,
+      "sha256": "4345d4620491bf6f5634a8fe1cd162609f6ddfe9989cab5b0e3ff9cb89ff68ef"
+    },
+    ".cache/ace16-fixed-ignore-null-update-native-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-native-first-20261029/report.json",
+      "bytes": 116269,
+      "sha256": "9e6a9b8ca0c18b529db01fa66c4d201f311b34de408a71023598a00f51560ae9"
+    },
+    ".cache/ace16-fixed-ignore-null-update-getters-first-20261029/report.json": {
+      "path": ".cache/ace16-fixed-ignore-null-update-getters-first-20261029/report.json",
+      "bytes": 100334,
+      "sha256": "7275b7358f56864c1e1ce0ac93c233143c4c1f4950d9462f1680b13ccb831991"
+    },
+    "docs/testing/results/ace16-fixed-ignore-null-update-example-build-2026-10-29.json": {
+      "path": "docs/testing/results/ace16-fixed-ignore-null-update-example-build-2026-10-29.json",
+      "bytes": 3330,
+      "sha256": "47cab2f4ddb027d0e2b0c3b7e85399b52b7e9f11ce2c08bb4a3a11e1b75199b0"
+    }
+  }
+}

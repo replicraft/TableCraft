@@ -1,0 +1,1117 @@
+{
+  "status": "independently verified engineering candidates; native Access unqualified",
+  "date": "2026-10-29",
+  "semantic_commit": "60b33158937b4fe66c6daa050c0d37f11f33ddeb",
+  "build_receipt_commit": "6496fac1cb7c7d73d07d4f6502eea592456d76d5",
+  "profile": "V2016 and V2019 genuine public creations; fixed Int32 scalar and Right DESC/Left ASC two-component secondary IgnoreNULL keys",
+  "original_sources": 2,
+  "target_tables": 12,
+  "sentinels": 2,
+  "user_rows_per_layout": 23,
+  "sentinel_rows_per_layout": 1,
+  "typed_records_across_16_candidates": 384,
+  "phases": {
+    "source_children": 5,
+    "source_gate_targets": 12,
+    "source_gate_sentinels": 2,
+    "expected_images_before_AFTER": 16,
+    "expected_refusal_classifications": 18,
+    "public_children": 68,
+    "public_ordered_row_update_calls": 46,
+    "original_public_children": 2,
+    "continuation_children": 66,
+    "public_proofs": 34,
+    "native_calls": 34,
+    "native_exact_images": 16,
+    "native_expected_exit1_refusals": 18,
+    "fresh_readers": 16,
+    "complete_native_bytes": 9076736
+  },
+  "native_refusals": {
+    "ambiguous_original_history": 8,
+    "unique_duplicate": 4,
+    "required_null": 6,
+    "stdout_empty": true,
+    "output_absent": true,
+    "exact_typed_stderr": true
+  },
+  "public_contrary_required": {
+    "all_null_success_engine_refusal": 4,
+    "partial_null_both_refuse": 2
+  },
+  "public_supported_comparison": {
+    "exact_images": 10,
+    "differing_images": 6,
+    "differing_bytes": 8,
+    "all_differences_behind_clear_NULL_bits": true,
+    "secondary_root_differences": 0,
+    "cases": [
+      {
+        "id": "V2016-single-null-new",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-single-null-existing",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-single-present-null",
+        "differing_bytes": 1,
+        "clear_mask_payload_bytes": 1,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-tuple-null-new",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-tuple-null-existing",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-tuple-null-partial",
+        "differing_bytes": 1,
+        "clear_mask_payload_bytes": 1,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-tuple-partial-omitted",
+        "differing_bytes": 2,
+        "clear_mask_payload_bytes": 2,
+        "other_differences": 0
+      },
+      {
+        "id": "V2016-tuple-partial-present",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-single-null-new",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-single-null-existing",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-single-present-null",
+        "differing_bytes": 1,
+        "clear_mask_payload_bytes": 1,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-tuple-null-new",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-tuple-null-existing",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-tuple-null-partial",
+        "differing_bytes": 1,
+        "clear_mask_payload_bytes": 1,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-tuple-partial-omitted",
+        "differing_bytes": 2,
+        "clear_mask_payload_bytes": 2,
+        "other_differences": 0
+      },
+      {
+        "id": "V2019-tuple-partial-present",
+        "differing_bytes": 0,
+        "clear_mask_payload_bytes": 0,
+        "other_differences": 0
+      }
+    ]
+  },
+  "public_observations": [
+    {
+      "id": "V2016-single-null-new",
+      "profile": "V2016",
+      "action": "single-null-new",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 11,
+      "output_sha256": "e60cc6d4b66e7b3fb6ee4e6a80295215d1d332e332524d12a43545e02f7b7b2f"
+    },
+    {
+      "id": "V2016-single-null-existing",
+      "profile": "V2016",
+      "action": "single-null-existing",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 11,
+      "output_sha256": "cb44abb8dbddc974d27380621a8836170d3871d4d405bb97a511902af7cc6cfb"
+    },
+    {
+      "id": "V2016-single-present-null",
+      "profile": "V2016",
+      "action": "single-present-null",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 7,
+      "output_sha256": "344c1c1c23352b9645ee16ee01236f7b5e9b3852a4bdd0c2e099ba73fd00cf2f"
+    },
+    {
+      "id": "V2016-single-removed-family-forward",
+      "profile": "V2016",
+      "action": "single-removed-family-forward",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 2,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        }
+      ],
+      "warning_records": 2,
+      "differing_bytes": 11,
+      "output_sha256": "120d5100ad07ccf02ad46ced076e4699c2c4fb657ef311c80b24d8f6b6c585b2"
+    },
+    {
+      "id": "V2016-single-removed-family-reverse",
+      "profile": "V2016",
+      "action": "single-removed-family-reverse",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        },
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 2,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 2,
+      "differing_bytes": 13,
+      "output_sha256": "17e2c20e5b03b24eb20cf1748465ae0975c15a6223e0f024a8fff274bb7fe70e"
+    },
+    {
+      "id": "V2016-single-cointroduced-forward",
+      "profile": "V2016",
+      "action": "single-cointroduced-forward",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": "7f8000001e"
+        },
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 16,
+      "output_sha256": "083fe82acacdf8871952c4ad65eb9504d754d0a6c0fa970a2e72c7d1ce0ea9db"
+    },
+    {
+      "id": "V2016-single-cointroduced-reverse",
+      "profile": "V2016",
+      "action": "single-cointroduced-reverse",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        },
+        {
+          "identity": 1,
+          "history": 3,
+          "old_key": "7f8000000a",
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 17,
+      "output_sha256": "f932e2fc18737e458a354aaa8bc6c7f2e133ee03e02c3e715fac8ea35d8b4767"
+    },
+    {
+      "id": "V2016-tuple-null-new",
+      "profile": "V2016",
+      "action": "tuple-null-new",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 5,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 5,
+          "old_key": null,
+          "new_key": "807ffffed37f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 46,
+      "output_sha256": "c9aef384f8dde2df085fc7211da6d3c0fc4ca5f4153d78e2f55d20398eaf2442"
+    },
+    {
+      "id": "V2016-tuple-null-existing",
+      "profile": "V2016",
+      "action": "tuple-null-existing",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 4,
+          "old_key": null,
+          "new_key": "807fffff9b7f8000000a"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 21,
+      "output_sha256": "8586eee95adabb182fb8765d3e9da99562c784d33c9266a2b6a1e4d85c80da36"
+    },
+    {
+      "id": "V2016-tuple-null-partial",
+      "profile": "V2016",
+      "action": "tuple-null-partial",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 5,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 5,
+          "old_key": null,
+          "new_key": "ff7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 12,
+      "output_sha256": "801f1a12bedccd685b697e003fa5614084bc1e2319e21469e0b3f3d8f370653b"
+    },
+    {
+      "id": "V2016-tuple-partial-omitted",
+      "profile": "V2016",
+      "action": "tuple-partial-omitted",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 5,
+          "history": 4,
+          "old_key": "ff7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 5,
+      "output_sha256": "4b9ecf9084c8008157aad4efe5f6b4eb1309bda9eab6243493cd1a1ac63de8f2"
+    },
+    {
+      "id": "V2016-tuple-partial-present",
+      "profile": "V2016",
+      "action": "tuple-partial-present",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 6,
+          "history": 4,
+          "old_key": "807fffff9b00",
+          "new_key": "807fffff9b7f80000014"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 48,
+      "output_sha256": "a11f9cd0f32dbac46dfbd71465b0ebfe1ea161df4786f16319557022c574aedb"
+    },
+    {
+      "id": "V2016-unique-single-duplicate",
+      "profile": "V2016",
+      "action": "unique-single-duplicate",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "refusal": "unique-represented-duplicate",
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "outcome": "unique-represented-duplicate"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "74f6ac1c99b0244a69427afb379112c7321690b9ba628417b1d9411bbb232258"
+    },
+    {
+      "id": "V2016-unique-tuple-partial-duplicate",
+      "profile": "V2016",
+      "action": "unique-tuple-partial-duplicate",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "refusal": "unique-represented-duplicate",
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "outcome": "unique-represented-duplicate"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "74f6ac1c99b0244a69427afb379112c7321690b9ba628417b1d9411bbb232258"
+    },
+    {
+      "id": "V2016-required-single-all-null",
+      "profile": "V2016",
+      "action": "required-single-all-null",
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 6,
+      "output_sha256": "0b53f04c81a5ec2a68be46686365a39fa930faf1405489a330ed9577e044d6a6"
+    },
+    {
+      "id": "V2016-required-tuple-all-null",
+      "profile": "V2016",
+      "action": "required-tuple-all-null",
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "807fffff9b7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 5,
+      "output_sha256": "3a71a84c33a89d672465e1486db0dd533b6f900767f59121a4f5ca6f96d94c79"
+    },
+    {
+      "id": "V2016-required-tuple-partial-null",
+      "profile": "V2016",
+      "action": "required-tuple-partial-null",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "NullKey refusal",
+      "refusal": "required-partial-null",
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "outcome": "required-partial-null"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "74f6ac1c99b0244a69427afb379112c7321690b9ba628417b1d9411bbb232258"
+    },
+    {
+      "id": "V2019-single-null-new",
+      "profile": "V2019",
+      "action": "single-null-new",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 11,
+      "output_sha256": "21a9711a6fa39094c99c7191ad32a4dfd6a74d97f40515d0eefc32ff75513974"
+    },
+    {
+      "id": "V2019-single-null-existing",
+      "profile": "V2019",
+      "action": "single-null-existing",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 11,
+      "output_sha256": "8f44acb6268c3955b3c0d6fba5ba018ea2a6ec6872605bdcd5ced2b70babd9e4"
+    },
+    {
+      "id": "V2019-single-present-null",
+      "profile": "V2019",
+      "action": "single-present-null",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 7,
+      "output_sha256": "74f32bed29324a087e5c6b7bd512e65d33c6b5811ef7d17663652cb3876b8145"
+    },
+    {
+      "id": "V2019-single-removed-family-forward",
+      "profile": "V2019",
+      "action": "single-removed-family-forward",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 2,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        }
+      ],
+      "warning_records": 2,
+      "differing_bytes": 11,
+      "output_sha256": "bb0c2dee1bc7584a591fe3ebc74581ff20069261b966e44741fbe0538242eecf"
+    },
+    {
+      "id": "V2019-single-removed-family-reverse",
+      "profile": "V2019",
+      "action": "single-removed-family-reverse",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000000a"
+        },
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        },
+        {
+          "identity": 2,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 2,
+      "differing_bytes": 13,
+      "output_sha256": "02801ac7baef7a701e7497f86779578b33bdfd6a8e849941bd515443c4b6663e"
+    },
+    {
+      "id": "V2019-single-cointroduced-forward",
+      "profile": "V2019",
+      "action": "single-cointroduced-forward",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": "7f8000001e"
+        },
+        {
+          "identity": 3,
+          "history": 2,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 16,
+      "output_sha256": "a609498e20916823220f6b379241c62832716f2cbe7088bb5b9b353431ec8a47"
+    },
+    {
+      "id": "V2019-single-cointroduced-reverse",
+      "profile": "V2019",
+      "action": "single-cointroduced-reverse",
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 3,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 3,
+          "old_key": null,
+          "new_key": "7f8000001e"
+        },
+        {
+          "identity": 1,
+          "history": 3,
+          "old_key": "7f8000000a",
+          "new_key": "7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 17,
+      "output_sha256": "6b1777a7bc03a1dd3a90661f1959c7dd027173fd15bcdd68a23b278dbfe4e497"
+    },
+    {
+      "id": "V2019-tuple-null-new",
+      "profile": "V2019",
+      "action": "tuple-null-new",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 5,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 5,
+          "old_key": null,
+          "new_key": "807ffffed37f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 46,
+      "output_sha256": "72cec8e089b84712059571eed6984066bb45e3929c8783095ccb42f0f642012f"
+    },
+    {
+      "id": "V2019-tuple-null-existing",
+      "profile": "V2019",
+      "action": "tuple-null-existing",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 4,
+          "old_key": null,
+          "new_key": "807fffff9b7f8000000a"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 21,
+      "output_sha256": "e7ffaa090ed5a146aef557e51ba50d9a66632d1165183c282cef247e31f18648"
+    },
+    {
+      "id": "V2019-tuple-null-partial",
+      "profile": "V2019",
+      "action": "tuple-null-partial",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 5,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "history": 5,
+          "old_key": null,
+          "new_key": "ff7f8000001e"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 12,
+      "output_sha256": "c74f412b779fe233be65334484cc4d11acadaa71b15fda7bbc23c76bcffd1779"
+    },
+    {
+      "id": "V2019-tuple-partial-omitted",
+      "profile": "V2019",
+      "action": "tuple-partial-omitted",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 5,
+          "history": 4,
+          "old_key": "ff7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 5,
+      "output_sha256": "039d67d8e452a613a649243faada076f264e60854d740890624f0427f63f2d85"
+    },
+    {
+      "id": "V2019-tuple-partial-present",
+      "profile": "V2019",
+      "action": "tuple-partial-present",
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "refusal": null,
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 6,
+          "history": 4,
+          "old_key": "807fffff9b00",
+          "new_key": "807fffff9b7f80000014"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 48,
+      "output_sha256": "b2d1c2163a724635ecd1c4ade31ceae3dea9eb4ff7eefdd2b9b22076e8129edb"
+    },
+    {
+      "id": "V2019-unique-single-duplicate",
+      "profile": "V2019",
+      "action": "unique-single-duplicate",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "refusal": "unique-represented-duplicate",
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "outcome": "unique-represented-duplicate"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "86e518e9d7c9d2b77d72c0457d369748924045c05103aaf6be472f7eecd8bd1a"
+    },
+    {
+      "id": "V2019-unique-tuple-partial-duplicate",
+      "profile": "V2019",
+      "action": "unique-tuple-partial-duplicate",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "refusal": "unique-represented-duplicate",
+      "original_history": 4,
+      "final_history": 4,
+      "ordered_steps": [
+        {
+          "identity": 3,
+          "outcome": "unique-represented-duplicate"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "86e518e9d7c9d2b77d72c0457d369748924045c05103aaf6be472f7eecd8bd1a"
+    },
+    {
+      "id": "V2019-required-single-all-null",
+      "profile": "V2019",
+      "action": "required-single-all-null",
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 6,
+      "output_sha256": "4026e27d2995b72466b8242780ce01c3376b88c5309b80145c00f24d3466935a"
+    },
+    {
+      "id": "V2019-required-tuple-all-null",
+      "profile": "V2019",
+      "action": "required-tuple-all-null",
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "refusal": null,
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "history": 2,
+          "old_key": "807fffff9b7f8000000a",
+          "new_key": null
+        }
+      ],
+      "warning_records": 1,
+      "differing_bytes": 5,
+      "output_sha256": "e546ca7c73b8c3c3c7191396398ba98cf849837d9c44713c4fdb9d78613a44be"
+    },
+    {
+      "id": "V2019-required-tuple-partial-null",
+      "profile": "V2019",
+      "action": "required-tuple-partial-null",
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "NullKey refusal",
+      "refusal": "required-partial-null",
+      "original_history": 2,
+      "final_history": 2,
+      "ordered_steps": [
+        {
+          "identity": 1,
+          "outcome": "required-partial-null"
+        }
+      ],
+      "warning_records": 0,
+      "differing_bytes": 0,
+      "output_sha256": "86e518e9d7c9d2b77d72c0457d369748924045c05103aaf6be472f7eecd8bd1a"
+    }
+  ],
+  "preservation": {
+    "source_images_unchanged": true,
+    "expected_images_unchanged": true,
+    "complete_candidates_match_source_request_models": true,
+    "unrelated_bytes_and_maps_preserved": true
+  },
+  "preparation_history": [
+    "Original SOURCE5 freeze retained unexecuted; pinned-source review corrected exact five omitted-key warnings per create before execution.",
+    "Original REF68 first two child calls returned zero; Python proof rejected a redundant whole-definition digest that included the predicted history change.",
+    "Separately frozen correction proves entire TD equals original plus predicted four-byte history; saved first transition passes and exact remaining66 commands execute once.",
+    "Initial maintained authoring copy sought a local BoundedFileChannel.java and raised FileNotFoundError before any verifier or constructor; actual shared owner is docs/testing/parent_index_split_originals/BoundedFileChannel.java. No standalone exception log claimed.",
+    "First maintained code freeze and successful replay retained before the final observational NULL-payload difference check. No constructor, request, source or expected-image changes."
+  ],
+  "archive_files": 4727,
+  "saved_replay": {
+    "default_exit": 0,
+    "blocked_subprocess_exit": 0,
+    "optional_git_exit": 0,
+    "missing_native_exit": 2,
+    "missing_getter_exit": 2,
+    "pin_occurrences": 4551,
+    "distinct_paths": 833,
+    "default_child_processes": 0,
+    "optional_git_metadata_children": 1,
+    "optional_git_source_blobs": 4727,
+    "optional_git_receipt_blobs": 1
+  },
+  "phase_anchors": {
+    "early": {
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-freeze.json",
+        "bytes": 5443,
+        "sha256": "fb0b3051f13d716195bceefc742a362945e3c700bf3dee22a233b5603bfe1221"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-warning-freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-warning-freeze.json",
+        "bytes": 7243,
+        "sha256": "78f4d06b5e45b2ea82904f447c0d0f58c8f1cc1d77d33d1bcf28cd73ec88078b"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-gates-first.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/source-gates-first.json",
+        "bytes": 117316,
+        "sha256": "ccdb3b286a13de0efc1823c70418d872e601e2f21393815f0f01d7a50bf17269"
+      },
+      ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/freeze.json",
+        "bytes": 33914,
+        "sha256": "fb2f33780ea0c40b6f6873a95f0271f98d6f093f981924f7f281f4f332b98bbf"
+      },
+      ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/classification.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-expected-next-20261029/classification.json",
+        "bytes": 34237,
+        "sha256": "00acf43fa36483b39a01cd528121390cdc2714d745d3a9c3ccbeb1f132612a7b"
+      },
+      ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/freeze.json",
+        "bytes": 35425,
+        "sha256": "0ae738fadd0b358f110e858e64079e17866bbdea7d950de756ef7443d40d1fd7"
+      },
+      ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-expected-first-20261029/report.json",
+        "bytes": 45071,
+        "sha256": "fa2b42e9f8d997f1e6eec9f77ab3cbe011ac2421da8aef8c5a11e11ee3171947"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-first-20261029/report.json",
+        "bytes": 25977,
+        "sha256": "e9124cbcabd01f629fa15071d44393c2d04975bc08e9335e4d73ed46c4020e82"
+      }
+    },
+    "late": {
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-freeze.json",
+        "bytes": 20657,
+        "sha256": "8e79fe24f4454e5ad43d4cf770f8f66210c167f1d892815a344e944a6e21aae5"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-freeze.json",
+        "bytes": 63172,
+        "sha256": "0cd26bde55a212d91cee27c81881c9974f0146d0a6bb2f93851c2d2e1ae316b0"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/saved-first-counter-proof.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/saved-first-counter-proof.json",
+        "bytes": 1312,
+        "sha256": "691e8875c9701028e1ac31eac858de179d680fdeabd1e28a7086981721431ef8"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-plan.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-plan.json",
+        "bytes": 70805,
+        "sha256": "581ecf42d143e49d5575d19a08fa65bde0cfecd7856ff7f51a4b8704b8a53518"
+      },
+      ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-plan.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-source-next-20261029/reference-continuation-plan.json",
+        "bytes": 69246,
+        "sha256": "e3ff162cafed9dac97352b80a225895f08e3e68488a9d2ba1e8f39cf685591e7"
+      },
+      ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/freeze.json",
+        "bytes": 39995,
+        "sha256": "95a5e46396343925909bce08565749fe80a337008865e7264c1b4ae84d8d3489"
+      },
+      ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/plan.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/plan.json",
+        "bytes": 122462,
+        "sha256": "52d62ea07bd22764e4f8469297edf9d1e143a573727780035a1f864136c8a104"
+      },
+      ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/getter-binding.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-acceptance-next-20261029/getter-binding.json",
+        "bytes": 20313,
+        "sha256": "24d1d020195eb3cf364c35f66341f1319b6ed62199109d9624fb3a57208f8f6f"
+      },
+      ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/freeze.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/freeze.json",
+        "bytes": 37522,
+        "sha256": "aae38bc0ddd8dfcfb3a9df2670686dc1e5e6bd972124b6c4030dcc49b28c0b93"
+      },
+      ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/build-attempt.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-isolated-build-next-20261029/build-attempt.json",
+        "bytes": 1697,
+        "sha256": "7468c2610a32bad4374643df62d21b76c118d357d7be086f2973335df118e56c"
+      },
+      ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/report.json",
+        "bytes": 47821,
+        "sha256": "dc9917058a09f98ebdb8b7e53f7e21507dce456606733a072234f0cef50d8573"
+      },
+      ".cache/ace16-fixed-ignore-null-update-reference-continuation-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-reference-continuation-first-20261029/report.json",
+        "bytes": 307075,
+        "sha256": "4345d4620491bf6f5634a8fe1cd162609f6ddfe9989cab5b0e3ff9cb89ff68ef"
+      },
+      ".cache/ace16-fixed-ignore-null-update-native-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-native-first-20261029/report.json",
+        "bytes": 116269,
+        "sha256": "9e6a9b8ca0c18b529db01fa66c4d201f311b34de408a71023598a00f51560ae9"
+      },
+      ".cache/ace16-fixed-ignore-null-update-getters-first-20261029/report.json": {
+        "path": ".cache/ace16-fixed-ignore-null-update-getters-first-20261029/report.json",
+        "bytes": 100334,
+        "sha256": "7275b7358f56864c1e1ce0ac93c233143c4c1f4950d9462f1680b13ccb831991"
+      },
+      "docs/testing/results/ace16-fixed-ignore-null-update-example-build-2026-10-29.json": {
+        "path": "docs/testing/results/ace16-fixed-ignore-null-update-example-build-2026-10-29.json",
+        "bytes": 3330,
+        "sha256": "47cab2f4ddb027d0e2b0c3b7e85399b52b7e9f11ce2c08bb4a3a11e1b75199b0"
+      }
+    }
+  },
+  "verification_receipts": [
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/code-freeze.json",
+      "bytes": 2439,
+      "sha256": "afbcf3773393817b2451af22db641b73edc6973ef323f7cde11342a3747de1cb"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/default-first.json",
+      "bytes": 23351,
+      "sha256": "90e3311d63677694063ec1b0315551d765deea44217256ed03093b5a6676e6be"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/code-freeze-v2.json",
+      "bytes": 2603,
+      "sha256": "62ffcf6d7ca8443f120da7b02fcf78fde4785d32b704ffc4e20aabdafbfbd196"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/default-final.json",
+      "bytes": 25739,
+      "sha256": "fea619d34b0ef293dd1d112f6ef161f064a6e0ab6dfc8896bd43e627afea405c"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/blocked-default-final.json",
+      "bytes": 25739,
+      "sha256": "fea619d34b0ef293dd1d112f6ef161f064a6e0ab6dfc8896bd43e627afea405c"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/git-final.json",
+      "bytes": 25799,
+      "sha256": "871d58fe061b0281c50303527d1c2f0eccbfb3f4863007695d08778bad156758"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/missing-native-final.json",
+      "bytes": 165,
+      "sha256": "b6c95af3051e98070a1ef2555aac3e8aca18d75c2f3cbb9b1615b7d0ca2051fb"
+    },
+    {
+      "path": ".cache/ace16-fixed-ignore-null-update-maintained-proof-20261029/missing-getter-final.json",
+      "bytes": 165,
+      "sha256": "4478b2208224a146d8962545042f8ee73c0367fec8d7052db964b0f504609b65"
+    }
+  ],
+  "native_Access_qualification": false,
+  "normal_save_qualification": false,
+  "data_macro_qualification": false,
+  "verifier_native_JVM_Cargo_calls": 0
+}
