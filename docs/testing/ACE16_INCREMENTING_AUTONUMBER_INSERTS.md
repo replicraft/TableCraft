@@ -136,12 +136,22 @@ They qualify those immutable source populations and metadata, while recording th
 stored mode as unclassified. Eight complete SOURCE/request-only images are frozen
 with expected-freeze SHA-256
 `9403f2c10b6e581cd6e64013773ff74e498d7a8cb5e966e1653193ae127896ae`.
-Public-reference and native-candidate phases have not yet run. Stored mode
-qualification and Microsoft Access save/reopen remain separate from these literal
-engineering checks and independent original-file preparation.
+All 16 public-reference calls pass. The committed producer's eight candidates
+match all 3,571,712 expected bytes; eight separate fresh independent reads verify
+the resulting rows, counters, aliases, maps and 20 generated IDs. The
+[original-file proof](ace16_incrementing_autonumber/README.md) supplies maintained
+saved-evidence verification. Public-reference
+images remain observations, not expected-image authority. Stored mode qualification
+and Microsoft Access save/reopen remain separate from this independent evidence.
+
+Before any fresh-reader call, review caught a report-format mismatch in the
+planned checker: it expected the independent writer's returned-value format
+instead of the CLI's actual generated-key report. A separately frozen derivative
+checks the genuine CLI stream; the original protocol and successful eight native
+outputs remain unchanged. No native call was repeated for this correction.
 
 The [committed-producer build receipt](results/ace16-incrementing-autonumber-example-build-2026-10-28.json)
 binds the copied engineering example to commit `9e77ffcf`. Its initially absent
 isolated release target compiled the owning engine; all 4,702 exported files match
-the committed Git blobs. This establishes producer provenance, not candidate or
-native Access qualification.
+the committed Git blobs. This establishes producer provenance separately from
+candidate comparisons and native Access qualification.

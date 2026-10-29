@@ -30,8 +30,11 @@ INSERT batch exposed missing generated-column context during long-value
 preflight; construction and independent audit now retain their own qualified
 contexts. A direct fixed-42-byte timestamp regression also covers the corrected
 preflight buffer. The [verification record](testing/results/ace16-incrementing-autonumber-preview-2026-10-28.json)
-retains initial failures separately. Eight independent original-file expected
-images are frozen; their candidate and native Access phases remain unrun.
+retains initial failures separately. Eight independent [original-file candidates](testing/ace16_incrementing_autonumber/README.md)
+match all 3,571,712 source/request-derived bytes, and eight fresh independent reads
+verify all 20 generated IDs. The 16 public-reference calls pass separately. Native
+Access qualification remains unrun; stored generation-mode detection remains
+unfinished.
 
 ## DELETE-generated NULLs through UPDATE cascades
 

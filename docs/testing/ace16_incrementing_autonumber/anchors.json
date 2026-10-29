@@ -1,0 +1,114 @@
+{
+  "phase_anchors": {
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/source-freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/source-freeze.json",
+      "bytes": 5671,
+      "sha256": "7f2dcf55f475a8cf5c8f7f1d827ba979ee5052328ff5017682a965a103259b74"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/source-gates-first.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/source-gates-first.json",
+      "bytes": 9000073,
+      "sha256": "0d763d0e876d0437aee5cb9099ba538914116df1ffddab34573804e3202af9e7"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/model-freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/model-freeze.json",
+      "bytes": 24428,
+      "sha256": "c273a2d24922cd0e2b31706b1b9134e2800bdb0f67c978f06365ecc3d838818c"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/model-bytes-freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/model-bytes-freeze.json",
+      "bytes": 26230,
+      "sha256": "f835c275c02899da28b5176fc3a97b92ac907c68fe9c36b1c53e2b8d19a450ba"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/expected-freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/expected-freeze.json",
+      "bytes": 28892,
+      "sha256": "9403f2c10b6e581cd6e64013773ff74e498d7a8cb5e966e1653193ae127896ae"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/reference-freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/reference-freeze.json",
+      "bytes": 25693,
+      "sha256": "843dd68e0f17b385418795521f85dcf420d4dece5562e58264ee657ba6b2fffb"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/bytes-boundary-correction.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/bytes-boundary-correction.json",
+      "bytes": 592,
+      "sha256": "a96f8f2f3331f542a0569195085043f1e36228b3be2d12a9bb28aff5f9c8acd2"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/partial-image-preservation.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/partial-image-preservation.json",
+      "bytes": 638,
+      "sha256": "ff3a4ccb8fcca02cea40eb06088a39eba76c1b85720603994c7903e80d52195e"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-next-20261028/reference-freeze-authoring-failure.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/reference-freeze-authoring-failure.json",
+      "bytes": 561,
+      "sha256": "1423229194155a007044c9893ca0dca2d9fb258b412bd1ff32f982dd5fdbe6b3"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-source-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-source-first-20261028/report.json",
+      "bytes": 45668,
+      "sha256": "a22f64e9aa3c225f7869c7db798134d35759603c9d331b75bc5b61c17ae556ff"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-expected-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-expected-first-20261028/report.json",
+      "bytes": 29800,
+      "sha256": "e256689adbf3cd73fd38359fc34c8676113fdc9f17f19b77a7bc7ec568f3f6ea"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-expected-bytes-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-expected-bytes-first-20261028/report.json",
+      "bytes": 41659,
+      "sha256": "d83d6637ff249f176926becce40caca54bccfa426d2fe3a9bf62b15a9c540509"
+    },
+    ".cache/ace16-incrementing-autonumber-insert-reference-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-reference-first-20261028/report.json",
+      "bytes": 100936,
+      "sha256": "4c6302a8020b3d30c3e8b009fe9ccc69c00734f5a37995d4796e2c16d92bfe83"
+    },
+    ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-isolated-build-next-20261028/freeze.json",
+      "bytes": 30744,
+      "sha256": "20726cf4b1c3cc41a89fec8be663519cc6724e47eaf4a5575415217d1982f64f"
+    },
+    "docs/testing/results/ace16-incrementing-autonumber-example-build-2026-10-28.json": {
+      "path": "docs/testing/results/ace16-incrementing-autonumber-example-build-2026-10-28.json",
+      "bytes": 3061,
+      "sha256": "2f685f36d3f6678f43d4c3919555c41abdf8315c8bb594bf657b1b6b0af419ef"
+    },
+    ".cache/ace16-incrementing-autonumber-acceptance-next-20261028/freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-acceptance-next-20261028/freeze.json",
+      "bytes": 33657,
+      "sha256": "8bc3e04d09e6e1a43ab135239372ff5cf26d7b141adf49140044bb5adba4c114"
+    },
+    ".cache/ace16-incrementing-autonumber-acceptance-next-20261028/plan.json": {
+      "path": ".cache/ace16-incrementing-autonumber-acceptance-next-20261028/plan.json",
+      "bytes": 37151,
+      "sha256": "2ea73d65579c7dd80cf3d5caaade04c69c3f8b9cbc4c93da7590c08724f00a69"
+    },
+    ".cache/ace16-incrementing-autonumber-candidates-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-candidates-first-20261028/report.json",
+      "bytes": 53294,
+      "sha256": "d243b0e5a090525ea3905b8a6356bb2ba82425520601bb02fdb5195ce85c5903"
+    },
+    ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/freeze.json": {
+      "path": ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/freeze.json",
+      "bytes": 41371,
+      "sha256": "d686abe4079922c60329e1e563dc6aa7d6f4d64a87de8998779afa3d70755148"
+    },
+    ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/getter-binding.json": {
+      "path": ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/getter-binding.json",
+      "bytes": 5875,
+      "sha256": "8c4dcb18a09aa473f031d828ca472f621b8d29e28d85ec8d952aef32f13a8019"
+    },
+    ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/correction.json": {
+      "path": ".cache/ace16-incrementing-autonumber-fresh-getters-next-20261028/correction.json",
+      "bytes": 670,
+      "sha256": "6fdf1566ac95842708b3fc831286f78e99f4b5f1785780295c8f8dc3e94bb37f"
+    },
+    ".cache/ace16-incrementing-autonumber-getters-corrected-first-20261028/report.json": {
+      "path": ".cache/ace16-incrementing-autonumber-getters-corrected-first-20261028/report.json",
+      "bytes": 77791,
+      "sha256": "598929e187a568bc9cdd953e797ba8ec5cb057ae99d0a803afb533cf1bef2d25"
+    }
+  }
+}

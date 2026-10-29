@@ -1271,7 +1271,9 @@ now composes caller-selected signed Int32 generation with the ordinary INSERT
 pipeline. The caller pins the original last-issued counter; live-row maxima do
 not replace stored history. Independent request replay checks the counter, keys
 and complete candidate before publication. Ordinary manual INSERT does not gain
-generated-field authority. Stored Increment/Random mode detection, broader
+generated-field authority. Its [eight original-file candidates](testing/ace16_incrementing_autonumber/README.md)
+now pass complete source/request byte comparisons and eight fresh independent
+reads after separate public-reference checks. Stored Increment/Random mode detection, broader
 generated fields, normal saves and native Access qualification remain unfinished.
 
 ## Ordered implementation path to the UI
