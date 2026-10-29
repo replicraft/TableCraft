@@ -9,6 +9,7 @@ use crate::{
         header::IndexHeader,
         page::{self, KeyRef},
     },
+    table::mutation::append::owners::OwnerContext,
 };
 use std::io::Cursor;
 
@@ -36,7 +37,7 @@ pub(super) struct Disposition {
 
 pub(super) fn prove<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P>,
-    plan: &Plan,
+    plan: &Plan<impl OwnerContext>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<Disposition, EditError> {
@@ -45,7 +46,7 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
 
 pub(super) fn prove_population<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P>,
-    plan: &Plan,
+    plan: &Plan<impl OwnerContext>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<Disposition, EditError> {
@@ -54,7 +55,7 @@ pub(super) fn prove_population<P: RetainedProfile, const N: usize>(
 
 fn prove_with<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P>,
-    plan: &Plan,
+    plan: &Plan<impl OwnerContext>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
     population: bool,
@@ -184,7 +185,8 @@ fn prove_with<P: RetainedProfile, const N: usize>(
             .certificates
             .get(*progress.split_position)
             .ok_or(EditError::Preservation)?;
-        if fact.physical != index.data_number()
+        if fact.definition != operation.owner
+            || fact.physical != index.data_number()
             || fact.root != index.root_page()
             || fact.usage != index.usage_map()
             || fact.column != operation.column

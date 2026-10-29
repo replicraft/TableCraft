@@ -1,5 +1,6 @@
 //! Keep typed profiles and certified final populations through serialization.
 use super::{census, reserve};
+use crate::table::mutation::append::owners::OwnerContext;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
     format::{data_type::INT32, reader::Reader},
@@ -39,6 +40,7 @@ pub(super) fn prepare<'a>(
     schema: &TableSchema,
     owner: &census::Physical<'a>,
     updates: &[IndexKeyUpdate],
+    complete: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Option<Prepared<'a>>, EditError> {
     let index = owner.index;
@@ -49,14 +51,16 @@ pub(super) fn prepare<'a>(
             .saturating_mul(updates.len())
             .saturating_mul(schema.columns().len()),
     )?;
-    if !index.columns().iter().any(|key| {
-        updates.iter().any(|update| {
-            schema
-                .columns
-                .get(update.column)
-                .is_some_and(|column| column.number() == key.number())
+    if !complete
+        && !index.columns().iter().any(|key| {
+            updates.iter().any(|update| {
+                schema
+                    .columns
+                    .get(update.column)
+                    .is_some_and(|column| column.number() == key.number())
+            })
         })
-    }) {
+    {
         return Ok(None);
     }
     let mut columns = Vec::new();
@@ -89,6 +93,7 @@ pub(super) fn prepare<'a>(
             image, reader, index, schema, updates, &profile,
         )?;
         census::require_tree(&population.tree, &owner.pages, reader)?;
+        population::history::preflight(image, schema, index, population.increment, reader)?;
         if !population.tree.is_leaf()
             && population.entries.len()
                 < population
@@ -115,6 +120,7 @@ pub(super) fn prepare<'a>(
             image, reader, index, schema, updates, &profile,
         )?;
         census::require_tree(&population.tree, &owner.pages, reader)?;
+        population::history::preflight(image, schema, index, population.increment, reader)?;
         if !population.tree.is_leaf()
             && population.entries.len()
                 < population
@@ -137,7 +143,7 @@ impl Prepared<'_> {
         &self,
         image: &NativeImage,
         schema: &TableSchema,
-        plan: &mut Plan,
+        plan: &mut Plan<impl OwnerContext>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         match self {
@@ -156,7 +162,7 @@ impl<P: WriteProfile> Typed<'_, P> {
         &self,
         image: &NativeImage,
         schema: &TableSchema,
-        plan: &mut Plan,
+        plan: &mut Plan<impl OwnerContext>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         if !self.population.changed {

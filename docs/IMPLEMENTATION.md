@@ -15,7 +15,7 @@ engineering previews and independent comparisons do not establish full parity.
 ## Nullable batch UPDATE with shared index allocation
 
 The separate [allocating batch preview](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
-now composes one table's Int32 assignments and multiple physical index owners
+now composes multiple tables' Int32 assignments and physical index owners
 under one append ledger. It retains logical forwarded ROWs, stages every tuple
 component against the original image, deduplicates aliases and schedules physical
 owners deterministically. Complete source populations, Required/UNIQUE rules,
@@ -41,11 +41,23 @@ separate public-reference phase passes 20 actions and 20 reads over 8,008 row
 updates. Its different page packing and opaque inactive NULL payloads remain
 observations; the canonical expectations were frozen before either writer ran.
 Source files, expected images and all candidate hashes remain unchanged through
-verification. Native Microsoft Access qualification remains open. Cross-table
-allocation, wider carriers, contraction and broader map/height cases remain
+verification. Native Microsoft Access qualification remains open. Wider carriers,
+contraction and broader map/height cases remain
 unfinished. Fitted, slot, cascade and normal save policies retain their separate
 admission; this is a non-journalable engineering candidate, not macro or native
 Access qualification.
+
+The [multiple-table continuation](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
+adds immutable definition-bound INDEX purposes and one EOF/GLOBAL map ledger.
+Forty-eight independent literal source/expected cases pass their source gates,
+then all 96 normal/reversed-request complete-image comparisons pass on the first
+API run. Correlated map/population/certificate controls and complete cross-table
+relationship checks pass. Historical overflow and foreign DATA/LVAL/INDEX body
+claims are checked before reservations. The combined library now passes 713
+functions with the same two existing ignored tests. The older 698-function and
+original-file observations above remain separate checkpoints, not new native
+Access qualification. Broader carriers, map/height combinations, contraction and
+ordinary saves remain open.
 
 ## Explicit data-macro XML envelopes
 

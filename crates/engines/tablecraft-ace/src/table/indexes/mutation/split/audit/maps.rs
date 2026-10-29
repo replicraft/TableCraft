@@ -1,7 +1,7 @@
 //! Independently replay EOF purposes, role bytes and bitmap promotion.
 use super::super::Plan;
 use crate::{
-    EditError, IndexCheck, InspectError, NativeImage,
+    EditError, IndexCheck, InspectError, NativeImage, NativeIndex,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
         page::{PAGE_BYTES, USAGE_SIGNATURE},
@@ -9,7 +9,8 @@ use crate::{
     },
     table::mutation::{
         CertifiedData,
-        map_authority::{self, Owner, RecordIdentity},
+        append::owners::OwnerContext,
+        map_authority::{self, Census, Owner, RecordIdentity},
     },
 };
 use std::io::Cursor;
@@ -70,11 +71,16 @@ pub(super) fn qualified() -> Expected {
     }
 }
 
+pub(super) struct IndexOwner<'a> {
+    pub definition: u32,
+    pub index: &'a NativeIndex,
+}
+
 pub(super) fn inventory(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     expected: &Expected,
-    plan: &Plan,
-    indexes: &[IndexCheck],
+    plan: &Plan<impl OwnerContext>,
+    indexes: &[IndexOwner<'_>],
     end: u32,
 ) -> Result<(), EditError> {
     let count = expected
@@ -97,12 +103,12 @@ pub(super) fn inventory(
         reader.work(indexes.len())?;
         let index = indexes
             .iter()
-            .find(|index| index.index().usage_map() == usage)
-            .ok_or(EditError::Preservation)?
-            .index();
+            .find(|owner| owner.index.usage_map() == usage)
+            .ok_or(EditError::Preservation)?;
         if actual.number != number
             || actual.usage != usage
-            || actual.physical != index.data_number()
+            || actual.physical != index.index.data_number()
+            || actual.definition != index.definition
         {
             return Err(EditError::Preservation);
         }
@@ -120,12 +126,12 @@ pub(super) fn inventory(
         reader.work(indexes.len())?;
         let index = indexes
             .iter()
-            .find(|index| index.index().usage_map() == promotion.usage)
-            .ok_or(EditError::Preservation)?
-            .index();
-        plan.append.require_index_bitmap(
+            .find(|owner| owner.index.usage_map() == promotion.usage)
+            .ok_or(EditError::Preservation)?;
+        plan.append.require_index_bitmap_for(
             promotion.bitmap_page,
-            index.data_number(),
+            index.definition,
+            index.index.data_number(),
             promotion.usage,
             reader.budget,
             reader.cancelled,
@@ -336,7 +342,7 @@ pub(super) fn reserve(
 pub(super) fn finish(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     expected: &Expected,
-    plan: &Plan,
+    plan: &Plan<impl OwnerContext>,
     after: &[u8],
 ) -> Result<(), EditError> {
     if expected.edits.len() != plan.append.map_edits.len()
@@ -492,7 +498,7 @@ pub(super) fn authority(
     image: &NativeImage,
     definition: u32,
     indexes: &[IndexCheck],
-    plan: &Plan,
+    plan: &Plan<impl OwnerContext>,
     expected: &Expected,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
@@ -506,34 +512,54 @@ pub(super) fn authority(
         |_, _, _, _| Ok(()),
     )?;
     let mut selected = Vec::new();
+    let mut bindings = Vec::new();
     reader
         .budget
-        .charge_allocation(
-            (expected.reservations.len() + 1) as u64,
-            size_of::<Owner>() as u64,
-        )
+        .charge_allocation((indexes.len() + 1) as u64, size_of::<Owner>() as u64)
         .map_err(InspectError::from)?;
     selected
-        .try_reserve(expected.reservations.len() + 1)
+        .try_reserve(indexes.len() + 1)
         .map_err(|_| InspectError::Allocation)?;
     selected.push(Owner::GlobalFree);
+    reader
+        .budget
+        .charge_allocation(indexes.len() as u64, size_of::<IndexOwner<'_>>() as u64)
+        .map_err(InspectError::from)?;
+    bindings
+        .try_reserve(indexes.len())
+        .map_err(|_| InspectError::Allocation)?;
     for &(usage, _) in &expected.reservations {
         reader.tick()?;
-        reader.work(indexes.len() + selected.len())?;
+        reader.work(bindings.len() + indexes.len())?;
         let index = indexes
             .iter()
             .find(|checked| checked.index().usage_map() == usage)
-            .ok_or(EditError::Preservation)?;
-        let owner = Owner::IndexOwned {
-            definition,
-            physical: index.index().data_number(),
-        };
-        if !selected.contains(&owner) {
-            selected.push(owner);
+            .ok_or(EditError::Preservation)?
+            .index();
+        if bindings
+            .iter()
+            .any(|prior: &IndexOwner<'_>| prior.index.data_number() == index.data_number())
+        {
+            continue;
         }
+        bindings.push(IndexOwner { definition, index });
+        selected.push(Owner::IndexOwned {
+            definition,
+            physical: index.data_number(),
+        });
     }
     census.require_exclusive(&selected, reader.budget, reader.cancelled)?;
+    authority_bound(&census, &selected, &bindings, plan, expected, reader)
+}
 
+pub(super) fn authority_bound(
+    census: &Census,
+    selected: &[Owner],
+    indexes: &[IndexOwner<'_>],
+    plan: &Plan<impl OwnerContext>,
+    expected: &Expected,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
     for (usage, row_offset, original) in expected
         .promoted
         .iter()
@@ -546,29 +572,28 @@ pub(super) fn authority(
         )
     {
         reader.tick()?;
-        reader.work(indexes.len() + plan.rebases.len())?;
-        let index = indexes
+        reader.work(indexes.len() + plan.rebases.len() + plan.promotions.len())?;
+        let binding = indexes
             .iter()
-            .find(|checked| checked.index().usage_map() == usage)
+            .find(|binding| binding.index.usage_map() == usage)
             .ok_or(EditError::Preservation)?;
-        let physical = index.index().data_number();
-        if plan
-            .rebases
-            .iter()
-            .any(|map| map.usage == usage && map.physical != physical)
-        {
+        let physical = binding.index.data_number();
+        if plan.rebases.iter().any(|map| {
+            map.usage == usage && (map.physical != physical || map.definition != binding.definition)
+        }) || plan.promotions.iter().any(|map| {
+            map.usage == usage && (map.physical != physical || map.definition != binding.definition)
+        }) {
             return Err(EditError::Preservation);
         }
-
         let owner = Owner::IndexOwned {
-            definition,
+            definition: binding.definition,
             physical,
         };
         let end = row_offset
             .checked_add(original.len())
             .ok_or(EditError::Preservation)?;
         census.require_record_rewrite(
-            &selected,
+            selected,
             RecordIdentity {
                 owner,
                 reference: usage,
@@ -578,6 +603,5 @@ pub(super) fn authority(
             reader.cancelled,
         )?;
     }
-
     Ok(())
 }

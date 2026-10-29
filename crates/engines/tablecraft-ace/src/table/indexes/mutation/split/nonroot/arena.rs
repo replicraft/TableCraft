@@ -1,4 +1,5 @@
 //! Postorder decisions use original leaf counts and complete final child maxima.
+use crate::table::mutation::append::owners::OwnerContext;
 mod normalize;
 use super::super::super::{repack, retained::RetainedProfile, tree::Tree};
 use super::super::{Plan, leaf_entries};
@@ -40,7 +41,7 @@ pub(super) struct Arena {
 pub(super) fn prepare<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     tree: &Tree,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Arena, EditError> {
     prepare_with(operation, tree, plan, reader, None)
@@ -49,7 +50,7 @@ pub(super) fn prepare<P: RetainedProfile, const N: usize>(
 pub(super) fn prepare_population<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     tree: &Tree,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Arena, EditError> {
     let leaves = tree.leaf_count(reader.budget, reader.cancelled)?;
@@ -62,7 +63,7 @@ pub(super) fn prepare_population<P: RetainedProfile, const N: usize>(
 fn prepare_with<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     tree: &Tree,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     remaining_leaves: Option<usize>,
 ) -> Result<Arena, EditError> {
@@ -91,7 +92,7 @@ fn build<P: RetainedProfile, const N: usize>(
     tree: &Tree,
     root: bool,
     arena: &mut Arena,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<usize>, EditError> {
     reader.tick()?;
@@ -189,7 +190,7 @@ fn build<P: RetainedProfile, const N: usize>(
 fn allocate<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     arena: &mut Arena,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
     let number = super::super::allocation::reserve(operation.image, operation.index, plan, reader)?;

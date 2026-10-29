@@ -15,10 +15,10 @@ use tablecraft_core::{
 };
 use tablecraft_schema::ScalarType;
 
-struct Table<'a> {
-    name: &'a str,
-    before: TableCheck,
-    keys: Vec<IndexKeyUpdate>,
+pub(super) struct Table<'a> {
+    pub(super) name: &'a str,
+    pub(super) before: TableCheck,
+    pub(super) keys: Vec<IndexKeyUpdate>,
 }
 
 impl NativeImage {
@@ -105,9 +105,6 @@ impl NativeImage {
                 });
             }
         }
-        if ALLOCATING && tables.len() > 1 {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
         budget
             .charge_allocation(count as u64, size_of::<(u32, u32)>() as u64)
             .map_err(InspectError::from)?;
@@ -165,15 +162,14 @@ impl NativeImage {
             }
         }
         spans::coalesce(&mut patches, budget, cancelled)?;
-        if ALLOCATING && let Some(table) = tables.first() {
+        if ALLOCATING && !tables.is_empty() {
             unique_changed(&mut changed, budget)?;
             return super::split::finish(
                 self,
                 super::split::Operation {
-                    checked: &table.before,
+                    tables: &tables,
                     groups,
                     fields: &patches,
-                    keys: &table.keys,
                     changed_rows: changed.len(),
                 },
                 budget,

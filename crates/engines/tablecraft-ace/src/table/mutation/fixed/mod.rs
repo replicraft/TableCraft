@@ -1,4 +1,4 @@
-mod batch;
+pub(in crate::table) mod batch;
 mod cascade;
 mod decimal;
 mod encoding;

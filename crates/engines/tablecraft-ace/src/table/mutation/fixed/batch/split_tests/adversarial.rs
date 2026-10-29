@@ -208,13 +208,13 @@ fn stale_duplicate_wrong_carrier_and_missing_ordinals_refuse_atomically() {
 }
 
 #[test]
-fn multiple_tables_and_definition_aliases_cannot_acquire_append_authority() {
+fn late_table_stale_values_and_definition_aliases_cannot_acquire_append_authority() {
     for code in [5, 6] {
         let bytes = extra::two_tables(code);
         let left = [FixedScalarUpdate::new(0, Value::Null, Value::Int32(7))];
         let other = [FixedScalarUpdate::new(
             0,
-            Value::Int32(100),
+            Value::Int32(-1),
             Value::Int32(101),
         )];
         assert_eq!(
@@ -228,7 +228,7 @@ fn multiple_tables_and_definition_aliases_cannot_acquire_append_authority() {
                     &|| false,
                 )
                 .err(),
-            Some(EditError::Unsupported(WriteBlocker::RowLayout))
+            Some(EditError::Conflict)
         );
 
         // A separately named native catalog ID aliases the selected physical TD.

@@ -4,13 +4,14 @@ use super::{
     Arena, Contents, Operation, Plan, allocate, bounds, copy_children, leaf_entries, push_branch,
     push_child, push_leaf, raw, repack,
 };
+use crate::table::mutation::append::owners::OwnerContext;
 use crate::{EditError, InspectError, WriteBlocker, format::reader::Reader};
 use std::io::Cursor;
 
 pub(super) fn run<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     arena: &mut Arena,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     pair: (usize, usize),
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<usize>, EditError> {
@@ -98,7 +99,7 @@ pub(super) fn fits<P: RetainedProfile, const N: usize>(
 pub(super) fn divide<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     arena: &mut Arena,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     index: usize,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<usize, EditError> {

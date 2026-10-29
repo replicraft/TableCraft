@@ -1,4 +1,5 @@
 //! Recursive physical planning; field authority stays in the table finalizer.
+use crate::table::mutation::append::owners::OwnerContext;
 mod arena;
 mod write;
 
@@ -18,7 +19,7 @@ pub(super) struct Operation<'a, P: RetainedProfile, const N: usize> {
 pub(super) fn edit<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     tree: &Tree,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
@@ -30,7 +31,7 @@ pub(super) fn edit<P: RetainedProfile, const N: usize>(
 pub(super) fn edit_population<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     tree: &Tree,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {

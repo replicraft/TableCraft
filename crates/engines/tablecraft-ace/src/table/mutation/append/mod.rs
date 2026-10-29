@@ -1,6 +1,7 @@
 //! Working ordinary/index consumers share one typed cursor and byte ledger.
 pub(in crate::table) mod global;
 mod maps;
+pub(in crate::table) mod owners;
 mod state;
 #[cfg(test)]
 mod tests;

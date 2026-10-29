@@ -1,6 +1,10 @@
 //! Independent complete-row population and shared-EOF replay for fixed batches.
 mod history;
 mod population;
+mod source;
+
+#[cfg(test)]
+mod tests;
 
 use super::super::{
     super::{
@@ -10,35 +14,34 @@ use super::super::{
         profile::{SingleProfile, WriteProfile},
     },
     Plan,
+    fixed_batch::Input,
 };
-use super::{allocated_source, maps, retained};
+use super::{maps, retained};
 use crate::{
-    EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
+    EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
     inspect_header,
     limits::MAX_IMAGE_BYTES,
     table::{
         indexes::composite,
-        mutation::map_authority::{self, Owner},
+        mutation::{append::owners::OwnerContext, map_authority},
     },
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
-pub(in crate::table::indexes::mutation::split) fn prove(
+pub(in crate::table::indexes::mutation::split) fn prove<O: OwnerContext>(
     image: &NativeImage,
-    checked: &TableCheck,
-    updates: &[IndexKeyUpdate],
-    plan: &Plan,
+    inputs: &[Input<'_>],
+    plan: &Plan<O>,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Range<usize>>, EditError> {
     check(budget, cancelled)?;
     if plan.append.original_length != image.as_bytes().len()
-        || plan.append.owner != checked.schema().definition_page()
         || plan.append.length != after.len()
         || after.len() < image.as_bytes().len()
         || after.len() as u64 > MAX_IMAGE_BYTES
@@ -56,86 +59,37 @@ pub(in crate::table::indexes::mutation::split) fn prove(
         cancelled,
         reads: 0,
     };
-    allocated_source(&mut reader, checked.schema(), checked.indexes())?;
-    let mut physical: Vec<&IndexCheck> = Vec::new();
-    for index in checked.indexes() {
+    let source = source::capture(inputs, &mut reader)?;
+    let census = map_authority::capture_catalog(
+        image,
+        reader.budget,
+        cancelled,
+        |schema, indexes, declarations, reader| {
+            source.require_catalog_claims(schema, indexes, declarations, reader)
+        },
+    )?;
+    census.require_exclusive(&source.owners, reader.budget, cancelled)?;
+    // Bind the staged owner context to this source, but never use its Census
+    // or prepared populations as independent source authority.
+    plan.append.owner.census(image)?;
+    let mut indexes = Vec::new();
+    for physical in &source.physical {
         reader.tick()?;
-        reader.work(physical.len())?;
-        if !physical
-            .iter()
-            .any(|prior| prior.index().data_number() == index.index().data_number())
+        if plan
+            .append
+            .index_definition(physical.index, reader.budget, cancelled)?
+            != physical.checked.schema().definition_page()
         {
-            push(&mut physical, index, &mut reader)?;
+            return Err(EditError::Preservation);
         }
-    }
-    let levels = physical.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    reader.work(physical.len().saturating_mul(levels))?;
-    physical.sort_unstable_by_key(|index| index.index().data_number());
-    if physical.len() != checked.schema().layout.physical_indexes {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
-    for (number, checked_index) in physical.iter().enumerate() {
-        reader.tick()?;
-        if checked_index.index().data_number() as usize != number {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-    }
-    let mut owners = Vec::new();
-    push(&mut owners, Owner::GlobalFree, &mut reader)?;
-    push(
-        &mut owners,
-        Owner::OrdinaryOwned {
-            definition: checked.schema().definition_page(),
-        },
-        &mut reader,
-    )?;
-    push(
-        &mut owners,
-        Owner::OrdinaryCandidate {
-            definition: checked.schema().definition_page(),
-        },
-        &mut reader,
-    )?;
-    for checked_index in &physical {
-        let index = checked_index.index();
         push(
-            &mut owners,
-            Owner::IndexOwned {
-                definition: checked.schema().definition_page(),
-                physical: index.data_number(),
+            &mut indexes,
+            maps::IndexOwner {
+                definition: physical.checked.schema().definition_page(),
+                index: physical.index,
             },
             &mut reader,
         )?;
-        if index
-            .constraints()
-            .is_some_and(|constraints| constraints.ignore_nulls())
-            && checked.indexes().iter().any(|alias| {
-                alias.index().data_number() == index.data_number()
-                    && alias
-                        .index()
-                        .constraints()
-                        .is_some_and(|constraints| constraints.primary_key())
-            })
-        {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
-    }
-    if owners.len() > 1 {
-        let census =
-            map_authority::capture_catalog(image, reader.budget, cancelled, |_, _, _, _| Ok(()))?;
-        census.require_exclusive(&owners, reader.budget, cancelled)?;
-    }
-    let mut source_pages = Vec::new();
-    for checked_index in &physical {
-        let pages =
-            crate::format::allocation::pages(&mut reader, checked_index.index().usage_map())?;
-        for page in pages {
-            reader.work(source_pages.len())?;
-            if source_pages.contains(&page) {
-                return Err(EditError::Preservation);
-            }
-            push(&mut source_pages, page, &mut reader)?;
-        }
     }
     let header = inspect_header(&mut Cursor::new(after), reader.budget, cancelled)?;
     let mut actual_source = Cursor::new(after);
@@ -148,8 +102,9 @@ pub(in crate::table::indexes::mutation::split) fn prove(
     };
     let mut state = Replay {
         image,
-        checked,
-        updates,
+        indexes: &indexes,
+        owners: &source.owners,
+        census: &census,
         plan,
         after,
         next_eof: image.catalog().header().page_count(),
@@ -157,9 +112,11 @@ pub(in crate::table::indexes::mutation::split) fn prove(
         edits: maps::qualified(),
         spans: Vec::new(),
     };
-    for checked_index in physical {
+    for physical in source.physical {
         actual.tick()?;
-        let index = checked_index.index();
+        let checked = physical.checked;
+        let updates = physical.updates;
+        let index = physical.index;
         if !affects(checked, index, updates, &mut actual)? {
             continue;
         }
@@ -191,7 +148,13 @@ pub(in crate::table::indexes::mutation::split) fn prove(
                     kind: NumericKey::new(ScalarType::Int32)?,
                     descending: index.columns()[0].descending(),
                 };
-                state.index::<_, { encoding::MAX_ENTRY_BYTES }>(index, &profile, &mut actual)?;
+                state.index::<_, { encoding::MAX_ENTRY_BYTES }>(
+                    checked,
+                    updates,
+                    index,
+                    &profile,
+                    &mut actual,
+                )?;
             }
             2..=10 => {
                 let profile = TupleProfile::<i64>::new_for_delete(
@@ -200,7 +163,13 @@ pub(in crate::table::indexes::mutation::split) fn prove(
                     actual.budget,
                     cancelled,
                 )?;
-                state.index::<_, { composite::MAX_ENTRY_BYTES }>(index, &profile, &mut actual)?;
+                state.index::<_, { composite::MAX_ENTRY_BYTES }>(
+                    checked,
+                    updates,
+                    index,
+                    &profile,
+                    &mut actual,
+                )?;
             }
             _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
         }
@@ -208,11 +177,12 @@ pub(in crate::table::indexes::mutation::split) fn prove(
     state.finish(&mut actual)
 }
 
-struct Replay<'a> {
+struct Replay<'a, O: OwnerContext> {
     image: &'a NativeImage,
-    checked: &'a TableCheck,
-    updates: &'a [IndexKeyUpdate],
-    plan: &'a Plan,
+    indexes: &'a [maps::IndexOwner<'a>],
+    owners: &'a [map_authority::Owner],
+    census: &'a map_authority::Census,
+    plan: &'a Plan<O>,
     after: &'a [u8],
     next_eof: u32,
     split_position: usize,
@@ -220,9 +190,11 @@ struct Replay<'a> {
     spans: Vec<Range<usize>>,
 }
 
-impl Replay<'_> {
+impl<O: OwnerContext> Replay<'_, O> {
     fn index<P: WriteProfile, const N: usize>(
         &mut self,
+        checked: &TableCheck,
+        updates: &[IndexKeyUpdate],
         index: &NativeIndex,
         profile: &P,
         actual: &mut Reader<'_, Cursor<&[u8]>>,
@@ -237,15 +209,15 @@ impl Replay<'_> {
         };
         let population = population::derive::<P, N>(
             self.image,
-            self.checked.schema(),
+            checked.schema(),
             index,
-            self.updates,
+            updates,
             profile,
             &mut reader,
         )?;
         let counter = history::prove(
             self.image,
-            self.checked.schema(),
+            checked.schema(),
             index,
             population.history_delta,
             self.after,
@@ -257,8 +229,7 @@ impl Replay<'_> {
             let start = number as usize * PAGE_BYTES;
             push(&mut self.spans, start..start + PAGE_BYTES, &mut reader)?;
         }
-        let column = self
-            .checked
+        let column = checked
             .schema()
             .columns()
             .iter()
@@ -268,7 +239,7 @@ impl Replay<'_> {
             &retained::Operation {
                 image: self.image,
                 index,
-                owner: self.checked.schema().definition_page(),
+                owner: checked.schema().definition_page(),
                 column,
                 profile,
                 tree: &population.tree,
@@ -314,10 +285,10 @@ impl Replay<'_> {
             cancelled: actual.cancelled,
             reads: 0,
         };
-        maps::authority(
-            self.image,
-            self.checked.schema().definition_page(),
-            self.checked.indexes(),
+        maps::authority_bound(
+            self.census,
+            self.owners,
+            self.indexes,
             self.plan,
             &self.edits,
             &mut reader,
@@ -327,7 +298,7 @@ impl Replay<'_> {
             &mut reader,
             &self.edits,
             self.plan,
-            self.checked.indexes(),
+            self.indexes,
             self.next_eof,
         )?;
         for span in maps::spans(&self.edits, &mut reader)? {

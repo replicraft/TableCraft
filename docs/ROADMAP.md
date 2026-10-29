@@ -10,6 +10,15 @@ and future architecture plans are retained. The
 [behavioral-parity decision](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md) governs
 shared services and future UI workflows, defaults, restrictions and quirks.
 
+On 29 October the user prioritized making native writes usable. Finish the
+current shared-allocation work, then prioritize end-to-end INSERT/UPDATE/DELETE
+through shared backend services, safe offline output, validation and durable
+save/recovery over further isolated preview expansion. Use focused independent
+checks to verify those workflows. Existing engineering candidates do not become
+ordinary saves merely by adding a CLI command; preservation, required data-macro
+handling and transaction gates still apply. Windows comparisons remain deferred
+and must be reported separately from local implementation evidence.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
@@ -1277,7 +1286,10 @@ prefrozen images; 16 fitting comparisons remain exact. Adversarial controls incl
 repeated families, request ordering, source ownership and correlated forgeries.
 Four public-builder originals now pass
 [20 complete-image candidate comparisons and 20 fresh independent reads](testing/results/ace16-nullable-split-batch-originals-2026-10-29.json),
-with a separate 40-call public-reference phase. Multi-table allocation, wider carriers, contraction,
+with a separate 40-call public-reference phase. A further
+[multiple-table continuation](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
+now passes 96 complete-image comparisons over 48 independently qualified literal
+cases with one shared append ledger and final relationship checks. Wider carriers, contraction,
 broader map/height cases and normal ACE saves remain unfinished. This advances
 milestone 4 without completing it or changing the required data-macro gate.
 

@@ -6,7 +6,7 @@ mod delete;
 mod error;
 mod field;
 #[cfg(feature = "ace16-write-preview")]
-mod fixed;
+pub(in crate::table) mod fixed;
 mod gates;
 #[cfg(feature = "ace16-write-preview")]
 mod index_append;

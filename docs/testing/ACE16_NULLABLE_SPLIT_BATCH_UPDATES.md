@@ -1,6 +1,7 @@
 # ACE 16 nullable batch UPDATE with index allocation
 
-Status: implemented engineering preview. The first source-only gates pass all
+Status: implemented engineering preview, including shared allocation across
+multiple tables. The initial one-table source-only gates pass all
 80 independently constructed source/expected pairs. All 13 focused functions
 pass, including 80 complete candidate comparisons, 16 exact comparisons with the
 existing fitted batch service, and adversarial request/ownership controls. Three
@@ -21,12 +22,14 @@ NULL are distinct carriers; values are not coerced. Duplicate/stale assignments,
 missing rows, failed constraints, resource exhaustion and cancellation return no
 candidate.
 
-The initial allocation profile accepts one table, Int32 assignments, and affected
-Int32 single/tuple indexes. Tuples retain their native component order/directions
-and existing format component bound; this complete-image checkpoint exercises
-one and two components. Different valid table targets refuse before append-state
-construction. Multiple-table allocation and wider indexed carriers remain
-unfinished rather than permanent exclusions.
+The allocation profile accepts Int32 assignments and affected Int32 single/tuple
+indexes. Multiple-table operations additionally certify all physical owners of
+every participating table under that profile before reserving pages. Tuples keep
+their native component order/directions and existing format component bound;
+the complete-image checkpoints exercise one and two components. Wider indexed
+carriers and broader combinations remain unfinished rather than permanent
+exclusions. The original single-table path retains its admission for unaffected
+owners.
 
 The existing fitted fixed/batch API keeps its output policy. Normal Jet 4 edits,
 exact-slot updates, UPDATE cascades and DELETE/SET NULL consumers retain their
@@ -48,7 +51,7 @@ cargo run -p tablecraft-ace --features ace16-write-preview \
 The source is captured without modification and the candidate path must be new.
 The flag conflicts with `--cascade-updates` before any file is opened. Omitting
 both flags retains the fitted API; cascade dispatch remains separate. This does
-not expose normal CLI editing or permit native saves. Four focused example tests
+not permit normal native saves. Four focused example tests
 and strict example Clippy pass. The committed producer and original-file
 qualification are recorded below.
 
@@ -59,7 +62,13 @@ owner is inventoried, and affected typed trees and complete final populations ar
 prepared before the first INDEX reservation. Cross-owner page overlap, ambiguous
 table-definition aliases, unqualified index coverage and unreachable affected
 owned storage cannot supply mutable spans. Physical processing follows ascending
-data number, independently of column-group or row-request order.
+table-definition page and then data number, independently of table names,
+column-group order or row-request order. One shared ledger preserves earlier
+tables' GLOBAL bitmap changes. Reservations, root certificates and map transitions
+retain both definition and physical-owner identity. Ordinary DATA, column-owned
+LVAL and foreign INDEX body claims cannot overlap mutable selected INDEX pages;
+distinct map records alone do not establish body exclusivity. Historical-counter
+overflow is checked during preparation, before any reservation.
 
 Original key membership is bound to every logical table ROW, including omitted
 keys. Every row's final tuple incorporates all requested components before its
@@ -166,7 +175,7 @@ canonical placement or expected payload authority. There are no unexplained
 typed-value, mask, counter, map or protected-prefix differences.
 
 Further root-height growth, map-boundary variants, wider tuples/carriers,
-cross-table allocation and contraction need their own acceptance. Required
+broader cross-table combinations and contraction need their own acceptance. Required
 [data-macro semantics](DATA_MACROS.md), native Access save/reopen and recovery
 qualification remain open; this candidate has no journal or save operation.
 
@@ -177,3 +186,34 @@ starting children or rebuilding the producer. Its default root replay verifies
 Missing consumer/output and tampered maintained-source controls refuse. The
 retained initial verifier-authoring failure concerns argv reconstruction only;
 executed programs, source bytes and canonical images remain unchanged.
+
+## Multiple-table continuation
+
+Forty-eight independently constructed source/expected pairs cover both ACE 16
+selectors, both directions, UNIQUE/nonunique owners, NULL clearing, fitted/growing
+table combinations and forwarded logical roots. Names sort in the opposite order
+from definition pages; both tables repeat physical IDs zero and one. Allocations
+share a GLOBAL bitmap byte and preserve opaque allocated orphans. Both source
+qualification functions pass before the first candidate comparisons. All 96
+normal/reversed-request comparisons then match complete expected images on the
+first run, without changing those expectations.
+
+The independent audit reconstructs tables and cells from original groups, sorts
+actual source owners and advances one EOF/map replay. Correlated GLOBAL-map,
+whole-population and same-number certificate substitutions refuse. Original
+ordinary/foreign-index ownership claims also cannot waive a no-op's source checks.
+Resource-pool and terminal-cancellation controls return no candidate.
+
+Four relationship integration functions check complete parent/child assignment,
+untouched incoming children and late stale values. Their initial read-qualified
+donor needed genuine declaration terminators, distinct candidate-map records and
+measured free-space metadata before it qualified for this allocating service.
+Those fixture corrections preserve all ROWs, slots, indexes and relationships;
+they do not relax the writer or change expected relationship errors. The initial
+failures and diagnostic probe are retained separately.
+
+The combined engine library passes 713 functions with two existing ignored tests;
+this includes the separate ordinal-deletion helper. The
+[continuation record](results/ace16-multitable-index-growth-2026-10-29.json) keeps
+the literal freezes, checks and failed preparation observations. These are local
+engineering checks, not native Access comparisons or production save permission.
