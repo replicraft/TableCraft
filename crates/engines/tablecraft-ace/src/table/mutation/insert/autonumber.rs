@@ -3,6 +3,7 @@ pub(super) mod audit;
 #[cfg(test)]
 mod companions;
 pub(super) mod counter;
+mod policy;
 pub(super) mod request;
 #[cfg(test)]
 mod tests;

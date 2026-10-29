@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-29",
+  "feature": "Explicit incrementing policy from the captured source LAST counter",
+  "base_commit": "5b09285f",
+  "native_Access_qualification": false,
+  "contract": "Explicit incrementing selection; signed source LAST, not live MAX or inferred NewValues. Existing full source/constraint gates and independent preview revalidation remain. No ordinary save authorization.",
+  "checks": {
+    "source_only_first": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "policy_api_first": {
+      "exit_code": 0,
+      "functions": 6
+    },
+    "autonumber_regression": {
+      "exit_code": 0,
+      "functions": 22
+    },
+    "cli_increment_first": {
+      "exit_code": 0,
+      "functions": 1
+    }
+  },
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber.rs",
+      "bytes": 1636,
+      "sha256": "d216a0a5512e53e6ed26d4b64bda39f7df99f70f4579dcdbe59e742378f38079"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/counter.rs",
+      "bytes": 4409,
+      "sha256": "a8f9d6d1e8b0db9cadaf648dad0e92420231b4d901b8e8d013d5b82c78ca2646"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/policy.rs",
+      "bytes": 9999,
+      "sha256": "7db088186a750f4d77d1af4d2768662aff903054e2db5fa11c171477b685286f"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/registered-first-freeze.json",
+      "bytes": 2177,
+      "sha256": "43a16ef5c8cb80f8fcde4f2b4178a3e5b9f6128c5cfa0b839eb34c4482a9ca3c"
+    },
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/source-first-root.log",
+      "bytes": 637,
+      "sha256": "e753a60317f8e9535df6c7f44b0200f91239f0ff1b91e6fbde77f374c9471743"
+    },
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/api-first-root.log",
+      "bytes": 1034,
+      "sha256": "1ae9dfde25ad82322ace81f64b07f216a5a77dc066158d75cd16f92327a6fa4c"
+    },
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/autonumber-regression-root.log",
+      "bytes": 3207,
+      "sha256": "e8b157175dcae1206815a0165a0325187d3fde6a6cea1bcc70eb8b84e16636d1"
+    },
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/cli-api-first-root.log",
+      "bytes": 467,
+      "sha256": "30dd81e216da04c87119c5cb363c766617c04c157c45a0886279d82e9ff17edf"
+    },
+    {
+      "path": ".cache/ace16-source-increment-policy-next-20261029/enum-correction-freeze.json",
+      "bytes": 1896,
+      "sha256": "09f52b3929b7f4c046449f319f1787148fb41a96e9e763703a2137293be9c0ef"
+    }
+  ],
+  "retained_observation": "First combined CLI unit build failed before tests because new test patterns used the old internal enum variant. Only those test patterns were corrected; the 28-function retry passed. Source/expected bytes and production behavior did not change.",
+  "remaining": [
+    "Native Access comparison",
+    "Stored Increment/Random-mode inference",
+    "Zero-companion-column row-count representation in CLI TSV",
+    "Normal ACE saves and required data-macro qualification"
+  ]
+}
