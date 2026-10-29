@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-29",
+  "feature": "Snapshot-local ordinal DELETE request capture",
+  "source_gate_first_exit_code": 0,
+  "focused_functions": {
+    "passed": 5,
+    "exit_code": 0
+  },
+  "contract": "Captures exact original ordinary record bytes in source order under delete admission, uniqueness, limits and cancellation. It does not grant save permission or persistent row identity.",
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete.rs",
+      "bytes": 4811,
+      "sha256": "61d97ec4670e239427da057996558cdfc6f6ac451657a55e1e94a0392b332140"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/selection.rs",
+      "bytes": 3547,
+      "sha256": "107e3ec853e90c7977537b43f10027ded83f8431ab9bd6dadc1846b17bc847bd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/selection/tests.rs",
+      "bytes": 6324,
+      "sha256": "4de2f4a9acbba99a8576d37eefb15286a8302e12879a0641b8bcef82b95d7d8a"
+    }
+  ],
+  "freeze": {
+    "path": ".cache/ace16-delete-ordinal-selection-next-20261029/registered-first-freeze.json",
+    "bytes": 973,
+    "sha256": "576b2b009e03ee7c4763b7a4d469f28d7651ce9d28cc4a2615e0d573a6b9420d"
+  },
+  "source_log": {
+    "path": ".cache/ace16-delete-ordinal-selection-next-20261029/source-first-root.log",
+    "bytes": 505,
+    "sha256": "121783f32d95c97173924f4798932c25f5ad319a0f9ee792f8c5de7d1ad28427"
+  },
+  "api_log": {
+    "path": ".cache/ace16-delete-ordinal-selection-next-20261029/api-first-root.log",
+    "bytes": 898,
+    "sha256": "46b202225780f5287064d44398f0c8423057594cd63f707aea91ecdff44a908c"
+  },
+  "library_regression": {
+    "path": ".cache/ace16-multitable-index-growth-implementation-20261029/library-regression-first-root.log",
+    "bytes": 91859,
+    "sha256": "d1f7917d32d9318c1cb65d1b3a97ba304c987d7d0243aae30297e96a28b093f3"
+  },
+  "native_Access_qualification": false,
+  "library_regression_context": "Combined working tree including the independent multi-table continuation; the five focused helper functions are separately recorded above.",
+  "post_check_change": "Logical blank lines added during manual readability review; no statements or control flow changed."
+}

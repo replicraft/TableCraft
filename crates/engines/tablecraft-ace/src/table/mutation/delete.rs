@@ -3,6 +3,7 @@ mod batch;
 mod cascade;
 mod patches;
 mod relationships;
+mod selection;
 
 use super::{EditError, NativeEditPlan, rows};
 use crate::NativeImage;
