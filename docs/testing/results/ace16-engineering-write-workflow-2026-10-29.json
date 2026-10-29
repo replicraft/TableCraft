@@ -1,0 +1,254 @@
+{
+  "date": "2026-10-29",
+  "feature": "Explicit ACE engineering UPDATE/INSERT/DELETE fresh-copy CLI workflows",
+  "qualification": "Local CLI integration and bounded publication checks; not native Access or normal ACE save qualification.",
+  "source_gate": {
+    "plain_literal_profiles": 4,
+    "authenticated_encrypted_control": true,
+    "corrected_exit_code": 0
+  },
+  "final_unit_functions": {
+    "passed": 10,
+    "exit_code": 0
+  },
+  "final_integration_functions": {
+    "passed": 5,
+    "exit_code": 0
+  },
+  "final_cli_invocations": {
+    "successful_write_copies": 8,
+    "refused_write_calls": 5,
+    "normal_ACE_save_refusal": 1
+  },
+  "publication": {
+    "same_parent_owned_temporary": true,
+    "file_sync_before_noclobber_publish": true,
+    "output_bytes_charged_before_temporary": true,
+    "directory_power_loss_guarantee": false
+  },
+  "strict_all_target_all_feature_lint": {
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ],
+    "exit_code": 0
+  },
+  "minimal_engine_and_adapter_exit_code": 0,
+  "adapter_compile_fail_doctest": {
+    "passed": 1,
+    "exit_code": 0
+  },
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1358,
+      "sha256": "a9c949e1b838d0ad8b7796c859c93bfd0a9b8dd167b1aafbbe0ad8a049f746db"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/main.rs",
+      "bytes": 3492,
+      "sha256": "8ea1aaac470233ce76b81ff6cf8f16bdfaf37f99435b17ee44bc5e06696a0453"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/mod.rs",
+      "bytes": 5316,
+      "sha256": "1050f46274b4503656ffd42c033d0200ecca850ce9ad0602bcc73c7b61bf7830"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/Cargo.toml",
+      "bytes": 1048,
+      "sha256": "a2f0050a875e74974b951b19152d02c5188231cc48f19c8c141a869ccbb03dfd"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/lib.rs",
+      "bytes": 1657,
+      "sha256": "b0436a340f33a69cad871aad8ac4679323660205bc7cfc1ac55b887fea2a90d5"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/mod.rs",
+      "bytes": 9082,
+      "sha256": "e94ffeec844236d915b5981a66f9823e0a4c78f07ce4c2adde668e87f085c715"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_previews.rs",
+      "bytes": 11081,
+      "sha256": "9a1c16d78efa177240ba2e69ce1a087da1eba9d8364f568b0a333c532b0a1916"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_previews/model.rs",
+      "bytes": 4656,
+      "sha256": "dac2dec8a5dda171b957d6fb44d275e38b99f23ad51f8b42f1dd61cbad2079a1"
+    },
+    {
+      "path": "docs/access/writes/ENGINEERING_COPIES.md",
+      "bytes": 7788,
+      "sha256": "a1fd2862e232af2bd7f701076068176077a26f8e52b1cd391050eff5e23ad73b"
+    },
+    {
+      "path": "docs/access/writes/QUERY_EDITING.md",
+      "bytes": 4898,
+      "sha256": "10cae47c8c48165d0dadede75d94f39c9f35393471c746916618a4650d280205"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/args.rs",
+      "bytes": 5005,
+      "sha256": "e62bb56660debaf71ae958f8430433a112e410bfb5878a06078ea5e0e7b7d180"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/error.rs",
+      "bytes": 1433,
+      "sha256": "b1bf1a0b89e9e37f9f76c7859d6d716befdabae875420900dd113867526fe9ac"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input/quotes.rs",
+      "bytes": 2406,
+      "sha256": "64760d1e9cde4e7ebbab70ca8b2c35fb653103c713e08986d5d73ad226a3c8fb"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input.rs",
+      "bytes": 8524,
+      "sha256": "3e75ea89f2fc3b0144fa71df249a15d95dc42b859c9ab7f44cc291aa35b7443c"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/mod.rs",
+      "bytes": 765,
+      "sha256": "f2b8831fa1cfed4bd02ca291957f36c2ad9f93a3991c57315ae930e88958ad75"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/publication/tests.rs",
+      "bytes": 8860,
+      "sha256": "dd7d5b9b5940e86791370a64d35df5918d8a82b652d35eb7f9c852e9c7d6dc98"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/publication.rs",
+      "bytes": 3989,
+      "sha256": "08f839a7b71572b608cec7b03b3849a9fd06f4e889732c0fb35cee3e85cf43f8"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/run.rs",
+      "bytes": 9133,
+      "sha256": "140a339640cfcf31f5ca75d20bbffd891e9bf9d0e14a864e4c66ca164a44247f"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/tests.rs",
+      "bytes": 6772,
+      "sha256": "52d05d5e79ee35a88a6e5de3d0a74893f252fde39b3fe3c54670a81f7b3aca48"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/updates.rs",
+      "bytes": 2701,
+      "sha256": "533999b034cc95417b47819291180e7fa814b08f5ee07d386ae97974301b8c19"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/values.rs",
+      "bytes": 6221,
+      "sha256": "6b0ee8962bafd9631a56f012c655f2e1f723a6574368df0aedf16cfcde1027fe"
+    }
+  ],
+  "predecessor_freezes": [
+    {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/first-freeze.json",
+      "bytes": 4116,
+      "sha256": "87d5a54a8d251b5e5c5e8b98da38c03e7116cbf1c1d9556ad83189d04f0353d9"
+    },
+    {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/fixture-correction-freeze.json",
+      "bytes": 1896,
+      "sha256": "369111a9ca132da57cd01c2fddf3fa333957e8d775f90928b035b5b237c33d20"
+    },
+    {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/style-correction-freeze.json",
+      "bytes": 885,
+      "sha256": "bed250b45b95f277e64297c25f3707ae39c18280e8fd8fcaef048921bfbc7731"
+    }
+  ],
+  "output_budget_correction": {
+    "path": ".cache/ace16-shared-fresh-copy-publisher-20261029/current-output-byte-correction-freeze.json",
+    "bytes": 1622,
+    "sha256": "f90211019fa4649bf522b4e2b87b54375806405e6eb8fc6c56fce4f539e7ee94"
+  },
+  "logs": {
+    "check-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/check-first-root.log",
+      "bytes": 1681,
+      "sha256": "65f691084ba8b5f3897b937e3656233564026d77e535df4f202838726ccefb15"
+    },
+    "source-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/source-first-root.log",
+      "bytes": 681,
+      "sha256": "a91064af06a14254c77df7842fd04cbbefc15e8480ece659d68a0dd1e00762a5"
+    },
+    "workflows-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/workflows-first-root.log",
+      "bytes": 2005,
+      "sha256": "cb48b1992260fe8a429f422f9f6b6d0d6ee7bfce021b4b36accd5416a1d04252"
+    },
+    "source-second-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/source-second-root.log",
+      "bytes": 451,
+      "sha256": "191520ac0964c6ec5ea01323d5d40174a60d74d591e26394d71b497545580a42"
+    },
+    "workflows-second-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/workflows-second-root.log",
+      "bytes": 686,
+      "sha256": "5153660ba254abbc385e1c78566cb30ea46839d798bde9b3a8c71513507e6e0a"
+    },
+    "workflows-third-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/workflows-third-root.log",
+      "bytes": 787,
+      "sha256": "0c367318ca7e1bd0d4a8f99ee7699343a0fdccfee9219fb0db48062cceb71a8d"
+    },
+    "unit-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/unit-first-root.log",
+      "bytes": 1298,
+      "sha256": "f9f60dc95d15ec448c6edf777a88c07305ca6cb45fbe07047234b3cd6b3abf92"
+    },
+    "unit-second-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/unit-second-root.log",
+      "bytes": 1649,
+      "sha256": "54bf4fc612591b4b61dd6ded13f93c092d0a811bde0a05eb7ae79b55558a2824"
+    },
+    "clippy-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/clippy-first-root.log",
+      "bytes": 1222,
+      "sha256": "5871f70ac37ad8d986567c4b91317cde9fac6ee02d012d7db673fdeafded0b96"
+    },
+    "clippy-second-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/clippy-second-root.log",
+      "bytes": 1899,
+      "sha256": "d7d8e17d982de0206f94471069cecae17905fd27ad169c3e848614b4c7229854"
+    },
+    "clippy-third-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/clippy-third-root.log",
+      "bytes": 402,
+      "sha256": "07ce3e03ca1dee61798d231d10a94278a616626535e78cd94f75ef5895c26dfe"
+    },
+    "minimal-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/minimal-first-root.log",
+      "bytes": 922,
+      "sha256": "ed9dc7f44db3702e9ae97d9918a8c7f5c31568f0dd7c1740db53506f99709da1"
+    },
+    "adapter-doc-first-root.log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/adapter-doc-first-root.log",
+      "bytes": 1148,
+      "sha256": "e5d1a44805611ad6e46c6134dd9a1a838aa23eb414db0139d928171b31fbf798"
+    }
+  },
+  "observations": [
+    "Initial public read source gate passed, but initial workflow execution passed 2 functions and failed 3: incomplete literal TD map trailers blocked writes, and the synthetic encryption-add setup was itself unsupported before the intended refusal call.",
+    "A fixture-only grammar correction supplied genuine TWO-FF trailers, declared lengths and free geometry. A deterministic supported encrypted source now authenticates and reads exact rows before the encrypted-write refusal. Production admission and expected write behavior were not relaxed.",
+    "The first two strict checks stopped on one engine conditional style warning, then CLI precedence/enum naming warnings. Explicit clap names retain the same public commands; no warnings were suppressed.",
+    "Publication review found missing caller-side output-byte accounting. The final unit set includes one-below/exact quota checks before temp creation; final actual CLI workflows pass again after the correction.",
+    "Temporary integration inputs/outputs are asserted inside tests and removed with their temp directories. This record does not claim independently retained complete candidate images or original-file/native Access replay.",
+    "Final source pins include post-check formatter-only module ordering and whitespace changes.",
+    "The documentation TSV example spells its empty NULL data field as quoted empty text, preserving the same parsed value without trailing whitespace."
+  ],
+  "unrun": [
+    "native Microsoft Access behavior/save/reopen",
+    "required data-macro semantics or absence qualification",
+    "encrypted database rewriting",
+    "in-place journal/transaction recovery",
+    "directory-entry crash durability"
+  ]
+}

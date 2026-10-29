@@ -15,12 +15,13 @@ mod presentation;
 #[command(
     name = "tablecraft",
     version,
-    about = "TableCraft inspection and query tools",
+    about = "TableCraft inspection, query and engineering-copy tools",
     after_help = concat!(
         "Query parse prints syntax; query saved reconstructs a native saved SELECT without executing it; ",
         "query eval calculates source-free SELECT expressions; query run executes bounded retrieval; ",
         "query preview-calculation explicitly recomputes a restricted stored formula without saving. ",
         "Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. ",
+        "Write preview-* commands create explicit experimental ACE copies, never qualified saves. ",
         "Inspect reports metadata or explicit checks without executing content. ",
         "In-place CLI editing and GUI hosts are not implemented."
     )

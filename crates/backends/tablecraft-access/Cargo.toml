@@ -11,6 +11,9 @@ description = "Native database and saved-query adapter for TableCraft"
 [lints]
 workspace = true
 
+[features]
+ace16-write-preview = ["tablecraft-ace/ace16-write-preview"]
+
 [dependencies]
 tablecraft-formats.workspace = true
 tablecraft-io.workspace = true

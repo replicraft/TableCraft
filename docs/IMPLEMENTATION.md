@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## User-facing engineering write copies
+
+The CLI now exposes [explicit UPDATE, INSERT and DELETE copy commands](access/writes/ENGINEERING_COPIES.md).
+Fixed groups, Short Text/Binary replacements, ordinary Memo/OLE replacements and
+explicit incrementing inserts reuse the existing native services. DELETE can
+capture exact original record expectations from selected snapshot-local ordinals;
+users do not need to construct record hex. The shared Access engineering service
+returns a non-journalable copy, with no conversion to a normal edit plan.
+
+Ten CLI unit functions cover typed/quoted input and publication failures, including
+exact output-byte limits, cancellation and existing/symlink/hardlink destinations.
+Five integration functions qualify literal sources and exercise actual CLI copies
+and refusals. Initial fixture admission/setup failures are retained separately;
+the final workflows pass after correcting source declaration grammar and using a
+qualified deterministic encrypted control. Output bytes are charged before any
+temporary is created. A complete same-directory temporary is synced before
+no-clobber publication; this does not supply directory durability or in-place
+transactions. Normal ACE save and data-macro gates remain unchanged.
+
 ## Nullable batch UPDATE with shared index allocation
 
 The separate [allocating batch preview](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
