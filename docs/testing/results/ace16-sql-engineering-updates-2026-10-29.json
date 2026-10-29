@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-29",
+  "feature": "SQL-selected engineering UPDATE copies",
+  "checks": {
+    "adapter_source_first": {
+      "exit_code": 0,
+      "functions": 1
+    },
+    "adapter_api_first": {
+      "exit_code": 0,
+      "functions": 5
+    },
+    "cli_source_first": {
+      "exit_code": 0,
+      "functions": 1
+    },
+    "cli_api_first": {
+      "exit_code": 0,
+      "functions": 4
+    },
+    "neutral_stored_tests": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "query_editing_regression": {
+      "exit_code": 0,
+      "functions": 9
+    },
+    "access_library_regression": {
+      "exit_code": 0,
+      "functions": 27
+    },
+    "cli_integration_regression": {
+      "exit_code": 0,
+      "functions": 14
+    },
+    "strict_all_targets_all_features_5_packages": {
+      "exit_code": 0
+    },
+    "minimal_4_packages": {
+      "exit_code": 0
+    },
+    "documentation_links": {
+      "exit_code": 0,
+      "targets": 6436,
+      "missing": 0
+    },
+    "dependency_boundaries": {
+      "exit_code": 0,
+      "packages": 15
+    }
+  },
+  "contract": "One local table and assignment, one original immutable Snapshot, all selected expressions before one consuming engineering finish, snapshot-local handles, explicit native modes. Existing normal Int32 editor and ACE gate unchanged. No params, joins, calls or general coercion expansion.",
+  "code": [
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/snapshot.rs",
+      "bytes": 1275,
+      "sha256": "38f1e5acca3c55f8a7c55d9cac0345e4ef9b31c4b42ca66bbefde8406259f417"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor.rs",
+      "bytes": 8580,
+      "sha256": "24c158119921ee59a71d81058000a01695a41738c2c01802b6940628fd9a0157"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests.rs",
+      "bytes": 8371,
+      "sha256": "704b050dcbcb258da074fee292d898fbe46a6d3caca52318d0b7604ce4cd769b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/source.rs",
+      "bytes": 2739,
+      "sha256": "b97b84b89482694ff3fd42ecafe9ebd9b19d985fc4fc310810c9c67de6df6666"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql.rs",
+      "bytes": 2047,
+      "sha256": "3e488a6fbaee8928e7650414dd75284ef0c23bbcb4a680ac590648803ecb2e9a"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_update.rs",
+      "bytes": 7286,
+      "sha256": "a27f8221adc21d368ce7b48b9bba5914045033a3d348ba37192a2fcc63e9374e"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates.rs",
+      "bytes": 9162,
+      "sha256": "2b78f91f68c541d3aa55cc065169edebd408411178f0430cee9477d50fc4570b"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/editing_stored.rs",
+      "bytes": 5370,
+      "sha256": "b0eb032f6ae0f251f1ce1ebaad6f11b7843b4d6a137b26c25f1e9c8827c62e9f"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/first-coherent-freeze.json",
+      "bytes": 3891,
+      "sha256": "e343530ba1e254163f81818de02d0d7d535bd72b1c24083382a18997b489c280"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/adapter-source-first-root.log",
+      "bytes": 822,
+      "sha256": "6dea7b9a75b8c9266a08623524fd2a7814d7e8474605c2d6d7ed2c709f20a17d"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/adapter-api-first-root.log",
+      "bytes": 799,
+      "sha256": "9be31942500e829e658292458facde81cb73a166e69c8b2875a013884cd74226"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/cli-source-first-root.log",
+      "bytes": 1027,
+      "sha256": "bc8132188b18cd59f7ae2281d182c660bcf2842885cc8bc40e350a89d21fb9ec"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/cli-api-first-root.log",
+      "bytes": 602,
+      "sha256": "0fc30e904ecc6e4ced83a75082133dd10ad9fcd56a675beb801ce77734de8fd9"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/neutral-first-root.log",
+      "bytes": 2695,
+      "sha256": "c355363bf4cd5c89c15f4535f1abc227696c35464509abf899ff83bac87aa963"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/neutral-second-root.log",
+      "bytes": 564,
+      "sha256": "d2159cb6f26edce44aaf1bbbdbe1974739eb2ec8e8ce70735054ad6287f5f6b6"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/neutral-factory-shadow-fix-freeze.json",
+      "bytes": 585,
+      "sha256": "9c436917d382f3cfb44e1ea518bf736794e283327b5b7a454dcfa1028b8ec9b4"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/error-visibility-freeze.json",
+      "bytes": 4092,
+      "sha256": "0547df0924e40c5ebff1c8a8877c1371ffcfd7e183dde7241aa92db2c5c6a9bd"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/query-regression-root.log",
+      "bytes": 1283,
+      "sha256": "4fa807cd0d72807f64deeb5126473f4fa357e62a56ba4dfea010a850bbfd0b0c"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/access-library-regression-root.log",
+      "bytes": 3309,
+      "sha256": "c832f0cf9790461c19a868ea03c10dcc3af0089f0d0d70e2d585d79a4d9b923b"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/cli-write-regression-first-root.log",
+      "bytes": 1922,
+      "sha256": "13a097fd3a0d9bcec232306e7ac6e4c068737f37e167aa80c46edddc7355c1af"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/clippy-first-root.log",
+      "bytes": 746,
+      "sha256": "19159ee3fab11c10c7e87eb92f056161c5a0454e6dd6a044016355bc29160ff2"
+    },
+    {
+      "path": ".cache/ace16-engineering-sql-update-next-20261029/minimal-check-root.log",
+      "bytes": 415,
+      "sha256": "046743b58e54146dd31ed754d375ebff423ed6a7b9b53d6080af3d54e2c590ec"
+    }
+  ],
+  "retained_observations": [
+    "First CLI check exited0 with a private-interface warning; visibility alone corrected.",
+    "First neutral test compile exited101 due to a local binding shadowing the test factory; only factory/calls renamed before two tests passed.",
+    "First combined CLI unit compile failed due to stale internal enum patterns in newly authored counter tests; separate publisher record retains that observation.",
+    "Result-record assembly initially named source.rs as model.rs; corrected the evidence path without modifying code or tests."
+  ],
+  "qualification": "Typed-row/source identity, exact no-op and mode/failure checks; not independent complete raw-image qualification or native Access comparison. Existing engine physical audits remain separate.",
+  "post_check_change": "Manual logical blank-line spacing only in adapter editor and shared assignment helper.",
+  "native_Access_qualification": false
+}

@@ -92,3 +92,12 @@ source unlock before a single publication call, and inject write, sync and
 publication failures without retry or visible output. The four existing CLI
 update integration functions also pass in the current regression run (14 tests
 across three CLI integration targets).
+
+## Explicit StoredScalar consumer
+
+The separate [SQL engineering-copy command](SQL_ENGINEERING_COPIES.md) uses
+`AccessEngineeringEditor` and the opt-in `StoredScalar` profile. Nullable NULL
+and exact non-Int32 stored carriers are accepted under shared descriptors; Int32
+retains checked integral assignment. Normal `NativeEditor`, `query update`, the
+existing Int32 profile and its ordinary ACE refusal are unchanged. The new command
+returns only an experimental, non-journalable copy under explicit native modes.

@@ -19,6 +19,7 @@ use crate::output;
 mod args;
 mod parameters;
 mod preview_calculation;
+mod preview_update;
 mod recomputed;
 mod results;
 mod retrieval;
@@ -51,7 +52,8 @@ pub(super) enum Error {
     Saved(tablecraft_access::SavedReadError),
     SavedRead(tablecraft_access::NativeSavedReadError),
     Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
-    Copy(editing::CopyError),
+    Copy(crate::native::publication::Error),
+    EngineeringUpdate(preview_update::Error),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -79,12 +81,16 @@ impl fmt::Display for Error {
             Self::SavedRead(error) => error.fmt(f),
             Self::Update(error) => error.fmt(f),
             Self::Copy(error) => error.fmt(f),
+            Self::EngineeringUpdate(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
     }
 }
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
+        Command::PreviewUpdate(args) => {
+            preview_update::run(*args, password).map_err(Error::EngineeringUpdate)
+        }
         Command::PreviewCalculation(args) => preview_calculation::run(*args, password),
         Command::Saved { name, database } => saved::run(&database, &name, password),
         Command::Parse { sql } => Ok(format!("{}\n", parse(&sql)?.query())),
