@@ -60,7 +60,7 @@ pub(super) fn increment<P: WriteProfile>(
     Ok(introduced.len())
 }
 
-pub(super) fn patch(
+pub(in crate::table::indexes::mutation) fn patch(
     image: &NativeImage,
     schema: &TableSchema,
     index: &NativeIndex,

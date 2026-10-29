@@ -12,6 +12,34 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Nullable batch UPDATE with shared index allocation
+
+The separate [allocating batch preview](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
+now composes one table's Int32 assignments and multiple physical index owners
+under one append ledger. It retains logical forwarded ROWs, stages every tuple
+component against the original image, deduplicates aliases and schedules physical
+owners deterministically. Complete source populations, Required/UNIQUE rules,
+original-association histories and disjoint ownership precede reservations.
+An independent original-request audit proves payloads, populations, histories,
+splits, maps, purposes and protected bytes before a candidate can escape.
+
+All 80 prefrozen complete-image cases pass on their first API run, alongside
+16 byte-identical fitted-path comparisons and adversarial ownership, history,
+ordering, resource and final-cancellation controls. Three correlated candidate/
+plan forgeries refuse under the independent audit. The full combined engine
+library passes 698 tests with two existing generators ignored, and 22 shared
+integration targets pass 148 tests. Strict all-target/all-feature ACE/CLI and
+minimal ACE Clippy, formatting, links and dependency checks pass. Local engine
+tests retain the explicit test-debug-level-1 disk accommodation.
+
+The [record](testing/results/ace16-nullable-split-batch-updates-2026-10-29.json)
+keeps source/model freezes, static audit corrections and compile/lint observations.
+Original-file comparisons are proposed but unrun for this path. Cross-table
+allocation, wider carriers, contraction and broader map/height cases remain
+unfinished. Fitted, slot, cascade and normal save policies retain their separate
+admission; this is a non-journalable engineering candidate, not macro or native
+Access qualification.
+
 ## Explicit data-macro XML envelopes
 
 The [envelope reader](access/schema/NATIVE_DATA_MACRO_XML.md) now explicitly reads

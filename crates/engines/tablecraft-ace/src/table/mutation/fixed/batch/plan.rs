@@ -45,14 +45,15 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Ace16WritePreview, EditError> {
-        self.preview_fixed_batch_inner::<true>(groups, budget, cancelled)
+        self.preview_fixed_batch_inner::<true, false>(groups, budget, cancelled)
     }
 
-    // There are two real consumers: the explicit fixed/batch preview selects
-    // extended admission, while UPDATE cascades retain their previous policy.
-    // Keep metadata admission, index membership and record access together.
+    // Fitting and allocating fixed/batch previews use extended admission;
+    // UPDATE cascades retain their previous strict policy. Keep metadata
+    // admission, index membership and record access together.
     pub(in crate::table::mutation::fixed) fn preview_fixed_batch_inner<
         const EXTENDED_FIXED: bool,
+        const ALLOCATING: bool,
     >(
         self,
         groups: &[FixedColumnUpdates<'_>],
@@ -104,6 +105,9 @@ impl NativeImage {
                 });
             }
         }
+        if ALLOCATING && tables.len() > 1 {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
         budget
             .charge_allocation(count as u64, size_of::<(u32, u32)>() as u64)
             .map_err(InspectError::from)?;
@@ -126,6 +130,9 @@ impl NativeImage {
                 .find(|column| column.name().eq_ignore_ascii_case(group.column()))
                 .and_then(|column| column.scalar_type())
                 .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            if ALLOCATING && kind != ScalarType::Int32 {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
             let mut target = Target::<EXTENDED_FIXED> {
                 table,
                 patches: &mut patches,
@@ -158,6 +165,21 @@ impl NativeImage {
             }
         }
         spans::coalesce(&mut patches, budget, cancelled)?;
+        if ALLOCATING && let Some(table) = tables.first() {
+            unique_changed(&mut changed, budget)?;
+            return super::split::finish(
+                self,
+                super::split::Operation {
+                    checked: &table.before,
+                    groups,
+                    fields: &patches,
+                    keys: &table.keys,
+                    changed_rows: changed.len(),
+                },
+                budget,
+                cancelled,
+            );
+        }
         let mut indexes = Vec::new();
         for table in &tables {
             check(budget, cancelled)?;
@@ -191,12 +213,7 @@ impl NativeImage {
                 .map_err(|_| InspectError::Allocation)?;
             indexes.extend(staged);
         }
-        let levels = changed.len().checked_ilog2().unwrap_or(0) as usize + 1;
-        budget
-            .charge(Resource::Steps, (changed.len() * levels) as u64)
-            .map_err(InspectError::from)?;
-        changed.sort_unstable();
-        changed.dedup();
+        unique_changed(&mut changed, budget)?;
         check(budget, cancelled)?;
         budget
             .charge_allocation(tables.len() as u64, size_of::<&str>() as u64)
@@ -253,4 +270,17 @@ impl<const EXTENDED_FIXED: bool> Target<'_, '_, EXTENDED_FIXED> {
         );
         Ok(())
     }
+}
+
+fn unique_changed(
+    changed: &mut Vec<(u32, u32)>,
+    budget: &mut ResourceBudget,
+) -> Result<(), EditError> {
+    let levels = changed.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    budget
+        .charge(Resource::Steps, (changed.len() * levels) as u64)
+        .map_err(InspectError::from)?;
+    changed.sort_unstable();
+    changed.dedup();
+    Ok(())
 }

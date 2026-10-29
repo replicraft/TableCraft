@@ -1267,6 +1267,18 @@ The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
 and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
 comparison is independent evidence, not Microsoft Access conformance.
 
+## Nullable allocating batch UPDATE continuation
+
+The separate [one-table Int32 batch service](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
+now shares one INDEX append ledger across physical owners, retains qualified
+nullable/IgnoreNULL populations and independently audits original requests,
+history, allocation and byte preservation. Its first API run matches 80 complete
+prefrozen images; 16 fitting comparisons remain exact. Adversarial controls include
+repeated families, request ordering, source ownership and correlated forgeries.
+Original-file qualification, multi-table allocation, wider carriers, contraction,
+broader map/height cases and normal ACE saves remain unfinished. This advances
+milestone 4 without completing it or changing the required data-macro gate.
+
 ## Selected forwarded fixed UPDATE continuation
 
 The [explicit fixed/batch service](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)

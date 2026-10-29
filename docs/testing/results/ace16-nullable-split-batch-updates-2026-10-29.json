@@ -1,0 +1,354 @@
+{
+  "date": "2026-10-29",
+  "feature": "ACE 16 one-table Int32 batch UPDATE with shared physical index allocation",
+  "source_base_commit": "7022e34f",
+  "scope": "Separate non-journalable engineering candidate; normal/fitting/slot/cascade policies stay separate. No native Access, macro safety or production save qualification.",
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 5276,
+      "sha256": "9f015ad5dc66958c8177280aa2134fc20f9717d5cadcd7df81dbff99c0aa45b0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored.rs",
+      "bytes": 1772,
+      "sha256": "49dc62eb6123117fe27cbc17f32fb339daf7df01c323a4d82db661a7394f2e13"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2473,
+      "sha256": "9e11dd32845dda6b276f03a738881bb6f5ed6b58d8611a8ad058348d2d15d64d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/population.rs",
+      "bytes": 5911,
+      "sha256": "5244eeb5cd97d6e60f1730614c71f1ea57b8f668916b32c907fe5838d8be248f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/population/history.rs",
+      "bytes": 4036,
+      "sha256": "848eb0122805baeca9d12a4d9086f16ab3acd8384efdc5de34d31927eb063f31"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/population/source.rs",
+      "bytes": 2640,
+      "sha256": "cebc0d9bba55ab15b91f36b08048119271b731d322243f853a1323acccd50942"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch.rs",
+      "bytes": 13621,
+      "sha256": "c5bdef30901f7401bb5b39ecb169aca44906a4f33d35d14d861f5c49a39a71bf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch/history.rs",
+      "bytes": 3147,
+      "sha256": "c224a79801bd999f785062ca67ef9536258d07a165f4941e7d0ee0c6e8b82b62"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch/population.rs",
+      "bytes": 7130,
+      "sha256": "36a93c941eff2208b62d608905b2ebed922e2159e88d7e37398ee56a7bc74618"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 18280,
+      "sha256": "a6da21a818790a5123cdd3533643f7bf8184c1c9b52d810756ac9454c3a0fca4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "bytes": 17111,
+      "sha256": "ec6dc10451e4c62269c9296523cd1193b0454cfe345588c4b8a2c670d606ccc6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot.rs",
+      "bytes": 2316,
+      "sha256": "32a458889898d06b4e8d413909157e31ea42561614a27988dba062dc0e49e7be"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/nonroot/replay.rs",
+      "bytes": 10072,
+      "sha256": "e89b7d70ede036d7b71d88e460d0bc7b9e1e89254a3a6deb4867fb16ac885aa9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/retained.rs",
+      "bytes": 8752,
+      "sha256": "f0a52485b0ef094f0cd0ba9a4e5b2a15c2e634cc5e463a6d054589812c20fe6a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/fixed_batch.rs",
+      "bytes": 3355,
+      "sha256": "2af07d797ab6e5383bcfc33ed50e87ae073b7ed9bd1fb3bed2b8b9e0f860ac37"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/fixed_batch/census.rs",
+      "bytes": 3892,
+      "sha256": "f9d11fbded99c0d2fa34c102e9781efac07eb29b3102d427a6317256cd5b0e6d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/fixed_batch/prepared.rs",
+      "bytes": 6238,
+      "sha256": "99d674a05b0235781dae752066edfc0facff3a9dfb269e1da7fb0c3c1f282b13"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 10286,
+      "sha256": "23d731b95c309493fc4aa73a7b98a329d42a38da5836fe51fbb86a618aca94e4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot.rs",
+      "bytes": 1381,
+      "sha256": "ed0a0ab1b8529f9ffce424bc36181038e77c55ee0b34b69482df5c7b10b13156"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+      "bytes": 10385,
+      "sha256": "6fced8f9a4e4cf3f085d76580771d23c6859fab3ca95a6c68bc549bed4e9955a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/mod.rs",
+      "bytes": 153,
+      "sha256": "d055500868deb9a4c83d64150d5da94ef9bb57155ead9437dd7b0aab6a796326"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 11274,
+      "sha256": "b763978a0c8ecc895edad25f26ed6323e100cdd4c7ac56b6dff3f5a300c3a037"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split.rs",
+      "bytes": 3838,
+      "sha256": "888815d1ec55fe9d0f7fc5ab02ae1a306d4af3df98bf841074e265823ab7ed06"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority.rs",
+      "bytes": 3249,
+      "sha256": "912c939f3c125914c2d18fcbb959363baf2a2e641050b005b03f2805bdb2d276"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority/cells.rs",
+      "bytes": 6279,
+      "sha256": "6669f833822f64eb07257f4dcb7267d62f471dfe5e293b0dd08580e0f00bbd60"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority/tests.rs",
+      "bytes": 9159,
+      "sha256": "9b5d3b09ae9e2aae9c7a6dc3b8bfc2f035b18ee7e02bdc10098ad36b5a2046f1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests.rs",
+      "bytes": 6058,
+      "sha256": "d1caba4e84aab77600f105c4de1d150c59dbb3dbd8a10460c671e0bc76572c00"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/adversarial.rs",
+      "bytes": 13353,
+      "sha256": "82912fffb7178929b7dadd0362b487570e6938f197cbe34f22f85b04b03d16c6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/adversarial_model.rs",
+      "bytes": 4481,
+      "sha256": "5216f3d892babc111cc237866db8dba6b55ed07db4767a0bd77bbabcb79f2612"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/orphans.rs",
+      "bytes": 3388,
+      "sha256": "20aebb9e3c6e5e6590a956a5b483c2d40c69f3c36513d1f633d41c672391de4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/preview.rs",
+      "bytes": 5856,
+      "sha256": "ea1d854acd649b39277aca753a3679d8922f0b7b4850debf914e38021f8b4388"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/plan.rs",
+      "bytes": 8140,
+      "sha256": "fc13054053eb4d8fc508a691268c74cf69152b9d61a9f9c3d7c2899f3fe2cafe"
+    }
+  ],
+  "unchanged_prefrozen_model": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/model.rs",
+    "bytes": 15166,
+    "sha256": "6aad7783f766a5809f07759b0aa063f2fd2a7621d72c3c5b3c4a0feb4b39570d"
+  },
+  "deleted_source_paths": [
+    "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored/history.rs",
+    "crates/engines/tablecraft-ace/src/table/indexes/mutation/ignored/source.rs"
+  ],
+  "source_and_execution_freezes": [
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/literal-first-freeze.json",
+      "bytes": 1115,
+      "sha256": "fdf76f0b2dd733a763066a96053057e49986a6631cbc891f7405f23be5bb4935"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/producer-first-coherent-freeze.json",
+      "bytes": 3731,
+      "sha256": "c098bdc84c6adac724b3fa2ca976f6aefee00beb061f5d024a15a42c1aff54ec"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/audit-first-coherent-freeze.json",
+      "bytes": 3054,
+      "sha256": "de5727e2331ad6d3649c674360936172fffb6f3f4fa9bd4a32218f7a470946ec"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/audit-owner-coverage-corrected-freeze.json",
+      "bytes": 3574,
+      "sha256": "7cc7d4f3dbea3a9626513382f6ad63f312899213f1b0c0164ddc7e42df83d311"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/audit-final-source-and-controls-freeze.json",
+      "bytes": 6757,
+      "sha256": "d407331efdf6e4b0a46185fd9c49cf27b37978f6b880fecb31627988137c9318"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/direct-api-first-freeze.json",
+      "bytes": 376,
+      "sha256": "37702026a3a48dbdc5cbff527ee9dc4fd4ff8d5b5da95658657ea9d5972b9bf2"
+    },
+    {
+      "path": ".cache/ace16-nullable-split-batch-next-20261029/inline-profile-lint-correction.json",
+      "bytes": 539,
+      "sha256": "b8aed7db4ecf0faed42f4f43397d413d0e30468b8f464a37593eb67d2fbcffdc"
+    }
+  ],
+  "adversarial_source_freeze": {
+    "path": ".cache/ace16-nullable-split-batch-adversarial-20261029/registered-freeze-v2.json",
+    "bytes": 1446,
+    "sha256": "26633524571c6910318797958e3befbbf99b916bb26a452d37b9727b4f20ea00"
+  },
+  "verification": [
+    {
+      "check": "normal combined all-feature library check",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/library-check-documented-root.log",
+        "bytes": 184,
+        "sha256": "06ca5078cd4e74dcb439a70f419309f2c290bacb2892a19ceafac5cd22937102"
+      }
+    },
+    {
+      "check": "source-only qualification before new API calls",
+      "exit_code": 0,
+      "passed_tests": 24,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/source-gates-first-root.log",
+        "bytes": 3626,
+        "sha256": "7d78320507697b177d296227f33a55faf2c0bf8677c0c30dce67967dc51b40c4"
+      }
+    },
+    {
+      "check": "first new API batch including 80 complete images and 16 exact fitted cases",
+      "exit_code": 0,
+      "passed_tests": 13,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/api-first-root.log",
+        "bytes": 2008,
+        "sha256": "a2db26da99e77a0563c7016a9bc431a746a9be46538979d3ff9de6bb6cb14477"
+      }
+    },
+    {
+      "check": "first independent correlated-forgery controls",
+      "exit_code": 0,
+      "passed_tests": 3,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/authority-first-root.log",
+        "bytes": 684,
+        "sha256": "f0b69a733bfe9c46d8276fe7fb2f054896991c531003ba59d9b904ab40b6cfa4"
+      }
+    },
+    {
+      "check": "final combined engine library",
+      "exit_code": 0,
+      "passed_tests": 698,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/library-all-final-root.log",
+        "bytes": 89752,
+        "sha256": "28b5df112007c9c5695b273a728b2dd3aca7f00e47fa8815ac6b5dbd25df05ba"
+      }
+    },
+    {
+      "check": "shared regression batch across 22 targets",
+      "exit_code": 0,
+      "passed_tests": 148,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/shared-regressions-first-root.log",
+        "bytes": 17689,
+        "sha256": "1e2f9a88feaa712f3cb873a9152a1a328677c4295a14cb28e2c699009532f157"
+      }
+    },
+    {
+      "check": "strict all-target/all-feature ACE and CLI Clippy",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/clippy-inline-profiles-root.log",
+        "bytes": 403,
+        "sha256": "03f163860998518710cda363482b6ece551169ee70d9e405efc296a7b0d63167"
+      }
+    },
+    {
+      "check": "strict minimal ACE library Clippy",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/clippy-minimal-root.log",
+        "bytes": 183,
+        "sha256": "dc54c7d5033cb16215c23a6d4134c9b0d6c2e29ad34795abd9a3639ecc83fd66"
+      }
+    }
+  ],
+  "complete_image_cases": 80,
+  "fitted_exact_previous_api_cases": 16,
+  "independent_correlated_forgery_functions": 3,
+  "profile": {
+    "tables_per_operation": 1,
+    "assignment_type": "Int32",
+    "affected_index_types": "Int32 single/tuples; literal images cover one and two components",
+    "physical_order": "ascending data number, logical aliases deduplicated",
+    "data_allocation": false,
+    "normal_save": false,
+    "contraction": false,
+    "cross_table_allocation": false,
+    "global_bootstrap": false
+  },
+  "test_profile": {
+    "local_override": "profile.test.package.tablecraft-ace.debug=1",
+    "reason": "local disk limits; no assertion, optimization or incremental changes",
+    "full_library_context": "combined worktree includes separate XML envelope feature; committed separately",
+    "existing_ignored_generators": 2
+  },
+  "static_review_corrections_before_first_runtime": [
+    "independent audit now requires exact declared physical-owner universe",
+    "independent audit grants spans only after exact reachable-tree/owned-map equality"
+  ],
+  "earlier_observations": [
+    {
+      "kind": "combined first check rejected missing public documentation in separate XML slice and reported unused audit import; documentation/import corrected",
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/library-check-first-root.log",
+        "bytes": 2059,
+        "sha256": "a21e35175a926f42bc146f01b2f82c04e1ad00e7610a11806e0df49532141ba1"
+      }
+    },
+    {
+      "kind": "strict lint requested storage decision for bounded inline prepared enum; scoped documented allowance retains metered fallible vector, no semantic change",
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/clippy-first-root.log",
+        "bytes": 1354,
+        "sha256": "b490c1e71d62c823127eb0a8bfc4f0588a810e46619d842d36d5f974312c541a"
+      }
+    }
+  ],
+  "other_checks": {
+    "format": 0,
+    "documentation_links": 0,
+    "dependency_boundaries": 0
+  },
+  "unrun": [
+    "original-file/public-reader comparisons for allocating batches (source proposal only)",
+    "native Microsoft Access comparison/save/reopen",
+    "broader carriers, multi-table allocation, contraction and map-boundary qualification"
+  ],
+  "xml_feature_parent_commit": "376aa54faaaedbfa8d4e34d8c7068aa5c90dd906"
+}

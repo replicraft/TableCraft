@@ -63,6 +63,129 @@ pub(super) struct Expected {
     policy: ReplayPolicy,
 }
 
+pub(super) fn qualified() -> Expected {
+    Expected {
+        policy: ReplayPolicy::CertifiedContinuation,
+        ..Expected::default()
+    }
+}
+
+pub(super) fn inventory(
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    expected: &Expected,
+    plan: &Plan,
+    indexes: &[IndexCheck],
+    end: u32,
+) -> Result<(), EditError> {
+    let count = expected
+        .reservations
+        .len()
+        .checked_add(expected.promoted.len())
+        .ok_or(EditError::Preservation)?;
+    if plan.append.reservations_len() != count
+        || end
+            .checked_sub(reader.header.page_count())
+            .ok_or(EditError::Preservation)? as usize
+            != count
+        || plan.append.indexes().count() != expected.reservations.len()
+    {
+        return Err(EditError::Preservation);
+    }
+    let mut numbers = Vec::new();
+    for (&(usage, number), actual) in expected.reservations.iter().zip(plan.append.indexes()) {
+        reader.tick()?;
+        reader.work(indexes.len())?;
+        let index = indexes
+            .iter()
+            .find(|index| index.index().usage_map() == usage)
+            .ok_or(EditError::Preservation)?
+            .index();
+        if actual.number != number
+            || actual.usage != usage
+            || actual.physical != index.data_number()
+        {
+            return Err(EditError::Preservation);
+        }
+        reader
+            .budget
+            .charge_allocation(1, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        numbers
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        numbers.push(number);
+    }
+    for promotion in &expected.promoted {
+        reader.tick()?;
+        reader.work(indexes.len())?;
+        let index = indexes
+            .iter()
+            .find(|index| index.index().usage_map() == promotion.usage)
+            .ok_or(EditError::Preservation)?
+            .index();
+        plan.append.require_index_bitmap(
+            promotion.bitmap_page,
+            index.data_number(),
+            promotion.usage,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        reader
+            .budget
+            .charge_allocation(1, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        numbers
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        numbers.push(promotion.bitmap_page);
+    }
+    let levels = count.checked_ilog2().unwrap_or(0) as usize + 1;
+    reader.work(count.saturating_mul(levels))?;
+    numbers.sort_unstable();
+    for (position, number) in numbers.into_iter().enumerate() {
+        reader.tick()?;
+        if Some(number)
+            != reader
+                .header
+                .page_count()
+                .checked_add(u32::try_from(position).map_err(|_| EditError::Preservation)?)
+        {
+            return Err(EditError::Preservation);
+        }
+    }
+    Ok(())
+}
+
+pub(super) fn spans(
+    expected: &Expected,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<std::ops::Range<usize>>, EditError> {
+    let mut spans = Vec::new();
+    for edit in &expected.edits {
+        reader.tick()?;
+        reader
+            .budget
+            .charge_allocation(1, size_of::<std::ops::Range<usize>>() as u64)
+            .map_err(InspectError::from)?;
+        spans.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+        spans.push(edit.offset..edit.offset + 1);
+    }
+    for map in &expected.promoted {
+        reader.tick()?;
+        reader
+            .budget
+            .charge_allocation(1, size_of::<std::ops::Range<usize>>() as u64)
+            .map_err(InspectError::from)?;
+        spans.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+        let end = map
+            .row_offset
+            .checked_add(map.original.len())
+            .ok_or(EditError::Preservation)?;
+        spans.push(map.row_offset..end);
+    }
+    Ok(spans)
+}
+
 pub(super) fn seed(
     image: &NativeImage,
     data: &CertifiedData<'_>,

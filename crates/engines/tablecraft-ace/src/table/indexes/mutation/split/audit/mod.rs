@@ -1,5 +1,6 @@
 //! Re-derive split, map and opaque-byte authority from the frozen source.
 mod fitting;
+pub(super) mod fixed_batch;
 mod framing;
 mod maps;
 mod nonroot;

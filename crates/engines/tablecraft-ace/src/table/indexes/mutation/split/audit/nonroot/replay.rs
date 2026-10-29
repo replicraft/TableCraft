@@ -37,6 +37,7 @@ struct Replay<'a, 'b, P: RetainedProfile, const N: usize> {
     position: usize,
     added: Vec<u32>,
     levels: [Vec<u32>; MAX_INDEX_DEPTH],
+    population_leaves: Option<usize>,
 }
 
 struct Branch<'a> {
@@ -59,15 +60,26 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
+    population: bool,
 ) -> Result<Vec<u32>, EditError> {
     let mut replay = Replay {
         operation,
         position: 0,
         added: Vec::new(),
         levels: std::array::from_fn(|_| Vec::new()),
+        population_leaves: if population {
+            Some(operation.tree.leaf_count(actual.budget, actual.cancelled)?)
+        } else {
+            None
+        },
     };
     let result = replay.walk(operation.tree, true, actual, progress)?;
-    if result.len() != 1 || replay.position != operation.keys.len() {
+    if result.len() != 1
+        || replay.position != operation.keys.len()
+        || replay
+            .population_leaves
+            .is_some_and(|remaining| remaining != 0)
+    {
         return Err(EditError::Preservation);
     }
     for numbers in &replay.levels {
@@ -96,12 +108,30 @@ impl<P: RetainedProfile, const N: usize> Replay<'_, '_, P, N> {
         actual.tick()?;
         let original = raw(self.operation.image, tree.number())?;
         let contents = if tree.is_leaf() {
-            if tree.count() == 0 {
+            let count = if let Some(leaves) = self.population_leaves.as_mut() {
+                let later = leaves.checked_sub(1).ok_or(EditError::Preservation)?;
+                let available = self
+                    .operation
+                    .keys
+                    .len()
+                    .checked_sub(self.position)
+                    .and_then(|remaining| remaining.checked_sub(later))
+                    .ok_or(EditError::Preservation)?;
+                *leaves = later;
+                if later == 0 {
+                    available
+                } else {
+                    available.min(tree.count())
+                }
+            } else {
+                tree.count()
+            };
+            if count == 0 {
                 return Err(EditError::Preservation);
             }
             let end = self
                 .position
-                .checked_add(tree.count())
+                .checked_add(count)
                 .filter(|end| *end <= self.operation.keys.len())
                 .ok_or(EditError::Preservation)?;
             let range = self.position..end;

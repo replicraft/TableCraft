@@ -25,3 +25,15 @@ pub(super) fn edit<P: RetainedProfile, const N: usize>(
     let mut arena = arena::prepare(operation, tree, plan, reader)?;
     write::emit(operation, &mut arena, plan, patches, reader)
 }
+
+/// Cardinality changes retain source survivor capacities before normalization.
+pub(super) fn edit_population<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P, N>,
+    tree: &Tree,
+    plan: &mut Plan,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    patches: &mut Vec<IndexDataPatch>,
+) -> Result<(), EditError> {
+    let mut arena = arena::prepare_population(operation, tree, plan, reader)?;
+    write::emit(operation, &mut arena, plan, patches, reader)
+}

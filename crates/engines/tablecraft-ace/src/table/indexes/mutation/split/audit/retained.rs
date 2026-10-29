@@ -40,6 +40,25 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
     actual: &mut Reader<'_, Cursor<&[u8]>>,
     progress: &mut Progress<'_>,
 ) -> Result<Disposition, EditError> {
+    prove_with::<P, N>(operation, plan, actual, progress, false)
+}
+
+pub(super) fn prove_population<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P>,
+    plan: &Plan,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+    progress: &mut Progress<'_>,
+) -> Result<Disposition, EditError> {
+    prove_with::<P, N>(operation, plan, actual, progress, true)
+}
+
+fn prove_with<P: RetainedProfile, const N: usize>(
+    operation: &Operation<'_, P>,
+    plan: &Plan,
+    actual: &mut Reader<'_, Cursor<&[u8]>>,
+    progress: &mut Progress<'_>,
+    population: bool,
+) -> Result<Disposition, EditError> {
     let image = operation.image;
     let index = operation.index;
     let profile = operation.profile;
@@ -89,6 +108,16 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
         }
 
         let current = actual.page(index.root_page())?;
+        if population {
+            nonroot::existing::<P, N>(
+                original_root,
+                &current,
+                &entries,
+                profile,
+                operation.owner,
+                actual,
+            )?;
+        }
         nonroot::layout::<_, N>(
             &entries,
             usize::from(IndexHeader::read(original_root)?.prefix.get()),
@@ -99,21 +128,23 @@ pub(super) fn prove<P: RetainedProfile, const N: usize>(
     }
 
     if recursive {
-        let added = nonroot::prove::<_, N>(
-            &nonroot::Operation {
-                image,
-                tree: operation.tree,
-                keys: operation.keys,
-                profile,
-                owner: operation.owner,
-                usage: index.usage_map(),
-            },
-            actual,
-            &mut nonroot::Progress {
-                next_eof: progress.next_eof,
-                map_edits: progress.map_edits,
-            },
-        )?;
+        let operation = nonroot::Operation {
+            image,
+            tree: operation.tree,
+            keys: operation.keys,
+            profile,
+            owner: operation.owner,
+            usage: index.usage_map(),
+        };
+        let mut replay = nonroot::Progress {
+            next_eof: progress.next_eof,
+            map_edits: progress.map_edits,
+        };
+        let added = if population {
+            nonroot::prove_population::<_, N>(&operation, actual, &mut replay)?
+        } else {
+            nonroot::prove::<_, N>(&operation, actual, &mut replay)?
+        };
         actual
             .budget
             .charge_allocation(added.len() as u64, size_of::<u32>() as u64)
