@@ -1,3 +1,3 @@
 mod model;
-mod read;
+pub(super) mod read;
 pub use model::{ObjectPayloadData, OpaquePayload};

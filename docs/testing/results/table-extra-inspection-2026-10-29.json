@@ -1,0 +1,287 @@
+{
+  "date": "2026-10-29",
+  "feature": "bounded inert table LvExtra wide-MR2 inspection",
+  "scope": "Storage framing and exact preservation; no XML interpretation, qualified macro absence, event execution or normal ACE write enablement.",
+  "source_base_commit": "25448f96",
+  "source_files": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/args.rs",
+      "bytes": 6510,
+      "sha256": "dd5abce402ec2b4e1f8d20da87a367e0fda632a10e3e215c6984bb846723cd6e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/extra.rs",
+      "bytes": 4014,
+      "sha256": "3567d2a48b37685c6f5791884a19b355058452827ca321e0cec151c1e6ab5e81"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/mod.rs",
+      "bytes": 10952,
+      "sha256": "c144d2ca8907e12739977955aefba32355c0ef506e46d3fe530931240514285c"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/table_extra.rs",
+      "bytes": 6643,
+      "sha256": "763ba4cd77ab06a328a397818d97e2823d693693771b560ff73ef0f04bd85756"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/examples/table_extra.rs",
+      "bytes": 6843,
+      "sha256": "736b9a58c5825e1d6e427977f91e2386de260ef9d848098ed7dbddb0670c7a70"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6736,
+      "sha256": "6656080763f058b73cba1283649ec8309732bc26b42f9ca557563d424a1a95f6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/mod.rs",
+      "bytes": 441,
+      "sha256": "64e8b7c584f21a5010247e7298cea059ac7364bc03ee493e78cb70e2dbf895d0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/mod.rs",
+      "bytes": 83,
+      "sha256": "2b7ee375d759d49a08effa969e50b1adeb27ac293a1e1d4e02583a3cff8de39c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/model.rs",
+      "bytes": 1742,
+      "sha256": "b0d97a9de138871b522fc9fd3824b4af4e8d75b9d32552364153c8d989bf015c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payload_data/read.rs",
+      "bytes": 5342,
+      "sha256": "cc860dc108b0549e007fb04f623f8300c0e5057f438ac54b6a86f4c68b508935"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/payloads.rs",
+      "bytes": 4180,
+      "sha256": "63e657a06dcca2f579aa8b3358d0cef3dfdc195eda2e4e4e72055d3376c13c83"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/decode.rs",
+      "bytes": 9867,
+      "sha256": "140acaec725942df270145e0c7d54459ee5efccf7fbf8a58ae5a4678c0d210c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/inspect.rs",
+      "bytes": 2575,
+      "sha256": "16696dc6256f43766e0975f0d761a9d0ff7b81582a63a05193cb8040c6701d6a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/mod.rs",
+      "bytes": 148,
+      "sha256": "8b127a1444bcf95ef580d58c09eb4ae1574de305c33b8c224134c7920ce87a60"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/model.rs",
+      "bytes": 4446,
+      "sha256": "51b0aa733545559bf7f43bb82fd8439709f7b4de48f4dc9818038902cb0ad777"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/decode.rs",
+      "bytes": 7399,
+      "sha256": "013e655561e8773d21f9b5f58950ca14ff81348f4bcd0595874528080674b173"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs",
+      "bytes": 1772,
+      "sha256": "72d9618cc0e3b384b4634acfff0bb0339a8a188a30ac49d7c7c89aeb9117459f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/inspect.rs",
+      "bytes": 8020,
+      "sha256": "e0dce77c61a9803e3e4af88decabd143a5b9343a700cbf72f84e5ae61f120d9d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests.rs",
+      "bytes": 180,
+      "sha256": "e4e592c365f1d3621e892996ce2a0cdcbe6ebc6aa17e68188c2920936ba80b53"
+    },
+    {
+      "path": "docs/testing/compare_table_extra.py",
+      "bytes": 8461,
+      "sha256": "155f99148b687b997495d405195e7699d6ace8933e25d616d7466afc306a920c"
+    }
+  ],
+  "verification": [
+    {
+      "check": "focused corrected fixture",
+      "exit_code": 0,
+      "passed_tests": 9,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/tests-catalog-count-corrected-root.log",
+        "bytes": 1450,
+        "sha256": "22f57cc70849558354508d025d377478d151aaa712aca02d69136fb295a5a1a8"
+      }
+    },
+    {
+      "check": "all engine library",
+      "exit_code": 0,
+      "passed_tests": 675,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/library-all-final-root.log",
+        "bytes": 86770,
+        "sha256": "41c06e85897100b0660186cd3bc6b0cf6fc0d0b7526f1b6679833d55dc72e564"
+      }
+    },
+    {
+      "check": "payload/properties regressions",
+      "exit_code": 0,
+      "passed_tests": 7,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/payload-properties-regressions-root.log",
+        "bytes": 1189,
+        "sha256": "6ebe59f643befa3f542c0934689ec61f867cbd047895a9430f09317f21cee3a7"
+      }
+    },
+    {
+      "check": "CLI inspection",
+      "exit_code": 0,
+      "passed_tests": 4,
+      "log": {
+        "path": ".cache/ace16-table-extra-cli-first-20261029/tests-first-root.log",
+        "bytes": 658,
+        "sha256": "7f2b8c9dad34313f1643d1bcc3d1a3df21c11364566369efa25db8f7aa4a0a4e"
+      }
+    },
+    {
+      "check": "strict ACE and CLI all targets/all features",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/clippy-array-chunks-root.log",
+        "bytes": 284,
+        "sha256": "598973f59c246417e67d3728d4784a706d9c06042d717c8c0a33fd25aa19ec17"
+      }
+    },
+    {
+      "check": "strict minimal ACE library",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/clippy-minimal-root.log",
+        "bytes": 183,
+        "sha256": "216ed027b297b0e83ec4e173f29c0c00b4ed3ec712ac89d0808ee5fb8b9fdc1d"
+      }
+    },
+    {
+      "check": "example build",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/example-build-final-root.log",
+        "bytes": 183,
+        "sha256": "79d23009cbd3c79e7cfff2a00930838d2a47d5a0d4d75b57db9a67e7cabe91b7"
+      }
+    },
+    {
+      "check": "final CLI browsing and Extra regression batch",
+      "exit_code": 0,
+      "passed_tests": 34,
+      "log": {
+        "path": ".cache/ace16-table-extra-cli-first-20261029/browsing-extra-final-root.log",
+        "bytes": 3749,
+        "sha256": "90b5da40c4ff37b60b5c007c83af6250bb0ec05abd92b072d4c261edfda88011"
+      }
+    }
+  ],
+  "test_profile": {
+    "local_override": "profile.test.package.tablecraft-ace.debug=1",
+    "applies_to": "focused and full ACE library tests",
+    "unchanged": [
+      "optimization",
+      "assertions",
+      "incremental compilation"
+    ],
+    "ignored_existing_generators": 2
+  },
+  "original_comparison": {
+    "manifest": {
+      "path": ".cache/ace16-table-extra-original-consumer-next-20261029/manifest.json",
+      "bytes": 8899,
+      "sha256": "734c5514c917a72ba8c4bff463e0311a1a253854bd938719390348ea8e69a4d7"
+    },
+    "frozen_inputs": {
+      "path": ".cache/ace16-table-extra-original-consumer-next-20261029/bound-freeze.json",
+      "bytes": 4600,
+      "sha256": "23d3f04c9bd965c1c71efee25c85449458ceaeb1aa5027e88befe8e7661e98a7"
+    },
+    "report": {
+      "path": ".cache/ace16-table-extra-original-consumer-first-20261029/report.json",
+      "bytes": 8726,
+      "sha256": "413d5aea0e5e2bb8e8fa168134bb1a4c344a255c849ebdada50b2d80908891a3"
+    },
+    "consumer": {
+      "path": "target/debug/examples/table_extra",
+      "bytes": 5820592,
+      "sha256": "19d12c019ed35dbf4d83477f17ffbc2ebebc17afa8890a237ceb385ab7f7e360"
+    },
+    "first_runtime_exit_code": 0,
+    "calls": 7,
+    "complete_exact_records": 54,
+    "payload_bytes": 14266,
+    "properties": 9,
+    "all_input_pins_unchanged": true,
+    "stored_profile": "ACE 2010; not ACE 16 native qualification",
+    "originals_tracked": false
+  },
+  "earlier_observations": [
+    {
+      "kind": "default-debug test build disk exhaustion before runtime",
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/tests-first-root.log",
+        "bytes": 4524,
+        "sha256": "1f3771e47a47925ede2a6ceb3d21a2f5d935715b2cf195d3b824ca59fcb7e295"
+      }
+    },
+    {
+      "kind": "first reduced-debug runtime: 8 pass, identity fixture fails capture because four catalog rows had a declared count of three; only fixture counter corrected",
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/tests-limited-debug-root.log",
+        "bytes": 2124,
+        "sha256": "a3100ac2dcdfb5e8e9e4b4fa8e3476adfbc6c5a78d94472eb39636c200f2a7ac"
+      }
+    },
+    {
+      "kind": "first strict lint: duplicate fixture module inclusion and constant chunks_exact; actual shared fixture imported, as_chunks adopted",
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/clippy-first-root.log",
+        "bytes": 5249,
+        "sha256": "70c3509fd177fa55719a50b54d120268a100eb2c7d27967241be8cbf17287225"
+      }
+    },
+    {
+      "kind": "next strict lint: example constant chunks_exact_mut; as_chunks_mut adopted",
+      "log": {
+        "path": ".cache/ace16-table-extra-core-first-20261029/clippy-shared-fixture-root.log",
+        "bytes": 1132,
+        "sha256": "c1752a107ada6069932e52d292fdd0303f71e8c74127a18ac8392077aac50e61"
+      }
+    },
+    {
+      "kind": "independent source-plan preparation rejected deleted zero-length catalog slot before any example calls; parser corrected to skip tombstones before live record decoding",
+      "stderr": {
+        "path": ".cache/ace16-table-extra-original-consumer-next-20261029/prepare-first.stderr",
+        "bytes": 894,
+        "sha256": "c8e12ef4801adedee7510eb2cff8f4c35a4c90336fdcc5b09376f4e5bebdaa63"
+      },
+      "original_source": {
+        "path": ".cache/ace16-table-extra-original-consumer-next-20261029/prepare-before-deleted-slot-correction.py",
+        "bytes": 5813,
+        "sha256": "aa6dd8d288f1e5f7e52884f7be7a840dca5d52c528e946680d9abf94bf264a07"
+      }
+    }
+  ],
+  "other_checks": {
+    "format": 0,
+    "documentation_links": 0,
+    "dependency_boundaries": 0
+  },
+  "unrun": [
+    "native Microsoft Access comparisons",
+    "native Access save/reopen",
+    "data-macro event semantics and absence qualification"
+  ]
+}

@@ -6,6 +6,7 @@ mod collections;
 mod complex;
 mod complex_links;
 mod constraints;
+mod extra;
 mod features;
 mod history;
 mod properties;
@@ -29,6 +30,7 @@ pub(crate) enum Mode<'a> {
     Table(&'a str),
     Indexes(&'a str),
     Properties(&'a str),
+    Extra(&'a str),
     Features(&'a str),
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
@@ -92,6 +94,9 @@ pub(crate) fn run(
         }
         Mode::Properties(name) => {
             properties::run(&mut source, name, &mut output, budget)?;
+        }
+        Mode::Extra(name) => {
+            extra::run(&mut source, name, &mut output, budget)?;
         }
         Mode::Indexes(name) => {
             let inspection = tablecraft_ace::inspect_table_indexes(

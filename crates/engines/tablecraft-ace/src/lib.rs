@@ -56,7 +56,8 @@ pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
 pub use preservation::{
     DependencyCoverage, NativeImage, ObjectDependency, ObjectPayloadData, ObjectPayloads,
-    OpaquePayload, PayloadPresence,
+    OpaquePayload, PayloadPresence, TableExtra, TableExtraCoverage, TableExtraGroup,
+    TableExtraProperty,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{

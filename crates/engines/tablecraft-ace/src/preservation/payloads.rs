@@ -9,7 +9,8 @@ use tablecraft_core::{
 };
 
 const CATALOG_DEFINITION_PAGE: u32 = 2;
-pub(super) const PAYLOAD_FIELDS: [&str; 3] = ["Lv", "LvModule", "LvExtra"];
+pub(super) const EXTRA_FIELD: &str = "LvExtra";
+pub(super) const PAYLOAD_FIELDS: [&str; 3] = ["Lv", "LvModule", EXTRA_FIELD];
 
 /// Presence of one native catalog payload, without following its content pointer.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

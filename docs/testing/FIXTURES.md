@@ -10398,3 +10398,42 @@ zero-byte archive. The successful isolated build separately binds 4,610 Git
 files, actual engine compilation and the retained copied artifact. Unexecuted
 qualifier and pre-construction import corrections are preserved as preparation
 history rather than relabeled runtime/native failures.
+
+## Private desktop data-macro carrier investigation
+
+The [table Extra inspection](../access/schema/NATIVE_TABLE_EXTRA.md) comparison
+uses four original databases retained privately, with no database, extracted XML
+or third-party macro body committed or redistributed. CI uses original synthetic
+framing and tiny inert text instead. All originals have stored ACE 2010 selectors;
+product/course names do not qualify them as ACE 16 files or native comparisons.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Packt `OrderProcessingData_6.5.accdb` | 2228224 | `409f18b89a7311e9aac6bf726968330263973cf33dd1a2cd8cc9b8100a6e7f4e` |
+| Packt `OrderProcessingData_6.5_FINAL.accdb` | 2248704 | `1383d9e27ba7885b9173cc871410fe7c5be7f18dc21b478e9467b52eddc0a8f4` |
+| MacKenzie `DataMacros_Example.accdb` | 462848 | `a0f83e9880b21068fcf321e00a962ad88231c9310fd63a6118c3ba59c50f78b3` |
+| MacKenzie `DataMacros.accdb` | 540672 | `d7deffb496ce78211df6df15595f6fa85a245e4d4392e866baa06ccc373cd238` |
+
+Packt sources are the Section 6 / Video 6.5 files in
+[Hands-On Microsoft Access 2019](https://github.com/PacktPublishing/Hands-On-Microsoft-Access-2019/tree/be14604c7113f38d95e42530fb3e03b303d6ad96),
+commit `be14604c7113f38d95e42530fb3e03b303d6ad96`, canonical tree
+`b660b380159d328c8175d0a6ab9e1c67d66b306d`. The reviewed repository license is
+MIT, Copyright 2020 Packt; its captured LICENSE SHA-256 is
+`937cd422a26027ec3046841b3dde311ddc353ed7a2ff3d724ba400c44cf6ea04`.
+Downloaded files match their Git blobs; no Section 6 license exception was found.
+
+The MacKenzie originals come from the author's
+[download page](https://mackenziemackenzie.com/downloads/index.html), archives
+`data_macros_example.zip` and `access_data_macros.zip`. The captured page permits
+use of the projects without restrictions. This is recorded as author permission,
+not an invented SPDX license or a redistribution decision. Archives were bounded,
+listed, checked for unsafe paths/encryption/symlinks and CRC-checked before private
+extraction. Original bytes were preserved; inert reads used hash-checked copies.
+
+Seven extracted table-owned Extra values and nine UTF-16 property values were
+frozen before the new consumer ran. All seven first comparisons pass complete
+raw payload/group/property/text and native Id/ParentId/logical-root checks. The
+[verification record](results/table-extra-inspection-2026-10-29.json) pins the
+private original-file observations and consumer lineage through its manifest. No stored content,
+VBA, macro, startup action or external connection was executed. Native macro
+absence and native Access save/reopen remain unqualified.
