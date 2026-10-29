@@ -149,6 +149,12 @@ impl Maps {
         Ok(())
     }
 
+    pub(in crate::table::mutation) fn owned_metadata_page(&self) -> Option<(u32, u32, u32, &[u8])> {
+        self.owned_rebase
+            .as_ref()
+            .and_then(owned::Owned::metadata_page)
+    }
+
     pub(in crate::table::mutation) fn metadata_pages(
         &self,
     ) -> impl Iterator<Item = (u32, u32, &[u8])> + '_ {
@@ -274,11 +280,6 @@ impl Maps {
         }
         if let Some(owned) = owned {
             append::claim(&mut append.map_edits, owned, true, &mut reader)?;
-        } else {
-            self.owned_rebase
-                .as_mut()
-                .ok_or(EditError::Preservation)?
-                .add(number, &self.owned_pages, append, &mut reader)?;
         }
         if let Some(hint) = hint {
             append::claim(&mut append.map_edits, hint, true, &mut reader)?;
@@ -292,6 +293,12 @@ impl Maps {
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
         append.reserve_data(number, reader.budget, reader.cancelled)?;
+        if rewrite_owned {
+            self.owned_rebase
+                .as_mut()
+                .ok_or(EditError::Preservation)?
+                .add(number, &self.owned_pages, append, &self.global, &mut reader)?;
+        }
         if let Some(growth) = &mut self.hint_growth {
             growth.add(number, &self.global, append, &mut reader)?;
         }

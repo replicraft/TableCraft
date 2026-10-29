@@ -15,6 +15,7 @@ pub(super) mod model;
 pub(in crate::table::mutation::insert) mod multiple_indexes;
 mod multiple_numeric_indexes;
 mod ordinary_rows;
+mod owned_map_promotion;
 mod properties;
 mod recursive_tree;
 mod secondary_scalar_indexes;

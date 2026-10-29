@@ -36,6 +36,7 @@ struct Replay {
     states: Vec<State>,
     visited: Vec<u32>,
     bitmap: Option<hint::ExpectedBitmap>,
+    owned_bitmap: Option<owned::ExpectedBitmap>,
 }
 
 pub(super) fn prove(
@@ -71,6 +72,7 @@ pub(super) fn prove(
         states: Vec::new(),
         visited: Vec::new(),
         bitmap: None,
+        owned_bitmap: None,
     };
     reserve(
         &mut replay.states,
@@ -145,7 +147,6 @@ pub(super) fn prove(
         } else {
             let number = next_eof;
             metadata.require_data_page(number, reader.budget, reader.cancelled)?;
-            owned_replay.add(number, &replay.states, metadata, proof, reader)?;
             if hint.is_none() {
                 let hint_cell = candidate.future_cell(reader, number)?;
                 if hint_cell.before & hint_cell.mask != 0 {
@@ -155,6 +156,7 @@ pub(super) fn prove(
             }
 
             proof.append(number, reader)?;
+            owned_replay.add(number, &replay.states, metadata, proof, reader)?;
             let start = number as usize * PAGE_BYTES;
             let raw = &mut proof.bytes[start..start + PAGE_BYTES];
             raw[..DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
@@ -216,6 +218,7 @@ pub(super) fn prove(
             .copy_from_slice(&(free as u16).to_le_bytes());
     }
 
+    replay.owned_bitmap = owned_replay.into_bitmap();
     replay.bitmap = hint.and_then(hint::Hint::into_metadata);
     if let Some(bitmap) = &replay.bitmap {
         let start = bitmap.number as usize * PAGE_BYTES;
@@ -327,6 +330,43 @@ fn compare(
                 .append
                 .require_data(*number, reader.budget, reader.cancelled)?;
         }
+    }
+    match (&replay.owned_bitmap, staged.maps.owned_metadata_page()) {
+        (Some(expected), Some((number, reference, block, bytes))) => {
+            reader.work(PAGE_BYTES)?;
+            if expected.number != number
+                || expected.reference != reference
+                || expected.block != block
+                || expected.bytes != bytes
+            {
+                return Err(EditError::Preservation);
+            }
+            staged.append.require_owned_bitmap(
+                number,
+                schema.definition,
+                reference,
+                block,
+                reader.budget,
+                reader.cancelled,
+            )?;
+        }
+        (None, None) => {}
+        _ => return Err(EditError::Preservation),
+    }
+    let mut owned_purposes = staged.append.owned_bitmaps();
+    if let Some(bitmap) = &replay.owned_bitmap
+        && owned_purposes.next()
+            != Some((
+                bitmap.number,
+                schema.definition,
+                bitmap.reference,
+                bitmap.block,
+            ))
+    {
+        return Err(EditError::Preservation);
+    }
+    if owned_purposes.next().is_some() {
+        return Err(EditError::Preservation);
     }
     let mut actual_metadata = staged.maps.metadata_pages();
     if let Some(bitmap) = &replay.bitmap {

@@ -5,6 +5,7 @@ use crate::{
     format::{
         allocation::RepresentedMap,
         bytes::u32_at,
+        page::{PAGE_BYTES, USAGE_SIGNATURE},
         reader::Reader,
         row::{reference_page, reference_slot},
     },
@@ -22,6 +23,16 @@ const PREFIX_BYTES: usize = size_of::<u8>() + POINTER_BYTES;
 const BITMAP_BYTES: usize = 64;
 const RECORD_BYTES: usize = PREFIX_BYTES + BITMAP_BYTES;
 const WINDOW_PAGES: u32 = (BITMAP_BYTES * u8::BITS as usize) as u32;
+const INDIRECT: u8 = 1;
+const BITMAP_PREFIX: usize = USAGE_SIGNATURE.len();
+const BITMAP_PAGES: u32 = ((PAGE_BYTES - BITMAP_PREFIX) * u8::BITS as usize) as u32;
+
+pub(super) struct ExpectedBitmap {
+    pub number: u32,
+    pub reference: u32,
+    pub block: u32,
+    pub bytes: Vec<u8>,
+}
 
 struct Record {
     offset: usize,
@@ -34,6 +45,7 @@ pub(super) struct Replay<'a> {
     definition: u32,
     reference: u32,
     record: Option<Record>,
+    bitmap: Option<ExpectedBitmap>,
 }
 
 impl<'a> Replay<'a> {
@@ -43,6 +55,7 @@ impl<'a> Replay<'a> {
             definition,
             reference,
             record: None,
+            bitmap: None,
         }
     }
 
@@ -54,6 +67,13 @@ impl<'a> Replay<'a> {
         proof: &mut ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
+        if let Some(bitmap) = &mut self.bitmap {
+            add_member(&mut bitmap.bytes, number, bitmap.number, reader)?;
+            let begin = bitmap.number as usize * PAGE_BYTES;
+            reader.work(PAGE_BYTES)?;
+            proof.bytes[begin..begin + PAGE_BYTES].copy_from_slice(&bitmap.bytes);
+            return Ok(());
+        }
         if self.record.is_none() {
             match self.original.future_cell(reader, number) {
                 Ok(cell) => {
@@ -117,32 +137,53 @@ impl<'a> Replay<'a> {
         {
             record.base
         } else {
-            let aligned = minimum - minimum % u8::BITS;
-            if maximum
-                .checked_sub(aligned)
-                .is_none_or(|distance| distance >= WINDOW_PAGES)
-            {
-                return Err(InspectError::Unsupported.into());
-            }
-            aligned
+            minimum - minimum % u8::BITS
         };
+        let fits = maximum
+            .checked_sub(base)
+            .is_some_and(|distance| distance < WINDOW_PAGES);
         let mut after = Vec::new();
         reserve(&mut after, RECORD_BYTES, reader)?;
         reader.work(RECORD_BYTES)?;
         after.resize(RECORD_BYTES, 0);
-        after[1..PREFIX_BYTES].copy_from_slice(&base.to_le_bytes());
-        for member in states.iter().map(|state| state.number).chain([number]) {
-            reader.tick()?;
-            let relative = member
-                .checked_sub(base)
-                .filter(|distance| *distance < WINDOW_PAGES)
-                .ok_or(EditError::Preservation)?;
-            let offset = PREFIX_BYTES + relative as usize / u8::BITS as usize;
-            let mask = 1 << (relative % u8::BITS);
-            if after[offset] & mask != 0 {
-                return Err(EditError::Preservation);
+        if fits {
+            after[1..PREFIX_BYTES].copy_from_slice(&base.to_le_bytes());
+            for member in states.iter().map(|state| state.number).chain([number]) {
+                reader.tick()?;
+                let relative = member
+                    .checked_sub(base)
+                    .filter(|distance| *distance < WINDOW_PAGES)
+                    .ok_or(EditError::Preservation)?;
+                let at = PREFIX_BYTES + relative as usize / u8::BITS as usize;
+                let mask = 1 << (relative % u8::BITS);
+                if after[at] & mask != 0 {
+                    return Err(EditError::Preservation);
+                }
+                after[at] |= mask;
             }
-            after[offset] |= mask;
+        } else {
+            let metadata = u32::try_from(proof.bytes.len() / PAGE_BYTES)
+                .map_err(|_| InspectError::StructureLimit)?;
+            let mut bytes = Vec::new();
+            reserve(&mut bytes, PAGE_BYTES, reader)?;
+            reader.work(PAGE_BYTES)?;
+            bytes.resize(PAGE_BYTES, 0);
+            bytes[..BITMAP_PREFIX].copy_from_slice(&USAGE_SIGNATURE);
+            for member in states.iter().map(|state| state.number).chain([number]) {
+                add_member(&mut bytes, member, metadata, reader)?;
+            }
+            proof.append(metadata, reader)?;
+            let begin = metadata as usize * PAGE_BYTES;
+            reader.work(PAGE_BYTES)?;
+            proof.bytes[begin..begin + PAGE_BYTES].copy_from_slice(&bytes);
+            after[0] = INDIRECT;
+            after[1..PREFIX_BYTES].copy_from_slice(&metadata.to_le_bytes());
+            self.bitmap = Some(ExpectedBitmap {
+                number: metadata,
+                reference: self.reference,
+                block: 0,
+                bytes,
+            });
         }
 
         let end = record
@@ -180,4 +221,27 @@ impl<'a> Replay<'a> {
         record.base = base;
         Ok(())
     }
+
+    pub(super) fn into_bitmap(self) -> Option<ExpectedBitmap> {
+        self.bitmap
+    }
+}
+
+fn add_member(
+    bytes: &mut [u8],
+    member: u32,
+    metadata: u32,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader.tick()?;
+    if member >= BITMAP_PAGES || member == metadata {
+        return Err(EditError::Preservation);
+    }
+    let at = BITMAP_PREFIX + member as usize / u8::BITS as usize;
+    let mask = 1 << (member % u8::BITS);
+    if bytes[at] & mask != 0 {
+        return Err(EditError::Preservation);
+    }
+    bytes[at] |= mask;
+    Ok(())
 }

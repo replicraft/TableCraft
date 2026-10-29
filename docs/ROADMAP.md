@@ -447,6 +447,13 @@ four saved EOF 512 source gates, twelve prebuild whole images, 24 public-referen
 calls, twelve exact candidates and twelve fresh typed-row/map reads, all runtime
 phases first attempt. LVAL and inline-DATA crossings preserve original hole bodies
 under the declared frontier-retirement policy; no new INDEX is required here.
+The later [ordinary DATA-owned promotion](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
+now allocates a distinct block-zero bitmap when an inline membership window no
+longer fits. Four independently constructed literal images, resource/cancellation
+controls and a correlated-purpose refusal pass in the combined 249-function INSERT
+batch. The full ACE library passes 590 functions with one existing ignored
+generator; 49 selected shared integration tests and strict lint/minimal checks
+pass. Original-file comparison for this inline-origin continuation remains open.
 Legacy external storage migration, continued TD initialization,
 block-one global growth and pointer-record expansion remain open; these
 checkpoints do not qualify normal saves or native Access behavior.
