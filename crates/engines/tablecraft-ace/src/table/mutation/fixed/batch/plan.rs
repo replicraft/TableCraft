@@ -1,6 +1,7 @@
 use super::super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview::qualify};
 use super::super::masked;
-use super::{FixedColumnUpdates, patches};
+use super::FixedColumnUpdates;
+use crate::table::mutation::patch::spans;
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::data_type::NUMERIC_BYTES,
@@ -138,7 +139,7 @@ impl NativeImage {
                 _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
             }
         }
-        patches::coalesce(&mut patches, budget, cancelled)?;
+        spans::coalesce(&mut patches, budget, cancelled)?;
         let mut indexes = Vec::new();
         for table in &tables {
             check(budget, cancelled)?;
@@ -183,7 +184,7 @@ impl NativeImage {
 
 struct Target<'a, 'b> {
     table: &'a mut Table<'b>,
-    patches: &'a mut Vec<patches::Patch>,
+    patches: &'a mut Vec<spans::Patch>,
     changed: &'a mut Vec<(u32, u32)>,
 }
 impl Target<'_, '_> {
@@ -205,7 +206,7 @@ impl Target<'_, '_> {
             cancelled,
         )?;
         for patch in &column.patches {
-            patches::push(self.patches, patch, budget, cancelled)?;
+            spans::push(self.patches, patch, budget, cancelled)?;
         }
         budget
             .charge_allocation(column.keys.len() as u64, size_of::<IndexKeyUpdate>() as u64)
