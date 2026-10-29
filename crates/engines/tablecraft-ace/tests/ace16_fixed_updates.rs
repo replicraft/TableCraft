@@ -13,7 +13,10 @@ use tablecraft_testkit::access as support;
 use fixture as base;
 use proptest::prelude::*;
 use std::io::Cursor;
-use tablecraft_ace::{EditError, FixedScalarUpdate, NativeImage, WriteBlocker, read_table};
+use tablecraft_ace::{
+    EditError, FixedScalarUpdate, IndexCheckStatus, NativeImage, WriteBlocker, check_table,
+    read_table,
+};
 use tablecraft_core::{
     limits::ResourceBudget,
     values::{Currency, Double, Guid, LegacyDateTime, Single, Value},
@@ -267,7 +270,7 @@ fn small_budget_cancellation_unsupported_masks_and_column_flags_still_block() {
 }
 
 #[test]
-fn indexed_single_targets_accept_edits_and_noops_but_keep_unknown_index_flags_blocked() {
+fn indexed_single_targets_admit_known_ignored_null_noops_but_keep_unknown_flags_blocked() {
     let bytes = numeric_fixture::database(6, &[4, 6], &[(1, false)], &[vec![Some(1), Some(5)]], 0);
     for updates in [
         vec![],
@@ -302,16 +305,36 @@ fn indexed_single_targets_accept_edits_and_noops_but_keep_unknown_index_flags_bl
             assert_eq!(preview.candidate_bytes(), bytes);
         }
     }
-    for flags in [0x82, 0x90] {
-        let mut changed = bytes.clone();
-        numeric_fixture::index_flags(&mut changed, flags);
-        assert_eq!(
-            capture(&changed)
-                .preview_ace16_fixed_updates("Items", "Score", &[], &mut budget(), &|| false)
-                .err(),
-            Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
-        );
+    let mut ignored = bytes.clone();
+    numeric_fixture::index_flags(&mut ignored, 0x82);
+    let checked = check_table(
+        &mut Cursor::new(&ignored),
+        CatalogScope::new(1),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(checked.rows(), 1);
+    assert_eq!(checked.indexes().len(), 1);
+    for index in checked.indexes() {
+        assert_eq!(index.status(), IndexCheckStatus::Checked);
+        assert!(index.index().constraints().unwrap().ignore_nulls());
     }
+    let preview = capture(&ignored)
+        .preview_ace16_fixed_updates("Items", "Score", &[], &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(preview.changed_rows(), 0);
+    assert_eq!(preview.candidate_bytes(), ignored);
+
+    let mut unknown = bytes;
+    numeric_fixture::index_flags(&mut unknown, 0x90);
+    assert_eq!(
+        capture(&unknown)
+            .preview_ace16_fixed_updates("Items", "Score", &[], &mut budget(), &|| false)
+            .err(),
+        Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+    );
 }
 
 #[test]

@@ -53,9 +53,7 @@ pub(in crate::table::mutation::insert::tests) fn install(
 ) {
     image[number as usize * PAGE..(number as usize + 1) * PAGE].copy_from_slice(page);
 }
-pub(in crate::table::mutation::insert::tests) fn map(
-    members: impl IntoIterator<Item = u32>,
-) -> Vec<u8> {
+pub(in crate::table::mutation) fn map(members: impl IntoIterator<Item = u32>) -> Vec<u8> {
     let mut bytes = vec![0; 69];
     for number in members {
         assert!(number < 512);
@@ -63,11 +61,7 @@ pub(in crate::table::mutation::insert::tests) fn map(
     }
     bytes
 }
-pub(in crate::table::mutation::insert::tests) fn map_page(
-    image: &mut [u8],
-    number: u32,
-    rows: Vec<Vec<u8>>,
-) {
+pub(in crate::table::mutation) fn map_page(image: &mut [u8], number: u32, rows: Vec<Vec<u8>>) {
     install(
         image,
         number,
@@ -128,7 +122,7 @@ pub(in crate::table::mutation::insert::tests) fn framing(
     }
     (prefix, full - saved * prefix)
 }
-pub(in crate::table::mutation::insert::tests) fn leaf(
+pub(in crate::table::mutation) fn leaf(
     original: Option<&[u8]>,
     entries: &[Vec<u8>],
     seed: usize,
@@ -154,7 +148,7 @@ pub(in crate::table::mutation::insert::tests) fn leaf(
     }
     page
 }
-pub(in crate::table::mutation::insert::tests) fn root(
+pub(in crate::table::mutation) fn root(
     original: &[u8],
     left: u32,
     right: u32,

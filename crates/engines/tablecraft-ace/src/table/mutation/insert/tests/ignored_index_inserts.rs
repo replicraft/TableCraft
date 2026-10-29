@@ -6,7 +6,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
 
-pub(in crate::table::mutation::insert) mod model;
+pub(in crate::table::mutation) mod model;
 use model::{Case, PAGE, Shape};
 
 fn row(id: i32, group: Option<i32>) -> frames::Row {

@@ -7,7 +7,7 @@ use crate::{
     format::data_type::NUMERIC_BYTES,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
-    table::indexes::{IndexKeyUpdate, index_patches},
+    table::indexes::{IndexKeyUpdate, fixed_index_patches},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -81,7 +81,7 @@ impl NativeImage {
             {
                 tables.push(Table {
                     name: group.table(),
-                    before: gates::before(&self, group.table(), budget, cancelled)?,
+                    before: gates::before_fixed_update(&self, group.table(), budget, cancelled)?,
                     keys: Vec::new(),
                 });
             }
@@ -143,7 +143,7 @@ impl NativeImage {
         let mut indexes = Vec::new();
         for table in &tables {
             check(budget, cancelled)?;
-            let staged = index_patches(
+            let staged = fixed_index_patches(
                 &self,
                 table.before.schema(),
                 table.before.indexes(),

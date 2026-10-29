@@ -35,7 +35,11 @@ general allocation/map growth, INSERT, schema changes,
 AutoNumber assignment and broader UPDATE index topology changes remain unsupported
 through these fixed-field APIs. A separate
 [caller-selected incrementing INSERT preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
-now owns its generated request and return contract. Ordinary-root deletion has a separate
+now owns its generated request and return contract. The
+[ignored-NULL secondary-index UPDATE continuation](ACE16_IGNORED_NULL_UPDATES.md)
+owns the current fixed/batch omission and historical-counter rules; older
+blanket ignore-NULL refusals below describe the earlier comparison slices.
+Ordinary-root deletion has a separate
 [existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
 

@@ -12,6 +12,8 @@ pub(in crate::table) use siblings::{SiblingAudit, audit_siblings};
 #[cfg(feature = "ace16-write-preview")]
 mod deletion;
 #[cfg(feature = "ace16-write-preview")]
+pub(super) mod population;
+#[cfg(feature = "ace16-write-preview")]
 mod replacement;
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use contraction::Contraction;

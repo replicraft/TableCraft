@@ -99,6 +99,8 @@ pub use read::read_table_text_index_range;
 pub use text::{GeneralEqualityPrefix, TextIndexSelection};
 pub(in crate::table) mod mutation;
 pub(in crate::table) mod page;
+#[cfg(feature = "ace16-write-preview")]
+pub(super) use mutation::fixed_patches as fixed_index_patches;
 pub(super) use mutation::{IndexDataPatch, IndexKeyUpdate, MutationKey, patches as index_patches};
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use mutation::{

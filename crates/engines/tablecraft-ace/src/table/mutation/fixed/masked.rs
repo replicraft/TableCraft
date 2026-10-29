@@ -11,7 +11,7 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
-    table::indexes::{IndexKeyUpdate, MutationKey, index_patches},
+    table::indexes::{IndexKeyUpdate, MutationKey, fixed_index_patches},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
@@ -96,7 +96,7 @@ pub(super) fn generate<const WIDTH: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
-    let structural = gates::before(&image, table, budget, cancelled)?;
+    let structural = gates::before_fixed_update(&image, table, budget, cancelled)?;
     let staged = stage::<WIDTH>(
         &image,
         &structural,
@@ -106,7 +106,7 @@ pub(super) fn generate<const WIDTH: usize>(
         budget,
         cancelled,
     )?;
-    let indexes = index_patches(
+    let indexes = fixed_index_patches(
         &image,
         structural.schema(),
         structural.indexes(),
