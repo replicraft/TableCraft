@@ -47,6 +47,19 @@ pub(in crate::table::mutation::insert) fn bind(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
+    let source = source(image, checked, budget, cancelled)?;
+    if source.last != policy.expected_last() {
+        return Err(EditError::Conflict);
+    }
+    Ok(source)
+}
+
+pub(in crate::table::mutation::insert) fn source(
+    image: &NativeImage,
+    checked: &TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
     let column = primary_column::resolve(checked, budget, cancelled)?;
     for (position, field) in checked.schema().columns().iter().enumerate() {
         check(budget, cancelled)?;
@@ -75,9 +88,6 @@ pub(in crate::table::mutation::insert) fn bind(
         .try_into()
         .map_err(|_| InspectError::Truncated)?;
     let last = i32::from_le_bytes(before);
-    if last != policy.expected_last() {
-        return Err(EditError::Conflict);
-    }
     Ok(Source {
         column,
         offset,

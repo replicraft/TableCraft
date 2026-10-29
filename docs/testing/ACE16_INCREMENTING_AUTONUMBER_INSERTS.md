@@ -35,6 +35,53 @@ Generated values follow original request order and become available only after
 independent complete-image proof and final index/constraint checks. The result
 has no conversion to a journalable edit plan.
 
+## Explicit policy from the captured counter
+
+`NativeImage::prepare_ace16_incrementing_insert_policy(&self, table, budget,
+cancelled)` explicitly selects increment-by-one behavior and obtains the LAST
+precondition from that same captured image. It shares the existing generated
+primary and signed counter binding, and performs the complete before-INSERT
+gates. The existing preview then independently revalidates the returned policy.
+This avoids manual counter inspection without selecting a mode automatically.
+
+The returned `IncrementingAutoNumber` is a counter precondition, not an image
+identity certificate. It does not detect stored Increment/Random mode, infer
+`MAX(live ID)`, issue IDs, reseed a table, evaluate defaults or override
+`NewValues`. Required, validation, active-content and property refusals remain.
+Callers that already know the original counter can continue using
+`IncrementingAutoNumber::new(expected_last)` unchanged.
+
+The main CLI exposes the explicit choice as:
+
+```sh
+tablecraft write preview-insert offline.accdb inserted.accdb Items companions.tsv \
+  --incrementing
+```
+
+`--incrementing` and `--incrementing-last LAST` are mutually exclusive. Both
+consume the same complete companion KIND/DATA TSV; neither supplies omitted
+companion fields. The current TSV protocol cannot encode a zero-companion row,
+so a table containing only the generated field still requires the engine API.
+The service obtains the policy and prepares one candidate from one captured
+image. Generated column/value facts become reportable only after successful
+fresh-output publication. The separate `preview_ace16_insert` engineering example
+retains its existing `--incrementing-last` interface.
+
+Two source-only gate functions pass before any new helper calls: they qualify
+both ACE16 layouts, signed minimum/negative counters, deleted highest/all rows,
+separate high-water history, exhausted maximum and independently constructed
+complete expected images. The six-function helper batch then passes, including
+exact preview output, unchanged explicit counter mismatches, property/profile
+refusals, all resource pools and cancellation at the measured final poll.
+The CLI argument control passes, including mutually exclusive incrementing flags.
+The actual CLI workflow also passes: source-counter selection and the existing
+explicit-LAST policy produce identical complete candidate bytes and generated
+IDs 31 and 32; a stale explicit counter publishes no output. This is consumer
+parity evidence, not a new independent raw model or native Access comparison.
+The first CLI unit compilation stopped before tests because two new test patterns
+used a stale internal enum variant. Correcting those patterns changed no runtime
+behavior or expected bytes; the complete CLI unit batch then passes all 28 tests.
+
 ## Last-issued counter and signed arithmetic
 
 The reviewed independent writer reads the signed little-endian Int32 at table
