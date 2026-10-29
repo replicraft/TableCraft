@@ -1,0 +1,742 @@
+{
+  "scope": "Independent original-file DELETE SET NULL engineering proof; not Microsoft Access save or recovery qualification",
+  "date": "2026-10-28",
+  "source": {
+    "helper": {
+      "path": "docs/testing/ace16_set_null_deletes/SetNullDeleteFixture.java",
+      "bytes": 20328,
+      "sha256": "194cf9a2dbca2aa87d414568efcdd6a1828e311342dddab351420b09c4ac2cfa"
+    },
+    "plan_helper_freeze": {
+      "path": ".cache/ace16-set-null-delete-source-next-20261028/plan-helper-freeze.json",
+      "bytes": 1768,
+      "sha256": "ae24e110d984bdcc975ae11bfd839ea6c46b961ea94617548753e0161c738ed8"
+    },
+    "capture_freeze": {
+      "path": ".cache/ace16-set-null-delete-source-next-20261028/source-freeze.json",
+      "bytes": 5552,
+      "sha256": "b9fe90eca51aac3e28d5bd84e7416de686eccc0ed2db049f2647dc847873a73b"
+    },
+    "capture_report": {
+      "path": ".cache/ace16-set-null-delete-source-first-20261028/report.json",
+      "bytes": 21662,
+      "sha256": "5693f7abb5374368c7a06bb00adc3fb06195e4f7a81897e8082be810e31ef910"
+    },
+    "capture_commands": 5,
+    "statuses": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "capture_qualification": false,
+    "saved_gate_v2_freeze": {
+      "path": ".cache/ace16-set-null-delete-saved-v2-next-20261028/gate-freeze.json",
+      "bytes": 16644,
+      "sha256": "8d6e5dc918e652f995dbd01c6f19ca8a02cbe029d0e4ef4e1d248e7228b9bc69"
+    },
+    "saved_gate_v2_report": {
+      "path": ".cache/ace16-set-null-delete-saved-v2-next-20261028/source-gates-first.json",
+      "bytes": 2129423,
+      "sha256": "f5b52ed8b9ec52a52455628a5d8bd5e48e3b39490766cb078a1bd33e04fa368f"
+    },
+    "qualified_originals": 2,
+    "header": "ACE2016",
+    "creation": "Public Jackcess5.0.4 only, no source patches/deletes/adaptive counts"
+  },
+  "constructor": {
+    "original_failed_freeze": {
+      "path": ".cache/ace16-set-null-delete-candidates-next-20261028/model-freeze.json",
+      "bytes": 17693,
+      "sha256": "1450ccfabd32442b2f7bc392a2691715b62a4d0f2907d28b581006debe0e9b98"
+    },
+    "first_partial_input_barrier": {
+      "path": ".cache/ace16-set-null-delete-expected-first-20261028/before-derive-inputs.json",
+      "bytes": 16860,
+      "sha256": "81c03c4dab2fe026677ddbd723e22f99870d5922bd81febd874be477a0857c1a"
+    },
+    "corrected_v2_freeze": {
+      "path": ".cache/ace16-set-null-delete-candidates-v2-next-20261028/model-freeze.json",
+      "bytes": 19252,
+      "sha256": "5c87c7ca1a8e415a28858285852d8b3faa82b4d3677ff752dcd2d37126603284"
+    },
+    "model": {
+      "path": ".cache/ace16-set-null-delete-candidates-v2-next-20261028/model_v2.py",
+      "bytes": 10940,
+      "sha256": "b3ba21fd83c5d483fa5dcb2e4d7c1d645bea27ddbf3136d99c58c9049b45c2bf"
+    },
+    "expected_freeze": {
+      "path": ".cache/ace16-set-null-delete-expected-second-20261028/freeze.json",
+      "bytes": 20478,
+      "sha256": "3b1c02603984ceb56c2313b446d24ad5ba931dafa7b36cdc7a3d2864a219e1f4"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-set-null-delete-expected-second-20261028/report.json",
+      "bytes": 1316,
+      "sha256": "d0d03861dc6d6c93ce1802530344d4a5f43344138d8cfdf93f80b8d2071cf730"
+    },
+    "pure_reverify": {
+      "path": ".cache/ace16-set-null-delete-candidates-v2-next-20261028/reverify-first.json",
+      "bytes": 1450,
+      "sha256": "c985d51e6b7c497d13d0d42fdfa9f06e01081b629c8cfc6e7755d13010491fc3"
+    },
+    "source_request_only": true,
+    "public_AFTER_inputs": 0,
+    "expected_images": 2,
+    "expected_changes_after_public": 0
+  },
+  "pure_failure_history": {
+    "raw_traceback_log_retained": false,
+    "root_tool_output_observations": [
+      "First saved gate: KeyError reference before source qualification",
+      "First constructor: KeyError ParentID before image write"
+    ],
+    "preserved_failed_programs": [
+      {
+        "path": ".cache/ace16-set-null-delete-source-next-20261028/source.py",
+        "bytes": 16051,
+        "sha256": "46ea3165370a91ed08b9dc05e540ed84366524bde30e3683908f2f015216faaf"
+      },
+      {
+        "path": ".cache/ace16-set-null-delete-candidates-next-20261028/model.py",
+        "bytes": 10911,
+        "sha256": "b3317d38ee45c15eca2b666fdca77ffee89856d8d1af3f347c6def23143b5950"
+      }
+    ],
+    "correction_notes": [
+      {
+        "path": ".cache/ace16-set-null-delete-saved-v2-next-20261028/CORRECTION.md",
+        "bytes": 1208,
+        "sha256": "9c60544ca5925dd71a3ef19b1bb030d652dcfb022207646dc4e92ee0a0036b3c"
+      },
+      {
+        "path": ".cache/ace16-set-null-delete-candidates-v2-next-20261028/CORRECTION.md",
+        "bytes": 1175,
+        "sha256": "49823299dabd065938d3d40568585b364c1f487fcf84f6e35a6f35e81b005adb"
+      }
+    ],
+    "corrections": "Raw-directory-proven map page/slot conversion; one loop-local table binding; no AFTER authority"
+  },
+  "expected_reads": {
+    "freeze": {
+      "path": ".cache/ace16-set-null-delete-expected-read-next-20261028/freeze.json",
+      "bytes": 19635,
+      "sha256": "90baa65d3d25a1ce7c2eacc387abd74da8b31719bf9e0dda7da7bd7e338135fb"
+    },
+    "report": {
+      "path": ".cache/ace16-set-null-delete-expected-read-first-20261028/report.json",
+      "bytes": 27214,
+      "sha256": "7bdb8bae60ca78b43865466e4304756ddd0b77c46a51d113b9fc182567008a53"
+    },
+    "commands": 2,
+    "status": 0
+  },
+  "public_reference": {
+    "freeze": {
+      "path": ".cache/ace16-set-null-delete-public-next-20261028/freeze.json",
+      "bytes": 18437,
+      "sha256": "c987fa9f80c18dcb3200a7d110e01ea2dab5eeca015ef8cfa3449e3e75705e42"
+    },
+    "report": {
+      "path": ".cache/ace16-set-null-delete-public-first-20261028/report.json",
+      "bytes": 48873,
+      "sha256": "3fa6aaa1d48f135228f3a778b0ca675f5540d8dba59161f812fa86adf3da5292"
+    },
+    "commands": 4,
+    "transition_proofs": 2,
+    "status": 0,
+    "comparison": {
+      "path": ".cache/ace16-set-null-delete-public-next-20261028/public-differences-first.json",
+      "bytes": 3066,
+      "sha256": "575ee5df19721976192783919cfe7bb64746389f220842e4e9f7428fddb73348"
+    },
+    "bytes_different_from_model": [
+      5,
+      5
+    ],
+    "difference_policy": {
+      "new_NULL_fixed_payload": 2,
+      "vacated_FK_leaf_wire": 3
+    },
+    "model_repair": false,
+    "single_parent_delete_per_original": true,
+    "multi_call_transaction_claim": false
+  },
+  "build": {
+    "producer_commit": "13c075bbe09502db255e15685e879e6281f878ec",
+    "receipt_commit": "31762f4f",
+    "receipt": {
+      "path": "docs/testing/results/ace16-set-null-delete-example-build-2026-10-28.json",
+      "bytes": 2898,
+      "sha256": "89f0bdc24961a0d49c95862b1e2ad10625cc180fa2b1d164a61fe56b3b8db4c4"
+    },
+    "source_files": 4667,
+    "initially_absent_target": true,
+    "actual_owning_engine_compilation": true
+  },
+  "native": {
+    "freeze": {
+      "path": ".cache/ace16-set-null-delete-acceptance-next-20261028/freeze.json",
+      "bytes": 50185,
+      "sha256": "38025096c492a39f935b3d5078cabfe2b7ecb1825b191bfe688c66c3712cb5ce"
+    },
+    "seed_freeze": {
+      "path": ".cache/ace16-set-null-delete-acceptance-next-20261028/seed-freeze.json",
+      "bytes": 36120,
+      "sha256": "530b1f881b04342d7abc109543132dec23b41f3ab6dcc4f82501317a4b353286"
+    },
+    "report": {
+      "path": ".cache/ace16-set-null-delete-candidate-first-20261028/report.json",
+      "bytes": 55086,
+      "sha256": "86c5046b990273563d05f47d7a600ec060e35a39377f482cc844b1410b59e03d"
+    },
+    "commands": 2,
+    "status": 0,
+    "complete_images_match_earlier_expected": true
+  },
+  "fresh": {
+    "binding": {
+      "path": ".cache/ace16-set-null-delete-acceptance-next-20261028/getter-binding.json",
+      "bytes": 1749,
+      "sha256": "5e2574a2d58ec7ebb0a762b6108607cd1275ed13c74bf5c9b4f8d1cfab3be470"
+    },
+    "report": {
+      "path": ".cache/ace16-set-null-delete-getters-first-20261028/report.json",
+      "bytes": 59676,
+      "sha256": "630b4b664f33876a8442a40a8f6c76b5492f3aff96b64fa7d75f8974fda2cd89"
+    },
+    "commands": 2,
+    "status": 0,
+    "all_complete_images_before_reader_one": true,
+    "all_images_rechecked_before_after_every_reader": true
+  },
+  "totals": {
+    "final_user_rows": 18,
+    "final_physical_key_ROW_pairs": 30,
+    "deleted_logical_roots": 3,
+    "surviving_NULL_assignments": 4,
+    "allocation_changes": 0,
+    "history_changes": 0,
+    "unchanged_Sentinel": true
+  },
+  "cases": [
+    {
+      "id": "V2016-basic",
+      "source": {
+        "path": ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-source.accdb",
+        "bytes": 438272,
+        "sha256": "f1b2e968c5a3cdd575a0959b8ffd79ef55b7a2a3f1695f68468a2952b0c43820"
+      },
+      "getter": {
+        "path": ".cache/ace16-set-null-delete-source-first-20261028/basic-before-inspect.stdout",
+        "bytes": 46445,
+        "sha256": "e19a1aa77961d50551865f7b62b4a344f006b64a69fef930e4c43e3371ab105d"
+      },
+      "expected": {
+        "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-basic-expected.accdb",
+        "bytes": 438272,
+        "sha256": "a34185fc15b7c71a338208bef620bd452e5ed444e24034e6407faf38f1f9b726"
+      },
+      "details": {
+        "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-basic-details.json",
+        "bytes": 1483,
+        "sha256": "a97cbabc9b39f15f496755e7d35886c3f49eafd26a9b87a8575a5dd258d6786a"
+      },
+      "before_rows": {
+        "Parents": 3,
+        "Children": 5,
+        "Sentinel": 1
+      },
+      "definitions": {
+        "Parents": 89,
+        "Children": 94,
+        "Sentinel": 101
+      },
+      "original_logical_ROW_seed": 23552,
+      "live_row_ordinal": 0,
+      "public_proof": {
+        "verified": true,
+        "deleted": {
+          "Parents": [
+            1
+          ]
+        },
+        "nulled": [
+          [
+            "Children",
+            10,
+            "ParentID"
+          ],
+          [
+            "Children",
+            11,
+            "ParentID"
+          ]
+        ],
+        "null_payloads": [
+          {
+            "table": "Children",
+            "identity": 10,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "00000000"
+          },
+          {
+            "table": "Children",
+            "identity": 11,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "00000000"
+          }
+        ],
+        "physical_frames": [
+          {
+            "table": "Children",
+            "physical": 1,
+            "root": 100,
+            "entries": 5,
+            "history": 4,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 3
+          },
+          {
+            "table": "Parents",
+            "physical": 0,
+            "root": 91,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          }
+        ],
+        "allocation_changes": 0,
+        "history_changes": 0,
+        "protected_original_prefix": true,
+        "unchanged_Sentinel": true,
+        "source_sha256": "f1b2e968c5a3cdd575a0959b8ffd79ef55b7a2a3f1695f68468a2952b0c43820",
+        "sha256": "76ffde8b2f1b83af82397562a3c33938d404f1752c9853c06135bd9935a06482"
+      },
+      "fresh_native_proof": {
+        "verified": true,
+        "deleted": {
+          "Parents": [
+            1
+          ]
+        },
+        "nulled": [
+          [
+            "Children",
+            10,
+            "ParentID"
+          ],
+          [
+            "Children",
+            11,
+            "ParentID"
+          ]
+        ],
+        "null_payloads": [
+          {
+            "table": "Children",
+            "identity": 10,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "01000000"
+          },
+          {
+            "table": "Children",
+            "identity": 11,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "01000000"
+          }
+        ],
+        "physical_frames": [
+          {
+            "table": "Children",
+            "physical": 1,
+            "root": 100,
+            "entries": 5,
+            "history": 4,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "Parents",
+            "physical": 0,
+            "root": 91,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          }
+        ],
+        "allocation_changes": 0,
+        "history_changes": 0,
+        "protected_original_prefix": true,
+        "unchanged_Sentinel": true,
+        "source_sha256": "f1b2e968c5a3cdd575a0959b8ffd79ef55b7a2a3f1695f68468a2952b0c43820",
+        "sha256": "a34185fc15b7c71a338208bef620bd452e5ed444e24034e6407faf38f1f9b726"
+      },
+      "public_differences": {
+        "id": "V2016-basic",
+        "expected": {
+          "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-basic-expected.accdb",
+          "bytes": 438272,
+          "sha256": "a34185fc15b7c71a338208bef620bd452e5ed444e24034e6407faf38f1f9b726"
+        },
+        "public": {
+          "path": ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-public.accdb",
+          "bytes": 438272,
+          "sha256": "76ffde8b2f1b83af82397562a3c33938d404f1752c9853c06135bd9935a06482"
+        },
+        "difference_counts": {
+          "vacated_FK_leaf_wire": 3,
+          "new_NULL_fixed_payload": 2
+        },
+        "differences": [
+          {
+            "offset": 401384,
+            "expected": 1,
+            "public": 0,
+            "classification": "new_NULL_fixed_payload"
+          },
+          {
+            "offset": 401399,
+            "expected": 1,
+            "public": 0,
+            "classification": "new_NULL_fixed_payload"
+          },
+          {
+            "offset": 410113,
+            "expected": 128,
+            "public": 0,
+            "classification": "vacated_FK_leaf_wire"
+          },
+          {
+            "offset": 410115,
+            "expected": 0,
+            "public": 97,
+            "classification": "vacated_FK_leaf_wire"
+          },
+          {
+            "offset": 410116,
+            "expected": 3,
+            "public": 4,
+            "classification": "vacated_FK_leaf_wire"
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2016-mixed",
+      "source": {
+        "path": ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-source.accdb",
+        "bytes": 462848,
+        "sha256": "6cb567f33be60348f2e41bcac2c25f3319fa7f277ecaaf916fa4d023cbe5d45b"
+      },
+      "getter": {
+        "path": ".cache/ace16-set-null-delete-source-first-20261028/mixed-before-inspect.stdout",
+        "bytes": 50399,
+        "sha256": "249d2abfeddf436daf50ea461fab064dcef4aff1b6cc50ffcafba1f10d25d2c3"
+      },
+      "expected": {
+        "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-mixed-expected.accdb",
+        "bytes": 462848,
+        "sha256": "48c7d72550e67236c0b23e8c11646e3a3c6df5414e0013e141782a91720e641f"
+      },
+      "details": {
+        "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-mixed-details.json",
+        "bytes": 2086,
+        "sha256": "63bf8086328deaeb3e637c943cd7086ed9304abf501174c38276cdbead6bb30e"
+      },
+      "before_rows": {
+        "Parents": 3,
+        "Children": 5,
+        "Sentinel": 1,
+        "CascadeChildren": 3
+      },
+      "definitions": {
+        "Parents": 89,
+        "Children": 94,
+        "Sentinel": 108,
+        "CascadeChildren": 101
+      },
+      "original_logical_ROW_seed": 23552,
+      "live_row_ordinal": 0,
+      "public_proof": {
+        "verified": true,
+        "deleted": {
+          "CascadeChildren": [
+            20
+          ],
+          "Parents": [
+            1
+          ]
+        },
+        "nulled": [
+          [
+            "Children",
+            10,
+            "ParentID"
+          ],
+          [
+            "Children",
+            11,
+            "ParentID"
+          ]
+        ],
+        "null_payloads": [
+          {
+            "table": "Children",
+            "identity": 10,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "00000000"
+          },
+          {
+            "table": "Children",
+            "identity": 11,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "00000000"
+          }
+        ],
+        "physical_frames": [
+          {
+            "table": "CascadeChildren",
+            "physical": 0,
+            "root": 103,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "CascadeChildren",
+            "physical": 1,
+            "root": 107,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "Children",
+            "physical": 1,
+            "root": 100,
+            "entries": 5,
+            "history": 4,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 3
+          },
+          {
+            "table": "Parents",
+            "physical": 0,
+            "root": 91,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          }
+        ],
+        "allocation_changes": 0,
+        "history_changes": 0,
+        "protected_original_prefix": true,
+        "unchanged_Sentinel": true,
+        "source_sha256": "6cb567f33be60348f2e41bcac2c25f3319fa7f277ecaaf916fa4d023cbe5d45b",
+        "sha256": "37f1c4b6c95ffb948f7c3e34635f7fb694f0c46936d9d198d7249f7653d3d815"
+      },
+      "fresh_native_proof": {
+        "verified": true,
+        "deleted": {
+          "CascadeChildren": [
+            20
+          ],
+          "Parents": [
+            1
+          ]
+        },
+        "nulled": [
+          [
+            "Children",
+            10,
+            "ParentID"
+          ],
+          [
+            "Children",
+            11,
+            "ParentID"
+          ]
+        ],
+        "null_payloads": [
+          {
+            "table": "Children",
+            "identity": 10,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "01000000"
+          },
+          {
+            "table": "Children",
+            "identity": 11,
+            "column": "ParentID",
+            "before": "01000000",
+            "after": "01000000"
+          }
+        ],
+        "physical_frames": [
+          {
+            "table": "CascadeChildren",
+            "physical": 0,
+            "root": 103,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "CascadeChildren",
+            "physical": 1,
+            "root": 107,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "Children",
+            "physical": 1,
+            "root": 100,
+            "entries": 5,
+            "history": 4,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          },
+          {
+            "table": "Parents",
+            "physical": 0,
+            "root": 91,
+            "entries": 2,
+            "history": 3,
+            "old_prefix": 0,
+            "prefix": 0,
+            "inactive_span_differences": 0
+          }
+        ],
+        "allocation_changes": 0,
+        "history_changes": 0,
+        "protected_original_prefix": true,
+        "unchanged_Sentinel": true,
+        "source_sha256": "6cb567f33be60348f2e41bcac2c25f3319fa7f277ecaaf916fa4d023cbe5d45b",
+        "sha256": "48c7d72550e67236c0b23e8c11646e3a3c6df5414e0013e141782a91720e641f"
+      },
+      "public_differences": {
+        "id": "V2016-mixed",
+        "expected": {
+          "path": ".cache/ace16-set-null-delete-expected-second-20261028/V2016-mixed-expected.accdb",
+          "bytes": 462848,
+          "sha256": "48c7d72550e67236c0b23e8c11646e3a3c6df5414e0013e141782a91720e641f"
+        },
+        "public": {
+          "path": ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-public.accdb",
+          "bytes": 462848,
+          "sha256": "37f1c4b6c95ffb948f7c3e34635f7fb694f0c46936d9d198d7249f7653d3d815"
+        },
+        "difference_counts": {
+          "vacated_FK_leaf_wire": 3,
+          "new_NULL_fixed_payload": 2
+        },
+        "differences": [
+          {
+            "offset": 401384,
+            "expected": 1,
+            "public": 0,
+            "classification": "new_NULL_fixed_payload"
+          },
+          {
+            "offset": 401399,
+            "expected": 1,
+            "public": 0,
+            "classification": "new_NULL_fixed_payload"
+          },
+          {
+            "offset": 410113,
+            "expected": 128,
+            "public": 0,
+            "classification": "vacated_FK_leaf_wire"
+          },
+          {
+            "offset": 410115,
+            "expected": 0,
+            "public": 97,
+            "classification": "vacated_FK_leaf_wire"
+          },
+          {
+            "offset": 410116,
+            "expected": 3,
+            "public": 4,
+            "classification": "vacated_FK_leaf_wire"
+          }
+        ]
+      }
+    }
+  ],
+  "maintained": {
+    "verifier": {
+      "path": "docs/testing/ace16_set_null_deletes/verify.py",
+      "bytes": 18971,
+      "sha256": "43735e3eaba32d150c6d82230556693f699c7222aa52822dd4eddfa60d78a53a"
+    },
+    "default": {
+      "path": ".cache/ace16-set-null-delete-maintained-proof-20261028/default-first.json",
+      "bytes": 906,
+      "sha256": "b318d234df48d1a14158536e0577d07dfa7e34a3e6d5498cbc6c767c26196666"
+    },
+    "optional_git": {
+      "path": ".cache/ace16-set-null-delete-maintained-proof-20261028/git-first.json",
+      "bytes": 966,
+      "sha256": "912e4b8a76a11f541e7f19c4b93b7c955acc7eeb8a3986c3d1825d693d268e2a"
+    },
+    "subprocess_blocked_default": {
+      "path": ".cache/ace16-set-null-delete-maintained-proof-20261028/no-child-first.json",
+      "bytes": 906,
+      "sha256": "b318d234df48d1a14158536e0577d07dfa7e34a3e6d5498cbc6c767c26196666"
+    },
+    "missing_evidence": {
+      "path": ".cache/ace16-set-null-delete-maintained-proof-20261028/missing-first.json",
+      "bytes": 286,
+      "sha256": "9e2549638c44ac69d3911fa704f18434e4829204c04aec2a6c5dd4e9873d06aa"
+    },
+    "statuses": [
+      0,
+      0,
+      0,
+      2
+    ],
+    "default_native_JVM_Cargo_children": 0,
+    "optional_git_metadata_children": 1,
+    "pin_occurrences": 2594,
+    "distinct_paths": 263
+  },
+  "qualification": {
+    "Microsoft_Access_execution": false,
+    "native_save_reopen": false,
+    "normal_backend_writes": false,
+    "data_macro_semantics": false,
+    "transaction_recovery": false,
+    "fixture_binaries_committed": false
+  }
+}
