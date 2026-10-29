@@ -177,7 +177,7 @@ fn default_sources_and_selected_indexes_do_not_silently_expand_or_fall_back() {
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score.Value FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
 }
 #[test]
@@ -344,7 +344,7 @@ fn attachment_opt_in_index_and_corrupt_child_boundaries_are_explicit() {
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score.FileName FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
     let mut bytes = bytes;
     bytes[CHILD_PAGE * PAGE_BYTES] = 0;

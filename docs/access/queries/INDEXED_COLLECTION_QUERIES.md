@@ -40,6 +40,12 @@ source handle. They are not durable IDs, cross-file identity, snapshot isolation
 or mutation capabilities. `TableSchema::same_definition` compares captured
 metadata, not row contents, property maps or an entire-file revision.
 
+The adapter checks opt-ins and projection metadata before opening the required
+index reader. That reader resolves and qualifies the selected index before any
+collection parent or child snapshot is loaded. A missing configured index returns
+`UnknownName` without a sequential fallback or collection-row reads. Full child
+certification and the reference bijection still complete before any visitor.
+
 ## Retained boundaries
 
 - The query path requires a complete `All` index traversal. An omitting/unsupported
@@ -78,6 +84,13 @@ memberships, forwarded roots, warm caches, aggregate queries, missing/duplicate/
 hidden/foreign roots, late orphan failures and metadata-only payload isolation.
 Explicit decoded attachment data and stored Memo-history members also retain
 their alignment when complete caches are reused without reading child pages again.
+
+The required-index ordering regression now rejects a missing configured name
+before collection parent/child records are read. The unchanged Watching guard
+passes; older blanket-index `Unsupported` expectations now use the precise
+`UnknownName` result. The four affected Access targets pass all 37 tests, followed
+by the full 500-test Access suite. Strict Access Clippy and minimal compilation
+also pass. This correction adds no sequential fallback or new index profile.
 
 The fixtures are repository-original synthetic data. These headless checks do
 not establish Microsoft Access execution or native write compatibility.

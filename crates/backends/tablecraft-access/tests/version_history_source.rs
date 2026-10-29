@@ -232,7 +232,7 @@ fn history_is_explicit_and_selected_indexes_never_silently_fall_back() {
     .unwrap();
     assert_eq!(
         execute(&source, "SELECT Score.Notes FROM Items").err(),
-        Some(QueryError::Unsupported)
+        Some(QueryError::UnknownName)
     );
 }
 

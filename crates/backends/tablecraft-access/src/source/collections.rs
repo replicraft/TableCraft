@@ -263,23 +263,10 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             return Err(QueryError::Unsupported);
         }
         validate_projection(indices, self.schema_columns(table)?.len())?;
-        let selected = self.load_values(table, values)?;
-        let mut fields = self.load_members(table, members)?;
-        self.budget
-            .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
-            .charge_allocation(values.len() as u64, size_of::<NativeField<'_>>() as u64)
-            .map_err(|error| query_error(error.into()))?;
-        fields
-            .try_reserve_exact(values.len())
-            .map_err(|_| QueryError::Allocation)?;
-        // Legacy Value views precede named members, matching the source contract.
-        for (position, column) in selected.into_iter().enumerate() {
-            fields.insert(position, NativeField::Value(column));
-        }
         if self.entry(table)?.index.is_some() {
-            return self.indexed_member_scan(table, indices, &fields, visitor);
+            return self.indexed_member_scan(table, indices, values, members, visitor);
         }
+        let fields = self.load_fields(table, values, members)?;
         let parents = fields.first().ok_or(QueryError::Source)?.parents().len();
         if fields.iter().any(|field| field.parents().len() != parents) {
             return Err(QueryError::Source);
