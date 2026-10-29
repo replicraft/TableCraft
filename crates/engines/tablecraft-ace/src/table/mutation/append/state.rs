@@ -37,6 +37,11 @@ enum Purpose {
         owned: u32,
         block: u32,
     },
+    OrdinaryOwnedBitmap {
+        definition: u32,
+        reference: u32,
+        block: u32,
+    },
     OrdinaryCandidateBitmap {
         definition: u32,
         reference: u32,
@@ -434,6 +439,62 @@ impl State {
         )
     }
 
+    pub(in crate::table) fn reserve_owned_bitmap(
+        &mut self,
+        number: u32,
+        reference: u32,
+        block: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::OrdinaryOwnedBitmap {
+                definition: self.owner,
+                reference,
+                block,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn require_owned_bitmap(
+        &self,
+        number: u32,
+        definition: u32,
+        reference: u32,
+        block: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::OrdinaryOwnedBitmap {
+                definition: actual,
+                reference: actual_reference,
+                block: actual_block,
+            } if actual == definition && actual_reference == reference && actual_block == block => {
+                Ok(())
+            }
+            _ => Err(EditError::Preservation),
+        }
+    }
+
+    pub(in crate::table) fn owned_bitmaps(
+        &self,
+    ) -> impl Iterator<Item = (u32, u32, u32, u32)> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::OrdinaryOwnedBitmap {
+                    definition,
+                    reference,
+                    block,
+                } => Some((reservation.number, definition, reference, block)),
+                _ => None,
+            })
+    }
+
     pub(in crate::table) fn reserve_candidate_bitmap(
         &mut self,
         number: u32,
@@ -557,6 +618,15 @@ impl State {
                 } => Purpose::LongValueOwnedBitmap {
                     column: *column,
                     owned: *owned,
+                    block: *block,
+                },
+                Purpose::OrdinaryOwnedBitmap {
+                    definition,
+                    reference,
+                    block,
+                } => Purpose::OrdinaryOwnedBitmap {
+                    definition: *definition,
+                    reference: *reference,
                     block: *block,
                 },
                 Purpose::OrdinaryCandidateBitmap {

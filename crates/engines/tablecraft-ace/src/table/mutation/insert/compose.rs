@@ -188,6 +188,7 @@ pub(super) fn compose(
                     + staged.long_values.metadata.len()
                     + staged.long_values.initializations.len()
                     + usize::from(data.append.global_bitmap().is_some())
+                    + usize::from(data.maps.owned_metadata_page().is_some())
                     + added_indexes
                     + PAGE_BYTES) as u64,
             )
@@ -260,6 +261,21 @@ pub(super) fn compose(
                 if selected.replace(page.after.as_slice()).is_some() {
                     return Err(EditError::Preservation);
                 }
+            }
+        }
+        if let Some((bitmap, reference, block, bytes)) = data.maps.owned_metadata_page()
+            && bitmap == number
+        {
+            data.append.require_owned_bitmap(
+                number,
+                data.append.owner,
+                reference,
+                block,
+                budget,
+                cancelled,
+            )?;
+            if selected.replace(bytes).is_some() {
+                return Err(EditError::Preservation);
             }
         }
         for (bitmap, reference, bytes) in data.maps.metadata_pages() {

@@ -34,7 +34,8 @@ receipts; all runtime phases pass first attempt. Single/chain LVAL and 32-row
 inline-DATA crossings preserve hole bodies while retiring old FREE membership.
 The source-pinned exclusive fill endpoint and frontier policy are explicit
 engineering observations, not universal Microsoft format claims. Block-one growth,
-wider ordinary-owned promotion and normal saves remain separate work. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
+higher-block ownership initialization and normal saves remain separate work. The
+ordinary-owned promotion continuation is recorded below. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
 
 ## Original-file Memo/OLE column-map growth
 
@@ -106,6 +107,36 @@ The later missing-declaration continuation is recorded above. Half-zero pairs,
 legacy external storage under zero pairs, continued TD initialization and
 production saves remain separate work. Qualified GLOBAL growth is recorded above. These literal engineering checks are not original-file or native
 Access qualification. See the [initialization contract](testing/ACE16_LONG_VALUE_INITIALIZATION.md).
+
+## Initialized Memo maps with INDEX growth
+
+INSERT now retains its qualified immutable source metadata after DATA placement
+for later physical-index work. Source buffer identity, byte length and definition
+bind that authority; root-leaf splitting, recursive NODE routing, owned-map
+rewrites and sealing share it. This fixes a later strict-recensus refusal when a
+zero Memo declaration initializes alongside existing Blob storage and primary
+index growth. It does not waive foreign map sharing or existing external payloads
+under zero references, and operations without retained metadata keep strict
+capture. Both literal source/expected-image gates pass before producer execution.
+The first combined INSERT batch passes all 249 functions, including the six
+source-authority/zero-Memo functions. The full ACE library passes 590 functions
+with one existing ignored generator; 49 selected shared integration tests,
+strict ACE Clippy, minimal compilation, formatting and documentation/dependency
+guards pass. See the [initialization continuation](testing/ACE16_LONG_VALUE_INITIALIZATION.md#initialization-through-later-index-growth).
+
+## Ordinary DATA-owned map promotion
+
+The INSERT preview can promote qualified ordinary-owned inline storage to a
+bitmap when its complete membership no longer fits a shifted inline window.
+A separate closed page purpose keeps owned metadata distinct from DATA, candidate
+metadata and GLOBAL storage. Source-derived audit checks the complete record,
+bitmap, reservation inventory and shared allocation order. Four independent
+literal source/expected-image gates pass before API execution; DATA 520 followed
+by owned bitmap 521 and later DATA 522 demonstrates bitmap reuse. All four
+ordinary-owned functions pass in the first combined 249-function INSERT batch
+and the wider checks recorded above. Original-file comparison and native Access
+qualification remain separate. See the
+[ordinary-owned contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
 
 ## Original-file variable-key INSERT comparisons
 

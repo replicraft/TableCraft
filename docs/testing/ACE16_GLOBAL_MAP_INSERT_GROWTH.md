@@ -69,8 +69,10 @@ requires `maximum − base < 512`. A represented edge bit still uses the origina
 cell path. After a rebase, complete row rewrites retain the original before-image
 and absorb prior owned-cell edits. They never invent cells from a staged base.
 Fresh Metadata authority binds the original OrdinaryOwned role and record range.
-Wider, indirect and UPDATE paths retain their existing behavior; ordinary-owned
-bitmap promotion beyond a fitting window remains separate work.
+Wider, indirect and UPDATE paths retain their existing behavior. The subsequent
+[ordinary-owned promotion continuation](ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
+adds a separately typed bitmap when the complete inline member window no longer
+fits; its original-file acceptance remains separate.
 
 The independent INSERT audit derives every allocation from original bytes and
 full requests. Its shared append replay inserts GLOBAL metadata at the actual
