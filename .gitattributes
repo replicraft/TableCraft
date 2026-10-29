@@ -4,3 +4,4 @@
 
 # The engineering TSV protocol has meaningful empty terminal fields.
 /docs/testing/ace16_insert_extended_datetime/requests.tsv -text whitespace=-blank-at-eol
+/docs/testing/ace16_incrementing_autonumber/requests/pressure.tsv -text whitespace=-blank-at-eol
