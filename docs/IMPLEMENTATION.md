@@ -34,7 +34,10 @@ tests retain the explicit test-debug-level-1 disk accommodation.
 
 The [record](testing/results/ace16-nullable-split-batch-updates-2026-10-29.json)
 keeps source/model freezes, static audit corrections and compile/lint observations.
-Original-file comparisons are proposed but unrun for this path. Cross-table
+The first [original-file source phase](testing/results/ace16-nullable-split-batch-sources-2026-10-29.json)
+passes nine creation/inspection calls, eight table gates and four Sentinel gates
+across four fixed originals. Actual candidate comparisons remain unrun for this
+path. Cross-table
 allocation, wider carriers, contraction and broader map/height cases remain
 unfinished. Fitted, slot, cascade and normal save policies retain their separate
 admission; this is a non-journalable engineering candidate, not macro or native

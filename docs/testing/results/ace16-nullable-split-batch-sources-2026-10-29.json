@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-29",
+  "phase": "Source-only qualification for allocating nullable batch UPDATE originals",
+  "consumer_commit": "50d028cc19452c54046b1e1d23baa77ac80f491b",
+  "scope": "Public-builder originals and independent raw/getter source qualification only; no candidate, public UPDATE or native Access qualification.",
+  "freeze": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-freeze.json",
+    "bytes": 9470,
+    "sha256": "da0880c7c3a6432bf004b870e458b9acfafae800a9ccd481c096c73fad7dcf5f"
+  },
+  "plan": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-plan.json",
+    "bytes": 16611,
+    "sha256": "940639e40d4887947ef18a237e93392b5804d84bf630cfc9b7ab7123fce23fda"
+  },
+  "capture_report": {
+    "path": ".cache/ace16-nullable-split-batch-source-first-20261029/report.json",
+    "bytes": 35238,
+    "sha256": "aca41719de9db944792246afac807e44fc09707d99c62269b4019319ab2c6945"
+  },
+  "source_gates": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-gates-first.json",
+    "bytes": 8517980,
+    "sha256": "af024b9896769525a2bb63eb8ddd2b9caf534243f701a9d0a90e1806489c6be8"
+  },
+  "static_log": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/static-root.log",
+    "bytes": 134,
+    "sha256": "dcb8843d8d21a61c6bfe8930cf991fe8391e61c7b7bc781e220eec94728a68e3"
+  },
+  "capture_log": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-first-root.log",
+    "bytes": 862,
+    "sha256": "181cd47b744152b57291e265d87664393146740353bd799b66eec3b1f23e773c"
+  },
+  "qualification_log": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/source-gates-first-root.log",
+    "bytes": 240,
+    "sha256": "3c13a054d41a3925e0ccac36cc717bc5b37811a8aa9ce9ac8a2fe5b908ed7dbd"
+  },
+  "authoring_provenance": {
+    "path": ".cache/ace16-nullable-split-batch-source-next-20261029/AUTHORING_PROVENANCE.json",
+    "bytes": 1061,
+    "sha256": "7c707745e590c2ce0a4595ffd1a5f6616381b4290b1c7b7a5376697e0bc6efd0"
+  },
+  "actual_source_children": 9,
+  "source_sequence": [
+    "compile once",
+    "create four fixed originals",
+    "inspect those four originals"
+  ],
+  "first_capture_exit_code": 0,
+  "first_qualification_exit_code": 0,
+  "target_gates": 8,
+  "sentinel_gates": 4,
+  "user_records": 4004,
+  "known_create_warning_records": 2400,
+  "warnings_suppressed": false,
+  "originals": [
+    {
+      "id": "V2016-ASC",
+      "profile": "V2016",
+      "direction": "ASC",
+      "source": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2016-ASC-source.accdb",
+        "bytes": 446464,
+        "sha256": "9f88cf99ee1475aa78f6f6cbbe1100b023996de8cc72ac8498434fae30aa5ae1"
+      },
+      "getter": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2016-ASC-inspect.stdout",
+        "bytes": 619929,
+        "sha256": "f5d3a7b111ee423ee579a43922dda1ede66071e35d8f3f6857b16073afb4ef83"
+      },
+      "targets": [
+        {
+          "name": "Items",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        },
+        {
+          "name": "UniqueItems",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        }
+      ],
+      "sentinel_rows": 1
+    },
+    {
+      "id": "V2016-DESC",
+      "profile": "V2016",
+      "direction": "DESC",
+      "source": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2016-DESC-source.accdb",
+        "bytes": 446464,
+        "sha256": "2b01464e7e77460e09fa752b233d21fe5525387062a8495eef6f4e0b4d1c1709"
+      },
+      "getter": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2016-DESC-inspect.stdout",
+        "bytes": 619933,
+        "sha256": "c952097f0c9f4923ec95801d6f4d0d4a52081c374bf581b67be116028a1a94ef"
+      },
+      "targets": [
+        {
+          "name": "Items",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        },
+        {
+          "name": "UniqueItems",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        }
+      ],
+      "sentinel_rows": 1
+    },
+    {
+      "id": "V2019-ASC",
+      "profile": "V2019",
+      "direction": "ASC",
+      "source": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2019-ASC-source.accdb",
+        "bytes": 520192,
+        "sha256": "b06f4f5761a4554072780fe6139e7d98fe968a044ed25d6dd94b1b8ff4aa4488"
+      },
+      "getter": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2019-ASC-inspect.stdout",
+        "bytes": 628977,
+        "sha256": "a0fb0db0188fe7252a4f9806b3a3849768cf8d7af2c01dd036dcb8284c9bc8dd"
+      },
+      "targets": [
+        {
+          "name": "Items",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        },
+        {
+          "name": "UniqueItems",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        }
+      ],
+      "sentinel_rows": 1
+    },
+    {
+      "id": "V2019-DESC",
+      "profile": "V2019",
+      "direction": "DESC",
+      "source": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2019-DESC-source.accdb",
+        "bytes": 520192,
+        "sha256": "031fef299358a036eb0161f5b2b1e90416acf390b687228260966a73c0c251d1"
+      },
+      "getter": {
+        "path": ".cache/ace16-nullable-split-batch-source-first-20261029/V2019-DESC-inspect.stdout",
+        "bytes": 628981,
+        "sha256": "c417aaecd5099b0c3d8553151029b9692098f7f6ffc0f14938163001599c9a4e"
+      },
+      "targets": [
+        {
+          "name": "Items",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        },
+        {
+          "name": "UniqueItems",
+          "rows": 500,
+          "logical_indexes": 4,
+          "physical_indexes": 2,
+          "ordinary_history": 201,
+          "ignored_history": 200
+        }
+      ],
+      "sentinel_rows": 1
+    }
+  ],
+  "source_pins_unchanged": true,
+  "constructor_images": 0,
+  "public_reference_commands": 0,
+  "native_candidate_commands": 0,
+  "reference_compile_commands": 0,
+  "unrun": [
+    "20 independent expected-image constructions",
+    "public reference actions/fresh readers",
+    "native candidates/fresh readers",
+    "native Access comparisons/save/reopen"
+  ],
+  "limits": {
+    "heap_bytes": 536870912,
+    "database_bytes": 8388608,
+    "stdout_bytes_per_child": 16777216,
+    "stderr_bytes_per_child": 16777216,
+    "child_seconds": 30
+  }
+}
