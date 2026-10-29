@@ -1,0 +1,81 @@
+{
+  "operation": "Committed nullable split-batch consumer in a fresh isolated target",
+  "commit": "50d028cc19452c54046b1e1d23baa77ac80f491b",
+  "command": [
+    "cargo",
+    "build",
+    "-p",
+    "tablecraft-ace",
+    "--features",
+    "ace16-write-preview",
+    "--example",
+    "preview_ace16_batch",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j2",
+    "--target-dir",
+    "<repository>/.cache/ace16-nullable-split-batch-isolated-build-next-20261029/target"
+  ],
+  "isolated_source": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/source",
+  "target_directory": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/target",
+  "fresh_target_was_absent": true,
+  "owning_engine_compilation_observed": true,
+  "source_archive": {
+    "path": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/committed-source.tar",
+    "bytes": 93265920,
+    "sha256": "2d8cb9039179b7ec1ccee2d324dcdcf339ce12e398c6afbc00908732405a7331"
+  },
+  "source_manifest": {
+    "path": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/archive-source-manifest.json",
+    "bytes": 1105531,
+    "sha256": "faf60cf6c1b21870747c6f0f5406741cc2d3c0717cfc6dbea51e3e5daa30f39d"
+  },
+  "exported_file_count": 4791,
+  "all_exported_files_match_git_objects": true,
+  "source_inventory_unchanged_after_build": true,
+  "expected_images_frozen_before_build": {
+    "path": ".cache/ace16-nullable-split-batch-expected-next-20261029/freeze.json",
+    "bytes": 29923,
+    "sha256": "e348dee129c323554b7b79be348747dfa0add239ff1b94c3014113e546f75f0d"
+  },
+  "expected_report_frozen_before_build": {
+    "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/report.json",
+    "bytes": 44642,
+    "sha256": "c31e35dcb2458b357b120fac010ee82331a233df57b5f24341a5db93c048ce1b"
+  },
+  "expected_outputs_frozen_before_build": {
+    "path": ".cache/ace16-nullable-split-batch-expected-first-20261029/freeze.json",
+    "bytes": 38966,
+    "sha256": "ee9f402cb997918905d1aa071fb5ddcb1cc68b256773e44f4ce6a1c81b039583"
+  },
+  "build_driver": {
+    "path": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/build.py",
+    "bytes": 11211,
+    "sha256": "71b30adfca490482a55f67a0cff43359dd0214c26ef5e0a3e277e3c9815116f3"
+  },
+  "build_freeze": {
+    "path": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/freeze.json",
+    "bytes": 41608,
+    "sha256": "897ae7ee0edc2cba8c5c1ecddcd7adecd37d5a9e03027b8633f778377124dcdb"
+  },
+  "build_log": {
+    "path": ".cache/ace16-nullable-split-batch-isolated-build-next-20261029/committed-build.log",
+    "bytes": 4927,
+    "sha256": "71a29cce6a2106939038dce8300268c15fc1dc069ad6b350e2494228b9c6279b"
+  },
+  "fresh_target_policy": "Initially absent dedicated target; archived mtimes cannot reuse shared artifacts",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "status": 0,
+  "artifacts": {
+    "batch": {
+      "path": ".cache/tablecraft-bin/ace16-nullable-split-batch-20261029",
+      "bytes": 6585392,
+      "sha256": "d939ec0c9d4bb86d3bbb9e792fa56081d40c2669e57dac9c561763d6027d1ed2"
+    }
+  },
+  "candidate_processes": 0,
+  "independent_reader_processes": 0,
+  "native_Access_qualification": false
+}
