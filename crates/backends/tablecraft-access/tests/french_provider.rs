@@ -76,7 +76,7 @@ fn exact_constructor_and_french_default_resolver_preserve_general_isolation() {
 }
 
 #[test]
-fn comparison_capability_does_not_supply_text_lcid_or_matching_policies() {
+fn database_search_does_not_supply_text_lcid_or_like_policies() {
     let provider = FrenchLegacyCollation::new(order(), budget(), &|| false)
         .unwrap()
         .with_option_compare(StringCompareMode::Database);
@@ -86,20 +86,50 @@ fn comparison_capability_does_not_supply_text_lcid_or_matching_policies() {
         provider.compare_text("a", "A"),
         Err(EvalError::CollationRequired)
     );
-    for mode in [StringCompareMode::Text, StringCompareMode::Database] {
-        assert_eq!(
-            provider.string_search_profile(mode),
-            StringSearchProfile::Unicode
-        );
-        assert_eq!(
-            provider.find("abc", "b", StringSearch::ForwardFrom(0), mode),
-            Err(EvalError::UnsupportedExpression)
-        );
-        assert_eq!(
-            provider.find_utf16(&[97, 98, 99], &[98], StringSearch::ForwardFrom(0), mode),
-            Err(EvalError::UnsupportedExpression)
-        );
-    }
+    assert_eq!(
+        provider.string_search_profile(StringCompareMode::Text),
+        StringSearchProfile::Unicode
+    );
+    assert_eq!(
+        provider.find(
+            "abc",
+            "b",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Text
+        ),
+        Err(EvalError::CollationRequired)
+    );
+    assert_eq!(
+        provider.find_utf16(
+            &[97, 98, 99],
+            &[98],
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Text
+        ),
+        Err(EvalError::CollationRequired)
+    );
+    assert_eq!(
+        provider.string_search_profile(StringCompareMode::Database),
+        StringSearchProfile::Utf16
+    );
+    assert_eq!(
+        provider.find(
+            "cote côte",
+            "côte",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Database
+        ),
+        Ok(Some(5..9))
+    );
+    assert_eq!(
+        provider.find_utf16(
+            &[0xd800, 0x00e9],
+            &[0x00c9],
+            StringSearch::ForwardFrom(1),
+            StringCompareMode::Database
+        ),
+        Ok(Some(1..2))
+    );
     assert_eq!(
         provider.find_locale(
             "abc",
@@ -109,6 +139,55 @@ fn comparison_capability_does_not_supply_text_lcid_or_matching_policies() {
         ),
         Err(EvalError::CollationRequired)
     );
+}
+
+#[test]
+fn french_search_uses_the_shared_comparison_pool_and_refuses_reentrant_callbacks() {
+    let pool = RefCell::new(ResourceBudget::new(4000, 0, 100_000));
+    let resolver = NativeCollationResolver::new(order(), &pool, &|| false).unwrap();
+    let provider = resolver.default_collation();
+    {
+        let _held = pool.borrow_mut();
+        assert_eq!(
+            provider.find(
+                "côte",
+                "ôte",
+                StringSearch::ForwardFrom(0),
+                StringCompareMode::Database
+            ),
+            Err(EvalError::CollationFailed)
+        );
+        assert_eq!(
+            provider.find_utf16(
+                &[0x00e9],
+                &[0x00e9],
+                StringSearch::ForwardFrom(0),
+                StringCompareMode::Database
+            ),
+            Err(EvalError::CollationFailed)
+        );
+    }
+    let mut successes = 0;
+    for _ in 0..100 {
+        match provider.find(
+            "côte",
+            "ôte",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Database,
+        ) {
+            Ok(Some(range)) => {
+                assert_eq!(range, 1..4);
+                successes += 1;
+            }
+            Err(EvalError::Limit(_)) => break,
+            result => panic!("Unexpected search result: {result:?}"),
+        }
+    }
+    assert!(successes > 0 && successes < 100);
+    assert!(matches!(
+        provider.compare("côte", "côte"),
+        Err(EvalError::Limit(_))
+    ));
 }
 
 #[test]

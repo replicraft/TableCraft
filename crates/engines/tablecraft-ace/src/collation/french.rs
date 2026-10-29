@@ -4,6 +4,9 @@ use crate::{InspectError, header::check};
 use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
 
+mod search;
+pub use search::{FrenchTextSearch, find_french_legacy_text, find_french_legacy_utf16};
+
 /// Compare complete decoded Strings under exact French legacy 1036/0/0.
 ///
 /// This engineering model reverses the complete secondary weight stream, ignores

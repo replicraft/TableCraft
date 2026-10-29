@@ -295,7 +295,7 @@ fn mixed_and_unknown_policies_refuse_while_bare_projection_stays_inactive() {
 }
 
 #[test]
-fn comparison_only_matching_refuses_wildcard_shortcuts_and_retains_search_controls() {
+fn french_search_keeps_like_refusals_and_binary_controls_separate() {
     let source = Words::new();
     let pool = budget();
     let policy = resolver(&pool);
@@ -314,8 +314,13 @@ fn comparison_only_matching_refuses_wildcard_shortcuts_and_retains_search_contro
     )
     .unwrap();
     assert_eq!(
-        run(&source, &french, "SELECT InStr(1,'cote','ot',2)").err(),
-        Some(QueryError::Evaluation(EvalError::UnsupportedExpression))
+        run(
+            &source,
+            &french,
+            "SELECT InStr(1,'cote côte','côte',2),InStrRev('côte CÔTE','côte',-1,2)"
+        )
+        .unwrap(),
+        [vec![Value::Int32(6), Value::Int32(6)]]
     );
     assert_eq!(
         run(

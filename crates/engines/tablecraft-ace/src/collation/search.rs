@@ -1,4 +1,4 @@
-//! Metered substring search under the explicit full-string General weight model.
+//! General search and primary-only span scheduling shared with French legacy.
 mod raw;
 
 use super::{
@@ -78,7 +78,7 @@ pub fn find_general_text(
     )
 }
 
-fn find_spans(
+pub(super) fn find_spans(
     boundaries: &[(usize, usize, usize)],
     needle_key: &key::ComparisonKey,
     empty_needle: bool,

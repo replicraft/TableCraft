@@ -7,11 +7,12 @@ extern crate self as tablecraft_ace;
 mod catalog;
 mod collation;
 pub use collation::{
-    GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey,
+    FrenchTextSearch, GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey,
     compare_french_legacy_text, compare_french_legacy_utf16, compare_general_like_units,
     compare_general_text, compare_general_utf16, encode_text_index_key,
-    encode_utf16_text_index_key, find_general_text, find_general_utf16, general_like_literal_step,
-    general_like_unit_step, inspect_database_sort_order, is_general_like_unit,
+    encode_utf16_text_index_key, find_french_legacy_text, find_french_legacy_utf16,
+    find_general_text, find_general_utf16, general_like_literal_step, general_like_unit_step,
+    inspect_database_sort_order, is_general_like_unit,
 };
 mod queries;
 pub use queries::{

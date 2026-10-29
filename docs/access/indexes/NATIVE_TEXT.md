@@ -540,11 +540,12 @@ String built-ins retain the operation/default provider: a French argument field
 under a General database default does not select French InStr/StrComp behavior.
 SQL predicates and relational keys retain their separate field-policy routing.
 Existing Binary behavior is separate. `LikeProfile::Unsupported` rejects even
-wildcard-only non-NULL LIKE. No French substring matcher is supplied: actual
-Text/Database/LCID search callbacks remain unavailable, while existing
-policy-independent NULL/empty/out-of-range controls and Binary search retain
-their evaluator behavior. No equality-prefix hint, automatic selection expansion
-or mutation authority is introduced.
+wildcard-only non-NULL LIKE. The separate
+[French substring service](FRENCH_SEARCH.md) now supplies provisional complete-
+weight Database-mode consumed spans. Text/LCID matching is not inferred from the
+stored descriptor. Existing policy-independent NULL/empty/out-of-range controls
+and Binary search retain their evaluator behavior. No equality-prefix hint,
+automatic selection expansion or mutation authority is introduced.
 
 [Independent short French keys and the Latin oracle](../../testing/FRENCH_COMPARISON_OBSERVATIONS.md)
 test complete comparison signs. A separate bounded

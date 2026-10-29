@@ -196,6 +196,12 @@ registers that profile for one exact InStr LCID. Neither this host profile nor
 the General model establishes native SQL qualification. The independently maintained key encoder agrees on 268 short
 forward/reverse/replacement controls across both General families.
 
+The exact French legacy database provider now also supplies a separate
+[full-weight span policy](../../access/indexes/FRENCH_SEARCH.md). It retains
+complete reversed secondary weights and shares only primary-proven pruning with
+General search. This does not enable French LIKE or establish native Access
+substring matching; Windows Text/LCID providers remain separately selected.
+
 ```sh
 tablecraft query eval "SELECT InStr(1,'banana','an',0) AS FirstMatch, InStrRev('banana','an') AS LastMatch"
 tablecraft query run "SELECT InStr('banana','an') AS FirstMatch" --collation ordinal
