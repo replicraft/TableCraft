@@ -134,9 +134,17 @@ prepared-profile enum's size difference. Its local justification retains the
 fallibly reserved, budget-metered vector instead of adding unmetered per-owner
 boxing. These preparation/lint results are separate from candidate behavior.
 
-Public-builder original-file sources and independent-reader comparisons for this
-allocation path are still planned. No Java/native producer calls have run for
-that study. Root-height growth, map-boundary variants, wider tuples/carriers,
+The [source-only original-file checkpoint](results/ace16-nullable-split-batch-sources-2026-10-29.json)
+now passes its first nine public-builder/inspection commands and eight raw target
+gates plus four Sentinel gates. Four unchanged V2016/V2019 ASC/DESC originals
+contain 4,004 user records. Each target has the predicted four logical declarations
+over two physical owners, leaf packing and 201/200 histories. All 2,400 known
+creation warning records are preserved and classified exactly; no stderr is
+silently suppressed. No expected image, public UPDATE, native candidate or native
+Access comparison ran in that source phase. Twenty source/request-derived
+expected images must precede the reference and candidate phases.
+
+Root-height growth, map-boundary variants, wider tuples/carriers,
 cross-table allocation and contraction need their own acceptance. Required
 [data-macro semantics](DATA_MACROS.md), native Access save/reopen and recovery
 qualification remain open; this candidate has no journal or save operation.
