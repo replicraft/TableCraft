@@ -1,0 +1,284 @@
+{
+  "date": "2026-10-29",
+  "operation": "Selected forwarded logical rows in ACE16 fixed/batch engineering previews with strict automatic-cascade isolation",
+  "baseline_commit": "60b33158937b4fe66c6daa050c0d37f11f33ddeb",
+  "entrypoints": [
+    "NativeImage::preview_ace16_fixed_updates",
+    "NativeImage::preview_ace16_batch_updates"
+  ],
+  "normal_save_enabled": false,
+  "native_Access_qualification": false,
+  "original_file_forwarding_qualification": false,
+  "scope": [
+    "Generic existing Root capture over actual RowAssignment consumers",
+    "Existing bounded resolver, full owned-page membership and exclusive selected final-offset ownership before callbacks",
+    "Logical index ROW and root slot metadata; physical data/mask/payload offsets",
+    "No DATA/index allocation, pointer rewrite, row resize or slot/header changes",
+    "Prior variable/slot consumers retain SlotScalarUpdate binding and policy",
+    "Explicit extended direct fixed/batch versus strict metadata/index/inline automatic-cascade routes"
+  ],
+  "correction": {
+    "prior_checkpoint": "60b33158",
+    "issue": "Automatic UPDATE cascade wrapper delegated to public extended batch API, so prior IgnoreNULL admission leaked transitively and new forwarded access would also leak.",
+    "fixed": "Both empty/no-facts and expanded cascade branches use internal strict batch policy; DELETE NULL and normal Jet4 remain inline-only.",
+    "earlier_counts_did_not_establish_isolation": true
+  },
+  "passing": {
+    "full_engine_library": 665,
+    "existing_generators_ignored": 2,
+    "focused_ignored_and_forwarding": 24,
+    "new_forwarding_functions": 8,
+    "cascade_target": 9,
+    "new_policy_functions": 3,
+    "shared_functions": 140,
+    "shared_targets": 20
+  },
+  "independent_images": {
+    "forwarded_core": 36,
+    "enforced_relationship_explicit_batch": 4,
+    "additional_reader_valid_shared_and_unowned_refusal_sources": 2
+  },
+  "verification": [
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/source-after-long-value-types.log",
+        "bytes": 530,
+        "sha256": "27dc1392959f75dd13d709c64fac827bdad4ff553fede83799a280437c2d7850"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/source-with-authority-first.log",
+        "bytes": 685,
+        "sha256": "8c98bcc8a561660f4c247a321b3c1dec5922dda32fd9ee3a441a47a440c7ce75"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/api-first-root.log",
+        "bytes": 7747,
+        "sha256": "fafaa092557b1d741c8871388bb78cad3809f7c7af45d9aec338df028ac4ab3f"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/library-first-root.log",
+        "bytes": 85456,
+        "sha256": "3007340dedbbb67cecdad2411d0075d65b6528e3b9a5c4983caa129ee4d3a611"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/shared-regressions-first-root.log",
+        "bytes": 16513,
+        "sha256": "5f4bc4fcefdd64db304a584a8896294051d844ad14300223a287c81ac661af29"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/clippy-first-root.log",
+        "bytes": 3762,
+        "sha256": "43537da2eeee6824b4fa111b66832fbed10a6a4d2e27534e7ce5d1b068c9d842"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/minimal-first-root.log",
+        "bytes": 1701,
+        "sha256": "53bbf03a0fe5ad6386da5ae009254e4138922fb5fe68901c3eef8e923f7fe535"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-cascade-policy-20261029/source-after-disk-cleanup.log",
+        "bytes": 480,
+        "sha256": "461e0d79c0bb2d0e05c8db4738d3dde9bb8f51997da514c9ad1309d11c429467"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-cascade-policy-20261029/api-first-root.log",
+        "bytes": 1117,
+        "sha256": "f0df3a3b73caefb417f9dff6c2676f17bbc97241ac18ee747c7b49af458f62c7"
+      }
+    }
+  ],
+  "preserved_failures": [
+    {
+      "status": 101,
+      "phase": "compile before tests",
+      "reason": "Two pre-existing SlotScalarUpdate Root consumers lacked explicit new generic arguments; mechanical annotations changed no bytes.",
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/source-first-root.log",
+        "bytes": 1506,
+        "sha256": "25f9b86f2f22b23e8b0b11ca163c3ffe70f7600a7e75ae7dd8171f51f9de3c2b"
+      }
+    },
+    {
+      "status": 101,
+      "phase": "archive build before tests",
+      "reason": "ENOSPC creating library archive. Reclaimed rebuildable codegen and incremental artifacts; compilation settings unchanged.",
+      "log": {
+        "path": ".cache/ace16-selected-forwarded-cascade-policy-20261029/source-first-root.log",
+        "bytes": 361,
+        "sha256": "8edb3dd01fc1a08c11d26fc5bcaab56c9ce8189634946c982f95065fd06d19de"
+      },
+      "cleanup": {
+        "path": ".cache/forwarded-update-codegen-cleanup-20261029.json",
+        "bytes": 667195,
+        "sha256": "6de17dc46bde5169e915f199c62322435734950f4afadf66ae607c40cce6fc76"
+      }
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/nulls.rs",
+      "bytes": 4284,
+      "sha256": "490b0c63ea3ed4b67f1072170c70eb58159272c8fe077aa787070973bfb2087b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 10323,
+      "sha256": "3b2c00aa642b590d1290421529ad9a7cccabc2ac2b92c10f1dc396b335ee9a33"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/cascade/plan.rs",
+      "bytes": 8126,
+      "sha256": "d58087fcc7deb9597b8f832ef623be3b8fb64cd2a4c2e8b6483de485373a9f3f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates.rs",
+      "bytes": 12271,
+      "sha256": "d03376ca132a5cefacf957eaa7bb9ba445b4e443ac074e1ec0b4912e55a89563"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/forwarded.rs",
+      "bytes": 4740,
+      "sha256": "1a9f7397c89bba3046afef633a539cc776bb677605dee3a68dbdb0303847ea3e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded.rs",
+      "bytes": 9906,
+      "sha256": "0d93f2dbd3e2b459eb73c4c40c5856d248db705f39aa7632d9f4ad17eeac36fc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded/authority.rs",
+      "bytes": 4901,
+      "sha256": "5407664deb9b9c6f1def68d02eab8eaaded217913af52641b6f8200c5bfed317"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "bytes": 9606,
+      "sha256": "2a34bea5f493d57821c68778f48c847b2845553b36ba1a158b9c5949fe3a5f15"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/placement.rs",
+      "bytes": 13621,
+      "sha256": "5b8bf113a27d213361053521ae5d0305f1d08f66a0a640e800ec39d817e54fc6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/stage.rs",
+      "bytes": 7350,
+      "sha256": "e842a997e0858affb1c654f3758641c2c18eb2649cf3d934596a3c85c6e6129d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/audit.rs",
+      "bytes": 13226,
+      "sha256": "de1175248987a87194c838b1bd95febb6299e6468d80d057057e56c6280d0601"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/forward.rs",
+      "bytes": 9299,
+      "sha256": "4ec3667e3eeee8f8bad3359c052d201679ca1d51cc6a1ec74b6b95a9d11d2d86"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs",
+      "bytes": 5613,
+      "sha256": "d14d6cfe326bd70e99841eb4e99618e776c7ebd747103646e4302e74f650e654"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/stage.rs",
+      "bytes": 10009,
+      "sha256": "55ea7a9fd83d89e48148400f9998602118b7ed878d4ef8f77985078bd3193255"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows.rs",
+      "bytes": 4818,
+      "sha256": "a8659c10e45c404c793bdd5a1d9d79a53cd8073ff1c12b53e7a5f8aca3546461"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/rows/final_record.rs",
+      "bytes": 2033,
+      "sha256": "b64cf0abf163cbdf9a454b3993d3a69383fc36eb09717e21d39dfe820f952b36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/placement.rs",
+      "bytes": 14604,
+      "sha256": "5a8fcebace4314e61d534a88a0bc536d5b0ed0d59c32f397c571280317396925"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/cascade_updates.rs",
+      "bytes": 7534,
+      "sha256": "7081a77e9ccc5706fc9ccb62edf4654c65c2ddab4f62ac6c9169ee3e2f86b1a2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/cascade_updates/policy.rs",
+      "bytes": 8245,
+      "sha256": "81ac9ea0ae1ec38634e14433890098998cde5a59e464fbe19ec071eef75e896b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/foreign_updates/fixture.rs",
+      "bytes": 5265,
+      "sha256": "44773c8ac152230c685cf27c8e094c6b95cd67be6b7cdcafae23d33dabbd2f6c"
+    }
+  ],
+  "source_freezes": [
+    {
+      "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/registered-first-freeze.json",
+      "bytes": 2670,
+      "sha256": "45a05b018b988099168c3c1414575ef86b83bb51aae1729752e8693111a3dc38"
+    },
+    {
+      "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/visibility-corrected-freeze.json",
+      "bytes": 2784,
+      "sha256": "7c9427c3abd3e0ea58e5be12f8090600cd6b042385f51c085a6ac72055af5451"
+    },
+    {
+      "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/long-value-types-corrected-freeze.json",
+      "bytes": 3219,
+      "sha256": "28af92894d2fc55f7f72085ae99c277d5c38bf0111c4976fbc4a63298d914d67"
+    },
+    {
+      "path": ".cache/ace16-selected-forwarded-fixed-next-20261029/authority-registered-freeze.json",
+      "bytes": 3713,
+      "sha256": "7f32c75f8de0f603585fc4fe0d6b4340f5657bd8cb1f7210f47214dab93544b0"
+    },
+    {
+      "path": ".cache/ace16-selected-forwarded-cascade-policy-20261029/freeze.json",
+      "bytes": 1724,
+      "sha256": "8a2afafc7a3609a164f4d9e691cfa0345119fa112437b60d9259aa39d35a430d"
+    }
+  ],
+  "historical_original_proof": {
+    "producer": "60b33158",
+    "result": "docs/testing/results/ace16-fixed-ignore-null-update-originals-2026-10-29.json",
+    "qualifies_current_forwarding_or_cascade_isolation": false
+  }
+}

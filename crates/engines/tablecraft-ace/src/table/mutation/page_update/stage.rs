@@ -20,7 +20,7 @@ use tablecraft_core::{
 };
 
 struct Change<'u> {
-    root: Root<'u>,
+    root: Root<'u, SlotScalarUpdate>,
     values: Vec<Value>,
     record: Vec<u8>,
     target: Range<usize>,
@@ -273,7 +273,7 @@ pub(in crate::table::mutation) trait Placement {
     fn apply(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_>,
+        root: &Root<'_, SlotScalarUpdate>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,
@@ -298,7 +298,7 @@ impl Placement for Plan {
     fn apply(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_>,
+        root: &Root<'_, SlotScalarUpdate>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,

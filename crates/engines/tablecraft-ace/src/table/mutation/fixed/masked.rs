@@ -97,7 +97,7 @@ pub(super) fn generate<const WIDTH: usize>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
     let structural = gates::before_fixed_update(&image, table, budget, cancelled)?;
-    let staged = stage::<WIDTH>(
+    let staged = stage::<WIDTH, true>(
         &image,
         &structural,
         column,
@@ -132,7 +132,7 @@ pub(in crate::table::mutation) struct ColumnEdits<const WIDTH: usize> {
     pub changed: Vec<u32>,
 }
 
-pub(in crate::table::mutation) fn stage<const WIDTH: usize>(
+pub(in crate::table::mutation) fn stage<const WIDTH: usize, const OWNED_FINAL: bool>(
     image: &NativeImage,
     structural: &TableCheck,
     column: &str,
@@ -204,7 +204,6 @@ pub(in crate::table::mutation) fn stage<const WIDTH: usize>(
     patches
         .try_reserve_exact(capacity)
         .map_err(|_| InspectError::Allocation)?;
-    let mut source = image.reader();
     budget
         .charge_allocation(updates.len() as u64, size_of::<u32>() as u64)
         .map_err(InspectError::from)?;
@@ -212,84 +211,90 @@ pub(in crate::table::mutation) fn stage<const WIDTH: usize>(
     changed
         .try_reserve_exact(updates.len())
         .map_err(|_| InspectError::Allocation)?;
-    rows::visit(
-        &mut Reader {
-            source: &mut source,
-            header: image.catalog().header(),
-            budget,
-            cancelled,
-            reads: 0,
-        },
-        schema,
-        &inputs,
-        |row, input| {
-            let mask_offset = row.mask + selected.number() / MASK_BITS;
-            let before = *row.data.get(mask_offset).ok_or(InspectError::Malformed)?;
-            let bit = 1_u8 << (selected.number() % MASK_BITS);
-            if (before & bit != 0) != input.before.present {
+    let visitor = |row: rows::Row<'_>, input: &Input<WIDTH>| {
+        let mask_offset = row.mask + selected.number() / MASK_BITS;
+        let before = *row.data.get(mask_offset).ok_or(InspectError::Malformed)?;
+        let bit = 1_u8 << (selected.number() % MASK_BITS);
+        if (before & bit != 0) != input.before.present {
+            return Err(EditError::Conflict);
+        }
+        if !input.before.present && !input.after.present {
+            return Ok(());
+        }
+        let payload_offset = if kind == ScalarType::Decimal {
+            let span = super::decimal::span(schema, column, row.data, row.mask)?;
+            if span.len() != WIDTH {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            }
+            span.start
+        } else {
+            COLUMN_COUNT_BYTES + selected.field.offset
+        };
+        let stored = if WIDTH != 0 {
+            if payload_offset + WIDTH > row.mask {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            }
+            let data = row.data[payload_offset..payload_offset + WIDTH]
+                .try_into()
+                .map_err(|_| InspectError::Malformed)?;
+            if input.before.present && data != input.before.bytes {
                 return Err(EditError::Conflict);
             }
-            if !input.before.present && !input.after.present {
-                return Ok(());
-            }
-            let payload_offset = if kind == ScalarType::Decimal {
-                let span = super::decimal::span(schema, column, row.data, row.mask)?;
-                if span.len() != WIDTH {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                }
-                span.start
-            } else {
-                COLUMN_COUNT_BYTES + selected.field.offset
-            };
-            let stored = if WIDTH != 0 {
-                if payload_offset + WIDTH > row.mask {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                }
-                let data = row.data[payload_offset..payload_offset + WIDTH]
-                    .try_into()
-                    .map_err(|_| InspectError::Malformed)?;
-                if input.before.present && data != input.before.bytes {
-                    return Err(EditError::Conflict);
-                }
-                data
-            } else {
-                [0; WIDTH]
-            };
-            let modified = input.before.present != input.after.present
-                || (WIDTH != 0 && input.after.present && input.before.bytes != input.after.bytes);
-            if !modified {
-                return Ok(());
-            }
-            if let Some(key_kind) = key_kind {
-                keys.push(IndexKeyUpdate {
-                    reference: row.reference,
-                    column,
-                    expected: key_kind.cell(&input.before.bytes, input.before.present)?,
-                    value: key_kind.cell(&input.after.bytes, input.after.present)?,
-                });
-            }
-            if WIDTH != 0 && input.after.present && stored != input.after.bytes {
-                patches.push(Patch {
-                    offset: row.offset + payload_offset,
-                    before: Span::Payload(stored),
-                    after: Span::Payload(input.after.bytes),
-                });
-            }
-            let after = (before & !bit) | if input.after.present { bit } else { 0 };
-            if (before ^ after) & !bit != 0 {
-                return Err(EditError::Preservation);
-            }
-            if before != after {
-                patches.push(Patch {
-                    offset: row.offset + mask_offset,
-                    before: Span::Mask(before),
-                    after: Span::Mask(after),
-                });
-            }
-            changed.push(row.reference);
-            Ok(())
-        },
-    )?;
+            data
+        } else {
+            [0; WIDTH]
+        };
+        let modified = input.before.present != input.after.present
+            || (WIDTH != 0 && input.after.present && input.before.bytes != input.after.bytes);
+        if !modified {
+            return Ok(());
+        }
+        if let Some(key_kind) = key_kind {
+            keys.push(IndexKeyUpdate {
+                reference: row.reference,
+                column,
+                expected: key_kind.cell(&input.before.bytes, input.before.present)?,
+                value: key_kind.cell(&input.after.bytes, input.after.present)?,
+            });
+        }
+        if WIDTH != 0 && input.after.present && stored != input.after.bytes {
+            patches.push(Patch {
+                offset: row.offset + payload_offset,
+                before: Span::Payload(stored),
+                after: Span::Payload(input.after.bytes),
+            });
+        }
+        let after = (before & !bit) | if input.after.present { bit } else { 0 };
+        if (before ^ after) & !bit != 0 {
+            return Err(EditError::Preservation);
+        }
+        if before != after {
+            patches.push(Patch {
+                offset: row.offset + mask_offset,
+                before: Span::Mask(before),
+                after: Span::Mask(after),
+            });
+        }
+        changed.push(row.reference);
+        Ok(())
+    };
+    if OWNED_FINAL {
+        rows::final_record::visit(image, schema, &inputs, budget, cancelled, visitor)?;
+    } else {
+        let mut source = image.reader();
+        rows::visit(
+            &mut Reader {
+                source: &mut source,
+                header: image.catalog().header(),
+                budget,
+                cancelled,
+                reads: 0,
+            },
+            schema,
+            &inputs,
+            visitor,
+        )?;
+    }
     Ok(ColumnEdits {
         patches,
         keys,

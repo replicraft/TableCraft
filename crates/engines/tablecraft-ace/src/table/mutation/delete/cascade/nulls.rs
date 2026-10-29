@@ -103,7 +103,7 @@ impl Output<'_> {
         updates: &[FixedScalarUpdate],
         kind: ScalarType,
     ) -> Result<(), EditError> {
-        let staged = masked::stage::<WIDTH>(
+        let staged = masked::stage::<WIDTH, false>(
             self.image,
             &self.table.before,
             column,

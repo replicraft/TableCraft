@@ -1,5 +1,8 @@
 //! Checked logical-root ownership of physical final records.
-use super::super::{EditError, SlotScalarUpdate, WriteBlocker, rows::Directory};
+use super::super::{
+    EditError, WriteBlocker,
+    rows::{Directory, RowAssignment},
+};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
@@ -15,12 +18,12 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(in crate::table::mutation) struct Root<'u> {
+pub(in crate::table::mutation) struct Root<'u, U> {
     pub reference: u32,
     pub word: u16,
     pub range: Range<usize>,
     pub final_record: PhysicalRow,
-    pub update: &'u SlotScalarUpdate,
+    pub update: &'u U,
 }
 
 #[derive(Clone, Copy)]
@@ -29,18 +32,18 @@ struct TargetOwner {
     root: u32,
 }
 
-pub(in crate::table::mutation) struct Roots<'u> {
-    pub selected: Vec<Root<'u>>,
+pub(in crate::table::mutation) struct Roots<'u, U> {
+    pub selected: Vec<Root<'u, U>>,
     pub owned: Vec<u32>,
 }
 
-pub(in crate::table::mutation) fn capture<'u>(
+pub(in crate::table::mutation) fn capture<'u, U: RowAssignment>(
     image: &NativeImage,
     schema: &TableSchema,
-    updates: &'u [SlotScalarUpdate],
+    updates: &'u [U],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Roots<'u>, EditError> {
+) -> Result<Roots<'u, U>, EditError> {
     let mut directory = Directory::new(updates, budget, cancelled)?;
     directory.require_unique(budget, cancelled)?;
     let declared = usize::try_from(schema.declared_rows())
@@ -51,7 +54,7 @@ pub(in crate::table::mutation) fn capture<'u>(
         .charge_allocation(declared as u64, size_of::<TargetOwner>() as u64)
         .map_err(InspectError::from)?;
     budget
-        .charge_allocation(updates.len() as u64, size_of::<Root<'_>>() as u64)
+        .charge_allocation(updates.len() as u64, size_of::<Root<'_, U>>() as u64)
         .map_err(InspectError::from)?;
     let mut owners = Vec::new();
     owners

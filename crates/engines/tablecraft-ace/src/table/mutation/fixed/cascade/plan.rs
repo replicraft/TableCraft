@@ -37,7 +37,7 @@ impl NativeImage {
         };
         explicit(&mut cells, &self, groups, budget, cancelled)?;
         if cells.facts.is_empty() {
-            return self.preview_ace16_batch_updates(groups, budget, cancelled);
+            return self.preview_fixed_batch_inner::<false>(groups, budget, cancelled);
         }
         let declarations = inspect_relationships(
             &mut self.reader(),
@@ -96,7 +96,7 @@ impl NativeImage {
                 &group.updates,
             ));
         }
-        self.preview_ace16_batch_updates(&borrowed, budget, cancelled)
+        self.preview_fixed_batch_inner::<false>(&borrowed, budget, cancelled)
     }
 }
 fn explicit(

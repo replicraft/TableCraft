@@ -8,6 +8,13 @@ refactor and stricter primary-group guard. Independent literal source/expected
 read gates precede the preview checks; they are not Microsoft Access comparisons
 or evidence of a native save.
 
+These results describe the committed `60b3315` continuation. The separate
+[selected forwarded-record continuation](ACE16_SELECTED_FORWARDED_UPDATES.md)
+has separately passed its ownership, preview and regression verification; the
+earlier counts do not qualify that additional storage path. The
+[original-file proof](ace16_fixed_ignore_null_updates/README.md), committed in
+`1196b4dc`, separately verifies the older `60b3315` producer.
+
 ## Entry points and scope
 
 With `tablecraft-ace/ace16-write-preview`,
@@ -15,9 +22,12 @@ With `tablecraft-ace/ace16-write-preview`,
 `NativeImage::preview_ace16_batch_updates` can maintain a qualified secondary index
 whose physical declaration omits entirely NULL keys. They return the existing
 non-journalable `Ace16WritePreview`. Normal Jet 4 editing, ordinary ACE save
-refusals, slot updates and automatic cascade entry points retain their previous
-admission rules. This continuation does not enable ignored-NULL indexes in those
-other paths.
+refusals and slot updates retain their previous admission rules. The
+[selected-forwarded continuation](ACE16_SELECTED_FORWARDED_UPDATES.md#admission-and-bounded-failure)
+also corrects a transitive UPDATE-cascade admission bug: the `60b3315` wrapper
+called the public batch service and therefore inherited this extended policy.
+It now uses a separate strict batch consumer. The earlier verification did not
+exercise or establish that isolation; its passing counts are retained as history.
 
 The fixed APIs keep their existing carrier and layout checks: Boolean,
 Byte, Int16/32/64, Currency, Single, Double, legacy DateTime, GUID and qualified
@@ -61,10 +71,11 @@ the final result.
 
 Source certification follows logical roots through forwarding when reading the
 original key population. It retains the logical root as identity, rather than
-substituting a hidden target ROW. This does not widen the fixed-field patcher:
-a request that selects a forwarded record still refuses under its existing
-ordinary-root layout rule. An unselected forwarded source row may participate in
-complete membership certification.
+substituting a hidden target ROW. At the `60b3315` checkpoint, this certified only
+unselected forwarded source rows; selecting a forwarded record still refused.
+The separate [resolved-record path](ACE16_SELECTED_FORWARDED_UPDATES.md) now stages
+eligible selected payloads under full original owned/exclusive-target checks.
+Its validation is recorded separately from this earlier index continuation.
 
 Required is checked before omission. Only an entirely NULL tuple is omitted;
 a partial-NULL tuple remains represented and participates in uniqueness. The
@@ -142,9 +153,21 @@ passes complete source qualification and returns a byte-identical empty preview.
 The unknown `0x90` constraint-coverage refusal remains unchanged. The first shared
 batch failure is retained; this correction did not relax production admission.
 
-On 29 October 2026, a separate public original-file SOURCE5 capture passed its
-first execution: one compile, two creations and two inert inspections. The saved
-qualification gates then passed for 12 target tables and two Sentinels. This
-establishes those original sources, not UPDATE behavior. No public UPDATE/reference
-transition or native Access write comparison has run for this continuation.
-Microsoft Access execution and save/reopen remain separate qualification work.
+On 29 October 2026, the separate
+[original-file proof](ace16_fixed_ignore_null_updates/README.md) qualified 12
+target tables and two Sentinels from its SOURCE5 capture, then derived all 16
+complete expected images from original sources and immutable requests before
+public reference actions or producer calls. The isolated `60b3315` producer
+matched all 16 images exactly, totaling 9,076,736 bytes, returned 18 precise
+refusals with no candidate output, and passed 16 fresh independent reader checks.
+The [saved result](results/ace16-fixed-ignore-null-update-originals-2026-10-29.json)
+and verifier preserve the public reference's original two completed calls and
+66-call continuation, including the intervening proof correction.
+
+Public writer observations retain differences rather than redefining the engine
+oracle: six public images differ by eight bytes behind cleared NULL bits, and
+the public writer accepts Required all-NULL cases that this preview refuses.
+This proof was committed in `1196b4dc`; it covers the older `60b3315` fixed/batch
+producer, not selected forwarding or strict cascade isolation. It is an
+independent public-writer comparison, not native Microsoft Access execution or
+save/reopen qualification. Those boundaries remain separate work.

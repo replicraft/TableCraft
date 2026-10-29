@@ -1,5 +1,5 @@
 //! Independent framing, unselected-field and final page authorization checks.
-use super::super::EditError;
+use super::super::{EditError, SlotScalarUpdate};
 use super::{
     forward::{FREE_OFFSET, POINTER_BYTES, Plan},
     roots::Root,
@@ -27,7 +27,7 @@ pub(in crate::table::mutation) fn record(
     image: &NativeImage,
     schema: &TableSchema,
     column: usize,
-    root: &Root<'_>,
+    root: &Root<'_, SlotScalarUpdate>,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

@@ -12,6 +12,29 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Selected forwarded-record fixed and batch UPDATE previews
+
+The [resolved-record continuation](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)
+now updates eligible fixed payloads in selected forwarded logical rows. Shared
+root capture proves allocation ownership and exclusive selected-target ownership
+before callbacks. Payload offsets refer to the final physical record; index ROWs
+and slot metadata retain the logical root. Pointer records, hidden directories,
+page headers, maps and record lengths stay unchanged.
+
+The UPDATE-cascade wrapper now uses an internal strict batch policy. Its earlier
+delegation to the public batch API had inherited the extended IgnoreNULL policy,
+contrary to the earlier scope claim. Both empty/no-facts and expanded cascade
+routes now retain the old metadata/index/inline-row policy; causal controls cover
+this correction separately from direct batch support.
+
+All 665 engine-library tests pass with two existing generators ignored. The focused
+forwarding/IgnoreNULL batch passes 24 functions, the cascade target passes nine,
+and 20 shared targets pass 140 regressions. Strict all-target/all-feature and
+minimal-library Clippy and formatting pass. The [result](testing/results/ace16-selected-forwarded-fixed-updates-2026-10-29.json)
+keeps the initial generic-type compile and disk-space interruptions separate from
+passing runtime checks. Native Access and original-file forwarding qualification
+remain open.
+
 ## Ignored-NULL fixed and batch UPDATE previews
 
 The separate [ACE 16 fixed/batch continuation](testing/ACE16_IGNORED_NULL_UPDATES.md)
@@ -28,9 +51,11 @@ regressions across 16 targets and strict all-target/all-feature and minimal-libr
 Clippy pass. The full engine library passes 657 tests with two existing generators
 ignored before the final state refactor and primary-group admission tightening;
 the final focused batch covers both changes. The [verification record](testing/results/ace16-ignored-null-fixed-updates-2026-10-29.json)
-retains oracle, compile and prior-integration failures separately. Public originals
-now pass source qualification only; UPDATE comparisons and native Access
-qualification remain open.
+retains oracle, compile and prior-integration failures separately. The
+[original-file proof](testing/ace16_fixed_ignore_null_updates/README.md) now passes
+16 complete candidate comparisons, 18 exact refusal controls and 16 fresh readers
+using the earlier `60b33158` producer. It does not qualify the later forwarding or
+cascade isolation changes; native Access qualification remains open.
 
 ## Explicit incrementing AutoNumber INSERT preview
 

@@ -1,5 +1,5 @@
 //! Append hidden targets without moving or reusing any original physical slot.
-use super::super::{EditError, WriteBlocker, patch::BytePatch};
+use super::super::{EditError, SlotScalarUpdate, WriteBlocker, patch::BytePatch};
 use super::{roots::Root, space::Space};
 use crate::{
     InspectError, NativeImage,
@@ -128,7 +128,7 @@ impl Plan {
     pub(super) fn apply(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_>,
+        root: &Root<'_, SlotScalarUpdate>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,
