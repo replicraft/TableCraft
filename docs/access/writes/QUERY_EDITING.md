@@ -58,6 +58,11 @@ publication/durable directory entries nor edits a live database in place. Option
 [library journal integration](NATIVE_WRITES.md#optional-journaled-persistence)
 remains the separate explicit in-place persistence boundary.
 
+The separate [experimental engineering-copy commands](ENGINEERING_COPIES.md)
+expose typed ACE UPDATE/INSERT/DELETE preparation on fresh outputs. They do not
+change this normal Jet 4 query-editing profile, certify data-macro absence or
+convert engineering candidates into qualified save/journal plans.
+
 ## References and evidence
 
 Microsoft documents [UPDATE syntax and criteria](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql).

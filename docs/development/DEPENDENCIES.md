@@ -446,9 +446,21 @@ built-in Access/SQLite integrations to backends. Dependency edges, registry
 versions/features and Cargo.lock are unchanged. External connectivity candidates
 remain [unadopted selections](DEPENDENCY_REVIEW.md#external-connectivity-direction).
 
-The local ACE `ace16-write-preview` feature adds only an opt-in engineering API
-and required-feature example, with no registry dependencies or feature changes.
-It is disabled by default and not requested by normal CLI/Access consumers.
+The local ACE `ace16-write-preview` feature remains disabled by default in the
+standalone engine. As of 29 October 2026, `tablecraft-access` has an opt-in feature
+of the same name forwarding that existing engine feature. The CLI requests both
+features on its inherited dependencies for the explicit
+[experimental write-copy commands](../access/writes/ENGINEERING_COPIES.md).
+Standalone adapter defaults, normal save admission and non-journalable candidate
+types remain unchanged. No package, version, checksum or lockfile edge is added.
+
+These commands reuse CLI-owned csv 1.4.0 for bounded typed request TSV after a
+strict quote-envelope prepass, and tempfile 3.27.0 for same-directory owned
+staging followed by `persist_noclobber`. The Access service owns typed preparation
+without filesystem operations; the CLI owns request parsing, authorized opens
+and publication. Neither dependency moves into the engine, and no new feature
+of csv or tempfile is requested. File synchronization and no-clobber publication
+do not establish durable-directory transactions or normal ACE saves.
 
 CLI presentation adopted 19 October 2026: [comfy-table 8.0.1](https://docs.rs/comfy-table/8.0.1/)
 (MIT, Rust 1.88 minimum), workspace-owned and used only by `tablecraft-cli`.

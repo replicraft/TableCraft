@@ -23,6 +23,9 @@ pub use source::{
     PreparedCalculation, RecomputedNativeSource,
 };
 mod editing;
+/// Explicit disposable engineering-copy preparation, separate from ordinary native saves.
+#[cfg(feature = "ace16-write-preview")]
+pub mod engineering;
 pub use editing::{NativeEditError, NativeEditor};
 mod saved;
 pub use saved::{

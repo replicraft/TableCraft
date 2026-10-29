@@ -62,6 +62,10 @@ files prompt for a password when needed; `-p` / `--password` is also available.
 See the [CLI guide](docs/cli/CLI.md) for saved queries, multivalue fields, encryption,
 streaming and resource controls.
 
+Explicit [experimental write-copy commands](docs/access/writes/ENGINEERING_COPIES.md)
+provide ACE 16 UPDATE, INSERT and DELETE previews on fresh files. General native
+saves remain in development.
+
 ## Documentation
 
 - [Documentation index](docs/README.md)

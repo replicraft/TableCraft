@@ -7,6 +7,7 @@ mod inspect;
 mod query;
 mod rows;
 mod tables;
+mod write;
 
 use crate::presentation::Format;
 use clap::Subcommand;
@@ -40,6 +41,14 @@ pub(crate) enum Command {
         #[command(subcommand)]
         command: encryption::Command,
     },
+    /// Create explicit experimental ACE engineering copies; never normal saves.
+    #[command(
+        after_help = "Use only stable/offline sources and disposable fresh outputs. Required data macros are neither qualified nor executed. These preview commands never overwrite sources, commit journals or enable normal ACE saves. Encrypted rewrites and deployment-package sources are refused."
+    )]
+    Write {
+        #[command(subcommand)]
+        command: write::Command,
+    },
     /// Inspect saved SELECTs, parse/evaluate queries or create qualified UPDATE copies.
     Query {
         #[command(subcommand)]
@@ -70,6 +79,7 @@ impl Command {
             Self::Inspect(args) => args
                 .run(format, password)
                 .map_err(|error| error.to_string()),
+            Self::Write { command } => command.run(password),
             Self::Query { command } => {
                 if matches!(
                     &command,
