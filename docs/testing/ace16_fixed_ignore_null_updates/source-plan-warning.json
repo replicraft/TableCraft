@@ -1,0 +1,116 @@
+{
+  "phase": "fixed-ignore-null-update-source5-capture-only",
+  "source_qualification": false,
+  "source_children": 5,
+  "future_reference_children": 68,
+  "limits": {
+    "file_bytes": 8388608,
+    "stdout_bytes": 16777216,
+    "stderr_bytes": 16777216,
+    "heap_bytes": 536870912,
+    "child_seconds": 30
+  },
+  "cases": [
+    {
+      "profile": "V2016",
+      "source": ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb"
+    },
+    {
+      "profile": "V2019",
+      "source": ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb"
+    }
+  ],
+  "commands": [
+    {
+      "id": "compile",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        ".cache/ace16-fixed-ignore-null-update-source-next-20261029/IgnoredNullUpdateFixture.java"
+      ]
+    },
+    {
+      "id": "V2016-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "create",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2019-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "create",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2016-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2019-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        "V2019"
+      ]
+    }
+  ],
+  "warning_correction": "Original empty-create-stderr assumption corrected before any child call; original frozen closure remains intact.",
+  "create_warning_tables": [
+    "Single",
+    "Tuple",
+    "UniqueSingle",
+    "UniqueSingle",
+    "UniqueTuple"
+  ]
+}

@@ -1,0 +1,1793 @@
+{
+  "status": "fixed recipe/inventory proposal; helper/controller not authored; NOT execution-ready",
+  "source_qualification": false,
+  "expected_images_derived": 0,
+  "actual_child_commands": 0,
+  "layouts": [
+    "V2016",
+    "V2019"
+  ],
+  "schema": [
+    [
+      "ID",
+      "LONG"
+    ],
+    [
+      "Left",
+      "LONG nullable"
+    ],
+    [
+      "Right",
+      "LONG nullable"
+    ],
+    [
+      "Marker",
+      "LONG"
+    ]
+  ],
+  "tables": {
+    "Single": {
+      "shape": "single",
+      "unique": false,
+      "required": false,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          10,
+          200,
+          1002
+        ],
+        [
+          3,
+          null,
+          300,
+          1003
+        ],
+        [
+          4,
+          20,
+          null,
+          1004
+        ]
+      ]
+    },
+    "Tuple": {
+      "shape": "tuple",
+      "unique": false,
+      "required": false,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          10,
+          100,
+          1002
+        ],
+        [
+          3,
+          null,
+          null,
+          1003
+        ],
+        [
+          4,
+          20,
+          200,
+          1004
+        ],
+        [
+          5,
+          10,
+          null,
+          1005
+        ],
+        [
+          6,
+          null,
+          100,
+          1006
+        ]
+      ]
+    },
+    "UniqueSingle": {
+      "shape": "single",
+      "unique": true,
+      "required": false,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          20,
+          200,
+          1002
+        ],
+        [
+          3,
+          null,
+          300,
+          1003
+        ],
+        [
+          4,
+          null,
+          null,
+          1004
+        ]
+      ]
+    },
+    "UniqueTuple": {
+      "shape": "tuple",
+      "unique": true,
+      "required": false,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          20,
+          200,
+          1002
+        ],
+        [
+          3,
+          null,
+          null,
+          1003
+        ],
+        [
+          4,
+          10,
+          null,
+          1004
+        ],
+        [
+          5,
+          null,
+          100,
+          1005
+        ]
+      ]
+    },
+    "RequiredSingle": {
+      "shape": "single",
+      "unique": false,
+      "required": true,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          20,
+          null,
+          1002
+        ]
+      ]
+    },
+    "RequiredTuple": {
+      "shape": "tuple",
+      "unique": false,
+      "required": true,
+      "rows": [
+        [
+          1,
+          10,
+          100,
+          1001
+        ],
+        [
+          2,
+          20,
+          200,
+          1002
+        ]
+      ]
+    }
+  },
+  "sentinel": {
+    "schema": [
+      [
+        "ID",
+        "LONG"
+      ],
+      [
+        "Marker",
+        "LONG"
+      ]
+    ],
+    "rows": [
+      [
+        91,
+        -12345
+      ]
+    ]
+  },
+  "index_policy": {
+    "primary": {
+      "names": [
+        "PrimaryID",
+        "PrimaryAlias"
+      ],
+      "columns": [
+        [
+          "ID",
+          true
+        ]
+      ],
+      "flags": 137
+    },
+    "secondary": {
+      "names": [
+        "ValueOrder",
+        "ValueAlias"
+      ],
+      "single_columns": [
+        [
+          "Left",
+          true
+        ]
+      ],
+      "tuple_columns": [
+        [
+          "Right",
+          false
+        ],
+        [
+          "Left",
+          true
+        ]
+      ],
+      "ignore_nulls": true,
+      "flags_nonunique": 130,
+      "flags_unique": 131,
+      "flags_required": 138
+    }
+  },
+  "limits": {
+    "file_bytes": 8388608,
+    "stdout_bytes": 16777216,
+    "stderr_bytes": 16777216,
+    "heap_bytes": 536870912,
+    "child_seconds": 30,
+    "warning_line_bytes": 2048,
+    "max_warning_records_per_action": 3
+  },
+  "source_children": 5,
+  "source_files": 2,
+  "saved_target_source_gates": 12,
+  "reference_transitions": 34,
+  "reference_children": 68,
+  "ordered_public_update_calls_including_refusals": 46,
+  "source_commands": [
+    {
+      "id": "compile",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+        ".cache/ace16-fixed-ignore-null-update-source-next-20261029/IgnoredNullUpdateFixture.java"
+      ]
+    },
+    {
+      "id": "V2016-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "create",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2019-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "create",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2016-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2019-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        "V2019"
+      ]
+    }
+  ],
+  "reference_commands": [
+    {
+      "id": "V2016-single-null-new-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-null-new-reference.accdb",
+        "V2016",
+        "single-null-new"
+      ]
+    },
+    {
+      "id": "V2016-single-null-new-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-null-new-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-null-existing-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-null-existing-reference.accdb",
+        "V2016",
+        "single-null-existing"
+      ]
+    },
+    {
+      "id": "V2016-single-null-existing-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-null-existing-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-present-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-present-null-reference.accdb",
+        "V2016",
+        "single-present-null"
+      ]
+    },
+    {
+      "id": "V2016-single-present-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-present-null-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-removed-family-forward-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-removed-family-forward-reference.accdb",
+        "V2016",
+        "single-removed-family-forward"
+      ]
+    },
+    {
+      "id": "V2016-single-removed-family-forward-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-removed-family-forward-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-removed-family-reverse-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-removed-family-reverse-reference.accdb",
+        "V2016",
+        "single-removed-family-reverse"
+      ]
+    },
+    {
+      "id": "V2016-single-removed-family-reverse-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-removed-family-reverse-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-cointroduced-forward-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-cointroduced-forward-reference.accdb",
+        "V2016",
+        "single-cointroduced-forward"
+      ]
+    },
+    {
+      "id": "V2016-single-cointroduced-forward-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-cointroduced-forward-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-single-cointroduced-reverse-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-cointroduced-reverse-reference.accdb",
+        "V2016",
+        "single-cointroduced-reverse"
+      ]
+    },
+    {
+      "id": "V2016-single-cointroduced-reverse-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-single-cointroduced-reverse-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-new-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-new-reference.accdb",
+        "V2016",
+        "tuple-null-new"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-new-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-new-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-existing-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-existing-reference.accdb",
+        "V2016",
+        "tuple-null-existing"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-existing-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-existing-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-partial-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-partial-reference.accdb",
+        "V2016",
+        "tuple-null-partial"
+      ]
+    },
+    {
+      "id": "V2016-tuple-null-partial-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-null-partial-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-tuple-partial-omitted-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-partial-omitted-reference.accdb",
+        "V2016",
+        "tuple-partial-omitted"
+      ]
+    },
+    {
+      "id": "V2016-tuple-partial-omitted-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-partial-omitted-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-tuple-partial-present-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-partial-present-reference.accdb",
+        "V2016",
+        "tuple-partial-present"
+      ]
+    },
+    {
+      "id": "V2016-tuple-partial-present-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-tuple-partial-present-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-unique-single-duplicate-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-unique-single-duplicate-reference.accdb",
+        "V2016",
+        "unique-single-duplicate"
+      ]
+    },
+    {
+      "id": "V2016-unique-single-duplicate-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-unique-single-duplicate-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-unique-tuple-partial-duplicate-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-unique-tuple-partial-duplicate-reference.accdb",
+        "V2016",
+        "unique-tuple-partial-duplicate"
+      ]
+    },
+    {
+      "id": "V2016-unique-tuple-partial-duplicate-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-unique-tuple-partial-duplicate-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-required-single-all-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-single-all-null-reference.accdb",
+        "V2016",
+        "required-single-all-null"
+      ]
+    },
+    {
+      "id": "V2016-required-single-all-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-single-all-null-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-required-tuple-all-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-tuple-all-null-reference.accdb",
+        "V2016",
+        "required-tuple-all-null"
+      ]
+    },
+    {
+      "id": "V2016-required-tuple-all-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-tuple-all-null-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2016-required-tuple-partial-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2016-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-tuple-partial-null-reference.accdb",
+        "V2016",
+        "required-tuple-partial-null"
+      ]
+    },
+    {
+      "id": "V2016-required-tuple-partial-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2016-required-tuple-partial-null-reference.accdb",
+        "V2016"
+      ]
+    },
+    {
+      "id": "V2019-single-null-new-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-null-new-reference.accdb",
+        "V2019",
+        "single-null-new"
+      ]
+    },
+    {
+      "id": "V2019-single-null-new-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-null-new-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-null-existing-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-null-existing-reference.accdb",
+        "V2019",
+        "single-null-existing"
+      ]
+    },
+    {
+      "id": "V2019-single-null-existing-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-null-existing-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-present-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-present-null-reference.accdb",
+        "V2019",
+        "single-present-null"
+      ]
+    },
+    {
+      "id": "V2019-single-present-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-present-null-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-removed-family-forward-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-removed-family-forward-reference.accdb",
+        "V2019",
+        "single-removed-family-forward"
+      ]
+    },
+    {
+      "id": "V2019-single-removed-family-forward-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-removed-family-forward-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-removed-family-reverse-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-removed-family-reverse-reference.accdb",
+        "V2019",
+        "single-removed-family-reverse"
+      ]
+    },
+    {
+      "id": "V2019-single-removed-family-reverse-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-removed-family-reverse-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-cointroduced-forward-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-cointroduced-forward-reference.accdb",
+        "V2019",
+        "single-cointroduced-forward"
+      ]
+    },
+    {
+      "id": "V2019-single-cointroduced-forward-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-cointroduced-forward-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-single-cointroduced-reverse-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-cointroduced-reverse-reference.accdb",
+        "V2019",
+        "single-cointroduced-reverse"
+      ]
+    },
+    {
+      "id": "V2019-single-cointroduced-reverse-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-single-cointroduced-reverse-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-new-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-new-reference.accdb",
+        "V2019",
+        "tuple-null-new"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-new-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-new-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-existing-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-existing-reference.accdb",
+        "V2019",
+        "tuple-null-existing"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-existing-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-existing-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-partial-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-partial-reference.accdb",
+        "V2019",
+        "tuple-null-partial"
+      ]
+    },
+    {
+      "id": "V2019-tuple-null-partial-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-null-partial-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-tuple-partial-omitted-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-partial-omitted-reference.accdb",
+        "V2019",
+        "tuple-partial-omitted"
+      ]
+    },
+    {
+      "id": "V2019-tuple-partial-omitted-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-partial-omitted-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-tuple-partial-present-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-partial-present-reference.accdb",
+        "V2019",
+        "tuple-partial-present"
+      ]
+    },
+    {
+      "id": "V2019-tuple-partial-present-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-tuple-partial-present-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-unique-single-duplicate-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-unique-single-duplicate-reference.accdb",
+        "V2019",
+        "unique-single-duplicate"
+      ]
+    },
+    {
+      "id": "V2019-unique-single-duplicate-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-unique-single-duplicate-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-unique-tuple-partial-duplicate-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-unique-tuple-partial-duplicate-reference.accdb",
+        "V2019",
+        "unique-tuple-partial-duplicate"
+      ]
+    },
+    {
+      "id": "V2019-unique-tuple-partial-duplicate-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-unique-tuple-partial-duplicate-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-required-single-all-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-single-all-null-reference.accdb",
+        "V2019",
+        "required-single-all-null"
+      ]
+    },
+    {
+      "id": "V2019-required-single-all-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-single-all-null-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-required-tuple-all-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-tuple-all-null-reference.accdb",
+        "V2019",
+        "required-tuple-all-null"
+      ]
+    },
+    {
+      "id": "V2019-required-tuple-all-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-tuple-all-null-reference.accdb",
+        "V2019"
+      ]
+    },
+    {
+      "id": "V2019-required-tuple-partial-null-action",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Djava.util.logging.SimpleFormatter.format=%4$s\t%3$s\t%5$s%6$s%n",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "action",
+        ".cache/ace16-fixed-ignore-null-update-source-first-20261029/V2019-source.accdb",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-tuple-partial-null-reference.accdb",
+        "V2019",
+        "required-tuple-partial-null"
+      ]
+    },
+    {
+      "id": "V2019-required-tuple-partial-null-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-fixed-ignore-null-update-source-first-20261029/classes",
+        "IgnoredNullUpdateFixture",
+        "inspect",
+        ".cache/ace16-fixed-ignore-null-update-reference-first-20261029/V2019-required-tuple-partial-null-reference.accdb",
+        "V2019"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "single-null-new",
+      "table": "Single",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 30
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "single-null-existing",
+      "table": "Single",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 10
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "single-present-null",
+      "table": "Single",
+      "updates": [
+        [
+          1,
+          {
+            "Left": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 1
+    },
+    {
+      "id": "single-removed-family-forward",
+      "table": "Single",
+      "updates": [
+        [
+          1,
+          {
+            "Left": null
+          }
+        ],
+        [
+          2,
+          {
+            "Left": null
+          }
+        ],
+        [
+          3,
+          {
+            "Left": 10
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "expected_warning_records": 2
+    },
+    {
+      "id": "single-removed-family-reverse",
+      "table": "Single",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 10
+          }
+        ],
+        [
+          1,
+          {
+            "Left": null
+          }
+        ],
+        [
+          2,
+          {
+            "Left": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: removed original family reintroduced by omitted row",
+      "expected_warning_records": 2
+    },
+    {
+      "id": "single-cointroduced-forward",
+      "table": "Single",
+      "updates": [
+        [
+          1,
+          {
+            "Left": 30
+          }
+        ],
+        [
+          3,
+          {
+            "Left": 30
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "single-cointroduced-reverse",
+      "table": "Single",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 30
+          }
+        ],
+        [
+          1,
+          {
+            "Left": 30
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "IndexedColumn refusal: represented replacement and omitted row introduce same new family",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "tuple-null-new",
+      "table": "Tuple",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 30,
+            "Right": 300
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "tuple-null-existing",
+      "table": "Tuple",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 10,
+            "Right": 100
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "tuple-null-partial",
+      "table": "Tuple",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 30,
+            "Right": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "tuple-partial-omitted",
+      "table": "Tuple",
+      "updates": [
+        [
+          5,
+          {
+            "Left": null,
+            "Right": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 1
+    },
+    {
+      "id": "tuple-partial-present",
+      "table": "Tuple",
+      "updates": [
+        [
+          6,
+          {
+            "Left": 20,
+            "Right": 100
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "supported",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "unique-single-duplicate",
+      "table": "UniqueSingle",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 10
+          }
+        ]
+      ],
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "unique-tuple-partial-duplicate",
+      "table": "UniqueTuple",
+      "updates": [
+        [
+          3,
+          {
+            "Left": 10,
+            "Right": null
+          }
+        ]
+      ],
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "DuplicateKey refusal",
+      "expected_warning_records": 0
+    },
+    {
+      "id": "required-single-all-null",
+      "table": "RequiredSingle",
+      "updates": [
+        [
+          1,
+          {
+            "Left": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "expected_warning_records": 1
+    },
+    {
+      "id": "required-tuple-all-null",
+      "table": "RequiredTuple",
+      "updates": [
+        [
+          1,
+          {
+            "Left": null,
+            "Right": null
+          }
+        ]
+      ],
+      "public_outcome": "success",
+      "engineering_policy": "NullKey refusal; public contrary outcome retained",
+      "expected_warning_records": 1
+    },
+    {
+      "id": "required-tuple-partial-null",
+      "table": "RequiredTuple",
+      "updates": [
+        [
+          1,
+          {
+            "Left": null,
+            "Right": 100
+          }
+        ]
+      ],
+      "public_outcome": "ConstraintViolationException",
+      "engineering_policy": "NullKey refusal",
+      "expected_warning_records": 0
+    }
+  ],
+  "warning_policy": {
+    "source_and_inspect_stderr": "must be empty",
+    "reference_action_stderr": "retained entirely; exact known WARNING logger/prefix/context/count grammar only",
+    "logger": "com.healthmarketscience.jackcess.Index",
+    "message_prefix": "Added duplicate index entry ",
+    "message_suffix": " (Db=<exact reference filename>;Table=<exact target>;Index=[ValueOrder, ValueAlias])",
+    "formatter_system_property": "%4$s\t%3$s\t%5$s%6$s%n",
+    "unexpected_log": "stop and retain; no broad stderr relaxation"
+  },
+  "phase_barrier": "all 12 target gates across both complete original files before any constructor or reference action",
+  "atomicity": "Reference action may invoke several ordered public row updates; never called an atomic native batch."
+}
