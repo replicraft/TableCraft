@@ -34,8 +34,10 @@ matching. Non-NULL LIKE then returns `UnsupportedExpression`, including wildcard
 patterns that would otherwise need no ordering callback. Mode checks, NULL
 propagation and operand preparation/coercion retain their existing phases; the
 unsupported check precedes raw String publication and pattern execution. Existing
-UnicodeScalar and Utf16Weights providers retain their matching paths. The French
-legacy native comparison provider uses this explicit refusal boundary.
+UnicodeScalar and Utf16Weights providers retain their matching paths. Exact
+French legacy now supplies the separate
+[weighted LIKE service](../../access/indexes/FRENCH_LIKE.md) rather than the
+unsupported profile; unknown/unqualified providers retain explicit refusal.
 
 `predicates::like_utf16` also accepts borrowed `LikeString::Text` and
 `LikeString::Utf16Le` inputs under an explicitly selected UTF-16 weight provider.
@@ -156,7 +158,10 @@ remain provisional native compatibility rules, not observed Access results.
 Expansions are compared within a contiguous literal run or one list element;
 wildcards/lists separate runs, with no hidden splitting of one character's weight
 stream across tokens. Full SQL text comparison's trailing-space trimming is not
-reused for LIKE. See [General matching](../../access/indexes/NATIVE_TEXT.md#general-utf-16-like-matching).
+reused for LIKE. Exact French legacy also selects this full grammar, with its
+own reversed-secondary complete keys and separately derived dictionary. See
+[General matching](../../access/indexes/NATIVE_TEXT.md#general-utf-16-like-matching)
+and [French matching](../../access/indexes/FRENCH_LIKE.md).
 
 The UTF-16 path compiles literal arenas and list ranges, then iterates tokens
 over budgeted position vectors. It uses no recursive/exponential backtracking.

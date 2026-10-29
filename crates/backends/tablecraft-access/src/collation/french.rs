@@ -1,4 +1,4 @@
-//! French legacy comparison and substring bridge with one cumulative allowance.
+//! French legacy comparison, substring and LIKE with one cumulative allowance.
 use super::{adapt, budget};
 use std::ops::Range;
 use std::{cell::RefCell, cmp::Ordering};
@@ -9,11 +9,12 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
     comparison::{
-        Collation, LikeProfile, StringCompareMode, StringComparisonProfile, StringSearch,
-        StringSearchProfile,
+        Collation, LikeProfile, LikeSpanState, StringCompareMode, StringComparisonProfile,
+        StringSearch, StringSearchProfile,
     },
 };
 
+mod like;
 mod search;
 
 const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
@@ -22,7 +23,8 @@ const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
 ///
 /// SQL/default and explicit Database comparison use the engineering weight model.
 /// Database substring search uses complete weights and consumed UTF-16 spans.
-/// This does not implement Windows Text/LCID comparison, LIKE,
+/// LIKE uses separate untrimmed full keys and the existing UTF-16 grammar.
+/// This does not implement Windows Text/LCID comparison,
 /// equality-prefix hints or native Access SQL qualification. Binary operations
 /// and policy-independent search controls retain their existing evaluator rules.
 pub struct FrenchLegacyCollation<'a> {
@@ -110,7 +112,27 @@ impl Collation for FrenchLegacyCollation<'_> {
     }
 
     fn like_profile(&self) -> LikeProfile {
-        LikeProfile::Unsupported
+        LikeProfile::Utf16Weights
+    }
+
+    fn like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        self.literal_step(candidate, literal)
+    }
+
+    fn like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        self.unit_step(candidate)
+    }
+
+    fn compare_like_units(&self, left: &[u16], right: &[u16]) -> Result<Ordering, EvalError> {
+        self.compare_pattern_units(left, right)
+    }
+
+    fn is_like_unit(&self, units: &[u16]) -> Result<bool, EvalError> {
+        self.pattern_unit(units)
     }
 
     fn string_search_profile(&self, mode: StringCompareMode) -> StringSearchProfile {

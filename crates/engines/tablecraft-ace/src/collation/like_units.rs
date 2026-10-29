@@ -1,8 +1,10 @@
 //! Derived single-unit equivalence dictionary for bounded General LIKE classes.
 use super::{GeneralSortFamily, NativeSortOrder, key};
 use crate::{InspectError, header::check};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::LikeSpanState;
+
+pub(super) mod unit_set;
 
 /// Whether a complete raw UTF-16 span equals some single unit's General weights.
 ///
@@ -27,15 +29,7 @@ pub fn is_general_like_unit(
     let family = order.general_family().ok_or(InspectError::Unsupported)?;
     let mut work = key::Work { budget, cancelled };
     let key = key::encode_full(family, units, &mut work)?;
-    // contains traverses at most one edge per key byte; charge that complete
-    // upper bound before entering the immutable FST reader.
-    work.budget
-        .charge(Resource::Steps, key.bytes.len() as u64)?;
-    work.tick()?;
-    let dictionary = dictionary(family)?;
-    let result = dictionary.contains(&key.bytes);
-    work.tick()?;
-    Ok(result)
+    unit_set::contains(&dictionary(family)?, &key, &mut work)
 }
 
 fn dictionary(family: GeneralSortFamily) -> Result<fst::Set<&'static [u8]>, InspectError> {
@@ -59,26 +53,7 @@ pub fn general_like_unit_step(
     let family = order.general_family().ok_or(InspectError::Unsupported)?;
     let mut work = key::Work { budget, cancelled };
     let key = key::encode_full(family, units, &mut work)?;
-    let dictionary = dictionary(family)?;
-    work.budget
-        .charge(Resource::Steps, key.bytes.len() as u64)?;
-    work.tick()?;
-    if dictionary.contains(&key.bytes) {
-        work.tick()?;
-        return Ok(LikeSpanState::Match);
-    }
-    let fst = dictionary.as_fst();
-    let mut node = fst.root();
-    for &byte in &key.bytes[..key.primary_length] {
-        work.tick()?;
-        let Some(index) = node.find_input(byte) else {
-            work.tick()?;
-            return Ok(LikeSpanState::Impossible);
-        };
-        node = fst.node(node.transition(index).addr);
-    }
-    work.tick()?;
-    Ok(LikeSpanState::Possible)
+    unit_set::step(&dictionary(family)?, &key, &mut work)
 }
 
 #[cfg(test)]

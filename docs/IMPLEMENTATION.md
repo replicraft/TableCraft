@@ -138,6 +138,21 @@ and the wider checks recorded above. Original-file comparison and native Access
 qualification remain separate. See the
 [ordinary-owned contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
 
+## First INSERT into empty ordinary ownership
+
+The INSERT preview now initializes a missing block-zero pointer in a qualified
+existing 69-byte indirect ordinary-owned map. DATA precedes its closed owned
+bitmap reservation. Original source authority and independent replay preserve
+all seventeen pointer slots, existing higher bitmap metadata and unclaimed old
+page bytes. Four literal source/request images pass separate read-only gates
+before API execution. The first regression refused with `Inspect(Unsupported)`;
+the corrected five-function batch passes, including correlated pointer erasure,
+resource and actual final-callback controls. The combined INSERT batch passes
+263 functions, the full ACE library passes 613 with two ignored, and the Access
+adapter suite passes 506. Strict ACE/Access Clippy, minimal builds, formatting
+and documentation/dependency guards pass. Original-file qualification remains
+pending. See the [empty-ownership contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
+
 ## Original-file variable-key INSERT comparisons
 
 Thirty-eight source/request-only variable-key images now match first-attempt
@@ -1510,8 +1525,37 @@ Two separate [saved-source companions](testing/FRENCH_SAVED_COMPANION_OBSERVATIO
 now preserve all original field values and 285 protected pages while adding one
 inert SELECT each. Their frozen-CLI replay passes four syntax controls, 24
 saved/named/derived executions and four buffered LIKE refusals, comparing 568 rows
-and 936 cells. This verifies existing named-source policy propagation without
-rewriting the original corpus or claiming native Access SQL qualification.
+and 936 cells. That historical executable predates the French LIKE policy below;
+its unchanged receipt is not a replay of the new matcher. It verifies named-source
+policy propagation without rewriting originals or claiming native Access SQL
+qualification.
+
+## French UTF-16 LIKE matching
+
+Exact French legacy `1036/0/0` now selects the existing full UTF-16 weighted LIKE
+matcher for both explicitly chosen ANSI modes. Complete untrimmed French keys
+supply literal equality and range order; a separately derived immutable
+dictionary recognizes single-element equivalents. SQL/search trimming and
+physical index truncation are excluded. Only primary prefixes permit pruning;
+complete reversed-secondary keys decide acceptance. The parser, wildcard unit
+counts, negated-list rule and reached-error timing retain their existing contract.
+
+The dictionary-only first gate verifies all 65,536 raw-unit memberships, exact
+distinct-key inventory and CRC. All seven engine functions and nineteen Access
+functions pass first execution, including six new adapter functions and the
+independent recursive pattern oracle. General regressions pass six engine and
+three adapter functions, and all 263 INSERT functions pass. The full ACE library
+passes 613 functions with two ignored engineering generators; the full Access
+run passes 506 functions across 63 result groups. These suites overlap.
+
+The first strict lint run found three redundant String conversions in adapter
+tests; only those were removed, preserving the first source freeze and literal
+expectations. Corrected strict all-target/all-feature Clippy, minimal builds,
+formatting, document links and dependency boundaries for all fifteen workspace
+packages pass.
+The [owning contract](access/indexes/FRENCH_LIKE.md) retains native Access/NLS
+matching, equality-prefix hints, other stored orders and native error timing as
+separate qualification or implementation work. No third-party fixture is added.
 
 ## French Database substring search
 
@@ -1534,8 +1578,9 @@ required-index ordering defect was corrected during the Access batch; it was
 not caused by French matching. Strict all-target/all-feature Clippy, minimal
 builds, formatting, document links and dependency guards pass.
 
-French LIKE, equality-prefix hints, Windows Text/LCID policy inference and native
-Access matching qualification remain separate. This advances the finite P0 T3
+French LIKE now has the separate untrimmed policy above. Equality-prefix hints,
+Windows Text/LCID policy inference and native Access matching qualification
+remain separate. This advances the finite P0 T3
 implementation gap without declaring read/query or native compatibility complete.
 
 ## Comparison-only French database query policy
@@ -1548,11 +1593,12 @@ remain separate. Per-field identities drive predicates and relational keys;
 String built-ins retain their operation/default provider contract.
 
 French SQL/default and explicit Database comparisons use the provisional weight
-model. Text/LCID policies are not inferred from the stored locale. An explicit
-unsupported-LIKE capability prevents wildcard-only patterns from bypassing the
-matching boundary. The subsequent substring service above supplies a separate
-provisional Database-mode policy; existing NULL/empty/out-of-range controls and
-Binary operations retain their rules. Native matching qualification remains open.
+model. Text/LCID policies are not inferred from the stored locale. The original
+comparison-only implementation refused non-NULL LIKE through its explicit
+capability boundary. The subsequent LIKE and substring services above supply
+separate pattern and Database-mode policies; existing NULL/empty/out-of-range
+controls and Binary operations retain their rules. Native matching qualification
+remains open.
 The resolver's default accessor now returns `&dyn Collation`, an intentional
 public source-compatibility change documented in the owning contract.
 

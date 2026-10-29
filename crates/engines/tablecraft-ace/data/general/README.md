@@ -33,6 +33,7 @@ below has its own upstream codec-table build script, not a weight generator.
 | kana-vowels.bin | 256 | `0e3d5e0c512fcea8b3a09d6f8ccd11241d35f042f4ff6098d0b2c136f9137ac9` |
 | like-legacy.fst | 33231 | `5c63462ffb2a5062e53db01610e4e6440909b2ad149241024fa0bf9ea7271bf6` |
 | like-2010.fst | 75954 | `5a6d7d415a3cb502ea5d23e39e4d5db088019aedde633dcec887a57c759bbe37` |
+| like-french-legacy.fst | 33228 | `a8584c05037d6695926c93ea3c3ffe0c6a332454acdfb863901d5ca5151808f1` |
 
 The `general-*.bin` normalized format is `TCGW`, little-endian u32 version 1, 65,536 little-endian u32
 offsets relative to the record region, then deduplicated records. Each record
@@ -58,7 +59,7 @@ and exhaustive per-block SHA-256 key fingerprints. Matching those vectors is
 independent algorithm evidence using the same reviewed weight data; it is not
 an independent source for those weights or native Microsoft Access qualification.
 
-The two `like-*.fst` files are original derived sets, not copied native indexes.
+The two General `like-*.fst` files are original derived sets, not copied native indexes.
 For every raw UTF-16 unit, the complete current General encoder supplies a key
 with widened positions and retained trailing spaces. Sorted distinct keys are
 serialized with fst 0.4.7's version-3 set builder. The legacy set contains 35,886
@@ -79,3 +80,22 @@ two artifacts; independent Rust hash expectations are never rewritten. The
 engineering generator runs as an explicitly ignored Rust test and requires no
 Java or native Access. Ordinary tests verify FST CRCs, both SHA-256 values, all
 65,536 source-unit keys and exact distinct counts, proving no extra keys exist.
+
+The separate `like-french-legacy.fst` derives complete French legacy keys for
+all raw units, with reversed secondary weights and pattern spaces retained.
+It uses the same reviewed Legacy weight data and notices, but does not assume
+General and French single-unit signatures are interchangeable. Its original
+ignored generator uses the current French full-key encoder; it is derived
+engineering data, not a new independent native Access oracle.
+
+```sh
+python3 scripts/regenerate_french_like.py
+python3 scripts/regenerate_french_like.py --write
+```
+
+The default verifies without replacing the artifact; `--write` replaces only the
+French file. An explicit `--captured-output PATH` reads retained generator output
+without invoking Cargo. Independent hash expectations are never rewritten by
+the script. Ordinary inventory tests verify every raw-unit key, exact distinct
+cardinality and the serialized set’s CRC/hash. No generation runs in normal
+library builds or LIKE callbacks.

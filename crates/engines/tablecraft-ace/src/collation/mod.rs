@@ -3,8 +3,9 @@ mod comparison;
 mod french;
 pub(crate) use comparison::equality_primary_prefix;
 pub use french::{
-    FrenchTextSearch, compare_french_legacy_text, compare_french_legacy_utf16,
-    find_french_legacy_text, find_french_legacy_utf16,
+    FrenchTextSearch, compare_french_legacy_like_units, compare_french_legacy_text,
+    compare_french_legacy_utf16, find_french_legacy_text, find_french_legacy_utf16,
+    french_legacy_like_literal_step, french_legacy_like_unit_step, is_french_legacy_like_unit,
 };
 mod key;
 mod like_units;

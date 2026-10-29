@@ -6,6 +6,11 @@ use tablecraft_core::limits::ResourceBudget;
 
 mod search;
 pub use search::{FrenchTextSearch, find_french_legacy_text, find_french_legacy_utf16};
+mod like;
+pub use like::{
+    compare_french_legacy_like_units, french_legacy_like_literal_step,
+    french_legacy_like_unit_step, is_french_legacy_like_unit,
+};
 
 /// Compare complete decoded Strings under exact French legacy 1036/0/0.
 ///

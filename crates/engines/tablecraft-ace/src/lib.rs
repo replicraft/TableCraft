@@ -8,11 +8,12 @@ mod catalog;
 mod collation;
 pub use collation::{
     FrenchTextSearch, GeneralSortFamily, GeneralTextSearch, NativeSortOrder, NativeTextKey,
-    compare_french_legacy_text, compare_french_legacy_utf16, compare_general_like_units,
-    compare_general_text, compare_general_utf16, encode_text_index_key,
+    compare_french_legacy_like_units, compare_french_legacy_text, compare_french_legacy_utf16,
+    compare_general_like_units, compare_general_text, compare_general_utf16, encode_text_index_key,
     encode_utf16_text_index_key, find_french_legacy_text, find_french_legacy_utf16,
-    find_general_text, find_general_utf16, general_like_literal_step, general_like_unit_step,
-    inspect_database_sort_order, is_general_like_unit,
+    find_general_text, find_general_utf16, french_legacy_like_literal_step,
+    french_legacy_like_unit_step, general_like_literal_step, general_like_unit_step,
+    inspect_database_sort_order, is_french_legacy_like_unit, is_general_like_unit,
 };
 mod queries;
 pub use queries::{
