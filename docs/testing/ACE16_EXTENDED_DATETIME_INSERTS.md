@@ -77,8 +77,24 @@ Strict ACE Clippy across all targets/features, minimal ACE/Access compilation,
 formatting and documentation/dependency guards pass. These totals overlap and
 are not summed.
 
-No fresh public-builder original, Microsoft Access comparison or native
-save/reopen evidence is claimed for this new payload continuation. Required
-data macros, defaults/generated fields and every other existing write blocker
-remain in force. See the [ordinary-row contract](ACE16_ORDINARY_INSERTS.md) for
-the surrounding profile.
+## Original-file comparison
+
+The [maintained original-file proof](ace16_insert_extended_datetime/README.md)
+now qualifies one unchanged public-builder V2019 source, one complete
+SOURCE/request-derived candidate and one separately bound fresh typed-row/map
+read. SOURCE3 capture and the later saved source gate are distinct; expected1
+precedes REF2 and the isolated committed-source build. The candidate matches all
+479,232 prefrozen bytes. DATA 111 gains slots 4..9 without allocation or map changes;
+table rows become 10 and physical histories 10/5 once despite aliases.
+
+The separate public append/read proof agrees semantically and differs only in 42
+inactive NULL-cell bytes for new ID 12: one Group byte and 41 Stamp bytes. Clear
+presence bits keep both fields NULL; every other byte agrees. The independent
+constructor remains unchanged and does not consume these public AFTER bytes.
+The retained pre-Cargo ENOSPC export attempt is separate from the successful
+fresh-target 4,610-file build and all passing runtime phases.
+
+This is independent-writer evidence, not a Microsoft Access comparison or native
+save/reopen qualification. Required data macros, defaults/generated fields and
+every other existing write blocker remain in force. See the
+[ordinary-row contract](ACE16_ORDINARY_INSERTS.md) for the surrounding profile.

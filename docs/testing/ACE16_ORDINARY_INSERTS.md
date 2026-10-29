@@ -225,8 +225,12 @@ The first focused 15-function batch, combined 258-function INSERT batch and
 ignored generator; full Access passes 500 after its separate required-index
 read-order fix. Strict all-target/all-feature ACE Clippy, minimal ACE/Access
 compilation, formatting and documentation/dependency guards pass. These counts
-overlap. No Extended Date/Time key, original-file or Microsoft Access save
-qualification is inferred from these literal controls.
+overlap. The later [original-file proof](ace16_insert_extended_datetime/README.md)
+now separately adds one exact SOURCE/request image comparison and one fresh
+typed-row/map read on a V2019 original, after SOURCE3 and a saved raw gate. Its
+public REF2 agrees except for 42 inactive NULL-cell bytes; expected-image
+construction precedes every AFTER. No Extended Date/Time key or Microsoft Access
+save qualification is inferred from either evidence set.
 
 ## Exact Decimal continuation
 

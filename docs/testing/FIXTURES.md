@@ -10325,3 +10325,30 @@ metadata purpose. Old FREE-hole membership retirement and final-four-byte fill
 quirk are declared reference policies; old hole bytes/orphan bodies remain exact.
 No donated content, Microsoft code/fixtures or machine-specific paths are tracked.
 Native Access save/reopen, block-one growth and arbitrary page reuse remain unqualified.
+
+## Original-file Extended Date/Time INSERT corpus
+
+The repository-authored [helper](ace16_insert_extended_datetime/ExtendedDateTimeInsertFixture.java)
+creates one V2019 Items/Sentinel original through the reviewed Jackcess 5.0.4 JAR.
+Items has required manual Int32 ID, nullable Int32 Group and native fixed 42-byte
+Extended Date/Time Stamp, with two physical Int32 indexes and four logical names.
+Four original records and six explicit requests cover epoch, maximum, leap day,
+the non-leap century 1900, exact 100 ns fractions and NULL. No fixture binary or
+third-party implementation is added; the existing bounded channel owner is reused.
+
+The [maintained proof](ace16_insert_extended_datetime/README.md) and
+[result](results/ace16-insert-extended-datetime-2026-10-28.json) retain SOURCE3,
+the separate saved gate, a SOURCE/request-only expected image before any AFTER,
+REF2, an isolated committed `c3313b3e` build, one exact native comparison and one fresh
+inert typed-row/map read. Actual DATA 111 slots 4..9 fit in the original file and
+no map or allocation changes occur. Logical aliases retain once-per-physical
+history changes. Public new NULL payloads differ in 42 inactive bytes while all
+other bytes match the prefrozen engineering image. These bytes never feed its
+constructor. Required data-macro semantics and Microsoft Access/normal save
+qualification remain open.
+
+The earlier source-export ENOSPC stopped before Cargo and is preserved with its
+zero-byte archive. The successful isolated build separately binds 4,610 Git
+files, actual engine compilation and the retained copied artifact. Unexecuted
+qualifier and pre-construction import corrections are preserved as preparation
+history rather than relabeled runtime/native failures.
