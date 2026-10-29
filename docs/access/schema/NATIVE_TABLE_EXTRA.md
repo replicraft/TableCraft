@@ -17,6 +17,10 @@ and XML bodies are not printed. This option requires a table and conflicts with
 other inspection modes. Errors remain buffered before stdout. It does not change
 default inspection or table browsing.
 
+The separate opt-in [XML envelope reader](NATIVE_DATA_MACRO_XML.md) can inspect
+normalized Event/Name facts from selected text with `--extra --macro-xml`.
+Plain Extra inspection keeps the framing-only contract below.
+
 The caller supplies a captured, catalog-scoped `ObjectId`. The result retains
 that identity, the original native Id and ParentId, and the logical catalog
 record page and slot. It does not select an object by a coincidentally equal name

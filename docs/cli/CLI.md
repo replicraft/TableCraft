@@ -43,6 +43,9 @@ per local user table and leaves linked targets unopened.
 `inspect --table NAME --extra` explicitly reports bounded inert
 [table Extra metadata](../access/schema/NATIVE_TABLE_EXTRA.md). It retains numeric
 group/property facts without printing stored XML or certifying data-macro absence.
+Add `--macro-xml` to explicitly inspect supported
+[data-macro XML envelopes](../access/schema/NATIVE_DATA_MACRO_XML.md). Event and
+Name metadata stays separate from action execution and absence qualification.
 
 When the database has exactly one user table, `rows PATH` selects it automatically;
 system tables do not count. With zero or multiple user tables, supply a table

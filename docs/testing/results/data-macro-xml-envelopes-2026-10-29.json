@@ -1,0 +1,276 @@
+{
+  "date": "2026-10-29",
+  "feature": "Explicit inert data-macro XML envelope inspection",
+  "source_base_commit": "7022e34f",
+  "scope": "Normalized Event/Name and namespace facts only; body grammar/actions/expressions, absence and write safety remain unqualified.",
+  "source_files": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/args.rs",
+      "bytes": 6688,
+      "sha256": "dbab927ee16c02041f48fcd344fc211b2af98faab813149db064917cf9104cc7"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/extra.rs",
+      "bytes": 6339,
+      "sha256": "6b0baf66e59133e28124a6164699174bf06bea033979116352ed60d5b0203b75"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/mod.rs",
+      "bytes": 10980,
+      "sha256": "cd9301c8560297fd26601966a93e7127f2e1d410a46e98d32d7636ae2665348a"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/table_extra.rs",
+      "bytes": 12412,
+      "sha256": "07f45786e9a00d0bd600b62a0e9e62b6af0a5641b37d973a7bbd5d677192bd84"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6792,
+      "sha256": "36400946bd8ade803891e1f650b89febf97faad87643ce02871c48de479f0e6c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/mod.rs",
+      "bytes": 508,
+      "sha256": "040a31b35b1d18227b6abe02269343b5b3b814506149447afdd5a1396df15866"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/mod.rs",
+      "bytes": 867,
+      "sha256": "56932aeac3a121cbb3612222f6694440f7c0c98f4862370d3a2d44a6f83b4773"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/model.rs",
+      "bytes": 2092,
+      "sha256": "89849c025c9b6968b636fdf657269a4d5949d33545aa373c8fc6ea6ceb63c01b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/names.rs",
+      "bytes": 1524,
+      "sha256": "f4750318f0a497cb438f67a4e964ebe9acdab153229f827f41b4724d59c651fb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/read.rs",
+      "bytes": 13703,
+      "sha256": "404e34ff9f25e55555f83a147f81938253fe5c9e85c8c9a1dbd91177a1b3c66a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/tests.rs",
+      "bytes": 9169,
+      "sha256": "41848e3cb76a2c6f7bf1254638216c46b3a7a0fc177506d5984cc3bc398c5500"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/mod.rs",
+      "bytes": 240,
+      "sha256": "9f449a7e6d8c12a312427180af460100ed08c747b98a5d03ae9f0e98d9fd1181"
+    },
+    {
+      "path": "docs/testing/verify_data_macro_xml.py",
+      "bytes": 14124,
+      "sha256": "70f8e51531915a56a1632eb258b1285ae33311df464f7881b0de7ee0912d5d74"
+    }
+  ],
+  "verification": [
+    {
+      "check": "engine envelope tests",
+      "exit_code": 0,
+      "passed_tests": 8,
+      "log": {
+        "path": ".cache/ace16-data-macro-xml-envelope-20261029/tests-namespace-bounds-root.log",
+        "bytes": 1252,
+        "sha256": "bb6875a804f7850a37afaa6bedc5725197138dc5adb48500734c349f287943a1"
+      }
+    },
+    {
+      "check": "final CLI envelope/Extra tests",
+      "exit_code": 0,
+      "passed_tests": 8,
+      "log": {
+        "path": ".cache/ace16-data-macro-xml-envelope-20261029/cli-late-xml-root.log",
+        "bytes": 972,
+        "sha256": "bc52e08421f87277ab02b4aa7e790bf3efe65d2217663d3740831751d34f56c6"
+      }
+    },
+    {
+      "check": "earlier CLI browsing and Extra tests",
+      "exit_code": 0,
+      "passed_tests": 36,
+      "log": {
+        "path": ".cache/ace16-data-macro-xml-envelope-20261029/cli-first-root.log",
+        "bytes": 3902,
+        "sha256": "590f1fd364d03a829bbb5a56cac8acd59283d1dd2f328d53a0227cc97eced9c2"
+      }
+    },
+    {
+      "check": "strict ACE and CLI all-target/all-feature Clippy",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/clippy-inline-profiles-root.log",
+        "bytes": 403,
+        "sha256": "03f163860998518710cda363482b6ece551169ee70d9e405efc296a7b0d63167"
+      }
+    },
+    {
+      "check": "strict minimal ACE library Clippy",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/clippy-minimal-root.log",
+        "bytes": 183,
+        "sha256": "dc54c7d5033cb16215c23a6d4134c9b0d6c2e29ad34795abd9a3639ecc83fd66"
+      }
+    },
+    {
+      "check": "strict final CLI test target including late invalid XML control",
+      "exit_code": 0,
+      "passed_tests": null,
+      "log": {
+        "path": ".cache/ace16-data-macro-xml-envelope-20261029/clippy-final-cli-test-root.log",
+        "bytes": 1144,
+        "sha256": "82609fd9e7eb685855a683e646c12070c037b71617916d497817184c51c41299"
+      }
+    }
+  ],
+  "test_profile": {
+    "engine_library_override": "profile.test.package.tablecraft-ace.debug=1",
+    "reason": "local disk limits; no assertion, optimization or incremental-compilation changes"
+  },
+  "original_comparison": {
+    "manifest": {
+      "path": ".cache/ace16-table-extra-macro-xml-original-next-20261029/bound.json",
+      "bytes": 6373,
+      "sha256": "4cc47294b0b68f02f346362885db5cf86b7a8c12723e4208166accb6e811a5d2"
+    },
+    "plan": {
+      "path": ".cache/ace16-table-extra-macro-xml-original-next-20261029/plan.json",
+      "bytes": 24879,
+      "sha256": "e3cc4f6d61929243d0aeeb1103bc2f7377748319dfaec149fc2d5fe5420c5cb6"
+    },
+    "freeze": {
+      "path": ".cache/ace16-table-extra-macro-xml-original-next-20261029/freeze.json",
+      "bytes": 6442,
+      "sha256": "52014c6556a685b3ef0359705e2a60156f21a55593056bfd9de0bf780a8aadaf"
+    },
+    "report": {
+      "path": ".cache/ace16-table-extra-macro-xml-original-first-20261029/report.json",
+      "bytes": 8883,
+      "sha256": "2f07e01f9ad9ffa8e73f23626046016bac50f9b2a945fc316ba9370eb4e75e88"
+    },
+    "consumer": {
+      "path": ".cache/tablecraft-bin/tablecraft-macro-xml-20261029",
+      "bytes": 44311672,
+      "sha256": "c592a78d41388362ac21e546a87f8475293d0d5df20c77060a33d1086ca72d32"
+    },
+    "captured_consumer": {
+      "path": "target/debug/tablecraft",
+      "bytes": 44311672,
+      "sha256": "c592a78d41388362ac21e546a87f8475293d0d5df20c77060a33d1086ca72d32"
+    },
+    "first_runtime_exit_code": 0,
+    "commands": 7,
+    "exact_records": 130,
+    "documents": 9,
+    "definitions": 9,
+    "names_only": 2,
+    "all_input_pins_unchanged": true,
+    "stored_profile": "ACE 2010; not native ACE 16 qualification",
+    "originals_redistributed": false
+  },
+  "earlier_observations": [
+    {
+      "kind": "First combined library check rejected six missing public API docs in XML model; documentation added and unrelated unused import removed, no type/runtime change",
+      "log": {
+        "path": ".cache/ace16-nullable-split-batch-next-20261029/library-check-first-root.log",
+        "bytes": 2059,
+        "sha256": "a21e35175a926f42bc146f01b2f82c04e1ad00e7610a11806e0df49532141ba1"
+      }
+    },
+    {
+      "kind": "Initial seven envelope tests pass before added namespace-work/binding control",
+      "log": {
+        "path": ".cache/ace16-data-macro-xml-envelope-20261029/tests-first-root.log",
+        "bytes": 1251,
+        "sha256": "ddd879b93d0d20fe0e50c2bae8591f45b5f7000c1ae606f9c249f198b20d8317"
+      }
+    },
+    {
+      "kind": "CLI opaque zero-group case was caught by read-only review before first flag runtime; explicit framing guard and causal test added; names-only report policy explicit and tested",
+      "runtime_failure": false
+    },
+    {
+      "kind": "Saved-only verifier lexical argv check corrected during static review to avoid resolving the mutable historical target path; retained consumer remains byte-identical and actual captured proof is unchanged",
+      "runtime_failure": false
+    },
+    {
+      "kind": "A private saved-verifier control record updated one of two duplicated code pins; full pin validation rejected the stale second pin before comparison. Both control pins corrected; captured evidence and code unchanged.",
+      "runtime_failure": false,
+      "evidence": {
+        "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/lexical-control-first-stop.json",
+        "bytes": 414,
+        "sha256": "96f58de25884e99451e355ca3e05e64fe2069eb2b2bcf95df5e59884c8ee6fe3"
+      }
+    }
+  ],
+  "other_checks": {
+    "format": 0,
+    "documentation_links": 0,
+    "dependency_boundaries": 0
+  },
+  "unrun": [
+    "native Microsoft Access event/rollback comparison",
+    "macro absence qualification",
+    "native save/reopen"
+  ],
+  "saved_verification": {
+    "verifier": {
+      "path": "docs/testing/verify_data_macro_xml.py",
+      "bytes": 14124,
+      "sha256": "70f8e51531915a56a1632eb258b1285ae33311df464f7881b0de7ee0912d5d74"
+    },
+    "default_with_all_subprocess_entrypoints_blocked": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/default-blocked-final.json",
+      "bytes": 256,
+      "sha256": "e09b31864922d5a94376ce35d7b81b415c17f7b2e87543ad25ebe33e95a03009"
+    },
+    "missing_consumer_expected_exit": 2,
+    "missing_consumer": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/missing-consumer-final.json",
+      "bytes": 294,
+      "sha256": "850433e369763bfd8814df8add7e4e1998827dca1db99814513381b422950ac1"
+    },
+    "missing_output_expected_exit": 2,
+    "missing_output": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/missing-output-final.json",
+      "bytes": 292,
+      "sha256": "b5ed023d50f3c21c2d637604c50f80a38c50e6d7f6e22c5dd1850d0c0d2e5e29"
+    },
+    "handoff": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/handoff.json",
+      "bytes": 714,
+      "sha256": "6cb5ed746bcf9b156b09d2cca7e6b8b315985cdab0e6160c4e4e89d386bc33a3"
+    },
+    "lexical_target_guard_and_subprocess_blocked": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/public-default-blocked-lexical-final.json",
+      "bytes": 310,
+      "sha256": "1956ec985e661b607b9a0fdd0b21453ba3eb795017ec3d2d2b5467811cc9da35"
+    },
+    "lexical_missing_consumer_expected_exit": 2,
+    "lexical_missing_consumer": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/lexical-missing-consumer-v2.json",
+      "bytes": 579,
+      "sha256": "0e89552439f473d0d80cdbef490805eb891eac1796d2a997b76a8316a76485e9"
+    },
+    "lexical_missing_output_expected_exit": 2,
+    "lexical_missing_output": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/lexical-missing-output-v2.json",
+      "bytes": 575,
+      "sha256": "129ee124054ee7779fd6a2f777f6c192af2dc5244fc27f0af9a9107e5642ef1a"
+    },
+    "final_handoff": {
+      "path": ".cache/ace16-data-macro-xml-maintained-verifier-20261029/final-handoff.json",
+      "bytes": 521,
+      "sha256": "00966b14070d0644c5d5ffa3fa7ef0b19bbe8bb9c4933aacea9a9c1c8e8d36cd"
+    }
+  }
+}
