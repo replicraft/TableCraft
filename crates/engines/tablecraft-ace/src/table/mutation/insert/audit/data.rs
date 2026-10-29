@@ -1,4 +1,5 @@
 //! Re-derive visible placement, allocation purposes and original map effects.
+mod owned;
 use super::{ImageProof, Row, reserve};
 use crate::{
     EditError, InspectError, TableSchema,
@@ -17,7 +18,7 @@ use crate::{
     table::mutation::{
         insert::placement::Plan,
         variable_split::metadata::Metadata,
-        variable_update::map_audit::{ExpectedByte, expect, hint},
+        variable_update::map_audit::{expect, hint},
     },
 };
 use std::io::Cursor;
@@ -34,7 +35,6 @@ struct State {
 struct Replay {
     states: Vec<State>,
     visited: Vec<u32>,
-    edits: Vec<ExpectedByte>,
     bitmap: Option<hint::ExpectedBitmap>,
 }
 
@@ -70,7 +70,6 @@ pub(super) fn prove(
     let mut replay = Replay {
         states: Vec::new(),
         visited: Vec::new(),
-        edits: std::mem::take(&mut proof.map_edits),
         bitmap: None,
     };
     reserve(
@@ -101,6 +100,7 @@ pub(super) fn prove(
         });
     }
 
+    let mut owned_replay = owned::Replay::new(&owned, schema.definition, schema.layout.usage);
     let original_eof = reader.header.page_count();
     let mut next_eof =
         u32::try_from(proof.bytes.len() / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
@@ -128,14 +128,14 @@ pub(super) fn prove(
             } else {
                 state.hinted = false;
                 if let Some(hint) = &mut hint {
-                    hint.remove(state.number, &mut replay.edits, reader)?;
+                    hint.remove(state.number, &mut proof.map_edits, reader)?;
                 } else {
                     let cell = if state.number < original_eof {
                         candidate.cell(reader, state.number)?
                     } else {
                         candidate.future_cell(reader, state.number)?
                     };
-                    expect(&mut replay.edits, cell, false, reader)?;
+                    expect(&mut proof.map_edits, cell, false, reader)?;
                 }
             }
         }
@@ -145,21 +145,13 @@ pub(super) fn prove(
         } else {
             let number = next_eof;
             metadata.require_data_page(number, reader.budget, reader.cancelled)?;
-            let owned_cell = owned.future_cell(reader, number)?;
-            let global_cell = global.future_cell(reader, number)?;
-            if owned_cell.before & owned_cell.mask != 0
-                || global_cell.before & global_cell.mask == 0
-            {
-                return Err(EditError::Preservation);
-            }
-            expect(&mut replay.edits, owned_cell, true, reader)?;
-            expect(&mut replay.edits, global_cell, false, reader)?;
+            owned_replay.add(number, &replay.states, metadata, proof, reader)?;
             if hint.is_none() {
                 let hint_cell = candidate.future_cell(reader, number)?;
                 if hint_cell.before & hint_cell.mask != 0 {
                     return Err(EditError::Preservation);
                 }
-                expect(&mut replay.edits, hint_cell, true, reader)?;
+                expect(&mut proof.map_edits, hint_cell, true, reader)?;
             }
 
             proof.append(number, reader)?;
@@ -170,14 +162,23 @@ pub(super) fn prove(
                 .copy_from_slice(&schema.definition.to_le_bytes());
             raw[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
                 .copy_from_slice(&((PAGE_BYTES - slot_offset(0)) as u16).to_le_bytes());
-            next_eof = next_eof
-                .checked_add(1)
-                .ok_or(InspectError::StructureLimit)?;
-            if let Some(hint) = &mut hint
-                && let Some(bitmap) =
-                    hint.add(number, &mut next_eof, &mut replay.edits, &global, reader)?
-            {
-                proof.append(bitmap, reader)?;
+            next_eof = u32::try_from(proof.bytes.len() / PAGE_BYTES)
+                .map_err(|_| InspectError::StructureLimit)?;
+            if let Some(hint) = &mut hint {
+                let global = &mut proof.global;
+                let bytes = &mut proof.bytes;
+                let zeros = &proof.qualified_zero_columns;
+                hint.add(
+                    number,
+                    &mut next_eof,
+                    &mut proof.map_edits,
+                    |metadata, edits, reader| {
+                        global.append(bytes, edits, zeros, metadata, reader)?;
+                        u32::try_from(bytes.len() / PAGE_BYTES)
+                            .map_err(|_| InspectError::StructureLimit.into())
+                    },
+                    reader,
+                )?;
             }
 
             visit(&mut replay.visited, number, reader)?;
@@ -221,7 +222,7 @@ pub(super) fn prove(
         reader.work(PAGE_BYTES)?;
         proof.bytes[start..start + PAGE_BYTES].copy_from_slice(&bitmap.bytes);
     }
-    for byte in &replay.edits {
+    for byte in &proof.map_edits {
         reader.tick()?;
         if proof.original.get(byte.offset) != Some(&byte.before) {
             return Err(EditError::Preservation);
@@ -233,7 +234,6 @@ pub(super) fn prove(
     }
 
     compare(proof, schema, rows, staged, &replay, reader)?;
-    proof.map_edits = replay.edits;
 
     Ok(())
 }

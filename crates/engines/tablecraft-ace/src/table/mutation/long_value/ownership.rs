@@ -366,6 +366,27 @@ impl Inventory {
         Ok(())
     }
 
+    pub(in crate::table::mutation) fn require_global_record_rewrite(
+        &self,
+        record: RecordIdentity,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        if record.owner != Owner::GlobalFree
+            || record.reference != allocation::GLOBAL_FREE_REFERENCE
+        {
+            return Err(EditError::Preservation);
+        }
+        self.maps
+            .as_ref()
+            .ok_or(InspectError::Malformed)?
+            .require_record_rewrite(
+                &[Owner::GlobalFree],
+                record,
+                reader.budget,
+                reader.cancelled,
+            )
+    }
+
     pub(in crate::table::mutation) fn require_record_rewrite(
         &self,
         schema: &TableSchema,

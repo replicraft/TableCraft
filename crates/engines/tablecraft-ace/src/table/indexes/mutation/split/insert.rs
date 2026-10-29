@@ -26,7 +26,7 @@ use crate::{
             page::{KeyRef, LEAF, NODE},
         },
         mutation::{
-            append::{self, State},
+            append::State,
             map_authority::{self, Owner},
         },
     },
@@ -309,8 +309,16 @@ fn prior_allocations(
     for number in append.original_length / PAGE_BYTES..append.length / PAGE_BYTES {
         reader.tick()?;
         let number = u32::try_from(number).map_err(|_| InspectError::StructureLimit)?;
-        let cell = global.future_cell(reader, number)?;
-        if cell.before & cell.mask == 0 || append::current(&append.map_edits, &cell, reader)? {
+        match global.future_cell(reader, number) {
+            Ok(cell) => {
+                if cell.before & cell.mask == 0 {
+                    return Err(EditError::Preservation);
+                }
+            }
+            Err(InspectError::Unsupported) if append.global_record().is_some() => {}
+            Err(error) => return Err(error.into()),
+        }
+        if append.global_is_free(&global, number, reader)? {
             return Err(EditError::Preservation);
         }
     }

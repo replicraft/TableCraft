@@ -4,7 +4,7 @@ use crate::{
     format::{
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::row_count,
+        reader::{Reader, row_count},
         row::{
             DELETED_MASK, MAX_SLOTS, OFFSET_MASK, ROW_COUNT_OFFSET, SLOT_BYTES, UNSUPPORTED_MASK,
             reference, slot_offset,
@@ -44,7 +44,7 @@ pub(super) fn prepare(
     schema: &TableSchema,
     metadata: Metadata,
     records: &[Vec<u8>],
-    append: State,
+    mut append: State,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, EditError> {
@@ -59,6 +59,26 @@ pub(super) fn prepare(
     }
     let mut maps = Maps::capture(image, schema, budget, cancelled)?;
     maps.enable_hint_growth(image, schema, &metadata, budget, cancelled)?;
+    maps.enable_owned_rebase(image, schema, &metadata, budget, cancelled)?;
+    {
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        append.enable_global_growth(&mut reader, |record, reader| {
+            metadata.require_record_rewrite(
+                record.owner,
+                record.reference,
+                record.range,
+                reader.budget,
+                reader.cancelled,
+            )
+        })?;
+    }
     budget
         .charge_allocation(records.len() as u64, size_of::<InsertedRow>() as u64)
         .map_err(InspectError::from)?;

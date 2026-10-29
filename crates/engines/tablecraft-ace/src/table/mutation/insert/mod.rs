@@ -9,7 +9,7 @@ mod policies;
 mod primary_column;
 mod record;
 #[cfg(test)]
-mod tests;
+pub(in crate::table::mutation) mod tests;
 
 use super::{gates, preview};
 use crate::{

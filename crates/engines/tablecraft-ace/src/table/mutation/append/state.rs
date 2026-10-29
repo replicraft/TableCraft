@@ -1,13 +1,25 @@
 //! Closed page purposes advance the same bounded cursor for real consumers.
-use super::Edit;
+use super::{Edit, global};
 use crate::{
     EditError, InspectError, LongValueMapReferences, NativeImage, NativeIndex,
-    format::page::PAGE_BYTES, header::check, limits::MAX_IMAGE_BYTES,
+    format::{
+        allocation::{GLOBAL_FREE_REFERENCE, RepresentedMap},
+        page::PAGE_BYTES,
+        reader::Reader,
+    },
+    header::check,
+    limits::MAX_IMAGE_BYTES,
+    table::mutation::map_authority::RecordIdentity,
 };
+use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
     Data,
+    GlobalBitmap {
+        reference: u32,
+        block: u32,
+    },
     LongValueMapContainer {
         definition: u32,
         column: usize,
@@ -73,6 +85,9 @@ pub(in crate::table) struct State {
     pub owner: u32,
     pub map_edits: Vec<Edit>,
     reservations: Vec<Reservation>,
+    global_configured: bool,
+    global: Option<global::Growth>,
+    global_reserved: bool,
 }
 
 impl State {
@@ -83,6 +98,92 @@ impl State {
             owner,
             map_edits: Vec::new(),
             reservations: Vec::new(),
+            global_configured: false,
+            global: None,
+            global_reserved: false,
+        }
+    }
+
+    pub(in crate::table) fn enable_global_growth(
+        &mut self,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+        certify: impl FnOnce(RecordIdentity, &mut Reader<'_, Cursor<&[u8]>>) -> Result<(), EditError>,
+    ) -> Result<(), EditError> {
+        if !self.global_configured {
+            self.global = global::Growth::capture(reader, certify)?;
+            self.global_configured = true;
+        }
+        Ok(())
+    }
+
+    pub(in crate::table) fn global_is_free(
+        &self,
+        original: &RepresentedMap,
+        number: u32,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<bool, EditError> {
+        if let Some(global) = &self.global
+            && (global.bitmap().is_some() || number >= global::INLINE_PAGES)
+        {
+            return global.is_free(number, reader);
+        }
+        let cell = original.future_cell(reader, number)?;
+        super::current(&self.map_edits, &cell, reader)
+    }
+
+    pub(in crate::table) fn claim_global(
+        &mut self,
+        original: &RepresentedMap,
+        number: u32,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        if let Some(global) = &mut self.global
+            && (global.bitmap().is_some() || number >= global::INLINE_PAGES)
+        {
+            return global.claim(number, &mut self.map_edits, reader);
+        }
+        let cell = original.future_cell(reader, number)?;
+        if !super::current(&self.map_edits, &cell, reader)? {
+            return Err(EditError::Preservation);
+        }
+        super::claim(&mut self.map_edits, cell, false, reader)
+    }
+
+    pub(in crate::table) fn global_record(&self) -> Option<&global::GlobalRecord> {
+        self.global.as_ref().and_then(global::Growth::record)
+    }
+
+    pub(in crate::table) fn global_bitmap(&self) -> Option<&global::GlobalBitmap> {
+        self.global.as_ref().and_then(global::Growth::bitmap)
+    }
+
+    #[cfg(test)]
+    pub(in crate::table::mutation) fn global_record_mut(
+        &mut self,
+    ) -> Option<&mut global::GlobalRecord> {
+        self.global.as_mut().and_then(global::Growth::record_mut)
+    }
+
+    #[cfg(test)]
+    pub(in crate::table::mutation) fn global_bitmap_mut(
+        &mut self,
+    ) -> Option<&mut global::GlobalBitmap> {
+        self.global.as_mut().and_then(global::Growth::bitmap_mut)
+    }
+
+    pub(in crate::table) fn planned_number(&self, position: usize) -> Result<u32, EditError> {
+        let base = self.next()?;
+        let position = u32::try_from(position).map_err(|_| InspectError::StructureLimit)?;
+        let number = base
+            .checked_add(position)
+            .ok_or(InspectError::StructureLimit)?;
+        if self.global.is_some() && !self.global_reserved && number > base.max(global::INLINE_PAGES)
+        {
+            number
+                .checked_add(1)
+                .ok_or(InspectError::StructureLimit.into())
+        } else {
+            Ok(number)
         }
     }
 
@@ -91,8 +192,21 @@ impl State {
     }
 
     pub(in crate::table) fn preview(&self, pages: usize) -> Result<usize, EditError> {
+        let extra = usize::from(
+            pages != 0
+                && self.global.is_some()
+                && !self.global_reserved
+                && self
+                    .next()?
+                    .checked_add(
+                        u32::try_from(pages - 1).map_err(|_| InspectError::StructureLimit)?,
+                    )
+                    .ok_or(InspectError::StructureLimit)?
+                    >= global::INLINE_PAGES,
+        );
         pages
-            .checked_mul(PAGE_BYTES)
+            .checked_add(extra)
+            .and_then(|pages| pages.checked_mul(PAGE_BYTES))
             .and_then(|added| self.length.checked_add(added))
             .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
             .ok_or_else(|| InspectError::StructureLimit.into())
@@ -188,7 +302,7 @@ impl State {
         blocks: &[u32],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
+    ) -> Result<Vec<u32>, EditError> {
         let count = blocks
             .len()
             .checked_add(1)
@@ -218,7 +332,19 @@ impl State {
                 block,
             });
         }
-        self.commit(number, &purposes, budget, cancelled)
+        budget
+            .charge_allocation(count as u64, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        let mut numbers = Vec::new();
+        numbers
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
+        for position in 0..count {
+            check(budget, cancelled)?;
+            numbers.push(self.planned_number(position)?);
+        }
+        self.commit(number, &purposes, budget, cancelled)?;
+        Ok(numbers)
     }
 
     pub(in crate::table) fn reserve_index(
@@ -263,7 +389,8 @@ impl State {
         index: &NativeIndex,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
+    ) -> Result<u32, EditError> {
+        let metadata = self.planned_number(1)?;
         self.commit(
             number,
             &[
@@ -278,7 +405,8 @@ impl State {
             ],
             budget,
             cancelled,
-        )
+        )?;
+        Ok(metadata)
     }
 
     fn commit(
@@ -296,11 +424,29 @@ impl State {
         }
 
         let length = self.preview(purposes.len())?;
+        let actual_count = (length - self.length) / PAGE_BYTES;
+        let pending = actual_count != purposes.len();
+        let bitmap = if pending {
+            Some(self.global_bitmap().ok_or(EditError::Preservation)?.number)
+        } else {
+            None
+        };
+        if pending
+            && bitmap
+                != Some(
+                    number
+                        .max(global::INLINE_PAGES)
+                        .checked_add(1)
+                        .ok_or(InspectError::StructureLimit)?,
+                )
+        {
+            return Err(EditError::Preservation);
+        }
         budget
-            .charge_allocation(purposes.len() as u64, size_of::<Reservation>() as u64)
+            .charge_allocation(actual_count as u64, size_of::<Reservation>() as u64)
             .map_err(InspectError::from)?;
         self.reservations
-            .try_reserve(purposes.len())
+            .try_reserve(actual_count)
             .map_err(|_| InspectError::Allocation)?;
         let count = u32::try_from(purposes.len()).map_err(|_| InspectError::StructureLimit)?;
         number
@@ -308,13 +454,18 @@ impl State {
             .ok_or(InspectError::StructureLimit)?;
 
         // Prepay cancellation before committing either member of a pair.
-        for _ in purposes {
+        for _ in 0..actual_count {
             check(budget, cancelled)?;
         }
 
-        for (position, purpose) in purposes.iter().enumerate() {
+        let mut next = number;
+        for purpose in purposes {
             let purpose = match purpose {
                 Purpose::Data => Purpose::Data,
+                Purpose::GlobalBitmap { reference, block } => Purpose::GlobalBitmap {
+                    reference: *reference,
+                    block: *block,
+                },
                 Purpose::LongValueMapContainer { definition, column } => {
                     Purpose::LongValueMapContainer {
                         definition: *definition,
@@ -356,11 +507,26 @@ impl State {
                 },
             };
             self.reservations.push(Reservation {
-                number: number
-                    .checked_add(position as u32)
-                    .ok_or(InspectError::StructureLimit)?,
+                number: next,
                 purpose,
             });
+            next = next.checked_add(1).ok_or(InspectError::StructureLimit)?;
+            if bitmap == Some(next) {
+                self.reservations.push(Reservation {
+                    number: next,
+                    purpose: Purpose::GlobalBitmap {
+                        reference: GLOBAL_FREE_REFERENCE,
+                        block: 0,
+                    },
+                });
+                next = next.checked_add(1).ok_or(InspectError::StructureLimit)?;
+            }
+        }
+        if next as usize * PAGE_BYTES != length {
+            return Err(EditError::Preservation);
+        }
+        if pending {
+            self.global_reserved = true;
         }
         self.length = length;
 
@@ -392,6 +558,34 @@ impl State {
         }
 
         Ok(item)
+    }
+
+    pub(in crate::table) fn require_global_bitmap(
+        &self,
+        number: u32,
+        reference: u32,
+        block: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match self.reservation(number, budget, cancelled)?.purpose {
+            Purpose::GlobalBitmap {
+                reference: actual,
+                block: actual_block,
+            } if actual == reference && actual_block == block => Ok(()),
+            _ => Err(EditError::Preservation),
+        }
+    }
+
+    pub(in crate::table) fn global_bitmaps(&self) -> impl Iterator<Item = (u32, u32, u32)> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::GlobalBitmap { reference, block } => {
+                    Some((reservation.number, reference, block))
+                }
+                _ => None,
+            })
     }
 
     pub(in crate::table) fn require_data(

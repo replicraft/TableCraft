@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Global free-map INSERT growth
+
+The separate ACE 16 INSERT preview now promotes canonical page 1:0 owner 1 inline
+69-byte/base-zero GLOBAL storage on the actual first allocation at page 512.
+GLOBAL 513 has a distinct closed purpose; DATA, INDEX, LVAL, containers and owned
+bitmaps receive actual page IDs from one allocator. Independent replay checks
+complete record/bitmap bytes and source identity. INSERT-only ordinary-owned
+inline rebasing preserves all current DATA members when its aligned window fits.
+Represented paths remain unchanged before promotion; UPDATE does not opt in.
+
+Forty source/request literal images pass complete read qualification and exact
+producer comparisons. The corrected 337-function mutation batch and full ACE
+library pass (580 functions, one existing ignored generator); seven shared targets
+pass 49 tests. Strict ACE Clippy across all targets/features, minimal compilation and
+formatting pass. Original-file GLOBAL candidate qualification remains pending. The source-pinned exclusive fill endpoint and
+retirement of old free holes are explicit engineering policies, not universal
+Microsoft format claims. Block-one growth, wider ordinary-owned promotion and
+normal saves remain separate work. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
+
 ## Original-file Memo/OLE column-map growth
 
 Sixteen source/request-only images on eight immutable ACE 16 originals now match
@@ -79,8 +98,8 @@ guards pass. The 212-function INSERT batch also passes after the final strict
 metadata dispatch adjustment.
 
 The later missing-declaration continuation is recorded above. Half-zero pairs,
-legacy external storage under zero pairs, continued TD initialization, global map
-growth and production saves remain separate work. These literal engineering checks are not original-file or native
+legacy external storage under zero pairs, continued TD initialization and
+production saves remain separate work. Qualified GLOBAL growth is recorded above. These literal engineering checks are not original-file or native
 Access qualification. See the [initialization contract](testing/ACE16_LONG_VALUE_INITIALIZATION.md).
 
 ## Original-file variable-key INSERT comparisons
@@ -146,7 +165,8 @@ bring the combined INSERT batch to 194 passing functions. The full ACE library
 batch passes 530 functions with one existing ignored fixture generator; strict
 ACE Clippy across all targets/features, minimal compilation, formatting and
 documentation/dependency guards pass. The later qualified declaration insertion
-is recorded above; global map growth and pointer-record expansion remain unfinished.
+is recorded above; qualified GLOBAL growth is also recorded above, while
+pointer-record expansion remains unfinished.
 Authentic external-file comparisons, normal saves and native Access qualification
 remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
 

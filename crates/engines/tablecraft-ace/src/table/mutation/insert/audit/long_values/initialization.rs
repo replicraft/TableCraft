@@ -2,7 +2,7 @@
 use super::super::{ImageProof, reserve};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
-    format::{allocation::RepresentedMap, page::PAGE_BYTES, reader::Reader, row::reference},
+    format::{page::PAGE_BYTES, reader::Reader, row::reference},
     table::mutation::{insert::Staged, long_value::ownership::InitializationSources},
 };
 use std::io::Cursor;
@@ -31,7 +31,6 @@ pub(super) fn derive(
     schema: &TableSchema,
     selected: &[usize],
     sources: &InitializationSources,
-    global: &RepresentedMap,
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Initialization>, EditError> {
@@ -87,22 +86,6 @@ pub(super) fn derive(
         if number > MAX_PACKED_PAGE {
             return Err(InspectError::StructureLimit.into());
         }
-        super::cursor::require_bit(
-            proof,
-            global,
-            reader.header.page_count(),
-            number,
-            true,
-            reader,
-        )?;
-        super::cursor::change(
-            proof,
-            global,
-            reader.header.page_count(),
-            number,
-            false,
-            reader,
-        )?;
         proof.append(number, reader)?;
         let base = number as usize * PAGE_BYTES;
         let page = &mut proof.bytes[base..base + PAGE_BYTES];

@@ -1,5 +1,6 @@
 use super::*;
 use crate::table::indexes::mutation::{NumericKey, profile::SingleProfile};
+use crate::table::mutation::append;
 use crate::{IndexCheckStatus, IndexConstraintViolation, check_table, check_table_constraints};
 use model::{PAGE, ROOT};
 use tablecraft_core::limits::Resource;

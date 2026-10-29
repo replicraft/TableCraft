@@ -208,8 +208,7 @@ impl Hint {
 
         let metadata = append.next()?;
         append.preview(1)?;
-        let cell = global.future_cell(reader, metadata)?;
-        if !append::current(&append.map_edits, &cell, reader)? {
+        if !append.global_is_free(global, metadata, reader)? {
             return Err(EditError::Preservation);
         }
         reader
@@ -239,7 +238,7 @@ impl Hint {
             &after,
             reader,
         )?;
-        append::claim(&mut append.map_edits, cell, false, reader)?;
+        append.claim_global(global, metadata, reader)?;
         append.reserve_candidate_bitmap(
             metadata,
             self.record.reference(),

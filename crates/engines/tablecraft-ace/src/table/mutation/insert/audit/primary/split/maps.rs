@@ -36,7 +36,6 @@ pub(in crate::table::mutation::insert::audit::primary) struct Allocation<'a> {
     index: &'a NativeIndex,
     owner: u32,
     owned: RepresentedMap,
-    global: RepresentedMap,
     census: Census,
     members: Vec<u32>,
     data_offsets: Vec<usize>,
@@ -98,7 +97,6 @@ impl<'a> Allocation<'a> {
             index,
             owner,
             owned,
-            global,
             census,
             members,
             data_offsets,
@@ -121,7 +119,6 @@ impl<'a> Allocation<'a> {
         }
         if let Some(promotion) = &mut self.promoted {
             set_bitmap(&mut promotion.bitmap, number, reader)?;
-            global(&self.global, number, proof, reader)?;
             proof.append(number, reader)?;
             reserve(&mut self.members, 1, reader)?;
             self.members.push(number);
@@ -140,7 +137,6 @@ impl<'a> Allocation<'a> {
                         return Err(EditError::Preservation);
                     }
                     edit(proof, cell, true, reader)?;
-                    global(&self.global, number, proof, reader)?;
                     proof.append(number, reader)?;
                     reserve(&mut self.members, 1, reader)?;
                     self.members.push(number);
@@ -259,13 +255,14 @@ impl<'a> Allocation<'a> {
                 after[at] |= 1 << (relative % u8::BITS);
             }
             replace(proof, record, &after, true, reader)?;
-            global(&self.global, number, proof, reader)?;
             proof.append(number, reader)?;
             self.rebased = Some(base);
             return Ok(());
         }
 
-        let metadata = number.checked_add(1).ok_or(InspectError::StructureLimit)?;
+        proof.append(number, reader)?;
+        let metadata = u32::try_from(proof.bytes.len() / PAGE_BYTES)
+            .map_err(|_| InspectError::StructureLimit)?;
         let mut bitmap = copied(&[0; PAGE_BYTES], reader)?;
         bitmap[..BITMAP_PREFIX].copy_from_slice(&USAGE_SIGNATURE);
         for member in &self.members {
@@ -275,9 +272,6 @@ impl<'a> Allocation<'a> {
         after[0] = INDIRECT_KIND;
         after[1..INLINE_PREFIX].copy_from_slice(&metadata.to_le_bytes());
         replace(proof, record, &after, false, reader)?;
-        global(&self.global, number, proof, reader)?;
-        global(&self.global, metadata, proof, reader)?;
-        proof.append(number, reader)?;
         proof.append(metadata, reader)?;
         self.promoted = Some(PromotionExpected {
             number: metadata,
@@ -328,25 +322,6 @@ fn edit(
     expect(&mut proof.map_edits, cell, set, reader)?;
     proof.bytes[offset] = after;
     Ok(())
-}
-
-fn global(
-    global: &RepresentedMap,
-    number: u32,
-    proof: &mut ImageProof<'_>,
-    reader: &mut Reader<'_, Cursor<&[u8]>>,
-) -> Result<(), EditError> {
-    let cell = global.future_cell(reader, number)?;
-    if cell.before & cell.mask == 0
-        || proof
-            .bytes
-            .get(cell.offset)
-            .is_none_or(|byte| byte & cell.mask == 0)
-    {
-        return Err(EditError::Preservation);
-    }
-
-    edit(proof, cell, false, reader)
 }
 
 fn replace(

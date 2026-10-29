@@ -14,7 +14,6 @@ use crate::{
     table::mutation::{
         insert::long_values::Plan,
         long_value::{maps::Scope, ownership::Inventory},
-        variable_update::map_audit::expect,
     },
 };
 use std::ops::Range;
@@ -49,7 +48,6 @@ pub(super) struct Cursor<'a> {
     inventory: Inventory,
     bitmaps: Vec<Bitmap>,
     original_eof: u32,
-    global: RepresentedMap,
     columns: Vec<Column>,
     touched: Vec<Touched>,
 }
@@ -129,7 +127,6 @@ impl<'a> Cursor<'a> {
             inventory,
             bitmaps: Vec::new(),
             original_eof: reader.header.page_count(),
-            global,
             columns,
             touched: Vec::new(),
         })
@@ -222,7 +219,6 @@ impl<'a> Cursor<'a> {
                         inventory: &self.inventory,
                         column: selected.number,
                     },
-                    global: &self.global,
                     members: &[],
                 },
                 proof,
@@ -246,7 +242,6 @@ impl<'a> Cursor<'a> {
                         inventory: &self.inventory,
                         column: selected.number,
                     },
-                    global: &self.global,
                     members: &members,
                 },
                 &mut self.bitmaps,
@@ -416,56 +411,4 @@ fn geometry(page: &[u8]) -> Result<(usize, usize), EditError> {
         return Err(EditError::Preservation);
     }
     Ok((count, end))
-}
-
-fn cell(
-    map: &RepresentedMap,
-    eof: u32,
-    number: u32,
-    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
-) -> Result<crate::format::allocation::MapCell, EditError> {
-    Ok(if number < eof {
-        map.cell(reader, number)?
-    } else {
-        map.future_cell(reader, number)?
-    })
-}
-
-pub(super) fn require_bit(
-    proof: &ImageProof<'_>,
-    map: &RepresentedMap,
-    eof: u32,
-    number: u32,
-    wanted: bool,
-    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
-) -> Result<(), EditError> {
-    let cell = cell(map, eof, number, reader)?;
-    let current = *proof
-        .bytes
-        .get(cell.offset)
-        .ok_or(EditError::Preservation)?;
-    if (current & cell.mask != 0) != wanted {
-        return Err(EditError::Preservation);
-    }
-    Ok(())
-}
-
-pub(super) fn change(
-    proof: &mut ImageProof<'_>,
-    map: &RepresentedMap,
-    eof: u32,
-    number: u32,
-    set: bool,
-    reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
-) -> Result<(), EditError> {
-    let cell = cell(map, eof, number, reader)?;
-    let offset = cell.offset;
-    expect(&mut proof.map_edits, cell, set, reader)?;
-    let expected = proof
-        .map_edits
-        .iter()
-        .find(|byte| byte.offset == offset)
-        .ok_or(EditError::Preservation)?;
-    *proof.bytes.get_mut(offset).ok_or(EditError::Preservation)? = expected.after;
-    Ok(())
 }

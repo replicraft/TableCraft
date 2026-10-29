@@ -312,7 +312,7 @@ impl Maps {
                         after[0] = INDIRECT;
                         for (ordinal, &block) in blocks.iter().enumerate() {
                             reader.tick()?;
-                            let bitmap = metadata_number(number, ordinal)?;
+                            let bitmap = append.planned_number(ordinal + 1)?;
                             let at = KIND_BYTES + block as usize * POINTER_BYTES;
                             after[at..at + POINTER_BYTES].copy_from_slice(&bitmap.to_le_bytes());
                         }
@@ -335,7 +335,7 @@ impl Maps {
                     blocks.push(block);
                     let mut after = copied(current, reader)?;
                     after[at..at + POINTER_BYTES]
-                        .copy_from_slice(&metadata_number(number, 0)?.to_le_bytes());
+                        .copy_from_slice(&append.planned_number(1)?.to_le_bytes());
                     replacement = Some(after);
                 } else {
                     reader.work(metadata.len())?;
@@ -363,19 +363,13 @@ impl Maps {
             _ => return Err(EditError::Unsupported(WriteBlocker::RowLayout)),
         }
 
-        // Every reservation uses the original global cell and its shared overlay.
-        // Metadata pages are map storage, never members of the LVAL owned set.
+        // The common global allocator may insert its own bitmap between a
+        // body and column metadata. Resolve every actual purpose page first.
         for ordinal in 0..=blocks.len() {
-            reader.tick()?;
-            let page = number
-                .checked_add(ordinal as u32)
-                .ok_or(InspectError::StructureLimit)?;
-            let cell = global.future_cell(reader, page)?;
-            if !append::current(&append.map_edits, &cell, reader)? {
-                return Err(EditError::Preservation);
-            }
+            let page = append.planned_number(ordinal)?;
+            append.claim_global(global, page, reader)?;
         }
-        if blocks.is_empty() {
+        let reserved = if blocks.is_empty() {
             append.reserve_long_value(
                 number,
                 column,
@@ -384,28 +378,17 @@ impl Maps {
                 reader.budget,
                 reader.cancelled,
             )?;
+            None
         } else {
-            append.reserve_long_value_with_owned_bitmaps(
+            Some(append.reserve_long_value_with_owned_bitmaps(
                 number,
                 column,
                 references,
                 &blocks,
                 reader.budget,
                 reader.cancelled,
-            )?;
-        }
-        for ordinal in 0..=blocks.len() {
-            reader.tick()?;
-            let page = number
-                .checked_add(ordinal as u32)
-                .ok_or(InspectError::StructureLimit)?;
-            append::claim(
-                &mut append.map_edits,
-                global.future_cell(reader, page)?,
-                false,
-                reader,
-            )?;
-        }
+            )?)
+        };
         if let Some(cell) = represented {
             if append::current(&append.map_edits, &cell, reader)? {
                 return Err(EditError::Preservation);
@@ -427,7 +410,10 @@ impl Maps {
                 }
             }
             metadata.push(BitmapPage {
-                number: metadata_number(number, ordinal)?,
+                number: *reserved
+                    .as_ref()
+                    .and_then(|numbers| numbers.get(ordinal + 1))
+                    .ok_or(EditError::Preservation)?,
                 column,
                 owned: references.owned(),
                 block,
@@ -492,13 +478,6 @@ fn source_cell(
     } else {
         map.cell(reader, number)?
     })
-}
-
-fn metadata_number(body: u32, ordinal: usize) -> Result<u32, EditError> {
-    let distance = u32::try_from(ordinal).map_err(|_| InspectError::StructureLimit)?;
-    body.checked_add(1)
-        .and_then(|number| number.checked_add(distance))
-        .ok_or_else(|| InspectError::StructureLimit.into())
 }
 
 fn inline(

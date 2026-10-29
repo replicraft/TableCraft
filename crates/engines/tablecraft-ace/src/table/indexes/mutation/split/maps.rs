@@ -16,7 +16,7 @@ pub(super) fn allocate_nonroot(
     image: &NativeImage,
     index: &NativeIndex,
     number: u32,
-    edits: &mut Vec<Edit>,
+    append: &mut append::State,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -36,12 +36,13 @@ pub(super) fn allocate_nonroot(
         global.require_allocated(&mut reader, page)?;
     }
     let owned_cell = owned.future_cell(&mut reader, number)?;
-    let free_cell = global.future_cell(&mut reader, number)?;
-    if owned_cell.before & owned_cell.mask != 0 || free_cell.before & free_cell.mask == 0 {
+    if owned_cell.before & owned_cell.mask != 0
+        || !append.global_is_free(&global, number, &mut reader)?
+    {
         return Err(InspectError::Malformed.into());
     }
-    change(edits, owned_cell, true, &mut reader)?;
-    change(edits, free_cell, false, &mut reader)?;
+    change(&mut append.map_edits, owned_cell, true, &mut reader)?;
+    append.claim_global(&global, number, &mut reader)?;
     Ok(())
 }
 

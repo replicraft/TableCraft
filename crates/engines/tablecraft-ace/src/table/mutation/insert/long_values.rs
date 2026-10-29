@@ -217,6 +217,9 @@ pub(super) fn prepare(
     };
     let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global.require_allocated_storage(&mut reader, &global)?;
+    append.enable_global_growth(&mut reader, |record, reader| {
+        inventory.require_global_record_rewrite(record, reader)
+    })?;
     let mut columns = Vec::new();
     reserve(&mut columns, selected.len(), reader.budget)?;
     for position in selected {

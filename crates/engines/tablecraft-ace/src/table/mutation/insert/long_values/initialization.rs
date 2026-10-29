@@ -11,7 +11,7 @@ use crate::{
     table::{
         long_value::maps::DefinitionTail,
         mutation::{
-            append::{self, State},
+            append::State,
             long_value::ownership::{MissingDeclaration, ZeroPair},
         },
     },
@@ -78,12 +78,8 @@ fn allocate(
     }
     let number = append.next()?;
     packed_maps(number)?;
-    let cell = global.future_cell(reader, number)?;
-    if !append::current(&append.map_edits, &cell, reader)? {
-        return Err(EditError::Preservation);
-    }
+    append.claim_global(global, number, reader)?;
     append.reserve_long_value_map_container(number, column, reader.budget, reader.cancelled)?;
-    append::claim(&mut append.map_edits, cell, false, reader)?;
     Ok(number)
 }
 

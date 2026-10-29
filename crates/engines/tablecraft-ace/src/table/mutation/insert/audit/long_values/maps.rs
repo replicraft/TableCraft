@@ -1,6 +1,5 @@
 //! Independent column-map rewrites and fresh bitmap placement from source facts.
 use super::super::{ImageProof, copied, reserve};
-use super::cursor::{change, require_bit};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
     format::{
@@ -227,7 +226,6 @@ pub(super) struct Authority<'a> {
 
 pub(super) struct Allocation<'a> {
     pub authority: Authority<'a>,
-    pub global: &'a crate::format::allocation::RepresentedMap,
     pub members: &'a [u32],
 }
 
@@ -391,40 +389,10 @@ impl Maps {
             _ => return Err(EditError::Preservation),
         }
 
-        for distance in 0..=blocks.len() {
-            let page = number
-                .checked_add(u32::try_from(distance).map_err(|_| InspectError::StructureLimit)?)
-                .ok_or(InspectError::StructureLimit)?;
-            require_bit(
-                proof,
-                allocation.global,
-                reader.header.page_count(),
-                page,
-                true,
-                reader,
-            )?;
-        }
-        change(
-            proof,
-            allocation.global,
-            reader.header.page_count(),
-            number,
-            false,
-            reader,
-        )?;
         proof.append(number, reader)?;
-        for (distance, block) in blocks.iter().enumerate() {
-            let page = number
-                .checked_add(u32::try_from(distance + 1).map_err(|_| InspectError::StructureLimit)?)
-                .ok_or(InspectError::StructureLimit)?;
-            change(
-                proof,
-                allocation.global,
-                reader.header.page_count(),
-                page,
-                false,
-                reader,
-            )?;
+        for block in &blocks {
+            let page = u32::try_from(proof.bytes.len() / PAGE_BYTES)
+                .map_err(|_| InspectError::StructureLimit)?;
             proof.append(page, reader)?;
             let base = page as usize * PAGE_BYTES;
             proof.bytes[base..base + BITMAP_HEADER.len()].copy_from_slice(&BITMAP_HEADER);

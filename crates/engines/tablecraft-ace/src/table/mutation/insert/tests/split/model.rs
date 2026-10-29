@@ -11,11 +11,11 @@ const MAP_ROW: usize = 4027;
 pub(in crate::table::mutation::insert::tests) struct Source {
     pub bytes: Vec<u8>,
     pub rows: Vec<Vec<Value>>,
-    keys: Vec<(i32, u32)>,
+    pub(in crate::table::mutation::insert::tests) keys: Vec<(i32, u32)>,
     full: bool,
 }
 
-fn record(id: i32, binary: Option<&[u8]>) -> Vec<u8> {
+pub(in crate::table::mutation::insert::tests) fn record(id: i32, binary: Option<&[u8]>) -> Vec<u8> {
     let mut bytes = vec![2, 0];
     bytes.extend(id.to_le_bytes());
     if let Some(binary) = binary {
@@ -41,7 +41,7 @@ fn install(bytes: &mut [u8], page: usize, data: &[u8]) {
     bytes[page * PAGE..(page + 1) * PAGE].copy_from_slice(data);
 }
 
-fn wire(value: i32, reference: u32) -> Vec<u8> {
+pub(in crate::table::mutation::insert::tests) fn wire(value: i32, reference: u32) -> Vec<u8> {
     [
         vec![127],
         ((value as u32) ^ 0x80000000).to_be_bytes().to_vec(),
@@ -50,7 +50,13 @@ fn wire(value: i32, reference: u32) -> Vec<u8> {
     .concat()
 }
 
-fn leaf(keys: &[(i32, u32)], prefix: usize, previous: u32, next: u32, residue: u8) -> Vec<u8> {
+pub(in crate::table::mutation::insert::tests) fn leaf(
+    keys: &[(i32, u32)],
+    prefix: usize,
+    previous: u32,
+    next: u32,
+    residue: u8,
+) -> Vec<u8> {
     let mut bytes = vec![residue; PAGE];
     bytes[..480].fill(0);
     bytes[..2].copy_from_slice(&[4, 1]);

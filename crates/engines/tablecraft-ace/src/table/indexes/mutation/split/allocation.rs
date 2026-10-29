@@ -60,7 +60,7 @@ fn reserve_inner(
         .find(|p| p.usage == index.usage_map())
     {
         set_member(&mut promotion.bitmap, number, reader)?;
-        global(image, number, &mut plan.append.map_edits, reader)?;
+        global(image, number, &mut plan.append, reader)?;
         plan.append
             .reserve_index(number, index, reader.budget, reader.cancelled)?;
         return Ok(number);
@@ -83,7 +83,7 @@ fn reserve_inner(
                 image,
                 index,
                 number,
-                &mut plan.append.map_edits,
+                &mut plan.append,
                 reader.budget,
                 reader.cancelled,
             )?;
@@ -250,14 +250,14 @@ fn rewrite_inline(
             });
         }
 
-        global(image, number, &mut plan.append.map_edits, reader)?;
+        global(image, number, &mut plan.append, reader)?;
         plan.append
             .reserve_index(number, index, reader.budget, reader.cancelled)?;
 
         return Ok(());
     }
 
-    let metadata = number.checked_add(1).ok_or(InspectError::StructureLimit)?;
+    let metadata = plan.append.planned_number(1)?;
     plan.append.preview(2)?;
     let global_map = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global_map.require_allocated_storage(reader, &global_map)?;
@@ -296,8 +296,8 @@ fn rewrite_inline(
         plan.rebases.remove(position);
     }
 
-    global(image, number, &mut plan.append.map_edits, reader)?;
-    global(image, metadata, &mut plan.append.map_edits, reader)?;
+    global(image, number, &mut plan.append, reader)?;
+    global(image, metadata, &mut plan.append, reader)?;
     reader
         .budget
         .charge_allocation(1, size_of::<Promotion>() as u64)
@@ -313,8 +313,12 @@ fn rewrite_inline(
         after,
         bitmap,
     });
-    plan.append
-        .reserve_index_bitmap(number, index, reader.budget, reader.cancelled)?;
+    let actual =
+        plan.append
+            .reserve_index_bitmap(number, index, reader.budget, reader.cancelled)?;
+    if actual != metadata {
+        return Err(EditError::Preservation);
+    }
 
     Ok(())
 }
@@ -342,7 +346,7 @@ fn set_member(
 fn global(
     image: &NativeImage,
     number: u32,
-    edits: &mut Vec<maps::Edit>,
+    append: &mut append::State,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let mut source = image.reader();
@@ -354,11 +358,10 @@ fn global(
         reads: 0,
     };
     let global = RepresentedMap::read(&mut original, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
-    let cell = global.future_cell(&mut original, number)?;
-    if cell.before & cell.mask == 0 {
+    if !append.global_is_free(&global, number, &mut original)? {
         return Err(InspectError::Malformed.into());
     }
-    maps::change(edits, cell, false, &mut original)
+    append.claim_global(&global, number, &mut original)
 }
 
 pub(super) fn seal(
