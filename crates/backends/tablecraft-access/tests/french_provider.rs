@@ -76,12 +76,12 @@ fn exact_constructor_and_french_default_resolver_preserve_general_isolation() {
 }
 
 #[test]
-fn database_search_does_not_supply_text_lcid_or_like_policies() {
+fn database_matching_does_not_supply_text_or_lcid_policies() {
     let provider = FrenchLegacyCollation::new(order(), budget(), &|| false)
         .unwrap()
         .with_option_compare(StringCompareMode::Database);
     assert_eq!(provider.option_compare(), Some(StringCompareMode::Database));
-    assert_eq!(provider.like_profile(), LikeProfile::Unsupported);
+    assert_eq!(provider.like_profile(), LikeProfile::Utf16Weights);
     assert_eq!(
         provider.compare_text("a", "A"),
         Err(EvalError::CollationRequired)

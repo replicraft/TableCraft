@@ -1157,6 +1157,18 @@ counts, so extra dictionary keys cannot hide behind coverage checks. Existing
 Apache-2.0 weight-data provenance/notices apply. These checks establish the
 derived set, not native Access LIKE behavior or an implemented query matcher.
 
+The separately derived French legacy LIKE dictionary adds no external fixture
+or copied code. The original ignored `emit_french_like_dictionary` test encodes
+all raw UTF-16 units with the existing full French encoder, retaining pattern
+spaces and reversed secondary weights. Its first retained generation produced
+`like-french-legacy.fst` (33,228 bytes, SHA-256
+`a8584c05037d6695926c93ea3c3ffe0c6a332454acdfb863901d5ca5151808f1`).
+The original `scripts/regenerate_french_like.py` verifies or explicitly replaces
+only this artifact; it can consume saved stdout without starting Cargo.
+Existing reviewed weight-data attribution and Apache-2.0 notices apply. The
+[French LIKE contract](../access/indexes/FRENCH_LIKE.md) separates the engineering
+matcher and independent pattern checks from native Access qualification.
+
 ## General substring search inputs
 
 The original `GeneralSearchOracle.java` recipe also reuses the reviewed Jackcess

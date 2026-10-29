@@ -199,8 +199,10 @@ forward/reverse/replacement controls across both General families.
 The exact French legacy database provider now also supplies a separate
 [full-weight span policy](../../access/indexes/FRENCH_SEARCH.md). It retains
 complete reversed secondary weights and shares only primary-proven pruning with
-General search. This does not enable French LIKE or establish native Access
-substring matching; Windows Text/LCID providers remain separately selected.
+General search. The later [French LIKE policy](../../access/indexes/FRENCH_LIKE.md)
+uses separate untrimmed callbacks; it does not inherit search padding. Neither
+service establishes native Access matching. Windows Text/LCID providers remain
+separately selected.
 
 ```sh
 tablecraft query eval "SELECT InStr(1,'banana','an',0) AS FirstMatch, InStrRev('banana','an') AS LastMatch"

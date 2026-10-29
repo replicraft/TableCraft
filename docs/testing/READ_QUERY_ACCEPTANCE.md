@@ -574,7 +574,7 @@ native Access/NLS qualification remain open. See the
 
 | Boundary | Current implementation | Remaining work |
 | --- | --- | --- |
-| Database text providers | General recognition requires `1033/0/0` or `1033/0/1`; a separate exact French Legacy `1036/0/0` provider supplies complete comparisons, bounded Database-mode substring spans and qualified single Short Text physical reads | French LIKE, additional database orders, arbitrary long French Unicode/unprintable behavior and native function-specific comparison/matching qualification |
+| Database text providers | General recognition requires `1033/0/0` or `1033/0/1`; a separate exact French Legacy `1036/0/0` provider supplies complete comparisons, bounded Database-mode substring spans, full UTF-16 LIKE matching and qualified single Short Text physical reads | Additional database orders, equality-prefix hints, arbitrary long French Unicode/unprintable behavior and native function-specific comparison/matching qualification |
 | System text / explicit LCID | Nineteen opt-in ICU host profiles implement decoded text comparison/search and exact registered LCID dispatch; General database comparison remains separate | Windows NLS/ACE function-specific qualification and broader locale providers; explicit registration does not establish native LCID equivalence |
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
 | Value categories | Explicit declaration-sensitive arithmetic now captures decimal integer literal carriers; default preparation is unchanged and unknown provenance is retained | Qualify literal subtypes and complete Variant promotion, Error and result-type matrices before enabling broader defaults |
@@ -584,7 +584,12 @@ The [French substring implementation](../access/indexes/FRENCH_SEARCH.md), added
 thirteen Access functions, plus thirty existing General regressions. Complete
 French weights decide matches; only the unchanged Legacy primary stream permits
 candidate pruning. This advances the engineering implementation of T3 without
-qualifying native Access matching, enabling French LIKE or closing the P0 row.
+qualifying native Access matching or closing the P0 row. The subsequent
+[French LIKE service](../access/indexes/FRENCH_LIKE.md) adds separate untrimmed
+callbacks and a complete raw-unit dictionary while preserving the full existing
+ANSI grammar. Its first seven engine and nineteen Access functions pass;
+the independent pattern oracle, exact dictionary inventory and resource controls
+remain engineering evidence, not native LIKE qualification.
 
 The [explicit ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) has bounded callbacks and 14,498
 independent ICU4C controls across nineteen host profiles. It supplies working host functionality while retaining
@@ -596,8 +601,10 @@ ACE 16-family originals: 96 successful executions and sixteen intended refusals,
 with zero disagreements. Independent Short keys and a restricted long Latin
 model supply separate expectations, including 20,000-unit Memo comparisons.
 This closes a concrete database-provider gap without establishing arbitrary
-French Unicode, Windows NLS or native Access SQL equivalence. French field LIKE
-remains refused; string built-ins still use their operation/default provider.
+French Unicode, Windows NLS or native Access SQL equivalence. That recorded CLI
+predates French LIKE and retains its historical refusals; it has not been rerun
+to qualify the new matcher. String built-ins still use their operation/default
+provider.
 The physical French index path does not authorize mutation or equality hints.
 
 These are implementation gaps as well as later qualification tasks. Completing

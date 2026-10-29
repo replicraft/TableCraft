@@ -295,15 +295,21 @@ fn mixed_and_unknown_policies_refuse_while_bare_projection_stays_inactive() {
 }
 
 #[test]
-fn french_search_keeps_like_refusals_and_binary_controls_separate() {
+fn french_matching_retains_field_policies_and_separate_binary_controls() {
     let source = Words::new();
     let pool = budget();
     let policy = resolver(&pool);
-    for pattern in ["*", "?", "c*"] {
+    for (pattern, ids) in [
+        ("*", vec![1, 2, 3, 4, 5]),
+        ("?", vec![]),
+        ("c*", vec![1, 2, 3, 4, 5]),
+    ] {
         let sql = format!("SELECT Id FROM T WHERE Word LIKE '{pattern}'");
         assert_eq!(
-            run(&source, &policy, &sql).err(),
-            Some(QueryError::Evaluation(EvalError::UnsupportedExpression))
+            run(&source, &policy, &sql).unwrap(),
+            ids.into_iter()
+                .map(|id| vec![Value::Int32(id)])
+                .collect::<Vec<_>>()
         );
     }
     let french_pool = budget();

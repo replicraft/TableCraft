@@ -40,6 +40,29 @@ fn emit_general_like_dictionaries() {
 }
 
 #[test]
+#[ignore = "Engineering generator: emits the separately derived French LIKE unit set"]
+fn emit_french_like_dictionary() {
+    let mut keys = BTreeSet::new();
+    for unit in u16::MIN..=u16::MAX {
+        let key = key::encode_full_french(
+            &[unit],
+            &mut key::Work {
+                budget: &mut budget(),
+                cancelled: &|| false,
+            },
+        )
+        .unwrap();
+        keys.insert(key.bytes);
+    }
+    let set = fst::Set::from_iter(keys).unwrap();
+    print!("FRENCH_LIKE_FST ");
+    for byte in set.as_fst().as_bytes() {
+        print!("{byte:02x}");
+    }
+    println!();
+}
+
+#[test]
 fn every_raw_unit_has_an_exact_dictionary_entry_and_no_extra_keys_exist() {
     for family in [GeneralSortFamily::Legacy, GeneralSortFamily::General2010] {
         let dictionary = dictionary(family).unwrap();

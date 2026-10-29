@@ -82,7 +82,9 @@ independent test populations.
 
 These tests establish an engineering span contract, not native Access SQL/NLS
 matching. The [French comparison observations](../../testing/FRENCH_COMPARISON_OBSERVATIONS.md)
-remain comparison evidence, not a native substring oracle. LIKE, character-class
-matching, equality-prefix hints, additional stored sort orders and Windows
+remain comparison evidence, not a native substring oracle. The subsequent
+[French LIKE policy](FRENCH_LIKE.md) has its own untrimmed pattern keys and
+character-class dictionary; search does not supply its grammar or padding rule.
+Equality-prefix hints, additional stored sort orders and Windows/native
 qualification remain separate work. Existing Binary operations and explicit
 Text/LCID providers keep their own contracts.

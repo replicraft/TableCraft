@@ -112,7 +112,15 @@ pub fn general_like_literal_step(
     let mut work = key::Work { budget, cancelled };
     let candidate = key::encode_full(family, candidate, &mut work)?;
     let literal = key::encode_full(family, literal, &mut work)?;
-    if compare_keys(&candidate, &literal, &mut work)? == Ordering::Equal {
+    literal_step(&candidate, &literal, &mut work)
+}
+
+pub(super) fn literal_step(
+    candidate: &key::ComparisonKey,
+    literal: &key::ComparisonKey,
+    work: &mut key::Work<'_>,
+) -> Result<LikeSpanState, InspectError> {
+    if compare_keys(candidate, literal, work)? == Ordering::Equal {
         return Ok(LikeSpanState::Match);
     }
     let prefix = &candidate.bytes[..candidate.primary_length];
