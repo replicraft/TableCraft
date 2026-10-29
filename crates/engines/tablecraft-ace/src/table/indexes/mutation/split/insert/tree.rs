@@ -19,10 +19,7 @@ use crate::{
             },
             page::{LEAF, NODE},
         },
-        mutation::{
-            append::State,
-            map_authority::{self, Owner},
-        },
+        mutation::{append::State, map_authority::Owner},
     },
 };
 use std::io::Cursor;
@@ -105,9 +102,8 @@ pub(super) fn continue_index<P: InsertProfile, const N: usize>(
             &mut reader,
         )?)
     };
-    let census =
-        map_authority::capture_catalog(image, reader.budget, cancelled, |_, _, _, _| Ok(()))?;
-    census.require_exclusive(
+    append.require_source_map_exclusive(
+        image,
         &[
             Owner::GlobalFree,
             Owner::OrdinaryOwned { definition },
@@ -117,8 +113,7 @@ pub(super) fn continue_index<P: InsertProfile, const N: usize>(
                 physical: index.data_number(),
             },
         ],
-        reader.budget,
-        cancelled,
+        &mut reader,
     )?;
     let mut owned = crate::format::allocation::pages(&mut reader, index.usage_map())?;
     let mut expected_owned = Vec::new();

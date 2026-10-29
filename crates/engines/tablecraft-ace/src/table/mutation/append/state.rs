@@ -9,7 +9,10 @@ use crate::{
     },
     header::check,
     limits::MAX_IMAGE_BYTES,
-    table::mutation::map_authority::RecordIdentity,
+    table::mutation::{
+        map_authority::{self, Owner, RecordIdentity},
+        variable_split::metadata::Metadata,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -88,6 +91,7 @@ pub(in crate::table) struct State {
     global_configured: bool,
     global: Option<global::Growth>,
     global_reserved: bool,
+    source_metadata: Option<Metadata>,
 }
 
 impl State {
@@ -101,7 +105,72 @@ impl State {
             global_configured: false,
             global: None,
             global_reserved: false,
+            source_metadata: None,
         }
+    }
+
+    pub(in crate::table::mutation) fn retain_source_metadata(
+        &mut self,
+        image: &NativeImage,
+        metadata: Metadata,
+    ) -> Result<(), EditError> {
+        metadata.require_source(image, self.owner)?;
+        if self.source_metadata.is_some() {
+            return Err(EditError::Preservation);
+        }
+
+        self.source_metadata = Some(metadata);
+        Ok(())
+    }
+
+    pub(in crate::table) fn require_source_map_exclusive(
+        &self,
+        image: &NativeImage,
+        owners: &[Owner],
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        reader.tick()?;
+        if let Some(metadata) = &self.source_metadata {
+            metadata.require_source(image, self.owner)?;
+            return metadata.require_exclusive(owners, reader.budget, reader.cancelled);
+        }
+
+        let census = map_authority::capture_catalog(
+            image,
+            reader.budget,
+            reader.cancelled,
+            |_, _, _, _| Ok(()),
+        )?;
+        census.require_exclusive(owners, reader.budget, reader.cancelled)
+    }
+
+    pub(in crate::table) fn require_source_map_rewrite(
+        &self,
+        image: &NativeImage,
+        owners: &[Owner],
+        record: RecordIdentity,
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+    ) -> Result<(), EditError> {
+        reader.tick()?;
+        if let Some(metadata) = &self.source_metadata {
+            metadata.require_source(image, self.owner)?;
+            metadata.require_exclusive(owners, reader.budget, reader.cancelled)?;
+            return metadata.require_record_rewrite(
+                record.owner,
+                record.reference,
+                record.range,
+                reader.budget,
+                reader.cancelled,
+            );
+        }
+
+        let census = map_authority::capture_catalog(
+            image,
+            reader.budget,
+            reader.cancelled,
+            |_, _, _, _| Ok(()),
+        )?;
+        census.require_record_rewrite(owners, record, reader.budget, reader.cancelled)
     }
 
     pub(in crate::table) fn enable_global_growth(

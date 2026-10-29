@@ -68,6 +68,39 @@ zero-column list, metadata inventory, typed reservations and full candidate
 bytes. Staged descriptors, source-status labels or a plausible container do not
 supply authority for different values or metadata.
 
+## Initialization through later INDEX growth
+
+After ordinary DATA placement, INSERT retains the actual immutable source metadata
+census for later physical indexes. That authority is bound to the same source
+buffer, byte length and table definition. Both root-leaf splitting and recursive
+NODE routing use it for map exclusivity, original map-row rewrites and final
+allocation checks. This avoids treating an independently qualified zero pair as
+an unknown declaration during a later strict recensus. It grants no authority
+from staged column lists or new map contents. Operations without retained
+metadata keep the existing strict catalog capture.
+
+A literal two-owner case starts with 400 parents, a zero Memo declaration and an
+existing Blob declaration. Its 52 new rows require Memo container 20, Memo body
+21, Blob body 22, DATA 23 and primary INDEX pages 24/25. The old Memo page and
+unclaimed historical map rows remain byte exact. A separate NODE-root source
+places the existing primary rows in two real linked leaves; its independent
+source/request image places container 22, bodies 23/24 and DATA 25 while retaining
+the existing index pages.
+
+The original root-leaf regression passed its source/expected-image read gates
+before the API refused with `Unsupported(RowLayout)`. The retained-census change
+addresses that later recensus, without changing those images. The recursive
+source and complete expected image also passed their separate read-only gate
+before the API check. The first combined INSERT batch passes all 249 functions,
+including the six source-authority/zero-Memo functions. Source-identity and owner
+mismatches, foreign column/index map sharing, and the existing full-API
+external-under-zero refusals remain explicit guard controls. The full ACE library
+passes 590 functions with one existing ignored fixture generator. All 49 selected
+shared integration tests, strict ACE Clippy across all targets/features, minimal
+compilation, formatting and documentation/dependency guards pass. These totals
+overlap; they do not establish original-file or Microsoft Access qualification
+for the initialization/index combination.
+
 ## Verification
 
 Ten literal source/request cases cover both ACE 16 headers and OLE, raw Memo and

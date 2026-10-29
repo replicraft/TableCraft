@@ -5,6 +5,12 @@ use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(in crate::table::mutation::insert::tests::long_value_inserts) enum MemoMaps {
+    Existing,
+    Zero,
+}
+
 #[derive(Clone)]
 pub(in crate::table::mutation::insert::tests::long_value_inserts) struct Row {
     pub id: i32,
@@ -32,9 +38,10 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) struct Case {
     pub rows: Vec<(Row, u32)>,
     pub added: Vec<Row>,
     pub expected: Vec<u8>,
+    data_page: u32,
 }
 
-fn descriptor(bytes: &[u8], reference: Option<u32>) -> Vec<u8> {
+pub(super) fn descriptor(bytes: &[u8], reference: Option<u32>) -> Vec<u8> {
     let tag = if reference.is_some() {
         0x40000000
     } else {
@@ -49,7 +56,7 @@ fn descriptor(bytes: &[u8], reference: Option<u32>) -> Vec<u8> {
     result
 }
 
-fn record(
+pub(super) fn record(
     id: i32,
     fixed_offset: usize,
     blob: Option<&[u8]>,
@@ -78,14 +85,14 @@ fn record(
     result
 }
 
-fn data_page(owner: u32, rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
+pub(super) fn data_page(owner: u32, rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     let mut page = raw::data_page(owner, rows);
     let used = rows.iter().map(|(_, bytes)| bytes.len()).sum::<usize>();
     raw::put16(&mut page, 2, (PAGE - 14 - 2 * rows.len() - used) as u16);
     page
 }
 
-fn long_page(rows: &[Vec<u8>]) -> Vec<u8> {
+pub(super) fn long_page(rows: &[Vec<u8>]) -> Vec<u8> {
     let rows = rows
         .iter()
         .cloned()
@@ -96,7 +103,13 @@ fn long_page(rows: &[Vec<u8>]) -> Vec<u8> {
     page
 }
 
-fn definition(original: &[u8], count: usize, fixed_offset: usize, histories: [u32; 2]) -> Vec<u8> {
+fn definition(
+    original: &[u8],
+    count: usize,
+    fixed_offset: usize,
+    histories: [u32; 2],
+    memo_maps: MemoMaps,
+) -> Vec<u8> {
     let mut bytes = base::definition(
         &[
             ("ID", 4, fixed_offset as u16, 4),
@@ -128,11 +141,14 @@ fn definition(original: &[u8], count: usize, fixed_offset: usize, histories: [u3
         raw::put32(&mut bytes, at + 2, (11 << 8) | owned);
         raw::put32(&mut bytes, at + 6, (11 << 8) | hint);
     }
+    if memo_maps == MemoMaps::Zero {
+        bytes[535..543].fill(0);
+    }
     raw::put16(&mut bytes, 553, 0xffff);
     bytes
 }
 
-fn maps(
+pub(super) fn maps(
     bytes: &mut [u8],
     data: &[u32],
     hints: &[u32],
@@ -155,7 +171,7 @@ fn maps(
     );
 }
 
-fn keys(rows: &[(Row, u32)], primary: bool) -> Vec<Vec<u8>> {
+pub(super) fn keys(rows: &[(Row, u32)], primary: bool) -> Vec<Vec<u8>> {
     let mut result = rows
         .iter()
         .map(|(row, reference)| {
@@ -187,22 +203,40 @@ fn source_indexes(before: &mut [u8], rows: &[(Row, u32)], pressure: bool) {
     }
 }
 
-fn expected_indexes(before: &[u8], after: &mut [u8], rows: &[(Row, u32)], pressure: bool) {
+fn expected_indexes(
+    before: &[u8],
+    after: &mut [u8],
+    rows: &[(Row, u32)],
+    children: Option<(u32, u32)>,
+) {
     let primary = keys(rows, true);
-    if pressure {
+    if let Some((right, left)) = children {
         let middle = primary.len() / 2;
         assert_eq!(middle, 226);
-        frames::install(after, 23, &frames::leaf(None, &primary[middle..], 0, 24, 0));
-        frames::install(after, 24, &frames::leaf(None, &primary[..middle], 0, 0, 23));
+        frames::install(
+            after,
+            right,
+            &frames::leaf(None, &primary[middle..], 0, left, 0),
+        );
+        frames::install(
+            after,
+            left,
+            &frames::leaf(None, &primary[..middle], 0, 0, right),
+        );
         frames::install(
             after,
             13,
-            &frames::root(&before[13 * PAGE..14 * PAGE], 24, 23, &primary[middle - 1]),
+            &frames::root(
+                &before[13 * PAGE..14 * PAGE],
+                left,
+                right,
+                &primary[middle - 1],
+            ),
         );
         frames::map_page(
             after,
             15,
-            vec![frames::map([13, 23, 24]), frames::map([14])],
+            vec![frames::map([13, right, left]), frames::map([14])],
         );
     } else {
         frames::install(
@@ -228,11 +262,18 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
     code: u8,
     pressure: bool,
 ) -> Case {
+    source_with_memo_maps(code, pressure, MemoMaps::Existing)
+}
+
+pub(super) fn source_with_memo_maps(code: u8, pressure: bool, memo_maps: MemoMaps) -> Case {
+    let initializing = memo_maps == MemoMaps::Zero;
+    assert!(!initializing || pressure);
+    let extra = u32::from(initializing);
     let mut before = external::original(code, Family::Memo).before;
     let fixed_offset = if pressure { 0 } else { 3970 };
     let histories = if pressure { [417, 829] } else { [17, 29] };
     let count = if pressure { 400 } else { 1 };
-    let metadata = definition(&before, count, fixed_offset, histories);
+    let metadata = definition(&before, count, fixed_offset, histories, memo_maps);
     frames::install(&mut before, 10, &metadata);
     before.resize(if pressure { 20 } else { 18 } * PAGE, 0);
     frames::install(&mut before, 16, &long_page(&[vec![0xd6; 4076]]));
@@ -304,10 +345,10 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
         })
         .collect::<Vec<_>>();
     let mut expected = before.clone();
-    expected.resize(if pressure { 25 } else { 20 } * PAGE, 0);
-    let memo_page = if pressure { 20 } else { 18 };
-    let blob_page = 21;
-    let data_page_number = if pressure { 22 } else { 19 };
+    expected.resize(if pressure { (25 + extra) as usize } else { 20 } * PAGE, 0);
+    let memo_page = if pressure { 20 + extra } else { 18 };
+    let blob_page = 21 + extra;
+    let data_page_number = if pressure { 22 + extra } else { 19 };
     let mut memo_rows = Vec::new();
     let mut blob_rows = Vec::new();
     let mut ordinary_rows = Vec::new();
@@ -341,13 +382,21 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
     maps(
         &mut expected,
         &if pressure {
-            vec![12, 18, 19, 22]
+            vec![12, 18, 19, data_page_number]
         } else {
             vec![12, 19]
         },
         &[data_page_number],
-        &[16, memo_page],
-        &[memo_page],
+        &if initializing {
+            vec![16]
+        } else {
+            vec![16, memo_page]
+        },
+        &if initializing {
+            vec![16]
+        } else {
+            vec![memo_page]
+        },
         &if pressure {
             vec![17, blob_page]
         } else {
@@ -358,9 +407,28 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
     frames::map_page(
         &mut expected,
         1,
-        vec![frames::map(if pressure { 25..512 } else { 20..512 })],
+        vec![frames::map(if pressure {
+            25 + extra..512
+        } else {
+            20..512
+        })],
     );
-    expected_indexes(&before, &mut expected, &final_rows, pressure);
+    if initializing {
+        frames::map_page(
+            &mut expected,
+            20,
+            vec![frames::map([memo_page]), frames::map([memo_page])],
+        );
+        raw::put16(&mut expected, 20 * PAGE + 2, 3940);
+        raw::put32(&mut expected, 10 * PAGE + 535, 20 << 8);
+        raw::put32(&mut expected, 10 * PAGE + 539, (20 << 8) | 1);
+    }
+    expected_indexes(
+        &before,
+        &mut expected,
+        &final_rows,
+        pressure.then_some((23 + extra, 24 + extra)),
+    );
     raw::put32(&mut expected, 10 * PAGE + 16, final_rows.len() as u32);
     raw::put32(
         &mut expected,
@@ -374,7 +442,12 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
     );
     if pressure {
         assert_eq!(
-            u16::from_le_bytes(expected[22 * PAGE + 2..22 * PAGE + 4].try_into().unwrap()),
+            u16::from_le_bytes(
+                expected
+                    [data_page_number as usize * PAGE + 2..data_page_number as usize * PAGE + 4]
+                    .try_into()
+                    .unwrap()
+            ),
             1742
         );
         assert_eq!(
@@ -393,6 +466,7 @@ pub(in crate::table::mutation::insert::tests::long_value_inserts) fn source_and_
         rows,
         added,
         expected,
+        data_page: data_page_number,
     }
 }
 
@@ -428,7 +502,7 @@ pub(super) fn checked(bytes: &[u8], rows: &[(Row, u32)]) {
 }
 
 pub(super) fn final_rows(case: &Case) -> Vec<(Row, u32)> {
-    let data = if case.rows.len() == 400 { 22 } else { 19 };
+    let data = case.data_page;
     case.rows
         .iter()
         .cloned()
