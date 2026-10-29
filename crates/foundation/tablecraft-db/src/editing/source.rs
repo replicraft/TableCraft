@@ -8,6 +8,10 @@ pub enum UpdateProfile {
     Unavailable,
     /// Existing non-NULL Int32 replacements; backend-specific gates still apply.
     ExistingInt32,
+    /// Stored scalar carriers and nullable NULL. Int32 targets retain the
+    /// existing checked integral assignment law; other types remain exact.
+    /// Backend rules still decide whether an actual field can be changed.
+    StoredScalar,
 }
 
 /// One frozen table plus a consuming, all-or-nothing edit planner. Planning must
