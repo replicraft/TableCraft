@@ -1,0 +1,412 @@
+{
+  "scope": "Prospective authentic V2016 DELETE SET NULL study; helper/plan only",
+  "source_qualification": false,
+  "source_children": 5,
+  "future_reference_children": 4,
+  "limits": {
+    "file_bytes": 8388608,
+    "stdout_bytes": 16777216,
+    "stderr_bytes": 16777216,
+    "heap_bytes": 536870912,
+    "child_seconds": 30
+  },
+  "java_prefix": [
+    "java",
+    "-Xmx512m",
+    "-Duser.timezone=UTC",
+    "-cp",
+    ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+    "SetNullDeleteFixture"
+  ],
+  "commands": [
+    {
+      "id": "compile",
+      "argv": [
+        "javac",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-set-null-delete-source-first-20261028/classes",
+        ".cache/ace16-set-null-delete-source-next-20261028/BoundedFileChannel.java",
+        ".cache/ace16-set-null-delete-source-next-20261028/SetNullDeleteFixture.java"
+      ]
+    },
+    {
+      "id": "basic-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+        "SetNullDeleteFixture",
+        "create",
+        ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-source.accdb",
+        "basic"
+      ]
+    },
+    {
+      "id": "mixed-create",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+        "SetNullDeleteFixture",
+        "create",
+        ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-source.accdb",
+        "mixed"
+      ]
+    },
+    {
+      "id": "basic-before-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+        "SetNullDeleteFixture",
+        "inspect",
+        ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-source.accdb",
+        "basic"
+      ]
+    },
+    {
+      "id": "mixed-before-inspect",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Duser.timezone=UTC",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+        "SetNullDeleteFixture",
+        "inspect",
+        ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-source.accdb",
+        "mixed"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "V2016-basic",
+      "selected": "basic",
+      "source": ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-source.accdb",
+      "requests": [
+        [
+          "Parents",
+          1
+        ]
+      ],
+      "before": {
+        "Parents": [
+          [
+            1,
+            1001
+          ],
+          [
+            2,
+            1002
+          ],
+          [
+            3,
+            1003
+          ]
+        ],
+        "Children": [
+          [
+            10,
+            1,
+            101
+          ],
+          [
+            11,
+            1,
+            102
+          ],
+          [
+            12,
+            2,
+            103
+          ],
+          [
+            13,
+            null,
+            104
+          ],
+          [
+            14,
+            3,
+            105
+          ]
+        ],
+        "Sentinel": [
+          [
+            91,
+            12345
+          ]
+        ]
+      },
+      "semantic_after": {
+        "Parents": [
+          [
+            2,
+            1002
+          ],
+          [
+            3,
+            1003
+          ]
+        ],
+        "Children": [
+          [
+            10,
+            null,
+            101
+          ],
+          [
+            11,
+            null,
+            102
+          ],
+          [
+            12,
+            2,
+            103
+          ],
+          [
+            13,
+            null,
+            104
+          ],
+          [
+            14,
+            3,
+            105
+          ]
+        ],
+        "Sentinel": [
+          [
+            91,
+            12345
+          ]
+        ]
+      },
+      "future_reference": [
+        {
+          "id": "basic-delete",
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Duser.timezone=UTC",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+            "SetNullDeleteFixture",
+            "delete",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-source.accdb",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-public.accdb",
+            "basic"
+          ]
+        },
+        {
+          "id": "basic-inspect",
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Duser.timezone=UTC",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+            "SetNullDeleteFixture",
+            "inspect",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-basic-public.accdb",
+            "basic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V2016-mixed",
+      "selected": "mixed",
+      "source": ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-source.accdb",
+      "requests": [
+        [
+          "Parents",
+          1
+        ]
+      ],
+      "before": {
+        "Parents": [
+          [
+            1,
+            1001
+          ],
+          [
+            2,
+            1002
+          ],
+          [
+            3,
+            1003
+          ]
+        ],
+        "Children": [
+          [
+            10,
+            1,
+            101
+          ],
+          [
+            11,
+            1,
+            102
+          ],
+          [
+            12,
+            2,
+            103
+          ],
+          [
+            13,
+            null,
+            104
+          ],
+          [
+            14,
+            3,
+            105
+          ]
+        ],
+        "Sentinel": [
+          [
+            91,
+            12345
+          ]
+        ],
+        "CascadeChildren": [
+          [
+            20,
+            1,
+            201
+          ],
+          [
+            21,
+            2,
+            202
+          ],
+          [
+            22,
+            null,
+            203
+          ]
+        ]
+      },
+      "semantic_after": {
+        "Parents": [
+          [
+            2,
+            1002
+          ],
+          [
+            3,
+            1003
+          ]
+        ],
+        "Children": [
+          [
+            10,
+            null,
+            101
+          ],
+          [
+            11,
+            null,
+            102
+          ],
+          [
+            12,
+            2,
+            103
+          ],
+          [
+            13,
+            null,
+            104
+          ],
+          [
+            14,
+            3,
+            105
+          ]
+        ],
+        "Sentinel": [
+          [
+            91,
+            12345
+          ]
+        ],
+        "CascadeChildren": [
+          [
+            21,
+            2,
+            202
+          ],
+          [
+            22,
+            null,
+            203
+          ]
+        ]
+      },
+      "future_reference": [
+        {
+          "id": "mixed-delete",
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Duser.timezone=UTC",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+            "SetNullDeleteFixture",
+            "delete",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-source.accdb",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-public.accdb",
+            "mixed"
+          ]
+        },
+        {
+          "id": "mixed-inspect",
+          "argv": [
+            "java",
+            "-Xmx512m",
+            "-Duser.timezone=UTC",
+            "-cp",
+            ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-set-null-delete-source-first-20261028/classes",
+            "SetNullDeleteFixture",
+            "inspect",
+            ".cache/ace16-set-null-delete-source-first-20261028/V2016-mixed-public.accdb",
+            "mixed"
+          ]
+        }
+      ]
+    }
+  ],
+  "phases": [
+    "SOURCE5 capture only",
+    "separate saved raw/relationship/index/catalog source gates for BOTH originals",
+    "SOURCE+request engineering constructor freeze before any derive",
+    "complete expected image freeze before public AFTER or producer build",
+    "REF4 fresh-copy single-parent deletes and separate inert reads",
+    "fresh committed producer build",
+    "native complete-image barrier",
+    "fresh independent reads"
+  ],
+  "constraints": {
+    "allow_source_patching": false,
+    "allow_adaptive_counts": false,
+    "active_content_execution": false,
+    "linked_opens": false,
+    "multiple_call_Jackcess_atomicity_claim": false,
+    "normal_Save_authority": false
+  }
+}

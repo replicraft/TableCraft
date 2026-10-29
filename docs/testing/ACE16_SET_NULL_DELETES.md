@@ -90,4 +90,36 @@ Strict Clippy across all engine targets/features, strict minimal-library Clippy,
 workspace formatting and documentation/dependency guards pass. The
 [verification record](results/ace16-set-null-delete-preview-2026-10-28.json)
 retains scoped source hashes, passing groups and earlier failed attempts. This
-does not claim original-file mutation, Windows Access execution or normal saves.
+keeps the separate original-file study below distinct from Windows Access execution
+and normal saves.
+
+
+## Original-file DELETE and SET NULL comparison
+
+The [maintained original-file proof](ace16_set_null_deletes/README.md) now passes
+on two immutable public-created V2016 originals. SOURCE5 capture is followed by
+two saved raw gates that bind genuine required parent primaries, reciprocal
+foreign indexes and raw SET NULL/CASCADE relationship actions. Two complete
+SOURCE/request-only images are frozen before public AFTERs, the committed producer
+build or native candidates. Two inert expected-image reads pass before REF4.
+
+Public REF4 passes both transitions. Each public file differs from its earlier
+engineering image in five bytes: two newly NULL fixed-payload low bytes and
+three vacated Child FK leaf wire bytes. These are observed representation
+choices, not model corrections. Both native candidates from the fresh isolated
+`13c075bb` build match the earlier complete engineering files exactly, followed
+by two separately bound fresh reader proofs. Across the two cases, three logical
+roots are deleted, four surviving FK cells become NULL, and the final snapshots
+contain 18 user rows and 30 physical key/ROW pairs. Maps, historical counters,
+unrelated rows and Sentinel remain unchanged.
+
+The first pure saved gate and first constructor failed before source qualification
+and image publication respectively; their programs/freezes and correction notes
+remain retained. Root tool output recorded the exceptions, with no standalone
+traceback file retained. Saved default replay passes with subprocess creation
+blocked; optional Git metadata mode passes, and missing evidence returns status
+2. The [result](results/ace16-set-null-delete-originals-2026-10-28.json) and
+[build receipt](results/ace16-set-null-delete-example-build-2026-10-28.json) keep
+those histories separate from the first passing runtime phases. The public
+reference uses one parent-delete call per original and does not qualify a
+multi-call transaction, crash recovery, data macros or native Access save/reopen.

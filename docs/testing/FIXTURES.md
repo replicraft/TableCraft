@@ -1,5 +1,30 @@
 # Candidate Access fixtures
 
+## Original DELETE and SET NULL inputs
+
+The repository-authored
+[SetNullDeleteFixture.java](ace16_set_null_deletes/SetNullDeleteFixture.java)
+creates two V2016 originals through the reviewed Jackcess 5.0.4 public APIs.
+The existing JAR SHA-256 is
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+Manual required parent keys, nullable child foreign keys and genuine enforced
+SET NULL relationships are created without byte patches or adaptive generation.
+The second original adds a separate CASCADE child; Sentinel is independent.
+No third-party fixture or implementation is copied. Generated databases and
+compiled tools remain private.
+
+The [maintained proof](ace16_set_null_deletes/README.md) separates SOURCE5,
+two saved raw gates, two SOURCE/request-only images, expected-read2, public REF4,
+a fresh committed-producer build, native2 complete-image comparisons and fresh2
+inert reader proofs. All runtime phases pass first attempt. Two earlier pure
+failures remain recorded separately, with retained programs/freezes and no
+invented raw traceback logs. Public files each have five representation-byte
+differences; the earlier model is unchanged. The
+[result](results/ace16-set-null-delete-originals-2026-10-28.json) and
+[build receipt](results/ace16-set-null-delete-example-build-2026-10-28.json)
+pin the originals and phase histories. This is independent engineering evidence,
+not Windows Access mutation, native save or transaction/recovery qualification.
+
 ## Original empty ordinary-owned INSERT input
 
 The repository-authored
