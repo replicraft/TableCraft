@@ -6,13 +6,13 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) enum Requests<'a> {
+pub(in crate::table::indexes::mutation) enum Requests<'a> {
     Complete(&'a [u32]),
     Indexed(Vec<u32>),
 }
 
 impl Requests<'_> {
-    pub(super) fn references(&self) -> &[u32] {
+    pub(in crate::table::indexes::mutation) fn references(&self) -> &[u32] {
         match self {
             Self::Complete(references) => references,
             Self::Indexed(references) => references,
@@ -20,7 +20,7 @@ impl Requests<'_> {
     }
 }
 
-pub(super) fn capture<'a, 'k, P: KeyProfile>(
+pub(in crate::table::indexes::mutation) fn capture<'a, 'k, P: KeyProfile>(
     index: &NativeIndex,
     profile: &P,
     keys: impl IntoIterator<Item = &'k KeyRef<P::Key>>,

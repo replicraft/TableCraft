@@ -8,7 +8,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Guid, Value},
 };
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{ReferentialAction, ScalarType};
 
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 enum Atom {
@@ -23,6 +23,9 @@ pub(super) struct Link {
     pub parent: usize,
     pub child: usize,
     pub matches: Vec<(usize, usize)>,
+    pub action: ReferentialAction,
+    pub children: [usize; INDEX_KEY_COLUMNS],
+    pub width: usize,
 }
 
 pub(super) fn link(
@@ -128,6 +131,17 @@ pub(super) fn link(
         parent,
         child,
         matches,
+        action: relationship
+            .declaration()
+            .rules()
+            .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))?
+            .on_delete,
+        children: {
+            let mut positions = [0; INDEX_KEY_COLUMNS];
+            positions[..children.len()].copy_from_slice(children);
+            positions
+        },
+        width: children.len(),
     })
 }
 

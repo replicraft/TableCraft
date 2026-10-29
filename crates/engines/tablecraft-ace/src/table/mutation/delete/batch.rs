@@ -1,5 +1,7 @@
 //! Explicit multi-table final-image candidates; no action expansion or early output.
 use super::{Ace16DeletePreview, TableRowDeletes, cascade, patches, relationships};
+use crate::table::indexes::{IndexKeyUpdate, index_delete_update_patches};
+use crate::table::mutation::patch::spans;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -24,6 +26,8 @@ struct Table {
     before: TableCheck,
     references: Vec<u32>,
     indexes: DeleteIndexPlan,
+    fields: Vec<spans::Patch>,
+    keys: Vec<IndexKeyUpdate>,
 }
 
 impl NativeImage {
@@ -67,7 +71,7 @@ pub(super) fn run(
         tracing::debug_span!("native.delete.batch_preview", groups = groups.len()).entered();
     let mut proven = match admission {
         Admission::Restrict => None,
-        Admission::Cascading(proof) => Some(proof.into_checks().into_iter()),
+        Admission::Cascading(proof) => Some(proof.into_tables().into_iter()),
     };
     check(budget, cancelled)?;
     preview::qualify(&image)?;
@@ -97,12 +101,15 @@ pub(super) fn run(
         {
             return Err(EditError::Conflict);
         }
-        let before = match &mut proven {
-            Some(checks) => checks.next().ok_or(InspectError::Malformed)?,
+        let (before, fields, keys) = match &mut proven {
+            Some(tables) => {
+                let table = tables.next().ok_or(InspectError::Malformed)?;
+                (table.before, table.fields, table.keys)
+            }
             None => {
                 let before = gates::before_delete(&image, group.table, budget, cancelled)?;
                 relationships::qualify(&image, before.schema().name(), budget, cancelled)?;
-                before
+                (before, Vec::new(), Vec::new())
             }
         };
         if !before.schema().name().eq_ignore_ascii_case(group.table) {
@@ -122,6 +129,8 @@ pub(super) fn run(
             before,
             references: Vec::new(),
             indexes: DeleteIndexPlan::default(),
+            fields,
+            keys,
         });
     }
 
@@ -144,25 +153,41 @@ pub(super) fn run(
         };
         let (staged, references) =
             patches::records(&mut reader, table.before.schema(), group.deletes)?;
+        for patch in &staged {
+            spans::push(&mut records, patch, budget, cancelled)?;
+        }
         budget
-            .charge_allocation(staged.len() as u64, size_of::<patches::Patch>() as u64)
+            .charge_allocation(table.fields.len() as u64, size_of::<spans::Patch>() as u64)
             .map_err(InspectError::from)?;
         records
-            .try_reserve(staged.len())
+            .try_reserve(table.fields.len())
             .map_err(|_| InspectError::Allocation)?;
-        records.extend(staged);
+        records.append(&mut table.fields);
         table.references = references;
     }
+    spans::coalesce(&mut records, budget, cancelled)?;
     let mut indexes: Vec<IndexDataPatch> = Vec::new();
     for table in &mut tables {
-        table.indexes = index_delete_patches(
-            &image,
-            table.before.schema(),
-            table.before.indexes(),
-            &table.references,
-            budget,
-            cancelled,
-        )?;
+        table.indexes = if table.keys.is_empty() {
+            index_delete_patches(
+                &image,
+                table.before.schema(),
+                table.before.indexes(),
+                &table.references,
+                budget,
+                cancelled,
+            )?
+        } else {
+            index_delete_update_patches(
+                &image,
+                table.before.schema(),
+                table.before.indexes(),
+                &table.references,
+                &table.keys,
+                budget,
+                cancelled,
+            )?
+        };
         budget
             .charge_allocation(
                 table.indexes.indexes.len() as u64,

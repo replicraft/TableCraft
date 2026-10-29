@@ -2,7 +2,7 @@ mod batch;
 mod cascade;
 mod decimal;
 mod encoding;
-mod masked;
+pub(in crate::table::mutation) mod masked;
 mod preview;
 mod update;
 

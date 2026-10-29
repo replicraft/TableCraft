@@ -67,7 +67,7 @@ impl<const WIDTH: usize> Span<WIDTH> {
         }
     }
 }
-pub(super) struct Patch<const WIDTH: usize> {
+pub(in crate::table::mutation) struct Patch<const WIDTH: usize> {
     offset: usize,
     before: Span<WIDTH>,
     after: Span<WIDTH>,
@@ -126,13 +126,13 @@ pub(super) fn generate<const WIDTH: usize>(
         .map(Ace16WritePreview::from_plan)
 }
 
-pub(super) struct ColumnEdits<const WIDTH: usize> {
+pub(in crate::table::mutation) struct ColumnEdits<const WIDTH: usize> {
     pub patches: Vec<Patch<WIDTH>>,
     pub keys: Vec<IndexKeyUpdate>,
     pub changed: Vec<u32>,
 }
 
-pub(super) fn stage<const WIDTH: usize>(
+pub(in crate::table::mutation) fn stage<const WIDTH: usize>(
     image: &NativeImage,
     structural: &TableCheck,
     column: &str,

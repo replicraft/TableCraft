@@ -2,9 +2,11 @@
 mod capture;
 mod facts;
 mod graph;
+mod nulls;
 mod state;
 
 use super::{Ace16DeletePreview, RowDelete, TableRowDeletes, batch};
+use crate::table::{indexes::IndexKeyUpdate, mutation::patch::spans};
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, header::check, table::mutation::preview,
 };
@@ -13,13 +15,19 @@ use tablecraft_core::limits::ResourceBudget;
 /// This proof can only be constructed after the cascade component and its complete
 /// original tables have passed the action-specific admission and closure checks.
 pub(super) struct Proof {
-    checks: Vec<TableCheck>,
+    tables: Vec<Prepared>,
 }
 
 impl Proof {
-    pub(super) fn into_checks(self) -> Vec<TableCheck> {
-        self.checks
+    pub(super) fn into_tables(self) -> Vec<Prepared> {
+        self.tables
     }
+}
+
+pub(super) struct Prepared {
+    pub before: TableCheck,
+    pub fields: Vec<spans::Patch>,
+    pub keys: Vec<IndexKeyUpdate>,
 }
 
 pub(super) fn reserve<T>(
@@ -36,14 +44,14 @@ pub(super) fn reserve<T>(
 }
 
 impl NativeImage {
-    /// Expand original cross-table Cascade associations into one checked candidate.
+    /// Apply original cross-table Cascade/SET NULL associations in one candidate.
     ///
     /// This separate engineering service requires enforced known actions. Every
     /// outgoing Cascade lookup uses genuine required primary parent keys and the
     /// existing exact mutation-key carriers. Incoming-only child deletion fires no
     /// lookup and retains the existing full FK/final-membership checks instead.
     /// Reachable Cascade edges must form an acyclic cross-table graph. Self edges,
-    /// cyclic cascades, SET NULL, unknown/unenforced rules and active content refuse;
+    /// cyclic actions, unknown/unenforced rules and active content refuse;
     /// unrelated components do not activate or expand. Every named empty seed still
     /// qualifies its reachable component.
     ///
@@ -52,6 +60,8 @@ impl NativeImage {
     /// original associations; nullable all-NULL child keys contribute no matches.
     /// Restrict edges retain the explicit batch's complete final-image membership
     /// rule. This does not establish per-row mixed-action or native SQL timing.
+    /// SET NULL clears every matched surviving child's foreign-key presence bit,
+    /// preserving fixed payload bytes. Deleted children receive no NULL updates.
     ///
     /// Expanded roots share the existing batch table/row ceilings and cumulative
     /// budget. Existing exact record, index, retirement, global-map and per-table
@@ -70,10 +80,11 @@ impl NativeImage {
         let mut state = state::State::prepare(&self, groups, budget, cancelled)?;
         state.expand(&self, budget, cancelled)?;
         state.close(budget, cancelled)?;
-        let mut checks = Vec::new();
+        let mut prepared = Vec::new();
         let mut owned = Vec::new();
         for table in state.tables {
             check(budget, cancelled)?;
+            let (fields, keys) = nulls::stage(&self, &table, budget, cancelled)?;
             let requests = capture::records(
                 &self,
                 table.before.schema(),
@@ -90,9 +101,13 @@ impl NativeImage {
                 .try_reserve_exact(name.len())
                 .map_err(|_| InspectError::Allocation)?;
             owned_name.push_str(name);
-            reserve(&mut checks, budget)?;
+            reserve(&mut prepared, budget)?;
             reserve(&mut owned, budget)?;
-            checks.push(table.before);
+            prepared.push(Prepared {
+                before: table.before,
+                fields,
+                keys,
+            });
             owned.push((owned_name, requests));
         }
         let mut expanded = Vec::new();
@@ -103,7 +118,7 @@ impl NativeImage {
         batch::run(
             self,
             &expanded,
-            batch::Admission::Cascading(Proof { checks }),
+            batch::Admission::Cascading(Proof { tables: prepared }),
             budget,
             cancelled,
         )

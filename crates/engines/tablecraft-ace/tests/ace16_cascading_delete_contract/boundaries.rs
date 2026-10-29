@@ -88,10 +88,10 @@ fn empty_requests_retain_primary_action_gates_without_inventing_global_activatio
     let mut set_null = database(6, true);
     rules(&mut set_null, 0x2000, 0x1000, 2, 1);
     before(&set_null);
-    assert_eq!(
-        run(&set_null, &[(1, &[])]).err(),
-        Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
-    );
+    let empty = run(&set_null, &[(1, &[])]).unwrap();
+    assert_eq!(empty.deleted_rows(), 0);
+    assert_eq!(empty.before_bytes(), set_null.bytes);
+    assert_eq!(empty.candidate_bytes(), set_null.bytes);
 
     let mut unenforced = database(6, true);
     rules(&mut unenforced, 2, 2, 0, 0);

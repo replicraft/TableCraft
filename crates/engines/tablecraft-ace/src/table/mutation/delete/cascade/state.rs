@@ -20,6 +20,8 @@ pub(super) struct Table {
     pub native_positions: Vec<usize>,
     pub references: Vec<u32>,
     pub selected: Vec<bool>,
+    /// Surviving original row ordinal and complete native column position.
+    pub nulls: Vec<(usize, usize)>,
 }
 
 pub(super) struct State {
@@ -168,6 +170,7 @@ impl State {
             native_positions,
             references,
             selected,
+            nulls: Vec::new(),
         });
         Ok(self.tables.len() - 1)
     }
@@ -206,7 +209,9 @@ impl State {
                     )
                     || !matches!(
                         rules.on_delete,
-                        ReferentialAction::Restrict | ReferentialAction::Cascade
+                        ReferentialAction::Restrict
+                            | ReferentialAction::Cascade
+                            | ReferentialAction::SetNull
                     )
                     || declaration
                         .parent_table()
@@ -215,7 +220,12 @@ impl State {
                 {
                     return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
                 }
-                if outgoing && rules.on_delete == ReferentialAction::Cascade {
+                if outgoing
+                    && matches!(
+                        rules.on_delete,
+                        ReferentialAction::Cascade | ReferentialAction::SetNull
+                    )
+                {
                     let child = self.load(
                         image,
                         declaration.child_table().as_str(),
@@ -231,7 +241,9 @@ impl State {
             }
             parent += 1;
         }
-        graph::acyclic(self.tables.len(), &self.links, budget, cancelled)
+        graph::acyclic(self.tables.len(), &self.links, budget, cancelled)?;
+        self.relationships = relationships;
+        Ok(())
     }
 
     fn select(
@@ -262,7 +274,9 @@ impl State {
             let (table, row) = self.queue[next];
             for link in 0..self.links.len() {
                 check(budget, cancelled)?;
-                if self.links[link].parent != table {
+                if self.links[link].parent != table
+                    || self.links[link].action != ReferentialAction::Cascade
+                {
                     continue;
                 }
                 for pair in 0..self.links[link].matches.len() {
@@ -274,6 +288,118 @@ impl State {
                 }
             }
             next += 1;
+        }
+        self.nullify(budget, cancelled)
+    }
+
+    fn nullify(
+        &mut self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let mut assignments = 0usize;
+        let mut affected = self.queue.len();
+        for link in &self.links {
+            check(budget, cancelled)?;
+            if link.action != ReferentialAction::SetNull {
+                continue;
+            }
+            for &(parent, child) in &link.matches {
+                check(budget, cancelled)?;
+                if !self.tables[link.parent].selected[parent]
+                    || self.tables[link.child].selected[child]
+                {
+                    continue;
+                }
+                let table = &mut self.tables[link.child];
+                for &projected in &link.children[..link.width] {
+                    check(budget, cancelled)?;
+                    let column = *table
+                        .native_positions
+                        .get(projected)
+                        .ok_or(InspectError::Malformed)?;
+                    let value = table
+                        .snapshot
+                        .rows()
+                        .get(child)
+                        .and_then(|row| row.get(projected))
+                        .ok_or(InspectError::Malformed)?;
+                    if matches!(value, tablecraft_core::values::Value::Null) {
+                        continue;
+                    }
+                    budget
+                        .charge(Resource::Steps, table.nulls.len() as u64)
+                        .map_err(InspectError::from)?;
+                    if table.nulls.contains(&(child, column)) {
+                        continue;
+                    }
+                    if assignments == NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
+                        return Err(InspectError::StructureLimit.into());
+                    }
+                    budget
+                        .charge(Resource::Steps, table.nulls.len() as u64)
+                        .map_err(InspectError::from)?;
+                    if !table.nulls.iter().any(|&(row, _)| row == child) {
+                        if affected == NativeImage::MAX_DELETE_BATCH_ROWS {
+                            return Err(InspectError::StructureLimit.into());
+                        }
+                        affected += 1;
+                    }
+                    reserve(&mut table.nulls, budget)?;
+                    table.nulls.push((child, column));
+                    assignments += 1;
+                }
+            }
+        }
+        self.qualify_null_roles(budget, cancelled)
+    }
+
+    fn qualify_null_roles(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        // Only effective surviving NULL assignments activate this boundary.
+        // Parent-key changes requiring UPDATE propagation are a different action
+        // closure; final MissingParent must not disguise that missing service.
+        for table in &self.tables {
+            check(budget, cancelled)?;
+            if table.nulls.is_empty() {
+                continue;
+            }
+            let schema = table.before.schema();
+            for relationship in &self.relationships {
+                check(budget, cancelled)?;
+                let declaration = relationship.declaration();
+                if !declaration
+                    .parent_table()
+                    .as_str()
+                    .eq_ignore_ascii_case(schema.name())
+                    || !declaration.rules().is_some_and(|rules| {
+                        rules.enforced
+                            && matches!(
+                                rules.on_update,
+                                ReferentialAction::Cascade | ReferentialAction::SetNull
+                            )
+                    })
+                {
+                    continue;
+                }
+                for &(_, column) in &table.nulls {
+                    check(budget, cancelled)?;
+                    let name = schema
+                        .columns()
+                        .get(column)
+                        .ok_or(InspectError::Malformed)?
+                        .name();
+                    for pair in declaration.columns() {
+                        check(budget, cancelled)?;
+                        if pair.parent().as_str().eq_ignore_ascii_case(name) {
+                            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+                        }
+                    }
+                }
+            }
         }
         Ok(())
     }

@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Atomic DELETE and SET NULL preview
+
+The separate ACE 16 [action preview](testing/ACE16_SET_NULL_DELETES.md) now applies
+qualified DELETE SET NULL edges after original-association cascade closure.
+Surviving child cells retain opaque fixed payload and clear presence bits; deleted
+children receive no NULL edits. Shared record-mask composition preserves tombstone
+structural checks. One physical index transform combines removed rows with changed
+surviving keys, retaining exact counts, aliases, maps and final constraints.
+Existing-page prefix overflow refuses the complete candidate. Self/cyclic actions,
+further UPDATE propagation and normal saves remain outside this continuation.
+
+Thirteen independent integration functions, seven direct planner controls and 76
+existing regression functions pass. The full engine library passes 617 functions
+before direct-control registration, with two existing generators ignored. Strict
+all-target/all-feature and minimal-library Clippy, formatting and documentation
+guards pass. The [result](testing/results/ace16-set-null-delete-preview-2026-10-28.json)
+keeps initial compile, fixture coverage, lint and disk failures separate. Original-file
+SET NULL comparisons and native Access qualification remain separate work.
+
 ## Global free-map INSERT growth
 
 The separate ACE 16 INSERT preview now promotes canonical page 1:0 owner 1 inline
