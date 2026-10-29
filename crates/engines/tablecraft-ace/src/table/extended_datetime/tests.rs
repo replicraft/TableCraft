@@ -38,6 +38,24 @@ fn noncanonical_digits_delimiters_ranges_and_lengths_are_rejected() {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
+#[test]
+fn constructor_validated_carriers_encode_exact_independent_native_goldens() {
+    for (date, time, days, seconds) in [
+        ((1, 1, 1), (0, 0, 0, 0), 0, 0),
+        ((1, 1, 1), (0, 0, 0, 1), 0, 0),
+        ((1900, 3, 1), (0, 0, 0, 0), 693_654, 0),
+        ((2000, 2, 29), (12, 34, 56, 1_234_567), 730_178, 45_296),
+        ((9999, 12, 31), (23, 59, 59, 9_999_999), 3_652_058, 86_399),
+    ] {
+        let value =
+            ExtendedDateTime::new(date.0, date.1, date.2, time.0, time.1, time.2, time.3).unwrap();
+        let actual = encode(&value).unwrap();
+        assert_eq!(actual.as_slice(), encoded(days, seconds, time.3));
+        assert_eq!(decode(&actual).unwrap(), value);
+    }
+}
+
 fn days_before(year: u16, month: u8, day: u8) -> u64 {
     // Independent elementary Gregorian count, not the production Jiff path.
     let completed = u64::from(year - 1);

@@ -55,6 +55,27 @@ fn invalid_complete_input_is_rejected_before_source_open_or_output_creation() {
 }
 
 #[test]
+fn invalid_extended_date_refuses_before_database_open_or_output_creation() {
+    let directory = Directory::new();
+    let requests = directory.file("rows.tsv", b"extended-date\t1900-02-29T00:00:00.0000000\n");
+    let output = directory.0.join("candidate.accdb");
+    let args = Args {
+        source: directory.0.join("absent.accdb"),
+        output: output.clone(),
+        table: "Items".into(),
+        requests,
+        value_bytes: 1024,
+    };
+    let error = run(args, &mut budget()).unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("invalid extended-date civil input")
+    );
+    assert!(!output.exists());
+}
+
+#[test]
 fn value_byte_argument_keeps_the_default_and_a_closed_explicit_range() {
     let positional = [
         "insert",

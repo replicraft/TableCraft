@@ -103,6 +103,7 @@ New fixed padding is zero. No schema or resource ceiling changes.
 | Currency | Exact scaled Int64 carrier; no floating conversion |
 | Single, Double | Exact IEEE carrier bits, including representational distinctions |
 | Legacy Date/Time | Validated legacy date carrier and its original bits |
+| Extended Date/Time | Exact civil carrier; qualified ACE2019 fixed 42-byte grammar and seven fractional digits |
 | GUID | Exact 16-byte identity with native component byte order |
 | Boolean | Boolean carrier only; value is the physical mask bit, with no payload bytes |
 | Short Text | Text or NULL; positive even declared width up to 510 bytes/255 UTF-16 units |
@@ -114,8 +115,9 @@ Existing independent public-builder Binary fixtures declare 255 bytes; they do
 not qualify every larger native declaration. Fixed fields require the supported
 native type, true width, flags and zero extended flags. Text permits only the
 existing Unicode-compression flag; Binary and Decimal permit no extended flags.
-Date/Time Extended, complex/calculated fields and unsupported metadata
-remain outside this record profile.
+Extended Date/Time uses only its already readable ACE2019 fixed declaration;
+the ACE2016 profile remains refused. Complex/calculated fields and unsupported
+metadata remain outside this record profile.
 
 The primary requires a non-NULL Int32. Other nullable fixed fields serialize
 NULL as zero payload with the presence bit clear. Present numeric zero retains
@@ -190,6 +192,9 @@ arguments and fresh-output publisher. Its [quoted TSV protocol](ACE16_INSERT_INP
 now uses the shared exact fixed-value parsers for Boolean, integer, scaled
 Currency, IEEE/date bits and GUID, alongside Text, Binary and explicit NULL.
 Decimal uses the existing exact coefficient:scale parser, with no rescaling.
+Extended Date/Time has an explicit `extended-date` kind with exactly
+`YYYY-MM-DDTHH:MM:SS.fffffff`, validated as a timezone-free civil value before the
+database opens. Its seven fractional digits are preserved without rounding.
 Complete input is captured before the database
 opens, under the unchanged input and native budgets.
 
@@ -203,10 +208,25 @@ forgeries, explicit/absent/wrong-type empty policies, quotas and cancellation.
 
 Defaults remain refused even with complete values or an empty batch. AutoNumber,
 generated identities, unqualified secondary key families, wider primary/tuple/foreign profiles,
-LVAL/extended-date records, required data macros and production native
-saves remain separate work. Public broader-schema INSERT references provide
+legacy external-storage migration, Extended Date/Time index keys, required data
+macros and production native saves remain separate work. Public broader-schema INSERT references provide
 separate independent-writer evidence. Windows/native Microsoft Access comparisons remain
 deferred; literal checks and Jackcess evidence do not establish full compatibility.
+
+## Extended Date/Time continuation
+
+The [Extended Date/Time payload continuation](ACE16_EXTENDED_DATETIME_INSERTS.md)
+adds exact 42-byte fixed ACE2019 records and the explicit engineering input token.
+Independent source and expected whole-image reader gates pass before producer
+admission or candidate execution. Present epoch, leap-day, maximum and 100 ns
+values remain distinct from NULL; old opaque NULL payload bytes are preserved.
+The first focused 15-function batch, combined 258-function INSERT batch and
+16-function example batch pass. Full ACE passes 601 functions with one existing
+ignored generator; full Access passes 500 after its separate required-index
+read-order fix. Strict all-target/all-feature ACE Clippy, minimal ACE/Access
+compilation, formatting and documentation/dependency guards pass. These counts
+overlap. No Extended Date/Time key, original-file or Microsoft Access save
+qualification is inferred from these literal controls.
 
 ## Exact Decimal continuation
 
