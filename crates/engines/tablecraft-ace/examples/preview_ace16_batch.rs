@@ -25,7 +25,7 @@ struct Args {
     /// Expand declared update cascades using original relationship matches.
     #[arg(long)]
     cascade_updates: bool,
-    /// Allow one table's Int32 indexes to grow in this engineering candidate.
+    /// Allow qualified Int32 indexes to grow across original-image table groups.
     #[arg(long, conflicts_with = "cascade_updates")]
     index_growth: bool,
     #[arg(long="set",required=true,num_args=SPEC_FIELDS,action=clap::ArgAction::Append,allow_hyphen_values=true,value_names=["TABLE","COLUMN","ROW","KIND","EXPECTED","VALUE"])]

@@ -1,4 +1,5 @@
 //! Exact-before composition shared by fixed and slot index-split candidates.
+use super::append::owners::OwnerContext;
 use super::{
     EditError, patch::BytePatch, preservation, slot::stage::Patch,
     variable_update::placement::DataView,
@@ -10,13 +11,16 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) fn qualify(image: &NativeImage, plan: &SplitIndexPlan) -> Result<(), EditError> {
+pub(super) fn qualify(
+    image: &NativeImage,
+    plan: &SplitIndexPlan<impl OwnerContext>,
+) -> Result<(), EditError> {
     qualify_after_data(image, plan, image.as_bytes().len())
 }
 
 fn qualify_after_data(
     image: &NativeImage,
-    plan: &SplitIndexPlan,
+    plan: &SplitIndexPlan<impl OwnerContext>,
     data_end: usize,
 ) -> Result<(), EditError> {
     if plan.append.original_length != image.as_bytes().len()
@@ -35,7 +39,7 @@ fn qualify_after_data(
 pub(super) fn compose<P: BytePatch>(
     image: &NativeImage,
     fields: &[P],
-    plan: &SplitIndexPlan,
+    plan: &SplitIndexPlan<impl OwnerContext>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -45,7 +49,7 @@ pub(super) fn compose<P: BytePatch>(
 pub(super) fn compose_data(
     image: &NativeImage,
     data: DataView<'_>,
-    plan: &SplitIndexPlan,
+    plan: &SplitIndexPlan<impl OwnerContext>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -55,7 +59,7 @@ pub(super) fn compose_data(
 fn compose_parts<P: BytePatch>(
     image: &NativeImage,
     fields: &[P],
-    plan: &SplitIndexPlan,
+    plan: &SplitIndexPlan<impl OwnerContext>,
     data: Option<DataView<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -151,7 +155,7 @@ fn compose_parts<P: BytePatch>(
                 if metadata == number {
                     plan.append.require_candidate_bitmap(
                         number,
-                        plan.append.owner,
+                        plan.append.owner.single()?,
                         reference,
                         budget,
                         cancelled,

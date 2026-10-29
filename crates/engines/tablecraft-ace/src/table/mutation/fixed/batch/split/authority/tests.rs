@@ -128,7 +128,7 @@ fn original_groups_reject_a_correlated_alternative_valid_population() {
         assert_eq!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &groups,
                 &plan,
                 &after,
@@ -154,7 +154,7 @@ fn original_groups_reject_a_correlated_alternative_valid_population() {
         assert!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &alternative,
                 &forged_plan,
                 &forged_after,
@@ -166,7 +166,7 @@ fn original_groups_reject_a_correlated_alternative_valid_population() {
         assert_eq!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &groups,
                 &forged_plan,
                 &forged_after,
@@ -196,7 +196,7 @@ fn candidate_and_staged_counter_agreement_does_not_authorize_extra_history() {
         assert!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &groups,
                 &plan,
                 &after,
@@ -232,7 +232,7 @@ fn candidate_and_staged_counter_agreement_does_not_authorize_extra_history() {
         assert_eq!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &groups,
                 &plan,
                 &after,
@@ -260,7 +260,7 @@ fn unreachable_owned_index_page_never_grants_correlated_patch_authority() {
         assert!(
             super::prove(
                 &image,
-                &checked,
+                &[&checked],
                 &groups,
                 &plan,
                 &after,
@@ -288,7 +288,7 @@ fn unreachable_owned_index_page_never_grants_correlated_patch_authority() {
         assert_eq!(
             super::prove(
                 &bad,
-                &checked,
+                &[&checked],
                 &groups,
                 &plan,
                 &after,

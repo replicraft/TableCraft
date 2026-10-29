@@ -1,5 +1,5 @@
 //! Closed page purposes advance the same bounded cursor for real consumers.
-use super::{Edit, global};
+use super::{Edit, global, owners::OwnerContext};
 use crate::{
     EditError, InspectError, LongValueMapReferences, NativeImage, NativeIndex,
     format::{
@@ -15,6 +15,7 @@ use crate::{
     },
 };
 use std::io::Cursor;
+use std::ops::{Deref, DerefMut};
 use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
@@ -47,10 +48,12 @@ enum Purpose {
         reference: u32,
     },
     Index {
+        definition: u32,
         physical: u32,
         usage: u32,
     },
     IndexBitmap {
+        definition: u32,
         physical: u32,
         usage: u32,
     },
@@ -63,6 +66,7 @@ struct Reservation {
 
 pub(in crate::table) struct IndexReservation {
     pub number: u32,
+    pub definition: u32,
     pub physical: u32,
     pub usage: u32,
 }
@@ -87,45 +91,71 @@ pub(in crate::table) struct LongValueMapContainerReservation {
     pub column: usize,
 }
 
-pub(in crate::table) struct State {
+pub(in crate::table) struct Ledger {
     pub original_length: usize,
     pub length: usize,
-    pub owner: u32,
     pub map_edits: Vec<Edit>,
     reservations: Vec<Reservation>,
     global_configured: bool,
     global: Option<global::Growth>,
     global_reserved: bool,
+}
+
+pub(in crate::table) struct State<O = u32> {
+    pub owner: O,
+    ledger: Ledger,
     source_metadata: Option<Metadata>,
+}
+
+impl<O> Deref for State<O> {
+    type Target = Ledger;
+
+    fn deref(&self) -> &Ledger {
+        &self.ledger
+    }
+}
+
+impl<O> DerefMut for State<O> {
+    fn deref_mut(&mut self) -> &mut Ledger {
+        &mut self.ledger
+    }
 }
 
 impl State {
     pub(in crate::table) fn new(image: &NativeImage, owner: u32) -> Self {
+        Self::from_owner(image, owner)
+    }
+}
+
+impl<O: OwnerContext> State<O> {
+    pub(in crate::table) fn with_owner(image: &NativeImage, owner: O) -> Result<Self, EditError> {
+        owner.census(image)?;
+        Ok(Self::from_owner(image, owner))
+    }
+
+    fn from_owner(image: &NativeImage, owner: O) -> Self {
         Self {
-            original_length: image.as_bytes().len(),
-            length: image.as_bytes().len(),
             owner,
-            map_edits: Vec::new(),
-            reservations: Vec::new(),
-            global_configured: false,
-            global: None,
-            global_reserved: false,
+            ledger: Ledger {
+                original_length: image.as_bytes().len(),
+                length: image.as_bytes().len(),
+                map_edits: Vec::new(),
+                reservations: Vec::new(),
+                global_configured: false,
+                global: None,
+                global_reserved: false,
+            },
             source_metadata: None,
         }
     }
 
-    pub(in crate::table::mutation) fn retain_source_metadata(
-        &mut self,
-        image: &NativeImage,
-        metadata: Metadata,
-    ) -> Result<(), EditError> {
-        metadata.require_source(image, self.owner)?;
-        if self.source_metadata.is_some() {
-            return Err(EditError::Preservation);
-        }
-
-        self.source_metadata = Some(metadata);
-        Ok(())
+    pub(in crate::table) fn index_definition(
+        &self,
+        index: &NativeIndex,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<u32, EditError> {
+        self.owner.index_definition(index, budget, cancelled)
     }
 
     pub(in crate::table) fn require_source_map_exclusive(
@@ -136,8 +166,12 @@ impl State {
     ) -> Result<(), EditError> {
         reader.tick()?;
         if let Some(metadata) = &self.source_metadata {
-            metadata.require_source(image, self.owner)?;
+            metadata.require_source(image, self.owner.single()?)?;
             return metadata.require_exclusive(owners, reader.budget, reader.cancelled);
+        }
+
+        if let Some(census) = self.owner.census(image)? {
+            return census.require_exclusive(owners, reader.budget, reader.cancelled);
         }
 
         let census = map_authority::capture_catalog(
@@ -158,7 +192,7 @@ impl State {
     ) -> Result<(), EditError> {
         reader.tick()?;
         if let Some(metadata) = &self.source_metadata {
-            metadata.require_source(image, self.owner)?;
+            metadata.require_source(image, self.owner.single()?)?;
             metadata.require_exclusive(owners, reader.budget, reader.cancelled)?;
             return metadata.require_record_rewrite(
                 record.owner,
@@ -167,6 +201,10 @@ impl State {
                 reader.budget,
                 reader.cancelled,
             );
+        }
+
+        if let Some(census) = self.owner.census(image)? {
+            return census.require_record_rewrite(owners, record, reader.budget, reader.cancelled);
         }
 
         let census = map_authority::capture_catalog(
@@ -211,10 +249,11 @@ impl State {
         number: u32,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        if let Some(global) = &mut self.global
+        let ledger = &mut self.ledger;
+        if let Some(global) = &mut ledger.global
             && (global.bitmap().is_some() || number >= global::INLINE_PAGES)
         {
-            return global.claim(number, &mut self.map_edits, reader);
+            return global.claim(number, &mut ledger.map_edits, reader);
         }
         let cell = original.future_cell(reader, number)?;
         if !super::current(&self.map_edits, &cell, reader)? {
@@ -286,24 +325,6 @@ impl State {
             .ok_or_else(|| InspectError::StructureLimit.into())
     }
 
-    pub(in crate::table) fn reserve_long_value_map_container(
-        &mut self,
-        number: u32,
-        column: usize,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        self.commit(
-            number,
-            &[Purpose::LongValueMapContainer {
-                definition: self.owner,
-                column,
-            }],
-            budget,
-            cancelled,
-        )
-    }
-
     pub(in crate::table) fn require_long_value_map_container(
         &self,
         number: u32,
@@ -338,89 +359,6 @@ impl State {
             })
     }
 
-    pub(in crate::table) fn reserve_data(
-        &mut self,
-        number: u32,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        self.commit(number, &[Purpose::Data], budget, cancelled)
-    }
-
-    pub(in crate::table) fn reserve_long_value(
-        &mut self,
-        number: u32,
-        column: usize,
-        owned: u32,
-        candidate: u32,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        self.commit(
-            number,
-            &[Purpose::LongValue {
-                column,
-                owned,
-                candidate,
-            }],
-            budget,
-            cancelled,
-        )
-    }
-
-    pub(in crate::table) fn reserve_long_value_with_owned_bitmaps(
-        &mut self,
-        number: u32,
-        column: usize,
-        references: LongValueMapReferences,
-        blocks: &[u32],
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Vec<u32>, EditError> {
-        let count = blocks
-            .len()
-            .checked_add(1)
-            .ok_or(InspectError::StructureLimit)?;
-        budget
-            .charge_allocation(count as u64, size_of::<Purpose>() as u64)
-            .map_err(InspectError::from)?;
-        let mut purposes = Vec::new();
-        purposes
-            .try_reserve_exact(count)
-            .map_err(|_| InspectError::Allocation)?;
-        purposes.push(Purpose::LongValue {
-            column,
-            owned: references.owned(),
-            candidate: references.candidate(),
-        });
-        let mut previous = None;
-        for &block in blocks {
-            check(budget, cancelled)?;
-            if previous.is_some_and(|previous| previous >= block) {
-                return Err(EditError::Preservation);
-            }
-            previous = Some(block);
-            purposes.push(Purpose::LongValueOwnedBitmap {
-                column,
-                owned: references.owned(),
-                block,
-            });
-        }
-        budget
-            .charge_allocation(count as u64, size_of::<u32>() as u64)
-            .map_err(InspectError::from)?;
-        let mut numbers = Vec::new();
-        numbers
-            .try_reserve_exact(count)
-            .map_err(|_| InspectError::Allocation)?;
-        for position in 0..count {
-            check(budget, cancelled)?;
-            numbers.push(self.planned_number(position)?);
-        }
-        self.commit(number, &purposes, budget, cancelled)?;
-        Ok(numbers)
-    }
-
     pub(in crate::table) fn reserve_index(
         &mut self,
         number: u32,
@@ -428,31 +366,13 @@ impl State {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        let definition = self.index_definition(index, budget, cancelled)?;
         self.commit(
             number,
             &[Purpose::Index {
+                definition,
                 physical: index.data_number(),
                 usage: index.usage_map(),
-            }],
-            budget,
-            cancelled,
-        )
-    }
-
-    pub(in crate::table) fn reserve_owned_bitmap(
-        &mut self,
-        number: u32,
-        reference: u32,
-        block: u32,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        self.commit(
-            number,
-            &[Purpose::OrdinaryOwnedBitmap {
-                definition: self.owner,
-                reference,
-                block,
             }],
             budget,
             cancelled,
@@ -495,24 +415,6 @@ impl State {
             })
     }
 
-    pub(in crate::table) fn reserve_candidate_bitmap(
-        &mut self,
-        number: u32,
-        reference: u32,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
-        self.commit(
-            number,
-            &[Purpose::OrdinaryCandidateBitmap {
-                definition: self.owner,
-                reference,
-            }],
-            budget,
-            cancelled,
-        )
-    }
-
     pub(in crate::table) fn reserve_index_bitmap(
         &mut self,
         number: u32,
@@ -520,15 +422,18 @@ impl State {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<u32, EditError> {
+        let definition = self.index_definition(index, budget, cancelled)?;
         let metadata = self.planned_number(1)?;
         self.commit(
             number,
             &[
                 Purpose::Index {
+                    definition,
                     physical: index.data_number(),
                     usage: index.usage_map(),
                 },
                 Purpose::IndexBitmap {
+                    definition,
                     physical: index.data_number(),
                     usage: index.usage_map(),
                 },
@@ -636,11 +541,21 @@ impl State {
                     definition: *definition,
                     reference: *reference,
                 },
-                Purpose::Index { physical, usage } => Purpose::Index {
+                Purpose::Index {
+                    definition,
+                    physical,
+                    usage,
+                } => Purpose::Index {
+                    definition: *definition,
                     physical: *physical,
                     usage: *usage,
                 },
-                Purpose::IndexBitmap { physical, usage } => Purpose::IndexBitmap {
+                Purpose::IndexBitmap {
+                    definition,
+                    physical,
+                    usage,
+                } => Purpose::IndexBitmap {
+                    definition: *definition,
                     physical: *physical,
                     usage: *usage,
                 },
@@ -775,11 +690,33 @@ impl State {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        self.require_index_bitmap_for(
+            number,
+            self.owner.single()?,
+            physical,
+            usage,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn require_index_bitmap_for(
+        &self,
+        number: u32,
+        definition: u32,
+        physical: u32,
+        usage: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
         match self.reservation(number, budget, cancelled)?.purpose {
             Purpose::IndexBitmap {
+                definition: actual_definition,
                 physical: expected,
                 usage: reference,
-            } if expected == physical && reference == usage => Ok(()),
+            } if actual_definition == definition && expected == physical && reference == usage => {
+                Ok(())
+            }
             _ => Err(EditError::Preservation),
         }
     }
@@ -864,12 +801,172 @@ impl State {
         self.reservations
             .iter()
             .filter_map(|reservation| match reservation.purpose {
-                Purpose::Index { physical, usage } => Some(IndexReservation {
+                Purpose::Index {
+                    definition,
+                    physical,
+                    usage,
+                } => Some(IndexReservation {
+                    definition,
                     number: reservation.number,
                     physical,
                     usage,
                 }),
                 _ => None,
             })
+    }
+}
+
+impl State {
+    pub(in crate::table::mutation) fn retain_source_metadata(
+        &mut self,
+        image: &NativeImage,
+        metadata: Metadata,
+    ) -> Result<(), EditError> {
+        metadata.require_source(image, self.owner)?;
+        if self.source_metadata.is_some() {
+            return Err(EditError::Preservation);
+        }
+
+        self.source_metadata = Some(metadata);
+        Ok(())
+    }
+
+    pub(in crate::table) fn reserve_long_value_map_container(
+        &mut self,
+        number: u32,
+        column: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::LongValueMapContainer {
+                definition: self.owner,
+                column,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn reserve_data(
+        &mut self,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(number, &[Purpose::Data], budget, cancelled)
+    }
+
+    pub(in crate::table) fn reserve_long_value(
+        &mut self,
+        number: u32,
+        column: usize,
+        owned: u32,
+        candidate: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::LongValue {
+                column,
+                owned,
+                candidate,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn reserve_long_value_with_owned_bitmaps(
+        &mut self,
+        number: u32,
+        column: usize,
+        references: LongValueMapReferences,
+        blocks: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u32>, EditError> {
+        let count = blocks
+            .len()
+            .checked_add(1)
+            .ok_or(InspectError::StructureLimit)?;
+        budget
+            .charge_allocation(count as u64, size_of::<Purpose>() as u64)
+            .map_err(InspectError::from)?;
+        let mut purposes = Vec::new();
+        purposes
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
+        purposes.push(Purpose::LongValue {
+            column,
+            owned: references.owned(),
+            candidate: references.candidate(),
+        });
+        let mut previous = None;
+        for &block in blocks {
+            check(budget, cancelled)?;
+            if previous.is_some_and(|previous| previous >= block) {
+                return Err(EditError::Preservation);
+            }
+            previous = Some(block);
+            purposes.push(Purpose::LongValueOwnedBitmap {
+                column,
+                owned: references.owned(),
+                block,
+            });
+        }
+        budget
+            .charge_allocation(count as u64, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        let mut numbers = Vec::new();
+        numbers
+            .try_reserve_exact(count)
+            .map_err(|_| InspectError::Allocation)?;
+        for position in 0..count {
+            check(budget, cancelled)?;
+            numbers.push(self.planned_number(position)?);
+        }
+        self.commit(number, &purposes, budget, cancelled)?;
+        Ok(numbers)
+    }
+
+    pub(in crate::table) fn reserve_owned_bitmap(
+        &mut self,
+        number: u32,
+        reference: u32,
+        block: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::OrdinaryOwnedBitmap {
+                definition: self.owner,
+                reference,
+                block,
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn reserve_candidate_bitmap(
+        &mut self,
+        number: u32,
+        reference: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.commit(
+            number,
+            &[Purpose::OrdinaryCandidateBitmap {
+                definition: self.owner,
+                reference,
+            }],
+            budget,
+            cancelled,
+        )
     }
 }

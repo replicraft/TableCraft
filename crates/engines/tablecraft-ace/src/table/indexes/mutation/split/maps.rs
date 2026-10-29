@@ -1,4 +1,5 @@
 //! Exact represented index-owned/global effects; table hints are never authority.
+use crate::table::mutation::append::owners::OwnerContext;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex,
     format::{
@@ -16,7 +17,7 @@ pub(super) fn allocate_nonroot(
     image: &NativeImage,
     index: &NativeIndex,
     number: u32,
-    append: &mut append::State,
+    append: &mut append::State<impl OwnerContext>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {

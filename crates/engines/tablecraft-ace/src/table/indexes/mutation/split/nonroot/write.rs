@@ -3,6 +3,7 @@ use super::super::super::{IndexDataPatch, repack, retained::RetainedProfile};
 use super::super::{AddedPage, Plan, leaf_entries, pages};
 use super::Operation;
 use super::arena::{self, Arena, Contents, Node};
+use crate::table::mutation::append::owners::OwnerContext;
 use crate::{
     EditError, InspectError,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -23,7 +24,7 @@ const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 pub(super) fn emit<P: RetainedProfile, const N: usize>(
     operation: &Operation<'_, P, N>,
     arena: &mut Arena,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     patches: &mut Vec<IndexDataPatch>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
@@ -47,7 +48,14 @@ pub(super) fn emit<P: RetainedProfile, const N: usize>(
     let original_eof = operation.image.catalog().header().page_count();
     for node in arena.nodes.iter().filter(|node| node.number < original_eof) {
         let before = arena::raw(operation.image, node.number)?;
-        let after = serialize(operation, arena, node, plan.append.owner, reader)?;
+        let after = serialize(
+            operation,
+            arena,
+            node,
+            plan.append
+                .index_definition(operation.index, reader.budget, reader.cancelled)?,
+            reader,
+        )?;
         reader.work(PAGE_BYTES)?;
         if before == after {
             continue;
@@ -82,7 +90,14 @@ pub(super) fn emit<P: RetainedProfile, const N: usize>(
             .iter()
             .find(|node| node.number == number)
             .ok_or(EditError::Preservation)?;
-        let bytes = serialize(operation, arena, node, plan.append.owner, reader)?;
+        let bytes = serialize(
+            operation,
+            arena,
+            node,
+            plan.append
+                .index_definition(operation.index, reader.budget, reader.cancelled)?,
+            reader,
+        )?;
         reader
             .budget
             .charge_allocation(1, size_of::<AddedPage>() as u64)

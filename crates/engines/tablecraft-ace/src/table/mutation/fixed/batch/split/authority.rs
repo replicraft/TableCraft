@@ -1,64 +1,61 @@
 //! Bind allocating UPDATE authority to original groups and immutable records.
 mod cells;
+mod tables;
 
 #[cfg(test)]
 mod tests;
 
+#[cfg(test)]
+mod multitable_tests;
+
 use crate::{
-    EditError, FixedColumnUpdates, InspectError, NativeImage, TableCheck, WriteBlocker,
+    EditError, FixedColumnUpdates, InspectError, NativeImage, TableCheck, check_table_constraints,
     header::check,
     table::{
-        indexes::SplitIndexPlan,
-        mutation::{gates, preservation},
+        indexes::{SplitIndexPlan, mutation::split::fixed_batch::Input},
+        mutation::{append::owners::OwnerContext, gates, preservation},
     },
 };
-use std::ops::Range;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) fn prove(
+pub(super) fn prove<O: OwnerContext>(
     image: &NativeImage,
-    checked: &TableCheck,
+    checked: &[&TableCheck],
     groups: &[FixedColumnUpdates<'_>],
-    plan: &SplitIndexPlan,
+    plan: &SplitIndexPlan<O>,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
     check(budget, cancelled)?;
-    let table = checked.schema().name();
-    if groups.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
-        return Err(InspectError::StructureLimit.into());
-    }
-    for (position, group) in groups.iter().enumerate() {
+    let tables = tables::derive(image, checked, groups, after, budget, cancelled)?;
+    let mut inputs = Vec::new();
+    for table in &tables {
         check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, position as u64)
-            .map_err(InspectError::from)?;
-        if !group.table().eq_ignore_ascii_case(table) {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
-        if groups[..position]
-            .iter()
-            .any(|other| other.column().eq_ignore_ascii_case(group.column()))
-        {
-            return Err(EditError::Conflict);
-        }
+        push(
+            &mut inputs,
+            Input {
+                checked: &table.checked,
+                updates: &table.fields.keys,
+            },
+            budget,
+        )?;
     }
-    let original = gates::before_fixed_update(image, table, budget, cancelled)?;
-    if !original.schema().same_definition(checked.schema())
-        || original.schema().object_id() != checked.schema().object_id()
-    {
-        return Err(EditError::Preservation);
-    }
-    let fields = cells::derive(image, original.schema(), groups, after, budget, cancelled)?;
-    let mut spans =
-        plan.audit_fixed_batch(image, &original, &fields.keys, after, budget, cancelled)?;
-    for byte in &fields.bytes {
+    let mut spans = plan.audit_fixed_batches(image, &inputs, after, budget, cancelled)?;
+    let mut changed = 0usize;
+    for table in &tables {
         check(budget, cancelled)?;
-        if after.get(byte.offset) != Some(&byte.after) {
-            return Err(EditError::Preservation);
+        changed = changed
+            .checked_add(table.fields.changed)
+            .ok_or(InspectError::StructureLimit)?;
+        for byte in &table.fields.bytes {
+            check(budget, cancelled)?;
+            if after.get(byte.offset) != Some(&byte.after) {
+                return Err(EditError::Preservation);
+            }
+            push(&mut spans, byte.offset..byte.offset + 1, budget)?;
         }
-        push(&mut spans, byte.offset..byte.offset + 1, budget)?;
     }
     let levels = spans.len().checked_ilog2().unwrap_or(0) as usize + 1;
     budget
@@ -81,7 +78,19 @@ pub(super) fn prove(
         .ok_or(EditError::Preservation)?;
     preservation::prove(image.as_bytes(), prefix, merged, budget, cancelled)?;
     check(budget, cancelled)?;
-    Ok(fields.changed)
+    // Constraints are evaluated on the single fully composed image. The table
+    // checker includes incoming relationships from untouched child tables.
+    for table in &tables {
+        gates::qualified(&check_table_constraints(
+            &mut Cursor::new(after),
+            image.catalog().catalog().scope(),
+            table.checked.schema().name(),
+            budget,
+            cancelled,
+        )?)?;
+    }
+    check(budget, cancelled)?;
+    Ok(changed)
 }
 
 fn push<T>(items: &mut Vec<T>, item: T, budget: &mut ResourceBudget) -> Result<(), EditError> {

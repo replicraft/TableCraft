@@ -22,7 +22,10 @@ use crate::{
     header::check,
     table::{
         indexes::page::{Entry, KeyRef},
-        mutation::{CertifiedData, append::State},
+        mutation::{
+            CertifiedData,
+            append::{State, owners::OwnerContext},
+        },
     },
 };
 use std::io::Cursor;
@@ -52,6 +55,7 @@ pub(super) enum AllocationPolicy {
 }
 
 pub(super) struct Certificate {
+    pub definition: u32,
     pub physical: u32,
     pub root: u32,
     pub usage: u32,
@@ -62,8 +66,8 @@ pub(super) struct Certificate {
     pub count: usize,
 }
 
-pub(in crate::table) struct Plan {
-    pub append: State,
+pub(in crate::table) struct Plan<O = u32> {
+    pub append: State<O>,
     pub patches: Vec<IndexDataPatch>,
     pub added: Vec<AddedPage>,
     certificates: Vec<Certificate>,
@@ -73,36 +77,8 @@ pub(in crate::table) struct Plan {
 }
 
 impl Plan {
-    pub(in crate::table) fn audit_fixed_batch(
-        &self,
-        image: &NativeImage,
-        checked: &TableCheck,
-        updates: &[IndexKeyUpdate],
-        after: &[u8],
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Vec<std::ops::Range<usize>>, EditError> {
-        audit::fixed_batch::prove(image, checked, updates, self, after, budget, cancelled)
-    }
-
     pub(super) fn new(image: &NativeImage, owner: u32) -> Self {
         Self::with_append(State::new(image, owner))
-    }
-
-    pub(super) fn with_append(append: State) -> Self {
-        Self::with_policy(append, AllocationPolicy::Legacy)
-    }
-
-    pub(super) fn with_policy(append: State, allocation_policy: AllocationPolicy) -> Self {
-        Self {
-            append,
-            patches: Vec::new(),
-            added: Vec::new(),
-            certificates: Vec::new(),
-            promotions: Vec::new(),
-            rebases: Vec::new(),
-            allocation_policy,
-        }
     }
 
     pub(in crate::table) fn audit(
@@ -141,6 +117,35 @@ impl Plan {
     }
 }
 
+impl<O: OwnerContext> Plan<O> {
+    pub(super) fn with_append(append: State<O>) -> Self {
+        Self::with_policy(append, AllocationPolicy::Legacy)
+    }
+
+    pub(super) fn with_policy(append: State<O>, allocation_policy: AllocationPolicy) -> Self {
+        Self {
+            append,
+            patches: Vec::new(),
+            added: Vec::new(),
+            certificates: Vec::new(),
+            promotions: Vec::new(),
+            rebases: Vec::new(),
+            allocation_policy,
+        }
+    }
+
+    pub(in crate::table) fn audit_fixed_batches(
+        &self,
+        image: &NativeImage,
+        inputs: &[fixed_batch::Input<'_>],
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<std::ops::Range<usize>>, EditError> {
+        audit::fixed_batch::prove(image, inputs, self, after, budget, cancelled)
+    }
+}
+
 pub(super) fn edit(
     image: &NativeImage,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -175,13 +180,16 @@ fn edit_prepared<P: RetainedProfile, const N: usize>(
     tree: &Tree,
     column: usize,
     patches: &mut Vec<IndexDataPatch>,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let image = operation.image;
     let index = operation.index;
     let profile = operation.profile;
-    let owner = plan.append.owner;
+    plan.append.owner.census(image)?;
+    let owner = plan
+        .append
+        .index_definition(index, reader.budget, reader.cancelled)?;
 
     if !tree.is_leaf() {
         return nonroot::edit(operation, tree, plan, reader, patches);
@@ -232,6 +240,7 @@ fn edit_prepared<P: RetainedProfile, const N: usize>(
     let right = allocation::reserve(image, index, plan, reader)?;
     let left = allocation::reserve(image, index, plan, reader)?;
     let fact = Certificate {
+        definition: owner,
         physical: index.data_number(),
         root: index.root_page(),
         usage: index.usage_map(),
@@ -352,7 +361,7 @@ pub(super) fn leaf_entries<'a, K>(
 pub(super) fn seal(
     image: &NativeImage,
     indexes: &[IndexCheck],
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {

@@ -8,6 +8,13 @@ use crate::{
     format::reader::Reader, inspect_table_index_counter, table::indexes::page::KeyRef,
 };
 use std::io::Cursor;
+use std::ops::Range;
+
+struct Change {
+    range: Range<usize>,
+    before: [u8; size_of::<u32>()],
+    after: [u8; size_of::<u32>()],
+}
 
 pub(super) fn increment<P: WriteProfile>(
     transitions: &[Transition<P::Key>],
@@ -60,16 +67,26 @@ pub(super) fn increment<P: WriteProfile>(
     Ok(introduced.len())
 }
 
-pub(in crate::table::indexes::mutation) fn patch(
+/// Bind and check the exact source counter before an append state can exist.
+pub(in crate::table::indexes::mutation) fn preflight(
     image: &NativeImage,
     schema: &TableSchema,
     index: &NativeIndex,
     increment: usize,
-    patches: &mut Vec<IndexDataPatch>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
+    change(image, schema, index, increment, reader).map(|_| ())
+}
+
+fn change(
+    image: &NativeImage,
+    schema: &TableSchema,
+    index: &NativeIndex,
+    increment: usize,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Option<Change>, EditError> {
     if increment == 0 {
-        return Ok(());
+        return Ok(None);
     }
     let historical = inspect_table_index_counter(
         &mut image.reader(),
@@ -94,15 +111,33 @@ pub(in crate::table::indexes::mutation) fn patch(
     if image.as_bytes().get(range.clone()) != Some(before.as_slice()) {
         return Err(EditError::Preservation);
     }
+    Ok(Some(Change {
+        range,
+        before,
+        after: after.to_le_bytes(),
+    }))
+}
+
+pub(in crate::table::indexes::mutation) fn patch(
+    image: &NativeImage,
+    schema: &TableSchema,
+    index: &NativeIndex,
+    increment: usize,
+    patches: &mut Vec<IndexDataPatch>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    let Some(change) = change(image, schema, index, increment, reader)? else {
+        return Ok(());
+    };
     reserve(patches, 1, reader)?;
     let mut before_bytes = Vec::new();
     let mut after_bytes = Vec::new();
     reserve(&mut before_bytes, size_of::<u32>(), reader)?;
     reserve(&mut after_bytes, size_of::<u32>(), reader)?;
-    before_bytes.extend_from_slice(&before);
-    after_bytes.extend_from_slice(&after.to_le_bytes());
+    before_bytes.extend_from_slice(&change.before);
+    after_bytes.extend_from_slice(&change.after);
     patches.push(IndexDataPatch {
-        offset: range.start,
+        offset: change.range.start,
         before: before_bytes,
         after: after_bytes,
     });

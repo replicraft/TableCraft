@@ -1,5 +1,6 @@
 //! Per-operation EOF placement with separately owned bitmap metadata.
 use super::{AddedPage, AllocationPolicy, Plan, maps};
+use crate::table::mutation::append::owners::OwnerContext;
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, WriteBlocker,
     format::{
@@ -22,6 +23,8 @@ const BITMAP_CAPACITY: usize = (PAGE_BYTES - BITMAP_PREFIX_BYTES) * u8::BITS as 
 mod tests;
 
 pub(in crate::table) struct Promotion {
+    pub definition: u32,
+    pub physical: u32,
     pub usage: u32,
     pub number: u32,
     pub offset: usize,
@@ -31,6 +34,7 @@ pub(in crate::table) struct Promotion {
 }
 
 pub(in crate::table) struct Rebase {
+    pub definition: u32,
     pub usage: u32,
     pub physical: u32,
     pub base: u32,
@@ -39,7 +43,7 @@ pub(in crate::table) struct Rebase {
 pub(super) fn reserve(
     image: &NativeImage,
     index: &NativeIndex,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
     reserve_inner(image, index, plan, reader)
@@ -48,17 +52,21 @@ pub(super) fn reserve(
 fn reserve_inner(
     image: &NativeImage,
     index: &NativeIndex,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
+    plan.append.owner.census(image)?;
+    let definition = plan
+        .append
+        .index_definition(index, reader.budget, reader.cancelled)?;
     let number = plan.append.next()?;
     plan.append.preview(1)?;
     reader.work(plan.promotions.len())?;
-    if let Some(promotion) = plan
-        .promotions
-        .iter_mut()
-        .find(|p| p.usage == index.usage_map())
-    {
+    if let Some(promotion) = plan.promotions.iter_mut().find(|p| {
+        p.definition == definition
+            && p.physical == index.data_number()
+            && p.usage == index.usage_map()
+    }) {
         set_member(&mut promotion.bitmap, number, reader)?;
         global(image, number, &mut plan.append, reader)?;
         plan.append
@@ -67,11 +75,11 @@ fn reserve_inner(
     }
 
     reader.work(plan.rebases.len())?;
-    if plan
-        .rebases
-        .iter()
-        .any(|map| map.usage == index.usage_map())
-    {
+    if plan.rebases.iter().any(|map| {
+        map.definition == definition
+            && map.physical == index.data_number()
+            && map.usage == index.usage_map()
+    }) {
         rewrite_inline(image, index, number, plan, reader)?;
         return Ok(number);
     }
@@ -103,10 +111,13 @@ fn rewrite_inline(
     image: &NativeImage,
     index: &NativeIndex,
     number: u32,
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let usage = index.usage_map();
+    let owner_definition = plan
+        .append
+        .index_definition(index, reader.budget, reader.cancelled)?;
     // Rewrites use strict original role grammar as well as the exact row frame.
     // A previously staged rebase never supplies its own before-image authority.
     RepresentedMap::read(reader, usage, MapRole::Owned)?;
@@ -117,7 +128,10 @@ fn rewrite_inline(
         let prior_usage = reservation.usage;
         let number = reservation.number;
         reader.tick()?;
-        if prior_usage == usage && reservation.physical == index.data_number() {
+        if reservation.definition == owner_definition
+            && prior_usage == usage
+            && reservation.physical == index.data_number()
+        {
             reader
                 .budget
                 .charge_allocation(1, size_of::<u32>() as u64)
@@ -146,7 +160,10 @@ fn rewrite_inline(
         .and_then(|n| n.checked_add(1))
         .ok_or(InspectError::StructureLimit)?;
     reader.work(plan.rebases.len())?;
-    let previous = plan.rebases.iter().position(|map| map.usage == usage);
+    let previous = plan
+        .rebases
+        .iter()
+        .position(|map| map.definition == owner_definition && map.usage == usage);
     let inline_base = match plan.allocation_policy {
         AllocationPolicy::Legacy => {
             if span as usize <= QualifiedInlineRecord::PAGE_CAPACITY {
@@ -184,7 +201,9 @@ fn rewrite_inline(
     }
 
     let owner = Owner::IndexOwned {
-        definition: plan.append.owner,
+        definition: plan
+            .append
+            .index_definition(index, reader.budget, reader.cancelled)?,
         physical: index.data_number(),
     };
     plan.append.require_source_map_rewrite(
@@ -238,6 +257,7 @@ fn rewrite_inline(
                 .try_reserve(1)
                 .map_err(|_| InspectError::Allocation)?;
             plan.rebases.push(Rebase {
+                definition: owner_definition,
                 usage,
                 physical: index.data_number(),
                 base,
@@ -300,6 +320,8 @@ fn rewrite_inline(
         .try_reserve(1)
         .map_err(|_| InspectError::Allocation)?;
     plan.promotions.push(Promotion {
+        definition: owner_definition,
+        physical: index.data_number(),
         usage,
         number: metadata,
         offset: record.start,
@@ -340,7 +362,7 @@ fn set_member(
 fn global(
     image: &NativeImage,
     number: u32,
-    append: &mut append::State,
+    append: &mut append::State<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     let mut source = image.reader();
@@ -361,7 +383,25 @@ fn global(
 pub(super) fn seal(
     image: &NativeImage,
     indexes: &[IndexCheck],
-    plan: &mut Plan,
+    plan: &mut Plan<impl OwnerContext>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader
+        .budget
+        .charge_allocation(indexes.len() as u64, size_of::<&IndexCheck>() as u64)
+        .map_err(InspectError::from)?;
+    let mut references = Vec::new();
+    references
+        .try_reserve_exact(indexes.len())
+        .map_err(|_| InspectError::Allocation)?;
+    references.extend(indexes.iter());
+    seal_references(image, &references, plan, reader)
+}
+
+pub(super) fn seal_references(
+    image: &NativeImage,
+    indexes: &[&IndexCheck],
+    plan: &mut Plan<impl OwnerContext>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     if !plan.promotions.is_empty() || !plan.rebases.is_empty() {
@@ -386,11 +426,16 @@ pub(super) fn seal(
                 .iter()
                 .find(|checked| checked.index().usage_map() == usage)
                 .ok_or(EditError::Preservation)?;
-            if index.index().data_number() != reservation.physical {
+            if index.index().data_number() != reservation.physical
+                || plan
+                    .append
+                    .index_definition(index.index(), reader.budget, reader.cancelled)?
+                    != reservation.definition
+            {
                 return Err(EditError::Preservation);
             }
             let owner = Owner::IndexOwned {
-                definition: plan.append.owner,
+                definition: reservation.definition,
                 physical: index.index().data_number(),
             };
             if !owners.contains(&owner) {
@@ -410,8 +455,12 @@ pub(super) fn seal(
             .ok_or(EditError::Preservation)?
             .index()
             .data_number();
-        plan.append.require_index_bitmap(
+        if physical != promotion.physical {
+            return Err(EditError::Preservation);
+        }
+        plan.append.require_index_bitmap_for(
             promotion.number,
+            promotion.definition,
             physical,
             promotion.usage,
             reader.budget,

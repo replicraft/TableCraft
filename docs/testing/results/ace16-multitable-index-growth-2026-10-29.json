@@ -1,0 +1,405 @@
+{
+  "date": "2026-10-29",
+  "feature": "Multi-table nullable Int32 UPDATE with one shared INDEX allocation ledger",
+  "qualification": "Independent literal source/complete-image and integration engineering checks; not native Access save/reopen or macro qualification.",
+  "independent_cases": 48,
+  "exact_complete_candidate_comparisons": 96,
+  "candidate_expectation_repairs": 0,
+  "source_gates_before_candidate_calls": true,
+  "focused_multitable_functions": {
+    "passed": 8,
+    "first_api_exit_code": 0
+  },
+  "physical_audit_functions": {
+    "passed": 2,
+    "first_exit_code": 0
+  },
+  "relationship_functions": {
+    "passed": 4,
+    "qualified_source_exit_code": 0,
+    "qualified_api_exit_code": 0
+  },
+  "library_regression": {
+    "passed": 713,
+    "ignored": 2,
+    "exit_code": 0,
+    "includes_ordinal_delete_helper": true
+  },
+  "test_configuration": [
+    "--all-features",
+    "--locked",
+    "--config",
+    "profile.test.package.tablecraft-ace.debug=1"
+  ],
+  "incremental_override": null,
+  "check_logs": {
+    "first_normal_check": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/check-first-root.log",
+      "bytes": 670,
+      "sha256": "80d9618f54a5bf4e7810a62da603f5d819ddb8f8ce2d69e881d9629c69c413bf"
+    },
+    "first_normal_check_source_race_receipt": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/check-first-root-receipt.json",
+      "bytes": 967,
+      "sha256": "2d81505e2ef1f800634f10b3c1629e3b84904866ff10e044d9d80aba83424c86"
+    },
+    "first_source_test_compile_failure": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/source-gates-first-root.log",
+      "bytes": 709,
+      "sha256": "2430afd11d8119a321886790d9ddfa584d6e86b5343a546b73b42a21c9817613"
+    },
+    "source_tests_pass": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/source-gates-second-root.log",
+      "bytes": 670,
+      "sha256": "50cafe4d6a6b930374e5a630f86f696a19284174c51cc01b501880648881b73e"
+    },
+    "first_api_comparisons": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/api-first-root.log",
+      "bytes": 1571,
+      "sha256": "3ca4a08f7001700f517c0598521d0096ddd56ab0635ab81c50ec93c5f904b911"
+    },
+    "physical_audit_controls": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/physical-audit-first-root.log",
+      "bytes": 564,
+      "sha256": "2f5082da28210410f884cfa30f8e4c74fb9abf534dd06316dde2846e5168f667"
+    },
+    "initial_relationship_read_gate": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-first-root.log",
+      "bytes": 516,
+      "sha256": "e463c6fa513aea9f439758bbd478ebf4ce0b60e67a3e6fa1da0de14f74b93bca"
+    },
+    "initial_relationship_api_failures": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationships-first-root.log",
+      "bytes": 1770,
+      "sha256": "dfa44c1528d91d8db7d197a4f6e4aa9236225225875f5a322c608a1e9a46987f"
+    },
+    "relationship_grammar_only_read_gate": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-second-root.log",
+      "bytes": 516,
+      "sha256": "31b8bfd6fd5ec10b354c8522fa2fac12a53ca3dbb737e677f78ead27763010aa"
+    },
+    "relationship_grammar_only_api_failures": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationships-second-root.log",
+      "bytes": 1771,
+      "sha256": "c8def3fd362a2acc0c31ea475988dc29cc7c4811bc37353931291ea8288e344d"
+    },
+    "actual_relationship_qualification_probe": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-qualification-probe-first-root.log",
+      "bytes": 1721,
+      "sha256": "132ccf4765cce63a02238f03051a05c9f5260b5db06f629225f2a91c5ab93cdc"
+    },
+    "relationship_free_geometry_authoring_failure": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-third-root.log",
+      "bytes": 1144,
+      "sha256": "48be2b9f955e99785d7c9560cd47ffaa5b6409dc195012f07fd14a866e8d78e5"
+    },
+    "qualified_relationship_source": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-fourth-root.log",
+      "bytes": 515,
+      "sha256": "49d112814c2eccb4be354368209902a2b67dafd483f5622f1d3a90d1fb1f31bc"
+    },
+    "qualified_relationship_api": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationships-third-root.log",
+      "bytes": 634,
+      "sha256": "e1724bb3eb14f4dbc02e4ad370c45687dcf8a5ac314c605f152fc0038793af3c"
+    },
+    "full_engine_library_regression": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/library-regression-first-root.log",
+      "bytes": 91859,
+      "sha256": "d1f7917d32d9318c1cb65d1b3a97ba304c987d7d0243aae30297e96a28b093f3"
+    }
+  },
+  "frozen_checkpoints": [
+    {
+      "path": ".cache/ace16-multitable-index-growth-literals-20261029/first-freeze.json",
+      "bytes": 2370,
+      "sha256": "e8d0f788abc6efa58ee5aba485dc2faf1ce8d9d2e57e1afddf60b53e66e108bf"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/producer-first-coherent-freeze.json",
+      "bytes": 3295,
+      "sha256": "a93a5d86bb15d2864b78d8ed5c5e7f73be25e50f166bc97ff33c59f31ddabd50"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/producer-caller-cleanup-freeze.json",
+      "bytes": 3434,
+      "sha256": "2e3d9fd9a82a982c93d7cd2f226fe65c96ffb6fe58ad22801c4d73a24241dba3"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/audit-first-coherent-freeze.json",
+      "bytes": 3498,
+      "sha256": "a1a0ec4bdb3fc76cf17b07eb6edfa0bab08f4668b8a73ab5e8c0a1d5fb00fffc"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/audit-with-controls-freeze.json",
+      "bytes": 3553,
+      "sha256": "e75181715a0fa4eaa0ee88f37f248bbae5372427fd3318950372b44c17dc2a59"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/audit-control-public-qualification-freeze.json",
+      "bytes": 663,
+      "sha256": "fa214c13c013c5bec845ef457970b4662842359316108f5a62eae836a352f986"
+    },
+    {
+      "path": ".cache/ace16-multitable-history-preflight-20261029/correction-freeze.json",
+      "bytes": 2727,
+      "sha256": "d455e8ff9bf9901ee62d54b54594c00e16d956d964a1dfc50a739dbd619cc29e"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/producer-owned-body-correction.json",
+      "bytes": 583,
+      "sha256": "5d90d3b5d416967ccc8f3bf7a66955c93d06eb296e514c116794ec1fe595d366"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/audit-all-owned-body-exclusion-freeze.json",
+      "bytes": 1727,
+      "sha256": "7e1be85648ed4a7232f78875419fd5480bdf95e7f2e083bba6507a7b4cd8f975"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-grammar-correction-freeze.json",
+      "bytes": 1942,
+      "sha256": "22e3f56066d2daa68669e37b50fc92f63e43575936fc06e39049ffb8f786630c"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-candidate-role-correction-freeze.json",
+      "bytes": 2214,
+      "sha256": "26544c40ee85e47840729525c056f95ad1c461ab0447e87eaa7b28ac1f3b256b"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/relationship-source-free-geometry-correction-freeze.json",
+      "bytes": 1818,
+      "sha256": "9f97e1f35ebdf08a5968168efad60e56bb53f47602bf3382492b7e5f34ccfcdf"
+    },
+    {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/audit-final-scoped-review.json",
+      "bytes": 5963,
+      "sha256": "a5644f3d0f174de047ac9a4a808ab1fb89046dba0b859ce7db74a68fc2d9a7ca"
+    }
+  ],
+  "observations": [
+    "Initial normal library check exited 0 with an unused wrapper warning; redundant caller-constraint cleanup may have raced the check. It is not an immutable execution-source proof.",
+    "First source-test build failed only on a private test import; no test or candidate ran. Public qualification replaced that test seam.",
+    "Static review moved historical-counter checked_add before all reservations and independently excluded cross-catalog DATA/LVAL/foreign INDEX body claims.",
+    "Initial relationship donor passed public read checks but lacked complete TD trailers and candidate-map roles required by the allocating profile. Two API runs each passed 2 and failed 2; expected errors were not changed.",
+    "A retained temporary read-only private probe proved complete declarations and missing OrdinaryCandidate claims; its source was archived and registration removed before final checks.",
+    "A fixture-authoring run then failed its free-header assertion: the old raw builder leaves free metadata zero. A new wrapper measures and normalizes only permitted metadata; original donor files, ROWs, slots, indexes and relationships remain unchanged.",
+    "Qualified relationship source and all 4 final integration functions pass. No writer admission or relationship expectation was weakened."
+  ],
+  "unrun": [
+    "native Microsoft Access comparisons",
+    "original-file multi-table producer replay",
+    "data-macro absence/required-event qualification",
+    "production ACE save/journal qualification"
+  ],
+  "shared_consumer_regression": {
+    "targets": 7,
+    "passed": 70,
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-multitable-index-growth-implementation-20261029/shared-consumer-regression-first-root.log",
+      "bytes": 7990,
+      "sha256": "1dbfb22221b56b7e8a5c23af85e84309dc987a3bd6413275a1a1fcfb99574dd6"
+    }
+  },
+  "strict_lint": {
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ],
+    "all_targets": true,
+    "all_features": true,
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/clippy-third-root.log",
+      "bytes": 402,
+      "sha256": "07ce3e03ca1dee61798d231d10a94278a616626535e78cd94f75ef5895c26dfe"
+    }
+  },
+  "minimal_engine_and_adapter": {
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-engineering-write-workflow-20261029/minimal-first-root.log",
+      "bytes": 922,
+      "sha256": "ed9dc7f44db3702e9ae97d9918a8c7f5c31568f0dd7c1740db53506f99709da1"
+    }
+  },
+  "source": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch.rs",
+      "bytes": 3971,
+      "sha256": "ed698d690dfc6698580525d0965ec507460487b84348e143296b114ba8898de5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/population/history.rs",
+      "bytes": 4953,
+      "sha256": "b32c142e395913c0c35e81c6d6b7d6a92d322895053d135856eb7ab466afda4b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/allocation.rs",
+      "bytes": 16437,
+      "sha256": "489ede4bb1aa0b527cb159b312b709cddc2d2d4635ba09eb6ae097797059a41d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch.rs",
+      "bytes": 12247,
+      "sha256": "78299b72e7fe2cecac30a709647c4a24e39c5aae97ced5118fa6415ff26820f8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch/source.rs",
+      "bytes": 10186,
+      "sha256": "f39ba79766574af173b4b6fbda7e013e11c1b9c5c0fc4976b33b468579263da0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/fixed_batch/tests.rs",
+      "bytes": 7163,
+      "sha256": "d8eff329d480f689f0f8ca46e4ebfaedda5fea0726618dea49f621b366613fb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/maps.rs",
+      "bytes": 19461,
+      "sha256": "9d1780659f121344cdebe50161180f8c60a9e5b47308fbb4317ab3f0b66d3650"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/retained.rs",
+      "bytes": 8910,
+      "sha256": "44e0d4a7a4d8d0ec5904794c4371f5ca722be24568e92afed2f68ed40e35db2c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/fixed_batch.rs",
+      "bytes": 8985,
+      "sha256": "dca4a7e275f8a070517a2bb364678d34b2f58ea66971e8d67da78bd0dd179627"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/fixed_batch/prepared.rs",
+      "bytes": 6593,
+      "sha256": "7562820e1ffab7c5ae64374bc89a8f6a373497bebabd0241eb22da0f1858ca01"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/maps.rs",
+      "bytes": 1958,
+      "sha256": "db111ad49919ba89d3222e11ded896d58e70e94624e5e1264e348cdc645a0fa9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 10564,
+      "sha256": "6154ba78606c708429bcbbda73039d9a0eb363f8794583ef778aea717f9f4238"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot.rs",
+      "bytes": 1477,
+      "sha256": "9b7227dfad2869b2b76ffaa2db4e50b19ddd175828768c5f7777833d6c3574d6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena.rs",
+      "bytes": 10538,
+      "sha256": "3fd66a6c5848c837711bc856b5ab256e5acbb785a4592efc529ee6578fbbc2d9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/arena/normalize.rs",
+      "bytes": 5187,
+      "sha256": "e885baf1c2f6216c054f9f0856b164b18379d5c21e23225d5be708a8ae0bdbb8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/nonroot/write.rs",
+      "bytes": 7732,
+      "sha256": "518a49432776ea079c11018d8418bc2448c7a393ded56f575ef19ee0135581f9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/mod.rs",
+      "bytes": 338,
+      "sha256": "95031240f92a5e1aabbd7753d99ce2b3a939d9893860a61885191018dff73052"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/owners.rs",
+      "bytes": 6645,
+      "sha256": "c393bb6f53651d43fa6240abb8b66984c60e0fbb6a34f2d7c0ca12c100ff032d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/state.rs",
+      "bytes": 29991,
+      "sha256": "fded098d3fff5747212623e25816e573dbc931fad037000d7bacc14072032ef9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/mod.rs",
+      "bytes": 209,
+      "sha256": "259aaf6471887c6b120a0da36a260d3adf9e77e77424110fb64a60f1b2227acd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/multitable_tests.rs",
+      "bytes": 6529,
+      "sha256": "cfec4194578875c612e64a44f028d180a3b4b8af234e7fa9cedaa3a7dd0ce54e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/multitable_tests/model.rs",
+      "bytes": 14183,
+      "sha256": "74a4479aeebf5de75e8bec5b017372c791b1cda6ee2f11f3272ad2f25e2630b9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/multitable_tests/preview.rs",
+      "bytes": 8578,
+      "sha256": "daaff9a7912045852e0bdab77abd844579d73336267f6efe1006e481c670a0a2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 11131,
+      "sha256": "0ca14565961a92083378bae3038d6abf6c96a6f787652351b77278a7e890f669"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split.rs",
+      "bytes": 5333,
+      "sha256": "81bd2559f4a5b0a5456f0c247faa8856cdc2c7592c34ee9754d6e6f1f26eab6c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority.rs",
+      "bytes": 3405,
+      "sha256": "5989c42fc8586e90e95495350617757ca155643700d6fc0fe8df632355a5644a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority/multitable_tests.rs",
+      "bytes": 7591,
+      "sha256": "0ba93d3686447d0637e57b058885046f2590f80c4f677fea5a665841ce4b5de1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority/tables.rs",
+      "bytes": 3867,
+      "sha256": "bd322377a6564e86cdbf77a30f63a1dfbce4fe48202d59f009e3e9e287de50e3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split/authority/tests.rs",
+      "bytes": 9180,
+      "sha256": "ea0e02f9486af5e44e4a99295949c7d3ff52968b1fd29c445fdfe2d59e79905a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests/adversarial.rs",
+      "bytes": 13332,
+      "sha256": "bd530514599e0e7f5e734dc12c8996f3c8274410e2f7dbde4394b0ee94521a5b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 374,
+      "sha256": "9f1e8a49142951aee79b1ff3f0d1effb244879bfc23ed3a3caf20c1b24233ee1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_append.rs",
+      "bytes": 8678,
+      "sha256": "799b5acf12fa8c2f372e0caecd69ebd2471c64b7fb0064d8783eb67a57f69ba1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1635,
+      "sha256": "d95e5e478ac9c1abc027c6e4dd9fa9c5f3f211824c9b48fd644bb9c19cf8f55c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_multitable_split_relationships.rs",
+      "bytes": 6037,
+      "sha256": "130344445bc9b4ee4ac2f734e4b0df250eb0386b440c2481f343b45ba1040eec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_multitable_split_relationships/source.rs",
+      "bytes": 6263,
+      "sha256": "3dd38ea4c32e6f975a953d3496296a7de0671a506a64835e527e79e1c5013d0c"
+    }
+  ],
+  "post_check_changes": "Formatter-only whitespace/module order and updated example help text; no control-flow changes after the successful strict lint."
+}
