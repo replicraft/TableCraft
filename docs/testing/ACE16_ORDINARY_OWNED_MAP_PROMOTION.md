@@ -32,8 +32,8 @@ same new bitmap. Candidate-map maintenance follows owned metadata allocation,
 and INDEX work continues on the shared resulting cursor.
 
 The current promotion initializes block zero within the existing 64 MiB image
-ceiling. Existing indirect and wider represented owned maps retain their prior
-paths; UPDATE does not opt into this continuation. No map-record resizing,
+ceiling. Existing represented indirect and wider owned maps retain their prior paths;
+UPDATE does not opt into this continuation. No map-record resizing,
 in-file page reuse or additional resource allowance is introduced.
 
 ## Independent proof and literal corpus
@@ -72,6 +72,52 @@ selected shared integration tests pass. Strict ACE Clippy across all targets and
 features, minimal compilation, formatting and documentation/dependency guards
 pass. The first strict lint run found one nested conditional in the composer;
 its let-chain correction changes no runtime semantics or expected image bytes.
+
+## First INSERT with a missing indirect block-zero pointer
+
+INSERT can also initialize block zero in an existing canonical 69-byte indirect
+ordinary-owned record. Its first pointer must be zero; complete original Metadata
+authority must bind the record to the selected table's OrdinaryOwned role. The
+new DATA reservation precedes the separately typed ordinary-owned bitmap on the
+same append cursor. The bitmap starts with the actual DATA member, while its own
+page and other allocated metadata remain excluded. Neither this operation nor
+inline promotion grants UPDATE a new allocation policy.
+
+The source record has seventeen four-byte pointer slots after its one-byte tag.
+Initialization copies the complete original record and changes only pointer zero.
+Every higher pointer and its existing bitmap storage remains intact. Independent
+audit captures that original row separately, derives the new bitmap and source
+record rewrite from actual placements, and checks the closed purpose inventory.
+It does not accept planner bytes as authority for erasing other pointers.
+
+Four literal source/request cases cover both ACE 16 headers with empty live
+membership, zero historical count and an empty primary leaf with a logical alias.
+The owned record is reference-backed with a missing first pointer; the candidate
+map is empty. The first row occupies DATA 16, owned bitmap 17 records only page
+16, and both table and primary counters become one. An occupied but unclaimed
+old DATA page remains byte exact and is never adopted. Two cases additionally
+retain a valid allocated bitmap at the last pointer slot, proving preservation
+of all seventeen slots rather than only the first sixteen.
+
+The baseline source and expected-image gate passed before the first API
+regression refused with `Inspect(Unsupported)`. No expected bytes changed to
+resolve that failure. The higher-pointer sources and complete expected images
+also passed their separate read-only gate before preview execution. All five
+owning functions then passed: baseline whole-image insertion, both source gates,
+correlated staged/candidate higher-pointer erasure refusal, all resource pools
+and actual final-callback cancellation. The first combined INSERT batch passes
+all 263 functions. The full ACE library passes 613 functions with two ignored,
+and the full Access adapter suite passes 506 tests. Strict Clippy across all
+ACE/Access targets and features, minimal builds, formatting and documentation/
+dependency guards pass. The two ignored cases are explicit engineering fixture
+and dictionary generators; they are not skipped acceptance checks.
+
+Existing represented cells, other record widths, table-definition growth,
+block-one initialization and general in-file reuse retain their earlier limits.
+These four cases are repository-authored native-format literals. An original-file
+INSERT comparison and fresh independent reads for this missing-pointer extension
+remain pending, even though a public Jackcess creator's empty-table map state
+motivated the regression.
 
 ## Qualification boundaries
 

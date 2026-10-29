@@ -83,14 +83,18 @@ impl<'a> Replay<'a> {
                     expect(&mut proof.map_edits, cell, true, reader)?;
                     return Ok(());
                 }
-                Err(InspectError::Unsupported) if self.original.kind() == INLINE => {}
+                Err(InspectError::Unsupported)
+                    if matches!(self.original.kind(), INLINE | INDIRECT) => {}
                 Err(error) => return Err(error.into()),
             }
 
             let page_number = reference_page(self.reference);
             let page = reader.page(page_number)?;
             let row = reader.row_location(page_number, reference_slot(self.reference), 0, &page)?;
-            if row.data.len() != RECORD_BYTES || row.data[0] != INLINE {
+            if row.data.len() != RECORD_BYTES
+                || row.data[0] != self.original.kind()
+                || (row.data[0] == INDIRECT && u32_at(&row.data, 1)? != 0)
+            {
                 return Err(InspectError::Unsupported.into());
             }
             let end = row
@@ -108,7 +112,11 @@ impl<'a> Replay<'a> {
             )?;
             self.record = Some(Record {
                 offset: row.offset,
-                base: u32_at(&row.data, 1)?,
+                base: if row.data[0] == INLINE {
+                    u32_at(&row.data, 1)?
+                } else {
+                    0
+                },
                 before: row.data,
             });
         }
@@ -139,9 +147,10 @@ impl<'a> Replay<'a> {
         } else {
             minimum - minimum % u8::BITS
         };
-        let fits = maximum
-            .checked_sub(base)
-            .is_some_and(|distance| distance < WINDOW_PAGES);
+        let fits = record.before[0] == INLINE
+            && maximum
+                .checked_sub(base)
+                .is_some_and(|distance| distance < WINDOW_PAGES);
         let mut after = Vec::new();
         reserve(&mut after, RECORD_BYTES, reader)?;
         reader.work(RECORD_BYTES)?;
@@ -176,6 +185,10 @@ impl<'a> Replay<'a> {
             let begin = metadata as usize * PAGE_BYTES;
             reader.work(PAGE_BYTES)?;
             proof.bytes[begin..begin + PAGE_BYTES].copy_from_slice(&bytes);
+            if record.before[0] == INDIRECT {
+                reader.work(RECORD_BYTES)?;
+                after.copy_from_slice(&record.before);
+            }
             after[0] = INDIRECT;
             after[1..PREFIX_BYTES].copy_from_slice(&metadata.to_le_bytes());
             self.bitmap = Some(ExpectedBitmap {

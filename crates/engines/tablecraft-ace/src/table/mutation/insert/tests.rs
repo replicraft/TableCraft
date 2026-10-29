@@ -5,6 +5,7 @@ mod child_split;
 mod decimal;
 mod decimal_index_inserts;
 mod empty;
+mod empty_owned_pointer;
 mod extended_datetime_inserts;
 mod general_height_one;
 pub(in crate::table::mutation) mod global_map_growth;
