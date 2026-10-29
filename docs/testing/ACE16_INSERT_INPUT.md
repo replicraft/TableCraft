@@ -69,3 +69,27 @@ An existing output is never overwritten; a failed owned partial output is
 removed, with cleanup failure reported. The source is opened for reading.
 The result is a separate engineering candidate, with data-macro semantics and
 native Access qualification pending. This example adds no normal CLI write path.
+
+## Explicit incrementing AutoNumber requests
+
+`--incrementing-last LAST` selects the separate
+[incrementing engineering service](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md).
+`LAST` must exactly match the original signed last-issued counter. It does not
+detect the stored Increment/Random mode. For example:
+
+```sh
+cargo run -p tablecraft-ace --features ace16-write-preview \
+  --example preview_ace16_insert -- source.accdb candidate.accdb Items companions.tsv \
+  --incrementing-last 9
+```
+
+In this mode, each TSV row contains every companion field in native order,
+excluding exactly the generated primary field. Do not supply a NULL placeholder
+or an explicit generated ID. The same CSV parser, carrier rules, limits and
+complete-input-before-database-open ordering apply. Omitting the flag retains
+manual complete-row requests and their generated-field refusal.
+
+After successful fresh-output publication, the report adds
+`generated_column_number=N` and one `generated_value[REQUEST]=ID` line per request,
+in request order. Write and flush failures propagate. The example's 22 tests pass,
+including malformed later companions, signed counter arguments and report errors.

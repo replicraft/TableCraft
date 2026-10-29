@@ -3,7 +3,6 @@ use super::fixed_values::{self, Kind};
 use clap::ValueEnum;
 use csv::{ByteRecord, ReaderBuilder};
 use std::{error::Error, fs::File, path::Path};
-use tablecraft_ace::RowInsert;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -37,11 +36,12 @@ fn validate_value_bytes(bytes: usize) -> Result<(), String> {
     Ok(())
 }
 
-pub(super) fn load(
+pub(super) fn load<T>(
     path: &Path,
     budget: &mut ResourceBudget,
     max_value_bytes: usize,
-) -> Result<Vec<RowInsert>, Box<dyn Error>> {
+    make_row: fn(Vec<Value>) -> T,
+) -> Result<Vec<T>, Box<dyn Error>> {
     validate_value_bytes(max_value_bytes)?;
     let mut file = File::open(path)?;
     let length = tablecraft_io::seek_to_end(&mut file, budget, &|| false)?;
@@ -58,14 +58,15 @@ pub(super) fn load(
         return Err("Insert-request file length changed during capture".into());
     }
 
-    parse(&encoded, budget, max_value_bytes)
+    parse(&encoded, budget, max_value_bytes, make_row)
 }
 
-fn parse(
+fn parse<T>(
     encoded: &[u8],
     budget: &mut ResourceBudget,
     max_value_bytes: usize,
-) -> Result<Vec<RowInsert>, Box<dyn Error>> {
+    make_row: fn(Vec<Value>) -> T,
+) -> Result<Vec<T>, Box<dyn Error>> {
     validate_value_bytes(max_value_bytes)?;
     if encoded.is_empty() {
         return Err("Insert-request file is empty".into());
@@ -83,7 +84,7 @@ fn parse(
         budget.charge_allocation(encoded.len() as u64, 1)?;
         budget.charge_allocation(field_capacity as u64, size_of::<usize>() as u64)?;
     }
-    budget.charge_allocation(MAX_REQUESTS as u64, size_of::<RowInsert>() as u64)?;
+    budget.charge_allocation(MAX_REQUESTS as u64, size_of::<T>() as u64)?;
     let mut requests = Vec::new();
     requests.try_reserve_exact(MAX_REQUESTS)?;
     let mut reader = ReaderBuilder::new()
@@ -123,7 +124,7 @@ fn parse(
                 max_value_bytes,
             )?);
         }
-        requests.push(RowInsert::new(values));
+        requests.push(make_row(values));
     }
     if requests.is_empty() {
         return Err("Insert-request file is empty".into());
