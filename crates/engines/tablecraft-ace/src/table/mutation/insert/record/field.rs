@@ -3,7 +3,7 @@ use crate::{
     EditError, NativeColumn, WriteBlocker,
     format::{
         data_type::EXTENDED_DATE_TIME_BYTES,
-        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+        layout::{AUTO_NUMBER_FLAG, FIXED_FLAG, UPDATABLE_FLAG},
     },
     table::{extended_datetime, mutation::fixed::encode_fixed},
 };
@@ -14,6 +14,21 @@ const BYTE_WIDTH: usize = size_of::<u8>();
 const SHORT_WIDTH: usize = size_of::<i16>();
 const LONG_WIDTH: usize = size_of::<i32>();
 const WIDE_WIDTH: usize = size_of::<i64>();
+// Largest fixed declaration currently admitted by this writer.
+pub(super) const MAX_FIXED_BYTES: usize = EXTENDED_DATE_TIME_BYTES;
+
+pub(super) fn incrementing_width(column: &NativeColumn) -> Result<usize, EditError> {
+    if column.scalar_type() != Some(ScalarType::Int32)
+        || !column.fixed()
+        || column.storage_length() != LONG_WIDTH
+        || column.flags() != (FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG)
+        || column.extended_flags() != 0
+        || column.complex_type_id().is_some()
+    {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    Ok(LONG_WIDTH)
+}
 
 pub(super) fn width(column: &NativeColumn) -> Result<usize, EditError> {
     let length = match column.scalar_type() {

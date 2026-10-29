@@ -7,7 +7,10 @@ mod records;
 #[cfg(test)]
 mod tests;
 
-use super::{RowInsert, Staged, policies, primary_column};
+use super::{
+    AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber, RowInsert, Staged, autonumber,
+    policies, primary_column,
+};
 use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -62,19 +65,101 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    prove_with(
+        image,
+        table,
+        AuditRequest::Explicit(requests),
+        staged,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prove_incrementing(
+    image: &NativeImage,
+    table: &str,
+    requests: (&[AutoNumberRowInsert], IncrementingAutoNumber),
+    staged: &Staged,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with(
+        image,
+        table,
+        AuditRequest::Incrementing {
+            requests: requests.0,
+            policy: requests.1,
+        },
+        staged,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
+fn prove_with(
+    image: &NativeImage,
+    table: &str,
+    input: AuditRequest<'_>,
+    staged: &Staged,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     check(budget, cancelled)?;
     preview::qualify(image)?;
-    let checked = gates::before_insert(image, table, budget, cancelled)?;
+    let (checked, count) = match input {
+        AuditRequest::Explicit(requests) => {
+            if staged.autonumber.is_some() {
+                return Err(EditError::Preservation);
+            }
+            (
+                gates::before_insert(image, table, budget, cancelled)?,
+                requests.len(),
+            )
+        }
+        AuditRequest::Incrementing { requests, .. } => (
+            gates::before_incrementing_insert(image, table, budget, cancelled)?,
+            requests.len(),
+        ),
+    };
     if checked
         .rows()
-        .checked_add(requests.len())
+        .checked_add(count)
         .is_none_or(|count| count > MAX_LIVE_ROWS)
     {
         return Err(InspectError::StructureLimit.into());
     }
     let schema = checked.schema();
-    records::qualify(schema, budget, cancelled)?;
+    if matches!(input, AuditRequest::Explicit(_)) {
+        records::qualify(schema, budget, cancelled)?;
+    }
     let id = primary_column::resolve(&checked, budget, cancelled)?;
+    let generation = match input {
+        AuditRequest::Explicit(_) => None,
+        AuditRequest::Incrementing { requests, policy } => {
+            records::layout::capture_incrementing(schema, id, budget, cancelled)?;
+            let plan = staged.autonumber.as_ref().ok_or(EditError::Preservation)?;
+            Some(autonumber::audit::Operation {
+                image,
+                checked: &checked,
+                requests,
+                policy,
+                plan,
+                returned: &plan.values,
+            })
+        }
+    };
+    let expanded = generation
+        .as_ref()
+        .map(|operation| operation.rows(budget, cancelled))
+        .transpose()?;
+    let requests = match input {
+        AuditRequest::Explicit(requests) => requests,
+        AuditRequest::Incrementing { .. } => expanded.as_deref().ok_or(EditError::Preservation)?,
+    };
     policies::require_text_declarations(image, schema, requests, budget, cancelled)?;
 
     let mut source = image.reader();
@@ -94,7 +179,16 @@ pub(super) fn prove(
         global: global::Replay::new(image, schema.definition_page()),
     };
 
-    let resolved = long_values::derive(image, &checked, requests, staged, &mut proof, &mut reader)?;
+    let generated_column = generation.as_ref().map(|_| id);
+    let resolved = long_values::derive(
+        image,
+        &checked,
+        requests,
+        generated_column,
+        staged,
+        &mut proof,
+        &mut reader,
+    )?;
     let metadata = Metadata::capture_for_insert_initialization(
         image,
         schema,
@@ -103,7 +197,11 @@ pub(super) fn prove(
         reader.budget,
         reader.cancelled,
     )?;
-    let mut rows = records::derive(schema, id, requests, resolved.as_deref(), &mut reader)?;
+    let mut rows = if generation.is_some() {
+        records::derive_incrementing(schema, id, requests, resolved.as_deref(), &mut reader)?
+    } else {
+        records::derive(schema, id, requests, resolved.as_deref(), &mut reader)?
+    };
 
     data::prove(
         &mut proof,
@@ -127,6 +225,9 @@ pub(super) fn prove(
     )?;
 
     proof.global.compare(staged, &proof.bytes, &mut reader)?;
+    if let Some(operation) = &generation {
+        operation.apply(&mut proof.bytes, reader.budget, reader.cancelled)?;
+    }
 
     if staged.data.append.length != proof.bytes.len()
         || staged.data.append.reservations_len()

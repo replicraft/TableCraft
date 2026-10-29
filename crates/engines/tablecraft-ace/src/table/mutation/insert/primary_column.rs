@@ -5,7 +5,7 @@ use tablecraft_schema::ScalarType;
 
 /// This selects a source column, not write authority. Primary maintenance still
 /// qualifies the complete physical index and every logical alias separately.
-pub(super) fn resolve(
+pub(in crate::table::mutation) fn resolve(
     checked: &TableCheck,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

@@ -59,6 +59,11 @@ pub use preservation::{
     OpaquePayload, PayloadPresence,
 };
 #[cfg(feature = "ace16-write-preview")]
+pub use table::{
+    Ace16AutoNumberInsertPreview, AutoNumberRowInsert, FixedColumnUpdates, FixedScalarUpdate,
+    IncrementingAutoNumber, RowInsert, SlotScalarUpdate,
+};
+#[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 pub use table::{
     AttachmentColumn, AttachmentMetadataColumn, StoredAttachment, read_attachment_column,
@@ -94,8 +99,6 @@ pub use table::{
 };
 pub use table::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use table::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
-#[cfg(feature = "ace16-write-preview")]
-pub use table::{FixedColumnUpdates, FixedScalarUpdate, RowInsert, SlotScalarUpdate};
 pub use table::{
     ForeignIndexInspection, ForeignIndexLink, ForeignIndexReference, inspect_foreign_index_links,
 };

@@ -4,7 +4,7 @@ use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single, Va
 pub(super) const FIXED_END: usize = 70;
 
 #[derive(Clone)]
-pub(super) struct Row {
+pub(in crate::table::mutation::insert) struct Row {
     pub earlier: Option<i32>,
     pub flag: bool,
     pub id: i32,

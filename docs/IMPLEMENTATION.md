@@ -12,6 +12,27 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit incrementing AutoNumber INSERT preview
+
+The separate [incrementing INSERT service](testing/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+accepts companion values and an explicit caller policy pinned to the original
+last-issued Int32 counter. It generates checked signed values in request order,
+retains deleted-ID history, and composes the counter with the existing DATA,
+long-value, physical-index and allocation proof. Independent replay derives keys
+from the original requests and source counter before returning the candidate.
+Ordinary INSERT still rejects generated fields. Stored Increment/Random mode
+detection, normal saves and native Access qualification remain open.
+
+The full engine library passes 641 tests with two existing generators ignored,
+including all 280 INSERT functions. The shared write regressions pass 76 tests;
+strict all-target/all-feature and minimal-library Clippy pass. The first combined
+INSERT batch exposed missing generated-column context during long-value
+preflight; construction and independent audit now retain their own qualified
+contexts. A direct fixed-42-byte timestamp regression also covers the corrected
+preflight buffer. The [verification record](testing/results/ace16-incrementing-autonumber-preview-2026-10-28.json)
+retains initial failures separately. Eight independent original-file expected
+images are frozen; their candidate and native Access phases remain unrun.
+
 ## DELETE-generated NULLs through UPDATE cascades
 
 The separate ACE 16 preview now follows qualified

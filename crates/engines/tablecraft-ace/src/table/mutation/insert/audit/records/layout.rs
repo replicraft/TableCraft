@@ -4,10 +4,10 @@ use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
         data_type::{
-            LONG_TEXT, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, NUMERIC, NUMERIC_BYTES, OLE,
-            SHORT_BINARY, SHORT_TEXT,
+            INT32, LONG_TEXT, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_BYTES, NUMERIC, NUMERIC_BYTES,
+            OLE, SHORT_BINARY, SHORT_TEXT,
         },
-        layout::{FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
+        layout::{AUTO_NUMBER_FLAG, FIXED_FLAG, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
@@ -26,8 +26,34 @@ pub(in crate::table::mutation::insert::audit) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
+    capture_with_generated(schema, None, budget, cancelled)
+}
+
+pub(in crate::table::mutation::insert::audit) fn capture_incrementing(
+    schema: &TableSchema,
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
+    capture_with_generated(schema, Some(column), budget, cancelled)
+}
+
+fn capture_with_generated(
+    schema: &TableSchema,
+    generated: Option<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
     check(budget, cancelled)?;
     let count = schema.columns().len();
+    if generated.is_some_and(|position| {
+        schema
+            .columns()
+            .get(position)
+            .is_none_or(|column| !column.fixed() || column.native_type() != INT32)
+    }) {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
     if count == 0 || schema.layout.max_columns != count {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -50,8 +76,13 @@ pub(in crate::table::mutation::insert::audit) fn capture(
         }
         if field.fixed() {
             let width = fixed::width(field).ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            let flags = if generated == Some(position) {
+                FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG
+            } else {
+                FIXED_FLAG | UPDATABLE_FLAG
+            };
             if field.storage_length() != width
-                || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+                || field.flags() != flags
                 || field.extended_flags() != 0
             {
                 return Err(EditError::Unsupported(WriteBlocker::Column));

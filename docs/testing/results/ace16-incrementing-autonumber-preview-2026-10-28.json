@@ -1,0 +1,330 @@
+{
+  "operation": "Explicit caller-selected incrementing Int32 AutoNumber INSERT engineering preview",
+  "baseline_commit": "043a44d47e95e92cb4681959e20946a9e65d4a41",
+  "entrypoint": "NativeImage::preview_ace16_incrementing_insert_rows",
+  "normal_save_enabled": false,
+  "stored_Increment_Random_mode_detection": false,
+  "native_Access_qualification": false,
+  "original_file_candidate_qualification": false,
+  "expected_last": "Exact original signed TD20 last-issued counter; not live maximum or row/index count",
+  "passing_functions": {
+    "full_engine_library": 641,
+    "existing_generators_ignored": 2,
+    "insert_subset": 280,
+    "autonumber_subset": 16,
+    "shared_write_regressions": 76
+  },
+  "scope": [
+    "Original companion requests and explicit counter precondition",
+    "Signed checked increment, exhaustion without wrap or collision skipping",
+    "Deleted/all-deleted history, actual non-first primary, aliases and dual-index splits",
+    "Text/Binary companions and external Memo/OLE declaration growth",
+    "Independent counter/row/index/whole-image audit and correlated corruption controls",
+    "Fixed42 extended-date preflight buffer regression"
+  ],
+  "verification": [
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/source-after-helper-visibility.log",
+        "bytes": 535,
+        "sha256": "0758bb8823c49494077fb03df29e9b8d205a927a162154c24d02223e27b3de3c"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/api-first.log",
+        "bytes": 1377,
+        "sha256": "c8009e780f246342cebe94ee8df1ce5aa7455a391007aaa606fc7134bd3bcaa9"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/audit-first.log",
+        "bytes": 662,
+        "sha256": "04d7d1542f4f992c80bbbbc52144c85f6812c10261743cc1124d009aa7a7cfdb"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/signed-source-first.log",
+        "bytes": 1025,
+        "sha256": "2cadd69bf67c6abc42abac04d229b523427143fef850df5b19b987f47b4b69eb"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/companions-source-after-status-correction.log",
+        "bytes": 528,
+        "sha256": "ec08df6ef53b590bf02b7c4719fca875ef58427db0b465ec0de7cea116141336"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/source17-first.log",
+        "bytes": 1830,
+        "sha256": "28a285c0b2a112916a2b6eefed7563916f494a9b163d5235e5cc4a1b8f80afff"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/source17-gates-first.log",
+        "bytes": 243,
+        "sha256": "9370f0ef43b58f49da986dea739644597b33e4728aafb31fd6c4688914e00545"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/library-after-lval-context.log",
+        "bytes": 82332,
+        "sha256": "8a676901c94815bd0ba2794f459a78e2da9e3295fc46b30bd76f8c47b971bc84"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/shared-write-regressions.log",
+        "bytes": 9437,
+        "sha256": "156c88d76b9694a6e10a57e86c41900edc63a85b0a58da1787945afd3212dc97"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/clippy-first.log",
+        "bytes": 184,
+        "sha256": "76df0edc5c9d93f7a1a4e35db40b30793eed1c0368831117c5597cdeced937f7"
+      }
+    },
+    {
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/minimal-first.log",
+        "bytes": 183,
+        "sha256": "945a9ae2e93e5f177aad22fad546843cc81f14ef79e61c247341dee612ff4678"
+      }
+    }
+  ],
+  "preserved_failures": [
+    {
+      "status": 101,
+      "reason": "Private test-helper visibility stopped compilation before runtime.",
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/source-first.log",
+        "bytes": 10342,
+        "sha256": "4b55be7f9e50cf58e50a533f32e82464538529f817878b2146de7584774a21a4"
+      }
+    },
+    {
+      "status": 101,
+      "reason": "Missing declaration assertion incorrectly expected zero-pair status; corrected to Absent plus no map references, without changing fixture bytes.",
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/companions-source-first.log",
+        "bytes": 1691,
+        "sha256": "fcdaf3e4f9dac4f6d36815560f6e337a432a7d7926286a435e4af0fc22ecb9ff"
+      }
+    },
+    {
+      "status": 101,
+      "reason": "278 passed; generated external Memo/OLE case refused because generation context was missing from fixed preflight and independent LVAL layout. Original source and expected images unchanged by correction.",
+      "log": {
+        "path": ".cache/ace16-incrementing-autonumber-root-20261028/insert-batch.log",
+        "bytes": 39969,
+        "sha256": "cf5ccb68a88acaf3497707ce596cc775fa18cd05328b85787e467a44074be977"
+      }
+    }
+  ],
+  "original_file_preparation": {
+    "source_children": 17,
+    "qualified_source_count": 8,
+    "expected_images": 8,
+    "reference_children_executed": 0,
+    "producer_candidates_executed": 0,
+    "expected_freeze": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/expected-freeze.json",
+      "bytes": 28892,
+      "sha256": "9403f2c10b6e581cd6e64013773ff74e498d7a8cb5e966e1653193ae127896ae"
+    },
+    "source_gates": {
+      "path": ".cache/ace16-incrementing-autonumber-insert-next-20261028/source-gates-first.json",
+      "bytes": 9000073,
+      "sha256": "0d763d0e876d0437aee5cb9099ba538914116df1ffddab34573804e3202af9e7"
+    },
+    "model_reader_correction": "First pure constructor wrote three valid files then stopped on a bytearray-versus-bytes reader type error; preserved failed model and partial report. Corrected derivative retains identical first three hashes."
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6663,
+      "sha256": "b2c5066bb8eee84d93e449c6162262b78f159b3e52defc1230820d367cd7a926"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4538,
+      "sha256": "9d98705a1c6f80f6ff22d80553a7997e25f78f9738976422700fe5be3b070cae"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/error.rs",
+      "bytes": 1987,
+      "sha256": "02dfc75ce75fa0a11fc09f2ec9ec6f8968dc9bb96d0d12c868045c932508669c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 11860,
+      "sha256": "954b8a91e536140a2857938f8a4f53199314d20bc896111661b0006c524cb0a7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "bytes": 8200,
+      "sha256": "0fe194150cb1cce85ff6686a132ea72e7c285ed662bb60ed2b2a16b6c48bda77"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/long_values.rs",
+      "bytes": 12847,
+      "sha256": "440dca79a2ebf595fe4ee90beec7ed66a0faf36b8eba8faf57060ec4745bbe17"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/long_values/choice.rs",
+      "bytes": 5377,
+      "sha256": "8f140749ac90fff58e957f226d618fb69d8b4733d3946014058e13b88e4d1141"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records.rs",
+      "bytes": 9148,
+      "sha256": "82157b78b73f8e5c792e61ff52552bdba87fe23e5ead3e374b5e642729d54942"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/records/layout.rs",
+      "bytes": 6889,
+      "sha256": "fc2ded9df3606b0f5004120027c0cf6595515256ddc2a68e59811f9b67db3a47"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber.rs",
+      "bytes": 1624,
+      "sha256": "7162ed07f4a55553181bc4d7c6a2faa3b209441f05333e6757b2924e552e358a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/audit.rs",
+      "bytes": 7280,
+      "sha256": "ab52d98ce9d17984c6e9daf6749d386a29937932590089f2f74cdfdcbee737e2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions.rs",
+      "bytes": 8887,
+      "sha256": "53f056ebe9b2dcbe5aaf8036aceddacef8548a06538c8867cba9afecfa472517"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions/literal.rs",
+      "bytes": 4125,
+      "sha256": "02ff5ef63a098a438505d87004ba52e4000372518bb4c284c4a6482e82e7b601"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/counter.rs",
+      "bytes": 4122,
+      "sha256": "71bc1c28ed463dfdcee4e6f93099dd3a3fe160448d4dc71c00b707ad1fb19b52"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/request.rs",
+      "bytes": 3731,
+      "sha256": "98ffabf982c5a3d6462628a0a7e9a00bce8ac34463657a47ede5b252e53d612c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/tests.rs",
+      "bytes": 8114,
+      "sha256": "bc9635e23299c3703a877480f4b30991cb0a668bf1c26df668b066ce73ee6593"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/compose.rs",
+      "bytes": 14497,
+      "sha256": "e122b29d55560e6c3df49bf59f426b285d7cdef9243337912c6b0278cd5db60e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/incrementing.rs",
+      "bytes": 5098,
+      "sha256": "9953c6d9e24cba0998fb0748110cee85bd503ae1ae2975fdb30de5eac48e83ee"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "bytes": 10552,
+      "sha256": "cbe0cbf0d0cb0715bc9fd2a2066185c85d7fafe966d219a470721ab4139872c6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/primary_column.rs",
+      "bytes": 1807,
+      "sha256": "bf855d04023af736478778e198cad2d95c0421961c9433da00e22514acb050aa"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record.rs",
+      "bytes": 8569,
+      "sha256": "d05d76d6d3845bff69c3ef902c0cdcebba064b9308684e31671d6e9175892173"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/field.rs",
+      "bytes": 4015,
+      "sha256": "0b27ed70c1f8880e3f6a0409e59cebf1eb1701f899f42fca298bf72aebc3e166"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/input.rs",
+      "bytes": 5547,
+      "sha256": "dff4041de014ee765903b0f0974cf8b0c1b64e79e06e6e3044b21413fa781528"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/layout.rs",
+      "bytes": 4640,
+      "sha256": "9495df16b6f3427294df155941a49307e6c1262eb852d28476163dc0301577e5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/record/tests/ordinary/long_values.rs",
+      "bytes": 7409,
+      "sha256": "835b9d0e7d9ac6a44f25da59aa2a5d5cab93cb2093df40f7b8b24dcf533e5c05"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "bytes": 897,
+      "sha256": "97642f67208709e75817c5d63f15dc2e3304abe30195d5cb775285a3fe8dd595"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber.rs",
+      "bytes": 15750,
+      "sha256": "e484b0e8c5258b932e1441725c57582df5ae691f66e065bd49914f1a9744ae5d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber/model.rs",
+      "bytes": 13030,
+      "sha256": "e2447d936d59ba6d29caea36d01cb95f7c708e4a3dbb31da845ef9af13298c7f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/model.rs",
+      "bytes": 10382,
+      "sha256": "e7b35fcbd3e213ba04e1b4966d20cec637e4cf9206be9969fa5cf88a3c4815d9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/ordinary_rows.rs",
+      "bytes": 17901,
+      "sha256": "663ebd449ceeb62c230f5de4cac526ff10366342b144fb8b78f7c3327cbebc26"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/ordinary_rows/fixture.rs",
+      "bytes": 13667,
+      "sha256": "aa06186e51acbac179c034d764870590ba0ed8a9d8922293c74e8720d7bbebb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/ordinary_rows/model.rs",
+      "bytes": 7413,
+      "sha256": "aa19bcc1a6aad344c596393436923715705074b02c8bb6ceeec64a699d1a1287"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1614,
+      "sha256": "42b75da7716712873c814e9389fd087eb7349da3dbfd5d61cadc8749abc2a957"
+    }
+  ],
+  "ordering": "Full library and regressions precede an import-only relocation in the fixed42 test; strict Clippy compiles the final import layout. Example support is committed separately. Final formatting only reorders the audit module declaration before the cfg(test) companion module."
+}

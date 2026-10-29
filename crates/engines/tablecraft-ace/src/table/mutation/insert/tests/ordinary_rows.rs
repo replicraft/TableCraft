@@ -8,8 +8,8 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 
-mod fixture;
-mod model;
+pub(in crate::table::mutation::insert) mod fixture;
+pub(in crate::table::mutation::insert) mod model;
 use fixture::{Case, Index, PAGE};
 use model::Row;
 

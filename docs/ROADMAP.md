@@ -1264,6 +1264,16 @@ The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
 and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
 comparison is independent evidence, not Microsoft Access conformance.
 
+## Explicit AutoNumber generation continuation
+
+The [incrementing INSERT engineering preview](testing/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+now composes caller-selected signed Int32 generation with the ordinary INSERT
+pipeline. The caller pins the original last-issued counter; live-row maxima do
+not replace stored history. Independent request replay checks the counter, keys
+and complete candidate before publication. Ordinary manual INSERT does not gain
+generated-field authority. Stored Increment/Random mode detection, broader
+generated fields, normal saves and native Access qualification remain unfinished.
+
 ## Ordered implementation path to the UI
 
 Apply each unfinished native milestone below to ACE 16 first. Existing Jet 4 and

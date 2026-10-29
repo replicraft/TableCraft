@@ -12,10 +12,7 @@ use crate::{
         mutation::long_value::encode::{self, Encoded, StorageChoice},
     },
 };
-use tablecraft_core::{
-    limits::ResourceBudget,
-    values::{Guid, Value},
-};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const MAX_RECORD_BYTES: usize = PAGE_BYTES - slot_offset(1);
@@ -62,6 +59,28 @@ pub(in crate::table::mutation::insert) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Input, EditError> {
+    prepare_with_generated(schema, variables, values, None, budget, cancelled)
+}
+
+pub(super) fn prepare_incrementing(
+    schema: &TableSchema,
+    variables: &[usize],
+    values: &[Value],
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Input, EditError> {
+    prepare_with_generated(schema, variables, values, Some(column), budget, cancelled)
+}
+
+fn prepare_with_generated(
+    schema: &TableSchema,
+    variables: &[usize],
+    values: &[Value],
+    generated: Option<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Input, EditError> {
     check(budget, cancelled)?;
     if values.len() != schema.columns().len() {
         return Err(EditError::Unsupported(WriteBlocker::Column));
@@ -71,9 +90,14 @@ pub(in crate::table::mutation::insert) fn prepare(
     for (position, column) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
         if column.fixed() {
-            let width = field::width(column)?;
-            let mut temporary = [0; Guid::BYTE_LEN];
-            field::write(column, &values[position], &mut temporary[..width])?;
+            let width = if generated == Some(position) {
+                field::incrementing_width(column)?
+            } else {
+                field::width(column)?
+            };
+            let mut temporary = [0; field::MAX_FIXED_BYTES];
+            let target = temporary.get_mut(..width).ok_or(EditError::Preservation)?;
+            field::write(column, &values[position], target)?;
         }
     }
     budget
