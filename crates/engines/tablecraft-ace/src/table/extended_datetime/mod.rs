@@ -1,4 +1,6 @@
 use crate::{InspectError, format::data_type::EXTENDED_DATE_TIME_BYTES};
+#[cfg(feature = "ace16-write-preview")]
+use jiff::Unit;
 use jiff::{Span, civil::Date};
 use tablecraft_core::values::ExtendedDateTime;
 
@@ -46,6 +48,44 @@ pub(super) fn decode(bytes: &[u8]) -> Result<ExtendedDateTime, InspectError> {
         fraction as u32,
     )
     .map_err(|_| InspectError::Malformed)
+}
+
+/// Encode an already validated civil carrier, without timezone or DATE coercion.
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn encode(
+    value: &ExtendedDateTime,
+) -> Result<[u8; EXTENDED_DATE_TIME_BYTES], InspectError> {
+    let (year, month, day) = value.date();
+    let date =
+        Date::new(year as i16, month as i8, day as i8).map_err(|_| InspectError::Malformed)?;
+    let elapsed = date
+        .since((Unit::Day, EPOCH))
+        .map_err(|_| InspectError::Malformed)?;
+    let days = u64::try_from(elapsed.get_days()).map_err(|_| InspectError::Malformed)?;
+    let (hour, minute, second, fraction) = value.time();
+    let seconds = u64::from(hour) * SECONDS_PER_HOUR
+        + u64::from(minute) * SECONDS_PER_MINUTE
+        + u64::from(second);
+
+    let mut bytes = [b'0'; EXTENDED_DATE_TIME_BYTES];
+    write_digits(&mut bytes[..DAYS_END], days)?;
+    bytes[DAYS_END] = b':';
+    write_digits(&mut bytes[SECONDS_START..SECONDS_END], seconds)?;
+    write_digits(&mut bytes[SECONDS_END..FRACTION_END], u64::from(fraction))?;
+    bytes[FRACTION_END..].copy_from_slice(TRAILER);
+    Ok(bytes)
+}
+
+#[cfg(feature = "ace16-write-preview")]
+fn write_digits(bytes: &mut [u8], mut value: u64) -> Result<(), InspectError> {
+    for digit in bytes.iter_mut().rev() {
+        *digit = b'0' + (value % RADIX) as u8;
+        value /= RADIX;
+    }
+    if value != 0 {
+        return Err(InspectError::Malformed);
+    }
+    Ok(())
 }
 
 fn digits(bytes: &[u8]) -> Result<u64, InspectError> {

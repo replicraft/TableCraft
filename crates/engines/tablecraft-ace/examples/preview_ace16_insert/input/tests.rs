@@ -4,10 +4,81 @@ use crate::{
     tests::{Directory, budget},
 };
 use tablecraft_core::limits::LimitError;
-use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
+use tablecraft_core::values::{
+    Currency, Decimal, Double, ExtendedDateTime, Guid, LegacyDateTime, Single,
+};
 
 const VALUE_BYTES: usize = 1024;
 
+#[test]
+fn extended_date_preserves_exact_civil_boundaries_and_seven_fraction_digits() {
+    let encoded = concat!(
+        "extended-date\t0001-01-01T00:00:00.0000000\n",
+        "extended-date\t0001-01-01T00:00:00.0000001\n",
+        "extended-date\t2000-02-29T12:34:56.1234567\n",
+        "extended-date\t9999-12-31T23:59:59.9999999\n",
+    );
+    let rows = parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).unwrap();
+    for (row, expected) in rows.iter().zip([
+        ExtendedDateTime::new(1, 1, 1, 0, 0, 0, 0).unwrap(),
+        ExtendedDateTime::new(1, 1, 1, 0, 0, 0, 1).unwrap(),
+        ExtendedDateTime::new(2000, 2, 29, 12, 34, 56, 1_234_567).unwrap(),
+        ExtendedDateTime::new(9999, 12, 31, 23, 59, 59, 9_999_999).unwrap(),
+    ]) {
+        assert_eq!(row.values(), &[Value::DateTimeExtended(expected)]);
+    }
+    assert_eq!(rows.len(), 4);
+    assert!(parse(encoded.as_bytes(), &mut budget(), 26).is_err());
+    assert!(parse(encoded.as_bytes(), &mut budget(), 27).is_ok());
+}
+
+#[test]
+fn extended_date_refuses_calendar_precision_timezone_and_implicit_carriers() {
+    for value in [
+        "0000-01-01T00:00:00.0000000",
+        "1900-02-29T00:00:00.0000000",
+        "2000-02-30T00:00:00.0000000",
+        "2000-01-01T24:00:00.0000000",
+        "2000-01-01T00:00:60.0000000",
+        "2000-01-01T00:00:00.123456",
+        "2000-01-01T00:00:00.12345678",
+        "2000-01-01T00:00:00.0000000Z",
+        "2000-01-01T00:00:00.0000000+00:00",
+        "2000-01-01t00:00:00.0000000",
+        "2000-01-01 00:00:00.0000000",
+        "2000-01-01T00:00:00.000000A",
+        "null",
+        "0",
+        "",
+    ] {
+        let encoded = format!("extended-date\t{value}\n");
+        assert!(
+            parse(encoded.as_bytes(), &mut budget(), VALUE_BYTES).is_err(),
+            "accepted {value:?}"
+        );
+    }
+    let rows = parse(
+        b"text\t2000-02-29T12:34:56.1234567\tnull\t\n",
+        &mut budget(),
+        VALUE_BYTES,
+    )
+    .unwrap();
+    assert_eq!(
+        rows[0].values(),
+        &[
+            Value::Text("2000-02-29T12:34:56.1234567".into()),
+            Value::Null
+        ]
+    );
+    assert!(
+        parse(
+            b"Extended-Date\t0001-01-01T00:00:00.0000000\n",
+            &mut budget(),
+            VALUE_BYTES
+        )
+        .is_err()
+    );
+}
 #[test]
 fn ordered_carriers_preserve_quotes_empty_null_binary_and_int32() {
     let rows = parse(

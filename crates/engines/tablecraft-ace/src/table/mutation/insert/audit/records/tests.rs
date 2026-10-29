@@ -1,4 +1,5 @@
 //! Literal record bytes distinguish carriers, physical spans and preferred wires.
+mod extended;
 use super::*;
 use crate::{inspect_table_schema, test_support::base};
 use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
@@ -247,9 +248,10 @@ fn boolean_offsets_cannot_invent_payload_extent_and_invalid_layouts_refuse() {
     ));
     literal::put16(&mut overlap, TABLE + FIELDS + FIELD_BYTES + 21, 4);
     qualify(&schema(&overlap), &mut budget(), &|| false).unwrap();
-    let extended = source(&[("ID", 4, 0, 4), ("Extended", 20, 4, 42)], &[]);
-    let metadata = schema(&extended);
-    assert!(metadata.columns()[1].scalar_type().is_some());
+    let mut earlier = source(&[("ID", 4, 0, 4), ("Extended", 20, 4, 42)], &[]);
+    earlier[20] = 5;
+    let metadata = schema(&earlier);
+    assert!(metadata.columns()[1].scalar_type().is_none());
     assert!(qualify(&metadata, &mut budget(), &|| false).is_err());
 
     for kind in [12, 11] {

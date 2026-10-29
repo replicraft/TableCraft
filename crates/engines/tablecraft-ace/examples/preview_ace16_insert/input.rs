@@ -9,6 +9,9 @@ use tablecraft_core::{
     values::Value,
 };
 
+#[path = "input/extended_date.rs"]
+mod extended_date;
+
 const MAX_INPUT_BYTES: u64 = 16 * 1024 * 1024;
 pub(super) const MAX_VALUE_BYTES: usize = MAX_INPUT_BYTES as usize;
 const MAX_REQUESTS: usize = 4096;
@@ -140,6 +143,11 @@ fn value(
     }
     match kind {
         b"null" if data.is_empty() => Ok(Value::Null),
+        b"extended-date" => extended_date::parse(data)
+            .map(Value::DateTimeExtended)
+            .map_err(|_| {
+                format!("Invalid insert request {number}: invalid extended-date civil input").into()
+            }),
         b"text" => {
             let text = std::str::from_utf8(data)
                 .map_err(|_| format!("Invalid insert request {number}: Text is not UTF-8"))?;

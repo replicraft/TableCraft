@@ -1,8 +1,11 @@
 //! Exact fixed carriers and Boolean mask semantics for new ordinary records.
 use crate::{
     EditError, NativeColumn, WriteBlocker,
-    format::layout::{FIXED_FLAG, UPDATABLE_FLAG},
-    table::mutation::fixed::encode_fixed,
+    format::{
+        data_type::EXTENDED_DATE_TIME_BYTES,
+        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+    },
+    table::{extended_datetime, mutation::fixed::encode_fixed},
 };
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_schema::ScalarType;
@@ -22,6 +25,7 @@ pub(super) fn width(column: &NativeColumn) -> Result<usize, EditError> {
             ScalarType::Int64 | ScalarType::Currency | ScalarType::Double | ScalarType::DateTime,
         ) => size_of::<i64>(),
         Some(ScalarType::Guid) => Guid::BYTE_LEN,
+        Some(ScalarType::DateTimeExtended) => EXTENDED_DATE_TIME_BYTES,
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
     if !column.fixed()
@@ -53,6 +57,16 @@ pub(super) fn write(
     if matches!(value, Value::Null) {
         destination.fill(0);
         return Ok(false);
+    }
+    if kind == ScalarType::DateTimeExtended {
+        let Value::DateTimeExtended(value) = value else {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        };
+        if destination.len() != EXTENDED_DATE_TIME_BYTES {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        destination.copy_from_slice(&extended_datetime::encode(value)?);
+        return Ok(true);
     }
     match destination.len() {
         BYTE_WIDTH => {

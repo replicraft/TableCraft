@@ -13,6 +13,10 @@ ordinals, omitted values, implicit NULLs or default-value substitution in this
 input protocol. The engine independently checks the complete native row shape
 and its current mutation profile.
 
+The first Extended Date/Time consumer batch passes all 16 example functions,
+including three strict civil-input and validation-before-database-open controls.
+This parser evidence does not qualify a new original file or native save.
+
 For an Int32 `ID` followed by Binary `Bytes`, a two-column request is:
 
 ```text
@@ -30,13 +34,20 @@ The accepted kind tokens are lowercase and exact:
 | `currency-scaled` | Signed Int64 coefficient in units of 1/10,000; no decimal/float parsing |
 | `single-bits`, `double-bits` | Unprefixed hexadecimal IEEE bits within 32/64-bit width |
 | `date-bits` | Unprefixed hexadecimal 64-bit legacy Date/Time bits, validated by the carrier |
+| `extended-date` | Exactly `YYYY-MM-DDTHH:MM:SS.fffffff`, years 0001..9999, seven fraction digits and no timezone |
 | `guid` | UUID text accepted by the shared exact GUID parser |
 | `binary` | Even-length hexadecimal; empty means present empty Binary |
 | `text` | UTF-8; empty means present empty Text |
 | `null` | Empty data only |
 
-The exact scalar kinds use the actual shared `fixed_values` parser. Decimal
-retains its coefficient/scale without rounding or conversion. NULL always uses its own `null`/empty pair; `int32` with data
+The other exact scalar kinds use the actual shared `fixed_values` parser. The
+`extended-date` boundary parser validates its 27 ASCII bytes and the Core civil
+constructor directly; it has no optional fractions, timezone handling or implicit
+Date/Time/Text coercion. The backend independently requires the qualified
+[ACE2019 Extended Date/Time field](ACE16_EXTENDED_DATETIME_INSERTS.md); parsing the
+carrier alone does not admit another source profile. Decimal retains its
+coefficient/scale without rounding or conversion. NULL always uses its own
+`null`/empty pair; `int32` or `extended-date` with data
 `null` is invalid. A `text` pair whose data is the literal `null` remains Text.
 The [ordinary-row profile](ACE16_ORDINARY_INSERTS.md) independently qualifies each
 carrier, field width and constraint, including explicit empty-Text declarations.

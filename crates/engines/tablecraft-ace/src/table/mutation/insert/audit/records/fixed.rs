@@ -1,8 +1,10 @@
 //! Exact fixed carriers, Boolean value masks and independently ordered GUID bytes.
+mod extended;
 use crate::{
     EditError, NativeColumn, WriteBlocker,
     format::data_type::{
-        BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, SINGLE,
+        BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, EXTENDED_DATE_TIME, EXTENDED_DATE_TIME_BYTES,
+        GUID, INT16, INT32, INT64, SINGLE,
     },
 };
 use tablecraft_core::values::{Guid, Value};
@@ -20,6 +22,7 @@ pub(super) fn width(field: &NativeColumn) -> Option<usize> {
         (DOUBLE, Some(ScalarType::Double)) => Some(size_of::<f64>()),
         (DATE_TIME, Some(ScalarType::DateTime)) => Some(size_of::<f64>()),
         (GUID, Some(ScalarType::Guid)) => Some(Guid::BYTE_LEN),
+        (EXTENDED_DATE_TIME, Some(ScalarType::DateTimeExtended)) => Some(EXTENDED_DATE_TIME_BYTES),
         _ => None,
     }
 }
@@ -50,6 +53,7 @@ pub(super) fn write(
         (SINGLE, Value::Single(value)) => put(target, &value.to_bits().to_le_bytes())?,
         (DOUBLE, Value::Double(value)) => put(target, &value.to_bits().to_le_bytes())?,
         (DATE_TIME, Value::DateTime(value)) => put(target, &value.to_bits().to_le_bytes())?,
+        (EXTENDED_DATE_TIME, Value::DateTimeExtended(value)) => extended::write(target, value)?,
         (GUID, Value::Guid(value)) => {
             let mut wire = value.to_bytes();
             wire[..size_of::<u32>()].reverse();
