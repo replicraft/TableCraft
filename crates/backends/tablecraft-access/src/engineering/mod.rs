@@ -1,4 +1,7 @@
 //! Explicit, non-journalable engineering copies; ordinary native saves stay gated.
+mod editor;
+pub use editor::{AccessEngineeringEditor, ScalarUpdateMode};
+pub mod sql;
 use tablecraft_ace::{
     Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
     EditError, FixedColumnUpdates, IncrementingAutoNumber, NativeImage, RowDelete, RowInsert,

@@ -14,6 +14,28 @@ engineering previews and independent comparisons do not establish full parity.
 
 ## User-facing engineering write copies
 
+SQL-selected [engineering UPDATE copies](access/writes/SQL_ENGINEERING_COPIES.md)
+now use one original snapshot and one backend finish. They support one assignment,
+nullable NULL, exact stored carriers and checked integral-to-Int32 assignment,
+with explicit fixed, variable/index-growth or ordinary Memo/OLE modes. All row
+selection and replacements complete before publication. Normal ACE saves remain
+gated. Explicit `write preview-insert --incrementing` now captures LAST from the
+same image; it does not infer the stored Increment/Random mode or use live MAX.
+
+Both ordinary Jet 4 UPDATE and engineering copies use one shared no-clobber
+publisher. Normal Jet 4 source-close errors precede publication, and output bytes
+are charged exactly once before any owned temporary is created. The current
+round passes 28 CLI unit tests, 14 CLI integration tests, all 27 Access adapter
+library tests, nine query editing tests and 22 AutoNumber tests. Strict Clippy
+passes for all five affected packages and minimal builds pass for four libraries.
+The [publication record](testing/results/shared-write-copy-publication-2026-10-29.json),
+[SQL record](testing/results/ace16-sql-engineering-updates-2026-10-29.json) and
+[counter record](testing/results/ace16-captured-increment-policy-2026-10-29.json)
+retain first attempts and test-only compile corrections. These are local checks;
+Microsoft Access save/reopen and required data-macro qualification remain open.
+
+The earlier first-command checkpoint follows:
+
 The CLI now exposes [explicit UPDATE, INSERT and DELETE copy commands](access/writes/ENGINEERING_COPIES.md).
 Fixed groups, Short Text/Binary replacements, ordinary Memo/OLE replacements and
 explicit incrementing inserts reuse the existing native services. DELETE can

@@ -1,19 +1,10 @@
-use super::NativeEditError;
-use tablecraft_ace::{
-    FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage, read_table,
-};
+use super::{NativeEditError, snapshot};
+use tablecraft_ace::{FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
 use tablecraft_db::{CellUpdate, EditableTable, Snapshot, UpdateProfile};
-use tablecraft_schema::{NameComparison, SchemaPolicy};
-
-const NATIVE_SCHEMA_POLICY: SchemaPolicy = SchemaPolicy {
-    max_name_bytes: 255,
-    max_columns: 256,
-    names: NameComparison::AsciiInsensitive,
-};
 
 /// One complete scalar table bound to an immutable native image. No source file
 /// is retained, no provider executes and planning performs no durable writes.
@@ -30,31 +21,7 @@ impl NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
-        let native = read_table(
-            &mut image.reader(),
-            image.catalog().catalog().scope(),
-            table,
-            budget,
-            cancelled,
-        )?;
-        let name = native.schema().name();
-        budget
-            .charge_allocation(name.len() as u64, 1)
-            .map_err(InspectError::from)?;
-        let mut owned = String::new();
-        owned
-            .try_reserve_exact(name.len())
-            .map_err(|_| InspectError::Allocation)?;
-        owned.push_str(name);
-        let (_, columns, rows) = native.into_parts();
-        let snapshot = Snapshot::new(
-            owned,
-            columns,
-            rows,
-            NATIVE_SCHEMA_POLICY,
-            budget,
-            cancelled,
-        )?;
+        let snapshot = snapshot::capture(&image, table, budget, cancelled)?;
         Ok(Self { image, snapshot })
     }
 }
@@ -89,7 +56,12 @@ impl EditableTable for NativeEditor {
             .snapshot
             .columns()
             .iter()
-            .position(|candidate| NATIVE_SCHEMA_POLICY.names.equals(candidate.name(), column))
+            .position(|candidate| {
+                self.snapshot
+                    .policy()
+                    .names
+                    .equals(candidate.name(), column)
+            })
             .ok_or(NativeEditError::Unsupported)?;
         budget
             .charge_allocation(updates.len() as u64, size_of::<Int32Update>() as u64)

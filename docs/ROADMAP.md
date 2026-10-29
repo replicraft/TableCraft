@@ -19,6 +19,13 @@ ordinary saves merely by adding a CLI command; preservation, required data-macro
 handling and transaction gates still apply. Windows comparisons remain deferred
 and must be reported separately from local implementation evidence.
 
+The first usable-copy steps now include direct typed INSERT/UPDATE/DELETE,
+source-captured incrementing AutoNumbers, shared no-clobber output publication
+and [SQL-selected single-column UPDATE](access/writes/SQL_ENGINEERING_COPIES.md).
+Next delivery work is SQL DELETE selection and atomic multi-column UPDATE,
+followed by broader INSERT/schema admission and durable save/recovery. These
+explicit engineering workflows retain their separate normal-save and macro gates.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
