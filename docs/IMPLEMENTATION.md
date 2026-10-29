@@ -153,6 +153,22 @@ adapter suite passes 506. Strict ACE/Access Clippy, minimal builds, formatting
 and documentation/dependency guards pass. Original-file qualification remains
 pending. See the [empty-ownership contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
 
+## Original-file Extended Date/Time INSERT
+
+The [timestamp comparison](testing/ace16_insert_extended_datetime/README.md)
+qualifies one public-builder ACE2019 original, a complete source/request-derived
+image and a separately bound fresh typed-row/map read. All 479,232 candidate
+bytes match the image frozen before the public reference and isolated producer
+build. Six rows fit in DATA 111; no pages or maps are added. Table rows become
+10 and physical index histories become 10/5, independent of logical aliases.
+
+The public writer differs only in 42 inactive NULL payload bytes; its logical
+values, keys, counters and every other byte agree. Those observations never feed
+the constructor. The pre-Cargo ENOSPC export failure remains distinct from the
+qualified committed-source build. Saved verification passes without starting a
+process. This does not qualify Microsoft Access saves, data macros or timestamp
+index keys.
+
 ## Original-file variable-key INSERT comparisons
 
 Thirty-eight source/request-only variable-key images now match first-attempt

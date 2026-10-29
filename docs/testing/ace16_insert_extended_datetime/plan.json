@@ -1,0 +1,173 @@
+{
+  "status": "DRAFT helper/finite inventory only; root review and concrete source qualification/controller required before any runtime",
+  "source_qualification": false,
+  "workdir": ".cache/ace16-extended-datetime-insert-reference-first-20261028",
+  "origins": [
+    {
+      "id": "V2019-extended",
+      "profile": "V2019",
+      "source": ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-source.accdb",
+      "before": ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-before-inspect.stdout",
+      "reference": ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-reference.accdb",
+      "old_rows": [
+        [
+          1,
+          10,
+          "0001-01-01T00:00:00.0000000"
+        ],
+        [
+          2,
+          10,
+          null
+        ],
+        [
+          3,
+          null,
+          "9999-12-31T23:59:59.9999999"
+        ],
+        [
+          4,
+          -1,
+          "1900-03-01T01:02:03.0000001"
+        ]
+      ],
+      "requests": [
+        [
+          10,
+          10,
+          "2000-02-29T12:34:56.1234567"
+        ],
+        [
+          11,
+          11,
+          "0001-01-01T00:00:00.0000001"
+        ],
+        [
+          12,
+          null,
+          null
+        ],
+        [
+          13,
+          11,
+          "9999-12-31T23:59:59.9999999"
+        ],
+        [
+          14,
+          -1,
+          "0001-01-01T00:00:00.0000000"
+        ],
+        [
+          15,
+          20,
+          "1900-03-01T01:02:03.0000001"
+        ]
+      ]
+    }
+  ],
+  "source_commands": [
+    {
+      "label": "compile",
+      "phase": "source-capture",
+      "argv": [
+        "javac",
+        "-J-Xmx512m",
+        "-encoding",
+        "UTF-8",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+        "-d",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/classes",
+        ".cache/ace16-extended-datetime-insert-source-next-20261028/BoundedFileChannel.java",
+        ".cache/ace16-extended-datetime-insert-source-next-20261028/ExtendedDateTimeInsertFixture.java"
+      ]
+    },
+    {
+      "label": "V2019-extended-create",
+      "phase": "source-capture",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-Duser.timezone=UTC",
+        "-Dcom.healthmarketscience.jackcess.dateTimeType=LOCAL_DATE_TIME",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-extended-datetime-insert-reference-first-20261028/classes",
+        "ExtendedDateTimeInsertFixture",
+        "create",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-source.accdb"
+      ]
+    },
+    {
+      "label": "V2019-extended-before-inspect",
+      "phase": "source-capture",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-Duser.timezone=UTC",
+        "-Dcom.healthmarketscience.jackcess.dateTimeType=LOCAL_DATE_TIME",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-extended-datetime-insert-reference-first-20261028/classes",
+        "ExtendedDateTimeInsertFixture",
+        "inspect",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-source.accdb"
+      ]
+    }
+  ],
+  "future_reference_commands": [
+    {
+      "label": "V2019-extended-append",
+      "phase": "public-reference",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-Duser.timezone=UTC",
+        "-Dcom.healthmarketscience.jackcess.dateTimeType=LOCAL_DATE_TIME",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-extended-datetime-insert-reference-first-20261028/classes",
+        "ExtendedDateTimeInsertFixture",
+        "append",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-source.accdb",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-reference.accdb"
+      ]
+    },
+    {
+      "label": "V2019-extended-after-inspect",
+      "phase": "public-reference",
+      "argv": [
+        "java",
+        "-Xmx512m",
+        "-Dstdout.encoding=UTF-8",
+        "-Duser.timezone=UTC",
+        "-Dcom.healthmarketscience.jackcess.dateTimeType=LOCAL_DATE_TIME",
+        "-cp",
+        ".cache/tablecraft-fixtures/jackcess-5.0.4.jar:.cache/ace16-extended-datetime-insert-reference-first-20261028/classes",
+        "ExtendedDateTimeInsertFixture",
+        "inspect",
+        ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-reference.accdb"
+      ]
+    }
+  ],
+  "future_native_calls": 1,
+  "future_fresh_inspections": 1,
+  "limits": {
+    "source_children": 3,
+    "reference_children": 2,
+    "total_source_reference_children": 5,
+    "deadline_seconds": 30,
+    "heap_mib": 512,
+    "stream_bytes": 16777216,
+    "database_bytes": 8388608
+  },
+  "barriers": [
+    "fresh source workspace, classes namespace, outputs absent",
+    "3source calls only; qualification remains false until saved-only raw gates",
+    "all source raw/getter/catalog/map/property gates before expected-image derivation",
+    "freeze independent SOURCE+REQUEST image before reference AFTER or producer build",
+    "reference2 separately reviewed/authorized; no AFTER used as expected authority",
+    "fresh isolated committed producer build/receipt only after expected freeze",
+    "native1 full image must match before fresh reader1; source pins before/after"
+  ]
+}

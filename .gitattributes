@@ -1,3 +1,6 @@
 # Keep release attribution byte-identical across platforms.
 /LICENSE text eol=lf
 /packaging/ThirdPartyLicenses.txt text eol=lf
+
+# The engineering TSV protocol has meaningful empty terminal fields.
+/docs/testing/ace16_insert_extended_datetime/requests.tsv -text whitespace=-blank-at-eol

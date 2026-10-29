@@ -16,6 +16,9 @@ and its current mutation profile.
 The first Extended Date/Time consumer batch passes all 16 example functions,
 including three strict civil-input and validation-before-database-open controls.
 This parser evidence does not qualify a new original file or native save.
+The later [original-file replay](ace16_insert_extended_datetime/README.md) uses
+the same strict token in a separately qualified V2019 source/request/native/read
+sequence; it retains distinct phase receipts and does not qualify normal saves.
 
 For an Int32 `ID` followed by Binary `Bytes`, a two-column request is:
 

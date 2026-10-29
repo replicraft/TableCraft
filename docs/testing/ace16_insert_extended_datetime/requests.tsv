@@ -1,0 +1,6 @@
+int32	10	int32	10	extended-date	2000-02-29T12:34:56.1234567
+int32	11	int32	11	extended-date	0001-01-01T00:00:00.0000001
+int32	12	null		null	
+int32	13	int32	11	extended-date	9999-12-31T23:59:59.9999999
+int32	14	int32	-1	extended-date	0001-01-01T00:00:00.0000000
+int32	15	int32	20	extended-date	1900-03-01T01:02:03.0000001

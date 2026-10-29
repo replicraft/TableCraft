@@ -1,0 +1,846 @@
+{
+  "scope": "One original-file ACE2019 Extended Date/Time ordinary INSERT engineering comparison; no Microsoft Access save qualification",
+  "date": "2026-10-28",
+  "source": {
+    "capture_report": {
+      "path": ".cache/ace16-extended-datetime-insert-reference-first-20261028/report.json",
+      "bytes": 20469,
+      "sha256": "381436b9c7a7a7526b99b217d0597a95e3bc5b1c4e4b97295839c324d74a50d6"
+    },
+    "capture_commands": 3,
+    "qualification_by_capture": false,
+    "saved_gate": {
+      "path": ".cache/ace16-extended-datetime-insert-source-next-20261028/source-gates-first.json",
+      "bytes": 13239,
+      "sha256": "a0a4f325cce68490dfba85fc47f88935b318f4d31e41903e2cef9861455910bc"
+    },
+    "saved_gates": 1,
+    "original": {
+      "path": ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-source.accdb",
+      "bytes": 479232,
+      "sha256": "bf7876071981bfca29d03d6739af5434e40a9acb41cf23c7d14b877e09749121"
+    },
+    "getter": {
+      "path": ".cache/ace16-extended-datetime-insert-reference-first-20261028/V2019-extended-before-inspect.stdout",
+      "bytes": 50066,
+      "sha256": "4609cbeb4877ab6d897c5609392bbb3a4e8fcc6e2eadce24ebe8cdcf083bb75e"
+    },
+    "facts": {
+      "definition": 106,
+      "source_pages": 117,
+      "rows": 4,
+      "record_bytes": 53,
+      "fixed_extent": 52,
+      "data_pages": [
+        111
+      ],
+      "columns": {
+        "ID": {
+          "position": 0,
+          "number": 0,
+          "native_type": 4,
+          "length": 4,
+          "auto": false,
+          "compressed": false,
+          "variable": 0
+        },
+        "Group": {
+          "position": 1,
+          "number": 1,
+          "native_type": 4,
+          "length": 4,
+          "auto": false,
+          "compressed": false,
+          "variable": 0
+        },
+        "Stamp": {
+          "position": 2,
+          "number": 2,
+          "native_type": 20,
+          "length": 42,
+          "auto": false,
+          "compressed": false,
+          "variable": 0
+        }
+      },
+      "histories": {
+        "0": 4,
+        "1": 3
+      },
+      "census": {
+        "protected_pages": {
+          "1": [
+            "GlobalFree:Container"
+          ],
+          "107": [
+            "Table:106:Hint:Container",
+            "Table:106:IndexData:0:Container",
+            "Table:106:IndexData:1:Container",
+            "Table:106:Owned:Container"
+          ],
+          "112": [
+            "Table:106:Owned:Bitmap"
+          ],
+          "9": [
+            "Table:3:Hint:Container",
+            "Table:3:IndexData:0:Container",
+            "Table:3:Owned:Container"
+          ],
+          "44": [
+            "Table:43:Column:6:Hint:Container",
+            "Table:43:Column:6:Owned:Container",
+            "Table:43:Hint:Container",
+            "Table:43:IndexData:0:Container",
+            "Table:43:IndexData:1:Container",
+            "Table:43:IndexData:2:Container",
+            "Table:43:Owned:Container"
+          ],
+          "19": [
+            "Table:18:Hint:Container",
+            "Table:18:IndexData:0:Container",
+            "Table:18:IndexData:1:Container",
+            "Table:18:IndexData:2:Container",
+            "Table:18:Owned:Container"
+          ],
+          "40": [
+            "Table:39:Column:0:Hint:Container",
+            "Table:39:Column:0:Owned:Container",
+            "Table:39:Column:3:Hint:Container",
+            "Table:39:Column:3:Owned:Container",
+            "Table:39:Hint:Container",
+            "Table:39:Owned:Container"
+          ],
+          "36": [
+            "Table:35:Hint:Container",
+            "Table:35:Owned:Container"
+          ],
+          "34": [
+            "Table:33:Hint:Container",
+            "Table:33:Owned:Container"
+          ],
+          "32": [
+            "Table:31:Hint:Container",
+            "Table:31:Owned:Container"
+          ],
+          "30": [
+            "Table:29:Hint:Container",
+            "Table:29:Owned:Container"
+          ],
+          "28": [
+            "Table:27:Hint:Container",
+            "Table:27:Owned:Container"
+          ],
+          "26": [
+            "Table:25:Hint:Container",
+            "Table:25:Owned:Container"
+          ],
+          "38": [
+            "Table:37:Hint:Container",
+            "Table:37:Owned:Container"
+          ],
+          "24": [
+            "Table:23:Hint:Container",
+            "Table:23:Owned:Container"
+          ],
+          "51": [
+            "Table:50:Hint:Container",
+            "Table:50:IndexData:0:Container",
+            "Table:50:Owned:Container"
+          ],
+          "58": [
+            "Table:57:Hint:Container",
+            "Table:57:IndexData:0:Container",
+            "Table:57:IndexData:1:Container",
+            "Table:57:Owned:Container"
+          ],
+          "54": [
+            "Table:53:Hint:Container",
+            "Table:53:IndexData:0:Container",
+            "Table:53:IndexData:1:Container",
+            "Table:53:Owned:Container"
+          ],
+          "91": [
+            "Table:90:Hint:Container",
+            "Table:90:Owned:Container"
+          ],
+          "6": [
+            "Table:2:Column:12:Hint:Container",
+            "Table:2:Column:12:Owned:Container",
+            "Table:2:Column:13:Hint:Container",
+            "Table:2:Column:13:Owned:Container",
+            "Table:2:Column:14:Hint:Container",
+            "Table:2:Column:14:Owned:Container",
+            "Table:2:Column:15:Hint:Container",
+            "Table:2:Column:15:Owned:Container",
+            "Table:2:Column:16:Hint:Container",
+            "Table:2:Column:16:Owned:Container",
+            "Table:2:Column:8:Hint:Container",
+            "Table:2:Column:8:Owned:Container",
+            "Table:2:Column:9:Hint:Container",
+            "Table:2:Column:9:Owned:Container",
+            "Table:2:Hint:Container",
+            "Table:2:IndexData:0:Container",
+            "Table:2:IndexData:1:Container",
+            "Table:2:Owned:Container"
+          ],
+          "11": [
+            "Table:4:Column:5:Hint:Container",
+            "Table:4:Column:5:Owned:Container",
+            "Table:4:Hint:Container",
+            "Table:4:IndexData:0:Container",
+            "Table:4:Owned:Container"
+          ],
+          "13": [
+            "Table:5:Hint:Container",
+            "Table:5:IndexData:0:Container",
+            "Table:5:IndexData:1:Container",
+            "Table:5:IndexData:2:Container",
+            "Table:5:Owned:Container"
+          ],
+          "68": [
+            "Table:67:Hint:Container",
+            "Table:67:IndexData:0:Container",
+            "Table:67:IndexData:1:Container",
+            "Table:67:Owned:Container"
+          ],
+          "85": [
+            "Table:84:Hint:Container",
+            "Table:84:IndexData:0:Container",
+            "Table:84:Owned:Container"
+          ],
+          "82": [
+            "Table:81:Column:6:Hint:Container",
+            "Table:81:Column:6:Owned:Container",
+            "Table:81:Hint:Container",
+            "Table:81:IndexData:0:Container",
+            "Table:81:Owned:Container"
+          ],
+          "88": [
+            "Table:87:Column:0:Hint:Container",
+            "Table:87:Column:0:Owned:Container",
+            "Table:87:Column:2:Hint:Container",
+            "Table:87:Column:2:Owned:Container",
+            "Table:87:Hint:Container",
+            "Table:87:Owned:Container"
+          ],
+          "114": [
+            "Table:113:Hint:Container",
+            "Table:113:Owned:Container"
+          ],
+          "116": [
+            "Table:113:Owned:Bitmap"
+          ],
+          "70": [
+            "Table:69:Column:0:Hint:Container",
+            "Table:69:Column:0:Owned:Container",
+            "Table:69:Column:5:Hint:Container",
+            "Table:69:Column:5:Owned:Container",
+            "Table:69:Hint:Container",
+            "Table:69:IndexData:0:Container",
+            "Table:69:IndexData:1:Container",
+            "Table:69:IndexData:2:Container",
+            "Table:69:Owned:Container"
+          ],
+          "106": [
+            "Table:106:Definition"
+          ],
+          "111": [
+            "Table:106:Owned"
+          ],
+          "108": [
+            "Table:106:IndexData:0"
+          ],
+          "109": [
+            "Table:106:IndexData:1"
+          ],
+          "3": [
+            "Table:3:Definition"
+          ],
+          "41": [
+            "Table:3:Owned"
+          ],
+          "49": [
+            "Table:3:Owned"
+          ],
+          "10": [
+            "Table:3:IndexData:0"
+          ],
+          "43": [
+            "Table:43:Definition"
+          ],
+          "48": [
+            "Table:43:Owned"
+          ],
+          "64": [
+            "Table:43:Owned"
+          ],
+          "89": [
+            "Table:43:Owned"
+          ],
+          "93": [
+            "Table:43:Owned"
+          ],
+          "94": [
+            "Table:43:Owned"
+          ],
+          "95": [
+            "Table:43:Owned"
+          ],
+          "97": [
+            "Table:43:Owned"
+          ],
+          "45": [
+            "Table:43:IndexData:0"
+          ],
+          "46": [
+            "Table:43:IndexData:1"
+          ],
+          "47": [
+            "Table:43:IndexData:2"
+          ],
+          "18": [
+            "Table:18:Definition"
+          ],
+          "74": [
+            "Table:18:Owned"
+          ],
+          "20": [
+            "Table:18:IndexData:0"
+          ],
+          "21": [
+            "Table:18:IndexData:1"
+          ],
+          "22": [
+            "Table:18:IndexData:2"
+          ],
+          "39": [
+            "Table:39:Definition"
+          ],
+          "35": [
+            "Table:35:Definition"
+          ],
+          "33": [
+            "Table:33:Definition"
+          ],
+          "31": [
+            "Table:31:Definition"
+          ],
+          "29": [
+            "Table:29:Definition"
+          ],
+          "27": [
+            "Table:27:Definition"
+          ],
+          "25": [
+            "Table:25:Definition"
+          ],
+          "37": [
+            "Table:37:Definition"
+          ],
+          "23": [
+            "Table:23:Definition"
+          ],
+          "50": [
+            "Table:50:Definition"
+          ],
+          "62": [
+            "Table:50:Owned"
+          ],
+          "52": [
+            "Table:50:IndexData:0"
+          ],
+          "57": [
+            "Table:57:Definition"
+          ],
+          "80": [
+            "Table:57:Owned"
+          ],
+          "59": [
+            "Table:57:IndexData:0"
+          ],
+          "60": [
+            "Table:57:IndexData:1"
+          ],
+          "53": [
+            "Table:53:Definition"
+          ],
+          "63": [
+            "Table:53:Owned"
+          ],
+          "55": [
+            "Table:53:IndexData:0"
+          ],
+          "56": [
+            "Table:53:IndexData:1"
+          ],
+          "90": [
+            "Table:90:Definition"
+          ],
+          "92": [
+            "Table:90:Owned"
+          ],
+          "2": [
+            "Table:2:Definition"
+          ],
+          "17": [
+            "Table:2:Owned"
+          ],
+          "110": [
+            "Table:2:Owned"
+          ],
+          "7": [
+            "Table:2:IndexData:0"
+          ],
+          "8": [
+            "Table:2:IndexData:1"
+          ],
+          "4": [
+            "Table:4:Definition"
+          ],
+          "12": [
+            "Table:4:IndexData:0"
+          ],
+          "5": [
+            "Table:5:Definition"
+          ],
+          "61": [
+            "Table:5:Owned"
+          ],
+          "14": [
+            "Table:5:IndexData:0"
+          ],
+          "15": [
+            "Table:5:IndexData:1"
+          ],
+          "16": [
+            "Table:5:IndexData:2"
+          ],
+          "67": [
+            "Table:67:Definition"
+          ],
+          "79": [
+            "Table:67:Owned"
+          ],
+          "75": [
+            "Table:67:IndexData:0"
+          ],
+          "76": [
+            "Table:67:IndexData:1"
+          ],
+          "84": [
+            "Table:84:Definition"
+          ],
+          "86": [
+            "Table:84:IndexData:0"
+          ],
+          "81": [
+            "Table:81:Definition"
+          ],
+          "83": [
+            "Table:81:IndexData:0"
+          ],
+          "87": [
+            "Table:87:Definition"
+          ],
+          "113": [
+            "Table:113:Definition"
+          ],
+          "115": [
+            "Table:113:Owned"
+          ],
+          "69": [
+            "Table:69:Definition"
+          ],
+          "78": [
+            "Table:69:Owned"
+          ],
+          "71": [
+            "Table:69:IndexData:0"
+          ],
+          "72": [
+            "Table:69:IndexData:1"
+          ],
+          "73": [
+            "Table:69:IndexData:2"
+          ]
+        },
+        "long_tables": {
+          "MSysAccessStorage": {
+            "live_parent_rows": 23,
+            "live_chunk_references": 3,
+            "declared_map_columns": 1
+          },
+          "MSysComplexType_Attachment": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 2
+          },
+          "MSysObjects": {
+            "live_parent_rows": 40,
+            "live_chunk_references": 2,
+            "declared_map_columns": 7
+          },
+          "MSysQueries": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 1
+          },
+          "MSysWSDPChangeTokenMapping": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 1
+          },
+          "MSysWSDPRelationshipMapping": {
+            "live_parent_rows": 0,
+            "live_chunk_references": 0,
+            "declared_map_columns": 2
+          },
+          "f_8FA5340F56044616AE380F64A2FEC135_Data": {
+            "live_parent_rows": 1,
+            "live_chunk_references": 1,
+            "declared_map_columns": 2
+          }
+        },
+        "owned_claims": {
+          "66": [
+            [
+              43,
+              6
+            ]
+          ],
+          "42": [
+            [
+              2,
+              14
+            ]
+          ],
+          "103": [
+            [
+              2,
+              14
+            ]
+          ],
+          "77": [
+            [
+              69,
+              0
+            ]
+          ]
+        },
+        "live_claims": {
+          "66": [
+            [
+              43,
+              6
+            ]
+          ],
+          "103": [
+            [
+              2,
+              14
+            ]
+          ],
+          "42": [
+            [
+              2,
+              14
+            ]
+          ],
+          "77": [
+            [
+              69,
+              0
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "source_request_expected": {
+    "freeze": {
+      "path": ".cache/ace16-extended-datetime-insert-source-next-20261028/model-freeze.json",
+      "bytes": 18248,
+      "sha256": "55c59af233512b9d690791826a48b1a926b7833136b7975dac23108e283fe967"
+    },
+    "report": {
+      "path": ".cache/ace16-extended-datetime-insert-expected-first-20261028/report.json",
+      "bytes": 20707,
+      "sha256": "f2c53d7fe90a5ad6c62eaa8bce219d34671b5f893fdc588fe6dbc672c5bf03f0"
+    },
+    "complete_images_before_AFTER_and_build": 1,
+    "image": {
+      "path": ".cache/ace16-extended-datetime-insert-expected-first-20261028/V2019-extended-expected.accdb",
+      "bytes": 479232,
+      "sha256": "7fc5f5afefcf9962604dfab1cde8efe50ddaffa7120b0efd5ba57d5495a6622d"
+    },
+    "facts": {
+      "sha256": "7fc5f5afefcf9962604dfab1cde8efe50ddaffa7120b0efd5ba57d5495a6622d",
+      "bytes": 479232,
+      "definition": 106,
+      "data_page": 111,
+      "source_count": 4,
+      "final_count": 10,
+      "free_before": 3862,
+      "free_after": 3532,
+      "new_rows": [
+        {
+          "reference": 28420,
+          "start": 458487,
+          "end": 458540,
+          "role": "Table:106"
+        },
+        {
+          "reference": 28421,
+          "start": 458434,
+          "end": 458487,
+          "role": "Table:106"
+        },
+        {
+          "reference": 28422,
+          "start": 458381,
+          "end": 458434,
+          "role": "Table:106"
+        },
+        {
+          "reference": 28423,
+          "start": 458328,
+          "end": 458381,
+          "role": "Table:106"
+        },
+        {
+          "reference": 28424,
+          "start": 458275,
+          "end": 458328,
+          "role": "Table:106"
+        },
+        {
+          "reference": 28425,
+          "start": 458222,
+          "end": 458275,
+          "role": "Table:106"
+        }
+      ],
+      "events": [
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        },
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        },
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        },
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        },
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        },
+        {
+          "phase": "DATA",
+          "page": 111,
+          "bytes": 53,
+          "fitted": true
+        }
+      ],
+      "allocations": [],
+      "map_changes": 0,
+      "table_rows_before": 4,
+      "table_rows_after": 10,
+      "histories_before": [
+        4,
+        3
+      ],
+      "histories_after": [
+        10,
+        5
+      ]
+    },
+    "actual_child_commands": 0
+  },
+  "public_reference": {
+    "freeze": {
+      "path": ".cache/ace16-extended-datetime-insert-public-next-20261028/freeze.json",
+      "bytes": 17299,
+      "sha256": "0dbb2aceae1c693b5a70ab3f51628e2ce7249cf4f85e574d2a854b02653ee354"
+    },
+    "report": {
+      "path": ".cache/ace16-extended-datetime-insert-public-first-20261028/report.json",
+      "bytes": 55257,
+      "sha256": "d769726b798c05048fd0c36dee5afe53009a71ebf76d9d55a015a38fffc69432"
+    },
+    "commands": 2,
+    "proofs": 1,
+    "first_attempt": true,
+    "inactive_NULL_observation": {
+      "path": ".cache/ace16-extended-datetime-insert-public-next-20261028/public-null-observation.json",
+      "bytes": 841,
+      "sha256": "57fe07f99a0c80417eb32dff2b9c2c04085c8af8ae8ef728b57eccaa2a2f0571"
+    },
+    "differing_bytes": 42,
+    "inactive_Group_differing_bytes": 1,
+    "inactive_Stamp_differing_bytes": 41,
+    "all_other_bytes_equal": true,
+    "AFTER_bytes_used_as_constructor_authority": false
+  },
+  "build": {
+    "receipt": {
+      "path": "docs/testing/results/ace16-insert-extended-datetime-example-build-2026-10-28.json",
+      "bytes": 2986,
+      "sha256": "7e9fb86575da3b07fc6c3718af088e22832510601b59d2d7ad3a3ecaf70affe4"
+    },
+    "source_commit": "c3313b3e2d73f90956e6048792cfd7db66bc2742",
+    "source_files": 4610,
+    "earlier_export_failure": {
+      "path": ".cache/ace16-insert-extended-datetime-build-20261028/prepare-failure.json",
+      "bytes": 711,
+      "sha256": "85d3c75c3959cd04d5fe1ba215a3bc13cdcadbee7c9654e6ddd367547e756a3d"
+    },
+    "earlier_failure_Cargo_calls": 0,
+    "fresh_target": true,
+    "actual_engine_compilation": true,
+    "verifier_target_directory_dependency": false
+  },
+  "native": {
+    "freeze": {
+      "path": ".cache/ace16-extended-datetime-insert-acceptance-next-20261028/freeze.json",
+      "bytes": 22773,
+      "sha256": "d5512610f878267a83c9411d2d40239f37316c749eb4ba1f6e6693cacb715ed8"
+    },
+    "report": {
+      "path": ".cache/ace16-extended-datetime-insert-candidate-first-20261028/report.json",
+      "bytes": 25550,
+      "sha256": "660ef48630ad1d0406d2cd8be213c5b25b9006e3ecd2db07d86393619d4974ee"
+    },
+    "commands": 1,
+    "complete_image_matches": 1,
+    "first_attempt": true
+  },
+  "fresh_reader": {
+    "binding": {
+      "path": ".cache/ace16-extended-datetime-insert-acceptance-next-20261028/getter-binding.json",
+      "bytes": 1457,
+      "sha256": "e69ee576ef6b716cea9b80a6b8ab8805ededbf54be366b3594286ba135574ce7"
+    },
+    "report": {
+      "path": ".cache/ace16-extended-datetime-insert-getters-first-20261028/report.json",
+      "bytes": 41634,
+      "sha256": "35e3b8626ecd68f5942fea2fd4dec2e780f0245473b1f7cdafa016cdf0499b57"
+    },
+    "commands": 1,
+    "first_attempt": true,
+    "complete_image_checked_before_and_after": true
+  },
+  "preparation_history": {
+    "pre_execution_qualifier_revision": true,
+    "unfrozen_import_failures": 2,
+    "import_failures_constructed_images": 0,
+    "ENOSPC_before_Cargo": true,
+    "failed_attempt_Cargo_calls": 0,
+    "repeated_completed_runtime_calls": 0
+  },
+  "all_runtime_phases_first_attempt": true,
+  "unchanged_limits": {
+    "file_bytes": 8388608,
+    "stream_bytes": 16777216,
+    "heap_mib": 512,
+    "seconds": 30,
+    "default_value_bytes": 1024
+  },
+  "verification": {
+    "first_default": {
+      "path": ".cache/ace16-extended-datetime-insert-maintained-proof-20261028/first-default.json",
+      "bytes": 14294,
+      "sha256": "65619a7fcfe3ee6454b1066b80ff371bcc84f6f1668e64ff342fc880c79ffade"
+    },
+    "first_Git": {
+      "path": ".cache/ace16-extended-datetime-insert-maintained-proof-20261028/first-git.json",
+      "bytes": 14354,
+      "sha256": "4d40c431c5dd876c984efc21908ac614f201ec7ce5b7cf6a5240d8fc76895389"
+    },
+    "rejecting_all_process_creation": {
+      "path": ".cache/ace16-extended-datetime-insert-maintained-proof-20261028/default-rejecting-processes.json",
+      "bytes": 14294,
+      "sha256": "65619a7fcfe3ee6454b1066b80ff371bcc84f6f1668e64ff342fc880c79ffade"
+    },
+    "explicit_missing_evidence": {
+      "path": ".cache/ace16-extended-datetime-insert-maintained-proof-20261028/first-missing.json",
+      "bytes": 200,
+      "sha256": "d55391d0b176829b803c4d5f1f9b945713ac228b94d3f8e1d536fb6fbd67734b"
+    },
+    "missing_exit_status": 2,
+    "default_subprocesses": 0,
+    "Git_metadata_processes": 1,
+    "pin_occurrences": 1142,
+    "distinct_paths": 212
+  },
+  "maintained_code": [
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/ExtendedDateTimeInsertFixture.java",
+      "bytes": 20173,
+      "sha256": "0636ea00f7e15bc1da794988c03ca83c00ef89856baf3e2cc1696df418543b62"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/README.md",
+      "bytes": 6162,
+      "sha256": "0ce4f1bf6b3f890b1926e38767af9bc664e672befb5f9c5905fb7b7119713e55"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/build.py",
+      "bytes": 3374,
+      "sha256": "a4c308e35dd489f5aeea1145d1d1238d59437c38afb29f1db3a5d0e1dc330e3c"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/model.py",
+      "bytes": 6560,
+      "sha256": "56bdc1043e2fb7bf5291462cb5fc8d6b89b4c086c9ad8fd2dc2422f609fd3263"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/plan.json",
+      "bytes": 5553,
+      "sha256": "28d2ee5cf4a35f73eae2e418795d8b43f08c266a9d26594e06375793b6671057"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/reference.py",
+      "bytes": 7148,
+      "sha256": "c7904fc4f07edf288d47f861642085db8c31bed64289c1302fdca5bfe272bc13"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/requests.tsv",
+      "bytes": 321,
+      "sha256": "f1686c8c6e69f22470b0dd72b46eeaa31b745376f1cdf945a2a0d97f8d51e81a"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/source.py",
+      "bytes": 13987,
+      "sha256": "780b44faad5bfa9eb82c6d6b16fbbe821dea0dee27bb7abbd68f77aa1d86fdbe"
+    },
+    {
+      "path": "docs/testing/ace16_insert_extended_datetime/verify.py",
+      "bytes": 15331,
+      "sha256": "252496a7f6775b2ebf83f842f89db5aeb1f53ef0aaf6525b2294d63897e4a45d"
+    }
+  ],
+  "not_qualified": [
+    "Extended Date/Time index keys",
+    "allocation or index splitting by this corpus",
+    "required data-macro semantics",
+    "normal backend editing or journalable ACE saves",
+    "Microsoft Access execution or native save/reopen"
+  ]
+}
