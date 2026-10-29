@@ -11,13 +11,13 @@ use tablecraft_core::{
 use tablecraft_schema::{ReferentialAction, ScalarType};
 
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-enum Atom {
+pub(super) enum Atom {
     Integral(i64),
     Decimal(i128),
     Guid([u8; Guid::BYTE_LEN]),
 }
 
-type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
+pub(super) type Key = [Option<Atom>; INDEX_KEY_COLUMNS];
 
 pub(super) struct Link {
     pub parent: usize,
@@ -175,7 +175,7 @@ fn column(table: &Table, name: &str) -> Result<usize, EditError> {
         .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
 }
 
-fn key(values: &[Value], columns: &[usize]) -> Result<Key, EditError> {
+pub(super) fn key(values: &[Value], columns: &[usize]) -> Result<Key, EditError> {
     let mut key = [None; INDEX_KEY_COLUMNS];
     for (position, &column) in columns.iter().enumerate() {
         key[position] = match values.get(column).ok_or(InspectError::Malformed)? {

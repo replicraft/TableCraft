@@ -1,9 +1,7 @@
-//! A real nullable alternate parent key must not silently activate UPDATE actions.
+//! Real nullable alternate parent keys bind declared UPDATE actions explicitly.
 use super::{model, support};
 use std::io::Cursor;
-use tablecraft_ace::{
-    EditError, RelationshipCheckStatus, WriteBlocker, check_table, check_table_constraints,
-};
+use tablecraft_ace::{RelationshipCheckStatus, check_table, check_table_constraints};
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
@@ -19,7 +17,7 @@ const INDEX_KIND: usize = 23;
 const ENTRY_START: usize = 480;
 const BITMAP: usize = 27;
 
-fn source(code: u8) -> model::Model {
+pub(super) fn source(code: u8) -> model::Model {
     let mut source = model::source(code, false, false);
 
     // Parents.Score --DELETE SET NULL--> Items.Score is retained. Items.Score
@@ -215,11 +213,11 @@ fn only_effective_surviving_parent_key_changes_require_update_action_support() {
         let candidate = model::run(&source, &[(1, &[0]), (0, &[0])]).unwrap();
         model::verify(&source, &expected, &candidate);
 
-        // Parents[0] selects Items[0].Score for NULL, which would otherwise
-        // activate the downstream UPDATE CASCADE service on a surviving row.
-        assert_eq!(
-            model::run(&source, &[(1, &[0])]).err(),
-            Some(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
-        );
+        // Key 10 has no downstream child. Its effective NULL assignment still
+        // binds the declared UPDATE CASCADE graph without changing Other.
+        let expected = model::expected(&source, [&[], &[0], &[]], &[0]);
+        model::qualify(&expected);
+        let candidate = model::run(&source, &[(1, &[0])]).unwrap();
+        model::verify(&source, &expected, &candidate);
     }
 }

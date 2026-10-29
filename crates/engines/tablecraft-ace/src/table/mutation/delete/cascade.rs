@@ -4,6 +4,7 @@ mod facts;
 mod graph;
 mod nulls;
 mod state;
+mod updates;
 
 use super::{Ace16DeletePreview, RowDelete, TableRowDeletes, batch};
 use crate::table::{indexes::IndexKeyUpdate, mutation::patch::spans};
@@ -80,6 +81,7 @@ impl NativeImage {
         let mut state = state::State::prepare(&self, groups, budget, cancelled)?;
         state.expand(&self, budget, cancelled)?;
         state.close(budget, cancelled)?;
+        state.update(&self, budget, cancelled)?;
         let mut prepared = Vec::new();
         let mut owned = Vec::new();
         for table in state.tables {

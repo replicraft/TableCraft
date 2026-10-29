@@ -34,14 +34,6 @@ pub(super) fn stage(
         if !table.nulls.iter().any(|&(_, target)| target == column) {
             continue;
         }
-        budget
-            .charge(Resource::Steps, table.native_positions.len() as u64)
-            .map_err(InspectError::from)?;
-        let projected = table
-            .native_positions
-            .iter()
-            .position(|&position| position == column)
-            .ok_or(InspectError::Malformed)?;
         let mut updates = Vec::new();
         for &(row, target) in &table.nulls {
             check(budget, cancelled)?;
@@ -51,12 +43,7 @@ pub(super) fn stage(
             if table.selected.get(row).copied() != Some(false) {
                 return Err(EditError::Preservation);
             }
-            let value = table
-                .snapshot
-                .rows()
-                .get(row)
-                .and_then(|values| values.get(projected))
-                .ok_or(InspectError::Malformed)?;
+            let value = table.original_value(row, column, budget)?;
             let expected = match value {
                 Value::Byte(_)
                 | Value::Int16(_)

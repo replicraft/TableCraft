@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## DELETE-generated NULLs through UPDATE cascades
+
+The separate ACE 16 preview now follows qualified
+[UPDATE CASCADE relationships](testing/ACE16_DELETE_NULL_UPDATE_CASCADES.md)
+after DELETE-generated NULL assignments. Lazy immutable key projections retain
+original row identities; checked nullable UNIQUE parents allow exact partial-NULL
+matches. Only changed components propagate, unchanged tuple siblings remain exact,
+and bounded UPDATE-only cycles may converge. Original surviving UPDATE RESTRICT
+associations still refuse even if another path independently NULLs the dependent;
+deleted endpoints suppress those associations. DELETE cycles remain refused.
+
+All 22 focused integration functions pass. The full engine library passes 624
+functions with two existing generators ignored, and ten existing targets pass 76
+regression functions. Strict all-target/all-feature and minimal-library Clippy and
+formatting pass. The initial invalid cycle fixture failed its source-only gate
+before any preview call; it was corrected with complete real parent populations.
+These are literal engineering checks; the original-file SET NULL proof below
+qualifies the earlier scoped producer, not the new UPDATE continuation.
+
 ## Atomic DELETE and SET NULL preview
 
 The separate ACE 16 [action preview](testing/ACE16_SET_NULL_DELETES.md) now applies
@@ -20,16 +39,20 @@ Surviving child cells retain opaque fixed payload and clear presence bits; delet
 children receive no NULL edits. Shared record-mask composition preserves tombstone
 structural checks. One physical index transform combines removed rows with changed
 surviving keys, retaining exact counts, aliases, maps and final constraints.
-Existing-page prefix overflow refuses the complete candidate. Self/cyclic actions,
-further UPDATE propagation and normal saves remain outside this continuation.
+Existing-page prefix overflow refuses the complete candidate. Self/cyclic DELETE
+actions and normal saves remain outside this continuation; the separate UPDATE
+continuation above extends effective NULL propagation.
 
 Thirteen independent integration functions, seven direct planner controls and 76
 existing regression functions pass. The full engine library passes 617 functions
 before direct-control registration, with two existing generators ignored. Strict
 all-target/all-feature and minimal-library Clippy, formatting and documentation
 guards pass. The [result](testing/results/ace16-set-null-delete-preview-2026-10-28.json)
-keeps initial compile, fixture coverage, lint and disk failures separate. Original-file
-SET NULL comparisons and native Access qualification remain separate work.
+keeps initial compile, fixture coverage, lint and disk failures separate. The
+[original-file proof](testing/ace16_set_null_deletes/README.md) now passes two exact
+source/request candidate comparisons and two fresh independent reads. Four public
+reference calls pass separately; five inactive bytes differ per public image.
+Native Access save qualification remains open.
 
 ## Global free-map INSERT growth
 
