@@ -142,8 +142,10 @@ The [atomic SET NULL continuation](ACE16_SET_NULL_DELETES.md) now also captures
 original associations for qualified delete SET NULL edges. After deletion closure,
 it nulls every matched surviving child's foreign-key components, retaining fixed
 payloads and composing each physical index once with any deletions. The same
-lookup carrier/primary requirements and final constraints apply. Self/cyclic
-actions and parent-key changes requiring further UPDATE cascades remain refused.
+DELETE lookup carrier/primary requirements and final constraints apply. Self/cyclic
+DELETE actions remain refused. Qualified
+[downstream UPDATE cascades](ACE16_DELETE_NULL_UPDATE_CASCADES.md) now propagate
+surviving NULL components under a separate original-association closure.
 The ordinary single-table and explicit batch entrypoints keep their existing
 RESTRICT-only boundary. The historical cascade results below remain distinct
 from this continuation's implementation checks.

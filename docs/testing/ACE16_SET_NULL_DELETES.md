@@ -21,12 +21,14 @@ child does not also receive a NULL edit. Repeated assignments to the same cell
 coalesce. Foreign-key matching never uses keys changed earlier in the operation.
 
 Only checked cross-table enforced actions are eligible. Self references and
-cyclic action components remain refused. Parent lookup requires a genuine required
+cyclic DELETE action components remain refused. DELETE lookup requires a genuine required
 primary key with a qualified matching key profile. Unknown rules, unchecked
 constraints and active content keep their existing write refusals.
-If an actual surviving NULL assignment also changes a referenced parent key that
-requires an UPDATE cascade, the service refuses that unsupported propagation.
-It does not infer successful update-action handling from final membership alone.
+The [downstream UPDATE continuation](ACE16_DELETE_NULL_UPDATE_CASCADES.md) now
+propagates effective surviving NULLs through established UPDATE CASCADE declarations
+using original associations and checked nullable UNIQUE parents. Its UPDATE-only
+cycles and Restrict policy have separate engineering checks; stored UPDATE SET NULL
+encoding and native SQL action timing remain unqualified.
 
 NULL transitions preserve opaque fixed payload bytes and clear only the stored
 presence bits. Different columns sharing one mask byte compose from the same
@@ -60,10 +62,11 @@ old fixed payloads, allocation maps, historical counters and unrelated tables.
 Separate controls cover stale explicit children, empty seeds, incoming-only
 deletion, final Restrict membership, resource exhaustion and cancellation.
 
-Three read-only source/expected test functions pass before mutation calls. A
-separate alternate-parent fixture checks the effective-assignment boundary: empty
-seeds and deleted children do not trigger UPDATE propagation, while an actual
-surviving referenced-key NULL assignment refuses with `ConstraintCoverage`.
+Three read-only source/expected test functions pass before mutation calls. The
+initial alternate-parent checkpoint refused a surviving referenced-key NULL with
+`ConstraintCoverage`, while empty seeds and deleted children remained no-ops.
+That deliberate refusal is superseded by the separate downstream continuation
+above, with complete positive source/expected controls.
 That fixture initially lacked an ordinary UNIQUE alias; stronger relationship
 coverage assertions exposed the gap before it could count as qualified evidence.
 Adding the real alias corrected the source without changing production gates or

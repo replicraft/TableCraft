@@ -2,12 +2,13 @@
 use super::{cascade_model, restrict_model, support, tuple};
 use std::io::Cursor;
 use tablecraft_ace::{
-    Ace16DeletePreview, IndexCheckStatus, check_table, check_table_constraints, read_table,
+    Ace16DeletePreview, ConstraintReport, IndexCheckStatus, RelationshipCheckStatus,
+    RuleCheckStatus, check_table, check_table_constraints, read_table,
 };
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
-pub use cascade_model::{before, budget, capture, data, definition, requests, root, run, table};
+pub use cascade_model::{budget, capture, data, definition, requests, root, run, table};
 pub use restrict_model::Model;
 
 const PAGE_BYTES: usize = 4096;
@@ -65,6 +66,40 @@ pub fn source(code: u8, composite: bool, second_cascade: bool) -> Model {
         model.bytes[at + DELETE_ACTION] = action;
     }
     model
+}
+
+pub fn before(model: &Model) {
+    cascade_model::before(model);
+    for target in 0..3 {
+        let report = check_table_constraints(
+            &mut Cursor::new(&model.bytes),
+            CatalogScope::new(1),
+            table(target),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        complete_constraints(&report);
+    }
+}
+
+fn complete_constraints(report: &ConstraintReport) {
+    assert_ne!(report.table_validation(), RuleCheckStatus::Unsupported);
+    for field in report.fields() {
+        assert!(
+            ![field.required(), field.empty_text(), field.validation()]
+                .contains(&RuleCheckStatus::Unsupported)
+        );
+    }
+    for relationship in report.relationships() {
+        assert_ne!(
+            relationship.status(),
+            RelationshipCheckStatus::Unsupported,
+            "table {} relationship {}",
+            report.name(),
+            relationship.relationship().declaration().name().as_str(),
+        );
+    }
 }
 
 pub struct Expected {
@@ -215,7 +250,7 @@ pub fn qualify(expected: &Expected) {
                 .iter()
                 .all(|index| index.status() == IndexCheckStatus::Checked)
         );
-        check_table_constraints(
+        let report = check_table_constraints(
             &mut Cursor::new(&expected.bytes),
             CatalogScope::new(1),
             table(target),
@@ -223,5 +258,6 @@ pub fn qualify(expected: &Expected) {
             &|| false,
         )
         .unwrap();
+        complete_constraints(&report);
     }
 }

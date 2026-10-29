@@ -15,9 +15,14 @@ use tablecraft_testkit::access as support;
 
 #[path = "ace16_set_null_delete_contract/model.rs"]
 mod model;
+#[path = "ace16_set_null_delete_contract/partial_tuple.rs"]
+mod partial_tuple;
 #[path = "ace16_set_null_delete_contract/role_boundary.rs"]
 mod role_boundary;
 #[path = "ace16_set_null_delete_contract/trees.rs"]
 mod trees;
 #[path = "ace16_set_null_delete_contract/values.rs"]
 mod values;
+
+#[path = "ace16_set_null_delete_contract/update_closure.rs"]
+mod update_closure;

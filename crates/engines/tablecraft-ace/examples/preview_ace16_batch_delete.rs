@@ -25,7 +25,7 @@ const STEP_BUDGET: u64 = 100_000_000;
 struct Args {
     source: PathBuf,
     output: PathBuf,
-    /// Expand qualified acyclic cross-table Cascade actions from the original seeds.
+    /// Expand qualified cross-table DELETE CASCADE and SET NULL actions from original seeds.
     #[arg(long)]
     cascade: bool,
     /// Exact table selector and headerless ROW/HEX TSV, repeatable for distinct tables.

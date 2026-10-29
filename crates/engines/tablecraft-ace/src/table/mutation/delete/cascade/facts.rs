@@ -7,10 +7,17 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ReferentialAction;
 
+#[derive(Clone, Copy)]
+pub(super) enum Purpose {
+    Delete,
+    Update,
+}
+
 pub(super) fn read(
     image: &NativeImage,
     schema: &TableSchema,
     relationships: &[NativeRelationship],
+    purpose: Purpose,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(TableSnapshot, Vec<usize>), EditError> {
@@ -31,10 +38,11 @@ pub(super) fn read(
         // Unenforced/unknown declarations do not invent new lookup work here.
         if !declaration.rules().is_some_and(|rules| {
             rules.enforced
-                && matches!(
-                    rules.on_delete,
-                    ReferentialAction::Cascade | ReferentialAction::SetNull
-                )
+                && (matches!(purpose, Purpose::Update)
+                    || matches!(
+                        rules.on_delete,
+                        ReferentialAction::Cascade | ReferentialAction::SetNull
+                    ))
         }) {
             continue;
         }

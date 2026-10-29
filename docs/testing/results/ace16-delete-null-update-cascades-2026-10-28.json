@@ -1,0 +1,252 @@
+{
+  "operation": "DELETE-generated NULL propagation through established ON UPDATE CASCADE relationships",
+  "baseline_commit": "d73740f1238cd16d70627c59f98ea6dd336e3e3a",
+  "source_contract": "https://support.microsoft.com/en-us/access/constraint-clause",
+  "entrypoint": "NativeImage::preview_ace16_cascading_deletes",
+  "normal_native_save_enabled": false,
+  "native_Access_qualification": false,
+  "additional_UPDATE_path_original_file_qualification": false,
+  "UPDATE_SET_NULL_native_encoding_admitted": false,
+  "ordinary_UPDATE_ignore_null_admission_changed": false,
+  "scope": {
+    "delete_closure_before_update_null_fixed_point": true,
+    "separate_lazy_immutable_key_projection": true,
+    "original_unambiguous_ordered_nullable_unique_parents": true,
+    "all_null_original_key_exemption": true,
+    "partial_null_original_keys_and_unchanged_components": true,
+    "whole_final_tuple_checks": true,
+    "deleted_endpoints_suppress_update_associations": true,
+    "update_restrict_uses_original_surviving_matches_even_if_independently_nulled": true,
+    "delete_restrict_retains_final_membership_contract": true,
+    "delete_cycles_and_self_references_remain_refused": true,
+    "update_only_cascade_cycles_can_converge": true,
+    "index_api_or_allocation_policy_widened": false
+  },
+  "passing_functions": {
+    "full_engine_library": 624,
+    "existing_generators_ignored": 2,
+    "existing_integration_functions": 76,
+    "existing_integration_targets": 10,
+    "final_focused_all_features": 22
+  },
+  "ordering": "Full library and existing regression batch preceded two test-only RestrictDiamond additions; final focused batch includes all 22 functions.",
+  "verification": [
+    {
+      "name": "coherent_production_check",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-check-first.log",
+        "bytes": 183,
+        "sha256": "691c396a31ac8d18b731ce714571712e6bd08b5349c1d457758c1c6b1feae6e7"
+      }
+    },
+    {
+      "name": "corrected_cycle_source_expected_gate_before_api",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-source-corrected-cycle.log",
+        "bytes": 517,
+        "sha256": "495332d095adf4ebe91f8e67a89dd4bb86ccf616f9fe3c45c92e61bb4f33ff20"
+      }
+    },
+    {
+      "name": "first_eighteen_focused_functions",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-api-first.log",
+        "bytes": 2002,
+        "sha256": "a00d80ab03daf8f3e7d4b2253d798127b4bf67f06ff00cf4990ca40b2eb7bbf5"
+      }
+    },
+    {
+      "name": "partial_tuple_source_expected_gate_before_api",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/partial-tuple-source-first.log",
+        "bytes": 519,
+        "sha256": "09ea0b3f0ab42b631cb95be38832c5eca51540fe6c5b5b52ffefd441992611e5"
+      }
+    },
+    {
+      "name": "twenty_focused_functions_with_partial_tuples",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-with-partial-api-first.log",
+        "bytes": 2204,
+        "sha256": "9c2ca2fdcba539ec16de9b45fb339a2431744c4df1d3b118a8afda6445c10787"
+      }
+    },
+    {
+      "name": "full_engine_library_and_ten_existing_integration_targets",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-batch-first.log",
+        "bytes": 89108,
+        "sha256": "748260b3b0ef6377f5e8202a75251ba1364835fa18b8861d68622c88fec86cb3"
+      }
+    },
+    {
+      "name": "restrict_diamond_source_expected_gate_before_api",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/restrict-diamond-source-first.log",
+        "bytes": 516,
+        "sha256": "11964b423106059579f9224a2b6be9c0fa257f18b914cee67e9651f99dc03def"
+      }
+    },
+    {
+      "name": "first_restrict_diamond_action_control",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/restrict-diamond-api-first.log",
+        "bytes": 404,
+        "sha256": "79f81cd3e5572afd63b93c02a96e9f7270ac16190e6817b9a1f9cc193ac2d61a"
+      }
+    },
+    {
+      "name": "strict_all_targets_all_features",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-clippy-first.log",
+        "bytes": 184,
+        "sha256": "6db0e4ae2e963f1645831dbdce5f4aea6579a8fa995a9d0fc1779dd5a0ca02fd"
+      }
+    },
+    {
+      "name": "strict_minimal_library",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-minimal-final.log",
+        "bytes": 72,
+        "sha256": "f4403412cb20dc7d8a0a94c08c9c8853e4bac9b3e8489158834f30512311ed97"
+      }
+    },
+    {
+      "name": "workspace_format",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-fmt-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "final_all_feature_focused_batch",
+      "status": 0,
+      "log": {
+        "path": ".cache/ace16-set-null-delete-20261028/update-closure-focused-final.log",
+        "bytes": 2510,
+        "sha256": "ac89c7a151944f76b92dce63e597b9dc0591d072b4f0fd21f080f748debb1964"
+      }
+    }
+  ],
+  "preserved_failed_source_gate": {
+    "log": {
+      "path": ".cache/ace16-set-null-delete-20261028/update-closure-source-first.log",
+      "bytes": 1191,
+      "sha256": "940b6087546f3f817808c74b0222bb20880b7a0309a515cc6a032bac4e2d45de"
+    },
+    "status": 101,
+    "observation": "Authored Cycle source contained Other20 only but had original Items10/30 references; MissingParent refused in source-only validation before any new preview call.",
+    "correction": "Added genuine Other10/30 DATA rows with complete live/history/leaf metadata, retaining Other20 at original ROW0. No production or checker relaxation and no producer-derived expected repair.",
+    "first_freeze": {
+      "path": ".cache/ace16-set-null-update-closure-next-20261028/first-freeze/freeze.json",
+      "bytes": 1040,
+      "sha256": "85dbb6dc35535c5d4a53647630fb16de126c86388555d3fc07a826e40189c337"
+    },
+    "corrected_freeze": {
+      "path": ".cache/ace16-set-null-update-closure-next-20261028/cycle-population-corrected-freeze/freeze.json",
+      "bytes": 878,
+      "sha256": "8683ad4511d93c382076041f05a98ee121b47d2e464d76742f6af93bddab7fe4"
+    }
+  },
+  "sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/examples/preview_ace16_batch_delete.rs",
+      "bytes": 3065,
+      "sha256": "1e6c15c8d603db00109681f96bb07bb12a5997772092213e8ae3f4d0fb5c2be7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade.rs",
+      "bytes": 4980,
+      "sha256": "b84665d3d02e5bf67865ea43281f7428ff9bb0eff89d80066bb248463e279e3f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/facts.rs",
+      "bytes": 4111,
+      "sha256": "130b3793593844c928738b52218bc7897b068dc9b5918c2632126b7fa03a14a7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/graph.rs",
+      "bytes": 8719,
+      "sha256": "570ec54900c39e16dcb31e9e9381b5c3436fbf24ad4ede234ac6a58cda820339"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/nulls.rs",
+      "bytes": 4277,
+      "sha256": "f6d8e1638330b6e400366eb4f34d76ef25f87d73bec6a907c762fe234aea311f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/state.rs",
+      "bytes": 15824,
+      "sha256": "5ace188f78e73ae27124ed5e603766a5e78888bd91a03c518f0524bb79b28072"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract.rs",
+      "bytes": 831,
+      "sha256": "f097a28db7425b135bf0988a54f3d5c23e6521bbec2185c87998373ca9890c89"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/model.rs",
+      "bytes": 9077,
+      "sha256": "ad38928495f92d4629c7879b613a7cada5f34c16de9f5c63b2c0cda9b20b75df"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/role_boundary.rs",
+      "bytes": 8803,
+      "sha256": "1f54e9a3ab94a28ed0faf92aba5bbeb14d62cc1e8b370a58f740b2096c23071f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/updates.rs",
+      "bytes": 6133,
+      "sha256": "284a199107225925753b8cf62eb99a5da5924586a8e2661ad0217ab4837ee735"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/updates/binding.rs",
+      "bytes": 5674,
+      "sha256": "02ee37afba3c0f0890b8bb16fd70b96bfd16deabde20b6479cfe4e0995906b95"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/delete/cascade/updates/facts.rs",
+      "bytes": 3239,
+      "sha256": "2f3a9d7220f2f8bfafbab9b99a001ea08e4e38345aef722a240041ddd53fe4a7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple.rs",
+      "bytes": 2782,
+      "sha256": "cc3f13cc8cda02e4606db21d86399bca8c8396f6b659143bac180ffae1dd07b8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple/model.rs",
+      "bytes": 9570,
+      "sha256": "353b8c4058628e6c15c5d21aaaeae23c05b382f285f3dcf13335819961a103fd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure.rs",
+      "bytes": 8828,
+      "sha256": "81349795d730a858298603565e31cf4f9f0b4a69e3f69853c5fb8e756a97cbb6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure/model.rs",
+      "bytes": 10867,
+      "sha256": "5b784013c3ed4745df6fffe2382eba006177c0837313242ce565f4d8509dea03"
+    }
+  ],
+  "independent_fixture_scope": [
+    "Both ACE16 header variants; chain, diamond and convergent UPDATE cycle.",
+    "Genuine two-physical-index partial-tuple source distinguishes a single-field DELETE action from composite UPDATE matching.",
+    "Original partial NULL and retained nonNULL tuple components, exact opaque payload and unchanged sibling preservation.",
+    "Complete membership-valid RestrictDiamond expected files do not replace the original-surviving-association action rule.",
+    "Required keys, deleted endpoints, no matching descendant, stale requests, all three resource pools and measured terminal cancellation."
+  ]
+}
