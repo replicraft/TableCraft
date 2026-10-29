@@ -10,6 +10,11 @@ opens databases, implements storage transactions or imports application hosts.
 This is a usable bounded retrieval profile, not complete Access SQL compatibility.
 The separate [query editing API](../access/writes/QUERY_EDITING.md) plans bounded single-table
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
+The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_COPIES.md)
+opts into `StoredScalar` assignment through the same planner: nullable NULL and
+exact stored carriers, with checked integral assignment to Int32. It retains one
+local table/one assignment, pure expressions and complete evaluation before one
+backend finish. Normal ACE write admission and retrieval behavior are unchanged.
 
 [Retained String keys](keys/RAW_STRING_KEYS.md) now share explicit raw-unit comparison
 across grouping, sets, sorting/TOP and crosstab row keys. Fixed-heading named

@@ -13,7 +13,7 @@ use tablecraft_core::{
 };
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth};
-use tablecraft_schema::{NameComparison, ScalarType};
+use tablecraft_schema::{Column, NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
 
 /// A backend candidate after all matching-row expressions have succeeded.
@@ -33,7 +33,10 @@ impl<P> UpdatePlan<P> {
     }
 }
 
-/// Plan one local table/one Int32 assignment UPDATE against a frozen snapshot.
+/// Plan one local table/one assignment UPDATE against a frozen snapshot.
+/// ExistingInt32 preserves its non-NULL checked integral conversion; StoredScalar
+/// adds nullable NULL and exact stored carriers while retaining that Int32 law.
+/// Every backend still qualifies its actual fields, constraints and persistence.
 /// Optional alias, pure expressions, BETWEEN/IN and three-valued WHERE use the
 /// existing query evaluator. Checked integral narrowing is explicit at assignment.
 /// Parameters, joins, subqueries, calls and other actions are rejected before any
@@ -54,8 +57,11 @@ pub fn plan_update<E: EditableTable>(
     budget
         .charge(Resource::Steps, 1)
         .map_err(QueryError::from)?;
-    if editor.update_profile() != UpdateProfile::ExistingInt32
-        || editor.snapshot().policy().names != NameComparison::AsciiInsensitive
+    let profile = editor.update_profile();
+    if !matches!(
+        profile,
+        UpdateProfile::ExistingInt32 | UpdateProfile::StoredScalar
+    ) || editor.snapshot().policy().names != NameComparison::AsciiInsensitive
     {
         return Err(QueryError::Unsupported.into());
     }
@@ -75,7 +81,7 @@ pub fn plan_update<E: EditableTable>(
         .columns()
         .get(column)
         .ok_or(QueryError::UnknownName)?;
-    if target.data_type() != ScalarType::Int32 {
+    if profile == UpdateProfile::ExistingInt32 && target.data_type() != ScalarType::Int32 {
         return Err(QueryError::Unsupported.into());
     }
     let mut column_name = String::new();
@@ -132,7 +138,7 @@ pub fn plan_update<E: EditableTable>(
                 continue;
             }
         }
-        let replacement = integral_assignment(runtime.eval(&value, env)?)?;
+        let replacement = assignment(runtime.eval(&value, env)?, target, profile)?;
         let handle = snapshot.row_handle(ordinal).ok_or(QueryError::Source)?;
         runtime.push(&mut updates, CellUpdate::new(handle, replacement))?;
     }
@@ -147,6 +153,36 @@ pub fn plan_update<E: EditableTable>(
     })
 }
 
+fn assignment(value: Value, target: &Column, profile: UpdateProfile) -> Result<Value, QueryError> {
+    if profile == UpdateProfile::ExistingInt32 {
+        return integral_assignment(value);
+    }
+
+    if profile != UpdateProfile::StoredScalar {
+        return Err(QueryError::Unsupported);
+    }
+
+    if matches!(value, Value::Null) {
+        return if target.nullable() {
+            Ok(value)
+        } else {
+            Err(QueryError::Unsupported)
+        };
+    }
+
+    if target.data_type() == ScalarType::Int32 {
+        return integral_assignment(value);
+    }
+
+    if ScalarType::of(&value) != Some(target.data_type())
+        || target.type_descriptor().validate_value(&value).is_err()
+    {
+        return Err(QueryError::Unsupported);
+    }
+
+    Ok(value)
+}
+
 fn integral_assignment(value: Value) -> Result<Value, QueryError> {
     let integer = match value {
         Value::Byte(value) => i64::from(value),
@@ -155,6 +191,7 @@ fn integral_assignment(value: Value) -> Result<Value, QueryError> {
         Value::Int64(value) => value,
         _ => return Err(QueryError::Unsupported),
     };
+
     i32::try_from(integer)
         .map(Value::Int32)
         .map_err(|_| tablecraft_expressions::EvalError::Overflow.into())

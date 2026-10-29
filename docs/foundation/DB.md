@@ -25,7 +25,9 @@ before wrap/reuse. There is no unchecked ordinal constructor or serialization.
 
 `CellUpdate` binds an exact replacement Value to such a handle. `EditableTable`
 exposes its frozen snapshot, candidate update profile and consuming batch planner.
-Candidate ExistingInt32 capability is not authorization for every field: adapters
+`UpdateProfile::StoredScalar` is a separate opt-in for nullable NULL and exact
+stored carriers, retaining checked integral assignment to Int32. `ExistingInt32`
+keeps its earlier non-NULL behavior. Neither capability authorizes every field: adapters
 must validate carriers, identities, constraints and unavailable behavior. Planning
 returns a backend-owned candidate and performs no durable writes. Persistence
 and recovery remain concrete plan responsibilities.
@@ -45,6 +47,11 @@ These are headless engineering checks, not native Access compatibility evidence.
 The [query update planner](../access/writes/QUERY_EDITING.md) now consumes EditableTable directly.
 It resolves fields and evaluates all selected replacements before invoking the
 backend once. Read-only query Source/SQLite adapters retain their existing APIs.
+
+The separate [SQL engineering editor](../access/writes/SQL_ENGINEERING_COPIES.md)
+also implements this consuming contract. It binds one original NativeImage to
+one snapshot and finishes once into a non-journalable EngineeringCopy. This does
+not change NativeEditor admission or introduce persistence into DB.
 
 ## Transaction contract direction
 
