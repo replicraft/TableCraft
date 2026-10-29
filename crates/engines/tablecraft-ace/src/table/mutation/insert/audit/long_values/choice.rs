@@ -49,7 +49,29 @@ pub(super) fn derive(
     requests: &[RowInsert],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Row>, EditError> {
-    let shape = layout::capture(schema, reader.budget, reader.cancelled)?;
+    derive_with_generated(schema, requests, None, reader)
+}
+
+pub(super) fn derive_incrementing(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    column: usize,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<Row>, EditError> {
+    derive_with_generated(schema, requests, Some(column), reader)
+}
+
+fn derive_with_generated(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    generated: Option<usize>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<Row>, EditError> {
+    let shape = if let Some(column) = generated {
+        layout::capture_incrementing(schema, column, reader.budget, reader.cancelled)?
+    } else {
+        layout::capture(schema, reader.budget, reader.cancelled)?
+    };
     let mut rows = Vec::new();
     reserve(&mut rows, requests.len(), reader)?;
     for request in requests {

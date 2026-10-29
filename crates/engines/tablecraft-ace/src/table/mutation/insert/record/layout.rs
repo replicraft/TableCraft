@@ -13,9 +13,30 @@ pub(super) fn variables(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<usize>, EditError> {
+    variables_with_generated(schema, None, budget, cancelled)
+}
+
+pub(super) fn incrementing_variables(
+    schema: &TableSchema,
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<usize>, EditError> {
+    variables_with_generated(schema, Some(column), budget, cancelled)
+}
+
+fn variables_with_generated(
+    schema: &TableSchema,
+    generated: Option<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<usize>, EditError> {
     check(budget, cancelled)?;
     let fields = schema.columns();
     let count = fields.len();
+    if generated.is_some_and(|position| fields.get(position).is_none_or(|column| !column.fixed())) {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
     if count == 0
         || count != schema.layout.max_columns
         || schema.layout.variable_slots > count
@@ -42,7 +63,11 @@ pub(super) fn variables(
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         if column.fixed() {
-            let width = field::width(column)?;
+            let width = if generated == Some(position) {
+                field::incrementing_width(column)?
+            } else {
+                field::width(column)?
+            };
             // Boolean's bit has no payload range. Its unused offset cannot
             // invent a fixed tail beyond the actual nonzero payload extent.
             if width == 0 {

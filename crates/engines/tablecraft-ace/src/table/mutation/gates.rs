@@ -1,7 +1,12 @@
 use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-use crate::format::layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, CALCULATED_EXT_MASK};
+use crate::format::{
+    data_type::INT32,
+    layout::{
+        AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, CALCULATED_EXT_MASK, FIXED_FLAG, UPDATABLE_FLAG,
+    },
+};
 use crate::{
     ConstraintReport, FileFormat, IndexCheckStatus, NativeImage, PayloadPresence,
     PropertyGroupKind, RelationshipCheckStatus, RuleCheckStatus, TableCheck, check_table,
@@ -53,6 +58,22 @@ pub(super) fn before_insert(
     before_with(image, table, Admission::Insert, budget, cancelled)
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_incrementing_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(
+        image,
+        table,
+        Admission::IncrementingInsert,
+        budget,
+        cancelled,
+    )
+}
+
 enum Admission {
     Update,
     #[cfg(feature = "ace16-write-preview")]
@@ -61,6 +82,8 @@ enum Admission {
     SlotUpdate,
     #[cfg(feature = "ace16-write-preview")]
     Insert,
+    #[cfg(feature = "ace16-write-preview")]
+    IncrementingInsert,
 }
 
 fn before_with(
@@ -110,11 +133,31 @@ fn before_with(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     #[cfg(feature = "ace16-write-preview")]
-    if matches!(admission, Admission::Insert) {
-        for column in schema.columns() {
+    if matches!(admission, Admission::Insert | Admission::IncrementingInsert) {
+        let generated = if matches!(admission, Admission::IncrementingInsert) {
+            Some(super::insert::primary_column::resolve(
+                &structural,
+                budget,
+                cancelled,
+            )?)
+        } else {
+            None
+        };
+        for (position, column) in schema.columns().iter().enumerate() {
             check(budget, cancelled)?;
-            if column.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0
-                || column.extended_flags() & CALCULATED_EXT_MASK != 0
+            if generated == Some(position) {
+                if column.native_type() != INT32
+                    || !column.fixed()
+                    || column.storage_length() != size_of::<i32>()
+                    || column.flags() != (FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG)
+                    || column.extended_flags() != 0
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                }
+            } else if column.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0 {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+            if column.extended_flags() & CALCULATED_EXT_MASK != 0
                 || column.complex_type_id().is_some()
             {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
@@ -206,7 +249,7 @@ fn before_with(
             // Full explicit INSERT rows do not qualify default evaluation or
             // omission semantics. UPDATE keeps its existing passive treatment.
             #[cfg(feature = "ace16-write-preview")]
-            if matches!(admission, Admission::Insert)
+            if matches!(admission, Admission::Insert | Admission::IncrementingInsert)
                 && property.name().eq_ignore_ascii_case("DefaultValue")
             {
                 return Err(EditError::Unsupported(WriteBlocker::Properties));
@@ -260,7 +303,7 @@ pub(super) fn qualified(report: &ConstraintReport) -> Result<(), EditError> {
 fn has_ignored_index_consumer(admission: &Admission) -> bool {
     match admission {
         #[cfg(feature = "ace16-write-preview")]
-        Admission::Delete | Admission::Insert => true,
+        Admission::Delete | Admission::Insert | Admission::IncrementingInsert => true,
         _ => false,
     }
 }

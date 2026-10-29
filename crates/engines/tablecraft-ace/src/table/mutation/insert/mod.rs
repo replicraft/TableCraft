@@ -1,12 +1,14 @@
 //! Explicit engineering INSERT with request-bound record and allocation proof.
 mod audit;
+mod autonumber;
 mod compose;
 mod counters;
+mod incrementing;
 mod indexes;
 mod long_values;
 mod placement;
 mod policies;
-mod primary_column;
+pub(super) mod primary_column;
 mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
@@ -25,6 +27,8 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+
+pub use autonumber::{Ace16AutoNumberInsertPreview, AutoNumberRowInsert, IncrementingAutoNumber};
 
 /// One complete new row in the captured native column order.
 /// Values are neither defaulted nor coerced; the selected insertion profile
@@ -50,6 +54,16 @@ struct Staged {
     long_values: long_values::Plan,
     indexes: Vec<IndexInsertion>,
     counters: Vec<counters::Patch>,
+    autonumber: Option<autonumber::counter::Plan>,
+}
+
+#[derive(Clone, Copy)]
+enum AuditRequest<'a> {
+    Explicit(&'a [RowInsert]),
+    Incrementing {
+        requests: &'a [AutoNumberRowInsert],
+        policy: IncrementingAutoNumber,
+    },
 }
 
 impl NativeImage {
@@ -127,6 +141,20 @@ fn prepare(
 ) -> Result<Staged, EditError> {
     let primary = primary_column::resolve(structural, budget, cancelled)?;
     let profile = record::Profile::bind(structural.schema(), budget, cancelled)?;
+    prepare_with(
+        image, structural, requests, primary, profile, budget, cancelled,
+    )
+}
+
+fn prepare_with(
+    image: &NativeImage,
+    structural: &TableCheck,
+    requests: &[RowInsert],
+    primary: usize,
+    profile: record::Profile<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
     policies::require_text_declarations(image, structural.schema(), requests, budget, cancelled)?;
 
     budget
@@ -160,13 +188,7 @@ fn prepare(
             .try_reserve_exact(requests.len())
             .map_err(|_| InspectError::Allocation)?;
         for request in requests {
-            inputs.push(record::input::prepare(
-                structural.schema(),
-                profile.variables(),
-                request.values(),
-                budget,
-                cancelled,
-            )?);
+            inputs.push(profile.prepare_input(request.values(), budget, cancelled)?);
         }
         let (long_values, append) = long_values::prepare(
             image,
@@ -246,6 +268,7 @@ fn prepare(
         long_values,
         indexes,
         counters,
+        autonumber: None,
     })
 }
 
@@ -257,8 +280,43 @@ fn finish(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
+    finish_with(
+        image,
+        table,
+        AuditRequest::Explicit(requests),
+        staged,
+        budget,
+        cancelled,
+    )
+}
+
+fn finish_with(
+    image: NativeImage,
+    table: &str,
+    requests: AuditRequest<'_>,
+    staged: &Staged,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ace16WritePreview, EditError> {
     let after = compose::compose(&image, staged, budget, cancelled)?;
-    audit::prove(&image, table, requests, staged, &after, budget, cancelled)?;
+    let inserted = match requests {
+        AuditRequest::Explicit(requests) => {
+            audit::prove(&image, table, requests, staged, &after, budget, cancelled)?;
+            requests.len()
+        }
+        AuditRequest::Incrementing { requests, policy } => {
+            audit::prove_incrementing(
+                &image,
+                table,
+                (requests, policy),
+                staged,
+                &after,
+                budget,
+                cancelled,
+            )?;
+            requests.len()
+        }
+    };
 
     let scope = image.catalog().catalog().scope();
     inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
@@ -288,6 +346,6 @@ fn finish(
     Ok(Ace16WritePreview::from_candidate(
         image.bytes,
         after,
-        requests.len(),
+        inserted,
     ))
 }

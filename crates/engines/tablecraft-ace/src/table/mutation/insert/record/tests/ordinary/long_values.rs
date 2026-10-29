@@ -4,6 +4,7 @@ use crate::table::mutation::{
     insert::record::input::{self, Payload},
     long_value::encode::{Encoded, StorageChoice},
 };
+use tablecraft_core::values::ExtendedDateTime;
 
 fn chosen(payload: &Payload, expected: &[u8]) -> StorageChoice {
     let Payload::Long {
@@ -15,6 +16,41 @@ fn chosen(payload: &Payload, expected: &[u8]) -> StorageChoice {
     };
     assert_eq!(bytes, expected);
     *choice
+}
+
+#[test]
+fn extended_timestamp_preflight_with_external_payload_checks_the_complete_fixed_field() {
+    let bytes = ordinary(
+        6,
+        &[("ID", 4, 0, 4), ("Stamp", 20, 4, 42), ("Blob", 11, 0, 0)],
+        &[(2, 0, false)],
+    );
+    let metadata = schema(&bytes);
+    let profile = Profile::bind(&metadata, &mut budget(), &|| false).unwrap();
+    let stamp = ExtendedDateTime::new(2000, 2, 29, 12, 34, 56, 1_234_567).unwrap();
+
+    for value in [Value::DateTimeExtended(stamp), Value::Null] {
+        let values = [Value::Int32(7), value, Value::Binary(vec![0x81; 65])];
+        let input = profile
+            .prepare_input(&values, &mut budget(), &|| false)
+            .unwrap();
+        assert!(matches!(
+            chosen(&input.payloads[0], &[0x81; 65]),
+            StorageChoice::Single
+        ));
+    }
+
+    // Even a NULL-looking raw payload cannot substitute for the declared
+    // timestamp carrier during preflight, before any LVAL reservation.
+    let wrong = [
+        Value::Int32(7),
+        Value::Binary(vec![0; 42]),
+        Value::Binary(vec![0x81; 65]),
+    ];
+    assert!(matches!(
+        profile.prepare_input(&wrong, &mut budget(), &|| false),
+        Err(EditError::Unsupported(WriteBlocker::Column))
+    ));
 }
 
 #[test]

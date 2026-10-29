@@ -32,7 +32,10 @@ root page. A further [variable-update service](ACE16_VARIABLE_UPDATES.md)
 admits alternate owned-page placement and EOF allocation using existing map
 representation. These fixed-field APIs do not resize records. Memo/OLE changes,
 general allocation/map growth, INSERT, schema changes,
-AutoNumber assignment and broader UPDATE index topology changes remain unsupported. Ordinary-root deletion has a separate
+AutoNumber assignment and broader UPDATE index topology changes remain unsupported
+through these fixed-field APIs. A separate
+[caller-selected incrementing INSERT preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+now owns its generated request and return contract. Ordinary-root deletion has a separate
 [existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
 
@@ -805,5 +808,8 @@ complete-image proof. The [quoted TSV example input](ACE16_INSERT_INPUT.md)
 supplies all values explicitly. Qualified non-Required secondary Ignore-NULL
 indexes omit NULL keys while preserving complete DATA/primary membership.
 Defaults, generated fields, primary/Required Ignore-NULL indexes and other
-unqualified key families remain refused. Required data-macro semantics
+unqualified key families remain refused by the ordinary explicit-row API. The
+separate [incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+requires an explicit caller policy and expected source counter, without claiming
+stored mode detection. Required data-macro semantics
 remain unqualified. This adds no normal CLI write path or native Access qualification.

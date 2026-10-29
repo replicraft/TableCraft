@@ -37,6 +37,9 @@ pub enum EditError {
     /// A declared RESTRICT action forbids changing a referenced original key.
     #[error("native relationship action restricts this update")]
     ReferentialAction,
+    /// The selected incrementing Int32 generator has no remaining values.
+    #[error("incrementing AutoNumber range is exhausted")]
+    AutoNumberExhausted,
     /// An edit changed a byte outside its validated field payloads.
     #[error("native edit preservation proof failed")]
     Preservation,

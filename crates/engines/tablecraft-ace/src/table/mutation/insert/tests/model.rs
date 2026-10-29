@@ -11,7 +11,7 @@ use tablecraft_testkit::access as support;
 pub(super) const PAGE: usize = 4096;
 pub(super) const HISTORY: u32 = 17;
 
-pub(super) fn budget() -> ResourceBudget {
+pub(in crate::table::mutation::insert) fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
 }
 
@@ -194,7 +194,7 @@ pub(in crate::table::mutation::insert) fn source(
     bytes
 }
 
-pub(super) fn capture(bytes: &[u8]) -> NativeImage {
+pub(in crate::table::mutation::insert) fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),
@@ -204,7 +204,11 @@ pub(super) fn capture(bytes: &[u8]) -> NativeImage {
     .unwrap()
 }
 
-pub(super) fn checked(bytes: &[u8], rows: usize, aliases: usize) -> TableCheck {
+pub(in crate::table::mutation::insert) fn checked(
+    bytes: &[u8],
+    rows: usize,
+    aliases: usize,
+) -> TableCheck {
     let sequential = read_table(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),

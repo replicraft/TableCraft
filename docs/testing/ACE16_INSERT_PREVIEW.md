@@ -20,7 +20,10 @@ existing 510-byte ceiling. The historical original-file fixtures below use the
 narrower two-field Int32/Binary255 schema; wider-schema qualification is unrun.
 
 DefaultValue presence refuses, even when every value is explicit or the batch
-is empty. AutoNumber, calculated and complex fields refuse. Existing active
+is empty. AutoNumber, calculated and complex fields refuse through this manual
+API. A separate [explicit incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+accepts companion values and a caller-selected counter policy; it does not detect
+stored Increment mode or change manual INSERT admission. Existing active
 payload, catalog-child, unsupported-property and constraint blockers remain.
 This admission does not establish absence of unknown data macros. Actual empty
 Text additionally requires an explicit AllowZeroLength declaration; stored false
@@ -134,7 +137,8 @@ do not establish Microsoft Access conformance.
 ## Remaining work
 
 This profile does not finish general INSERT. Other scalar/complex fields,
-defaults and AutoNumber, additional index families, nesting an oversized new top,
+defaults, stored AutoNumber mode qualification and other generated behavior,
+additional index families, nesting an oversized new top,
 broader allocation
 and reclamation, query INSERT planning, application events and normal native save
 qualification remain separate work. Native Microsoft Access comparison evidence

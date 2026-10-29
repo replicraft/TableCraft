@@ -26,6 +26,7 @@ use tablecraft_core::{
 pub(super) struct Profile<'a> {
     schema: &'a TableSchema,
     variables: Vec<usize>,
+    generated: Option<usize>,
 }
 
 impl<'a> Profile<'a> {
@@ -35,7 +36,45 @@ impl<'a> Profile<'a> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         let variables = layout::variables(schema, budget, cancelled)?;
-        Ok(Self { schema, variables })
+        Ok(Self {
+            schema,
+            variables,
+            generated: None,
+        })
+    }
+
+    pub(super) fn bind_incrementing(
+        schema: &'a TableSchema,
+        column: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let variables = layout::incrementing_variables(schema, column, budget, cancelled)?;
+        Ok(Self {
+            schema,
+            variables,
+            generated: Some(column),
+        })
+    }
+
+    pub(super) fn prepare_input(
+        &self,
+        values: &[Value],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<input::Input, EditError> {
+        if let Some(column) = self.generated {
+            input::prepare_incrementing(
+                self.schema,
+                &self.variables,
+                values,
+                column,
+                budget,
+                cancelled,
+            )
+        } else {
+            input::prepare(self.schema, &self.variables, values, budget, cancelled)
+        }
     }
 
     pub(super) fn build(

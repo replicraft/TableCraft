@@ -21,6 +21,7 @@ pub(super) fn compose(
 ) -> Result<Vec<u8>, EditError> {
     check(budget, cancelled)?;
     let data = &staged.data;
+    let generation = staged.autonumber.as_ref().and_then(|plan| plan.patch());
     let original = image.as_bytes();
     if data.append.original_length != original.len()
         || data.append.length < original.len()
@@ -67,6 +68,7 @@ pub(super) fn compose(
         })
         .and_then(|count| count.checked_add(data.append.map_edits.len()))
         .and_then(|count| count.checked_add(staged.counters.len()))
+        .and_then(|count| count.checked_add(usize::from(generation.is_some())))
         .ok_or(InspectError::StructureLimit)?;
     let mut added_indexes = 0_usize;
     for index in &staged.indexes {
@@ -343,6 +345,17 @@ pub(super) fn compose(
         }
     }
     for patch in &staged.counters {
+        spans.push(write(
+            original,
+            &mut after,
+            patch.offset,
+            &patch.before,
+            &patch.after,
+            budget,
+            cancelled,
+        )?);
+    }
+    if let Some(patch) = generation {
         spans.push(write(
             original,
             &mut after,

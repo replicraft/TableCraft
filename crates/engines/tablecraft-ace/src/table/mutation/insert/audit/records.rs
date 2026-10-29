@@ -38,7 +38,32 @@ pub(super) fn derive(
     resolved: Option<&[super::long_values::ResolvedRow]>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Row>, EditError> {
-    let shape = layout::capture(schema, reader.budget, reader.cancelled)?;
+    derive_with_generated(schema, id, requests, resolved, None, reader)
+}
+
+pub(super) fn derive_incrementing(
+    schema: &TableSchema,
+    id: usize,
+    requests: &[RowInsert],
+    resolved: Option<&[super::long_values::ResolvedRow]>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<Row>, EditError> {
+    derive_with_generated(schema, id, requests, resolved, Some(id), reader)
+}
+
+fn derive_with_generated(
+    schema: &TableSchema,
+    id: usize,
+    requests: &[RowInsert],
+    resolved: Option<&[super::long_values::ResolvedRow]>,
+    generated: Option<usize>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<Row>, EditError> {
+    let shape = if let Some(column) = generated {
+        layout::capture_incrementing(schema, column, reader.budget, reader.cancelled)?
+    } else {
+        layout::capture(schema, reader.budget, reader.cancelled)?
+    };
 
     let primary = schema.columns().get(id).ok_or(EditError::Preservation)?;
     if primary.native_type() != INT32 || !primary.fixed() {

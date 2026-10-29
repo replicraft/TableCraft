@@ -49,6 +49,7 @@ pub(super) fn derive(
     image: &NativeImage,
     checked: &TableCheck,
     requests: &[RowInsert],
+    generated: Option<usize>,
     staged: &Staged,
     proof: &mut ImageProof<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -83,7 +84,11 @@ pub(super) fn derive(
         }
         return Ok(None);
     }
-    let rows = choice::derive(checked.schema(), requests, reader)?;
+    let rows = if let Some(column) = generated {
+        choice::derive_incrementing(checked.schema(), requests, column, reader)?
+    } else {
+        choice::derive(checked.schema(), requests, reader)?
+    };
     let mut selected = Vec::new();
     for row in &rows {
         for field in &row.fields {

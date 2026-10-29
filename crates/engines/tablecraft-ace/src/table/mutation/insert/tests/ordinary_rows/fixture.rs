@@ -7,7 +7,7 @@ use tablecraft_testkit::access as raw;
 pub(super) const PAGE: usize = 4096;
 
 #[derive(Clone, Copy)]
-pub(super) enum Index {
+pub(in crate::table::mutation::insert) enum Index {
     Primary,
     Alias,
     Ordinary,
@@ -17,7 +17,7 @@ pub(super) enum Index {
     None,
 }
 
-pub(super) struct Case {
+pub(in crate::table::mutation::insert) struct Case {
     pub before: Vec<u8>,
     pub rows: Vec<Row>,
     pub variables: bool,
@@ -79,7 +79,13 @@ fn leaf(original: Option<&[u8]>, keys: &[(i32, i32, u32)], index: Index) -> Vec<
     page
 }
 
-pub(super) fn source(code: u8, variables: bool, full: bool, index: Index, default: bool) -> Case {
+pub(in crate::table::mutation::insert) fn source(
+    code: u8,
+    variables: bool,
+    full: bool,
+    index: Index,
+    default: bool,
+) -> Case {
     let mut before = base::source(
         code,
         matches!(index, Index::Alias | Index::DoublePrimary),
@@ -267,7 +273,7 @@ pub(super) fn source(code: u8, variables: bool, full: bool, index: Index, defaul
     case
 }
 
-pub(super) fn expected(case: &Case, rows: &[Row]) -> Vec<u8> {
+pub(in crate::table::mutation::insert) fn expected(case: &Case, rows: &[Row]) -> Vec<u8> {
     let mut bytes = case.before.clone();
     let mut hints = vec![12_usize];
     let mut owned = vec![12_usize];
