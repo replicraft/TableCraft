@@ -1,4 +1,4 @@
-//! Fixed-cell engineering batches on fresh disposable copies; cascades are opt-in.
+//! Fixed-cell engineering batches on fresh copies; cascades and growth are opt-in.
 #[path = "support/fixed_values.rs"]
 mod fixed_values;
 
@@ -25,9 +25,32 @@ struct Args {
     /// Expand declared update cascades using original relationship matches.
     #[arg(long)]
     cascade_updates: bool,
+    /// Allow one table's Int32 indexes to grow in this engineering candidate.
+    #[arg(long, conflicts_with = "cascade_updates")]
+    index_growth: bool,
     #[arg(long="set",required=true,num_args=SPEC_FIELDS,action=clap::ArgAction::Append,allow_hyphen_values=true,value_names=["TABLE","COLUMN","ROW","KIND","EXPECTED","VALUE"])]
     cells: Vec<String>,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Mode {
+    Fitted,
+    Cascading,
+    IndexGrowth,
+}
+
+impl Args {
+    fn mode(&self) -> Mode {
+        if self.index_growth {
+            Mode::IndexGrowth
+        } else if self.cascade_updates {
+            Mode::Cascading
+        } else {
+            Mode::Fitted
+        }
+    }
+}
+
 struct Group<'a> {
     table: &'a str,
     column: &'a str,
@@ -36,6 +59,7 @@ struct Group<'a> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
+    let mode = args.mode();
     let mut owned: Vec<Group<'_>> = Vec::new();
     let (cells, remainder) = args.cells.as_chunks::<SPEC_FIELDS>();
     if !remainder.is_empty() || cells.len() > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
@@ -72,10 +96,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &mut budget,
         &|| false,
     )?;
-    let preview = if args.cascade_updates {
-        image.preview_ace16_cascading_updates(&groups, &mut budget, &|| false)?
-    } else {
-        image.preview_ace16_batch_updates(&groups, &mut budget, &|| false)?
+    let preview = match mode {
+        Mode::IndexGrowth => {
+            image.preview_ace16_split_batch_updates(&groups, &mut budget, &|| false)?
+        }
+        Mode::Cascading => {
+            image.preview_ace16_cascading_updates(&groups, &mut budget, &|| false)?
+        }
+        Mode::Fitted => image.preview_ace16_batch_updates(&groups, &mut budget, &|| false)?,
     };
     let mut output = OpenOptions::new()
         .write(true)
@@ -89,3 +117,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "preview_ace16_batch/tests.rs"]
+mod tests;

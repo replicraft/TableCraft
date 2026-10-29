@@ -34,6 +34,23 @@ separate admission. The [strict cascade consumer](ACE16_SELECTED_FORWARDED_UPDAT
 does not inherit this allocation path. No formula, default, provider, macro or
 application callback executes. Ordinary ACE saves remain blocked.
 
+## Explicit engineering consumer
+
+The existing batch example selects this service only with `--index-growth`:
+
+```sh
+cargo run -p tablecraft-ace --features ace16-write-preview \
+  --example preview_ace16_batch -- original.accdb candidate.accdb \
+  --index-growth --set Items Group 0 int32 null 42 \
+  --set Items Score 0 int32 null 777
+```
+
+The source is captured without modification and the candidate path must be new.
+The flag conflicts with `--cascade-updates` before any file is opened. Omitting
+both flags retains the fitted API; cascade dispatch remains separate. This does
+not expose normal CLI editing or permit native saves. Four focused example tests
+and strict example Clippy pass; original-file candidate calls remain pending.
+
 ## One original operation and append ledger
 
 Logical aliases are grouped by physical data number. Every original physical
