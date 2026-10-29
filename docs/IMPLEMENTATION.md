@@ -26,10 +26,15 @@ Forty source/request literal images pass complete read qualification and exact
 producer comparisons. The corrected 337-function mutation batch and full ACE
 library pass (580 functions, one existing ignored generator); seven shared targets
 pass 49 tests. Strict ACE Clippy across all targets/features, minimal compilation and
-formatting pass. Original-file GLOBAL candidate qualification remains pending. The source-pinned exclusive fill endpoint and
-retirement of old free holes are explicit engineering policies, not universal
-Microsoft format claims. Block-one growth, wider ordinary-owned promotion and
-normal saves remain separate work. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
+formatting pass. The [original-file proof](testing/ace16_insert_global_bootstrap/README.md)
+now adds twelve exact source/request-derived candidates and twelve fresh combined
+row/map reads on four EOF 512 originals. SOURCE9, four saved gates, prebuild images,
+24 public-reference calls and the fresh isolated `7c282f43` build remain separate
+receipts; all runtime phases pass first attempt. Single/chain LVAL and 32-row
+inline-DATA crossings preserve hole bodies while retiring old FREE membership.
+The source-pinned exclusive fill endpoint and frontier policy are explicit
+engineering observations, not universal Microsoft format claims. Block-one growth,
+wider ordinary-owned promotion and normal saves remain separate work. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
 
 ## Original-file Memo/OLE column-map growth
 
