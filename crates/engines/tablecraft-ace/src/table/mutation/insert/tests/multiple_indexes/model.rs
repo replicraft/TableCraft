@@ -46,11 +46,7 @@ pub(in crate::table::mutation::insert::tests) fn record(row: &Row) -> Vec<u8> {
     bytes
 }
 
-pub(in crate::table::mutation::insert::tests) fn install(
-    image: &mut [u8],
-    number: u32,
-    page: &[u8],
-) {
+pub(in crate::table::mutation) fn install(image: &mut [u8], number: u32, page: &[u8]) {
     image[number as usize * PAGE..(number as usize + 1) * PAGE].copy_from_slice(page);
 }
 pub(in crate::table::mutation) fn map(members: impl IntoIterator<Item = u32>) -> Vec<u8> {
