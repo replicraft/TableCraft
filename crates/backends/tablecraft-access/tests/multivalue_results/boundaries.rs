@@ -157,7 +157,7 @@ fn cancellation_and_independent_native_query_limits_return_no_collection_result(
 }
 
 #[test]
-fn native_opt_in_and_selected_index_blockers_are_preserved_for_bare_output() {
+fn native_opt_in_and_missing_required_index_refuse_before_bare_output_reads() {
     let source = NativeSource::new(
         Cursor::new(populated(6)),
         CatalogScope::new(1),
@@ -185,9 +185,11 @@ fn native_opt_in_and_selected_index_blockers_are_preserved_for_bare_output() {
     .with_multivalues()
     .with_index("Items", "Missing")
     .unwrap();
+    // Indexed collections are supported; the older blanket Unsupported
+    // expectation is replaced by the precise missing required-index failure.
     assert_eq!(
         query(&source, "SELECT Id,Score FROM Items").err(),
-        Some(QueryError::Unsupported),
+        Some(QueryError::UnknownName),
     );
     assert_eq!(reads.get(), 0);
 }

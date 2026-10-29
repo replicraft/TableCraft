@@ -1,11 +1,11 @@
 //! Required-index parents joined to complete collection snapshots by logical ROW.
-use super::{NativeField, NativeList, NativeSource, query_error};
+use super::{NativeList, NativeSource, query_error};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, read_stored_table_index_with_references,
     read_table_index_with_references,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_db::{MultivalueList, ProjectedRow};
+use tablecraft_db::{MultivalueList, ProjectedRow, validate_projection};
 use tablecraft_query::{QueryError, source::MultivalueVisitor};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
@@ -13,9 +13,25 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         &self,
         table: &str,
         indices: &[usize],
-        fields: &[NativeField<'_>],
+        values: &[usize],
+        members: &[usize],
         visitor: &mut MultivalueVisitor<'_>,
     ) -> Result<(), QueryError> {
+        // Opt-in and projection validation stay metadata-only. A missing or
+        // unsupported required index must fail before parent/child snapshots.
+        if !values.is_empty() {
+            if !self.multivalues {
+                return Err(QueryError::Unsupported);
+            }
+            validate_projection(values, self.collection_columns(table)?.len())?;
+        }
+        if !members.is_empty() {
+            if !self.collections {
+                return Err(QueryError::Unsupported);
+            }
+            validate_projection(members, self.named_members(table)?.len())?;
+        }
+
         let entry = self.entry(table)?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
         let index = entry.index.as_ref().ok_or(QueryError::Source)?;
@@ -50,7 +66,13 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         )
         .map_err(query_error)?;
         drop(source);
+        drop(budget);
 
+        let fields = self.load_fields(table, values, members)?;
+        let mut budget = self
+            .budget
+            .try_borrow_mut()
+            .map_err(|_| QueryError::Source)?;
         let snapshot = indexed.snapshot();
         self.check_snapshot_rows(snapshot)?;
         if !declared.matches_projection(snapshot, indices) {
@@ -65,7 +87,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
 
         // These snapshots all came from this NativeSource's stable/offline handle.
         // Metadata checks do not grant identity across unrelated database handles.
-        for field in fields {
+        for field in &fields {
             if (self.cancelled)() {
                 return Err(QueryError::Cancelled);
             }
@@ -154,7 +176,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             lists
                 .try_reserve_exact(fields.len())
                 .map_err(|_| QueryError::Allocation)?;
-            for field in fields {
+            for field in &fields {
                 lists.push(NativeList {
                     field,
                     parent,

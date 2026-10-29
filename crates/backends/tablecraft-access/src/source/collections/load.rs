@@ -11,6 +11,29 @@ use tablecraft_query::QueryError;
 use tablecraft_schema::ScalarType;
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
+    pub(super) fn load_fields(
+        &self,
+        table: &str,
+        values: &[usize],
+        members: &[usize],
+    ) -> Result<Vec<NativeField<'_>>, QueryError> {
+        let selected = self.load_values(table, values)?;
+        let mut fields = self.load_members(table, members)?;
+        self.budget
+            .try_borrow_mut()
+            .map_err(|_| QueryError::Source)?
+            .charge_allocation(values.len() as u64, size_of::<NativeField<'_>>() as u64)
+            .map_err(|error| query_error(error.into()))?;
+        fields
+            .try_reserve_exact(values.len())
+            .map_err(|_| QueryError::Allocation)?;
+        // Legacy Value views precede named members, matching the source contract.
+        for (position, column) in selected.into_iter().enumerate() {
+            fields.insert(position, NativeField::Value(column));
+        }
+        Ok(fields)
+    }
+
     pub(super) fn load_members(
         &self,
         table: &str,
