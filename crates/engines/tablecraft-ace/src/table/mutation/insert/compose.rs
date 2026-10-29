@@ -55,7 +55,8 @@ pub(super) fn compose(
     let mut count = data
         .pages
         .len()
-        .checked_add(staged.long_values.pages.len())
+        .checked_add(usize::from(data.append.global_record().is_some()))
+        .and_then(|count| count.checked_add(staged.long_values.pages.len()))
         .and_then(|count| count.checked_add(staged.long_values.initializations.len()))
         .and_then(|count| {
             count.checked_add(if staged.long_values.definition_growth.is_some() {
@@ -85,6 +86,17 @@ pub(super) fn compose(
     spans
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
+    if let Some(record) = data.append.global_record() {
+        spans.push(write(
+            original,
+            &mut after,
+            record.offset,
+            &record.before,
+            &record.after,
+            budget,
+            cancelled,
+        )?);
+    }
     for initialization in &staged.long_values.initializations {
         check(budget, cancelled)?;
         if let DeclarationBinding::ZeroPair {
@@ -175,12 +187,27 @@ pub(super) fn compose(
                     + staged.long_values.pages.len()
                     + staged.long_values.metadata.len()
                     + staged.long_values.initializations.len()
+                    + usize::from(data.append.global_bitmap().is_some())
                     + added_indexes
                     + PAGE_BYTES) as u64,
             )
             .map_err(InspectError::from)?;
         let number = u32::try_from(start / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
         let mut selected = None;
+        if let Some(bitmap) = data.append.global_bitmap()
+            && bitmap.number == number
+        {
+            data.append.require_global_bitmap(
+                number,
+                bitmap.reference,
+                bitmap.block,
+                budget,
+                cancelled,
+            )?;
+            if selected.replace(bitmap.bytes.as_slice()).is_some() {
+                return Err(EditError::Preservation);
+            }
+        }
         for page in &staged.long_values.pages {
             if page.number == number && page.before.is_empty() {
                 data.append.require_long_value(

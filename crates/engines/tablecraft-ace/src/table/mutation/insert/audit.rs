@@ -1,5 +1,6 @@
 //! Request-bound INSERT proof, separate from construction and composition.
 mod data;
+mod global;
 mod long_values;
 mod primary;
 mod records;
@@ -11,7 +12,7 @@ use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    limits::{MAX_IMAGE_BYTES, MAX_LIVE_ROWS},
+    limits::MAX_LIVE_ROWS,
     table::mutation::{
         gates, preview, variable_split::metadata::Metadata,
         variable_update::map_audit::ExpectedByte,
@@ -33,6 +34,7 @@ struct ImageProof<'a> {
     bytes: Vec<u8>,
     map_edits: Vec<ExpectedByte>,
     qualified_zero_columns: Vec<usize>,
+    global: global::Replay<'a>,
 }
 
 impl ImageProof<'_> {
@@ -41,27 +43,13 @@ impl ImageProof<'_> {
         number: u32,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        if number as usize != self.bytes.len() / PAGE_BYTES {
-            return Err(EditError::Preservation);
-        }
-
-        let length = self
-            .bytes
-            .len()
-            .checked_add(PAGE_BYTES)
-            .filter(|length| *length as u64 <= MAX_IMAGE_BYTES)
-            .ok_or(InspectError::StructureLimit)?;
-        reader
-            .budget
-            .charge_allocation(PAGE_BYTES as u64, 1)
-            .map_err(InspectError::from)?;
-        reader.work(PAGE_BYTES)?;
-        self.bytes
-            .try_reserve_exact(PAGE_BYTES)
-            .map_err(|_| InspectError::Allocation)?;
-        self.bytes.resize(length, 0);
-
-        Ok(())
+        self.global.append(
+            &mut self.bytes,
+            &mut self.map_edits,
+            &self.qualified_zero_columns,
+            number,
+            reader,
+        )
     }
 }
 
@@ -103,6 +91,7 @@ pub(super) fn prove(
         bytes,
         map_edits: Vec::new(),
         qualified_zero_columns: Vec::new(),
+        global: global::Replay::new(image, schema.definition_page()),
     };
 
     let resolved = long_values::derive(image, &checked, requests, staged, &mut proof, &mut reader)?;
@@ -136,6 +125,8 @@ pub(super) fn prove(
         &mut proof,
         &mut reader,
     )?;
+
+    proof.global.compare(staged, &proof.bytes, &mut reader)?;
 
     if staged.data.append.length != proof.bytes.len()
         || staged.data.append.reservations_len()

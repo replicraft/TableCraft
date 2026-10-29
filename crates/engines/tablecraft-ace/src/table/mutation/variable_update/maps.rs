@@ -1,5 +1,6 @@
 //! Represented owned/candidate/global cells composed against one frozen image.
 mod hint;
+mod owned;
 
 use super::super::{
     EditError, WriteBlocker,
@@ -29,6 +30,7 @@ pub(in crate::table::mutation) struct Maps {
     hint: RepresentedMap,
     hint_reference: u32,
     hint_growth: Option<hint::Hint>,
+    owned_rebase: Option<owned::Owned>,
     global: RepresentedMap,
     eof: u32,
 }
@@ -70,9 +72,32 @@ impl Maps {
             hint,
             hint_reference,
             hint_growth: None,
+            owned_rebase: None,
             global,
             eof: reader.header.page_count(),
         })
+    }
+
+    /// INSERT may rebase one canonical owned row; other consumers keep their
+    /// original represented-only allocation policy.
+    pub(in crate::table::mutation) fn enable_owned_rebase(
+        &mut self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        metadata: &Metadata,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        self.owned_rebase = owned::Owned::capture(schema, metadata, &mut reader)?;
+        Ok(())
     }
 
     pub(in crate::table::mutation) fn enable_hint_growth(
@@ -220,16 +245,26 @@ impl Maps {
             cancelled,
             reads: 0,
         };
-        let owned = self.owned.future_cell(&mut reader, number)?;
+        let rewrite_owned = self
+            .owned_rebase
+            .as_ref()
+            .is_some_and(|owned| owned.needs_rewrite(number));
+        let owned = if rewrite_owned {
+            None
+        } else {
+            Some(self.owned.future_cell(&mut reader, number)?)
+        };
         let hint = if self.hint_growth.is_none() {
             Some(self.hint.future_cell(&mut reader, number)?)
         } else {
             None
         };
-        let global = self.global.future_cell(&mut reader, number)?;
-        if append::current(&append.map_edits, &owned, &mut reader)?
-            || !append::current(&append.map_edits, &global, &mut reader)?
+        if let Some(owned) = &owned
+            && append::current(&append.map_edits, owned, &mut reader)?
         {
+            return Err(InspectError::Malformed.into());
+        }
+        if !append.global_is_free(&self.global, number, &mut reader)? {
             return Err(InspectError::Malformed.into());
         }
         if let Some(hint) = &hint
@@ -237,11 +272,18 @@ impl Maps {
         {
             return Err(InspectError::Malformed.into());
         }
-        append::claim(&mut append.map_edits, owned, true, &mut reader)?;
+        if let Some(owned) = owned {
+            append::claim(&mut append.map_edits, owned, true, &mut reader)?;
+        } else {
+            self.owned_rebase
+                .as_mut()
+                .ok_or(EditError::Preservation)?
+                .add(number, &self.owned_pages, append, &mut reader)?;
+        }
         if let Some(hint) = hint {
             append::claim(&mut append.map_edits, hint, true, &mut reader)?;
         }
-        append::claim(&mut append.map_edits, global, false, &mut reader)?;
+        append.claim_global(&self.global, number, &mut reader)?;
         reader
             .budget
             .charge_allocation(1, size_of::<u32>() as u64)

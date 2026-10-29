@@ -99,7 +99,9 @@ files, Windows execution or native save/reopen behavior.
 
 ## Remaining scope
 
+The later [GLOBAL INSERT continuation](ACE16_GLOBAL_MAP_INSERT_GROWTH.md)
+qualifies canonical inline promotion at the first page 512 allocation.
 Definition continuation allocation, legacy external-page adoption or migration,
-map-container slot expansion and global map growth remain separate work. The
+map-container slot expansion and wider global growth remain separate work. The
 [long-value INSERT](ACE16_LONG_VALUE_INSERTS.md) and
 [engineering preview safety](ACE16_WRITE_PREVIEWS.md) boundaries continue to apply.

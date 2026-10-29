@@ -104,8 +104,9 @@ Minimal and all-feature compilation remain separate checks.
 
 The later [missing-declaration continuation](ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
 adds qualified single-page TD tails. Table-definition continuation growth, legacy
-external-page adoption or migration, map-container slot expansion and global map
-growth remain separate work. These tests qualify synthetic engineering sources
+external-page adoption or migration and map-container slot expansion remain
+separate work. The later [GLOBAL INSERT continuation](ACE16_GLOBAL_MAP_INSERT_GROWTH.md)
+qualifies the canonical first page 512 crossing; wider global growth remains open. These tests qualify synthetic engineering sources
 and independent byte proofs; they do not establish original Access-file behavior,
 Windows Access execution or native save/reopen compatibility. The
 [preview safety boundary](ACE16_WRITE_PREVIEWS.md) remains unchanged.

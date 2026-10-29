@@ -23,6 +23,7 @@ pub(super) struct PromotionExpected {
 
 pub(super) struct Growth {
     pub begin: u32,
+    end: u32,
     pub right: u32,
     pub left: u32,
     pub promoted: Option<PromotionExpected>,
@@ -106,6 +107,8 @@ pub(super) fn derive(
 
     Ok(Growth {
         begin,
+        end: u32::try_from(proof.bytes.len() / PAGE_BYTES)
+            .map_err(|_| InspectError::StructureLimit)?,
         right,
         left,
         promoted,
@@ -121,29 +124,25 @@ impl Growth {
         proof: &ImageProof<'_>,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
-        let extra = u32::from(self.promoted.is_some());
-        let following = self.begin.checked_add(1).ok_or(EditError::Preservation)?;
-        let end = self
-            .begin
-            .checked_add(2 + extra)
-            .ok_or(EditError::Preservation)?;
-        let left = match &self.promoted {
-            None => following,
-            Some(promotion) if promotion.number == following => {
-                following.checked_add(1).ok_or(EditError::Preservation)?
+        if self.right != self.begin || proof.bytes.len() / PAGE_BYTES != self.end as usize {
+            return Err(EditError::Preservation);
+        }
+        let mut expected_phase = Vec::new();
+        reserve(&mut expected_phase, 2, reader)?;
+        expected_phase.extend([self.right, self.left]);
+        if let Some(promotion) = &self.promoted {
+            reserve(&mut expected_phase, 1, reader)?;
+            expected_phase.push(promotion.number);
+        }
+        expected_phase.sort_unstable();
+        reader.work((self.end - self.begin) as usize)?;
+        let mut phase = (self.begin..self.end).filter(|number| !proof.global.is_metadata(*number));
+        for number in expected_phase {
+            if phase.next() != Some(number) {
+                return Err(EditError::Preservation);
             }
-            Some(promotion)
-                if promotion.number
-                    == following.checked_add(1).ok_or(EditError::Preservation)? =>
-            {
-                following
-            }
-            Some(_) => return Err(EditError::Preservation),
-        };
-        if self.right != self.begin
-            || self.left != left
-            || proof.bytes.len() / PAGE_BYTES != end as usize
-        {
+        }
+        if phase.next().is_some() {
             return Err(EditError::Preservation);
         }
 

@@ -170,8 +170,7 @@ pub(super) fn derive(
             }
             let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
             global.require_allocated_storage(reader, &global)?;
-            initializations =
-                initialization::derive(schema, &selected, &sources, &global, proof, reader)?;
+            initializations = initialization::derive(schema, &selected, &sources, proof, reader)?;
             growth = tail::derive(
                 schema,
                 sources.tail.as_ref(),

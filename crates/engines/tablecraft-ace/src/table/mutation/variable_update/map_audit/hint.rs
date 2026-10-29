@@ -143,14 +143,21 @@ impl Hint {
         Ok(())
     }
 
-    pub(in crate::table::mutation) fn add(
+    pub(in crate::table::mutation) fn add<F>(
         &mut self,
         number: u32,
         next_eof: &mut u32,
         expected: &mut Vec<ExpectedByte>,
-        global: &RepresentedMap,
+        mut allocate: F,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
-    ) -> Result<Option<u32>, EditError> {
+    ) -> Result<Option<u32>, EditError>
+    where
+        F: FnMut(
+            u32,
+            &mut Vec<ExpectedByte>,
+            &mut Reader<'_, Cursor<&[u8]>>,
+        ) -> Result<u32, EditError>,
+    {
         reader.tick()?;
         let members = self.updated_members(Some(number), reader)?;
         if let Some(bitmap) = &mut self.bitmap {
@@ -203,22 +210,6 @@ impl Hint {
         {
             return Err(EditError::Preservation);
         }
-        let global_cell = global.future_cell(reader, metadata)?;
-        reader.work(expected.len())?;
-        let current = if let Some(byte) = expected
-            .iter()
-            .find(|byte| byte.offset == global_cell.offset)
-        {
-            if byte.before != global_cell.before {
-                return Err(EditError::Preservation);
-            }
-            byte.after
-        } else {
-            global_cell.before
-        };
-        if global_cell.before & global_cell.mask == 0 || current & global_cell.mask == 0 {
-            return Err(EditError::Preservation);
-        }
         let mut bitmap = zeroed(PAGE_BYTES, reader)?;
         bitmap[..BITMAP_PREFIX.len()].copy_from_slice(&BITMAP_PREFIX);
         for &member in &members {
@@ -233,7 +224,10 @@ impl Hint {
         after[0] = 1;
         after[1..INLINE_PREFIX].copy_from_slice(&metadata.to_le_bytes());
         replace_expected(self.offset, &self.original, &after, expected, reader)?;
-        expect(expected, global_cell, false, reader)?;
+        let end = allocate(metadata, expected, reader)?;
+        if end <= metadata {
+            return Err(EditError::Preservation);
+        }
         self.members = members;
         self.rewritten = true;
         self.bitmap = Some(ExpectedBitmap {

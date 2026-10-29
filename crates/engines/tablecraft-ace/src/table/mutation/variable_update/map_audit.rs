@@ -320,8 +320,13 @@ fn replay(
             phase_pages.push(number);
             next_eof = next_eof.checked_add(1).ok_or(EditError::Preservation)?;
             if let Some(replay) = &mut hint_replay
-                && let Some(bitmap) =
-                    replay.add(number, &mut next_eof, &mut expected, &global, &mut reader)?
+                && let Some(bitmap) = replay.add(
+                    number,
+                    &mut next_eof,
+                    &mut expected,
+                    |number, edits, reader| reserve_global_metadata(&global, number, edits, reader),
+                    &mut reader,
+                )?
             {
                 reader
                     .budget
@@ -399,4 +404,29 @@ fn compare(
     // bytes. This replay only grants exact map transitions, never page contents.
     check(budget, cancelled)?;
     Ok(())
+}
+
+// UPDATE retains its represented-only global policy. The shared hint replay
+// asks its actual consumer to authorize one metadata allocation.
+fn reserve_global_metadata(
+    global: &RepresentedMap,
+    number: u32,
+    expected: &mut Vec<ExpectedByte>,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<u32, EditError> {
+    let cell = global.future_cell(reader, number)?;
+    reader.work(expected.len())?;
+    let current = if let Some(byte) = expected.iter().find(|byte| byte.offset == cell.offset) {
+        if byte.before != cell.before {
+            return Err(EditError::Preservation);
+        }
+        byte.after
+    } else {
+        cell.before
+    };
+    if cell.before & cell.mask == 0 || current & cell.mask == 0 {
+        return Err(EditError::Preservation);
+    }
+    expect(expected, cell, false, reader)?;
+    number.checked_add(1).ok_or(EditError::Preservation)
 }

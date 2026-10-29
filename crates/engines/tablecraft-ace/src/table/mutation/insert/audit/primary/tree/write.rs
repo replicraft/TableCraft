@@ -2,7 +2,7 @@
 
 use super::super::{Wire, page_range, split::maps::Allocation};
 use super::{
-    Change, ImageProof, frames,
+    Change, ImageProof, copied_numbers, frames,
     normalize::{Normalized, Origin, Payload},
     raw, reserve,
     source::Source,
@@ -148,6 +148,8 @@ pub(super) fn derive(
         pages,
         indexes,
         begin,
+        end: u32::try_from(proof.bytes.len() / PAGE_BYTES)
+            .map_err(|_| InspectError::StructureLimit)?,
         physical: index.data_number(),
         usage: index.usage_map(),
         promoted,
@@ -203,37 +205,34 @@ pub(super) fn compare(
         .len()
         .checked_add(extra)
         .ok_or(EditError::Preservation)?;
-    let end = change
-        .begin
-        .checked_add(u32::try_from(added).map_err(|_| InspectError::StructureLimit)?)
-        .ok_or(EditError::Preservation)?;
-    if proof.bytes.len() / PAGE_BYTES != end as usize
+    if proof.bytes.len() / PAGE_BYTES != change.end as usize
         || actual.added.len() != added
         || actual.promotions.len() != extra
     {
         return Err(EditError::Preservation);
     }
-    let mut next = change.begin;
-    for number in &change.indexes {
-        reader.tick()?;
-        if change
-            .promoted
-            .as_ref()
-            .is_some_and(|promotion| promotion.number == next)
-        {
-            next = next.checked_add(1).ok_or(EditError::Preservation)?;
-        }
-        if *number != next {
+    let mut expected_pages = copied_numbers(&change.indexes, reader)?;
+    if let Some(promotion) = &change.promoted {
+        reserve(&mut expected_pages, 1, reader)?;
+        let work = expected_pages
+            .len()
+            .checked_mul(size_of::<u32>())
+            .ok_or(InspectError::StructureLimit)?;
+        reader.work(work)?;
+        let position = expected_pages
+            .binary_search(&promotion.number)
+            .err()
+            .ok_or(EditError::Preservation)?;
+        expected_pages.insert(position, promotion.number);
+    }
+    reader.work((change.end - change.begin) as usize)?;
+    let mut phase = (change.begin..change.end).filter(|number| !proof.global.is_metadata(*number));
+    for &number in &expected_pages {
+        if phase.next() != Some(number) {
             return Err(EditError::Preservation);
         }
-        next = next.checked_add(1).ok_or(EditError::Preservation)?;
     }
-    if let Some(promotion) = &change.promoted
-        && promotion.number == next
-    {
-        next = next.checked_add(1).ok_or(EditError::Preservation)?;
-    }
-    if next != end {
+    if phase.next().is_some() {
         return Err(EditError::Preservation);
     }
 
@@ -264,11 +263,7 @@ pub(super) fn compare(
     if position != actual.patches.len() {
         return Err(EditError::Preservation);
     }
-    for (offset, page) in actual.added.iter().enumerate() {
-        let number = change
-            .begin
-            .checked_add(u32::try_from(offset).map_err(|_| InspectError::StructureLimit)?)
-            .ok_or(EditError::Preservation)?;
+    for (page, number) in actual.added.iter().zip(expected_pages) {
         reader.work(PAGE_BYTES)?;
         if page.number != number || page.bytes != proof.bytes[page_range(number)?] {
             return Err(EditError::Preservation);

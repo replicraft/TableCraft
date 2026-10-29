@@ -434,10 +434,17 @@ The combined INSERT batch passes 212 functions and the full ACE library passes
 adds certified single-page TD tails and exact header changes, with mixed zero/missing
 bindings, nonzero consumed-spare before-images and an independent complete-image
 audit. Its combined INSERT batch passes 229 functions; the full ACE library passes
-565 with one existing ignored generator. Legacy external storage migration,
-continued TD initialization, global map growth and pointer-record
-expansion remain open; these checkpoints do not qualify normal saves or native
-Access behavior.
+565 with one existing ignored generator. The following
+[GLOBAL INSERT continuation](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md) now
+promotes canonical inline storage at the first page 512 allocation, interleaving
+GLOBAL 513 with actual DATA/INDEX/LVAL/container/owned-bitmap IDs and independently
+replaying source identity, frontier retirement and the pinned fill policy.
+Forty complete literal images, 337 mutation functions and the full 580-function
+ACE library pass (one existing ignored generator); seven shared targets pass 49
+tests. Strict ACE Clippy, minimal compilation and formatting pass; original-file
+GLOBAL candidate qualification remains pending. Legacy external storage migration, continued TD initialization,
+block-one global growth and pointer-record expansion remain open; these
+checkpoints do not qualify normal saves or native Access behavior.
 The external-payload profile additionally passes sixteen source/request-only
 complete-image comparisons and sixteen fresh independent typed-row/map reads.
 Its committed producer was rebuilt in a fresh target after a stale shared-cache

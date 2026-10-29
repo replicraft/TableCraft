@@ -20,6 +20,7 @@ pub(super) struct Change {
     pages: Vec<u32>,
     indexes: Vec<u32>,
     begin: u32,
+    end: u32,
     physical: u32,
     usage: u32,
     promoted: Option<PromotionExpected>,

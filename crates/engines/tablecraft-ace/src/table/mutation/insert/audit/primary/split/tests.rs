@@ -317,6 +317,7 @@ fn index_row_transition_cannot_retire_even_unchanged_certified_data_effects() {
             original: image.as_bytes(),
             bytes: before.clone(),
             qualified_zero_columns: Vec::new(),
+            global: audit::global::Replay::new(&image, 10),
             map_edits: vec![ExpectedByte {
                 offset,
                 before: before[offset],
