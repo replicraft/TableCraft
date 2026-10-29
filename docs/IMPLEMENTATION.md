@@ -1513,6 +1513,31 @@ saved/named/derived executions and four buffered LIKE refusals, comparing 568 ro
 and 936 cells. This verifies existing named-source policy propagation without
 rewriting the original corpus or claiming native Access SQL qualification.
 
+## French Database substring search
+
+Exact French legacy `1036/0/0` now supports provisional Database-mode substring
+search over decoded text and raw UTF-16. Complete French weights decide equality;
+physical index truncation and digests never decide a match. The kernel returns
+original consumed spans, retains valid surrogate-pair boundaries and selects the
+shortest matching span at the earliest/latest admitted start. Shared primary-only
+pruning uses the unchanged Legacy primary stream; reversed secondary weights
+never justify pruning. Work, allocation and cancellation remain cumulative.
+
+The first focused batch passes seven kernel, one primary-invariant, six provider
+and seven query-contract functions. Independent Latin/window oracles, generated
+raw-unit windows, long-input work ceilings, one-short pools and shared callback
+guards cover the [owning contract](access/indexes/FRENCH_SEARCH.md). Existing
+General engine and adapter regressions pass fourteen and sixteen functions.
+The full ACE library passes 601 functions with one existing ignored generator;
+the full Access suite passes 500 functions across 62 targets. A separate
+required-index ordering defect was corrected during the Access batch; it was
+not caused by French matching. Strict all-target/all-feature Clippy, minimal
+builds, formatting, document links and dependency guards pass.
+
+French LIKE, equality-prefix hints, Windows Text/LCID policy inference and native
+Access matching qualification remain separate. This advances the finite P0 T3
+implementation gap without declaring read/query or native compatibility complete.
+
 ## Comparison-only French database query policy
 
 Exact French legacy `1036/0/0` now has separate full-String and raw-UTF16
@@ -1525,8 +1550,9 @@ String built-ins retain their operation/default provider contract.
 French SQL/default and explicit Database comparisons use the provisional weight
 model. Text/LCID policies are not inferred from the stored locale. An explicit
 unsupported-LIKE capability prevents wildcard-only patterns from bypassing the
-matching boundary; actual French substring matching remains unavailable, while
-existing NULL/empty/out-of-range controls and Binary operations retain their rules.
+matching boundary. The subsequent substring service above supplies a separate
+provisional Database-mode policy; existing NULL/empty/out-of-range controls and
+Binary operations retain their rules. Native matching qualification remains open.
 The resolver's default accessor now returns `&dyn Collation`, an intentional
 public source-compatibility change documented in the owning contract.
 

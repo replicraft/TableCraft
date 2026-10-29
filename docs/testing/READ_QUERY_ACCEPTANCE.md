@@ -574,10 +574,17 @@ native Access/NLS qualification remain open. See the
 
 | Boundary | Current implementation | Remaining work |
 | --- | --- | --- |
-| Database text providers | General recognition requires `1033/0/0` or `1033/0/1`; a separate exact French Legacy `1036/0/0` provider now supplies complete comparisons and qualified single Short Text physical reads | French LIKE/search, additional database orders, arbitrary long French Unicode/unprintable behavior and native function-specific padding/weight qualification |
+| Database text providers | General recognition requires `1033/0/0` or `1033/0/1`; a separate exact French Legacy `1036/0/0` provider supplies complete comparisons, bounded Database-mode substring spans and qualified single Short Text physical reads | French LIKE, additional database orders, arbitrary long French Unicode/unprintable behavior and native function-specific comparison/matching qualification |
 | System text / explicit LCID | Nineteen opt-in ICU host profiles implement decoded text comparison/search and exact registered LCID dispatch; General database comparison remains separate | Windows NLS/ACE function-specific qualification and broader locale providers; explicit registration does not establish native LCID equivalence |
 | Mixed field policies | Runtime policies survive retained cells; distinct required IDs conservatively merge to Conflict | Native precedence rules before relaxing conflicts |
 | Value categories | Explicit declaration-sensitive arithmetic now captures decimal integer literal carriers; default preparation is unchanged and unknown provenance is retained | Qualify literal subtypes and complete Variant promotion, Error and result-type matrices before enabling broader defaults |
+
+The [French substring implementation](../access/indexes/FRENCH_SEARCH.md), added
+28 October 2026, passes its first seven kernel, one primary-invariant and
+thirteen Access functions, plus thirty existing General regressions. Complete
+French weights decide matches; only the unchanged Legacy primary stream permits
+candidate pruning. This advances the engineering implementation of T3 without
+qualifying native Access matching, enabling French LIKE or closing the P0 row.
 
 The [explicit ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) has bounded callbacks and 14,498
 independent ICU4C controls across nineteen host profiles. It supplies working host functionality while retaining

@@ -1,5 +1,6 @@
-//! Comparison-only French legacy bridge with one explicit cumulative allowance.
+//! French legacy comparison and substring bridge with one cumulative allowance.
 use super::{adapt, budget};
+use std::ops::Range;
 use std::{cell::RefCell, cmp::Ordering};
 use tablecraft_ace::{
     InspectError, NativeSortOrder, compare_french_legacy_text, compare_french_legacy_utf16,
@@ -7,15 +8,21 @@ use tablecraft_ace::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{
     EvalError,
-    comparison::{Collation, LikeProfile, StringCompareMode, StringComparisonProfile},
+    comparison::{
+        Collation, LikeProfile, StringCompareMode, StringComparisonProfile, StringSearch,
+        StringSearchProfile,
+    },
 };
+
+mod search;
 
 const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
 
 /// Explicit provisional French legacy 1036/0/0 full-string comparison.
 ///
 /// SQL/default and explicit Database comparison use the engineering weight model.
-/// This does not implement Windows Text/LCID comparison, LIKE, substring search,
+/// Database substring search uses complete weights and consumed UTF-16 spans.
+/// This does not implement Windows Text/LCID comparison, LIKE,
 /// equality-prefix hints or native Access SQL qualification. Binary operations
 /// and policy-independent search controls retain their existing evaluator rules.
 pub struct FrenchLegacyCollation<'a> {
@@ -104,6 +111,34 @@ impl Collation for FrenchLegacyCollation<'_> {
 
     fn like_profile(&self) -> LikeProfile {
         LikeProfile::Unsupported
+    }
+
+    fn string_search_profile(&self, mode: StringCompareMode) -> StringSearchProfile {
+        if mode == StringCompareMode::Database {
+            StringSearchProfile::Utf16
+        } else {
+            StringSearchProfile::Unicode
+        }
+    }
+
+    fn find(
+        &self,
+        haystack: &str,
+        needle: &str,
+        bounds: StringSearch,
+        mode: StringCompareMode,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        self.search(haystack, needle, bounds, mode)
+    }
+
+    fn find_utf16(
+        &self,
+        haystack: &[u16],
+        needle: &[u16],
+        bounds: StringSearch,
+        mode: StringCompareMode,
+    ) -> Result<Option<Range<usize>>, EvalError> {
+        self.search_utf16(haystack, needle, bounds, mode)
     }
 
     fn option_compare(&self) -> Option<StringCompareMode> {
