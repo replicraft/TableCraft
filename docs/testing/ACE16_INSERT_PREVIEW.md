@@ -54,7 +54,8 @@ incrementing companions, Required/carrier/arity/empty-Text/validation failures,
 and unqualified declaration refusals. The first API compilation stopped before
 tests because one migrated test used a request type from a different literal
 fixture owner; correcting that type and removing its unused import changed no
-source or expected bytes. Broader checks for this expansion remain pending.
+source or expected bytes. The complete INSERT library slice also passes all
+292 functions; remaining broader checks are tracked separately.
 
 A unique, required, ascending Int32 primary remains mandatory. Qualified
 [additional scalar physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
