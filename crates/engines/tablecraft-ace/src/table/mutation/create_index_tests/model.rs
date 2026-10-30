@@ -7,18 +7,18 @@ use crate::{
 use std::collections::BTreeSet;
 use tablecraft_testkit::access as raw;
 
-pub(super) const PAGE: usize = 4096;
-pub(super) const SOURCE_PAGES: u32 = 24;
+pub(in crate::table::mutation) const PAGE: usize = 4096;
+pub(in crate::table::mutation) const SOURCE_PAGES: u32 = 24;
 
 #[derive(Clone, Copy, Debug)]
-pub(super) enum Population {
+pub(in crate::table::mutation) enum Population {
     Empty,
     Distinct,
     NullableDuplicate,
     Pressure,
 }
 
-pub(super) const POPULATIONS: [Population; 4] = [
+pub(in crate::table::mutation) const POPULATIONS: [Population; 4] = [
     Population::Empty,
     Population::Distinct,
     Population::NullableDuplicate,
@@ -26,14 +26,14 @@ pub(super) const POPULATIONS: [Population; 4] = [
 ];
 
 #[derive(Clone)]
-pub(super) struct Row {
+pub(in crate::table::mutation) struct Row {
     pub id: i32,
     pub score: Option<i32>,
     pub guard: i32,
     pub reference: u32,
 }
 
-pub(super) struct Case {
+pub(in crate::table::mutation) struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub rows: Vec<Row>,
@@ -161,7 +161,11 @@ fn expected_definition(
     (result, length)
 }
 
-pub(super) fn source(code: u8, population: Population, descending: bool) -> Case {
+pub(in crate::table::mutation) fn source(
+    code: u8,
+    population: Population,
+    descending: bool,
+) -> Case {
     let seed = frames::source(code, false, false).before;
     let mut before = seed.clone();
     before.resize(SOURCE_PAGES as usize * PAGE, 0);

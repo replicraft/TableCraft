@@ -7,7 +7,8 @@ use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
-mod model;
+mod api;
+pub(in crate::table::mutation) mod model;
 mod reference;
 
 fn budget() -> ResourceBudget {

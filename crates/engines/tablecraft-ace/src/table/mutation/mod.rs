@@ -18,6 +18,10 @@ mod guards;
 #[cfg(feature = "ace16-write-preview")]
 mod index_append;
 #[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod index_create;
+#[cfg(feature = "ace16-write-preview")]
+pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
+#[cfg(feature = "ace16-write-preview")]
 mod insert;
 #[cfg(feature = "ace16-write-preview")]
 mod long_value;

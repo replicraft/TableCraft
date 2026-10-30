@@ -49,6 +49,8 @@ pub use mutation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 #[cfg(feature = "ace16-write-preview")]
+pub use mutation::{Ace16IndexCreatePreview, SecondaryIndexCreate};
+#[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
     BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,

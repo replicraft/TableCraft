@@ -1,4 +1,5 @@
 //! Immutable table identities for the shared INDEX append consumer.
+pub(in crate::table) mod fresh_index;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck,
     format::{allocation, reader::Reader},

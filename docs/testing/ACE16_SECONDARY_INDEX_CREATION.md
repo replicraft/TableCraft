@@ -1,6 +1,8 @@
-# Physical secondary-index creation sources
+# Physical secondary-index creation
 
-Status: SOURCE-qualified literal corpus; no creation writer or CLI is implemented.
+Status: native engineering creation API, exact quota/purpose controls, mutation
+regressions, strict/minimal builds and final repository checks pass. Access/CLI
+creation consumers are not installed.
 
 The [source gate](../../crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs)
 constructs eight authored BEFORE images and sixteen complete ASC/DESC expected
@@ -44,13 +46,67 @@ cargo test -p tablecraft-ace --all-features --lib --locked \
   qualify_real_secondary_index_source_and_complete_expected_before_writer
 ```
 
-The [result](results/ace16-secondary-index-creation-sources-2026-10-30.json) pins
-the model, source gate, helpers, review and first log. A bounded definition
-composer, fresh-index allocation capability, creation API, independent producer
-proof and actual CLI/shared-service consumer remain unimplemented. Unknown
-tails/chains and wider policies must not be admitted by inference. Blank-database
-creation, general CREATE/ALTER TABLE, required macro coverage, transactions and
-normal ACE saves remain separate unfinished work.
+The [source result](results/ace16-secondary-index-creation-sources-2026-10-30.json)
+retains the original model, source gate, helpers, review and first log. Its
+SOURCE-only state is historical; it is not retargeted to the later producer.
+
+## Native engineering API
+
+`NativeImage::preview_ace16_create_secondary_index` consumes one Standard capture
+and an original borrowed `SecondaryIndexCreate::new(name, column, descending)`.
+It returns `Ace16IndexCreatePreview`: complete original/candidate bytes and the
+created name, separate logical/physical numbers and indexed-row count. Indexing
+records does not report changed data rows. There is no normal-plan, journal or
+save conversion.
+
+The initial profile requires a qualified ordinary fixed Int32 table with
+contiguous native fields, existing single-column indexes, a supported one-page
+TD tail and representable inline allocation records. The selected field must be
+previously unindexed. New names are ASCII, at most 64 bytes, beginning with a
+letter and continuing with letters, digits or underscore. The new index is
+ordinary nonunique/include-NULL, ASC or DESC. These are current engineering
+limits, not the complete ACE 16 compatibility target.
+
+Source qualification, all original rows, fresh-key population, definition
+capacity and complete source ownership are checked before reservations. A
+source-bound fresh owner allocates a distinct map container and INDEX bodies
+under explicit new-purpose ledger entries, without inventing an original
+`NativeIndex`. The existing key codecs and actual shared page constructor build
+one leaf, or a root and two fitting leaves; larger heights, chained definitions,
+map promotion and wider field/policy profiles remain refused.
+
+The independent audit rereads original records and the original caller request.
+It independently reconstructs NULL/nonNULL keys, distinct-family history, TD
+framing, maps and every appended page, checking the plan and ledger as
+observations. Complete expected bytes must equal the candidate before final
+reader/constraint/ownership checks and cancellation. Old rows, aliases, map
+records, counters and unrelated inactive bytes are protected.
+
+First native compilation, the unchanged SOURCE gate, all three initial public
+API functions and all three correlated audit controls pass. The API covers all
+16 complete expected images; authority controls reject a valid alternative
+DESC population against original ASC intent, correlated wrong fresh history,
+and correlated omitted GLOBAL claims. A static install review corrected one
+explicit LimitError-to-InspectError mapping before any compilation; no source
+or expected image changed.
+
+The pressure-source controls pass exact and one-below Bytes/Rows/Steps limits,
+including all exact pools together and cancellation at the final observed poll.
+Both headers reject FixedUpdate-purpose captures before operation spending or
+polling, for empty and 600-row populations. The full mutation regression passes
+549 functions; the explicit private-export helper is ignored. Minimal ACE passes.
+The first strict check found only a range-expression style lint; an equivalent
+inclusive-range correction preserves both endpoints. After that correction, all
+five public API functions, all three audit controls and native strict
+all-target/all-feature checks pass. Final formatter, documentation links and
+dependency boundaries pass. Source/expected images remain unchanged.
+The [native result](results/ace16-secondary-index-creation-native-2026-10-30.json)
+pins the initial and final logs separately, including the first strict refusal.
+
+Blank-database creation, general CREATE/ALTER TABLE, required macro coverage,
+transactions and normal ACE saves remain separate unfinished work. A planned
+explicit SQL `query preview-create-index` consumer will lower the existing
+CREATE INDEX syntax into the same typed request; it is not implemented yet.
 
 ## Independent public-API reference
 

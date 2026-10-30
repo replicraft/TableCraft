@@ -1,0 +1,343 @@
+{
+  "feature": "Real ordinary Int32 physical secondary-index creation engineering API",
+  "date": "2026-10-30",
+  "state": "Native API/source/audit, quota/purpose, mutation regression, strict/minimal and final repository checks pass; host uninstalled",
+  "scope": {
+    "headers": [
+      5,
+      6
+    ],
+    "capture": "Standard only; FixedUpdate-purpose explicitly refused even for empty sources",
+    "request": "SecondaryIndexCreate::new(name, column, descending)",
+    "method": "NativeImage::preview_ace16_create_secondary_index",
+    "ordinary_nonunique_include_null": true,
+    "already_indexed_field_refused": true,
+    "new_key_profile": "Int32 ASC/DESC, including NULL and duplicate logical ROWs",
+    "allocation": "Dedicated fresh map container plus one leaf or root and two leaves; initial inline-map/single-TD-page profile",
+    "source_derived_ids": true,
+    "logical_physical_separate": true,
+    "normal_save_or_journal_authority": false,
+    "host_consumer_installed": false,
+    "required_macro_qualification": false
+  },
+  "source_before_producer": {
+    "functions": 1,
+    "pairs": 16,
+    "complete_reader_views": 32,
+    "original_source_record": "docs/testing/results/ace16-secondary-index-creation-sources-2026-10-30.json",
+    "original_source_result_unchanged": true,
+    "source_after_install_exit": 0,
+    "log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/native-source-after-install-root.log",
+      "bytes": 506,
+      "sha256": "a4c9f0c2d1976b9d79bff48e52236b40994f8b3748d934a3026e904d31916807"
+    }
+  },
+  "first_native": {
+    "normal_compile": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-normal-first-root.log",
+        "bytes": 183,
+        "sha256": "7b5c8a5a06c08e8e8e79824d00f79ba158f04e58004fb83bfee906a38822d98c"
+      }
+    },
+    "public_api": {
+      "exit": 0,
+      "functions": 3,
+      "complete_expected_images": 16,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-api-first-root.log",
+        "bytes": 618,
+        "sha256": "b1d9603d4525a076389287b0843da3ac4e6e44d9f618c7a96d9042bcfecd072d"
+      }
+    },
+    "independent_audit": {
+      "exit": 0,
+      "functions": 3,
+      "controls": [
+        "Original ASC caller intent against healthy valid DESC plan/candidate",
+        "Correlated wrong fresh-family count and TD counter",
+        "Correlated dropped GLOBAL claims and candidate bitmap"
+      ],
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-audit-first-root.log",
+        "bytes": 657,
+        "sha256": "9d25a959427202f32628b37a799e5b7d3b03f320eb680a1f5e4850b654bd6b61"
+      }
+    }
+  },
+  "additional_controls": {
+    "status": "first execution passed",
+    "selectors": [
+      "create_secondary_index_pressure_obeys_exact_pools_and_terminal_cancellation",
+      "create_secondary_index_refuses_fixed_update_purpose_even_for_empty_source"
+    ],
+    "pressure_rows": 600,
+    "pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "exact_each_and_joint": true,
+    "one_below_each_typed_limit": true,
+    "final_observed_cancellation": true,
+    "fixed_update_purpose_both_headers_empty_and_pressure": true,
+    "resource_functions": 1,
+    "purpose_functions": 1,
+    "pools_log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/native-pools-first-root.log",
+      "bytes": 515,
+      "sha256": "18da0745b231925e1fd10055287706f19b85ff10da7cf174bf4f9fb5cde21836"
+    },
+    "purpose_log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/native-policy-first-root.log",
+      "bytes": 401,
+      "sha256": "31984a4cae97c2b709eb619fd687fc745a2e624d35d3d79572b60345595599d0"
+    }
+  },
+  "history": [
+    {
+      "phase": "Static native install review before first compilation",
+      "observation": "A FreshIndexOwner allocation charge required explicit LimitError mapping through InspectError; corrected before any compilation or API execution",
+      "source_or_expected_changed": false,
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/native-coherent-correction.json",
+        "bytes": 236,
+        "sha256": "f214939dd1c5664a864fdd057b4f0ad775e7c0b4c10227d24de98ca89d0c6ff8"
+      }
+    },
+    {
+      "phase": "First native all-target/all-feature strict check",
+      "exit": 101,
+      "observation": "One manual_range_contains lint in the new TD length guard; equivalent inclusive-range predicate retained exact lower/upper endpoints",
+      "source_or_expected_changed": false,
+      "first_log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-strict-first-root.log",
+        "bytes": 1028,
+        "sha256": "2b7e556f835a6b54a4c589f5f0ee5a5c7aeb0caa1274d421a981ad60f732cad6"
+      },
+      "correction": "length > PAGE_BYTES || length < PAGE_HEADER_BYTES became !(PAGE_HEADER_BYTES..=PAGE_BYTES).contains(&length)"
+    }
+  ],
+  "broader_checks": {
+    "native_mutation_regression": {
+      "exit": 0,
+      "passed": 549,
+      "ignored": 1,
+      "ignored_scope": "explicit private source/expected export helper",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-mutation-regression-first-root.log",
+        "bytes": 74115,
+        "sha256": "63fcad67ed4de49429c921b4c356dfb8f465b8c1c4d19fcee2db925a9a42d863"
+      }
+    },
+    "strict_all_targets_all_features": {
+      "exit": 0,
+      "package": "tablecraft-ace",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-strict-final-root.log",
+        "bytes": 184,
+        "sha256": "bfe6a62075848f18cd89f6fd6f7b12e6a4b40927f69b25ead76e7070ac700b0f"
+      }
+    },
+    "minimal": {
+      "exit": 0,
+      "package": "tablecraft-ace",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-minimal-first-root.log",
+        "bytes": 183,
+        "sha256": "a592d422e4eaf36c0e8f0e608beb842428fb1e9ffb0a9458fbda70c46ca26fc5"
+      }
+    },
+    "formatter": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "exit": 0,
+      "checked": 6626,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/links-final-root.log",
+        "bytes": 53,
+        "sha256": "7a987d4fab1435af5d0ec3634fde38fc58cb72ede427f5eac83d50c4dcdafc46"
+      }
+    },
+    "dependency_boundaries": {
+      "exit": 0,
+      "workspace_packages": 15,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/boundaries-final-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    }
+  },
+  "public_reference": "docs/testing/results/ace16-secondary-index-public-reference-2026-10-30.json",
+  "reference_limit": "Separate public-generated semantics; original authored catalog bootstrap refusal retained; no whole-image/native Access/save qualification",
+  "current_source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/definition.rs",
+      "bytes": 3832,
+      "sha256": "6abe9335e153efdb32b77722eb75224d7f84a16967105edefa97dd1b2c66ec42"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/layout.rs",
+      "bytes": 7801,
+      "sha256": "0d300d68ecab3090845c7faadc1914f9c1ef99431846def40bcef07da3de47da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "bytes": 4678,
+      "sha256": "cd14a9875f13d6576e543c168ee5a45f083162312dd554532f71719cfec1d234"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2649,
+      "sha256": "34b16b0f33aa6ca5f02bd7122adac3458359ea641850ad8bf274f31a7522c2e3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "bytes": 11031,
+      "sha256": "58b8624b87d105ce79cc11fc0f2731913c43d8a5eefeac14ee78c1c66fa673d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 5065,
+      "sha256": "ffe7b36890431bf74383bca107a6ad159f61968359eb76a63c5c357b4061867d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 7598,
+      "sha256": "833b87bcd34186e9e475b22ecf9c84de7031dfa740cd10dab342c5af55d310f7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs",
+      "bytes": 9699,
+      "sha256": "2993a3718416b886ed4f5d9ac5d7c8a81212ab1f4635c260b6b684c9ee80be32"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests/model.rs",
+      "bytes": 9664,
+      "sha256": "8ba77778ca4fce43b01c7e1efbb807409f6b12f5ba31f0f03ae8d36c6562aaf1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/owners.rs",
+      "bytes": 6683,
+      "sha256": "ab162c62afdf8d55f4bd60597baf6d587c72cdc63262dce097666291ea69315d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/state.rs",
+      "bytes": 33320,
+      "sha256": "528c0a790223fe0e79d3a197665226d51c5430193f9388d15032a1ddb521be59"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/definition.rs",
+      "bytes": 7180,
+      "sha256": "3bdde1e9444e55f72840b867b3fe63a89bbf47007fc1dec2f9404700591f6c9e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 2616,
+      "sha256": "1d27c6de8f8f26a96fb802adcb5ee25ae81bedd83020e86feda2d3feeb520578"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/audit/frame.rs",
+      "bytes": 8819,
+      "sha256": "062f02a4b9f2b061cc609406e28c29966cd8a523ebe58a626150ab422f99a80b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/audit/tests.rs",
+      "bytes": 3799,
+      "sha256": "879c896a095eb9b3bff914bf4890a73d8d7128d6af386bd554d1e7d90c24e442"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/audit.rs",
+      "bytes": 12931,
+      "sha256": "5c6dc7a70fa4b18d3e99ad7df1a56ccbb70babd9e2dfc08a048da442701ff6a7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/buffer.rs",
+      "bytes": 956,
+      "sha256": "6d7475502297f2a18d03cfaa18675cf614d0569a6c3d9c16380d3fcd18b98256"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/layout.rs",
+      "bytes": 10103,
+      "sha256": "ca9cac60e014ed4545fa73937756da818cb59ea9ffdedb28a084332e1c83e8b2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/mod.rs",
+      "bytes": 2029,
+      "sha256": "17eea3d53f2531b93f3803297af1e777b4d601adf9361ecf28fd57fc1e9c0efb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/model.rs",
+      "bytes": 1872,
+      "sha256": "567d539895169f1893145b404939e881e8b1729da69c3d4d1220c8e5e74c817f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/source.rs",
+      "bytes": 4331,
+      "sha256": "3d937cf220e0e4ac0158926f61130bf9c9b34d8fdc4362832e5c5e01f355d985"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/stage.rs",
+      "bytes": 6963,
+      "sha256": "5cc399890e85b91d38b1636a3e9698865b35b7e1b609cd1562a9d5dba7c5a6b4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/create.rs",
+      "bytes": 9421,
+      "sha256": "4725d49a2348f90c12e5ac9cf21ca4716b872eea3cbe3be673b6ed44861e2b89"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/pages.rs",
+      "bytes": 4496,
+      "sha256": "a8687daa1cb8d78406f901e0a5e81d5261df7e4a889e5706fc998ff5c8bc2ea3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/owners/fresh_index.rs",
+      "bytes": 6293,
+      "sha256": "f49a7cbb8fabc255f81bb47044587095e316f4866127b57cd89dbb042d830470"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests/api.rs",
+      "bytes": 9055,
+      "sha256": "2ea259e12567da9d391abb62f30352c7f711e8f6a115a4b4c20e56dc2e333235"
+    }
+  ],
+  "source_models_preserved": true,
+  "extraction_or_host_installed": false,
+  "post_style_validation": {
+    "public_api": {
+      "exit": 0,
+      "functions": 5,
+      "complete_expected_images": 16,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-api-after-style-root.log",
+        "bytes": 988,
+        "sha256": "e121444ad54fe9aa8fc10bb552ca780a76c18b7e2fee464bbe442bde9cb2b881"
+      }
+    },
+    "independent_audit": {
+      "exit": 0,
+      "functions": 3,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/native-audit-after-style-root.log",
+        "bytes": 657,
+        "sha256": "9847b05d52a1f0eef5c3d44816ed8616fc652fa9b9a1883fd00187ef925b969c"
+      }
+    }
+  },
+  "initial_coherent_freeze": {
+    "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/native-quota-policy-coherent-freeze.json",
+    "bytes": 6706,
+    "sha256": "576368de159c92d271ddb508ed62a60f8189b080d24d018ae8b30fbaf4436332"
+  }
+}

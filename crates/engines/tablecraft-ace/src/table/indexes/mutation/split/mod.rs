@@ -5,7 +5,6 @@ pub(in crate::table) mod fixed_batch;
 pub(in crate::table::indexes) mod insert;
 mod maps;
 mod nonroot;
-mod pages;
 pub(in crate::table) mod rows;
 mod slot;
 mod source;
@@ -15,7 +14,7 @@ pub(in crate::table) use slot::{
 };
 
 use super::{
-    IndexDataPatch, IndexKeyUpdate, encoding, plan::keys, profile::SingleProfile, repack,
+    IndexDataPatch, IndexKeyUpdate, encoding, pages, plan::keys, profile::SingleProfile, repack,
     replacement::SlotKeyChanges, retained::RetainedProfile, tree::Tree,
 };
 use crate::{

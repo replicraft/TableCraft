@@ -19,10 +19,10 @@ pub(crate) use represented::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, Represente
 #[cfg(all(test, feature = "ace16-write-preview"))]
 pub(crate) use tests::header as test_header;
 
-const INLINE_MAP: u8 = 0;
+pub(crate) const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;
 const PAGE_POINTER_BYTES: usize = size_of::<u32>();
-const INLINE_BITMAP_OFFSET: usize = 1 + PAGE_POINTER_BYTES;
+pub(crate) const INLINE_BITMAP_OFFSET: usize = 1 + PAGE_POINTER_BYTES;
 const INDIRECT_BITMAP_OFFSET: usize = 4;
 const PAGES_PER_BITMAP: usize = (PAGE_BYTES - INDIRECT_BITMAP_OFFSET) * MASK_BITS;
 
