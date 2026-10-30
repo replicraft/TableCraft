@@ -58,8 +58,10 @@ multi-column finish. Its borrowed `ColumnUpdates` groups hold canonical target
 names and snapshot-issued `CellUpdate` handles. The caller retains each complete
 column vector through the finish; the backend validates duplicate targets,
 repeated/stale handles, aggregate limits and actual native eligibility. The Access
-engineering editor implements it for one fixed-field batch. Variable/LVAL modes
-retain one target; ordinary NativeEditor does not acquire this capability.
+engineering editor implements fixed batches and fixed fields with one qualified
+Short Text/Binary field. Default mixed routing fits the original record;
+explicit variable mode permits joint DATA placement but no mixed INDEX growth.
+LVAL retains one target; ordinary NativeEditor does not acquire this capability.
 The contract does not authorize sequential candidate chaining, cross-backend
 atomicity, durable changes or journal conversion.
 Seven neutral batch-planner functions passed, including original-row exchange,

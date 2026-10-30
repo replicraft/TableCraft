@@ -1,11 +1,16 @@
 //! Choose one existing native service from the complete resolved target set.
 use super::{
     AccessEngineeringEditor, EngineeringCopy, EngineeringRequest, FixedScalarUpdate, InspectError,
-    NativeEditError, ResourceBudget, ScalarType, SlotScalarUpdate, UpdateMode, check, engine_error,
-    preview,
+    NativeEditError, ResourceBudget, ScalarType, ScalarUpdateMode, SlotScalarUpdate, UpdateMode,
+    check, engine_error, preview,
 };
 use tablecraft_ace::FittedColumnUpdates;
 use tablecraft_db::ColumnUpdates;
+
+enum Placement {
+    Fitted,
+    Growing,
+}
 
 enum Requests {
     Fixed(Vec<FixedScalarUpdate>),
@@ -25,16 +30,7 @@ impl AccessEngineeringEditor {
         }
 
         let positions = self.validate_columns(columns, budget, cancelled)?;
-        let mut variable_count = 0;
-        for position in &positions {
-            check(budget, cancelled)?;
-            if matches!(
-                self.snapshot.columns()[*position].data_type(),
-                ScalarType::Text | ScalarType::Binary
-            ) {
-                variable_count += 1;
-            }
-        }
+        let variable_count = self.variable_count(&positions, budget, cancelled)?;
         if variable_count > 1 {
             return Err(NativeEditError::Unsupported);
         }
@@ -66,6 +62,61 @@ impl AccessEngineeringEditor {
             .map_err(engine_error);
         }
 
+        self.joint_columns(columns, positions, Placement::Fitted, budget, cancelled)
+    }
+
+    pub(super) fn variable_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<EngineeringCopy, NativeEditError> {
+        check(budget, cancelled)?;
+        if columns.len() < 2
+            || columns.len() > self.snapshot.columns().len()
+            || !matches!(
+                self.mode,
+                ScalarUpdateMode::Variable {
+                    index_growth: false
+                }
+            )
+        {
+            return Err(NativeEditError::Unsupported);
+        }
+        let positions = self.validate_columns(columns, budget, cancelled)?;
+        if self.variable_count(&positions, budget, cancelled)? != 1 {
+            return Err(NativeEditError::Unsupported);
+        }
+        self.joint_columns(columns, positions, Placement::Growing, budget, cancelled)
+    }
+
+    fn variable_count(
+        &self,
+        positions: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<usize, NativeEditError> {
+        let mut count = 0;
+        for position in positions {
+            check(budget, cancelled)?;
+            if matches!(
+                self.snapshot.columns()[*position].data_type(),
+                ScalarType::Text | ScalarType::Binary
+            ) {
+                count += 1;
+            }
+        }
+        Ok(count)
+    }
+
+    fn joint_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        positions: Vec<usize>,
+        placement: Placement,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<EngineeringCopy, NativeEditError> {
         budget
             .charge_allocation(columns.len() as u64, size_of::<Requests>() as u64)
             .map_err(InspectError::from)?;
@@ -123,15 +174,16 @@ impl AccessEngineeringEditor {
         }
         check(budget, cancelled)?;
 
-        preview(
-            self.image,
-            EngineeringRequest::FittedUpdate {
+        let request = match placement {
+            Placement::Fitted => EngineeringRequest::FittedUpdate {
                 table: self.snapshot.name(),
                 groups: &groups,
             },
-            budget,
-            cancelled,
-        )
-        .map_err(engine_error)
+            Placement::Growing => EngineeringRequest::MixedUpdate {
+                table: self.snapshot.name(),
+                groups: &groups,
+            },
+        };
+        preview(self.image, request, budget, cancelled).map_err(engine_error)
     }
 }

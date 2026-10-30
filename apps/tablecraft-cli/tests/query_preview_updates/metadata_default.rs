@@ -1,4 +1,6 @@
 //! Real command consumers of the unchanged joint-record literal source owners.
+#[path = "metadata_default/growing.rs"]
+mod growing;
 use super::{budget, fixture as base, fs, rows, run};
 use std::io::Cursor;
 use tablecraft_ace::{IndexCheckStatus, check_table, check_table_constraints};

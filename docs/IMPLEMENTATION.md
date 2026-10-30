@@ -18,8 +18,10 @@ The additive [mixed-update engine service](testing/ACE16_MIXED_GROWING_UPDATES.m
 now places larger fixed/Short Text or Binary records on the original page,
 another owned page or a new DATA page. One original-request proof governs full
 records, placement, maps and joint index keys. INDEX replacements must fit their
-existing pages, and map cells must already represent the allocation. Default
-CLI mixed updates still use the fitting service; its growth routing is next.
+existing pages, and map cells must already represent the allocation. SQL
+`query preview-update --variable` now selects this service for fixed fields and
+exactly one Short Text/Binary field. Default mixed updates stay fitted; mixed
+`--index-growth` remains refused, including when no rows match.
 
 The final focused run passes eight growth and eight fitting functions, including
 72 new complete-file comparisons and all 83 existing fitting comparisons.
@@ -27,6 +29,10 @@ Source-role alias and map-capacity controls pass. The earlier shared batch passe
 498 mutation and 72 native integration tests; after tightening map admission,
 the focused rerun, strict ACE lint and minimal build pass. Joint INDEX splitting,
 map growth, normal saves and native Access qualification remain open.
+The adapter passes 72 complete-image comparisons and the CLI produces 24 exact
+Text growth copies. The follow-up regression passes 55 adapter functions,
+31 CLI unit and 36 CLI integration functions, with strict ACE/Access/CLI checks
+and a minimal Access build. Single-variable modes retain their existing services.
 
 ## Omitted INSERT fields and constant defaults
 

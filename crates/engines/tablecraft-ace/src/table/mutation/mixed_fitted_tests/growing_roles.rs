@@ -1,5 +1,5 @@
 //! A reader-valid orphan INDEX ownership claim cannot authorize DATA writes.
-use super::{growing, model::Family, qualify};
+use super::{growing::model as growing, model::Family, qualify};
 use crate::{
     EditError, NativeImage, WriteBlocker,
     table::mutation::{gates, variable_split::metadata::Metadata},

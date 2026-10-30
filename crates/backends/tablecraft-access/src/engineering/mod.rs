@@ -53,6 +53,13 @@ pub enum EngineeringRequest<'a> {
         /// Original-row typed groups; engine storage admission remains required.
         groups: &'a [FittedColumnUpdates<'a>],
     },
+    /// Joint fixed and one Short Text/Binary replacement with DATA placement.
+    MixedUpdate {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original-row groups; INDEX topology must fit without allocation.
+        groups: &'a [FittedColumnUpdates<'a>],
+    },
     /// Replace Short Text/Binary values in one actual table and column.
     VariableUpdate {
         /// Exact selected table name.
@@ -222,6 +229,9 @@ pub fn preview(
         }),
         EngineeringRequest::FittedUpdate { table, groups } => {
             Candidate::Rows(image.preview_ace16_fitted_updates(table, groups, budget, cancelled)?)
+        }
+        EngineeringRequest::MixedUpdate { table, groups } => {
+            Candidate::Rows(image.preview_ace16_mixed_updates(table, groups, budget, cancelled)?)
         }
         EngineeringRequest::VariableUpdate {
             table,

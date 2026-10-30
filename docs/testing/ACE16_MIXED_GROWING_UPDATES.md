@@ -47,6 +47,10 @@ remain a continuation using this same original-source operation and ledger.
 The CLI's current default mixed SQL route still uses the fitting service. This
 engine continuation does not implicitly change default routing, normal ACE
 saves, required data macros, journaling or publication permissions.
+Explicit [SQL `--variable` routing](../access/writes/SQL_ENGINEERING_COPIES.md)
+now invokes the growing service for fixed fields plus one Short Text/Binary
+field. Mixed INDEX allocation still refuses; single-variable services retain
+their existing profiles.
 
 ## Complete source authority before placement
 
@@ -94,7 +98,7 @@ operation; no resource checks were skipped to preserve an older quota.
 
 ## Independent evidence and chronology
 
-The [literal growth corpus](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs)
+The [literal growth corpus](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing/model.rs)
 contains 36 pairs: both headers, Legacy/Modern text or Binary, ASC/DESC keys and
 three placement destinations. The original selected record is 23 bytes with a
 zero-byte NULL variable span and no internal padding. Jointly setting its fixed

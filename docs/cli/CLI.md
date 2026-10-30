@@ -223,7 +223,10 @@ tablecraft query preview-insert "INSERT INTO Items (Id, Score) VALUES (4, 42)" \
 These commands require schemas admitted by the selected engineering profile.
 They keep the original file and publish one complete copy under a fresh name.
 UPDATE can combine fixed fields and one fitted Short Text/Binary field through
-its default metadata route. INSERT can omit named ordinary fields: only needed
+its default metadata route. Add `--variable` to permit joint DATA placement with
+fixed siblings; their INDEX owners must still fit. Mixed `--variable --index-growth`
+requests refuse, while the single-variable combination retains its old profile.
+INSERT can omit named ordinary fields: only needed
 qualified literal defaults or NULL are resolved, while explicit NULL stays
 supplied. Positional VALUES remain complete-width. Generated IDs require explicit
 `--incrementing` and a named companion field list; ordinary companions may also

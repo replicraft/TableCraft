@@ -11,7 +11,7 @@ use crate::{
         indexes::{IndexDataPatch, index_row_patches},
         mutation::{
             gates,
-            mixed_fitted_tests::{growing as model, model::Family},
+            mixed_fitted_tests::{growing::model, model::Family},
         },
     },
 };
