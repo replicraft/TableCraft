@@ -7,9 +7,9 @@ use super::{
 use crate::{InspectError, NativeReadSource, limits::MAX_DEFINITION_PAGES};
 use std::ops::Deref;
 
-const PAGE_HEADER_BYTES: usize = 2 * size_of::<u16>() + size_of::<u32>();
-const NEXT_PAGE_OFFSET: usize = PAGE_HEADER_BYTES - size_of::<u32>();
-const LENGTH_OFFSET: usize = PAGE_HEADER_BYTES;
+pub(crate) const PAGE_HEADER_BYTES: usize = 2 * size_of::<u16>() + size_of::<u32>();
+pub(crate) const NEXT_PAGE_OFFSET: usize = PAGE_HEADER_BYTES - size_of::<u32>();
+pub(crate) const LENGTH_OFFSET: usize = PAGE_HEADER_BYTES;
 const MIN_DEFINITION_BYTES: usize = LENGTH_OFFSET + size_of::<u32>();
 const CONTINUATION_BYTES: usize = PAGE_BYTES - PAGE_HEADER_BYTES;
 const MAX_DEFINITION_BYTES: usize = PAGE_BYTES + (MAX_DEFINITION_PAGES - 1) * CONTINUATION_BYTES;

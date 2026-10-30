@@ -18,18 +18,18 @@ use arrayvec::ArrayVec;
 use tablecraft_schema::SchemaName;
 
 // Jet 4 / initial ACE definition facts: pinned references in docs/access/indexes/NATIVE_INDEXES.md.
-const PHYSICAL_BYTES: usize = 52;
-const LOGICAL_BYTES: usize = 28;
-const KEY_START: usize = 4;
-const KEY_BYTES: usize = 3;
-const UNUSED_COLUMN: u16 = u16::MAX;
-const ASCENDING: u8 = 1;
-const USAGE_OFFSET: usize = 34;
-const ROOT_OFFSET: usize = 38;
-const FLAGS_OFFSET: usize = 46;
-const NUMBER_OFFSET: usize = 4;
-const DATA_NUMBER_OFFSET: usize = 8;
-const TYPE_OFFSET: usize = 23;
+pub(in crate::table) const PHYSICAL_BYTES: usize = 52;
+pub(in crate::table) const LOGICAL_BYTES: usize = 28;
+pub(in crate::table) const KEY_START: usize = 4;
+pub(in crate::table) const KEY_BYTES: usize = 3;
+pub(in crate::table) const UNUSED_COLUMN: u16 = u16::MAX;
+pub(in crate::table) const ASCENDING: u8 = 1;
+pub(in crate::table) const USAGE_OFFSET: usize = 34;
+pub(in crate::table) const ROOT_OFFSET: usize = 38;
+pub(in crate::table) const FLAGS_OFFSET: usize = 46;
+pub(in crate::table) const NUMBER_OFFSET: usize = 4;
+pub(in crate::table) const DATA_NUMBER_OFFSET: usize = 8;
+pub(in crate::table) const TYPE_OFFSET: usize = 23;
 
 pub(in crate::table) struct Definitions {
     pub indexes: Vec<NativeIndex>,

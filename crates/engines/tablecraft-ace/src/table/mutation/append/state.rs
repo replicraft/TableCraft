@@ -1,5 +1,8 @@
 //! Closed page purposes advance the same bounded cursor for real consumers.
-use super::{Edit, global, owners::OwnerContext};
+use super::{
+    Edit, global,
+    owners::{OwnerContext, fresh_index::FreshIndexOwner},
+};
 use crate::{
     EditError, InspectError, LongValueMapReferences, NativeImage, NativeIndex,
     format::{
@@ -47,6 +50,15 @@ enum Purpose {
         definition: u32,
         reference: u32,
     },
+    CreatedIndexMapContainer {
+        definition: u32,
+        physical: u32,
+    },
+    CreatedIndexBody {
+        definition: u32,
+        physical: u32,
+        usage: u32,
+    },
     Index {
         definition: u32,
         physical: u32,
@@ -69,6 +81,12 @@ pub(in crate::table) struct IndexReservation {
     pub definition: u32,
     pub physical: u32,
     pub usage: u32,
+}
+
+pub(in crate::table) struct CreatedIndexMapReservation {
+    pub number: u32,
+    pub definition: u32,
+    pub physical: u32,
 }
 
 pub(in crate::table) struct LongValueReservation {
@@ -541,6 +559,22 @@ impl<O: OwnerContext> State<O> {
                     definition: *definition,
                     reference: *reference,
                 },
+                Purpose::CreatedIndexMapContainer {
+                    definition,
+                    physical,
+                } => Purpose::CreatedIndexMapContainer {
+                    definition: *definition,
+                    physical: *physical,
+                },
+                Purpose::CreatedIndexBody {
+                    definition,
+                    physical,
+                    usage,
+                } => Purpose::CreatedIndexBody {
+                    definition: *definition,
+                    physical: *physical,
+                    usage: *usage,
+                },
                 Purpose::Index {
                     definition,
                     physical,
@@ -968,5 +1002,82 @@ impl State {
             budget,
             cancelled,
         )
+    }
+}
+
+impl State<FreshIndexOwner> {
+    pub(in crate::table) fn reserve_created_index_map(
+        &mut self,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if number != self.owner.container() || self.reservations_len() != 0 {
+            return Err(EditError::Preservation);
+        }
+        self.commit(
+            number,
+            &[Purpose::CreatedIndexMapContainer {
+                definition: self.owner.definition(),
+                physical: self.owner.physical(),
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn reserve_created_index_body(
+        &mut self,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.owner.require_body(number)?;
+        self.commit(
+            number,
+            &[Purpose::CreatedIndexBody {
+                definition: self.owner.definition(),
+                physical: self.owner.physical(),
+                usage: self.owner.usage(),
+            }],
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table) fn created_index_maps(
+        &self,
+    ) -> impl Iterator<Item = CreatedIndexMapReservation> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::CreatedIndexMapContainer {
+                    definition,
+                    physical,
+                } => Some(CreatedIndexMapReservation {
+                    number: reservation.number,
+                    definition,
+                    physical,
+                }),
+                _ => None,
+            })
+    }
+
+    pub(in crate::table) fn created_indexes(&self) -> impl Iterator<Item = IndexReservation> + '_ {
+        self.reservations
+            .iter()
+            .filter_map(|reservation| match reservation.purpose {
+                Purpose::CreatedIndexBody {
+                    definition,
+                    physical,
+                    usage,
+                } => Some(IndexReservation {
+                    number: reservation.number,
+                    definition,
+                    physical,
+                    usage,
+                }),
+                _ => None,
+            })
     }
 }

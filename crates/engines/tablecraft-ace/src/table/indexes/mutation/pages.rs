@@ -1,5 +1,5 @@
 //! Construct new leaf pages and a retained-root node using existing key codecs.
-use super::super::{repack, retained::RetainedProfile};
+use super::{repack, retained::RetainedProfile};
 use crate::{
     EditError, InspectError,
     format::page::PAGE_BYTES,

@@ -4,6 +4,8 @@ mod combined;
 pub(in crate::table) use combined::index_delete_update_patches;
 mod composite;
 #[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod create;
+#[cfg(feature = "ace16-write-preview")]
 mod delete;
 mod encoding;
 #[cfg(feature = "ace16-write-preview")]
@@ -11,6 +13,8 @@ mod ignored;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod insertion;
 mod kind;
+#[cfg(feature = "ace16-write-preview")]
+mod pages;
 #[cfg(feature = "ace16-write-preview")]
 mod population;
 use super::composite::DecimalValue;

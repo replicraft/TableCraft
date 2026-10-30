@@ -70,6 +70,8 @@ pub use table::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
+#[cfg(feature = "ace16-write-preview")]
+pub use table::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 pub use table::{
     AttachmentColumn, AttachmentMetadataColumn, StoredAttachment, read_attachment_column,
     read_attachment_column_with_limits, read_attachment_metadata,
