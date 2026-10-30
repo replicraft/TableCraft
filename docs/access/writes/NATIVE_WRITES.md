@@ -546,6 +546,11 @@ qualify these independent copies, not actual Access saves or broader mutations.
 
 ## Mask and foreign-index engineering boundaries
 
+The separate [historical-column fixed UPDATE profile](../../testing/ACE16_HISTORICAL_FIXED_UPDATES.md)
+admits native-number gaps only after proving every original record remains full
+width. Removed storage stays opaque and preserved; other admission modes retain
+their prior refusal.
+
 The opt-in [mask preview](../../testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
 now handles Boolean bits and non-indexed nullable fixed fields, retaining payload
 bytes when NULL clears presence. This is not a production save capability. Native

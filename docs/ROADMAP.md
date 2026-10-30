@@ -31,6 +31,10 @@ work is broader real-table schema admission, deterministic write expressions and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
 
+Qualified [historical full-width layouts](testing/ACE16_HISTORICAL_FIXED_UPDATES.md)
+now permit engineering fixed updates across deleted-column native-number gaps.
+Old shorter records and other mutation modes retain their existing refusals.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

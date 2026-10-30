@@ -12,6 +12,21 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fixed updates on historical column layouts
+
+Engineering fixed UPDATE now admits deleted-column native-number gaps when every
+original record proves full width and exclusive logical ownership. Removed bytes
+and NULL bits remain opaque and preserved. The
+[historical-layout contract](testing/ACE16_HISTORICAL_FIXED_UPDATES.md) keeps shorter
+records and all other admission modes closed.
+
+Sixty-four prefrozen full-image API comparisons and eight actual CLI copies pass.
+The fixed library slice passes 54 tests and five existing shared integration
+targets pass 36 tests, with strict ACE Clippy and minimal builds. The
+[record](testing/results/ace16-historical-fixed-updates-2026-10-29.json) retains the
+source-authoring corrections made before any mutation API; no golden changed
+after a producer ran. Normal ACE saves and native Access qualification remain open.
+
 ## SQL VALUES INSERT copies
 
 `query preview-insert` now evaluates one fully explicit VALUES row and publishes

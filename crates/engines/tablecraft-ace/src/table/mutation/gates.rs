@@ -1,5 +1,7 @@
 #[cfg(feature = "ace16-write-preview")]
 mod defaults;
+#[cfg(feature = "ace16-write-preview")]
+mod historical;
 
 use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
@@ -138,13 +140,20 @@ fn before_with(
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
     // Deleted-column read qualification does not qualify edits of historical storage.
-    if schema.columns().len() != schema.layout.max_columns
+    let historical_columns = schema.columns().len() != schema.layout.max_columns
         || schema
             .columns()
             .iter()
             .enumerate()
-            .any(|(number, column)| column.number() != number)
-    {
+            .any(|(number, column)| column.number() != number);
+    if historical_columns {
+        #[cfg(feature = "ace16-write-preview")]
+        if matches!(admission, Admission::FixedUpdate) {
+            historical::qualify(image, schema, budget, cancelled)?;
+        } else {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        #[cfg(not(feature = "ace16-write-preview"))]
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     #[cfg(feature = "ace16-write-preview")]

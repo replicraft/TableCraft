@@ -6,6 +6,9 @@ pub(in crate::table::mutation) mod masked;
 mod preview;
 mod update;
 
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod historical_columns;
+
 #[cfg(test)]
 mod ignored_updates;
 
