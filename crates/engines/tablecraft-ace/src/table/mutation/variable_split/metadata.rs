@@ -2,7 +2,7 @@
 use super::super::{EditError, WriteBlocker, map_authority};
 use crate::{
     IndexCheck, InspectError, NativeImage, NativeIndex, NativeReadSource, TableSchema,
-    format::{definition, reader::Reader},
+    format::{allocation, definition, reader::Reader},
     header::check,
 };
 use std::{io::Cursor, ops::Range};
@@ -21,6 +21,14 @@ pub(in crate::table::mutation) struct Metadata {
     mutable: Vec<map_authority::Owner>,
 }
 
+#[derive(Clone, Copy)]
+enum Capture<'a> {
+    Column(usize),
+    AllIndexes,
+    Initialization(&'a [usize]),
+    Mixed(&'a [usize]),
+}
+
 impl Metadata {
     pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
@@ -30,7 +38,14 @@ impl Metadata {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_selected(image, schema, indexes, Some(column), &[], budget, cancelled)
+        Self::capture_selected(
+            image,
+            schema,
+            indexes,
+            Capture::Column(column),
+            budget,
+            cancelled,
+        )
     }
 
     /// INSERT maintains every physical index. It must capture all mutable index
@@ -42,7 +57,14 @@ impl Metadata {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_selected(image, schema, indexes, None, &[], budget, cancelled)
+        Self::capture_selected(
+            image,
+            schema,
+            indexes,
+            Capture::AllIndexes,
+            budget,
+            cancelled,
+        )
     }
 
     pub(in crate::table::mutation) fn capture_for_insert_initialization(
@@ -61,8 +83,34 @@ impl Metadata {
             image,
             schema,
             indexes,
-            None,
-            initializing,
+            Capture::Initialization(initializing),
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Capture the affected map-role union and every source body which may not
+    /// receive an ordinary DATA record. The proof reacquires this independently.
+    pub(in crate::table::mutation) fn capture_for_mixed_updates(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: &[IndexCheck],
+        columns: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        for &column in columns {
+            check(budget, cancelled)?;
+            schema
+                .columns()
+                .get(column)
+                .ok_or(EditError::Preservation)?;
+        }
+        Self::capture_selected(
+            image,
+            schema,
+            indexes,
+            Capture::Mixed(columns),
             budget,
             cancelled,
         )
@@ -72,12 +120,19 @@ impl Metadata {
         image: &NativeImage,
         schema: &TableSchema,
         indexes: &[IndexCheck],
-        column: Option<usize>,
-        initializing: &[usize],
+        capture: Capture<'_>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
+        let column = match capture {
+            Capture::Column(column) => Some(column),
+            _ => None,
+        };
+        let initializing = match capture {
+            Capture::Initialization(columns) => columns,
+            _ => &[],
+        };
         let number = column
             .map(|position| {
                 schema
@@ -109,12 +164,23 @@ impl Metadata {
         let mut selected_found = false;
         let mut payload = |local: &TableSchema,
                            native_indexes: &[NativeIndex],
-                           _: &crate::table::long_value::maps::Declarations,
+                           declarations: &crate::table::long_value::maps::Declarations,
                            reader: &mut Reader<'_, Cursor<&[u8]>>|
          -> Result<(), EditError> {
             definition::read_with_pages(reader, local.definition_page(), |page, reader| {
                 protect(&mut protected_pages, page, reader)
             })?;
+            if matches!(capture, Capture::Mixed(_)) {
+                if local.definition_page() != definition {
+                    protect_members(&mut protected_pages, local.layout.usage, reader)?;
+                }
+                for index in native_indexes {
+                    protect_members(&mut protected_pages, index.usage_map(), reader)?;
+                }
+                for declaration in &declarations.entries {
+                    protect_members(&mut protected_pages, declaration.references.owned(), reader)?;
+                }
+            }
             if local.definition_page() != definition {
                 return Ok(());
             }
@@ -143,6 +209,22 @@ impl Metadata {
                         .any(|field| field.number() == number)
                 }) {
                     continue;
+                }
+                if let Capture::Mixed(columns) = capture {
+                    reader.work(
+                        columns
+                            .len()
+                            .checked_mul(native.columns().len())
+                            .ok_or(InspectError::StructureLimit)?,
+                    )?;
+                    if !columns.iter().any(|&column| {
+                        native
+                            .columns()
+                            .iter()
+                            .any(|key| key.number() == schema.columns()[column].number())
+                    }) {
+                        continue;
+                    }
                 }
                 let owner = map_authority::Owner::IndexOwned {
                     definition,
@@ -288,5 +370,16 @@ fn protect<R: NativeReadSource>(
         .charge_allocation(1, size_of::<u32>() as u64)?;
     pages.try_reserve(1).map_err(|_| InspectError::Allocation)?;
     pages.push(number);
+    Ok(())
+}
+
+fn protect_members<R: NativeReadSource>(
+    protected: &mut Vec<u32>,
+    reference: u32,
+    reader: &mut Reader<'_, R>,
+) -> Result<(), InspectError> {
+    for page in allocation::pages(reader, reference)? {
+        protect(protected, page, reader)?;
+    }
     Ok(())
 }

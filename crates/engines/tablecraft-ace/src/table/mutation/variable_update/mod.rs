@@ -1,7 +1,7 @@
 //! Separate alternative-owned-page and represented-EOF forwarding previews.
 pub(super) mod audit;
 pub(super) mod authority;
-mod finish;
+pub(super) mod finish;
 pub(super) mod map_audit;
 pub(super) mod maps;
 pub(super) mod placement;

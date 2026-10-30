@@ -1,5 +1,5 @@
 //! Complete expected-value staging before any candidate is published.
-use super::super::{EditError, SlotScalarUpdate, WriteBlocker};
+use super::super::{EditError, SlotScalarUpdate, WriteBlocker, rows::RowAssignment};
 use super::{
     audit,
     forward::Plan,
@@ -270,10 +270,10 @@ pub(in crate::table::mutation) trait Placement {
         Space::capture(image, schema, owned, budget, cancelled)
     }
 
-    fn apply(
+    fn apply<U: RowAssignment>(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_, SlotScalarUpdate>,
+        root: &Root<'_, U>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,
@@ -295,10 +295,10 @@ pub(in crate::table::mutation) trait Placement {
 }
 
 impl Placement for Plan {
-    fn apply(
+    fn apply<U: RowAssignment>(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_, SlotScalarUpdate>,
+        root: &Root<'_, U>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,

@@ -19,14 +19,7 @@ pub(super) fn finish(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
     check(budget, cancelled)?;
-    if plan.append.original_length != image.as_bytes().len()
-        || plan.append.length < plan.append.original_length
-        || plan.append.length as u64 > MAX_IMAGE_BYTES
-        || !plan.append.length.is_multiple_of(PAGE_BYTES)
-    {
-        return Err(EditError::Preservation);
-    }
-
+    qualify(&image, plan)?;
     let scope = image.catalog().catalog().scope();
     let original = check_table(
         &mut Cursor::new(image.as_bytes()),
@@ -47,6 +40,31 @@ pub(super) fn finish(
         cancelled,
     )?;
 
+    compose(
+        image,
+        operation.table,
+        plan,
+        indexes,
+        changed,
+        budget,
+        cancelled,
+    )
+}
+
+/// Complete-byte composition after an operation's independent record/map proof.
+pub(in crate::table::mutation) fn compose(
+    image: NativeImage,
+    table: &str,
+    plan: &Plan,
+    indexes: &[IndexDataPatch],
+    changed: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ace16WritePreview, EditError> {
+    check(budget, cancelled)?;
+    qualify(&image, plan)?;
+
+    let scope = image.catalog().catalog().scope();
     budget
         .charge_allocation(plan.append.length as u64, 1)
         .map_err(InspectError::from)?;
@@ -154,13 +172,7 @@ pub(super) fn finish(
     // Reparse the catalog/header from actual grown bytes; old page_count must
     // never constrain or authorize reads of the newly appended pages.
     inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
-    let checked = check_table(
-        &mut Cursor::new(&after),
-        scope,
-        operation.table,
-        budget,
-        cancelled,
-    )?;
+    let checked = check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?;
     if checked
         .indexes()
         .iter()
@@ -171,7 +183,7 @@ pub(super) fn finish(
     gates::qualified(&check_table_constraints(
         &mut Cursor::new(&after),
         scope,
-        operation.table,
+        table,
         budget,
         cancelled,
     )?)?;
@@ -183,4 +195,16 @@ pub(super) fn finish(
         after,
         changed,
     ))
+}
+
+fn qualify(image: &NativeImage, plan: &Plan) -> Result<(), EditError> {
+    if plan.append.original_length != image.as_bytes().len()
+        || plan.append.length < plan.append.original_length
+        || plan.append.length as u64 > MAX_IMAGE_BYTES
+        || !plan.append.length.is_multiple_of(PAGE_BYTES)
+    {
+        return Err(EditError::Preservation);
+    }
+
+    Ok(())
 }

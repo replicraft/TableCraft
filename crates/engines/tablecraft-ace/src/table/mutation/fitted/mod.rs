@@ -1,6 +1,8 @@
 //! One original-image fixed/variable statement, with no page allocation.
+mod growing;
 mod record_proof;
 mod request;
+mod serialization;
 mod stage;
 
 pub use request::FittedColumnUpdates;

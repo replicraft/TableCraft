@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Mixed UPDATE record growth
+
+The additive [mixed-update engine service](testing/ACE16_MIXED_GROWING_UPDATES.md)
+now places larger fixed/Short Text or Binary records on the original page,
+another owned page or a new DATA page. One original-request proof governs full
+records, placement, maps and joint index keys. INDEX replacements must fit their
+existing pages, and map cells must already represent the allocation. Default
+CLI mixed updates still use the fitting service; its growth routing is next.
+
+The final focused run passes eight growth and eight fitting functions, including
+72 new complete-file comparisons and all 83 existing fitting comparisons.
+Source-role alias and map-capacity controls pass. The earlier shared batch passed
+498 mutation and 72 native integration tests; after tightening map admission,
+the focused rerun, strict ACE lint and minimal build pass. Joint INDEX splitting,
+map growth, normal saves and native Access qualification remain open.
+
 ## Omitted INSERT fields and constant defaults
 
 SQL engineering INSERT now accepts named subsets of ordinary fields, including
@@ -60,8 +76,9 @@ integration targets pass 36 tests. Joint key controls, strict ACE Clippy and min
 builds pass. The [record](testing/results/ace16-fitted-mixed-updates-2026-10-30.json)
 retains source corrections before producers and the initial encoding mismatch;
 no expected image changed after its producer ran. Metadata-directed adapter/CLI
-consumers now use this service; mixed record allocation, normal saves and native
-Access qualification remain open.
+consumers now use this fitting service. Mixed DATA allocation uses the separate
+service above; joint INDEX/map growth, normal saves and native Access
+qualification remain open.
 
 ## Passive display metadata on ACE 16 writes
 

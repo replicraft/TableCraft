@@ -1,8 +1,9 @@
 //! Real alternate-page placement and bounded EOF data-page initialization.
 use super::super::{
-    EditError, SlotScalarUpdate, WriteBlocker,
+    EditError, WriteBlocker,
     append::State,
     page_update::{roots::Root, space::Space, stage::Placement},
+    rows::RowAssignment,
     variable_split::metadata::Metadata,
 };
 use super::maps::Maps;
@@ -301,10 +302,10 @@ impl Placement for Plan {
         })
     }
 
-    fn apply(
+    fn apply<U: RowAssignment>(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_, SlotScalarUpdate>,
+        root: &Root<'_, U>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,

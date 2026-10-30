@@ -1,5 +1,8 @@
 //! One original record becomes one complete fitted record and joint key cache.
-use super::request::{self, FittedColumnUpdates};
+use super::{
+    request::{self, FittedColumnUpdates},
+    serialization::RecordPolicy,
+};
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{
@@ -79,6 +82,24 @@ pub(super) fn build(
     image: &NativeImage,
     checked: &TableCheck,
     groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
+    build_with(
+        image,
+        checked,
+        groups,
+        RecordPolicy::FittedDeclared,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn build_with(
+    image: &NativeImage,
+    checked: &TableCheck,
+    groups: &[FittedColumnUpdates<'_>],
+    policy: RecordPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -198,53 +219,69 @@ pub(super) fn build(
             None
         };
         let mut after = if let Some(value) = variable_value {
-            let variable_number = schema.columns()[bound.columns[bound.variable_group]]
-                .field
-                .variable;
-            let variable_start = *layout
-                .offsets
-                .get(variable_number)
-                .ok_or(InspectError::Malformed)?;
-            let variable_end = *layout
-                .offsets
-                .get(variable_number + 1)
-                .ok_or(InspectError::Malformed)?;
-            let selected_span = variable_end
-                .checked_sub(variable_start)
-                .ok_or(InspectError::Malformed)?;
-            let preserved_payload = layout
-                .offsets
-                .last()
-                .ok_or(InspectError::Malformed)?
-                .checked_sub(selected_span)
-                .ok_or(InspectError::Malformed)?;
-            let capacity = layout
-                .data_end
-                .checked_sub(preserved_payload)
-                .ok_or(InspectError::Malformed)?;
-            let payload = super::super::slot::storage::encode_declared(
-                &schema.columns()[bound.columns[bound.variable_group]],
-                value,
-                capacity,
-                reader.budget,
-                cancelled,
-            )?;
-            page_update::record::replace_payload(
-                schema,
-                bound.columns[bound.variable_group],
-                &before,
-                &payload,
-                !matches!(value, Value::Null),
-                reader.budget,
-                cancelled,
-            )?
+            match policy {
+                RecordPolicy::GrowingPreferred => page_update::record::build(
+                    schema,
+                    bound.columns[bound.variable_group],
+                    &before,
+                    value,
+                    reader.budget,
+                    cancelled,
+                )?,
+                RecordPolicy::FittedDeclared => {
+                    let variable_number = schema.columns()[bound.columns[bound.variable_group]]
+                        .field
+                        .variable;
+                    let variable_start = *layout
+                        .offsets
+                        .get(variable_number)
+                        .ok_or(InspectError::Malformed)?;
+                    let variable_end = *layout
+                        .offsets
+                        .get(variable_number + 1)
+                        .ok_or(InspectError::Malformed)?;
+                    let selected_span = variable_end
+                        .checked_sub(variable_start)
+                        .ok_or(InspectError::Malformed)?;
+                    let preserved_payload = layout
+                        .offsets
+                        .last()
+                        .ok_or(InspectError::Malformed)?
+                        .checked_sub(selected_span)
+                        .ok_or(InspectError::Malformed)?;
+                    let capacity = layout
+                        .data_end
+                        .checked_sub(preserved_payload)
+                        .ok_or(InspectError::Malformed)?;
+                    let payload = super::super::slot::storage::encode_declared(
+                        &schema.columns()[bound.columns[bound.variable_group]],
+                        value,
+                        capacity,
+                        reader.budget,
+                        cancelled,
+                    )?;
+                    page_update::record::replace_payload(
+                        schema,
+                        bound.columns[bound.variable_group],
+                        &before,
+                        &payload,
+                        !matches!(value, Value::Null),
+                        reader.budget,
+                        cancelled,
+                    )?
+                }
+            }
         } else {
             copy(&before, reader.budget, cancelled)?
         };
-        if after.len() != before.len() {
+        if matches!(policy, RecordPolicy::FittedDeclared) && after.len() != before.len() {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
 
+        let final_layout = match policy {
+            RecordPolicy::FittedDeclared => layout,
+            RecordPolicy::GrowingPreferred => record_layout::parse(&after, schema, reader.budget)?,
+        };
         for (group, &column) in groups.iter().zip(&bound.columns) {
             if !matches!(group, FittedColumnUpdates::Fixed { .. }) {
                 continue;
@@ -263,7 +300,7 @@ pub(super) fn build(
                 let end = start
                     .checked_add(width)
                     .ok_or(InspectError::StructureLimit)?;
-                if end > layout.data_end {
+                if end > final_layout.data_end {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                 }
                 after
@@ -271,7 +308,7 @@ pub(super) fn build(
                     .ok_or(InspectError::Malformed)?
                     .copy_from_slice(&bytes[..width]);
             }
-            let at = layout.mask_start + field.number() / MASK_BITS;
+            let at = final_layout.mask_start + field.number() / MASK_BITS;
             let bit = 1 << (field.number() % MASK_BITS);
             let mask = after.get_mut(at).ok_or(InspectError::Malformed)?;
             *mask = (*mask & !bit) | if present { bit } else { 0 };

@@ -1,0 +1,375 @@
+{
+  "date": "2026-10-30",
+  "feature": "Joint original-source fixed/ShortText-or-Binary UPDATE with represented-map DATA placement and allocation",
+  "api": "NativeImage::preview_ace16_mixed_updates",
+  "request": "Borrowed FittedColumnUpdates groups, at least one fixed and exactly one ordinary Short Text/Binary group for one original table",
+  "contract": {
+    "original_authority": "Fresh original requests and source-bound table/roots independently reconstruct full final records and exact original/final value projections before generic placement; final proof reacquires original authority and source body roles.",
+    "wire_policy": "GrowingPreferred uses existing minimum-size serializer, including raw UTF16 for the two-unit tie. Existing FittedDeclared wrapper retains declared-if-fits/raw-if-needed and equal physical capacity.",
+    "placement": "Existing physical target, original-page hidden last slot, alternate owned candidate page or EOF DATA page. One append/map ledger; stable logical ROWs; no candidate chaining.",
+    "index": "Fitting joint INDEX replacement only, every alias qualified and physical owner dispatched once. No topology or INDEX allocation claim.",
+    "allocation": "Already represented GLOBAL/ordinary-owned/candidate cells only. No whole-record map rebasing, bitmap promotion or in-file free-page reuse.",
+    "body_protection": "Every catalog INDEX/ColumnOwned body and foreign ordinary-owned body, including unreachable membership, denied as selected mutable DATA; definitions/map storage also protected.",
+    "resources": "Current allocation/work/rows/cancellation paid. Additional retained proof context can change quota consumption; no identical historical cost claim."
+  },
+  "checks": [
+    {
+      "check": "source_first",
+      "exit_code": 101,
+      "mutation_apis_run": false,
+      "reason": "Complete catalog map-declaration grammar absent in read-only donor",
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/source-first-root.log",
+        "bytes": 1228,
+        "sha256": "5ee7be62b49c4d3b73fbf6fb024750aeea29e3d12ee16b1f5b9d89138a031c59"
+      }
+    },
+    {
+      "check": "source_corrected",
+      "exit_code": 0,
+      "pairs": 36,
+      "complete_images": 72,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/source-second-root.log",
+        "bytes": 509,
+        "sha256": "b788200d429146ac98b36cba4876a069b28dfa8817c6e011a71101d30d739371"
+      }
+    },
+    {
+      "check": "normal_engine_check",
+      "exit_code": 0,
+      "warning": "Unused Value import removed before mutation APIs",
+      "evidence": {
+        "path": ".cache/ace16-omitted-insert-defaults-next-20261030/combined-engine-check-first-root.log",
+        "bytes": 559,
+        "sha256": "6c09bc41d956d7b38d8aead8f4d361ebd8ed7ede292b8ade54f4d068ce84a1a7"
+      }
+    },
+    {
+      "check": "reader_valid_body_alias_source",
+      "exit_code": 0,
+      "functions": 1,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/role-alias-source-first-root.log",
+        "bytes": 508,
+        "sha256": "c3b97f0dfd45957d0135ea52d90849cb4da2297b44bd62fdb070fde6a6d40ff6"
+      }
+    },
+    {
+      "check": "first_growth_and_fitted_API",
+      "exit_code": 0,
+      "growth_functions": 7,
+      "fitted_functions": 8,
+      "growth_matrix_comparisons": 72,
+      "fitted_matrix_comparisons": 83,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/api-first-root.log",
+        "bytes": 2047,
+        "sha256": "8f17f4202aff558efb1da987642709f3cc60069cd7e62f75d42d1579194cff63"
+      }
+    },
+    {
+      "check": "engine_mutations_before_represented_policy",
+      "exit_code": 0,
+      "functions": 498,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/engine-mutations-first-root.log",
+        "bytes": 67437,
+        "sha256": "66935b105b423b6c65edc5a3b40a5cc13e2a7e026d10eb15546ba19afeda3d1b"
+      }
+    },
+    {
+      "check": "shared_native_before_represented_policy",
+      "exit_code": 0,
+      "functions": 72,
+      "targets": 10,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/shared-native-first-root.log",
+        "bytes": 8872,
+        "sha256": "a5744c2a031885afabe08748c28fedc2199d0ef8ca456be25a951a3f5e08969b"
+      }
+    },
+    {
+      "check": "query_access_before_represented_policy",
+      "exit_code": 0,
+      "access_functions": 51,
+      "query_functions": 84,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/query-access-first-root.log",
+        "bytes": 16540,
+        "sha256": "a12c59f3fb89429bbd36baa68953a6fba264f90b0a82e5f9964a337f7a699418"
+      }
+    },
+    {
+      "check": "CLI_before_represented_policy",
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 33,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/cli-first-root.log",
+        "bytes": 7522,
+        "sha256": "e12925f85821c4f6a672fcbf75ee6706857adde0ac151ccec7b61d6068fe1e6d"
+      }
+    },
+    {
+      "check": "strict_before_represented_policy",
+      "exit_code": 0,
+      "packages": 5,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/clippy-first-root.log",
+        "bytes": 746,
+        "sha256": "f1cefd3324230c398cf2a5e36fac2d6dce339cf79d80d1318b0074ca11ff8bb1"
+      }
+    },
+    {
+      "check": "minimal_ACE_before_represented_policy",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-ace-first-root.log",
+        "bytes": 183,
+        "sha256": "d7965d5133fdb0275d7b62b8c8963c57ca9f62d042110eb78f15fa250782e94a"
+      }
+    },
+    {
+      "check": "minimal_Access_before_represented_policy",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-access-first-root.log",
+        "bytes": 526,
+        "sha256": "98404b553188a179ed8f210d452628c9ab5f1f61919b034918319c7aec39dcca"
+      }
+    },
+    {
+      "check": "represented_boundary_source_first",
+      "exit_code": 0,
+      "functions": 1,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-boundary-source-first-root.log",
+        "bytes": 513,
+        "sha256": "571bd034efdaa37ea557f0faaa1bcc24be7edea87e47ebb7810d68056d1fd6af"
+      }
+    },
+    {
+      "check": "final_growth_and_fitted_API",
+      "exit_code": 0,
+      "growth_functions": 8,
+      "fitted_functions": 8,
+      "growth_matrix_comparisons": 72,
+      "fitted_matrix_comparisons": 83,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-api-second-root.log",
+        "bytes": 2170,
+        "sha256": "841588732896482384bcbad164618b3d60ae22920bb43d7ff3bc45f043c40d76"
+      }
+    },
+    {
+      "check": "final_strict_ACE_all_targets_all_features",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-clippy-final-root.log",
+        "bytes": 184,
+        "sha256": "08c4d493e1824dca5dac49b596396034bd945db9da61731db577ed4e0fce427d"
+      }
+    },
+    {
+      "check": "final_minimal_ACE",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-minimal-final-root.log",
+        "bytes": 72,
+        "sha256": "f2066ca264b9a8598ecd436c70919e1efe1acea4098ad2a13b5d82d67bc049ec"
+      }
+    }
+  ],
+  "verification_order": [
+    "Corrected growth source36 and reader-valid alias source qualified before first growth API.",
+    "First seven growth/eight fitting API and broad batch passed before represented-map capture policy was tightened.",
+    "New isolated represented-map boundary source qualified before its API.",
+    "Final eight growth/eight fitting API plus strict/minimal ACE passed after the policy correction; broad498 was not repeated."
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/finish.rs",
+      "bytes": 2258,
+      "sha256": "f891e13f6c805242271d60c64c65ac36946e9bd6065f2c76bd8ae01c43bfc581"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/mod.rs",
+      "bytes": 1600,
+      "sha256": "13ff73b49e593bfb172d507fa17da8b4513160c3bebfaa7a3c1df05eb8cc8cb9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/stage.rs",
+      "bytes": 2963,
+      "sha256": "c7c637ca084542258312fa323512857cd271501469f4cb6348132f6419e45af9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/tests/boundary.rs",
+      "bytes": 1314,
+      "sha256": "657f75921ea44427f94fb407cb7668c13c1f50b5bfee5a471f7705e7eca51f55"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/tests.rs",
+      "bytes": 11767,
+      "sha256": "6cf47bd69191fe0f08fde31367cbc9736f464718a9485fcc08d1a1ffa516b9bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/mod.rs",
+      "bytes": 2348,
+      "sha256": "13931c7c34ff7780026e402ff83ad2c55c70fb2293f8f150a23288d4f5facb76"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof/verified.rs",
+      "bytes": 6097,
+      "sha256": "528920b9cb6c3607b8e9d284b81e6c2ac9ffa480235c827596ab5b1578cf37f9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs",
+      "bytes": 11304,
+      "sha256": "ebb2604e45cb0e6deb2a01b567763cd0cfa4f4372abb10365f63544788b9e267"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/serialization.rs",
+      "bytes": 178,
+      "sha256": "50cd77ba0f6d2c56763ec6e4d851543d060c94f6e697f4558eead939f66484e9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs",
+      "bytes": 12185,
+      "sha256": "0dae1f5e99086000f5ad093018eb7120ce6094c616a8451490c0ef181e4be05e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs",
+      "bytes": 9899,
+      "sha256": "4bbbbadbf0324a3d63fb1414ef30887d959a1f0c0904a67ff40b091e191d2a95"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_boundary.rs",
+      "bytes": 3449,
+      "sha256": "1cab5fdcb0b705c69c4f3e3d5872b05a686b62b08e08cccc9e50508d29fe694e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_roles.rs",
+      "bytes": 1897,
+      "sha256": "8c7100c005caaf768cfc881f7e40cb95e329a4c4bd1f23791ae9abbdb036be88"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests.rs",
+      "bytes": 5519,
+      "sha256": "78db7ec8c14eaaefbc0c78a2b91a12bce0cdc18b992af5af94be7020086fb9a1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/forward.rs",
+      "bytes": 9305,
+      "sha256": "3a7ec393c14de326961fb15284ff80ef02742f2d495edf486886625fc8ec0e48"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/page_update/stage.rs",
+      "bytes": 10036,
+      "sha256": "57a0bff74184e05046c063a8d5d3a069bd32502342be87e6be14b31d7d73bc29"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs",
+      "bytes": 12890,
+      "sha256": "2f798240fc87e55e9f24dc516584a74910b14e98fbed2f7e8c861c1114fb9b85"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/authority.rs",
+      "bytes": 8041,
+      "sha256": "07358756ecbda1663c3c762820139ecdbafb7262ac0d1e83bbfd5b69aa5f09f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/finish.rs",
+      "bytes": 7061,
+      "sha256": "5a78d39121a17174f3cbeef167d59869b483083d11a645210b8110b7d2c53805"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/record.rs",
+      "bytes": 1896,
+      "sha256": "165a8d12a9a4112ac573235fef23be09894b9f790714295fa0ba88d1e89f6e63"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit.rs",
+      "bytes": 15990,
+      "sha256": "7f02e3187261889fcb51e0645037e7f0b38f0398bfc2edd9f404ee3573a08fbf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/mod.rs",
+      "bytes": 3854,
+      "sha256": "a0bd31f4ce8da8bac22d7a61f981ab5b6b32344414d88d5c85b96dbb81c417b9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/placement.rs",
+      "bytes": 14614,
+      "sha256": "1b9c6486a81616444dba6dce8eeb60a83ac0ff98f9af75e1255c9564d73c3969"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/mod.rs",
+      "bytes": 7247,
+      "sha256": "f2e7dbc83eb108e4ec0534296fe11454c163e39065d386bb74876e2daee16c7e"
+    }
+  ],
+  "preserved_predecessors": [
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-registered-first-freeze.json",
+      "bytes": 2200,
+      "sha256": "5fe3936b6afd330c4121d0ab600cd6feca54897f7a384d95564ee29b743d601d"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-declaration-correction-freeze.json",
+      "bytes": 2969,
+      "sha256": "808ff8db90c21f9f267bc7a9ae14a2149cc35d14c273f50e91ee1ada645febdb"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/actual-first-coherent-freeze.json",
+      "bytes": 6713,
+      "sha256": "0b33ed7ee8ad5f00df90e980690642469489796920790a960ea2a14e745c2a6c"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/api-first-registered-freeze.json",
+      "bytes": 6180,
+      "sha256": "75eb856b1b7f7229a9463d432f94e8337e4a4868fa7b1c5d09926266e39e3eba"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-boundary-source-first-freeze.json",
+      "bytes": 2144,
+      "sha256": "63fe9ca0fb9f58e4dc073a30d5315016a7d636b2d2da602b458ca7476779891e"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/represented-boundary-api-registered-freeze.json",
+      "bytes": 6574,
+      "sha256": "289b5f055667efffc1fdb34b0f2ad56b0ab59717ea1a547181ccff85f481f999"
+    }
+  ],
+  "qualification": {
+    "independent_literal_source_pairs": 36,
+    "independent_literal_source_images": 72,
+    "native_access": false,
+    "original_file_mixed_growth": false,
+    "normal_ACE_saves": false,
+    "data_macros": false,
+    "journal_activation": false,
+    "CLI_default_mixed_growth": false
+  },
+  "remaining": [
+    "True joint INDEX split continuation through the same DATA append state and independent full-profile replay.",
+    "Map-record growth/promotion with complete typed metadata composition and proof.",
+    "Native original-file and Access save comparisons; required data macros and normal ACE write qualification."
+  ],
+  "final_format_and_links": {
+    "format": 0,
+    "documentation_links": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-mixed-growing-update-design-20261030/producer/doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "6a731779654d6d1f4178b3018356d661080f033aa45978bc267f8fa5728632a2"
+      }
+    ]
+  }
+}

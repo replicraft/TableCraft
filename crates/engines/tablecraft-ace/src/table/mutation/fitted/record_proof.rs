@@ -1,6 +1,9 @@
 //! Fresh original requests/records authorize rows and joint key maintenance.
+pub(super) mod verified;
+
 use super::{
     request::{self, FittedColumnUpdates},
+    serialization::RecordPolicy,
     stage::Staged,
 };
 use crate::{
@@ -10,21 +13,13 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     table::{
-        indexes::{IndexDataPatch, RowKeyUpdate, index_row_patches, qualify_row_indexes},
+        indexes::{IndexDataPatch, qualify_row_indexes},
         mutation::{gates, page_update::roots, variable_update::record_proof},
         record, record_layout,
     },
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
-
-struct ProvenRow {
-    reference: u32,
-    original: Vec<Value>,
-    final_values: Vec<Value>,
-}
+use tablecraft_core::limits::{Resource, ResourceBudget};
+use verified::{ProvenRow, Verified};
 
 pub(super) fn prove(
     image: &NativeImage,
@@ -35,6 +30,27 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
+    let verified = records(
+        image,
+        table,
+        groups,
+        RecordPolicy::FittedDeclared,
+        budget,
+        cancelled,
+    )?;
+    verified.compare_staged(staged, budget, cancelled)?;
+    verified.prove_indexes(image, indexes, budget, cancelled)?;
+    Ok(verified.records.len())
+}
+
+pub(super) fn records(
+    image: &NativeImage,
+    table: &str,
+    groups: &[FittedColumnUpdates<'_>],
+    policy: RecordPolicy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Verified, EditError> {
     // Capture qualification from this original image again. Neither a producer
     // TableCheck nor any staged column/key cache determines proof authority.
     let original = gates::before_slot(image, table, budget, cancelled)?;
@@ -47,9 +63,6 @@ pub(super) fn prove(
         budget,
         cancelled,
     )?;
-    if bound.columns != staged.affected {
-        return Err(EditError::Preservation);
-    }
 
     budget
         .charge_allocation(schema.columns().len() as u64, size_of::<usize>() as u64)
@@ -126,9 +139,6 @@ pub(super) fn prove(
             projection.push(position);
         }
     }
-    if projection != staged.projection {
-        return Err(EditError::Preservation);
-    }
 
     let captured = roots::capture(image, schema, &bound.rows, budget, cancelled)?;
     budget
@@ -204,21 +214,37 @@ pub(super) fn prove(
             None
         };
         let mut expected = if let Some(value) = variable_value {
-            record_proof::reconstruct_declared(
-                schema,
-                bound.columns[bound.variable_group],
-                before,
-                value,
-                reader.budget,
-                cancelled,
-            )?
+            match policy {
+                RecordPolicy::FittedDeclared => record_proof::reconstruct_declared(
+                    schema,
+                    bound.columns[bound.variable_group],
+                    before,
+                    value,
+                    reader.budget,
+                    cancelled,
+                )?,
+                RecordPolicy::GrowingPreferred => record_proof::reconstruct(
+                    schema,
+                    bound.columns[bound.variable_group],
+                    before,
+                    value,
+                    reader.budget,
+                    cancelled,
+                )?,
+            }
         } else {
             super::stage::copy(before, reader.budget, cancelled)?
         };
-        if expected.len() != before.len() {
+        if matches!(policy, RecordPolicy::FittedDeclared) && expected.len() != before.len() {
             return Err(EditError::Preservation);
         }
 
+        let final_layout = match policy {
+            RecordPolicy::FittedDeclared => layout,
+            RecordPolicy::GrowingPreferred => {
+                record_layout::parse(&expected, schema, reader.budget)?
+            }
+        };
         for group in groups {
             if !matches!(group, FittedColumnUpdates::Fixed { .. }) {
                 continue;
@@ -242,7 +268,7 @@ pub(super) fn prove(
                 let end = start
                     .checked_add(width)
                     .ok_or(InspectError::StructureLimit)?;
-                if end > layout.data_end {
+                if end > final_layout.data_end {
                     return Err(EditError::Preservation);
                 }
                 expected
@@ -251,87 +277,32 @@ pub(super) fn prove(
                     .copy_from_slice(&bytes[..width]);
             }
             let mask = expected
-                .get_mut(layout.mask_start + field.number() / MASK_BITS)
+                .get_mut(final_layout.mask_start + field.number() / MASK_BITS)
                 .ok_or(EditError::Preservation)?;
             let bit = 1 << (field.number() % MASK_BITS);
             *mask = (*mask & !bit) | if present { bit } else { 0 };
         }
 
-        let producer = staged
-            .records
-            .get(rows.len())
-            .ok_or(EditError::Preservation)?;
         let final_values =
             record::decode_selected(&expected, schema, Some(&projection), &mut reader)?;
-        reader.work(before.len() + expected.len() + projection.len())?;
-        if producer.reference != root.reference
-            || producer.offset != root.final_record.offset
-            || producer.before != *before
-            || producer.after != expected
-            || !request::rows_equal(
-                &producer.original_values,
-                &before_values,
-                reader.budget,
-                cancelled,
-            )?
-            || !request::rows_equal(
-                &producer.final_values,
-                &final_values,
-                reader.budget,
-                cancelled,
-            )?
-        {
-            return Err(EditError::Preservation);
-        }
         rows.push(ProvenRow {
             reference: root.reference,
+            root_word: root.word,
+            root_range: root.range,
+            source_offset: root.final_record.offset,
+            before: root.final_record.data,
+            bytes: expected,
             original: before_values,
             final_values,
         });
     }
-    if rows.len() != staged.records.len() {
-        return Err(EditError::Preservation);
-    }
-
-    // Rebuild joint final key inputs exclusively from independently proven rows.
-    reader
-        .budget
-        .charge_allocation(rows.len() as u64, size_of::<RowKeyUpdate<'_>>() as u64)
-        .map_err(InspectError::from)?;
-    let mut keys = Vec::new();
-    keys.try_reserve_exact(rows.len())
-        .map_err(|_| InspectError::Allocation)?;
-    for row in &rows {
-        reader.tick()?;
-        keys.push(RowKeyUpdate {
-            reference: row.reference,
-            columns: &projection,
-            before: &row.original,
-            after: &row.final_values,
-        });
-    }
-    let expected_indexes = index_row_patches(
-        image,
-        schema,
-        original.indexes(),
-        &bound.columns,
-        &keys,
-        reader.budget,
-        cancelled,
-    )?;
-    if expected_indexes.len() != indexes.len() {
-        return Err(EditError::Preservation);
-    }
-    for (expected, actual) in expected_indexes.iter().zip(indexes) {
-        reader.tick()?;
-        reader.work(expected.before.len() + expected.after.len())?;
-        if expected.offset != actual.offset
-            || expected.before != actual.before
-            || expected.after != actual.after
-        {
-            return Err(EditError::Preservation);
-        }
-    }
     reader.tick()?;
-    Ok(rows.len())
+    Ok(Verified {
+        checked: original,
+        columns: bound.columns,
+        projection,
+        records: rows,
+        source_address: image.as_bytes().as_ptr() as usize,
+        source_length: image.as_bytes().len(),
+    })
 }

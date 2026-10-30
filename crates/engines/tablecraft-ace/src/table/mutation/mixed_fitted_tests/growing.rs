@@ -4,13 +4,13 @@ use model::{Family, PAGE, Recipe, Row};
 use tablecraft_testkit::access as raw;
 
 #[derive(Clone, Copy)]
-pub(super) enum Destination {
+pub(in crate::table::mutation) enum Destination {
     OriginalPage,
     OtherOwned,
     EndOfFile,
 }
 
-pub(super) struct Case {
+pub(in crate::table::mutation) struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub rows: Vec<Row>,
@@ -74,7 +74,12 @@ fn record_after(family: Family) -> Vec<u8> {
     record
 }
 
-pub(super) fn case(code: u8, family: Family, descending: bool, destination: Destination) -> Case {
+pub(in crate::table::mutation) fn case(
+    code: u8,
+    family: Family,
+    descending: bool,
+    destination: Destination,
+) -> Case {
     let source = model::case(code, family, descending, Recipe::Nulls, false);
     let rows = source.rows;
     let mut final_rows = rows.clone();
