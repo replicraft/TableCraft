@@ -1,6 +1,8 @@
 //! Source-bound creation of one real ordinary Int32 secondary index.
 mod audit;
 pub(in crate::table) mod buffer;
+#[cfg(test)]
+mod generated_sources;
 mod layout;
 mod model;
 pub(in crate::table) mod source;

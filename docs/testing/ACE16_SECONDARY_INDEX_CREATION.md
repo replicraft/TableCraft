@@ -132,3 +132,27 @@ use the pinned library's embedded templates privately; no third-party fixture
 bytes are added to the repository. The [reference record](results/ace16-secondary-index-public-reference-2026-10-30.json)
 retains the initial refusal, unrun calls, frozen programs and separate passing
 series. No Microsoft Access, native-save or transaction qualification is implied.
+
+## Native admission of generated originals
+
+A separate ignored SOURCE diagnostic now passes on all eight immutable originals
+created by the pinned Jackcess public API. Both headers and the empty, three-row,
+six-row nullable/duplicate and 600-row populations are included. All sixteen
+original ASC/DESC requests pass the actual creation source qualifier. All eight
+original table checks and independent existing-owner censuses pass, and all eight
+original hashes remain unchanged. No writer, reservation or candidate is invoked.
+
+The exact file hashes and requests were frozen before the first call. Static
+review corrected two budget-error conversions before compilation; the original
+private draft and freeze remain retained. The diagnostic and native strict
+all-target/all-feature check pass on their first executions. The
+[SOURCE-admission record](results/ace16-secondary-index-genuine-source-admission-2026-10-30.json)
+pins the inputs, installed diagnostic, relevant owners and actual logs separately
+from the historical authored-corpus/native-writer records.
+
+This establishes existing-source admission only. It does not yet establish
+prospective allocation admission, canonical whole-image writer output, candidate
+reopen or Microsoft Access save behavior on these generated originals. A later
+whole-image comparison must first freeze independent expectations from these
+originals and the original requests; public reference AFTER bytes cannot supply
+those canonical expectations.

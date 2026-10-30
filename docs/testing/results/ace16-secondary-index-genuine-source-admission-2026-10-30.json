@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Ignored SOURCE-only native secondary-index admission diagnostic on eight immutable Jackcess public-API-created originals; no index writer calls or candidate construction.",
+  "native_baseline": "8f4a514b",
+  "status": "passed",
+  "executed": {
+    "source_diagnostic": {
+      "functions_passed": 1,
+      "captures": 8,
+      "source_requests": 16,
+      "source_qualified": 16,
+      "original_check_table_passed": 8,
+      "existing_owner_censuses_passed": 8,
+      "original_hashes_unchanged": 8,
+      "writer_calls": 0,
+      "log": ".cache/ace16-index-create-genuine-source-admission-20261030/source-admission-first-root.log",
+      "receipt": ".cache/ace16-index-create-genuine-source-admission-20261030/source-admission-first-root.json"
+    },
+    "strict": {
+      "exit_code": 0,
+      "scope": "tablecraft-ace all targets/all features",
+      "log": ".cache/ace16-index-create-genuine-source-admission-20261030/strict-first-root.log"
+    }
+  },
+  "populations": [
+    {
+      "name": "empty",
+      "rows": 0
+    },
+    {
+      "name": "distinct",
+      "rows": 3
+    },
+    {
+      "name": "nullable",
+      "rows": 6
+    },
+    {
+      "name": "pressure",
+      "rows": 600
+    }
+  ],
+  "headers": [
+    5,
+    6
+  ],
+  "requests": {
+    "table": "Items",
+    "column": "Score",
+    "names": [
+      "ScoreLookupAsc",
+      "ScoreLookupDesc"
+    ],
+    "directions": [
+      "ASC",
+      "DESC"
+    ]
+  },
+  "authoring_history": [
+    {
+      "kind": "precompile static correction",
+      "detail": "EditError has From<InspectError>, so two charge_allocation results explicitly map BudgetError through InspectError. Original private draft and freeze retained; no compilation failure and no source/request/image change."
+    },
+    {
+      "kind": "scoped formatting",
+      "detail": "rustfmt sorted the cfg(test) child declaration among existing modules; predecessor installation receipt retained."
+    }
+  ],
+  "boundaries": [
+    "SOURCE admission and existing ownership only; prospective fresh owner/global map rewrite and writer remain unexecuted on these originals.",
+    "No whole-image expected construction, producer comparison, candidate reopen, native Microsoft Access save or transaction evidence is supplied by this diagnostic.",
+    "Original public reference AFTER files are not diagnostic inputs.",
+    "Private binary originals remain untracked and unchanged."
+  ],
+  "pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/mod.rs",
+      "sha256": "202834d5dc2f398e41fe0de69cae79013c150d019f3bf9dd016872ed2a0180ca"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/generated_sources.rs",
+      "sha256": "90c95479e98777baf2692796ae11e17a27b0057b6e44e624f2d95efbc0169dbe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/source.rs",
+      "sha256": "3d937cf220e0e4ac0158926f61130bf9c9b34d8fdc4362832e5c5e01f355d985"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/layout.rs",
+      "sha256": "ca9cac60e014ed4545fa73937756da818cb59ea9ffdedb28a084332e1c83e8b2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_create/model.rs",
+      "sha256": "567d539895169f1893145b404939e881e8b1729da69c3d4d1220c8e5e74c817f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/append/owners.rs",
+      "sha256": "ab162c62afdf8d55f4bd60597baf6d587c72cdc63262dce097666291ea69315d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/catalog.rs",
+      "sha256": "a478166716d4142de7654a87134c81d69407aa0fb1d0a269678e052443be6ee2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/map_authority/claims.rs",
+      "sha256": "19ee53983a02883ffab10a4d5bae641bff8af1a91a279f6f68f47bcb54cf027b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "sha256": "403b29e128606d1f3dded01bc0cbc553bbd72fb288e1b17e7a3e3db1eb754117"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/image.rs",
+      "sha256": "d9dffd20d10e68b6e6459ca15fbc2343a4876d76018d6d6900619ed2f1a724e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation.rs",
+      "sha256": "cd14a9875f13d6576e543c168ee5a45f083162312dd554532f71719cfec1d234"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/allocation/represented.rs",
+      "sha256": "071043e057e5037cf33aa4d985b727cda92af1bac4684b463c6dd1d0283b1b20"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "sha256": "ad31ab981deb1262ecb790cce6c087e870114788bfd39329340927412c9c211c"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "b7b4b43a2ad44f1c6e6a5e1567dc2c397034ab57f4348c0641869faea4013934"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-public-first-plan.json",
+      "sha256": "5a5ce1365f68bc0234cafd3e531b42a159e78182616a17542f8341962c22cd1d"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-first-report.json",
+      "sha256": "d6396b23a4e28e82f91dd283d86d45976550f94de80163a1a81728705c33c738"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/BuildIndexReferenceSource.java",
+      "sha256": "b3e7556f155fd7cca84f208743604b563c96af9044b12d4a0dc08be1772e651a"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/SecondaryIndexReference.java",
+      "sha256": "a2e13b2b690e435c90e01afe610dcd7af18bfe9c2b6a51a37a559b9b523101de"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/original-inputs-and-requests.json",
+      "sha256": "b6c0e00c05908f54b030ef78387c4f3830407d0c56414669fa89135ef99a40ea"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/registration.patch",
+      "sha256": "9f9c1c9af2ce5f36c98d3791a778999c57a0b63e0d3351d4169a4f6d5392b807"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-empty.accdb",
+      "sha256": "620d351427f93f8f34dc140af737fb44dbb194a3114de5bbe82f74adfa4c5921"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-distinct.accdb",
+      "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-nullable.accdb",
+      "sha256": "e44c5b6ca37405f5f9bb9ed4ff49dc940d64d3829528e8b6c003090acc2823d1"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-pressure.accdb",
+      "sha256": "30617d80e342ed3c86f67bbc9ba4d2d4e60472632fbcceca3036a5af76889648"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-empty.accdb",
+      "sha256": "e5c1655e999f2abb9dfda2861beef83588a176050808a42bdff610b53686c28a"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-distinct.accdb",
+      "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-nullable.accdb",
+      "sha256": "df1a245a66ab4d14da9a6bf3dfd6f2df881c21b2b5f28954f5b1103c4c5d1aae"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-pressure.accdb",
+      "sha256": "de9107c03a1f87eb4ca091e9c81a9097b82a5052c6451c0b009c2f68c98c1a51"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/private-first-freeze.json",
+      "sha256": "0b0ebed6717bfe67f13e24fc2445b7e9dd62d755f0e4fc5b67d480cdfd46e75b"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/installed-source-freeze.json",
+      "sha256": "ca853bb2ffaa664763572969ccd00a566685d20daddd394f3b56d44849787ba3"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/generated_sources-before-budget-conversion.rs",
+      "sha256": "41be6581e7cadb7a7c198b071c9a18c2ee78426d870c4f36ad256a6c34b4f2bc"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/source-admission-first-root.log",
+      "sha256": "3c4a0443c18ac4143bda3df4e71b34505e254047b74bbc41978f848158bfe99a"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/source-admission-first-root.json",
+      "sha256": "04cf90d4bc347b366f68fafe2c3cb1cd1f052b03293ba21e1d50c99fb9089fc3"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-source-admission-20261030/strict-first-root.log",
+      "sha256": "1fa322106c5d4feca58c2ff214fa387b9ee8bd4cdf26078d764c074327fe3770"
+    }
+  ]
+}
