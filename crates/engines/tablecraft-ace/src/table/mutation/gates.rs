@@ -1,3 +1,6 @@
+#[cfg(feature = "ace16-write-preview")]
+mod defaults;
+
 use super::super::indexes::FOREIGN_INDEX;
 use super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
@@ -259,13 +262,13 @@ fn before_with(
         }
         for property in group.properties() {
             check(budget, cancelled)?;
-            // Full explicit INSERT rows do not qualify default evaluation or
-            // omission semantics. UPDATE keeps its existing passive treatment.
+            // Complete supplied values do not invoke field defaults. Qualify
+            // their inert declaration without adding omission/evaluation semantics.
             #[cfg(feature = "ace16-write-preview")]
             if matches!(admission, Admission::Insert | Admission::IncrementingInsert)
                 && property.name().eq_ignore_ascii_case("DefaultValue")
             {
-                return Err(EditError::Unsupported(WriteBlocker::Properties));
+                defaults::qualify(structural.schema(), group, property, budget, cancelled)?;
             }
             // Captions/descriptions and rejection text are passive.
             if property.flags() & !SUPPORTED_PROPERTY_FLAG_MASK != 0

@@ -19,6 +19,7 @@ pub(in crate::table::mutation) mod multiple_indexes;
 mod multiple_numeric_indexes;
 pub(in crate::table::mutation::insert) mod ordinary_rows;
 mod owned_map_promotion;
+mod passive_defaults;
 mod properties;
 mod recursive_tree;
 mod secondary_scalar_indexes;

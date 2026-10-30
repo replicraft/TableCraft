@@ -334,11 +334,7 @@ fn readable_unqualified_index_and_layout_declarations_do_not_select_the_first_in
 #[test]
 fn defaults_generated_flags_pools_and_late_cancellation_keep_sources_retryable() {
     let case = fixture::source(6, true, false, Index::Primary, true);
-    refusal(
-        &case,
-        Row::rich(60).values(true),
-        EditError::Unsupported(WriteBlocker::Properties),
-    );
+    run(&case, &[Row::rich(60)]);
     let mut generated = fixture::source(6, true, false, Index::Primary, false);
     generated.before[10 * PAGE + 75 + 2 * 25 + 15] = 0x13;
     refusal(
