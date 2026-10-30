@@ -28,6 +28,10 @@ complex attributes. These flags qualify this selected engineering profile; they
 are not an Increment-mode detector. Multiple generated fields, generated GUIDs,
 complex fields and unqualified properties remain refused. In particular, an
 unqualified stored `NewValues` declaration is not overridden by caller policy.
+Primary Microsoft documentation identifies Increment and Random choices but does
+not establish a numbered native property encoding here. The pinned independent
+writer also supplies no NewValues metadata enum binding. No raw `0`/`1` carrier,
+flag, counter sign or property absence is treated as proof of a stored mode.
 
 On success, the result exposes `before_bytes()`, `candidate_bytes()`,
 `inserted_rows()`, `generated_column_number()` and `generated_values()`.
