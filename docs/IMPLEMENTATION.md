@@ -21,7 +21,10 @@ the full I/O run passes 54 unit, nine integration and two compile-fail tests,
 with strict lint checks passing. The native journal path now retains bounded
 original typed intent and rebuilds the normal Jet 4 plan against the checked
 BEFORE image; both complete images must match before recovery writes are admitted.
-Seven qualified-recovery checks pass. Host-owned filesystem pairing and the CLI
+Seven qualified-recovery checks pass. The optional I/O
+[filesystem owner](foundation/FILESYSTEM_JOURNALS.md) now validates existing bundle
+identity and lends retained storage for explicit recovery; fifteen focused checks
+and the full I/O suite pass. Durable bundle creation/retirement and CLI
 save/recover commands remain unfinished. See [the journal contract](foundation/IMAGE_JOURNAL.md)
 and [native recovery](access/writes/NATIVE_WRITES.md#native-qualification-before-recovery-writes).
 

@@ -2,7 +2,7 @@ use super::protocol::{Backend, CreateFailure, PublishFailure};
 use super::{ParentIdentity, PublicationError};
 use crate::{
     IoError,
-    namespace::{HeldDirectory, Location, ObjectIdentity, RelativeName},
+    namespace::{HeldDirectory, Location, ObjectIdentity, RelativeName, require_private_directory},
     progress::check,
     write_exact_at,
 };
@@ -10,7 +10,6 @@ use rustix::fs::{self, AtFlags, Mode, OFlags};
 use std::ffi::CStr;
 use std::fs::File;
 use std::io::ErrorKind;
-use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -24,8 +23,6 @@ const HEX: &[u8; 16] = b"0123456789abcdef";
 const MAX_STAGE_ATTEMPTS: usize = 16;
 const CREATE_CALLBACK_STEPS: u64 = 6;
 const WRITE_CHUNK_BYTES: usize = 64 * 1024;
-const PRIVATE_DIRECTORY_MODE: u32 = 0o700;
-const PERMISSION_BITS: u32 = 0o777;
 const PAYLOAD: &CStr = c"payload";
 
 #[cfg(test)]
@@ -163,12 +160,7 @@ impl Backend for Unix {
                 .metadata()
                 .map_err(IoError::from)
                 .map_err(retained)?;
-            if !metadata.is_dir()
-                || metadata.mode() & PERMISSION_BITS != PRIVATE_DIRECTORY_MODE
-                || metadata.uid() != rustix::process::geteuid().as_raw()
-            {
-                return Err(retained(IoError::Io(ErrorKind::PermissionDenied)));
-            }
+            require_private_directory(&metadata).map_err(retained)?;
             let identity = ObjectIdentity::from_metadata(&metadata);
             let directory =
                 HeldDirectory::adopt_observed(directory, &metadata).map_err(retained)?;
