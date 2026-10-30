@@ -2,6 +2,13 @@
 
 ## Current product priority
 
+Explicit [physical secondary-index creation](testing/ACE16_SECONDARY_INDEX_CREATION.md)
+now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete
+images match through each consumer, including NULL/duplicate keys and root-leaf
+growth. Real generated files pass source admission; full writer comparisons on
+those originals remain next. This advances schema editing without closing
+general saves, required macros or broader index profiles.
+
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
 `--image-bytes`, up to the native 80 MiB ceiling with independent work budgets.

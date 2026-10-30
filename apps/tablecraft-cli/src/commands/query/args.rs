@@ -17,6 +17,8 @@ pub(crate) enum Command {
     PreviewInsert(Box<super::preview_insert::Arguments>),
     /// Select original rows with SQL and create a fresh experimental ACE DELETE copy.
     PreviewDelete(Box<super::preview_delete::Arguments>),
+    /// Create one ordinary secondary index in a fresh experimental ACE copy.
+    PreviewCreateIndex(Box<super::preview_create_index::Arguments>),
     /// Select original rows with SQL and create a fresh experimental ACE UPDATE copy.
     PreviewUpdate(Box<super::preview_update::Arguments>),
     /// Preview one restricted calculated-field formula; recomputes without saving or replacing caches.

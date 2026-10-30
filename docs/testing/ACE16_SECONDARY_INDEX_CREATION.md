@@ -1,8 +1,9 @@
 # Physical secondary-index creation
 
 Status: native engineering creation API, exact quota/purpose controls, mutation
-regressions, strict/minimal builds and final repository checks pass. Access/CLI
-creation consumers are not installed.
+regressions and strict/minimal builds pass. The Access adapter and explicit
+[SQL/CLI copy command](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
+now consume this service. Native Access creation/save qualification remains open.
 
 The [source gate](../../crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs)
 constructs eight authored BEFORE images and sixteen complete ASC/DESC expected

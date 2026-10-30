@@ -251,3 +251,32 @@ values stay caller-supplied; this is not SQL row selection. Binary values use
 hexadecimal. Add `--index-growth` for joint DATA/INDEX growth with fixed siblings;
 mixed Memo/OLE, multiple variable fields and multitable variable requests still
 refuse before publication. Default typed updates remain fixed-field maintenance.
+
+## Experimental secondary-index copies
+
+```sh
+tablecraft query preview-create-index \
+  'CREATE INDEX ScoreLookup ON Items (Score DESC)' \
+  --database offline.accdb --output indexed.accdb
+```
+
+This explicit engineering command adds one ordinary nonunique single-Int32
+secondary index, including NULL keys, on a previously unindexed field. ASC is
+the default; DESC is explicit. UNIQUE, WITH policies, parameters, multiple fields
+and other statements refuse before source open. Native schema, properties,
+constraints and ownership checks retain their own narrower admission.
+
+The command publishes one complete copy under a fresh name and keeps the original
+unchanged. Its report separates logical/physical index numbers and indexed-row
+count; it does not report changed data rows. Standard capture remains limited to
+64 MiB. Work defaults are 268435456 bytes, 100000 rows and 100000000 steps;
+`--work-bytes`, `--work-rows` and `--work-steps` set those cumulative pools without
+widening the structural profile. `--image-bytes` is unavailable for this command.
+Encrypted/deployment rewrites and occupied output paths refuse. The dedicated
+guard checks first qualify a supported encrypted reader and stored/MSZIP package
+readers, then confirm four no-output refusals, including the correct-password
+case. There is no fallback, in-place editing, normal-save or required-macro
+authority.
+
+See [the exact SQL engineering contract](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
+and [native index creation](../testing/ACE16_SECONDARY_INDEX_CREATION.md).

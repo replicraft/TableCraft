@@ -8,11 +8,13 @@ mod inserter;
 pub use inserter::{AccessEngineeringInserter, ScalarInsertMode};
 pub mod sql;
 pub mod sql_delete;
+pub mod sql_index;
 pub mod sql_insert;
 use tablecraft_ace::{
-    Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
-    EditError, FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, NativeImage,
-    RowDelete, RowInsert, SlotScalarUpdate, TableRowDeletes,
+    Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16IndexCreatePreview, Ace16WritePreview,
+    AutoNumberRowInsert, EditError, FittedColumnUpdates, FixedColumnUpdates,
+    IncrementingAutoNumber, NativeImage, RowDelete, RowInsert, SecondaryIndexCreate,
+    SlotScalarUpdate, TableRowDeletes,
 };
 use tablecraft_ace::{InsertFieldValue, OmittedRowInsert};
 use tablecraft_core::limits::ResourceBudget;
@@ -52,6 +54,13 @@ pub enum NamedInsertMode {
 
 /// Typed intent bound to one immutable image. Values and expected bytes are exact.
 pub enum EngineeringRequest<'a> {
+    /// Create one real physical secondary index through the native source audit.
+    CreateSecondaryIndex {
+        /// Exact local table name; never an implicit external source.
+        table: &'a str,
+        /// Original borrowed native request; unsupported options are not inferred.
+        request: &'a SecondaryIndexCreate<'a>,
+    },
     /// Map explicitly named typed fields once, then finish one original batch.
     NamedInsert {
         /// Exact local table, resolved by the existing native metadata service.
@@ -233,6 +242,20 @@ enum Candidate {
     Rows(Ace16WritePreview),
     Generated(Ace16AutoNumberInsertPreview),
     Delete(Ace16DeletePreview),
+    Index(Ace16IndexCreatePreview),
+}
+
+/// Audited index-creation presentation facts, separate from changed data rows.
+#[derive(Clone, Copy)]
+pub struct CreatedIndexMetadata<'a> {
+    /// Exact new logical index name.
+    pub name: &'a str,
+    /// New zero-based logical descriptor number.
+    pub logical_index_number: u32,
+    /// New zero-based physical index-data number.
+    pub physical_index_number: u32,
+    /// All original rows indexed, including NULL and duplicate keys.
+    pub indexed_rows: usize,
 }
 
 /// A complete disposable candidate, with no normal save, journal or commit API.
@@ -256,6 +279,7 @@ impl EngineeringCopy {
             Candidate::Rows(value) => value.before_bytes(),
             Candidate::Generated(value) => value.before_bytes(),
             Candidate::Delete(value) => value.before_bytes(),
+            Candidate::Index(value) => value.before_bytes(),
         }
     }
 
@@ -265,6 +289,7 @@ impl EngineeringCopy {
             Candidate::Rows(value) => value.candidate_bytes(),
             Candidate::Generated(value) => value.candidate_bytes(),
             Candidate::Delete(value) => value.candidate_bytes(),
+            Candidate::Index(value) => value.candidate_bytes(),
         }
     }
 
@@ -274,6 +299,20 @@ impl EngineeringCopy {
             Candidate::Rows(value) => value.changed_rows(),
             Candidate::Generated(value) => value.inserted_rows(),
             Candidate::Delete(value) => value.deleted_rows(),
+            Candidate::Index(_) => 0,
+        }
+    }
+
+    /// Index creation reports metadata without claiming any data row changed.
+    pub fn created_index(&self) -> Option<CreatedIndexMetadata<'_>> {
+        match &self.candidate {
+            Candidate::Index(value) => Some(CreatedIndexMetadata {
+                name: value.index_name(),
+                logical_index_number: value.logical_index_number(),
+                physical_index_number: value.physical_index_number(),
+                indexed_rows: value.indexed_rows(),
+            }),
+            _ => None,
         }
     }
 
@@ -299,6 +338,9 @@ pub fn preview(
 ) -> Result<EngineeringCopy, EngineeringError> {
     let _span = tracing::debug_span!("access.edit.engineering_preview").entered();
     let candidate = match request {
+        EngineeringRequest::CreateSecondaryIndex { table, request } => Candidate::Index(
+            image.preview_ace16_create_secondary_index(table, request, budget, cancelled)?,
+        ),
         EngineeringRequest::NamedInsert {
             table,
             fields,
