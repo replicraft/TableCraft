@@ -212,6 +212,20 @@ fn set_member(bytes: &mut [u8], row: usize, number: usize, set: bool) {
     }
 }
 
+pub fn null_memo_pressure_source() -> Vec<u8> {
+    let mut null_source = source::source(6, 1);
+    let ole = single(1, OLE, 0);
+    install(
+        &mut null_source,
+        ROOT,
+        &page(
+            10,
+            &[(0, record(1, None, Some(&ole))), (HIDDEN, vec![0x9b; 4040])],
+        ),
+    );
+    null_source
+}
+
 pub fn combined_expected(before: &[u8]) -> Vec<u8> {
     let mut expected = before.to_vec();
     expected.resize((EOF + 4) * PAGE, 0);

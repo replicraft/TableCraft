@@ -18,3 +18,13 @@ pub(in crate::table) fn ordinary(field: &NativeColumn) -> bool {
             (LONG_TEXT | OLE, 0) | (LONG_TEXT, COMPRESSED_UNICODE_FLAG)
         )
 }
+
+impl NativeColumn {
+    /// Whether this declaration uses the supported ordinary Memo/OLE storage
+    /// profile. This inspects metadata only: payloads, ownership, constraints
+    /// and write permission still require their existing independent checks.
+    /// Calculated, complex-wrapper and unknown flag combinations return false.
+    pub fn is_ordinary_long_value(&self) -> bool {
+        ordinary(self)
+    }
+}

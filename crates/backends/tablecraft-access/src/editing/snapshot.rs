@@ -31,6 +31,13 @@ pub(crate) fn capture(
     finish(native, budget, cancelled).map(|(snapshot, _)| snapshot)
 }
 
+#[cfg(feature = "ace16-write-preview")]
+pub(crate) struct EngineeringSnapshot {
+    pub snapshot: Snapshot,
+    pub schema: TableSchema,
+    pub projected: bool,
+}
+
 /// Engineering-only ordinary projection. Excluded declarations remain available
 /// to the editor; no cached calculation or collection becomes a scalar NULL.
 #[cfg(feature = "ace16-write-preview")]
@@ -39,7 +46,7 @@ pub(crate) fn capture_engineering(
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<(Snapshot, Option<TableSchema>), NativeEditError> {
+) -> Result<EngineeringSnapshot, NativeEditError> {
     let schema = inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -58,7 +65,19 @@ pub(crate) fn capture_engineering(
         projected |= field.scalar_type().is_none();
     }
     if !projected {
-        return capture(image, table, budget, cancelled).map(|snapshot| (snapshot, None));
+        let native = read_table(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let (snapshot, schema) = finish(native, budget, cancelled)?;
+        return Ok(EngineeringSnapshot {
+            snapshot,
+            schema,
+            projected: false,
+        });
     }
     let metadata = crate::source::schema::classify(&schema, budget, cancelled)?;
     let names = metadata.projection_names(budget)?;
@@ -74,7 +93,11 @@ pub(crate) fn capture_engineering(
         return Err(InspectError::Malformed.into());
     }
     let (snapshot, schema) = finish(native, budget, cancelled)?;
-    Ok((snapshot, Some(schema)))
+    Ok(EngineeringSnapshot {
+        snapshot,
+        schema,
+        projected: true,
+    })
 }
 
 fn finish(

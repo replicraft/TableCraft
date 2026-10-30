@@ -76,17 +76,20 @@ assignment coercions or the ordinary `ExistingInt32` carrier law.
 
 The default resolves the complete target set from the original snapshot and
 selects one service before native planning. All-fixed targets use existing fitting
-fixed/batch maintenance and retain its history policy. One Text/Binary target
-uses the existing variable service without INDEX growth; its qualified DATA
-placement may allocate pages. Multiple variable targets, or variable targets
+fixed/batch maintenance and retain its history policy. For one Text/Binary target,
+the retained native declaration selects the existing ordinary Memo/OLE service
+when it matches that engine storage shape. Otherwise it uses the existing variable
+service without INDEX growth. Their qualified DATA placement may allocate pages. Multiple variable targets, or variable targets
 with fixed siblings, use [joint fitted-record maintenance](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md):
 one original/final row projection, existing record capacity and retained INDEX
 topology. There is no failed-preview retry or intermediate candidate.
 
-Shared Text/Binary metadata selects a route; the engine still certifies actual
-Short Text/Binary storage. It does not silently route Memo/OLE to the long-value
-service. Mixed LVAL changes remain unsupported, including when WHERE selects no
-rows. This routing `Default` is unrelated to
+Shared Text/Binary metadata alone does not establish native storage kind. The
+single-column Memo/OLE selection uses the engine's ordinary LVAL declaration
+predicate; ownership, properties, constraints and payloads still require the
+selected engine service's checks. Multiple-column LVAL changes remain unsupported,
+including when WHERE selects no rows. Projected rich schemas retain their existing
+unindexed Boolean-only mutation restriction. This routing `Default` is unrelated to
 omitted INSERT fields or native `DefaultValue` evaluation.
 
 `--index-growth` explicitly selects existing Int32 fixed INDEX allocation.
@@ -271,3 +274,37 @@ adapter library passes 57 functions; the selected CLI round passes 37 unit and
 all-target/all-feature checks and minimal Access checks pass. See the
 [frontend record](../../testing/results/mixed-data-index-growth-copies-2026-10-30.json).
 These are experimental engineering copies, not native Access save qualification.
+
+## Default ordinary Memo/OLE routing evidence
+
+One-column SQL updates to qualified ordinary Memo/OLE fields now use the existing
+LVAL service without requiring `--long-value`. Explicit modes retain their prior
+profiles. The adapter moves the native schema into its captured state without
+cloning it, selects one service before planning and never retries a failed preview.
+This grants no normal-save or data-macro authority.
+
+Before producer installation, Access and CLI each qualified six source/expected
+pairs, and the reused old direct-engine recipe passed. The first Access positive
+run exposed an authored OLE expectation that compacted a 39-byte root into a
+40-byte record. The existing stable-root contract instead preserves its original
+capacity and appends a hidden forwarding target. That failed compacting expectation
+remains unchanged in its original owner. A separate literal forwarding expectation
+was then source-qualified in both frontends before API replay; no routing or
+encoder change occurred during this correction.
+
+The corrected Access run passed two functions with twelve complete default/explicit
+images and six empty-batch copies. The first CLI run passed two functions with
+eight exact SQL copies, eight existing-output refusals and three native-profile
+no-output refusals. The existing routing boundary filter passed three functions,
+including unchanged joint-LVAL refusal. Broader checks passed 15 native LVAL and
+41 Extra functions, Access 63 library plus four LVAL and two preserved integration
+functions, and CLI 43 unit plus 107 integration functions. Minimal ACE/Access,
+formatting, documentation and dependency boundaries passed. Strict compilation
+exposed a test-only reuse-context name collision in the extracted recipe; naming
+its actual `source::source` owner fixes that ambiguity with an exact inverse check
+of the remaining constructor bytes. The affected ordinary/mixed LVAL contracts
+then passed 15 and eight functions, and Access/CLI LVAL targets passed four each.
+The strict retry found two obsolete wrapper imports; removing only those imports
+allowed final all-target/all-feature ACE/Access/CLI strict checks and formatting
+to pass. Both compile-only hygiene failures remain recorded separately from the
+earlier authored expectation failure; no production or encoding policy changed.

@@ -1,0 +1,350 @@
+{
+  "feature": "Default ordinary Memo/OLE SQL UPDATE routing",
+  "date": "2026-10-30",
+  "scope": "single native ordinary LVAL target; nonjournalable engineering copies only",
+  "source_first": {
+    "access_functions": 1,
+    "cli_functions": 1,
+    "pairs_each": 6,
+    "images_each": 12,
+    "old_recipe_regression_functions": 1,
+    "status": "passed before producer"
+  },
+  "first_api_failure": {
+    "access_empty_function": "passed",
+    "positive_function": "failed on authored compacting OLE expectation",
+    "wrong_expected_retained": {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs",
+      "bytes": 4728,
+      "sha256": "376222e9d6c8332da1bca10cde59a3a56940241935a143bb2bf1bf7709593472"
+    },
+    "cause": "SINGLE12 to INLINE13 grows the parent39 to40; stable root must forward rather than repack",
+    "production_or_encoder_changed": false,
+    "cli_and_boundaries_reached": false
+  },
+  "additive_source_first": {
+    "access_functions": 1,
+    "cli_functions": 1,
+    "pairs_each": 1,
+    "images_each": 2,
+    "status": "passed before corrected API replay",
+    "owner": {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/forwarding_case.rs",
+      "bytes": 2046,
+      "sha256": "5be8bf829e8a14bd31c7452105500d81c93910979f77a26aa25bbfb9720a91d4"
+    }
+  },
+  "focused_api": {
+    "access_functions": 2,
+    "default_explicit_complete_images": 12,
+    "empty_complete_images": 6,
+    "cli_functions": 2,
+    "sql_complete_copies": 8,
+    "occupied_output_refusals": 8,
+    "native_profile_no_output_refusals": 3,
+    "boundary_functions": 3,
+    "status": "passed"
+  },
+  "checks": {
+    "broader_regression": "passed before test-only source-owner/import hygiene",
+    "targeted_post_hygiene_regression": "passed native ordinary15+mixed8, Access4, CLI4",
+    "strict": "passed all targets/all features ACE/Access/CLI",
+    "minimal": "passed ACE/Access",
+    "format": "passed"
+  },
+  "logs": [
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/normal-first-root.log",
+      "bytes": 402,
+      "sha256": "f45b414c93c1c0b6e8f7e18ceb29b45b83c9806a013bb52a01d1342e7bcc1f67"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/access-source-first-root.log",
+      "bytes": 502,
+      "sha256": "c3ad694138aa68495090835260e851456baf5b0fb28e33e6c093344784721dfa"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/cli-source-first-root.log",
+      "bytes": 499,
+      "sha256": "8469e272d036f6840b048657e0c0900d7209dbd22b442ed886f716856774851f"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/old-recipe-regression-root.log",
+      "bytes": 511,
+      "sha256": "91428d5d25edbf3454b3ab1aa8d800343ec934ada47b59738c696e431060c85d"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/access-api-first-root.log",
+      "bytes": 592290,
+      "sha256": "130716830ec499c5d5d92a4c100bb5f84cd8f90bda06190276b731d70ce613f9"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/access-forwarding-source-first-root.log",
+      "bytes": 498,
+      "sha256": "d8bab25bad449205e7bcf86fd36eb6cfed0f91717dfd34881ecc0da32117087f"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/cli-forwarding-source-first-root.log",
+      "bytes": 495,
+      "sha256": "b1f9e512af36b75e1cdb2e018e1a288f2265cfef205019995ac70b8c11f88d68"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/access-api-forwarding-qualified-root.log",
+      "bytes": 556,
+      "sha256": "d081e8945780a57a5403e508508ffe99a0481ee429e6e330220e91851bf33b9d"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/cli-api-first-root.log",
+      "bytes": 592,
+      "sha256": "1c3c33b0d9c185750d83a31337ebd568eb773d6e48db5666ddb3cb17bde2376b"
+    },
+    {
+      "path": ".cache/ace16-default-long-value-routing-next-20261030/boundaries-first-root.log",
+      "bytes": 821,
+      "sha256": "db6e4f8b2a3c2ef66dfec67c643092d682e6c17ab0b33496c95e87ca3122a69f"
+    }
+  ],
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model.rs",
+      "bytes": 9528,
+      "sha256": "4bde8806ebb640518931729d37b4de22bd269637248ff6343ec905b05bcb972f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/values.rs",
+      "bytes": 10553,
+      "sha256": "024cc2701c308bb54ab03f8e957ac76f784195ec56e4c58d5025afb9ba1f3602"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs",
+      "bytes": 4728,
+      "sha256": "376222e9d6c8332da1bca10cde59a3a56940241935a143bb2bf1bf7709593472"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/forwarding_case.rs",
+      "bytes": 2046,
+      "sha256": "5be8bf829e8a14bd31c7452105500d81c93910979f77a26aa25bbfb9720a91d4"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/default_long_value_updates.rs",
+      "bytes": 949,
+      "sha256": "490df46c3150f0827bee9627fba354c279a5590404431441e9565f0fdd1d32e0"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_default_long_values.rs",
+      "bytes": 943,
+      "sha256": "1acf653320ca90954555c309b5ee100aa1bd363d40f0a6a97b2cfa3fe8f20d26"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/snapshot.rs",
+      "bytes": 3790,
+      "sha256": "dfab94f9d10e1f71eed0593fe9b774502c58f401f6da8d3fd9f4b893eb56b834"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/preserved.rs",
+      "bytes": 1855,
+      "sha256": "238eb7228bde3651e4e277a804b379714d9ef301532961226892902d18945d55"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/routing.rs",
+      "bytes": 7314,
+      "sha256": "c098b7ef1bd145a1bfb847a9f7ce26c85a8191fcaba4d72e0498c16d7367c333"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/storage.rs",
+      "bytes": 1336,
+      "sha256": "8d1d520d927e26c8a8b3ef6a9d8ca48e049a17c1f64325645ba8500c86995c90"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor.rs",
+      "bytes": 17325,
+      "sha256": "98626371f9e7933ba433984be9878cd090af1798b14975e7de81b39c26ffe2cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/long_value/profile.rs",
+      "bytes": 979,
+      "sha256": "437797d2ead8ddb70353c290be0918f0eb8fbe814e7b791fc5405a560c15e71b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/default_long_value_updates/api.rs",
+      "bytes": 3163,
+      "sha256": "6629dba879aaa6d530225becc37dd5c2f07cdeda9720628c5db55b392ffd580b"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_default_long_values/api.rs",
+      "bytes": 4090,
+      "sha256": "96a8d523d50b5f8be8659cc76e8e8b894abe3a5d28be0598432d57d255ed98f1"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/metadata_default/boundaries.rs",
+      "bytes": 8296,
+      "sha256": "9fb8954cb4742a8b0b70fcc68727b3e5992a0f0a90e1d9b8b67cc3780ce1c383"
+    }
+  ],
+  "freeze": {
+    "path": ".cache/ace16-default-long-value-routing-next-20261030/wrapper-import-cleanup-freeze.json",
+    "bytes": 3262,
+    "sha256": "e175809fa31d258cee379da8ad65edd98e9baffb9901000ad9f6c7096a504533"
+  },
+  "unchanged_boundaries": [
+    "joint LVAL refusal",
+    "explicit selected modes",
+    "rich-schema Boolean-only target restriction",
+    "normal ACE save/macro gates"
+  ],
+  "native_access_comparison": false,
+  "post_focused_test_readability": "Output imported at top; qualified-case lookup asserts original Ole Binary7\u2192Binary8 identity instead of unexplained numeric index; no semantic/source/expected change",
+  "reuse_context_correction": "Broad strict compile exposed bare source(6,1) resolving a different parent helper in old mixed-long-value consumer. Qualified source::source(6,1); exact inverse verifies no literal/source/expected or producer change.",
+  "broader": {
+    "native_long_value_functions": 15,
+    "native_extra_functions": 41,
+    "access_library_functions": 63,
+    "access_default_lval_target_functions": 4,
+    "access_preserved_target_functions": 2,
+    "cli_unit_functions": 43,
+    "cli_integration_functions": 107,
+    "cli_per_target": {
+      "clock": 4,
+      "eval": 8,
+      "guard_preparation": 5,
+      "inspect": 11,
+      "macro_inventory": 3,
+      "preserved_boolean_updates": 4,
+      "query_preview_default_long_values": 4,
+      "query_preview_inserts": 19,
+      "query_preview_updates": 26,
+      "table_extra": 13,
+      "updates": 4,
+      "write_previews": 6
+    },
+    "minimal_ace": "passed",
+    "minimal_access": "passed",
+    "format": "passed",
+    "documentation": "passed",
+    "boundaries": "passed",
+    "strict": "initial test-only source-owner E0061 retained; final strict passed",
+    "logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/access.log",
+        "bytes": 8963,
+        "sha256": "2eb1e6036bbbe6dbcc5058106459566d3168205252107a6c6af1a2b546e62f15"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/boundaries.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/cli.log",
+        "bytes": 16949,
+        "sha256": "6e9e771c49803c48b726e3cda7c5eed6c4a362de82ac60f70a77f9b04a4838fc"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/documentation.log",
+        "bytes": 53,
+        "sha256": "e5f68a2161698a7b60c166e982d35577b03c0e8d50000ad006da84903b6c102c"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-access.log",
+        "bytes": 301,
+        "sha256": "a8226e2ae8797b34c3d78ce939f97776be8a7938244fbeda1a25e2a68b4cda99"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-ace.log",
+        "bytes": 183,
+        "sha256": "d41d4f3e1d55c3cc53608f9be190ee60b380e5df705939897b4ea006e035bdcb"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-extra.log",
+        "bytes": 5716,
+        "sha256": "db11311f4fbed3e931b9374159d81ef043c2c7640fc3203d7c9d5263d843b47b"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-lval.log",
+        "bytes": 1782,
+        "sha256": "a3e7af438ec2dec4419998e352590cc3db384c502589ae295490e3c5d0e866fa"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict.log",
+        "bytes": 1273,
+        "sha256": "a8e13f7888053d5f17126658b61b601948bca04826d79b3c48747f78cd59cb4d"
+      }
+    ]
+  },
+  "targeted_hygiene_retry": {
+    "root_session": 4650,
+    "ordinary_lval": 15,
+    "mixed_lval": 8,
+    "access_target": 4,
+    "cli_target": 4,
+    "format": "passed",
+    "documentation": "passed",
+    "boundaries": "passed",
+    "strict": "first retry found only two obsolete wrapper imports; removed; final strict passed",
+    "logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-reuse-corrected.log",
+        "bytes": 2752,
+        "sha256": "8f177d48f38fa1ce6d929fa2501e4cc08342690d7fe4a4dae40eba621187cd51"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/access-default-posthygiene.log",
+        "bytes": 1182,
+        "sha256": "6d94232f8802bab678a221ec411d096a85eabab9843e97a06dfe4d338ac80f50"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/cli-default-posthygiene.log",
+        "bytes": 1212,
+        "sha256": "0f9761afe3eeeb9b88e20d63dcb9988aba15326c29618c54be8d89c09d60657e"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict-corrected.log",
+        "bytes": 1226,
+        "sha256": "14496656ef1351fc10563c95398f313e672ee009a66d9930622b216cd4b21b6d"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format-corrected.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/documentation-corrected.log",
+        "bytes": 53,
+        "sha256": "06719950f41c9aa569b5bc6725cc524014a21b2d616fc5d67edc5a9ffbb65559"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/boundaries-corrected.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    ]
+  },
+  "final_checks": {
+    "root_session": 61345,
+    "strict_packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ],
+    "strict_all_targets_all_features": "passed",
+    "formatter": "passed",
+    "runtime_repeated_after_import_cleanup": false,
+    "logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict-final.log",
+        "bytes": 403,
+        "sha256": "76c45216fb5a579e37556cd2f64cfe730bd1431dbc3041fd09850deff1e2264e"
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  }
+}

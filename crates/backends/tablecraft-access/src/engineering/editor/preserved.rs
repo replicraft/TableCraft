@@ -11,9 +11,10 @@ impl AccessEngineeringEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), NativeEditError> {
-        let Some(schema) = &self.preserved_schema else {
+        if !self.projected_schema {
             return Ok(());
-        };
+        }
+        let schema = &self.native_schema;
         if !matches!(
             self.mode,
             ScalarUpdateMode::Default | ScalarUpdateMode::Fixed(UpdateMode::Fitted)
