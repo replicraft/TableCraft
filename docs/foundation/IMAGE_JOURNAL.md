@@ -211,6 +211,15 @@ full-suite invocation stopped at an integration-module path compile error; root
 added only the explicit child-file path and the corrected run passed all 46
 checks. No record golden or protocol behavior changed after API execution.
 
+Three additional Proptest controls now generate 256 cases each from a fixed
+seed. Independently encoded V2 records cover varied image lengths, arbitrary
+real before/after byte mixtures and partial markers, repeated pending rollback,
+committed verification without rewrites, foreign targets and single-byte record
+corruption. Invalid records must change neither resource. All 768 generated
+cases pass; the complete I/O suite passes 49 checks, and strict all-target/all-feature
+Clippy passes. This extends the local model checks without changing the protocol
+or establishing physical power-loss behavior.
+
 The actual native consumer above continues to call V1 `prepare_expected` with a
 validated `NativeEditPlan`. Seven existing native transaction/write-transaction
 semantic tests also pass; this is separate from the strict I/O package check. V2 supplies no new native plan, no conversion from
