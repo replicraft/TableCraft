@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Date expressions in UPDATE and DELETE
+
+The [closed mutation function profile](query/MUTATION_SCALAR_FUNCTIONS.md) now
+admits Year/Month/Day/Hour/Minute/Second and DateSerial/TimeSerial through the
+existing shared date kernels. It retains original-row evaluation, eager operands,
+exact stored carriers and one backend finish. No clock or locale text parser is
+introduced; the existing explicit 1930–2029 constructor window applies.
+
+Five new neutral controls and one actual CLI control pass. The corrected broader
+query round passes 113 functions; the initial obsolete Year refusal remains
+recorded separately. The CLI check validates typed rows and no-output failures,
+not a new complete-file engine profile or native Access outcome.
+
 ## Joint mixed DATA and INDEX growth
 
 The additive [joint-growth engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md) now

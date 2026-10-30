@@ -144,7 +144,6 @@ fn unsupported_shapes_and_unknown_fields_fail_even_for_empty_tables() {
         "UPDATE Items SET Score=1,Id=2",
         "UPDATE Items SET Score=Rnd()",
         "UPDATE Items SET Score=DCount('*','Hidden')",
-        "UPDATE Items SET Score=Year(#2026-01-01#)",
         "UPDATE Items SET Score=DatePart('d',#2026-01-01#)",
         "UPDATE Items SET Score=DateDiff('d',#2026-01-01#,#2026-01-02#)",
         "UPDATE Items SET Score=Day(DateAdd('d',1,#2026-01-01#))",
@@ -275,6 +274,7 @@ fn deterministic_calls_bind_on_empty_sources_without_widening_assignment_carrier
     // hypothetical result value or bypassing the actual target field profile.
     for sql in [
         "UPDATE Items SET Score=Abs(Score)",
+        "UPDATE Items SET Score=Year(#2026-01-01#)",
         "UPDATE Items SET Score=IIf(True,1,2)",
         "UPDATE Items SET Score=Nz(Score,0)",
         "UPDATE Items SET Score=Len('x')",
@@ -296,6 +296,10 @@ fn deterministic_calls_bind_on_empty_sources_without_widening_assignment_carrier
         ("UPDATE Items SET Score=Nz(Score,0)", vec![10, 20, 0]),
         ("UPDATE Items SET Score=Len('x')", vec![1, 1, 1]),
         ("UPDATE Items SET Score=CInt(1)", vec![1, 1, 1]),
+        (
+            "UPDATE Items SET Score=Year(#2026-01-01#)",
+            vec![2026, 2026, 2026],
+        ),
     ] {
         let (editor, calls) = editor(false);
         let query = parse_query(sql, ParseLimits::default()).unwrap();

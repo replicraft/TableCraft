@@ -53,7 +53,9 @@ Old shorter records and other mutation modes retain their existing refusals.
 
 The [deterministic write expression profile](query/MUTATION_SCALAR_FUNCTIONS.md)
 now shares explicit numeric conversions, eager IIf/Nz, selected Text functions
-and Abs/Int/Fix/Round between UPDATE and DELETE. Hidden retrieval/runtime calls
+and Abs/Int/Fix/Round between UPDATE and DELETE. Gregorian components and numeric
+DateSerial/TimeSerial construction now use the existing date kernels, with no
+ambient clock or text-date parsing. Hidden retrieval/runtime calls
 and broader function semantics remain outside that capability.
 
 Qualified [passive display declarations](testing/ACE16_PASSIVE_DISPLAY_METADATA.md)
