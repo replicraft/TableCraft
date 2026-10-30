@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "scope": "Local protocol and native planning checks, journal feature; no Microsoft Access or hardware crash qualification",
+  "source_order": [
+    "Six independent complete intent frames checked before codec API tests",
+    "Two native source qualifiers checked before seven qualified-recovery API tests"
+  ],
+  "coverage": {
+    "native_source_pairs": 8,
+    "native_source_refusal_views": 6,
+    "native_recovery_api_functions": 7,
+    "intent_functions_including_source": 5,
+    "adapter_functions": 6,
+    "unchanged_publication_functions": 10,
+    "existing_native_transaction_functions": 7
+  },
+  "invariants": [
+    "Decoded intent is bounded request data, not permission",
+    "Moved requests retain order, no-ops and allocation",
+    "Qualification binds the complete BEFORE image and rebuilds the unchanged normal Jet4 plan",
+    "Both complete journal images must match before a recovery capability is returned",
+    "Recovery retains the same checked journal and returns its known outcome directly"
+  ],
+  "retained_attempts": [
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/source-first-root.log",
+      "sha256": "6a8aca1f9bce63c8892ca5662a9ca248bc3284a540f9cf19e104fa09b678ed17",
+      "outcome": "pass",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/source-corrected-root.log",
+      "sha256": "13077081d3a31110ee73925e225ea65d5dfd1699ad41e3b5b83341d8d7a57d5a",
+      "outcome": "pass",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/jet4-host-journal-lifecycle-next-20261030/native-source-first-root.log",
+      "sha256": "f5fadafbd9a78ca3cd26b03d64da77a49ae4bd034c1ffa70b3c4fea2005fe75e",
+      "outcome": "pass",
+      "passing_functions": 2
+    },
+    {
+      "path": ".cache/jet4-host-journal-lifecycle-next-20261030/native-source-qualified-root.log",
+      "sha256": "a64ce7d02a1e92d5987a3c91fa64fd95e8d4229a0574789ea17825069d83cfc5",
+      "outcome": "pass",
+      "passing_functions": 2
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/codec-corrected-root.log",
+      "sha256": "4e26837c122fcf804ffcb4131166c2a7afcecc9bc8c3a7fc2b0d32a586f99cf6",
+      "outcome": "pass",
+      "passing_functions": 5
+    },
+    {
+      "path": ".cache/jet4-host-journal-lifecycle-next-20261030/native-api-first-root.log",
+      "sha256": "b026bd96afa8af23c64d76652c9fdbd6cde37066eb5803083a9ead2a54bc4db6",
+      "outcome": "pass",
+      "passing_functions": 7
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/access-corrected-root.log",
+      "sha256": "23d850086fedd6170643c487c0478757df87d34d51c4a2d8343e6bab7185065b",
+      "outcome": "pass",
+      "passing_functions": 6
+    },
+    {
+      "path": ".cache/jet4-host-journal-lifecycle-next-20261030/namespace-publication-first-root.log",
+      "sha256": "c01057abd91c1e513d7ce41070c02bb3640a36805cce246501e315111173372f",
+      "outcome": "pass",
+      "passing_functions": 10
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/strict-first-root.log",
+      "sha256": "665d70126ddd6bae3703e238b69fd6f126f3aac58580959058170c50dc3a114b",
+      "outcome": "iterator lint failure"
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/strict-corrected-root.log",
+      "sha256": "22cb3741c052042ec276c24d529d3f30815d191027bae86a25b867e469b9a474",
+      "outcome": "compiler cache disk exhaustion"
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/strict-after-cache-cleanup-root.log",
+      "sha256": "aee3a37f0ce99d707e415a36da19be73d08560faacab5368d18b92b807b01c0d",
+      "outcome": "pass"
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/minimal-root.log",
+      "sha256": "4cfad7852fc000017d645dce88a7fe3b630724edd6d388ea70d9e52706e3815c",
+      "outcome": "pass"
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/native-transaction-regression-root.log",
+      "sha256": "d28c9304a21e99ec1beebfd916ca10e826a5109eb92ac4a7ac9926cb00fe7d18",
+      "outcome": "pass",
+      "passing_functions": 7
+    }
+  ],
+  "limitations": [
+    "Filesystem pairing and CLI journal commands are separate unfinished consumers",
+    "No normal ACE save admission or required data-macro qualification",
+    "No native Access comparison or physical power-loss evidence"
+  ]
+}
