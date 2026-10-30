@@ -1,6 +1,7 @@
 //! Format-independent bounded synchronous I/O and owned OS file locks.
 //!
-//! Callers charge requested bytes before I/O; helpers charge callback work.
+//! Read/write helpers require caller byte charges and charge callback work.
+//! Optional required publication charges its supplied output payload once.
 //! Individual blocking callbacks remain responsible for their own timeouts.
 
 mod error;
@@ -17,3 +18,7 @@ pub use write::write_exact_at;
 /// Optional fixed and resizable image journals over explicitly owned storage.
 #[cfg(feature = "journal")]
 pub mod journal;
+
+/// Optional required namespace durability for explicitly selected fresh copies.
+#[cfg(feature = "fresh-publication")]
+pub mod publication;

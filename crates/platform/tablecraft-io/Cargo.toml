@@ -20,6 +20,12 @@ sha2 = { workspace = true, optional = true }
 [features]
 default = []
 journal = ["dep:sha2"]
+fresh-publication = ["dep:rustix", "dep:getrandom"]
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, optional = true, features = ["std", "fs", "process"] }
+getrandom = { workspace = true, optional = true }
 
 [dev-dependencies]
+tempfile.workspace = true
 proptest.workspace = true

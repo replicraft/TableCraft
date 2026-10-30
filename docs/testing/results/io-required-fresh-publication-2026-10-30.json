@@ -1,0 +1,365 @@
+{
+  "feature": "Explicit required fresh-copy namespace durability",
+  "date": "2026-10-30",
+  "status": "Observed macOS IO focused/full, strict and minimal checks passed; no other-platform or hardware power-loss qualification",
+  "observed_platform": "macOS host only",
+  "independent_design": {
+    "path": ".cache/ace16-durable-fresh-publication-next-20261030/private-design-first-freeze.json",
+    "sha256": "47be82372ad3190a9a50299897bf7a32b0ac92ef5ad4843c18aa07ac504292ef",
+    "literal_fault_traces": 20,
+    "implementation_tuned_from_runtime_failures": false
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-io",
+        "--all-features",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/compile-first-root.log",
+        "bytes": 351,
+        "sha256": "ea66fb06d2fe2ca0a4dc718fb19424d76709e105a863e3688ef31959f4046a07"
+      },
+      "passed_functions": null
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-io",
+        "--all-features",
+        "--lib",
+        "publication::",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-tests-first-root.log",
+        "bytes": 1511,
+        "sha256": "656623ef8671b9203611b55171b47259ce2ce39d76712b8334b356fd52222334"
+      },
+      "passed_functions": 8
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-io",
+        "--all-features",
+        "--lib",
+        "publication::",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-tests-corrected-root.log",
+        "bytes": 1478,
+        "sha256": "31840c42ca52db3b43eda4cae38c881d0fcb1bb53a032ee25a65de71fd6bb466"
+      },
+      "passed_functions": 10
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-io",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--all-targets",
+        "--keep-going",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/strict-final-root.log",
+        "bytes": 632,
+        "sha256": "900d066d157a5fa7829760520cf3473272ae7953e1923a4ca27033acdd1c7bb3"
+      },
+      "passed_functions": null
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-io",
+        "--all-features",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-full-first-root.log",
+        "bytes": 5464,
+        "sha256": "3c7edd0f7333be5ad2f96753331863b6fa86c56675240935a94d2e443492bd4f"
+      },
+      "passed_functions": 49
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-io",
+        "--no-default-features",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-minimal-first-root.log",
+        "bytes": 182,
+        "sha256": "28b71ed98709007a02d14d268f4a81103e6715da28d42350b3eceaef5cbf6445"
+      },
+      "passed_functions": null
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/access-minimal-first-root.log",
+        "bytes": 530,
+        "sha256": "5a3c2d6a0c6f7916daf9bf7974e5edd3c5e0b93d6310aa8e9a1e2b28330a35b6"
+      },
+      "passed_functions": null
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/access-full-first-root.log",
+        "bytes": 8992,
+        "sha256": "8932659df5e97f9becec94dbba5a1ac9dea8e15f041ca458619af6522ed27558"
+      },
+      "passed_functions": 69
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bin",
+        "tablecraft",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/cli-unit-full-first-root.log",
+        "bytes": 7285,
+        "sha256": "7f0a02bc4fff2d2078638f2b307ee6d122a29303ca1012a691ed8fe873a34c21"
+      },
+      "passed_functions": 60
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "query_preview_updates",
+        "--test",
+        "query_preview_default_long_values",
+        "--test",
+        "preserved_boolean_updates",
+        "--test",
+        "write_previews",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/existing-write-regression-first-root.log",
+        "bytes": 5069,
+        "sha256": "75bff848efc2aabc92d4614cdd334c12ceb2160c29dc2f675b7acc9aa3b3c2d8"
+      },
+      "passed_functions": 42
+    }
+  ],
+  "pending": [],
+  "code_inputs": [
+    {
+      "path": "Cargo.toml",
+      "bytes": 7576,
+      "sha256": "c8e937742815a46a3d92b5be7fdac45afff7ec7ff414cbc4a86be1ec90913afb"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 54823,
+      "sha256": "c5f30ada47255e25246a61bf2ace82d58bcb8b3d8dd27567ae6451ba2b36c553"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/Cargo.toml",
+      "bytes": 778,
+      "sha256": "01cace7e073a253edac4f37d45a9817c8497d773b2cbd82ca4b382d283d148fc"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/lib.rs",
+      "bytes": 823,
+      "sha256": "660fdac0ec6ca48dc6fa19d21e74caebdba6a66be2099ed375c9803d554e38c0"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/error.rs",
+      "bytes": 3171,
+      "sha256": "52aeb9deea982eb568d06ba175d3f5485827a8f3c52949a1b58d5d78773921d1"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/mod.rs",
+      "bytes": 2924,
+      "sha256": "f00ab3d0dc1fa1f647f4292a0ae78b72879eae5b496d9635a1d3dcfd00f0579c"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/protocol.rs",
+      "bytes": 4141,
+      "sha256": "939c659386910d33bef1659d9f761a5163c40902109fec7bb2eb43ec19676e4b"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/tests/filesystem.rs",
+      "bytes": 6556,
+      "sha256": "a4059424f14caa64a73dcfff8262dc566543c6dc2bdbc4373dbd0eb68d16da6b"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/tests.rs",
+      "bytes": 9915,
+      "sha256": "8abb0b10634eeeb6856f78da7f53f0d25c6f288370338a766b6d56477c14f5d6"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/unix.rs",
+      "bytes": 11899,
+      "sha256": "c99ca6a96c4020f2506a0d52bf0e1ba2bea4e41012cf60f693b0e016c3346357"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/publication/unix/tests.rs",
+      "bytes": 1369,
+      "sha256": "1f3917a0b3377238581492997795046e918a59c3e0c8a1946edb01a1380ebe15"
+    }
+  ],
+  "limits": [
+    "explicit optional feature; default publisher unchanged",
+    "Unix descriptor-relative implementation; Windows required mode refuses before staging, without runtime qualification",
+    "receipt acknowledges captured parent barrier, not current textual destination or hardware power-loss outcome",
+    "unknown publication callback outcome stops without cleanup, namespace retry or final deletion",
+    "caller prevents private staging-entry replacement by any capable actor, including shared non-sticky parent writers; failed cleanup means a temporary may remain",
+    "no native ACE macro, normal-save or journal admission"
+  ],
+  "history": [
+    {
+      "phase": "post-first8 static review",
+      "changes": [
+        "paid fallible NUL-terminated parent/final buffers and borrowed CStr calls eliminate hidden rustix conversion allocation",
+        "terminal final-name scan charged before visibility",
+        "reserved final nonce skipped before staging creation; controlled entropy test added",
+        "long-parent small-leaf exact/onebelow Bytes admission control added"
+      ],
+      "independent20_traces_changed": false
+    },
+    {
+      "phase": "first strict check",
+      "exit_code": 101,
+      "finding": "cfg(test) entropy_override nested function pointer triggered type_complexity",
+      "correction": "cfg(test) named function-pointer alias, no suppression or behavior change",
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/strict-first-root.log",
+        "bytes": 2488,
+        "sha256": "f5a4e288362891c86d64d3ee0d68922fea80f086162ced79b7a20a1c5b54abf0"
+      },
+      "corrected_strict_exit_code": 0,
+      "corrected_strict_log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/strict-final-root.log",
+        "bytes": 632,
+        "sha256": "900d066d157a5fa7829760520cf3473272ae7953e1923a4ca27033acdd1c7bb3"
+      }
+    }
+  ],
+  "observations": {
+    "independent_preimplementation_literal_fault_traces": 20,
+    "initial_focused_functions_passed": 8,
+    "post_static_correction_focused_functions_passed": 10,
+    "final_full_io_functions_passed": 49,
+    "frozen20_changed": false,
+    "static_semantic_corrections_preceded_new_control_execution": true,
+    "test_only_strict_correction_changed_behavior": false
+  },
+  "final_repository_checks": {
+    "final-format-root": {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": ".cache/ace16-durable-output-cli-next-20261030/final-format-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-links-root": {
+      "command": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "exit_code": 0,
+      "log": ".cache/ace16-durable-output-cli-next-20261030/final-links-root.log",
+      "sha256": "17b30f0c41184a066a6e825280bd470b4998ae66262c142ab254d62eeadbcd02"
+    },
+    "final-boundaries-root": {
+      "command": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit_code": 0,
+      "log": ".cache/ace16-durable-output-cli-next-20261030/final-boundaries-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    "final-boundary-tests-root": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_dependency_boundaries.py"
+      ],
+      "exit_code": 0,
+      "log": ".cache/ace16-durable-output-cli-next-20261030/final-boundary-tests-root.log",
+      "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+    },
+    "documentation_targets": 6652,
+    "missing_documentation_targets": 0,
+    "workspace_packages": 15,
+    "dependency_policy_tests": 12
+  }
+}
