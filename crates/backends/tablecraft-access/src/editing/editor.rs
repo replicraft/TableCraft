@@ -1,5 +1,7 @@
 use super::{NativeEditError, snapshot};
 use tablecraft_ace::{FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage};
+#[cfg(feature = "journal")]
+use tablecraft_ace::{RecoverableEditError, RecoverableNativeEditPlan};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -46,6 +48,27 @@ impl EditableTable for NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
+        let native = self.int32_updates(column, updates, budget, cancelled)?;
+        Ok(self.image.plan_int32_updates(
+            self.snapshot.name(),
+            column,
+            &native,
+            budget,
+            cancelled,
+        )?)
+    }
+}
+
+impl NativeEditor {
+    /// Share the exact snapshot-handle and carrier conversion across normal and
+    /// recoverable plans. This creates requests, never persistence permission.
+    pub(super) fn int32_updates(
+        &self,
+        column: &str,
+        updates: &[CellUpdate],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<Int32Update>, NativeEditError> {
         if cancelled() {
             return Err(InspectError::Cancelled.into());
         }
@@ -86,12 +109,23 @@ impl EditableTable for NativeEditor {
             };
             native.push(Int32Update::new(ordinal, *expected, *value));
         }
-        Ok(self.image.plan_int32_updates(
+        Ok(native)
+    }
+
+    #[cfg(feature = "journal")]
+    pub(super) fn plan_recoverable(
+        self,
+        column: &str,
+        updates: Vec<Int32Update>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_int32_updates(
             self.snapshot.name(),
             column,
-            &native,
+            updates,
             budget,
             cancelled,
-        )?)
+        )
     }
 }

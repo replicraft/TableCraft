@@ -18,15 +18,23 @@ The I/O journal now exposes a read-only `CheckedV1` session. It retains the exac
 verified images and journal borrow for later consuming recovery, so native policy
 checks can run before any target write. Independent literal controls ran first;
 the full I/O run passes 54 unit, nine integration and two compile-fail tests,
-with strict lint checks passing. This does not yet supply host-owned file pairing
-or native recovery admission. See [the journal contract](foundation/IMAGE_JOURNAL.md).
+with strict lint checks passing. The native journal path now retains bounded
+original typed intent and rebuilds the normal Jet 4 plan against the checked
+BEFORE image; both complete images must match before recovery writes are admitted.
+Seven qualified-recovery checks pass. Host-owned filesystem pairing and the CLI
+save/recover commands remain unfinished. See [the journal contract](foundation/IMAGE_JOURNAL.md)
+and [native recovery](access/writes/NATIVE_WRITES.md#native-qualification-before-recovery-writes).
 
 Normal SQL UPDATE planning now lives in `tablecraft_access::editing::sql` and is
 used by the CLI. The adapter composes the existing snapshot/query/native checks;
 the host keeps file ownership and publication. External selectors are refused
 before file opens in both default and required copy modes. Four adapter and five
 CLI unit checks pass, including a complete-image expected UPDATE. See
-[query editing](access/writes/QUERY_EDITING.md).
+[query editing](access/writes/QUERY_EDITING.md). The optional adapter `journal`
+feature adds shared recoverable SQL planning with the same snapshot conversion;
+two focused tests pass. Native intent, namespace extraction and adapter checks
+pass strict and minimal builds; retained failures and limits are recorded
+[separately](testing/results/native-int32-intent-recovery-2026-10-30.json).
 
 ## Required fresh-output publication
 

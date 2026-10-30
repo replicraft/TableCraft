@@ -127,3 +127,24 @@ and exact non-Int32 stored carriers are accepted under shared descriptors; Int32
 retains checked integral assignment. Normal `NativeEditor`, `query update`, the
 existing Int32 profile and its ordinary ACE refusal are unchanged. The new command
 returns only an experimental, non-journalable copy under explicit native modes.
+
+## Explicit recoverable planning
+
+The adapter's optional `journal` feature adds
+`editing::sql::plan_recoverable_update`. It evaluates the same ordinary local
+UPDATE once, using `NativeJournalEditor` and the existing snapshot-handle/carrier
+conversion. The resulting native plan also retains the resolved original table,
+column and typed row requests bound to the exact before image. Ordinary
+`NativeEditor` and `plan_update` keep their existing plan types and costs.
+
+This API prepares no journal and changes no file. Hosts must persist the bounded
+intent and establish exclusive, correctly paired durable resources before using
+the native preparation/commit API. Recovery uses the retained typed requests;
+it must never replay SQL, reevaluate clocks or infer permission from serialized
+metadata. ACE engineering previews remain a separate, non-journalable capability.
+The CLI does not yet expose this adapter capability. Two focused journal-adapter
+tests pass, including whole-image parity with ordinary planning, exact resolved
+intent, a committed in-memory journal, no-ops and refused late expression/native
+validation failures. Four ordinary adapter tests, strict all-target/all-feature
+checks and the minimal adapter build also pass. These are local service checks,
+not durable filesystem or native Access qualification.

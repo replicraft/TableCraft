@@ -1,6 +1,10 @@
 //! Shared normal UPDATE planning; file ownership and publication stay with hosts.
 
+#[cfg(feature = "journal")]
+use super::journal::{self, NativeJournalEditor};
 use super::{NativeEditError, NativeEditor};
+#[cfg(feature = "journal")]
+use tablecraft_ace::RecoverableNativeEditPlan;
 use tablecraft_ace::{NativeEditPlan, NativeImage};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::Collation;
@@ -56,6 +60,39 @@ pub fn plan_update(
 ) -> Result<UpdatePlan<NativeEditPlan>, Error> {
     let table = local_update_table(query)?;
     let editor = NativeEditor::new(image, table, budget, cancelled)?;
+    Ok(tablecraft_query::plan_update(
+        editor, query, budget, collation, cancelled,
+    )?)
+}
+
+/// Failures of the explicit recoverable planning path, before durable writes.
+#[cfg(feature = "journal")]
+#[derive(Debug, Error)]
+pub enum RecoverableError {
+    /// The statement is outside the local single-table UPDATE profile.
+    #[error(transparent)]
+    Shape(#[from] QueryError),
+    /// Native snapshot preparation failed.
+    #[error(transparent)]
+    Editor(#[from] NativeEditError),
+    /// Evaluation, native validation or intent construction failed.
+    #[error(transparent)]
+    Plan(#[from] UpdateError<journal::Error>),
+}
+
+/// Resolve SQL once against the original snapshot and retain the typed native
+/// request for recovery qualification. No SQL or evaluator state is persisted;
+/// journal creation and commit remain explicit host operations.
+#[cfg(feature = "journal")]
+pub fn plan_recoverable_update(
+    image: NativeImage,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<RecoverableNativeEditPlan>, RecoverableError> {
+    let table = local_update_table(query)?;
+    let editor = NativeJournalEditor::new(image, table, budget, cancelled)?;
     Ok(tablecraft_query::plan_update(
         editor, query, budget, collation, cancelled,
     )?)

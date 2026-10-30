@@ -1342,3 +1342,9 @@ source/model bytes remain unchanged after their equivalent correction. Corrected
 strict/minimal checks pass after clearing exhausted ordinary compiler cache
 space. Fixtures and saved producers were retained, and incremental compilation
 stays enabled.
+
+The opt-in `tablecraft-access/journal` feature forwards the native journal feature.
+Its actual consumers are `NativeJournalEditor` and the shared SQL recoverable
+planner, retaining original resolved Int32 requests through the existing query
+plan. No new registry dependency or backend-neutral native type is added, and
+default fresh-copy CLI behavior is unchanged.

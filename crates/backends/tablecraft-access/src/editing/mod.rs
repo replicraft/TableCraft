@@ -2,6 +2,8 @@
 
 mod editor;
 mod error;
+#[cfg(feature = "journal")]
+pub mod journal;
 pub(crate) mod snapshot;
 pub mod sql;
 
