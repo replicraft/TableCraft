@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Nonallocating fitting UPDATE complete source body-role protection",
+  "status": "focused native, frontend, broader native mutation and strict/minimal checks pass",
+  "scope": {
+    "normal_save_promoted": false,
+    "allocation_granted": false,
+    "historical_constructor_or_expected_bodies_changed": false,
+    "framed_derivative_changed_bytes_per_image": 6,
+    "source_pairs": 43,
+    "source_images": 86
+  },
+  "chronology": [
+    "Causal SOURCE first passes; healthy and alias variants remain ordinary-reader/index/constraint valid.",
+    "Causal API first accepts healthy and reader-valid DATA/INDEX overlap with exact frozen expected bytes, then deliberately fails.",
+    "Guard fixes ownership; normal check first passes; causal healthy/alias/map-write-denial controls pass3.",
+    "Old fitting namespace passes20/fails7 with RowLayout; exact original-source diagnostic identifies incomplete zero ownership-list tails at TD2:398,TD7:449,TD10:663.",
+    "Additive six-byte fully framed derivatives frozen and SOURCE passes43pairs86images before their first mutation calls. Historical constructors/oracles remain unchanged.",
+    "Explicit native control migration passes whole fitting namespace30.",
+    "Shared pure fixture owner moved inverse-exact; Access and CLI SOURCE gates each pass43pairs before frontend API migration.",
+    "Access58,CLI37unit+25queryupdates+6write,strict3packages,minimal2packages pass.",
+    "Broader native mutation regression first passes529 tests after shared raw inventory and Metadata changes.",
+    "Mechanical imports-at-top cleanup moves existing Metadata/reference_page/PAGE_BYTES/Declarations/tree_pages imports in three owning files; logic, sources and expected bytes unchanged. ACE normal check passes; final strict ACE all-target/all-feature import-cleanup rerun passes."
+  ],
+  "checks": [
+    {
+      "name": "native_fitted_namespace",
+      "passed": 30
+    },
+    {
+      "name": "access_library",
+      "passed": 58
+    },
+    {
+      "name": "cli_unit",
+      "passed": 37
+    },
+    {
+      "name": "cli_query_updates",
+      "passed": 25
+    },
+    {
+      "name": "cli_typed_write",
+      "passed": 6
+    },
+    {
+      "name": "strict_ace_access_cli_all_targets_all_features",
+      "exit_code": 0
+    },
+    {
+      "name": "minimal_ace_access",
+      "exit_code": 0
+    },
+    {
+      "name": "broader_native_mutation",
+      "passed": 529,
+      "exit_code": 0
+    },
+    {
+      "name": "import_cleanup_ace_all_targets_all_features_strict",
+      "exit_code": 0
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs",
+      "sha256": "cb8caf138e12e58b7770ab73c35d85b9da99ba6c2614b51b327b9f6ee36f929a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/mod.rs",
+      "sha256": "af3a068250bba139133bd14a742e59bb1c9f79a6369bae826a71999e540d177a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs",
+      "sha256": "6e4828e0e2dad7297c6626659cff559cbbe2ff5ad406c29a07fa9434fd550ad9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs",
+      "sha256": "5ca07731ab69a2df0e2c3d07e732eb0ca9bdad210bb5551426f884390951d588"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/fitting_roles.rs",
+      "sha256": "016fa2e87d8536308fbb137683c0bc5661e70b40be29d063c012deb73675b439"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/fitting_roles/model.rs",
+      "sha256": "1cb7b39dd90eeae9709cad6b8f2bf4df8762656c83240035d1005777177512da"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/fitting_roles/diagnostics.rs",
+      "sha256": "33dbc4779f16af3dd4e32395936f33326fb1ba175f1ae98bba58212c03708348"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/tests.rs",
+      "sha256": "af5705af2ab6563ec95f474d638f06ed6094180cf3ac095d3cab9db75452a67c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/tests/capacity.rs",
+      "sha256": "3e1364b774019e5d278fae5510725411a493618d90fb4ff5437ae57f5fcb717f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/tests/qualified.rs",
+      "sha256": "001a6526699596382a372401760344ef85ffa88759ee60a5104b8e0afe70975a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/framed.rs",
+      "sha256": "c6ff5365a2daf5ca3876f69bb73003686b41484e64cbad8900d3dd5489b9236d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model/keys.rs",
+      "sha256": "a35f12489d0b1c0a4665cbe96953cd30602314f69662d5490ce09fe50cfe6952"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/mod.rs",
+      "sha256": "e0eb4f25e05b774622de91b0b85f9577a3e86d60189649e7f5b9a990ac984d3d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/mod.rs",
+      "sha256": "b1126f2ae7648ce428222b8633a7b12bafbb226debd09c40c941337e42b71f8f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/split/audit/source.rs",
+      "sha256": "e15fac669004ff67509b48fe0ccae3a19db41eff552fa652b6b1e68bcf33c9af"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/metadata_default.rs",
+      "sha256": "77c4ce160e33ae894e7ccea25fa103f61057e2a146fa9bc5285529688e1ac019"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/metadata_default/boundaries.rs",
+      "sha256": "0d1d52cd45a6894b30dfc66e4ac4850abd7eb9f66e37a5f3f1933c8bf3d1a729"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/metadata_default/framed_sources.rs",
+      "sha256": "78969a5e5ebc84557af9a2dec96518dae59073fe2138ebf24db81d0c3dbbcbdc"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates/metadata_default.rs",
+      "sha256": "198d4d77d396023f6e3bbfd79740fa8f3bf61ee430f9e8bda55e9923d1db6997"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates/metadata_default/framed_sources.rs",
+      "sha256": "a833866304535719d45cb4cec2c078286d2aa45dfe25539bcb47f4b97864f370"
+    }
+  ],
+  "evidence_pins": [
+    {
+      "path": ".cache/ace16-fitting-body-role-correctness-20261030/native-mutation-regressions-first-root.log",
+      "sha256": "dba69b8fa1048b146ce4d801ae17a6edc187cf5ebd65bb09b18e466b3b72e8ff"
+    },
+    {
+      "path": ".cache/ace16-fitting-body-role-correctness-20261030/import-cleanup-check-root.log",
+      "sha256": "4fde3c3b064847ce2d08354e3f7cea654ec33346c8c2ea5f5ba6433547c5be82"
+    },
+    {
+      "path": ".cache/ace16-fitting-body-role-correctness-20261030/import-cleanup-strict-root.log",
+      "sha256": "e2649474de0c8d63d79e4c3428a1c159ad0fc706453a2c2ebfa7d1bff494cf3f"
+    }
+  ]
+}

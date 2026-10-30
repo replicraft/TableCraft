@@ -4,6 +4,7 @@ use crate::{
     IndexCheck, InspectError, NativeImage, NativeIndex, NativeReadSource, TableSchema,
     format::{allocation, definition, reader::Reader},
     header::check,
+    table::{indexes::mutation::split::audit::source::tree_pages, long_value::maps::Declarations},
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -27,6 +28,7 @@ enum Capture<'a> {
     AllIndexes,
     Initialization(&'a [usize]),
     Mixed(&'a [usize]),
+    Fitted(&'a [usize]),
 }
 
 impl Metadata {
@@ -41,7 +43,7 @@ impl Metadata {
         Self::capture_selected(
             image,
             schema,
-            indexes,
+            indexes.iter().map(IndexCheck::index),
             Capture::Column(column),
             budget,
             cancelled,
@@ -60,7 +62,7 @@ impl Metadata {
         Self::capture_selected(
             image,
             schema,
-            indexes,
+            indexes.iter().map(IndexCheck::index),
             Capture::AllIndexes,
             budget,
             cancelled,
@@ -82,7 +84,7 @@ impl Metadata {
         Self::capture_selected(
             image,
             schema,
-            indexes,
+            indexes.iter().map(IndexCheck::index),
             Capture::Initialization(initializing),
             budget,
             cancelled,
@@ -109,21 +111,52 @@ impl Metadata {
         Self::capture_selected(
             image,
             schema,
-            indexes,
+            indexes.iter().map(IndexCheck::index),
             Capture::Mixed(columns),
             budget,
             cancelled,
         )
     }
 
-    fn capture_selected(
+    /// Protect existing records and affected INDEX bodies without granting any
+    /// allocation or map-record rewrite capability.
+    pub(in crate::table::mutation) fn capture_for_fitted_updates(
         image: &NativeImage,
         schema: &TableSchema,
         indexes: &[IndexCheck],
-        capture: Capture<'_>,
+        columns: &[usize],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        for &column in columns {
+            check(budget, cancelled)?;
+            schema
+                .columns()
+                .get(column)
+                .ok_or(EditError::Preservation)?;
+        }
+
+        Self::capture_selected(
+            image,
+            schema,
+            indexes.iter().map(IndexCheck::index),
+            Capture::Fitted(columns),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_selected<'i, I>(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: I,
+        capture: Capture<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError>
+    where
+        I: Clone + ExactSizeIterator<Item = &'i NativeIndex>,
+    {
         check(budget, cancelled)?;
         let column = match capture {
             Capture::Column(column) => Some(column),
@@ -143,11 +176,17 @@ impl Metadata {
             })
             .transpose()?;
         let definition = schema.definition_page();
-        let shared = [
+        let ordinary = [map_authority::Owner::OrdinaryOwned { definition }];
+        let growing = [
             map_authority::Owner::GlobalFree,
             map_authority::Owner::OrdinaryOwned { definition },
             map_authority::Owner::OrdinaryCandidate { definition },
         ];
+        let shared: &[map_authority::Owner] = if matches!(capture, Capture::Fitted(_)) {
+            &ordinary
+        } else {
+            &growing
+        };
         let capacity = indexes
             .len()
             .checked_add(shared.len())
@@ -159,18 +198,21 @@ impl Metadata {
         mutable
             .try_reserve_exact(capacity)
             .map_err(|_| InspectError::Allocation)?;
-        mutable.extend_from_slice(&shared);
+        mutable.extend_from_slice(shared);
         let mut protected_pages = Vec::new();
         let mut selected_found = false;
+        let mut index_pages = Vec::new();
+        let mut denied_index_pages = Vec::new();
+        let mut selected_physical = Vec::new();
         let mut payload = |local: &TableSchema,
                            native_indexes: &[NativeIndex],
-                           declarations: &crate::table::long_value::maps::Declarations,
+                           declarations: &Declarations,
                            reader: &mut Reader<'_, Cursor<&[u8]>>|
          -> Result<(), EditError> {
             definition::read_with_pages(reader, local.definition_page(), |page, reader| {
                 protect(&mut protected_pages, page, reader)
             })?;
-            if matches!(capture, Capture::Mixed(_)) {
+            if matches!(capture, Capture::Mixed(_) | Capture::Fitted(_)) {
                 if local.definition_page() != definition {
                     protect_members(&mut protected_pages, local.layout.usage, reader)?;
                 }
@@ -179,6 +221,71 @@ impl Metadata {
                 }
                 for declaration in &declarations.entries {
                     protect_members(&mut protected_pages, declaration.references.owned(), reader)?;
+                }
+            }
+            if let Capture::Fitted(columns) = capture {
+                definition::read_with_pages(reader, local.definition_page(), |page, reader| {
+                    protect(&mut denied_index_pages, page, reader)
+                })?;
+                if local.definition_page() == definition {
+                    let global = allocation::RepresentedMap::read(
+                        reader,
+                        allocation::GLOBAL_FREE_REFERENCE,
+                        allocation::MapRole::GlobalFree,
+                    )?;
+                    for page in allocation::pages(reader, local.layout.usage)? {
+                        global.require_allocated(reader, page)?;
+                    }
+                }
+                protect_members(&mut denied_index_pages, local.layout.usage, reader)?;
+                for declaration in &declarations.entries {
+                    protect_members(
+                        &mut denied_index_pages,
+                        declaration.references.owned(),
+                        reader,
+                    )?;
+                }
+                for index in native_indexes {
+                    reader.tick()?;
+                    reader.work(columns.len().saturating_mul(index.columns().len()))?;
+                    let affected = local.definition_page() == definition
+                        && columns.iter().any(|&column| {
+                            index
+                                .columns()
+                                .iter()
+                                .any(|key| key.number() == schema.columns()[column].number())
+                        });
+                    if affected {
+                        // Aliases refer to one physical tree; its entire owned
+                        // inventory must be reachable, with native page owners.
+                        reader.work(selected_physical.len())?;
+                        if selected_physical.contains(&index.data_number()) {
+                            continue;
+                        }
+                        protect(&mut selected_physical, index.data_number(), reader)?;
+                        let pages =
+                            tree_pages(index, definition, reader).map_err(|error| match error {
+                                EditError::Preservation => {
+                                    EditError::Unsupported(WriteBlocker::RowLayout)
+                                }
+                                other => other,
+                            })?;
+                        let global = allocation::RepresentedMap::read(
+                            reader,
+                            allocation::GLOBAL_FREE_REFERENCE,
+                            allocation::MapRole::GlobalFree,
+                        )?;
+                        for page in pages {
+                            global.require_allocated(reader, page)?;
+                            reader.work(index_pages.len())?;
+                            if index_pages.contains(&page) {
+                                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                            }
+                            protect(&mut index_pages, page, reader)?;
+                        }
+                    } else {
+                        protect_members(&mut denied_index_pages, index.usage_map(), reader)?;
+                    }
                 }
             }
             if local.definition_page() != definition {
@@ -196,10 +303,10 @@ impl Metadata {
                 reader.tick()?;
                 reader.work(indexes.len() + native.columns().len())?;
                 let checked = indexes
-                    .iter()
-                    .find(|checked| checked.index().number() == native.number())
+                    .clone()
+                    .find(|checked| checked.number() == native.number())
                     .ok_or(EditError::Preservation)?;
-                if !same_index(native, checked.index()) {
+                if !same_index(native, checked) {
                     return Err(EditError::Preservation);
                 }
                 if number.is_some_and(|number| {
@@ -210,7 +317,7 @@ impl Metadata {
                 }) {
                     continue;
                 }
-                if let Capture::Mixed(columns) = capture {
+                if let Capture::Mixed(columns) | Capture::Fitted(columns) = capture {
                     reader.work(
                         columns
                             .len()
@@ -261,6 +368,24 @@ impl Metadata {
             reads: 0,
         };
         census.protect_storage(&mut protected_pages, &mut reader)?;
+        if matches!(capture, Capture::Fitted(_)) {
+            // Definition and map storage are protected even if a corrupt
+            // payload-owned map also claims their pages.
+            census.protect_storage(&mut denied_index_pages, &mut reader)?;
+            for &page in &index_pages {
+                reader.tick()?;
+                reader.work(denied_index_pages.len())?;
+                if denied_index_pages.contains(&page) {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+            }
+        }
+        if matches!(capture, Capture::Fitted(_)) {
+            // These roles were checked only for source exclusivity. A fitting
+            // operation receives no authority to rewrite their map records.
+            mutable.clear();
+        }
+
         Ok(Self {
             source_address: image.as_bytes().as_ptr() as usize,
             source_length: image.as_bytes().len(),

@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fitting UPDATE ownership protection
+
+The [fitting body-role correction](testing/ACE16_FITTING_BODY_ROLES.md) closes a
+reproduced engineering-preview defect: an INDEX-owned map could also claim the
+ordinary DATA page being edited. The healthy and aliased complete candidates
+matched independent expectations before the fix; the aliased source now refuses.
+Both production staging and the fresh original-request proof check complete
+ownership, affected tree inventories, body-role disjointness and GLOBAL allocated
+membership. The nonallocating capture grants no map-record rewrite authority.
+
+The stronger check exposed incomplete ownership-list framing in historical test
+sources. Those originals and expectations remain unchanged and retain explicit
+read and mutation-refusal coverage. Separate six-byte derivatives passed source
+qualification before positive, forgery and resource controls used them. Current
+checks pass 529 native mutation functions, 58 adapter functions, 37 CLI unit and
+31 selected CLI integration functions, strict ACE/Access/CLI and minimal
+ACE/Access builds. This does not enable normal ACE saves or qualify native Access.
+
 ## Inert data-macro program structure
 
 The [program reader](access/schema/NATIVE_DATA_MACRO_PROGRAM.md) now retains

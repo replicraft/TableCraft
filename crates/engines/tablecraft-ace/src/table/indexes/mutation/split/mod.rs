@@ -1,6 +1,6 @@
 //! Separate, bounded recursive splitting; ordinary replacement paths stay closed.
 pub(in crate::table) mod allocation;
-mod audit;
+pub(in crate::table) mod audit;
 pub(in crate::table) mod fixed_batch;
 pub(in crate::table::indexes) mod insert;
 mod maps;

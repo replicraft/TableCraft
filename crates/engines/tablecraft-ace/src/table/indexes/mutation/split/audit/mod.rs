@@ -11,7 +11,7 @@ mod retained;
 mod retained_tests;
 mod rows;
 mod slot;
-mod source;
+pub(in crate::table) mod source;
 
 use super::super::{encoding, plan::keys, profile::SingleProfile, replacement::SlotKeyChanges};
 use super::{Plan, rows::Changes};

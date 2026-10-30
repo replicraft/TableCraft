@@ -1,5 +1,8 @@
 //! Whole-image controls and correlated forgeries use the actual source owner.
 mod capacity;
+#[path = "../mixed_fitted_tests/framed.rs"]
+mod framed;
+mod qualified;
 
 use super::{record_proof, request::FittedColumnUpdates, stage};
 use crate::table::mutation::{gates, mixed_fitted_tests::model};
@@ -156,7 +159,7 @@ fn mixed_joint_updates_match_every_prefrozen_image_in_both_group_orders() {
         for family in [Family::Legacy, Family::Modern, Family::Binary] {
             for descending in [false, true] {
                 for recipe in [Recipe::Permutation, Recipe::Shorter, Recipe::Nulls] {
-                    let case = model::case(code, family, descending, recipe, false);
+                    let case = framed::framed(model::case(code, family, descending, recipe, false));
                     let (fixed, variable) = requests(&case);
                     let mut groups = groups(&fixed, &variable);
                     for _ in 0..2 {
@@ -175,7 +178,7 @@ fn mixed_joint_updates_match_every_prefrozen_image_in_both_group_orders() {
         }
     }
     for family in [Family::Legacy, Family::Modern, Family::Binary] {
-        let case = model::case(6, family, true, Recipe::Permutation, true);
+        let case = framed::framed(model::case(6, family, true, Recipe::Permutation, true));
         let (fixed, variable) = requests(&case);
         let result = capture(&case.before)
             .preview_ace16_fitted_updates(
@@ -191,7 +194,13 @@ fn mixed_joint_updates_match_every_prefrozen_image_in_both_group_orders() {
 
 #[test]
 fn late_original_expected_and_physical_capacity_fail_without_a_candidate() {
-    let case = model::case(6, Family::Legacy, false, Recipe::Permutation, false);
+    let case = framed::framed(model::case(
+        6,
+        Family::Legacy,
+        false,
+        Recipe::Permutation,
+        false,
+    ));
     let (fixed, mut variable) = requests(&case);
     let last = *case.changed.last().unwrap();
     variable[last] = SlotScalarUpdate::new(
@@ -229,7 +238,13 @@ fn late_original_expected_and_physical_capacity_fail_without_a_candidate() {
 
 #[test]
 fn correlated_wrong_fixed_payload_cache_and_index_are_not_original_intent() {
-    let case = model::case(6, Family::Legacy, false, Recipe::Permutation, false);
+    let case = framed::framed(model::case(
+        6,
+        Family::Legacy,
+        false,
+        Recipe::Permutation,
+        false,
+    ));
     let (fixed, variable) = requests(&case);
     let groups = groups(&fixed, &variable);
     let image = capture(&case.before);
@@ -260,7 +275,13 @@ fn correlated_wrong_fixed_payload_cache_and_index_are_not_original_intent() {
 
 #[test]
 fn unselected_other_bytes_are_not_authorized_by_agreeing_key_caches() {
-    let case = model::case(6, Family::Legacy, false, Recipe::Permutation, false);
+    let case = framed::framed(model::case(
+        6,
+        Family::Legacy,
+        false,
+        Recipe::Permutation,
+        false,
+    ));
     let (fixed, variable) = requests(&case);
     let groups = groups(&fixed, &variable);
     let image = capture(&case.before);
@@ -292,7 +313,13 @@ fn unselected_other_bytes_are_not_authorized_by_agreeing_key_caches() {
 
 #[test]
 fn collation_equivalent_original_or_final_cache_is_not_exact_stored_value() {
-    let case = model::case(6, Family::Legacy, false, Recipe::Permutation, false);
+    let case = framed::framed(model::case(
+        6,
+        Family::Legacy,
+        false,
+        Recipe::Permutation,
+        false,
+    ));
     let (fixed, variable) = requests(&case);
     let groups = groups(&fixed, &variable);
     let image = capture(&case.before);
@@ -331,7 +358,13 @@ fn collation_equivalent_original_or_final_cache_is_not_exact_stored_value() {
 
 #[test]
 fn mixed_proof_and_deep_work_respect_exact_pools_and_final_cancellation() {
-    let case = model::case(6, Family::Modern, true, Recipe::Permutation, true);
+    let case = framed::framed(model::case(
+        6,
+        Family::Modern,
+        true,
+        Recipe::Permutation,
+        true,
+    ));
     let (fixed, variable) = requests(&case);
     let groups = groups(&fixed, &variable);
     let mut work = budget();

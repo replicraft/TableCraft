@@ -6,12 +6,13 @@ use super::{
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{
+        page::PAGE_BYTES,
         reader::Reader,
-        row::{COLUMN_COUNT_BYTES, MASK_BITS},
+        row::{COLUMN_COUNT_BYTES, MASK_BITS, reference_page},
     },
     table::{
         indexes::RowKeyUpdate,
-        mutation::{page_update, patch::BytePatch},
+        mutation::{page_update, patch::BytePatch, variable_split::metadata::Metadata},
         record, record_layout,
     },
 };
@@ -156,6 +157,23 @@ pub(super) fn build_with(
     }
 
     let captured = page_update::roots::capture(image, schema, &bound.rows, budget, cancelled)?;
+
+    if matches!(policy, RecordPolicy::FittedDeclared) {
+        let metadata = Metadata::capture_for_fitted_updates(
+            image,
+            schema,
+            checked.indexes(),
+            &bound.columns,
+            budget,
+            cancelled,
+        )?;
+        for root in &captured.selected {
+            metadata.require_data_page(reference_page(root.reference), budget, cancelled)?;
+            let terminal = u32::try_from(root.final_record.offset / PAGE_BYTES)
+                .map_err(|_| InspectError::StructureLimit)?;
+            metadata.require_data_page(terminal, budget, cancelled)?;
+        }
+    }
     budget
         .charge_allocation(captured.selected.len() as u64, size_of::<Record>() as u64)
         .map_err(InspectError::from)?;

@@ -59,3 +59,6 @@ mod tests;
 
 #[cfg(test)]
 mod multiple_variable_tests;
+
+#[cfg(test)]
+mod fitting_roles;

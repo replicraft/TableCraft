@@ -1,5 +1,8 @@
 //! Frontend consumers reuse the engine's independently frozen whole-image owners.
 mod boundaries;
+#[path = "../../../../../../engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/framed.rs"]
+mod framed;
+mod framed_sources;
 mod growing;
 mod joint_split;
 use super::{AccessEngineeringEditor, ScalarUpdateMode, budget, fixture as base, image, rows};
@@ -123,7 +126,7 @@ fn qualify_metadata_default_sources_and_complete_expected_before_frontend_api() 
 
 #[test]
 fn typed_default_joint_updates_match_all_frozen_images_in_both_group_orders() {
-    for case in cases() {
+    for case in cases().into_iter().map(framed::framed) {
         for reverse in [false, true] {
             let editor = AccessEngineeringEditor::new(
                 image(&case.before),
@@ -185,7 +188,9 @@ fn default_sql_uses_joint_original_values_and_explicit_fixed_stays_strict() {
             for case in [
                 model::case(6, family, descending, model::Recipe::Permutation, false),
                 capacity::case(family, descending),
-            ] {
+            ]
+            .map(framed::framed)
+            {
                 let query = parse_query(
                     "UPDATE Items SET Age=IIf(Id=1,20,10), Name=IIf(Id=1,'é','a') WHERE Id IN(1,2)",
                     ParseLimits::default(),
@@ -224,13 +229,13 @@ fn default_rejects_two_variable_targets_even_for_zero_matches() {
         ParseLimits::default(),
     )
     .unwrap();
-    let case = model::case(
+    let case = framed::framed(model::case(
         6,
         model::Family::Legacy,
         false,
         model::Recipe::Permutation,
         false,
-    );
+    ));
     assert!(
         sql::preview_batch_update(
             image(&case.before),

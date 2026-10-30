@@ -152,15 +152,7 @@ pub(super) fn capture<'a>(
             {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            let owned = allocation::pages(reader, index.usage_map())?;
-            let mut reached = Vec::new();
-            visit(index.root_page(), definition, 0, &mut reached, reader)?;
-            let levels = reached.len().checked_ilog2().unwrap_or(0) as usize + 1;
-            reader.work(reached.len().saturating_mul(levels))?;
-            reached.sort_unstable();
-            if reached != owned {
-                return Err(EditError::Preservation);
-            }
+            let owned = tree_pages(index, definition, reader)?;
             for page in owned {
                 reader.tick()?;
                 reader.work(source_pages.len())?;
@@ -193,6 +185,25 @@ pub(super) fn capture<'a>(
         owners,
         index_pages: source_pages,
     })
+}
+
+/// Read and bind the complete original tree, independently of staged keys.
+pub(in crate::table) fn tree_pages(
+    index: &NativeIndex,
+    definition: u32,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<Vec<u32>, EditError> {
+    let owned = allocation::pages(reader, index.usage_map())?;
+    let mut reached = Vec::new();
+    visit(index.root_page(), definition, 0, &mut reached, reader)?;
+    let levels = reached.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    reader.work(reached.len().saturating_mul(levels))?;
+    reached.sort_unstable();
+    if reached != owned {
+        return Err(EditError::Preservation);
+    }
+
+    Ok(reached)
 }
 
 fn visit(
