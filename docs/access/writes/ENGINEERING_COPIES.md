@@ -1,5 +1,9 @@
 # Experimental ACE write copies
 
+For SQL predicates over original rows, use the separate
+[SQL UPDATE](SQL_ENGINEERING_COPIES.md) and [SQL DELETE](SQL_DELETE_COPIES.md)
+commands. They share the same fresh-copy publication boundary.
+
 The explicit `tablecraft write preview-update`, `preview-insert` and
 `preview-delete` commands prepare disposable engineering copies through the
 existing typed ACE engine services. They are separate from normal `query update`

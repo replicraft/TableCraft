@@ -10,6 +10,8 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Select original rows with SQL and create a fresh experimental ACE DELETE copy.
+    PreviewDelete(Box<super::preview_delete::Arguments>),
     /// Select original rows with SQL and create a fresh experimental ACE UPDATE copy.
     PreviewUpdate(Box<super::preview_update::Arguments>),
     /// Preview one restricted calculated-field formula; recomputes without saving or replacing caches.
