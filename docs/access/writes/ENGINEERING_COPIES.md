@@ -33,6 +33,10 @@ tablecraft write preview-update offline.accdb edited.accdb --variable \
 tablecraft write preview-update offline.accdb binary-edited.accdb --variable \
   --set Items Age 3 int32 null 40 \
   --set Items Name 3 binary null 00ff
+
+tablecraft write preview-update offline.accdb grown.accdb --variable --index-growth \
+  --set Items Age 0 int32 1 1001 \
+  --set Items Name 0 binary null 00000000
 ```
 
 Each `--set` contains `TABLE COLUMN ROW KIND EXPECTED VALUE`. ROW is the zero-based
@@ -50,9 +54,12 @@ permits the engine's qualified Int32 single/tuple growth profile. `--variable`
 selects Short Text/Binary replacement, including qualified DATA forwarding.
 With fixed siblings it uses one joint DATA-placement preview: the original page,
 another owned DATA page, or qualified represented EOF allocation. INDEX owners
-must fit. Mixed `--variable --index-growth` refuses before typed group
-serialization; that combination retains the existing qualified single-key
-General/Binary index-growth service only for one variable column. `--long-value` selects ordinary Memo/OLE replacement through
+must fit unless `--index-growth` is also selected. Together, `--variable
+--index-growth` selects one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
+for fixed siblings with exactly one Short Text/Binary column. One captured
+original image supplies both the DATA placement and INDEX allocation ledger;
+there is no intermediate candidate or fallback. The one-variable combination
+retains its existing General/Binary index-growth service. `--long-value` selects ordinary Memo/OLE replacement through
 existing LVAL ownership checks. Those carriers use `text` and `binary` respectively.
 Unknown indexes, collations, maps or record profiles remain typed refusals.
 

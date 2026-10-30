@@ -59,8 +59,10 @@ impl Ace16WritePreview {
 impl NativeImage {
     /// Preview bounded fixed non-NULL Int32 field/index patches on ACE 16.
     ///
-    /// Requires `ace16-write-preview`, disabled by default and unused by the CLI
-    /// and Access backend. Only unencoded subversion-zero 2016/2019 read profiles
+    /// Requires `ace16-write-preview`, disabled by default in the standalone
+    /// engine. Explicit Access engineering services and fresh-copy CLI commands
+    /// opt in; ordinary save and journal admission stay unchanged.
+    /// Only unencoded subversion-zero 2016/2019 read profiles
     /// are eligible. Other physical/constraint/preservation gates are unchanged.
     /// Eligible foreign indexes require complete reciprocal/catalog and before/
     /// after membership checks; required cascades are not executed.

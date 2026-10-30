@@ -64,7 +64,7 @@ pub(crate) struct Update {
     /// Ordinary Memo/OLE replacement in one table/column using existing LVAL storage.
     #[arg(long, conflicts_with_all = ["variable", "index_growth", "cascade_updates"])]
     pub(super) long_value: bool,
-    /// Permit fixed or single-variable INDEX growth; mixed variable growth refuses.
+    /// Permit qualified fixed, single-variable or joint fixed/variable INDEX growth.
     #[arg(long, conflicts_with = "cascade_updates")]
     pub(super) index_growth: bool,
     /// Expand qualified update cascades from original relationship associations.

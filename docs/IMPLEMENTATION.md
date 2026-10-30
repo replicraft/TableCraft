@@ -24,9 +24,18 @@ All 24 independently authored source/expected pairs passed before mutation.
 The first API run passes six functions, 48 complete-file comparisons in both
 group orders and two unchanged no-op images. The shared round passes 522 mutation,
 72 native integration, 55 adapter, 37 CLI unit and 51 CLI integration tests,
-strict ACE/Access/CLI checks and minimal ACE/Access builds. Exposing this joint
-service through the existing mixed INDEX flags is next; broader map profiles,
-normal saves and native Access qualification remain unfinished.
+strict ACE/Access/CLI checks and minimal ACE/Access builds. The existing SQL and
+typed `--variable --index-growth` flags now expose that joint service through one
+`MixedSplitUpdate` request. Frontend source gates pass all 24 original/expected
+pairs before APIs; the adapter passes 48 whole-image comparisons in both group
+orders, SQL publishes 16 exact Text copies, and typed write publishes 24 exact
+copies including eight Binary cases. Source/stale/no-clobber controls remain
+active. The frontend round passes 57 adapter functions, 37 CLI unit and 29 selected
+integration functions, strict ACE/Access/CLI checks and minimal Access. The
+[frontend record](testing/results/mixed-data-index-growth-copies-2026-10-30.json)
+retains an initial zero-test Access invocation separately from the corrected
+all-features run. Broader map profiles, normal saves and native Access
+qualification remain unfinished.
 
 ## Explicit clocks for INSERT defaults
 
@@ -55,8 +64,8 @@ another owned page or a new DATA page. One original-request proof governs full
 records, placement, maps and joint index keys. INDEX replacements must fit their
 existing pages, and map cells must already represent the allocation. SQL
 `query preview-update --variable` now selects this service for fixed fields and
-exactly one Short Text/Binary field. Default mixed updates stay fitted; mixed
-`--index-growth` remains refused, including when no rows match.
+exactly one Short Text/Binary field. Default mixed updates stay fitted; adding
+`--index-growth` selects the separate joint continuation above.
 
 The final focused run passes eight growth and eight fitting functions, including
 72 new complete-file comparisons and all 83 existing fitting comparisons.
@@ -73,7 +82,8 @@ Typed `write preview-update --variable` now uses the same service for one table,
 fixed siblings and one variable field, preserving caller expectations and original
 ordinals. All 36 complete copies pass, including 12 Binary cases. Its focused
 regression passes 34 CLI unit and 25 selected integration tests, plus strict CLI
-checks; unsupported mixed INDEX/LVAL modes refuse before opening the source.
+checks. The joint INDEX continuation above extends the same typed flags;
+mixed LVAL, multiple variable fields and multitable variable requests still refuse.
 
 ## Omitted INSERT fields and constant defaults
 
@@ -125,7 +135,7 @@ builds pass. The [record](testing/results/ace16-fitted-mixed-updates-2026-10-30.
 retains source corrections before producers and the initial encoding mismatch;
 no expected image changed after its producer ran. Metadata-directed adapter/CLI
 consumers now use this fitting service. Mixed DATA allocation uses the separate
-service above; joint INDEX/map growth, normal saves and native Access
+services above; broader map growth, normal saves and native Access
 qualification remain open.
 
 ## Passive display metadata on ACE 16 writes

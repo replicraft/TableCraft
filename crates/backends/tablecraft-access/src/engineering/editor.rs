@@ -25,7 +25,7 @@ pub enum ScalarUpdateMode {
     /// Fixed-field maintenance using the selected existing fitting/growth/action profile.
     Fixed(UpdateMode),
     /// One Short Text/Binary field, optionally with fixed siblings for DATA
-    /// growth. Qualified encoded INDEX growth remains single-column only.
+    /// growth. INDEX growth uses one qualified DATA/INDEX continuation.
     Variable {
         /// Select the existing variable-plus-index split service explicitly.
         index_growth: bool,
@@ -278,17 +278,10 @@ impl AccessEngineeringEditor {
     }
 
     fn check_batch_mode(&self, position: usize, width: usize) -> Result<(), NativeEditError> {
-        // The explicit non-INDEX-growth variable batch may include fixed siblings.
+        // The explicit variable batch may include fixed siblings.
         // Its router still requires exactly one variable target and native kind
         // qualification remains inside the one selected engine service.
-        if width > 1
-            && matches!(
-                self.mode,
-                ScalarUpdateMode::Variable {
-                    index_growth: false
-                }
-            )
-        {
+        if width > 1 && matches!(self.mode, ScalarUpdateMode::Variable { .. }) {
             return Ok(());
         }
         self.check_mode(position)

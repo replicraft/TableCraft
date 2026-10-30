@@ -67,7 +67,7 @@ fn variable_batch_flag_publishes_all_text_growth_destinations_exactly() {
 }
 
 #[test]
-fn default_capacity_and_mixed_index_growth_refusals_never_publish() {
+fn default_capacity_and_multiple_variable_refusals_never_publish() {
     let case = source_model::case(
         6,
         model::Family::Legacy,
@@ -80,11 +80,7 @@ fn default_capacity_and_mixed_index_growth_refusals_never_publish() {
     for (ordinal, (sql, flags)) in [
         ("UPDATE Items SET Age=40,Name='aa' WHERE Id=4", &[][..]),
         (
-            "UPDATE Items SET Age=40,Name='aa' WHERE Id=4",
-            &["--variable", "--index-growth"][..],
-        ),
-        (
-            "UPDATE Items SET Age=40,Name='aa' WHERE FALSE",
+            "UPDATE Items SET Name='a',Other='b' WHERE FALSE",
             &["--variable", "--index-growth"][..],
         ),
         (

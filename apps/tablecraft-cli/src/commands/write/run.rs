@@ -33,26 +33,23 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
         && updates::mixed::required(&args.cells, &mut budget, &|| false)?
     {
         if args.long_value {
-            updates::mixed::preflight(&args.cells, false, &mut budget, &|| false)?;
+            updates::mixed::preflight(&args.cells, &mut budget, &|| false)?;
             return Err(invalid("Mixed Memo/OLE updates are not qualified"));
         }
-        let owned = updates::mixed::prepare(
-            &args.cells,
-            args.value_bytes,
-            args.index_growth,
-            &mut budget,
-            &|| false,
-        )?;
+        let owned = updates::mixed::prepare(&args.cells, args.value_bytes, &mut budget, &|| false)?;
         let groups = owned.groups(&mut budget, &|| false)?;
-        return publish(
-            &args.paths,
+        let request = if args.index_growth {
+            EngineeringRequest::MixedSplitUpdate {
+                table: owned.table,
+                groups: &groups,
+            }
+        } else {
             EngineeringRequest::MixedUpdate {
                 table: owned.table,
                 groups: &groups,
-            },
-            password,
-            &mut budget,
-        );
+            }
+        };
+        return publish(&args.paths, request, password, &mut budget);
     }
 
     if args.variable || args.long_value {

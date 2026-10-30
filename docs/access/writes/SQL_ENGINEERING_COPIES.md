@@ -100,10 +100,13 @@ tablecraft query preview-update "UPDATE Contacts SET Age=40, Name='Alice' WHERE 
   --database contacts.accdb --output edited.accdb --variable
 ```
 
-Mixed requests with `--variable --index-growth` refuse before request
-serialization, including zero matches. That combination retains its existing
-qualified INDEX growth only for a single variable target. Variable mode also
-refuses fixed-only groups or more than one variable target. Native Short
+With fixed siblings, `--variable --index-growth` instead selects one
+[joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md).
+The engine uses one original source and one allocation ledger for DATA placement
+and every affected physical INDEX owner. It derives each final tuple jointly;
+logical aliases do not allocate independent trees. A single-variable statement
+retains its existing selected INDEX-growth service. Variable mode still refuses
+fixed-only groups or more than one variable target, including zero matches. Native Short
 Text/Binary qualification remains inside the selected engine service; Memo/OLE
 is never inferred from shared Text/Binary carriers. Default routing stays fitted
 for joint fixed/variable updates; it does not retry with DATA growth.
@@ -229,11 +232,42 @@ The four Access controls passed on their first API run, including 72 whole-image
 comparisons in both group orders, all three DATA destinations and non-NULL Binary.
 Three CLI controls passed first, including 24 complete Text copies, source
 preservation, fitted-default refusal and mixed INDEX-growth/multiple-variable
-no-output refusals. The zero-match mixed INDEX-growth adapter control uses a
-zero-Bytes planning budget and still receives the explicit mode refusal before
-request allocation. The targeted old/new native fixture regression passed all
+no-output refusals. At that checkpoint, the zero-match mixed INDEX-growth adapter control used a
+zero-Bytes planning budget and received the then-current mode refusal. The joint
+INDEX continuation below replaces that obsolete blanket refusal with a paid
+request-allocation control. The targeted old/new native fixture regression passed all
 16 functions, the Access library passed 55, and CLI regressions passed 31 unit
 plus 36 integration functions (six DELETE, two historical, nine INSERT, fifteen
 UPDATE and four normal Jet 4). Strict ACE/Access/CLI all-target/all-feature checks
 and minimal Access checks also passed. These are scoped local engineering-copy
 checks, not a full ACE library run or native Access save qualification.
+
+
+## Explicit joint DATA and INDEX growth
+
+The engine, Access frontend and CLI each passed a source-only gate over all 24
+original/complete-expected pairs before frontend API execution. They use the
+actual native `joint_split_tests/model.rs` literal owner and its four pure
+children. Only test visibility and explicit module paths changed; reversing
+those changes restores the original constructor file exactly. No candidate or
+public AFTER image supplies expected bytes.
+
+The qualified literal matrix covers both headers, Legacy/Modern Text and Binary,
+both key directions, root-leaf growth and retained nonroot leaf growth. The
+source histories remain 701 and 901; logical aliases share physical owners.
+Default metadata routing remains fitted, `--variable` alone retains its prior
+DATA-growth path with fitting indexes, and the old one-variable route remains
+unchanged. Only the deliberately obsolete mixed-INDEX refusal controls migrate;
+multiple variable fields, mixed LVAL and source/constraint failures still refuse.
+
+The corrected all-features adapter API run passes 48 complete-image comparisons
+in both group orders. Its initial command omitted the feature and ran zero tests;
+that invocation is retained and excluded from passing API evidence. The CLI's
+first focused run passes four functions, including 16 exact SQL Text copies and
+24 exact typed copies with eight Binary cases. Stale expected values, existing
+destinations and source aliases leave all original files unchanged. The full
+adapter library passes 57 functions; the selected CLI round passes 37 unit and
+29 integration functions (23 UPDATE and six typed CRUD). Strict ACE/Access/CLI
+all-target/all-feature checks and minimal Access checks pass. See the
+[frontend record](../../testing/results/mixed-data-index-growth-copies-2026-10-30.json).
+These are experimental engineering copies, not native Access save qualification.

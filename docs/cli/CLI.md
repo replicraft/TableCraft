@@ -224,8 +224,9 @@ These commands require schemas admitted by the selected engineering profile.
 They keep the original file and publish one complete copy under a fresh name.
 UPDATE can combine fixed fields and one fitted Short Text/Binary field through
 its default metadata route. Add `--variable` to permit joint DATA placement with
-fixed siblings; their INDEX owners must still fit. Mixed `--variable --index-growth`
-requests refuse, while the single-variable combination retains its old profile.
+fixed siblings; their INDEX owners must still fit unless `--index-growth` is also
+selected. The combined flags use one qualified joint DATA/INDEX continuation.
+Default routing and the old single-variable combination retain their profiles.
 INSERT can omit named ordinary fields: only needed
 qualified literal defaults or NULL are resolved, while explicit NULL stays
 supplied. Positional VALUES remain complete-width. Generated IDs require explicit
@@ -247,5 +248,6 @@ See [SQL UPDATE](../access/writes/SQL_ENGINEERING_COPIES.md),
 The typed `write preview-update --variable` command also accepts fixed siblings
 with one Short Text/Binary field in one table. Its `--set` ordinals and expected
 values stay caller-supplied; this is not SQL row selection. Binary values use
-hexadecimal, and mixed INDEX growth or mixed Memo/OLE requests refuse before
-publication. Default typed updates remain fixed-field maintenance.
+hexadecimal. Add `--index-growth` for joint DATA/INDEX growth with fixed siblings;
+mixed Memo/OLE, multiple variable fields and multitable variable requests still
+refuse before publication. Default typed updates remain fixed-field maintenance.

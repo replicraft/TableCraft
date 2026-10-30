@@ -1,6 +1,8 @@
 //! Real command consumers of the unchanged joint-record literal source owners.
 #[path = "metadata_default/growing.rs"]
 mod growing;
+#[path = "metadata_default/joint_split.rs"]
+mod joint_split;
 #[path = "../write_previews/mixed.rs"]
 mod typed_write;
 use super::{budget, fixture as base, fs, rows, run};

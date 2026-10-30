@@ -61,7 +61,6 @@ fn variable_kind(kind: &str) -> bool {
 
 pub(in crate::commands::write) fn preflight(
     cells: &[String],
-    index_growth: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
@@ -122,20 +121,16 @@ pub(in crate::commands::write) fn preflight(
             "Mixed variable updates require fixed siblings and exactly one text/binary column",
         ));
     }
-    if index_growth {
-        return Err(input("Mixed variable INDEX growth is not qualified"));
-    }
     Ok(())
 }
 
 pub(in crate::commands::write) fn prepare<'a>(
     cells: &'a [String],
     max_value_bytes: usize,
-    index_growth: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared<'a>, Error> {
-    preflight(cells, index_growth, budget, cancelled)?;
+    preflight(cells, budget, cancelled)?;
     let groups = parse_with_kind(
         cells,
         max_value_bytes,

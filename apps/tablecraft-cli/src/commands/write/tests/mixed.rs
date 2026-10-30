@@ -30,7 +30,7 @@ fn cells(variable: &str) -> Vec<String> {
 fn mixed_protocol_preserves_kind_null_expectations_and_original_ordinals() {
     for kind in ["text", "binary"] {
         let input = cells(kind);
-        let owned = updates::mixed::prepare(&input, 1024, false, &mut budget(), &|| false).unwrap();
+        let owned = updates::mixed::prepare(&input, 1024, &mut budget(), &|| false).unwrap();
         assert_eq!(owned.table, "Items");
         let groups = owned.groups(&mut budget(), &|| false).unwrap();
         let [
@@ -69,15 +69,16 @@ fn mixed_scope_conflicts_and_unknown_kinds_refuse_without_native_groups() {
             3 => input[3] = "unknown-kind".to_owned(),
             _ => unreachable!(),
         }
-        let result = updates::mixed::prepare(&input, 1024, false, &mut budget(), &|| false);
+        let result = updates::mixed::prepare(&input, 1024, &mut budget(), &|| false);
         assert!(matches!(result, Err(Error::Input(_))));
     }
     let mut input = cells("text");
     input[5] = "not-an-int32".to_owned();
-    assert!(
-        matches!(updates::mixed::prepare(&input, 1024, true, &mut budget(), &|| false), Err(Error::Input(message)) if message == "Mixed variable INDEX growth is not qualified")
-    );
-    assert!(updates::mixed::prepare(&[], 1024, false, &mut budget(), &|| false).is_err());
+    assert!(matches!(
+        updates::mixed::prepare(&input, 1024, &mut budget(), &|| false),
+        Err(Error::Input(_))
+    ));
+    assert!(updates::mixed::prepare(&[], 1024, &mut budget(), &|| false).is_err());
 }
 
 #[test]
@@ -91,7 +92,7 @@ fn mixed_parser_and_borrowed_groups_obey_exact_pools_and_final_cancel() {
         polls.set(polls.get() + 1);
         false
     };
-    let owned = updates::mixed::prepare(&input, 1024, false, &mut work, &cancelled).unwrap();
+    let owned = updates::mixed::prepare(&input, 1024, &mut work, &cancelled).unwrap();
     owned.groups(&mut work, &cancelled).unwrap();
     let needed =
         std::array::from_fn::<_, 3, _>(|index| limits[index] - work.remaining(resources[index]));
@@ -100,11 +101,11 @@ fn mixed_parser_and_borrowed_groups_obey_exact_pools_and_final_cancel() {
         let mut exact = limits;
         exact[index] = needed[index];
         let mut work = ResourceBudget::new(exact[0], exact[1], exact[2]);
-        let owned = updates::mixed::prepare(&input, 1024, false, &mut work, &|| false).unwrap();
+        let owned = updates::mixed::prepare(&input, 1024, &mut work, &|| false).unwrap();
         owned.groups(&mut work, &|| false).unwrap();
         exact[index] -= 1;
         let mut work = ResourceBudget::new(exact[0], exact[1], exact[2]);
-        let result = updates::mixed::prepare(&input, 1024, false, &mut work, &|| false)
+        let result = updates::mixed::prepare(&input, 1024, &mut work, &|| false)
             .and_then(|owned| owned.groups(&mut work, &|| false).map(|_| ()));
         assert!(result.is_err());
     }
@@ -116,7 +117,7 @@ fn mixed_parser_and_borrowed_groups_obey_exact_pools_and_final_cancel() {
         polls.set(polls.get() + 1);
         polls.get() == last
     };
-    let result = updates::mixed::prepare(&input, 1024, false, &mut work, &cancelled)
+    let result = updates::mixed::prepare(&input, 1024, &mut work, &cancelled)
         .and_then(|owned| owned.groups(&mut work, &cancelled).map(|_| ()));
     assert!(matches!(
         result,

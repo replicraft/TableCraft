@@ -74,8 +74,12 @@ remains fitted. Typed `write preview-update --variable` now shares this service,
 with 36 exact copies, including Binary, preserving caller expectations and ordinals.
 The separate [joint DATA/INDEX engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
 now passes 24 source pairs and 48 complete API comparisons for root and nonroot
-splits, with one shared allocation overlay. Mixed INDEX flag routing is next;
-broader map profiles continue separately.
+splits, with one shared allocation overlay. Existing SQL and typed
+`--variable --index-growth` now select that joint service: frontend source gates
+pass 24 pairs, the adapter passes 48 complete-image comparisons, and SQL/typed
+commands publish 16 Text and 24 typed exact copies, including eight Binary cases.
+Default fitting and single-variable modes remain unchanged; broader map profiles
+continue separately.
 Normal saves and required macro gates remain.
 
 ## Delivery snapshot — 27 October 2026

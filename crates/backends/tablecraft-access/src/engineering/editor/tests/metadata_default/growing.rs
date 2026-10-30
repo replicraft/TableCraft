@@ -88,7 +88,7 @@ fn explicit_variable_batch_matches_all_prefrozen_images_in_both_orders() {
 }
 
 #[test]
-fn default_stays_fitted_and_mixed_index_growth_refuses_before_request_allocations() {
+fn default_stays_fitted_and_mixed_index_growth_pays_request_allocations() {
     let case = source_model::case(
         6,
         model::Family::Legacy,
@@ -159,7 +159,7 @@ fn default_stays_fitted_and_mixed_index_growth_refuses_before_request_allocation
                 &mut ResourceBudget::new(0, 100_000, 100_000_000),
                 &|| false
             ),
-            Err(NativeEditError::Unsupported)
+            Err(NativeEditError::Inspect(_))
         ));
     }
 }
