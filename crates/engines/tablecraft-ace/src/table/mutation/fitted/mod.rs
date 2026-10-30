@@ -56,3 +56,6 @@ impl NativeImage {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod multiple_variable_tests;

@@ -44,4 +44,4 @@ impl NativeImage {
 mod tests;
 
 #[cfg(test)]
-mod joint_split_tests;
+pub(in crate::table::mutation::fitted) mod joint_split_tests;

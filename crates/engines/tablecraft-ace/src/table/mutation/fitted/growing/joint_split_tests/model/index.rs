@@ -2,7 +2,7 @@
 use super::PAGE;
 use tablecraft_testkit::access as raw;
 
-pub(super) fn index_page(
+pub(crate) fn index_page(
     before: Option<&[u8]>,
     entries: &[Vec<u8>],
     links: (u32, u32),
@@ -30,6 +30,6 @@ pub(super) fn index_page(
     page
 }
 
-pub(super) fn separator(maximum: &[u8], child: u32) -> Vec<u8> {
+pub(crate) fn separator(maximum: &[u8], child: u32) -> Vec<u8> {
     [maximum, &child.to_be_bytes()].concat()
 }
