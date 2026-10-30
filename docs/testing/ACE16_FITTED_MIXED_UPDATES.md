@@ -153,3 +153,22 @@ slot-update, variable-update and variable-update-contract targets passed
 9, 7, 9, 4 and 7 functions respectively. These regressions exercise the existing
 single-variable consumers whose serialization policy remains unchanged. They
 do not establish growing-record support for the mixed route.
+
+## Record-growth source qualification
+
+A separate [literal growth corpus](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs)
+now qualifies 36 source/expected pairs before any growing mixed-update producer
+runs. Both header codes, three key families, both index directions and three
+placement destinations are represented: a hidden slot on the original page, an
+existing owned page, and a new DATA page at EOF. Reads, indexes, constraints,
+source-role metadata and original logical-root resolution pass for all 72 images.
+The growing text expectations use the existing minimum-size variable serializer;
+the fitted service retains its distinct capacity-aware encoding policy.
+
+The first source gate stopped at source-role admission because three independently
+authored table definitions lacked their empty declaration terminators. The new
+corpus alone acquired explicit terminators at its known definition ends before
+the successful rerun. Existing fitted fixtures, engine guards and expected values
+were unchanged. The [source record](results/ace16-mixed-growth-sources-2026-10-30.json)
+preserves both attempts. This is source qualification, not a passing growth
+producer, CLI capability, native Access comparison or save qualification.
