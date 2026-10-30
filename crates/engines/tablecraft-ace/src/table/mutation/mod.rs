@@ -6,7 +6,7 @@ mod delete;
 mod error;
 mod field;
 #[cfg(feature = "ace16-write-preview")]
-mod fitted;
+pub(in crate::table) mod fitted;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod fixed;
 mod gates;
@@ -39,7 +39,7 @@ mod split_slot;
 #[cfg(feature = "ace16-write-preview")]
 mod variable_split;
 #[cfg(feature = "ace16-write-preview")]
-mod variable_update;
+pub(in crate::table) mod variable_update;
 #[cfg(feature = "ace16-write-preview")]
 pub use insert::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,

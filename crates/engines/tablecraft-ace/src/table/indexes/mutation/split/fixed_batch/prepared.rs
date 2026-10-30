@@ -1,5 +1,6 @@
 //! Keep typed profiles and certified final populations through serialization.
-use super::{census, reserve};
+use super::super::source;
+use super::reserve;
 use crate::table::mutation::append::owners::OwnerContext;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
@@ -38,7 +39,7 @@ pub(super) enum Prepared<'a> {
 pub(super) fn prepare<'a>(
     image: &NativeImage,
     schema: &TableSchema,
-    owner: &census::Physical<'a>,
+    owner: &source::Physical<'a>,
     updates: &[IndexKeyUpdate],
     complete: bool,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
@@ -92,7 +93,7 @@ pub(super) fn prepare<'a>(
         let population = population::prepare::<_, { encoding::MAX_ENTRY_BYTES }>(
             image, reader, index, schema, updates, &profile,
         )?;
-        census::require_tree(&population.tree, &owner.pages, reader)?;
+        source::require_tree(&population.tree, &owner.pages, reader)?;
         population::history::preflight(image, schema, index, population.increment, reader)?;
         if !population.tree.is_leaf()
             && population.entries.len()
@@ -119,7 +120,7 @@ pub(super) fn prepare<'a>(
         let population = population::prepare::<_, { composite::MAX_ENTRY_BYTES }>(
             image, reader, index, schema, updates, &profile,
         )?;
-        census::require_tree(&population.tree, &owner.pages, reader)?;
+        source::require_tree(&population.tree, &owner.pages, reader)?;
         population::history::preflight(image, schema, index, population.increment, reader)?;
         if !population.tree.is_leaf()
             && population.entries.len()

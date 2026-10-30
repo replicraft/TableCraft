@@ -1,7 +1,6 @@
 //! Independent complete-row population and shared-EOF replay for fixed batches.
 mod history;
 mod population;
-mod source;
 
 #[cfg(test)]
 mod tests;
@@ -16,7 +15,7 @@ use super::super::{
     Plan,
     fixed_batch::Input,
 };
-use super::{maps, retained};
+use super::{maps, retained, source};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -59,7 +58,12 @@ pub(in crate::table::indexes::mutation::split) fn prove<O: OwnerContext>(
         cancelled,
         reads: 0,
     };
-    let source = source::capture(inputs, &mut reader)?;
+    let mut checked_tables = Vec::new();
+    for input in inputs {
+        reader.tick()?;
+        push(&mut checked_tables, input.checked, &mut reader)?;
+    }
+    let source = source::capture(&checked_tables, &mut reader)?;
     let census = map_authority::capture_catalog(
         image,
         reader.budget,
@@ -115,7 +119,14 @@ pub(in crate::table::indexes::mutation::split) fn prove<O: OwnerContext>(
     for physical in source.physical {
         actual.tick()?;
         let checked = physical.checked;
-        let updates = physical.updates;
+        actual.work(inputs.len())?;
+        let updates = inputs
+            .iter()
+            .find(|input| {
+                input.checked.schema().definition_page() == checked.schema().definition_page()
+            })
+            .ok_or(EditError::Preservation)?
+            .updates;
         let index = physical.index;
         if !affects(checked, index, updates, &mut actual)? {
             continue;

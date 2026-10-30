@@ -1,7 +1,7 @@
 //! One original table, multiple physical owners, one qualified append ledger.
-mod census;
 mod prepared;
 
+use super::source;
 use super::{AllocationPolicy, Plan, seal};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, TableCheck, TableSchema, WriteBlocker,
@@ -61,7 +61,7 @@ pub(in crate::table) fn multiple(
         reader.tick()?;
         let schema = input.checked.schema();
         tables.push(input.checked);
-        let owners = census::capture(schema, input.checked.indexes(), &mut reader)?;
+        let owners = source::capture(schema, input.checked.indexes(), &mut reader)?;
         reserve(
             &mut checked_indexes,
             input.checked.indexes().len(),
@@ -177,7 +177,7 @@ pub(in crate::table) fn patches(
         cancelled,
         reads: 0,
     };
-    let owners = census::capture(schema, indexes, &mut reader)?;
+    let owners = source::capture(schema, indexes, &mut reader)?;
     let mut prepared = Vec::new();
     reserve(&mut prepared, owners.len(), &mut reader)?;
     for owner in &owners {

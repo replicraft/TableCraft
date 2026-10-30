@@ -6,7 +6,9 @@ pub(in crate::table::indexes) mod insert;
 mod maps;
 mod nonroot;
 mod pages;
+pub(in crate::table) mod rows;
 mod slot;
+mod source;
 
 pub(in crate::table) use slot::{
     continue_patches as continue_slot_patches, patches as slot_patches, qualify as qualify_slot,
@@ -114,6 +116,17 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         audit::prove_slot_after_data(image, data, self, after, budget, cancelled)
+    }
+
+    pub(in crate::table) fn audit_rows_after_data(
+        &self,
+        image: &NativeImage,
+        data: &crate::table::mutation::fitted::growing::joint::certified::CertifiedRows<'_>,
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        audit::prove_rows_after_data(image, data, self, after, budget, cancelled)
     }
 }
 

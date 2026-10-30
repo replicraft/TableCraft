@@ -41,8 +41,10 @@ this does not authorize adopting an unrelated hidden record.
 The DATA phase owns one append cursor and map-byte overlay. It does not reuse
 arbitrary in-file free pages. GLOBAL, owned and candidate allocation cells must
 already be represented. The current composer does not grant map-record rebasing,
-bitmap promotion or INDEX allocation. True joint INDEX splitting and map growth
-remain a continuation using this same original-source operation and ledger.
+bitmap promotion or INDEX allocation. The separate [joint DATA/INDEX continuation](ACE16_MIXED_DATA_INDEX_GROWTH.md)
+now consumes the same original-source operation and append ledger through
+qualified INDEX splitting. This DATA-only method keeps its represented-map and
+fitting-INDEX policy.
 
 The CLI's current default mixed SQL route still uses the fitting service. This
 engine continuation does not implicitly change default routing, normal ACE

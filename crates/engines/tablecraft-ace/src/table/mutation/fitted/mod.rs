@@ -1,5 +1,5 @@
 //! One original-image fixed/variable statement, with no page allocation.
-mod growing;
+pub(in crate::table) mod growing;
 mod record_proof;
 mod request;
 mod serialization;

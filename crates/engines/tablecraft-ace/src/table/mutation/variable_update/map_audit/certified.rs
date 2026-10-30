@@ -1,7 +1,10 @@
 //! Only immutable requests and original metadata can seed index continuation.
-use super::{ExpectedByte, replay};
+use super::{
+    ReplayAuthority,
+    placement_certificate::{self, CertifiedPlacement},
+};
 use crate::{
-    EditError, InspectError, NativeImage, TableCheck,
+    EditError, NativeImage, TableCheck,
     format::{page::PAGE_BYTES, row::reference_page},
     header::check,
     table::{
@@ -11,58 +14,27 @@ use crate::{
             page_update::roots,
             variable_split::metadata::Metadata,
             variable_update::{
-                audit,
                 authority::{Operation, Verified},
                 placement::DataView,
             },
         },
     },
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::table) struct CertifiedData<'a> {
-    image: &'a NativeImage,
-    after: &'a [u8],
+    phase: CertifiedPlacement<'a>,
     original: TableCheck,
     verified: Verified,
-    end: u32,
-    edits: Vec<ExpectedByte>,
-    pages: Vec<u32>,
 }
 
 impl CertifiedData<'_> {
-    pub(in crate::table) fn require_source(&self, image: &NativeImage) -> Result<(), EditError> {
-        if !std::ptr::eq(self.image, image) {
-            return Err(EditError::Preservation);
-        }
-
-        Ok(())
-    }
-
-    pub(in crate::table) fn require_after(&self, after: &[u8]) -> Result<(), EditError> {
-        if !std::ptr::eq(self.after, after) {
-            return Err(EditError::Preservation);
-        }
-
-        Ok(())
+    pub(in crate::table) fn phase(&self) -> &CertifiedPlacement<'_> {
+        &self.phase
     }
 
     pub(in crate::table) fn original(&self) -> &TableCheck {
         &self.original
-    }
-
-    pub(in crate::table) fn end(&self) -> u32 {
-        self.end
-    }
-
-    pub(in crate::table) fn pages(&self) -> &[u32] {
-        &self.pages
-    }
-
-    pub(in crate::table) fn edits(&self) -> impl Iterator<Item = (usize, u8, u8)> + '_ {
-        self.edits
-            .iter()
-            .map(|byte| (byte.offset, byte.before, byte.after))
     }
 
     pub(in crate::table) fn column(&self) -> usize {
@@ -133,116 +105,22 @@ pub(in crate::table::mutation) fn certify<'a>(
         metadata.require_data_page(terminal, budget, cancelled)?;
     }
 
-    verified.compare_view(data, verified.records.len(), budget, cancelled)?;
-    let replay = replay(
-        image,
-        original.schema(),
+    let phase = placement_certificate::prove(
+        placement_certificate::Operation {
+            image,
+            schema: original.schema(),
+            records: &verified.records,
+            authority: ReplayAuthority::QualifiedCandidate(&metadata),
+        },
         data,
-        &verified.records,
-        Some(&metadata),
+        after,
         budget,
         cancelled,
     )?;
 
-    budget
-        .charge_allocation(data.pages.len() as u64, size_of::<u32>() as u64)
-        .map_err(InspectError::from)?;
-    let mut seen = Vec::new();
-    seen.try_reserve_exact(data.pages.len())
-        .map_err(|_| InspectError::Allocation)?;
-    let mut added = 0;
-
-    for page in data.pages {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, (seen.len() + 2 * PAGE_BYTES) as u64)
-            .map_err(InspectError::from)?;
-        metadata.require_data_page(page.number, budget, cancelled)?;
-        if seen.contains(&page.number) || page.after.len() != PAGE_BYTES {
-            return Err(EditError::Preservation);
-        }
-        seen.push(page.number);
-
-        let start = (page.number as usize)
-            .checked_mul(PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        let end = start
-            .checked_add(PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        if page.before.is_empty() {
-            let levels = replay.data_pages.len().checked_ilog2().unwrap_or(0) as usize + 1;
-            budget
-                .charge(Resource::Steps, levels as u64)
-                .map_err(InspectError::from)?;
-            if replay.data_pages.binary_search(&page.number).is_err() {
-                return Err(EditError::Preservation);
-            }
-            added += 1;
-        } else if page.before.len() != PAGE_BYTES
-            || image.as_bytes().get(start..end) != Some(page.before.as_slice())
-        {
-            return Err(EditError::Preservation);
-        }
-
-        if after.get(start..end) != Some(page.after.as_slice()) {
-            return Err(EditError::Preservation);
-        }
-    }
-    if added != replay.data_pages.len() {
-        return Err(EditError::Preservation);
-    }
-
-    let mut metadata_pages = data.maps.metadata_pages();
-    match (
-        &replay.metadata,
-        metadata_pages.next(),
-        metadata_pages.next(),
-    ) {
-        (None, None, None) => {}
-        (Some(expected), Some((number, reference, bytes)), None) => {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, (seen.len() + 2 * PAGE_BYTES) as u64)
-                .map_err(InspectError::from)?;
-            if number != expected.number
-                || reference != expected.reference
-                || bytes != expected.bytes.as_slice()
-                || seen.contains(&number)
-            {
-                return Err(EditError::Preservation);
-            }
-            data.append.require_candidate_bitmap(
-                number,
-                original.schema().definition,
-                reference,
-                budget,
-                cancelled,
-            )?;
-            let start = (number as usize)
-                .checked_mul(PAGE_BYTES)
-                .ok_or(EditError::Preservation)?;
-            let end = start
-                .checked_add(PAGE_BYTES)
-                .ok_or(EditError::Preservation)?;
-            if after.get(start..end) != Some(expected.bytes.as_slice()) {
-                return Err(EditError::Preservation);
-            }
-        }
-        _ => return Err(EditError::Preservation),
-    }
-
-    // This framing replay now sees exact original before-pages, certified
-    // record identities/lengths, and the actual composed DATA bytes.
-    audit::pages(data, budget, cancelled)?;
-    check(budget, cancelled)?;
-
     Ok(CertifiedData {
-        image,
-        after,
+        phase,
         original,
         verified,
-        end: replay.end,
-        edits: replay.edits,
-        pages: replay.phase_pages,
     })
 }

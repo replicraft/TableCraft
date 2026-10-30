@@ -99,7 +99,7 @@ pub(in crate::table) fn qualify(
     Ok(())
 }
 
-pub(super) fn affects(
+pub(in crate::table::indexes::mutation) fn affects(
     schema: &TableSchema,
     index: &NativeIndex,
     columns: &[usize],

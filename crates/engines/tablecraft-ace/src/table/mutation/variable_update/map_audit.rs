@@ -1,6 +1,7 @@
 //! Independent placement replay derives map authority without planner masks.
 mod certified;
 pub(in crate::table::mutation) mod hint;
+pub(in crate::table) mod placement_certificate;
 pub(in crate::table::mutation) mod record;
 #[cfg(test)]
 mod tests;
@@ -43,6 +44,26 @@ pub(in crate::table::mutation) struct ExpectedByte {
     pub(in crate::table::mutation) offset: usize,
     pub(in crate::table::mutation) before: u8,
     pub(in crate::table::mutation) after: u8,
+}
+
+/// Protection and permission are independent: a complete source-role census
+/// does not authorize allocation of candidate-map storage.
+#[derive(Clone, Copy)]
+pub(in crate::table::mutation) enum ReplayAuthority<'a> {
+    Represented,
+    ProtectedRepresented(&'a Metadata),
+    QualifiedCandidate(&'a Metadata),
+}
+
+impl ReplayAuthority<'_> {
+    fn metadata(&self) -> Option<&Metadata> {
+        match self {
+            Self::Represented => None,
+            Self::ProtectedRepresented(metadata) | Self::QualifiedCandidate(metadata) => {
+                Some(metadata)
+            }
+        }
+    }
 }
 
 struct Replay {
@@ -108,7 +129,15 @@ pub(super) fn prove<R: RecordImage>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let replay = replay(image, schema, plan.view(), records, None, budget, cancelled)?;
+    let replay = replay(
+        image,
+        schema,
+        plan.view(),
+        records,
+        ReplayAuthority::Represented,
+        budget,
+        cancelled,
+    )?;
     compare(&replay.edits, plan, budget, cancelled)
 }
 
@@ -131,7 +160,7 @@ pub(in crate::table::mutation) fn prove_protected<R: RecordImage>(
         schema,
         plan.view(),
         records,
-        Some(metadata),
+        ReplayAuthority::ProtectedRepresented(metadata),
         budget,
         cancelled,
     )?;
@@ -143,7 +172,7 @@ fn replay<R: RecordImage>(
     schema: &TableSchema,
     plan: DataView<'_>,
     records: &[R],
-    metadata: Option<&Metadata>,
+    authority: ReplayAuthority<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Replay, EditError> {
@@ -151,6 +180,7 @@ fn replay<R: RecordImage>(
         return Err(EditError::Preservation);
     }
 
+    let metadata = authority.metadata();
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
@@ -179,7 +209,7 @@ fn replay<R: RecordImage>(
     let mut expected = Vec::new();
     let mut data_pages = Vec::new();
     let mut phase_pages = Vec::new();
-    let mut hint_replay = if let Some(metadata) = metadata {
+    let mut hint_replay = if let ReplayAuthority::QualifiedCandidate(metadata) = &authority {
         hint::Hint::capture(schema.definition, hint_reference, metadata, &mut reader)?
     } else {
         None

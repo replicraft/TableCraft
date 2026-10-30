@@ -84,6 +84,10 @@ impl Space {
         self
     }
 
+    pub(in crate::table::mutation) fn into_metadata(self) -> Option<Metadata> {
+        self.metadata
+    }
+
     pub(in crate::table::mutation) fn require_metadata_page(
         &self,
         number: u32,

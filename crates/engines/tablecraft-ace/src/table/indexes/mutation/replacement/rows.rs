@@ -83,7 +83,7 @@ impl<T: KeyChange + ?Sized> KeyRow for Final<'_, T> {
 
 /// Check the borrowed projection/identity inventory without adopting any staged
 /// row bytes as authority. Actual original keys still match the source tree.
-pub(super) fn validate(
+pub(in crate::table::indexes::mutation) fn validate(
     schema: &TableSchema,
     updates: &[RowKeyUpdate<'_>],
     reader: &mut Reader<'_, Cursor<&[u8]>>,

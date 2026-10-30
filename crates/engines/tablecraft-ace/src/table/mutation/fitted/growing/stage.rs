@@ -21,10 +21,33 @@ pub(super) struct Prepared {
     pub placement: Plan,
 }
 
+pub(super) enum Continuation {
+    DataOnly,
+    JointIndexes,
+}
+
 pub(super) fn prepare(
     image: &NativeImage,
     table: &str,
     groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared, EditError> {
+    prepare_with(
+        image,
+        table,
+        groups,
+        Continuation::DataOnly,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prepare_with(
+    image: &NativeImage,
+    table: &str,
+    groups: &[FittedColumnUpdates<'_>],
+    continuation: Continuation,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared, EditError> {
@@ -89,6 +112,14 @@ pub(super) fn prepare(
         budget,
         cancelled,
     )?;
+
+    match continuation {
+        Continuation::DataOnly => {}
+        Continuation::JointIndexes => {
+            let metadata = space.into_metadata().ok_or(EditError::Preservation)?;
+            placement.append.retain_source_metadata(image, metadata)?;
+        }
+    }
 
     Ok(Prepared {
         verified,

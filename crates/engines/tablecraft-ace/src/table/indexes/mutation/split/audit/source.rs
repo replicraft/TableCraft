@@ -1,6 +1,4 @@
 //! Independently bind every physical owner and its complete reachable storage.
-use super::super::super::fixed_batch::Input;
-use super::push;
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeIndex, TableCheck, TableSchema, WriteBlocker,
     format::{allocation, page::PAGE_BYTES, reader::Reader},
@@ -8,7 +6,6 @@ use crate::{
     table::{
         indexes::{
             header::IndexHeader,
-            mutation::IndexKeyUpdate,
             page::{ENTRY_START, LEAF, NODE},
         },
         long_value::maps::Declarations,
@@ -23,7 +20,6 @@ const MASK_START: usize = size_of::<IndexHeader>();
 pub(super) struct Physical<'a> {
     pub checked: &'a TableCheck,
     pub index: &'a NativeIndex,
-    pub updates: &'a [IndexKeyUpdate],
 }
 
 pub(super) struct Source<'a> {
@@ -83,33 +79,33 @@ impl Source<'_> {
 }
 
 pub(super) fn capture<'a>(
-    inputs: &[Input<'a>],
+    inputs: &[&'a TableCheck],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Source<'a>, EditError> {
     let mut tables = Vec::new();
     for input in inputs {
         reader.tick()?;
         reader.work(tables.len())?;
-        if tables.iter().any(|prior: &&Input<'_>| {
-            prior.checked.schema().definition_page() == input.checked.schema().definition_page()
+        if tables.iter().any(|prior: &&TableCheck| {
+            prior.schema().definition_page() == input.schema().definition_page()
         }) {
             return Err(EditError::Preservation);
         }
-        push(&mut tables, input, reader)?;
+        push(&mut tables, *input, reader)?;
     }
     let levels = tables.len().checked_ilog2().unwrap_or(0) as usize + 1;
     reader.work(tables.len().saturating_mul(levels))?;
-    tables.sort_unstable_by_key(|input| input.checked.schema().definition_page());
+    tables.sort_unstable_by_key(|input| input.schema().definition_page());
 
     let mut physical = Vec::new();
     let mut owners = Vec::new();
     let mut source_pages = Vec::new();
     push(&mut owners, Owner::GlobalFree, reader)?;
     for input in tables {
-        let checked = input.checked;
+        let checked = input;
         let schema = checked.schema();
         let definition = schema.definition_page();
-        super::super::allocated_source(reader, schema, checked.indexes())?;
+        super::allocated_source(reader, schema, checked.indexes())?;
         push(&mut owners, Owner::OrdinaryOwned { definition }, reader)?;
         push(&mut owners, Owner::OrdinaryCandidate { definition }, reader)?;
         for number in 0..schema.layout.physical_indexes {
@@ -181,15 +177,7 @@ pub(super) fn capture<'a>(
                 },
                 reader,
             )?;
-            push(
-                &mut physical,
-                Physical {
-                    checked,
-                    index,
-                    updates: input.updates,
-                },
-                reader,
-            )?;
+            push(&mut physical, Physical { checked, index }, reader)?;
         }
         reader.work(checked.indexes().len())?;
         if checked
@@ -282,5 +270,21 @@ fn visit(
     for child in children {
         visit(child, definition, depth + 1, reached, reader)?;
     }
+    Ok(())
+}
+
+fn push<T>(
+    values: &mut Vec<T>,
+    value: T,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader
+        .budget
+        .charge_allocation(1, size_of::<T>() as u64)
+        .map_err(InspectError::from)?;
+    values
+        .try_reserve(1)
+        .map_err(|_| InspectError::Allocation)?;
+    values.push(value);
     Ok(())
 }
