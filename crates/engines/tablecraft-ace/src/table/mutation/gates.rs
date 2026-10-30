@@ -1,6 +1,8 @@
 #[cfg(feature = "ace16-write-preview")]
 mod defaults;
 #[cfg(feature = "ace16-write-preview")]
+mod display;
+#[cfg(feature = "ace16-write-preview")]
 mod historical;
 
 use super::super::indexes::FOREIGN_INDEX;
@@ -271,6 +273,18 @@ fn before_with(
         }
         for property in group.properties() {
             check(budget, cancelled)?;
+            // These exact ACE display declarations leave stored values and
+            // physical scale unchanged; all other property gates still apply.
+            #[cfg(feature = "ace16-write-preview")]
+            if matches!(
+                image.catalog().header().format(),
+                FileFormat::Ace2016 | FileFormat::Ace2019
+            ) && display::requested(property.name())
+            {
+                display::qualify(structural.schema(), group, property, budget, cancelled)?;
+                continue;
+            }
+
             // Complete supplied values do not invoke field defaults. Qualify
             // their inert declaration without adding omission/evaluation semantics.
             #[cfg(feature = "ace16-write-preview")]

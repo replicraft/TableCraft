@@ -40,6 +40,11 @@ now shares explicit numeric conversions, eager IIf/Nz, selected Text functions
 and Abs/Int/Fix/Round between UPDATE and DELETE. Hidden retrieval/runtime calls
 and broader function semantics remain outside that capability.
 
+Qualified [passive display declarations](testing/ACE16_PASSIVE_DISPLAY_METADATA.md)
+now remain intact during ACE 16 engineering INSERT/UPDATE/DELETE. Formatting and
+numeric display places do not coerce stored values or replace physical Decimal
+precision/scale; broader metadata and normal save admission remain unfinished.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

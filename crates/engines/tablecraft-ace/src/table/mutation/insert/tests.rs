@@ -4,6 +4,7 @@ mod bitmap;
 mod child_split;
 mod decimal;
 mod decimal_index_inserts;
+mod display_metadata;
 mod empty;
 mod empty_owned_pointer;
 mod extended_datetime_inserts;
