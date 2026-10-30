@@ -43,6 +43,7 @@ impl NativeImage {
     ) -> Result<BeforeEventGuardPreparation<'_>, BeforeEventGuardError> {
         let _span = tracing::debug_span!("native.before_event.prepare").entered();
         check(budget, cancelled)?;
+        self.require_standard_capture()?;
         selection::validate(selectors, budget, cancelled)?;
         let event = original.event();
         let table = source::table(self, table_name, budget, cancelled)?;

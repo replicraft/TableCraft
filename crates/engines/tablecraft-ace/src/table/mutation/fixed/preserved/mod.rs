@@ -171,3 +171,6 @@ pub(super) fn projected(
     }
     Ok(false)
 }
+
+#[cfg(test)]
+mod larger_capture_tests;

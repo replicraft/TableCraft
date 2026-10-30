@@ -6,7 +6,7 @@ mod payloads;
 pub(crate) mod table_extra;
 
 pub use dependencies::{DependencyCoverage, ObjectDependency};
-pub use image::NativeImage;
+pub use image::{FixedUpdateImageLimits, NativeImage};
 pub use payload_data::{ObjectPayloadData, OpaquePayload};
 pub use payloads::{ObjectPayloads, PayloadPresence};
 pub use table_extra::{

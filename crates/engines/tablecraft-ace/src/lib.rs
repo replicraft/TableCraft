@@ -56,11 +56,11 @@ pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
 pub use preservation::{
     DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, DependencyCoverage,
-    MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind,
-    MacroProgramProfile, MacroProgramText, MacroProgramTextKind, MacroPropertyInventory,
-    MacroPropertyObservation, NativeImage, ObjectDependency, ObjectPayloadData, ObjectPayloads,
-    OpaquePayload, PayloadPresence, TableExtra, TableExtraCoverage, TableExtraGroup,
-    TableExtraProperty, TableMacroInventory, XmlByteSpan,
+    FixedUpdateImageLimits, MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode,
+    MacroProgramNodeKind, MacroProgramProfile, MacroProgramText, MacroProgramTextKind,
+    MacroPropertyInventory, MacroPropertyObservation, NativeImage, ObjectDependency,
+    ObjectPayloadData, ObjectPayloads, OpaquePayload, PayloadPresence, TableExtra,
+    TableExtraCoverage, TableExtraGroup, TableExtraProperty, TableMacroInventory, XmlByteSpan,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{

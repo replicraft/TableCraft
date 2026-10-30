@@ -6,9 +6,61 @@ use std::io::{Cursor, Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
+/// Explicit complete-image envelope for a fixed-update-purpose capture.
+///
+/// This is an image-retention bound, not a memory budget or native format maximum.
+/// Capture under this policy currently permits inert reads only: every mutation
+/// and normal edit plan remains refused, including on files below 64 MiB.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedUpdateImageLimits {
+    max_bytes: u64,
+}
+
+impl FixedUpdateImageLimits {
+    /// Largest explicitly admitted complete source in the current profile.
+    pub const MAX_BYTES: u64 = 80 * 1024 * 1024;
+
+    /// Validate a positive caller ceiling without changing default capture.
+    pub const fn new(max_bytes: u64) -> Result<Self, InspectError> {
+        if max_bytes == 0 || max_bytes > Self::MAX_BYTES {
+            return Err(InspectError::StructureLimit);
+        }
+        Ok(Self { max_bytes })
+    }
+
+    /// Maximum source length retained by this explicit capture.
+    pub const fn max_bytes(self) -> u64 {
+        self.max_bytes
+    }
+}
+
+impl Default for FixedUpdateImageLimits {
+    fn default() -> Self {
+        Self {
+            max_bytes: crate::limits::MAX_IMAGE_BYTES,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+enum CapturePolicy {
+    Standard,
+    FixedUpdate(FixedUpdateImageLimits),
+}
+
+impl CapturePolicy {
+    fn max_bytes(self) -> u64 {
+        match self {
+            Self::Standard => crate::limits::MAX_IMAGE_BYTES,
+            Self::FixedUpdate(limits) => limits.max_bytes(),
+        }
+    }
+}
+
 /// An immutable complete native image, retaining opaque objects and unused bytes.
-/// Complete capture is capped at 64 MiB, independently of the larger read-source
-/// envelope; caller budgets can impose stricter bounds.
+/// Default capture is capped at 64 MiB. Explicit fixed-update-purpose capture
+/// retains its own validated ceiling and currently grants no mutation capability.
+/// Both remain independent of the larger read-source envelope and caller budgets.
 ///
 /// Capture requires a stable/offline source. It does not acquire native Access
 /// locks, qualify database integrity or execute application content. There is no
@@ -17,6 +69,7 @@ use tablecraft_model::CatalogScope;
 pub struct NativeImage {
     pub(crate) bytes: Vec<u8>,
     catalog: CatalogInspection,
+    capture: CapturePolicy,
 }
 impl NativeImage {
     /// Retain every input byte before inspecting metadata from that frozen image.
@@ -29,11 +82,44 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
+        Self::capture_with_policy(source, scope, CapturePolicy::Standard, budget, cancelled)
+    }
+
+    /// Retain one complete immutable source under an explicit fixed-purpose limit.
+    ///
+    /// All bytes, catalog decoding, stable-source requirements, paid resources
+    /// and cancellation checks are the same as default capture. This policy is
+    /// retained privately, including for small inputs; it cannot authorize other
+    /// mutations by presenting a larger work budget or matching image length.
+    /// The current capture-only profile refuses every mutation and normal plan.
+    pub fn capture_for_fixed_updates<R: Read + Seek>(
+        source: &mut R,
+        scope: CatalogScope,
+        limits: FixedUpdateImageLimits,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::capture_with_policy(
+            source,
+            scope,
+            CapturePolicy::FixedUpdate(limits),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_with_policy<R: Read + Seek>(
+        source: &mut R,
+        scope: CatalogScope,
+        capture: CapturePolicy,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
         let _span = tracing::debug_span!("native.image.capture").entered();
         let header = inspect_header(source, budget, cancelled)?;
         header.read_profile()?;
         let length = u64::from(header.page_count()) * u64::from(header.page_size());
-        if length > crate::limits::MAX_IMAGE_BYTES {
+        if length > capture.max_bytes() {
             return Err(InspectError::StructureLimit);
         }
         budget.charge_allocation(length, 1)?;
@@ -60,7 +146,18 @@ impl NativeImage {
             return Err(InspectError::Malformed);
         }
         let catalog = inspect_catalog(&mut Cursor::new(&bytes), scope, budget, cancelled)?;
-        Ok(Self { bytes, catalog })
+        Ok(Self {
+            bytes,
+            catalog,
+            capture,
+        })
+    }
+
+    pub(crate) fn require_standard_capture(&self) -> Result<(), InspectError> {
+        match self.capture {
+            CapturePolicy::Standard => Ok(()),
+            CapturePolicy::FixedUpdate(_) => Err(InspectError::StructureLimit),
+        }
     }
 
     /// Complete original bytes, including bodies this engine cannot decode.
