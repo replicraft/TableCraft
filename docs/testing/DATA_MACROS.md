@@ -67,6 +67,12 @@ names-only carriers explicitly reporting zero inspected documents. Neither empty
 coverage nor a recognized envelope establishes absence, supported actions,
 required event behavior or normal save eligibility.
 
+A subsequent explicit [program-structure reader](../access/schema/NATIVE_DATA_MACRO_PROGRAM.md)
+recognizes a documented desktop structural subset and retains unfamiliar
+subtrees and argument-presence/span facts. It does not evaluate expressions,
+execute events or establish complete detection/absence. Native-original and
+transaction-safety requirements below remain unchanged.
+
 Desktop references describe [Before Change](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event),
 [Before Delete](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-delete-macro-event),
 [After Insert](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/after-insert-macro-event),

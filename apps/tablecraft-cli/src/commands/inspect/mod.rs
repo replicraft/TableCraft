@@ -31,6 +31,7 @@ pub(crate) enum Mode<'a> {
     Indexes(&'a str),
     Properties(&'a str),
     Extra(&'a str, bool),
+    MacroProgram(&'a str),
     Features(&'a str),
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
@@ -94,6 +95,9 @@ pub(crate) fn run(
         }
         Mode::Properties(name) => {
             properties::run(&mut source, name, &mut output, budget)?;
+        }
+        Mode::MacroProgram(name) => {
+            extra::run_program(&mut source, name, &mut output, budget)?;
         }
         Mode::Extra(name, macro_xml) => {
             extra::run(&mut source, name, macro_xml, &mut output, budget)?;

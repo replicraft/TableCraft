@@ -12,6 +12,11 @@ inside an otherwise supported envelope remain uninterpreted. Event strings are
 retained rather than silently mapped to executable triggers. Required table-macro
 semantics remain a prerequisite to normal ACE writes.
 
+The separate explicit [program-structure inspection](NATIVE_DATA_MACRO_PROGRAM.md)
+now retains documented desktop Statements/If/RaiseError shapes and opaque
+subtrees with original XML byte spans. Envelope-only inspection stays unchanged;
+structural coverage still supplies no execution or absence authority.
+
 ## Explicit CLI consumer
 
 ```sh

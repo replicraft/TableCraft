@@ -25,6 +25,23 @@ pub(super) fn document(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DataMacroXml, InspectError> {
+    inspect(text, false, budget, cancelled)
+}
+
+pub(super) fn program_envelopes(
+    text: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DataMacroXml, InspectError> {
+    inspect(text, true, budget, cancelled)
+}
+
+fn inspect(
+    text: &str,
+    program: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DataMacroXml, InspectError> {
     let _span = tracing::debug_span!("native.table.extra.macro_xml.inspect").entered();
     check(budget, cancelled)?;
     if text.len() > MAX_LONG_VALUE_BYTES {
@@ -70,30 +87,35 @@ pub(super) fn document(
                 names::qualified(element.name().as_ref(), budget, cancelled)?;
                 resolution_work(&reader, element.name().as_ref(), budget)?;
                 let (resolved, local) = reader.resolver().resolve_element(element.name());
+                let parent = depth.checked_sub(1).map(|index| stack[index]);
+                let in_body = matches!(parent, Some(Node::Definition | Node::Body));
                 let current_namespace = match resolved {
                     ResolveResult::Bound(value)
                         if value.as_ref() == DataMacroXmlNamespace::April2009.uri() =>
                     {
-                        DataMacroXmlNamespace::April2009
+                        Some(DataMacroXmlNamespace::April2009)
                     }
                     ResolveResult::Bound(value)
                         if value.as_ref() == DataMacroXmlNamespace::November2009.uri() =>
                     {
-                        DataMacroXmlNamespace::November2009
+                        Some(DataMacroXmlNamespace::November2009)
                     }
-                    _ => return Err(InspectError::Unsupported),
+                    ResolveResult::Unknown(_) => return Err(InspectError::Unsupported),
+                    _ => None,
                 };
-                if namespace.is_some_and(|expected| expected != current_namespace) {
-                    return Err(InspectError::Unsupported);
+                if !(program && in_body) {
+                    let current_namespace = current_namespace.ok_or(InspectError::Unsupported)?;
+                    if namespace.is_some_and(|expected| expected != current_namespace) {
+                        return Err(InspectError::Unsupported);
+                    }
+                    namespace = Some(current_namespace);
                 }
-                namespace = Some(current_namespace);
-                let parent = depth.checked_sub(1).map(|index| stack[index]);
                 let node = match (parent, local.as_ref()) {
                     (None, "DataMacros") if !root_seen => Node::Wrapper,
                     (None, "DataMacro") if !root_seen => Node::Definition,
                     (Some(Node::Wrapper), "DataMacro") => Node::Definition,
                     (Some(Node::Definition | Node::Body), name)
-                        if name != "DataMacro" && name != "DataMacros" =>
+                        if program || (name != "DataMacro" && name != "DataMacros") =>
                     {
                         Node::Body
                     }

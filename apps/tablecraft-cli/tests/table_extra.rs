@@ -1,3 +1,6 @@
+#[path = "table_extra/program.rs"]
+mod program;
+
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod base;
 #[path = "support/mod.rs"]

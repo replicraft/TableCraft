@@ -55,9 +55,11 @@ pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};
 pub use preservation::{
-    DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace, DependencyCoverage, NativeImage,
-    ObjectDependency, ObjectPayloadData, ObjectPayloads, OpaquePayload, PayloadPresence,
-    TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty,
+    DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, DependencyCoverage,
+    MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind,
+    MacroProgramProfile, NativeImage, ObjectDependency, ObjectPayloadData, ObjectPayloads,
+    OpaquePayload, PayloadPresence, TableExtra, TableExtraCoverage, TableExtraGroup,
+    TableExtraProperty, XmlByteSpan,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{

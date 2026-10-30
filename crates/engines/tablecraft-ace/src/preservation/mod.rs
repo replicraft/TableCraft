@@ -10,8 +10,9 @@ pub use image::NativeImage;
 pub use payload_data::{ObjectPayloadData, OpaquePayload};
 pub use payloads::{ObjectPayloads, PayloadPresence};
 pub use table_extra::{
-    DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace, TableExtra, TableExtraCoverage,
-    TableExtraGroup, TableExtraProperty,
+    DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, MacroProgramCoverage,
+    MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind, MacroProgramProfile,
+    TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty, XmlByteSpan,
 };
 
 pub(crate) const COPY_CHUNK_BYTES: usize = 64 * 1024;

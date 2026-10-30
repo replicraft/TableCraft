@@ -46,8 +46,11 @@ pub(crate) struct Args {
     )]
     extra: bool,
     /// Explicitly inspect stored data-macro XML envelopes; does not execute actions.
-    #[arg(long, requires = "extra")]
+    #[arg(long, requires = "extra", conflicts_with = "macro_program")]
     macro_xml: bool,
+    /// Explicitly inspect documented desktop macro structure; never executes it.
+    #[arg(long, requires = "extra", conflicts_with = "macro_xml")]
+    macro_program: bool,
     /// Inspect inert calculated, complex and presentation field declarations.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
     features: bool,
@@ -93,6 +96,7 @@ impl Args {
             properties,
             extra,
             macro_xml,
+            macro_program,
             features,
             complex,
             stored_calculation,
@@ -107,7 +111,9 @@ impl Args {
         } else if relationships {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
-            if extra {
+            if extra && macro_program {
+                Mode::MacroProgram(name)
+            } else if extra {
                 Mode::Extra(name, macro_xml)
             } else if let Some(column) = attachments.as_deref() {
                 Mode::Attachments(name, column)

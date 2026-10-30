@@ -1,6 +1,7 @@
 mod decode;
 mod fixture;
 mod inspect;
+mod program_sources;
 
 use tablecraft_core::limits::ResourceBudget;
 

@@ -1,0 +1,120 @@
+# Inert data-macro program structure
+
+`TableExtraProperty::inspect_macro_program` inspects an explicitly selected
+structural profile without evaluating expressions or executing actions. The
+initial `MacroProgramProfile::DocumentedDesktop` recognizes Statements,
+ConditionalBlock/If/Condition and the documented desktop RaiseError argument
+shape. This is an inspection capability, not macro execution, complete semantic
+detection, an absence certificate or a normal-write permit.
+
+## Explicit consumer
+
+```sh
+tablecraft inspect example.accdb --table Orders --extra --macro-program
+```
+
+The flag requires `--extra` and `--table`, and conflicts with `--macro-xml`.
+Framing-only Extra and the existing XML-envelope mode retain their behavior.
+The new report includes envelope identities, structural coverage, node/parent
+indices, opaque diagnostics and source spans. It prints no condition, argument or
+raw XML body text. True lexical/resource failures leave buffered stdout
+unpublished, including when a later property fails after an earlier valid one.
+
+Names-only bags and empty decoded groups report no program documents inspected,
+explicitly without certifying absence. Missing, NULL, empty or opaque Extra still
+refuses the selected decoder. No stored content opens a resource or invokes a
+provider.
+
+## Selected profile and opaque structure
+
+The caller selects the documented desktop profile; it is not inferred from the
+file selector, property name, numeric group, Event string or namespace alone.
+The [existing namespace families](NATIVE_DATA_MACRO_XML.md) remain explicit.
+Descendant prefixes are resolved by namespace URI. Equivalent aliases work;
+foreign/rebound elements and qualified attributes stay opaque even when their
+local names resemble known structures.
+
+Microsoft's desktop RaiseError contract requires an Error Number and permits an
+optional Description. Its BeforeChange XML spells those arguments Number and
+Description. This profile checks those element shapes and cardinalities only.
+A present-empty element differs from an absent element. No cardinality result
+establishes a Long, Boolean, nonempty expression, field binding or execution
+result. [Desktop RaiseError](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/raiseerror-macro-action),
+[BeforeChange XML](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event)
+
+Missing, repeated or unfamiliar arguments retain an opaque action rather than
+selecting a first/last value or declaring every such document malformed XML.
+Unfamiliar actions, attributes, nesting and unsupported conditional branches also
+retain whole opaque subtrees with diagnostics. Empty Statements remains an
+explicit macro envelope; it does not mean the table has no macros. Event/name
+facts are retained without selecting executable event semantics.
+
+Services AXL2 RaiseError lists only Description, so that reference does not define
+the desktop argument profile. SetField stays opaque: the desktop BeforeChange
+example uses it directly, while generic action and Services documentation impose
+CreateRecord/EditRecord context. This implementation does not invent one
+universal execution rule. [Services RaiseError](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-axl2/212dd877-a6f7-45e1-9f33-2d7a33ce5e5d),
+[custom web app RaiseError](https://learn.microsoft.com/en-us/office/client-developer/access/raiseerror-macro-action-access-custom-web-app),
+[SetField context](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/setfield-macro-action)
+
+## Exact source and bounds
+
+The result borrows its original property owner. Native property bytes remain
+available separately, and the containing TableExtra retains the complete outer
+LvExtra payload. Nothing is reconstructed from the recognized nodes.
+
+`XmlByteSpan` uses the exact original **decoded XML UTF-8 input buffer**, including
+any leading BOM. It is not a UTF-16 property, compressed/assembled LvExtra, LVAL
+page or database-file offset. Whole elements and raw inner-XML contents retain
+separate ranges. Entity/CDATA contents are not evaluated or silently substituted
+into the coordinate system. A present-empty range has equal start/end offsets;
+a missing optional element is None.
+
+The existing lexical reader remains the XML name, declaration, namespace,
+character and entity safety owner. Program inspection first completes that
+validation, then builds a separately paid bounded source-position arena from the
+same immutable text. Unknown subtrees still undergo lexical checks. DTDs, custom
+entities, processing instructions, unbound prefixes and malformed XML refuse
+without external resolution. The envelope-only path retains its own strict
+namespace behavior.
+
+Limits are 2 MiB XML input, depth 128, 64 attributes per element, 128 namespace
+bindings and 1,024 definitions. Program inspection additionally bounds staging
+at 16,384 XML elements, retained output at 4,096 nodes, and known-namespace Action
+containers at 64 direct child elements, including unknown actions. Allocations
+are fallible and charged before reservation. Parsing/traversal and final
+publication check work and cancellation. The property decoder consumes no row
+budget; native source capture retains its separate row/read limits.
+
+## Observed verification
+
+The source gate passed 25 independently authored native MR2/property/XML carriers
+and 42 literal node spans before program API execution. They cover both observed
+namespaces, prefixes/rebinding, BOM and multibyte/CDATA input, nested If,
+present-empty/missing/repeated arguments, untyped contents, opaque nodes and
+lexical errors. No third-party example program was copied into these fixtures.
+
+The first native API target passed all 13 functions: five program controls and
+eight existing envelope regressions. The broader table-Extra target passed 23
+functions; strict ACE all-target/all-feature Clippy and a minimal ACE build pass.
+Budget/ceiling refusals, original-byte retention, and early/measured terminal
+cancellation return no partial AST. All frozen structures and spans are unchanged.
+
+The CLI source gate then passed 50 complete carriers across both ACE16 layouts,
+before consumer API calls. Its first API invocation passed three functions and
+failed one test helper: the helper assumed blank TSV section separators and
+mistakenly included following summary rows. The node rows already matched.
+Only the test reader/imports changed, using the existing quoted-TSV CSV parser
+and adding a quoted-tab/newline control; decoder, consumer and goldens stayed
+unchanged. The corrected target passes all five functions, including the full
+50-carrier matrix. Those calls produce 38 structural reports and 12 atomic
+refusals. Broader CLI checks pass 37 unit and 37 selected integration functions;
+strict CLI all-target/all-feature Clippy passes on its first invocation.
+
+Current tests do not qualify macro execution, old/new/IsInsert/Updated binding,
+transaction effects/rollback, complete native storage detection, native ACE16
+absence, or Microsoft Access save/reopen. These remain required work under
+[data-macro acceptance](../../testing/DATA_MACROS.md). The separate
+[historical envelope proof](../../testing/ace16_data_macro_xml/README.md) retains
+its original consumer/source witnesses; it is not current program qualification.
+See the [focused result](../../testing/results/data-macro-program-inspection-2026-10-30.json).

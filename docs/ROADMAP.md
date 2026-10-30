@@ -92,6 +92,13 @@ failures. Fixed V1 native integration is unchanged. This supplies a storage
 capability for later allocating native plans; engineering candidates remain
 non-journalable, and native Access/power-loss qualification remains open.
 
+Explicit [data-macro program inspection](access/schema/NATIVE_DATA_MACRO_PROGRAM.md)
+now retains the documented Statements/If/RaiseError structure, unevaluated source
+ranges and opaque unknown content. Native checks cover 25 XML sources and 42
+literal node ranges; the explicit CLI consumer covers 50 native carriers.
+This advances the required macro work without supplying execution, qualified
+absence or normal native-save permission.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.
