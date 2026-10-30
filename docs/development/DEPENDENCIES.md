@@ -1305,3 +1305,25 @@ observations rather than native conformance findings.
 The engineering testkit consumes workspace `tablecraft-core` for the actual
 shared literal-row `Value` conversion used by ACE, Access and CLI fixture
 consumers. It retains independent raw bytes and no engine dependency.
+
+
+## Explicit required fresh-copy namespace durability
+
+The optional `tablecraft-io/fresh-publication` feature directly consumes the
+already locked/reviewed rustix 1.1.5 on Unix (`std`, `fs`, `process`, defaults
+disabled). Its working consumer uses descriptor-relative directory/file creation,
+hard-link publication, identity checks and owned cleanup; `process` supplies the
+actual effective-user ownership check. Workspace registry ownership remains at
+the root. Existing getrandom 0.4.3 supplies bounded random staging components;
+no custom entropy generator or new runtime is introduced. Existing tempfile
+3.27.0 is also an IO development dependency for isolated filesystem tests.
+
+Required durability is explicit and Unix-only in this implementation. Windows
+refuses it before output effects; existing default publication is unaffected.
+These dependencies add no native database admission or macro/save authority.
+The CLI enables this feature for its explicit `--durable-output` consumers;
+default publication retains its existing path. The first macOS all-feature IO
+library check, corrected ten focused publication functions, full IO49-function
+suite and minimal build passed. Final IO/Access/CLI all-target/all-feature strict
+checks passed after a test-only function-pointer type alias correction. No Windows
+runtime or hardware power-loss qualification is claimed.

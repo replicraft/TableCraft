@@ -107,3 +107,63 @@ header revalidation now use the same bounded End(0) helper. Native page reads an
 the existing writer already use the shared absolute I/O entry points. Generic
 checkpoint ownership remains in I/O; Jet/ACE page geometry, encryption, locking,
 constraints and transaction qualification remain in their owning layers.
+
+
+## Explicit required fresh-copy publication
+
+The optional `fresh-publication` feature adds
+`publication::RequiredOutput::capture` and its consuming `publish` operation.
+It is a generic fresh-output protocol, not an image journal or native-save
+permission. The caller opts in; the existing host publisher remains unchanged.
+The first macOS all-feature library check and initial eight focused publication
+functions passed. Static review then corrected name-buffer allocation accounting
+and reserved-final staging-name handling; all ten focused functions passed with
+those controls. The final full IO suite passed 49 functions, the IO minimal build
+passed, and all-target/all-feature strict checks for IO, Access and CLI passed.
+The 20 pre-implementation fault-trace literals are design expectations, distinct
+from the ten executed focused test functions.
+
+The Unix implementation captures the actual parent directory, preflights its
+barrier, creates a private random staging directory, writes and synchronizes a
+regular payload, then creates a no-clobber final hard link relative to the held
+parent. Cleanup addresses only the operation's own staging entries. A successful
+receipt confirms the barrier on that captured directory, subject to the
+filesystem/device honoring it. Retargeting the original textual path does not
+redirect publication to the replacement directory. Callers needing a stable
+textual destination must separately maintain that namespace. Callers must also
+prevent concurrent replacement of private staging entries by any actor able to
+change those entries, including writers to a shared non-sticky parent. Mode0700
+protects the staging contents but does not prevent such parent-entry changes;
+identity checks followed by cleanup do not provide atomic protection against that
+excluded race. Concurrent creation of the final name remains safely refused.
+
+Payload bytes are charged once by IO. Cleanup work is reserved before staging;
+terminal publication/barrier work is reserved before visibility. Known successful
+publication always attempts the parent barrier even after cleanup failure, with
+no later cancellation or shared-budget rejection. An unknown publication-call
+outcome instead stops, retains possible staging entries and reports
+`VisibilityUncertain` without another namespace callback. No failure authorizes
+automatic retry or deletion of the final entry. `NotPublished`,
+`PublishedUnconfirmed` and `PublishedCleanupFailure` distinguish the other
+visibility/barrier outcomes; failed cleanup means a temporary *may* remain.
+Blocking filesystem callbacks retain their own timeout responsibilities.
+
+Required Windows durability currently returns `UnsupportedDurability` before
+staging. Directory handles and file-content synchronization alone are not claimed
+to establish a Windows namespace barrier. The documented
+[MoveFileExW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw)
+WRITE_THROUGH behavior is not substituted for this descriptor-relative Unix
+protocol. Existing cross-platform content-sync publication remains available.
+On Unix, the separate file/directory barrier distinction follows
+[fsync](https://man7.org/linux/man-pages/man2/fsync.2.html).
+
+
+The focused publication tests exercise sanitized pre-publication faults,
+visibility-uncertain stop behavior, post-publication cleanup/barrier failures,
+pre-reserved cleanup/terminal pools, final cancellation, actual no-clobber writes,
+parent-path retargeting, invalid raw leaf spellings, and exact/one-below work and
+payload pools. These are injected and local filesystem observations, not a
+power-loss qualification of the filesystem/device or another operating system.
+The first strict check found only a test-only function-pointer type-complexity
+lint, corrected by a named alias without behavior or trace changes.
+See the [observed IO result](../testing/results/io-required-fresh-publication-2026-10-30.json).
