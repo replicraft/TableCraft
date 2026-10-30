@@ -1,0 +1,274 @@
+{
+  "date": "2026-10-30",
+  "feature": "Passive Format and numeric DecimalPlaces metadata in ACE16 engineering writes",
+  "checks": {
+    "engine_source_first": {
+      "exit_code": 0,
+      "functions": 3
+    },
+    "first_engine_API_build": {
+      "exit_code": 101,
+      "tests_run": 0
+    },
+    "engine_API_after_assertion_correction": {
+      "exit_code": 0,
+      "functions": 10,
+      "API_functions": 7
+    },
+    "engine_focused_after_import_style_corrections": {
+      "exit_code": 0,
+      "functions": 10
+    },
+    "insert_regression_before_equivalent_import_style_cleanup": {
+      "exit_code": 0,
+      "functions": 306
+    },
+    "shared_regression_before_equivalent_import_style_cleanup": {
+      "exit_code": 0,
+      "functions": 43,
+      "targets": 5
+    },
+    "CLI_sources_after_module_path_correction": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "CLI_API_first_executed": {
+      "exit_code": 0,
+      "functions": 4,
+      "actual_commands_and_whole_image_comparisons": 3
+    },
+    "CLI_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 33
+    },
+    "strict_ACE_CLI_after_lint_corrections": {
+      "exit_code": 0
+    },
+    "minimal_ACE_Access_first": {
+      "exit_code": 0
+    },
+    "scoped_formatting": {
+      "exit_code": 0
+    }
+  },
+  "contract": "ACE2016/2019 engineering operations only. Actual column scope and qualified flags; Format exact native Text on qualified numeric/Boolean/ShortText/legacyDate fields, numeric DecimalPlaces exact Byte0..15/255Auto. Preserve property and stored record bytes without rendering or rounding; physical Decimal precision/scale unchanged. ExtendedDateTime precision semantics, normalJet4, NewValues and other properties remain closed.",
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 13721,
+      "sha256": "62e991223654bcd0605774ab09f5b07213a12312a908a1a92595dd5bd6566a59"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates/display.rs",
+      "bytes": 2996,
+      "sha256": "c31c965bad46ba539f394e4766872ebf63015c5fa37976f6f4c656a8f2d7d48f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "bytes": 925,
+      "sha256": "6bad7da2099c636f35576de1c302db574e8de4ea8a5ebc3931f2506e1440b708"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts.rs",
+      "bytes": 13406,
+      "sha256": "efa9f78feaa9ca6c01b6da6fed7efda8688101b1f170cbadd45b0e1db6b3656b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/passive_defaults.rs",
+      "bytes": 5869,
+      "sha256": "be2c4121937aeb5cc9f1d103e11a427e620a0f72cea5655f681d04a2f95b9ca9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/display_metadata.rs",
+      "bytes": 10002,
+      "sha256": "2438218754605194db99aa0b9864936583f9ca5bf40d0430ce3e75e0aecaed0f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/display_metadata/api.rs",
+      "bytes": 5855,
+      "sha256": "cbd1e8d08ef62381bfe78e30d182f40a5884f1261d7d01c5e447cedb2a8da184"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/display_metadata.rs",
+      "bytes": 2803,
+      "sha256": "feafbc52eeb91bb894fe698126232a485cd97700a092f3dc68668cdfae84ab2b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/display_metadata/api.rs",
+      "bytes": 1363,
+      "sha256": "b135d2ad2bf0773ab388e6d73f9d4984b2e47c117b96bb50d5536c9aa9ff0d1f"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts.rs",
+      "bytes": 7426,
+      "sha256": "9a7424878b6e93bacb8053176388ac6e5488bca93c32080bf0a58807449b1973"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/display_metadata.rs",
+      "bytes": 1570,
+      "sha256": "78bd04f604725f746bd0165eb86c606a97abbfebe61d708b59415ffe6bc30251"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/display_metadata/api.rs",
+      "bytes": 1066,
+      "sha256": "c65a93d9ac59649bf20da60dbf967411903e91f7880349682c1853af65f4359c"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates.rs",
+      "bytes": 11277,
+      "sha256": "d16d4338bff99ea59b10901f24fee8904e81c3ba089b2f58e2f1406cef70c5c8"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates/display_metadata.rs",
+      "bytes": 3845,
+      "sha256": "67bb38847750fa672c98f017c39b0f7d1cebca8dd77b9501d543a82af532d15e"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates/display_metadata/api.rs",
+      "bytes": 1788,
+      "sha256": "7d122de2ea796a86850fb09d04c127fdcf7b37371d59f82be4ed8f741156ef9d"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/PRIMARY_REVIEW.json",
+      "bytes": 2982,
+      "sha256": "2e9a929b7980a362400365064cc47b1757d703c7815d41d371be85e741c36b22"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/source-registered-freeze.json",
+      "bytes": 1340,
+      "sha256": "7de788eb145ad994e0494963bd4918489b741aa46006bed376932dbc653fbbfd"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/source-first-root.log",
+      "bytes": 821,
+      "sha256": "8f158377f14d9e33365279cb1b014c80e623bd364b322e1e12a8200211ed8a83"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/pre-api-freeze.json",
+      "bytes": 2718,
+      "sha256": "2e125778da84e1fdce66eb4e799cf2734070ad65b7aa8b4a81c72de6b8ae36ed"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/api-first-root.log",
+      "bytes": 806,
+      "sha256": "1c2e531c55a7c51128af3da0c8f397f7268f0a0bea9f41ef4b17927392aedd1f"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/accessor-correction-freeze.json",
+      "bytes": 2883,
+      "sha256": "c82cfb73fe6ce07e31ced6f1a762e34fb28c7d930a9b3d5cb2d3cec357989627"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/api-second-root.log",
+      "bytes": 1816,
+      "sha256": "001493552c4390112931ab4ccdb8ea45f6152c7b7703b50fd4f5f9b2fca8d66b"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/insert-regression-first-root.log",
+      "bytes": 42951,
+      "sha256": "12daa0f864d586ec825a815979b1f96de93b0a3d212aac2b42733977df996c4f"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/shared-consumers-first-root.log",
+      "bytes": 5199,
+      "sha256": "95e4db96b2847fce4d59cc4f6f6d23aa85503101a1f2a9c95d78abf4036e669d"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/clippy-first-root.log",
+      "bytes": 1368,
+      "sha256": "df63c8196f71fc52ea1de7d81469598d71f069aabd8857b145d050541ce1fb5f"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/clippy-import-correction-freeze.json",
+      "bytes": 3762,
+      "sha256": "a335a47f3de5d681fcccaaed1e242b80670c4ade6da21de6976a00ef48031f3e"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/semantic-constants-freeze.json",
+      "bytes": 2864,
+      "sha256": "7086cd0d0ce216d4d6032fcce46fd49df3c657f07e34e743fb8043cfb2eb0c5b"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/api-after-lint-root.log",
+      "bytes": 1817,
+      "sha256": "2c0b19ca1f21f0a6724845eac38a0dd4cdfaa4fb186bebd145e90c886596e794"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/format-first-root.log",
+      "bytes": 432,
+      "sha256": "690617c1b5847da2b14ebe62867ab4c5de865cc6c9d420c69f88ec497c6c598d"
+    },
+    {
+      "path": ".cache/ace16-passive-display-metadata-next-20261029/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/source-registered-freeze.json",
+      "bytes": 1336,
+      "sha256": "9da644c0df0ee618f5e5be33938d37d9b65dcec7af53b5274ad081cdf51307b4"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/source-first-root.log",
+      "bytes": 1581,
+      "sha256": "b740156949d72573ffe1a01773b9b15ac978fbd54a6a26196deef14ab8ba42a8"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/integration-path-correction-freeze.json",
+      "bytes": 1896,
+      "sha256": "99772ca005203cb7efc2d9068083ae7aab8ea268a7959235a0e3a178ff6dc6c7"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/source-second-root.log",
+      "bytes": 1049,
+      "sha256": "795fe229ed0143308ddd184d5c8f2cf5334d4c2e11c27a7a99a3d1a7e63c2a63"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/pre-api-freeze.json",
+      "bytes": 1912,
+      "sha256": "9fe15241f72e01abd1338d3c9a6a382aa5b004ea6e1b71df0b048e4be603e9ba"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/api-first-root.log",
+      "bytes": 1045,
+      "sha256": "b0c8e29b0fbabd4f417c33f967e6bfde3e188f2ef8e60f7d0ef1ae95855c03d1"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/regression-first-root.log",
+      "bytes": 7794,
+      "sha256": "2cda118f98e0305639d9495d05cbd6dc5b37b00fe17149fd757b75fbd8c45425"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/clippy-after-lint-root.log",
+      "bytes": 1129,
+      "sha256": "f656826542c8ee4720713bf8a64d3b5c9858b70e3f51203fc79bafe834dfa9a5"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/clippy-source-loop-corrected-root.log",
+      "bytes": 184,
+      "sha256": "612f4f22476546f3a3aa54d51fbcd5ead884088d5934e92fc2ddf1ade1a10465"
+    },
+    {
+      "path": ".cache/ace16-passive-display-cli-next-20261030/minimal-first-root.log",
+      "bytes": 301,
+      "sha256": "0d6b7b220871ba586c3ba8a5d383b29c02c1f5220c8df1372b698c1c568dbc20"
+    }
+  ],
+  "retained_observations": [
+    "Initial API compilation failed before tests on an UPDATE accessor used for DELETE; assertion changed to deleted_rows only.",
+    "First strict run found a duplicate fixture module and unnecessary clone; import actual existing owner with narrow visibility and use slice::from_ref. No source/golden construction changes.",
+    "Named production DecimalPlaces constants and imported InspectError before final focused checks; values and control flow unchanged.",
+    "First CLI source build failed before tests because integration-root modules needed explicit paths. Path attributes only changed, both parent predecessors preserved.",
+    "Combined strict retry found an unrelated mixed-source range loop. Equivalent enumeration correction remains separate mixed-source work; corrected strict passes.",
+    "Final formatter removed terminal blank lines from two CLI source owners after checks; behavior and golden construction unchanged."
+  ],
+  "native_Access_qualification": false,
+  "limitations": [
+    "No metadata rendering, default filling or implicit carrier/scale conversion",
+    "Memo/ExtendedDateTime Format and other scopes/carriers remain unqualified",
+    "Normal ACE saves, required data macros, journal promotion and native Access comparison remain separate"
+  ]
+}

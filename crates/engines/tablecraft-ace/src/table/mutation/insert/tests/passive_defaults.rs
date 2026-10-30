@@ -1,6 +1,6 @@
 //! Complete explicit requests retain inert default declarations byte for byte.
 mod api;
-mod model;
+pub(super) mod model;
 
 use super::{
     incrementing_autonumber::model as generated,

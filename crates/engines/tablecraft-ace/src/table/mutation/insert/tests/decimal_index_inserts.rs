@@ -1,4 +1,5 @@
 //! NUMERIC secondary membership is independent of its ordinary row storage.
+mod display_metadata;
 mod model;
 mod two_decimal;
 

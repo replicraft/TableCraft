@@ -1,4 +1,7 @@
 //! SQL-selected user workflows over the independent engineering source owner.
+#[path = "query_preview_updates/display_metadata.rs"]
+mod display_metadata;
+
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]

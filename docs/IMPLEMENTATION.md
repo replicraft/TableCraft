@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Passive display metadata on ACE 16 writes
+
+Engineering writes now preserve qualified field Format and numeric DecimalPlaces
+declarations without rendering or rounding stored values. Exact property scope,
+carriers, flags and enum values are checked; Extended Date/Time precision metadata,
+unknown properties and normal Jet 4 admission remain separate. The
+[display-metadata contract](testing/ACE16_PASSIVE_DISPLAY_METADATA.md) includes
+scale-28 Decimal, generated fields, text updates and deletion controls.
+
+All ten focused engine functions and three exact CLI copies pass. The round also
+passes 306 INSERT functions, 43 shared native tests, 31 CLI unit and 33 integration
+tests, strict ACE/CLI Clippy and minimal ACE/Access builds. The
+[record](testing/results/ace16-passive-display-metadata-2026-10-30.json) retains
+test-only compile/lint corrections. No stored value is formatted implicitly and
+normal ACE save/data-macro/native Access qualification remains open.
+
 ## Deterministic UPDATE and DELETE expressions
 
 The [closed mutation function profile](query/MUTATION_SCALAR_FUNCTIONS.md) now
