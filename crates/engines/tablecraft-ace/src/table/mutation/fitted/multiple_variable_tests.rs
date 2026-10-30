@@ -1,5 +1,8 @@
 //! Source-only qualification before any multi-variable record producer.
+mod api;
 mod model;
+mod third;
+mod third_model;
 
 use super::growing::joint_split_tests::model as frames;
 use crate::{

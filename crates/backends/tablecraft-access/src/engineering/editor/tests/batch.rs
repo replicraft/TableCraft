@@ -109,7 +109,7 @@ fn one_finish_merges_shared_mask_and_both_physical_alias_groups() {
 }
 
 #[test]
-fn duplicate_targets_and_multiple_variable_columns_refuse_without_a_candidate() {
+fn duplicate_targets_and_multiple_lval_columns_refuse_without_a_candidate() {
     let example = case(5, Recipe::Exchange);
     for text in [
         "UPDATE Items AS i SET i.Score=1, score=2 WHERE FALSE",
@@ -129,29 +129,22 @@ fn duplicate_targets_and_multiple_variable_columns_refuse_without_a_candidate() 
         );
     }
     let variable = super::source::source();
-    for mode in [
-        ScalarUpdateMode::Variable {
-            index_growth: false,
-        },
-        ScalarUpdateMode::LongValue,
-    ] {
-        for filter in ["", " WHERE FALSE"] {
-            let text = format!("UPDATE Items SET Label='new', Other='other'{filter}");
-            let query = parse_query(&text, ParseLimits::default()).unwrap();
-            assert!(matches!(
-                sql::preview_batch_update(
-                    image(&variable),
-                    query.query(),
-                    mode,
-                    &mut budget(),
-                    None,
-                    &|| false,
-                ),
-                Err(tablecraft_query::UpdateError::Backend(
-                    crate::NativeEditError::Unsupported
-                ))
-            ));
-        }
+    for filter in ["", " WHERE FALSE"] {
+        let text = format!("UPDATE Items SET Label='new', Other='other'{filter}");
+        let query = parse_query(&text, ParseLimits::default()).unwrap();
+        assert!(matches!(
+            sql::preview_batch_update(
+                image(&variable),
+                query.query(),
+                ScalarUpdateMode::LongValue,
+                &mut budget(),
+                None,
+                &|| false,
+            ),
+            Err(tablecraft_query::UpdateError::Backend(
+                crate::NativeEditError::Unsupported
+            ))
+        ));
     }
 }
 

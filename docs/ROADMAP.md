@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
+in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.
+Single-column Memo/OLE keeps its separate explicit mode; mixed LVAL operations
+and general native saves remain unfinished.
+
 The [advanced-field preservation slice](testing/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
 now passes authored-source Boolean copy edits through the engine, adapter and
 CLI. The donated real database still refuses its property profile; qualifying

@@ -31,9 +31,9 @@ native Access collation equivalence is inferred.
 ## Selection and assignment
 
 The current profile permits one local table, an optional alias and one or more
-SET assignments. Default metadata routing supports fixed fields together with
-at most one Short Text/Binary field. Explicit `--variable` can also combine one
-such field with fixed siblings under its joint DATA-placement profile. Explicit
+SET assignments. Default metadata routing supports multiple Short Text/Binary
+fields with optional fixed siblings in one fitted row. Explicit `--variable`
+selects their joint DATA-placement profile. Explicit
 LVAL retains exactly one target column. It reuses the existing pure scalar expression/WHERE profile:
 field references, literals, unary/binary expressions, BETWEEN, IN lists and
 three-valued filtering. The closed [deterministic mutation function set](../../query/MUTATION_SCALAR_FUNCTIONS.md)
@@ -78,20 +78,20 @@ The default resolves the complete target set from the original snapshot and
 selects one service before native planning. All-fixed targets use existing fitting
 fixed/batch maintenance and retain its history policy. One Text/Binary target
 uses the existing variable service without INDEX growth; its qualified DATA
-placement may allocate pages. Fixed targets with exactly one Text/Binary target
-use [joint fitted-record maintenance](../../testing/ACE16_FITTED_MIXED_UPDATES.md):
+placement may allocate pages. Multiple variable targets, or variable targets
+with fixed siblings, use [joint fitted-record maintenance](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md):
 one original/final row projection, existing record capacity and retained INDEX
 topology. There is no failed-preview retry or intermediate candidate.
 
 Shared Text/Binary metadata selects a route; the engine still certifies actual
 Short Text/Binary storage. It does not silently route Memo/OLE to the long-value
-service. More than one variable target and mixed LVAL changes remain unsupported,
-including when WHERE selects no rows. This routing `Default` is unrelated to
+service. Mixed LVAL changes remain unsupported, including when WHERE selects no
+rows. This routing `Default` is unrelated to
 omitted INSERT fields or native `DefaultValue` evaluation.
 
 `--index-growth` explicitly selects existing Int32 fixed INDEX allocation.
 `--variable` retains its existing service for one Short Text/Binary target.
-With fixed siblings it selects [joint DATA placement](../../testing/ACE16_MIXED_GROWING_UPDATES.md)
+With multiple variable targets or fixed siblings it selects [joint DATA placement](../../testing/ACE16_MIXED_GROWING_UPDATES.md)
 once, allowing a hidden target on the original or another owned DATA page, or
 qualified represented EOF allocation. INDEX owners must still fit. For example:
 
@@ -100,14 +100,13 @@ tablecraft query preview-update "UPDATE Contacts SET Age=40, Name='Alice' WHERE 
   --database contacts.accdb --output edited.accdb --variable
 ```
 
-With fixed siblings, `--variable --index-growth` instead selects one
-[joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md).
+With multiple variable targets or fixed siblings, `--variable --index-growth`
+instead selects one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md).
 The engine uses one original source and one allocation ledger for DATA placement
 and every affected physical INDEX owner. It derives each final tuple jointly;
 logical aliases do not allocate independent trees. A single-variable statement
 retains its existing selected INDEX-growth service. Variable mode still refuses
-fixed-only groups or more than one variable target, including zero matches. Native Short
-Text/Binary qualification remains inside the selected engine service; Memo/OLE
+fixed-only groups, including zero matches. Native Short Text/Binary qualification remains inside the selected engine service; Memo/OLE
 is never inferred from shared Text/Binary carriers. Default routing stays fitted
 for joint fixed/variable updates; it does not retry with DATA growth.
 `--long-value` selects one ordinary Memo/OLE column. `--cascade-updates` selects qualified fixed update
@@ -235,7 +234,8 @@ preservation, fitted-default refusal and mixed INDEX-growth/multiple-variable
 no-output refusals. At that checkpoint, the zero-match mixed INDEX-growth adapter control used a
 zero-Bytes planning budget and received the then-current mode refusal. The joint
 INDEX continuation below replaces that obsolete blanket refusal with a paid
-request-allocation control. The targeted old/new native fixture regression passed all
+request-allocation control. The later [multiple-variable extension](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
+also replaces the historical multiple-variable refusal. The targeted old/new native fixture regression passed all
 16 functions, the Access library passed 55, and CLI regressions passed 31 unit
 plus 36 integration functions (six DELETE, two historical, nine INSERT, fifteen
 UPDATE and four normal Jet 4). Strict ACE/Access/CLI all-target/all-feature checks

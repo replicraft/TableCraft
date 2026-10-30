@@ -72,7 +72,7 @@ impl rows::RowAssignment for Ordinal {
 pub(super) struct Bound {
     pub columns: Vec<usize>,
     pub rows: Vec<Ordinal>,
-    pub variable_group: usize,
+    pub variable_groups: Vec<usize>,
 }
 
 pub(super) fn bind(
@@ -91,8 +91,13 @@ pub(super) fn bind(
     columns
         .try_reserve_exact(groups.len())
         .map_err(|_| InspectError::Allocation)?;
-    let mut variable_group = None;
-    let mut fixed_groups = 0;
+    budget
+        .charge_allocation(groups.len() as u64, size_of::<usize>() as u64)
+        .map_err(InspectError::from)?;
+    let mut variable_groups = Vec::new();
+    variable_groups
+        .try_reserve_exact(groups.len())
+        .map_err(|_| InspectError::Allocation)?;
     let mut count = 0_usize;
 
     for (group_number, group) in groups.iter().enumerate() {
@@ -126,12 +131,9 @@ pub(super) fn bind(
                     .map_err(InspectError::from)?;
                 field::fixed_column(schema, selected.name(), kind, width)?;
                 rows::unique(updates, budget, cancelled)?;
-                fixed_groups += 1;
             }
             FittedColumnUpdates::Variable { updates, .. } => {
-                if variable_group.replace(group_number).is_some() {
-                    return Err(EditError::Unsupported(WriteBlocker::Column));
-                }
+                variable_groups.push(group_number);
                 super::super::slot::storage::qualify(selected)?;
                 rows::unique(updates, budget, cancelled)?;
             }
@@ -155,10 +157,9 @@ pub(super) fn bind(
         }
         columns.push(position);
     }
-    if fixed_groups == 0 {
+    if variable_groups.is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
-    let variable_group = variable_group.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
 
     budget
         .charge_allocation(count as u64, size_of::<Ordinal>() as u64)
@@ -185,7 +186,7 @@ pub(super) fn bind(
     Ok(Bound {
         columns,
         rows: selected,
-        variable_group,
+        variable_groups,
     })
 }
 

@@ -4,6 +4,7 @@ mod record_proof;
 mod request;
 mod serialization;
 mod stage;
+mod variables;
 
 pub use request::FittedColumnUpdates;
 
@@ -12,7 +13,7 @@ use crate::{NativeImage, table::indexes::index_row_patches};
 use tablecraft_core::limits::ResourceBudget;
 
 impl NativeImage {
-    /// Prepare fixed fields plus one Short Text/Binary field in one original
+    /// Prepare optional fixed fields plus ordinary Short Text/Binary fields in one original
     /// table. The final record must fit its existing physical capacity. Every
     /// expected cell refers to this image; all final keys and constraints are
     /// checked jointly. Text prefers declared Unicode compression when its units

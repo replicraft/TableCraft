@@ -151,7 +151,7 @@ fn explicit_modes_and_conflicts_are_checked_before_database_open() {
         mixed
             .run(None)
             .unwrap_err()
-            .contains("one table and column")
+            .contains("Mixed variable updates require one table")
     );
 }
 

@@ -11,7 +11,7 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 
 impl NativeImage {
-    /// Preview fixed and one ordinary Short Text/Binary field jointly, allowing
+    /// Preview optional fixed and ordinary Short Text/Binary fields jointly, allowing
     /// existing-page hidden targets or checked EOF DATA allocation. INDEX pages
     /// must fit. Logical row identities and original expectations remain stable.
     /// This engineering candidate does not enable normal saves or data macros.

@@ -2,6 +2,7 @@
 use super::{
     request::{self, FittedColumnUpdates},
     serialization::RecordPolicy,
+    variables,
 };
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
@@ -222,76 +223,42 @@ pub(super) fn build_with(
             continue;
         }
 
-        let variable = &groups[bound.variable_group];
-        reader.work(variable.len())?;
-        let variable_cell = (0..variable.len())
-            .filter_map(|i| variable.cell(i))
-            .find(|cell| cell.row == root.update.0);
-        let variable_value = if let Some(cell) = variable_cell {
-            if request::values_equal(cell.expected, cell.value, reader.budget, cancelled)? {
-                None
-            } else {
-                Some(cell.value)
+        reader
+            .budget
+            .charge_allocation(
+                bound.variable_groups.len() as u64,
+                size_of::<variables::Cell<'_>>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        let mut cells = Vec::new();
+        cells
+            .try_reserve_exact(bound.variable_groups.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for &group_number in &bound.variable_groups {
+            reader.tick()?;
+            let group = &groups[group_number];
+            reader.work(group.len())?;
+            let cell = (0..group.len())
+                .filter_map(|position| group.cell(position))
+                .find(|cell| cell.row == root.update.0);
+            if let Some(cell) = cell
+                && !request::values_equal(cell.expected, cell.value, reader.budget, cancelled)?
+            {
+                cells.push(variables::Cell {
+                    column: bound.columns[group_number],
+                    value: cell.value,
+                });
             }
-        } else {
-            None
-        };
-        let mut after = if let Some(value) = variable_value {
-            match policy {
-                RecordPolicy::GrowingPreferred => page_update::record::build(
-                    schema,
-                    bound.columns[bound.variable_group],
-                    &before,
-                    value,
-                    reader.budget,
-                    cancelled,
-                )?,
-                RecordPolicy::FittedDeclared => {
-                    let variable_number = schema.columns()[bound.columns[bound.variable_group]]
-                        .field
-                        .variable;
-                    let variable_start = *layout
-                        .offsets
-                        .get(variable_number)
-                        .ok_or(InspectError::Malformed)?;
-                    let variable_end = *layout
-                        .offsets
-                        .get(variable_number + 1)
-                        .ok_or(InspectError::Malformed)?;
-                    let selected_span = variable_end
-                        .checked_sub(variable_start)
-                        .ok_or(InspectError::Malformed)?;
-                    let preserved_payload = layout
-                        .offsets
-                        .last()
-                        .ok_or(InspectError::Malformed)?
-                        .checked_sub(selected_span)
-                        .ok_or(InspectError::Malformed)?;
-                    let capacity = layout
-                        .data_end
-                        .checked_sub(preserved_payload)
-                        .ok_or(InspectError::Malformed)?;
-                    let payload = super::super::slot::storage::encode_declared(
-                        &schema.columns()[bound.columns[bound.variable_group]],
-                        value,
-                        capacity,
-                        reader.budget,
-                        cancelled,
-                    )?;
-                    page_update::record::replace_payload(
-                        schema,
-                        bound.columns[bound.variable_group],
-                        &before,
-                        &payload,
-                        !matches!(value, Value::Null),
-                        reader.budget,
-                        cancelled,
-                    )?
-                }
-            }
-        } else {
-            copy(&before, reader.budget, cancelled)?
-        };
+        }
+        let mut after = variables::rebuild(
+            schema,
+            &before,
+            &layout,
+            &cells,
+            policy,
+            reader.budget,
+            cancelled,
+        )?;
         if matches!(policy, RecordPolicy::FittedDeclared) && after.len() != before.len() {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }

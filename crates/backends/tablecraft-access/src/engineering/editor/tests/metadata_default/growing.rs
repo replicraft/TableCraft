@@ -165,37 +165,72 @@ fn default_stays_fitted_and_mixed_index_growth_pays_request_allocations() {
 }
 
 #[test]
-fn variable_batch_requires_exactly_one_variable_even_without_selected_rows() {
+fn variable_batch_refuses_fixed_only_targets_even_without_selected_rows() {
     let case = source_model::case(
         6,
         model::Family::Legacy,
         false,
         source_model::Destination::OriginalPage,
     );
-    for names in [["Age", "Id"], ["Name", "Other"]] {
+    let editor = AccessEngineeringEditor::new(
+        image(&case.before),
+        "Items",
+        ScalarUpdateMode::Variable {
+            index_growth: false,
+        },
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let groups = [
+        ColumnUpdates {
+            column: "Age",
+            updates: &[],
+        },
+        ColumnUpdates {
+            column: "Id",
+            updates: &[],
+        },
+    ];
+    assert!(matches!(
+        editor.plan_columns(&groups, &mut budget(), &|| false),
+        Err(NativeEditError::Unsupported)
+    ));
+}
+
+#[test]
+fn multiple_variable_empty_selections_preserve_the_qualified_source_in_both_modes() {
+    let case = source_model::case(
+        6,
+        model::Family::Legacy,
+        false,
+        source_model::Destination::OriginalPage,
+    );
+    for index_growth in [false, true] {
         let editor = AccessEngineeringEditor::new(
             image(&case.before),
             "Items",
-            ScalarUpdateMode::Variable {
-                index_growth: false,
-            },
+            ScalarUpdateMode::Variable { index_growth },
             &mut budget(),
             &|| false,
         )
         .unwrap();
         let groups = [
             ColumnUpdates {
-                column: names[0],
+                column: "Name",
                 updates: &[],
             },
             ColumnUpdates {
-                column: names[1],
+                column: "Other",
                 updates: &[],
             },
         ];
-        assert!(matches!(
-            editor.plan_columns(&groups, &mut budget(), &|| false),
-            Err(NativeEditError::Unsupported)
-        ));
+        let copy = editor
+            .plan_columns(&groups, &mut budget(), &|| false)
+            .unwrap_or_else(|error| {
+                panic!("qualified empty variable mode {index_growth}: {error}")
+            });
+        assert_eq!(copy.before_bytes(), case.before);
+        assert_eq!(copy.candidate_bytes(), case.before);
     }
 }

@@ -12,6 +12,16 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Multiple variable fields in one UPDATE copy
+
+The existing fitted, DATA-growth and joint DATA/INDEX services now compose
+multiple Short Text/Binary fields and optional fixed siblings from one original
+image. SQL and typed CLI routes use those services without chaining candidates.
+The [working contract](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md) records 176
+native whole-image comparisons, 88 typed adapter and eight SQL comparisons, and
+20 actual CLI copies. Normal saves, mixed Memo/OLE edits and required data-macro
+qualification remain separate.
+
 ## Boolean copies with advanced-field preservation
 
 The existing engineering fixed service now supports qualified unindexed Boolean

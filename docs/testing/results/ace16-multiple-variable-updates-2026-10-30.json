@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Joint multiple Short Text/Binary UPDATE copies",
+  "scope": "Existing fitted, DATA-only and shared DATA/INDEX placement services; optional fixed siblings; one original source and one final row/key transform",
+  "counts": {
+    "source_pairs": 44,
+    "source_images": 88,
+    "native_api_functions": 6,
+    "native_whole_image_comparisons": 176,
+    "access_api_functions": 3,
+    "access_typed_images": 88,
+    "access_sql_images": 8,
+    "cli_api_functions": 3,
+    "cli_sql_copies": 8,
+    "cli_typed_copies": 12
+  },
+  "checks": [
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/native-normal-first-root.log",
+      "sha256": "47e614a60c37291919da62aad1815d4477c5b204921cdf89ff03e041c7d5f92a",
+      "name": "normal",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/source-second-root.log",
+      "sha256": "1f78e61db4b272b76012b5a4519f153b4162488ab46dbec86d430b8d74e2faea",
+      "name": "source36",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/third-source-first-root.log",
+      "sha256": "bedd80d58c552e8e0395b3dedb4720645baadc17fffc314c596e79783e3e9b92",
+      "name": "source8",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/native-api-corrected-root.log",
+      "sha256": "3eb5954d88e7679d8958b53bbd3acd2a5478bf7407318d9c87fb7f9a830ae799",
+      "name": "native_api6_176_images",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/access-source-first-root.log",
+      "sha256": "12bc0398b1f6d0e87029676486b70c4f9f57afc73adee84f02bc8420b6b556c5",
+      "name": "access_source44",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/cli-source-corrected-root.log",
+      "sha256": "9ce094219ac97c29af3f72e4a753efce994036d0fa7c2d96b25e6534a23ab108",
+      "name": "cli_source44",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/access-api-sql-corrected-root.log",
+      "sha256": "83e227d59a7d282aad977677129a1a0467ffef47d2be6b2f58e0a2468dca04b4",
+      "name": "access_api3_88_typed_8_sql",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/cli-api-corrected-root.log",
+      "sha256": "26a0cf395b6e7df2d545e2cde9576a200e50add041e665e750dda570cc700f77",
+      "name": "cli_source1_api3_8_sql_12_typed",
+      "exit_code": 0
+    }
+  ],
+  "retained_first_failures": [
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/source-first-root.log",
+      "sha256": "856b888431d6aec5e89ce3788a20f4e7f1c41127b99b76c6c4c012237fefe1f3",
+      "reason": "SOURCE-only GLOBAL container owner framing corrected before first writer"
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/native-api-first-root.log",
+      "sha256": "970258bd54bd1d055ce387c37f9547ad9e8d2330956f19e5db05e72bb3902f1c",
+      "reason": "API compile-only E0282 closure index annotation"
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/cli-source-first-root.log",
+      "sha256": "8650769ffef18b6339189d83a16125354c6af18c8c057a77d652e19b949e5718",
+      "reason": "CLI SOURCE compile-only missing original fixture support alias"
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/access-api-first-root.log",
+      "sha256": "fac827e3c01717e5c4fcdf34ab6d4f64f882015cecd4204eb1ad9b81c5397382",
+      "reason": "Access API compile-only missing EditableTable import"
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/access-api-corrected-root.log",
+      "sha256": "7dda50de2129cdc35b13de839130ed2e770532837d14c7f90e55ccfb2bdb58e8",
+      "reason": "Typed88 pass; SQL tests reject bare reserved First before SQL writer"
+    },
+    {
+      "path": ".cache/ace16-multiple-variable-updates-next-20261030/cli-api-first-root.log",
+      "sha256": "7c433328747a4fc2de34c034132c9f8e147ae00014cc0133b68bfb148b68799c",
+      "reason": "CLI API compile-only PathBuf borrow"
+    },
+    {
+      "path": ".cache/ace16-write-workflows-final-20261030/access.log",
+      "sha256": "1ca543aa9331df7f9c96b0566d0d5027b8ad2d6f885b93ad3972de0abbea1f25",
+      "reason": "Obsolete exactly-one-variable empty-selection refusal migrated to explicit fixed-only refusal and byte-exact empty-operation success in both growth modes"
+    },
+    {
+      "path": ".cache/ace16-write-workflows-final-20261030/cli.log",
+      "sha256": "533a9b98c412385ced4311a898c8a47e1fb5097a76987157bb1cac39d91eeb40",
+      "reason": "Cross-table pre-open refusal retained; assertion updated to actual mixed one-table message"
+    },
+    {
+      "path": ".cache/ace16-write-workflows-final-20261030/cli-corrected.log",
+      "sha256": "e12108106ea05ae6729a242560b709763d0ceb835b14072dcfba64c80860497d",
+      "reason": "Valid same-table text/text variable protocol moved out of pre-open refusal matrix to explicit missing-source-open/no-output check"
+    },
+    {
+      "path": ".cache/ace16-write-workflows-final-20261030/strict-corrected.log",
+      "sha256": "d5542c2ecbf2eccb8863c42cd6c0d770dccac3d4f7055e684bab0801b73adc30",
+      "reason": "Access same-crate duplicate fixture registration corrected with direct actual-owner import and test-only visibility; no constructor or expected changes"
+    }
+  ],
+  "expected_bytes_changed_after_first_writer": false,
+  "normal_save_or_journal_or_macro_permission_changed": false,
+  "broader_regressions": {
+    "status": "passed",
+    "scope": "Selected combined native/Access/CLI workflow regressions; not a full workspace test run",
+    "native_mutation_passed": 540,
+    "native_extra_passed": 19,
+    "preserved_scalar_passed": 15,
+    "preserved_scalar_ignored": 2,
+    "preserved_ui_passed": 5,
+    "preserved_ui_ignored": 1,
+    "access_library_passed": 63,
+    "cli_unit_passed": 40,
+    "cli_integration_passed": 45,
+    "cli_integration_targets": {
+      "guard_preparation": 5,
+      "preserved_boolean_updates": 4,
+      "query_preview_multiple_variables": 4,
+      "query_preview_updates": 26,
+      "write_previews": 6
+    },
+    "logs": [
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-mutation.log",
+        "sha256": "35b4c543fb1d8ba3a8d27dd0ae11616efd7d8f50e77c7580807c76eba65b2578"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-extra.log",
+        "sha256": "65c0c4f5e640b95fc25148671bc797d08e686388591933fe37da2dc9b6d99ff5"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-preserved.log",
+        "sha256": "4bc3029ba22051383b0af12ad0f55186b051f9019b005a1c8d800f056df58135"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/access-corrected.log",
+        "sha256": "1698889e9780deb560669178634135fe2475650db3216ca34cb042644246b27b"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/cli-phase-corrected.log",
+        "sha256": "9e110088d7ce3388f3a8983f3f282b2a40a75ee1b790283e03ca15b3062c932d"
+      }
+    ],
+    "access_preserved_boolean_integration_passed": 2
+  },
+  "final_strict_minimal": {
+    "strict_status": "passed",
+    "strict_first_failure": "Three guard-owned chunks_exact style findings; no multi-variable semantic diagnostic",
+    "minimal_ace_exit": 0,
+    "minimal_access_exit": 0,
+    "format_exit": 0,
+    "documentation_missing": 0,
+    "dependency_boundaries_packages": 15,
+    "logs": [
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict.log",
+        "sha256": "bc23b8a52675d271520c96d4001beed53f6c0cb76c1d005eb85c38e599871c47"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-ace.log",
+        "sha256": "b19d57267f05b82bab91ea7eb2186a0e6b3efba3f4e3599643d43f1c4659745f"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-access.log",
+        "sha256": "65c547e1b80bfcee2db76d6e5357575d81af3b8206985a69bbb4c3cd1ad94f24"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/documentation.log",
+        "sha256": "f421f8a61e01628430a21938da16a6e0bb9b3980701b9cabd78d96e83e9fd264"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/boundaries.log",
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict-owner-corrected.log",
+        "sha256": "68fe25566bf84eb87e2a330e72bac9bf63e8d984d277533ee398fc5b0518ffb3"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/format-corrected.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict-final.log",
+        "sha256": "ee770f147df677adee3e44697c4799ad2fb5f9506017e3ffa25252f86946d5de"
+      }
+    ],
+    "strict_exit": 0,
+    "strict_packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ]
+  },
+  "test_intent_migrations": [
+    "Old read/expected constructors unchanged; supported two-variable empty operations compare against qualified original bytes. Fixed-only, real capacity, unknown-kind, cross-table and mixed-LVAL refusals remain explicit.",
+    "The valid variable-only typed protocol must reach source open before native field kinds can be qualified; existing complete-copy cases independently prove real supported field kinds."
+  ],
+  "post_fixture_owner_refactor": {
+    "access_source_and_api_passed": 4,
+    "log": {
+      "path": ".cache/ace16-write-workflows-final-20261030/access-owner-corrected.log",
+      "sha256": "6a5be363eb8952c1974431ad9d2584975de0aa3813948339dd3264fe612be6b7"
+    },
+    "constructor_or_expected_changes": false
+  }
+}

@@ -4,7 +4,7 @@ mod boundaries;
 mod framed;
 mod framed_sources;
 mod growing;
-mod joint_split;
+pub(super) mod joint_split;
 use super::{AccessEngineeringEditor, ScalarUpdateMode, budget, fixture as base, image, rows};
 use crate::engineering::{UpdateMode, sql};
 use std::io::Cursor;
@@ -223,7 +223,7 @@ fn default_sql_uses_joint_original_values_and_explicit_fixed_stays_strict() {
 }
 
 #[test]
-fn default_rejects_two_variable_targets_even_for_zero_matches() {
+fn default_multiple_variable_targets_with_zero_matches_preserve_the_original() {
     let query = parse_query(
         "UPDATE Items SET Name='x', Other='y' WHERE FALSE",
         ParseLimits::default(),
@@ -236,17 +236,17 @@ fn default_rejects_two_variable_targets_even_for_zero_matches() {
         model::Recipe::Permutation,
         false,
     ));
-    assert!(
-        sql::preview_batch_update(
-            image(&case.before),
-            query.query(),
-            ScalarUpdateMode::Default,
-            &mut budget(),
-            None,
-            &|| false
-        )
-        .is_err()
-    );
+    let copy = sql::preview_batch_update(
+        image(&case.before),
+        query.query(),
+        ScalarUpdateMode::Default,
+        &mut budget(),
+        None,
+        &|| false,
+    )
+    .unwrap()
+    .into_backend();
+    assert_eq!(copy.candidate_bytes(), case.before);
 }
 
 #[test]
