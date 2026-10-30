@@ -6,6 +6,19 @@ backend candidate. It imports [DB contracts](../../foundation/DB.md), never conc
 adapters. Planning performs no durable writes. The Access adapter delegates native
 checks/preservation to [ACE](NATIVE_WRITES.md).
 
+`tablecraft_access::editing::sql` composes the ordinary native path for hosts.
+Its metadata-only `local_update_table` rejects nonlocal/parameterized or unsupported
+statement shapes before file I/O. `plan_update` consumes the captured native image,
+prepares the existing editor and calls the shared query planner once. The CLI
+uses this service; it owns file locks, comparison-policy selection, reporting and
+publication. The adapter returns the same typed query/native candidate without
+opening files or persisting changes. Four adapter integration tests pass,
+including an independent complete-image UPDATE expectation and external-source
+refusals. Five existing CLI copy tests pass with their publication checks;
+strict all-target/all-feature adapter/CLI Clippy and the minimal adapter build
+also pass.
+
+
 ## Supported profile
 
 The ordinary `ExistingInt32` profile supports one local table, optional alias
