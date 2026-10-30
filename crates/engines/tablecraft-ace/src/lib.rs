@@ -62,8 +62,8 @@ pub use preservation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber, RowInsert,
-    SlotScalarUpdate,
+    FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber,
+    InsertFieldValue, OmittedRowInsert, RowInsert, SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};

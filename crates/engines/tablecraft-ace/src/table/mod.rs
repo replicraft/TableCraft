@@ -43,8 +43,8 @@ pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber, RowInsert,
-    SlotScalarUpdate,
+    FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber,
+    InsertFieldValue, OmittedRowInsert, RowInsert, SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};

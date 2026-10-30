@@ -6,12 +6,14 @@ mod counters;
 mod incrementing;
 mod indexes;
 mod long_values;
+mod omitted;
 mod placement;
 mod policies;
 pub(super) mod primary_column;
 mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
+mod values;
 
 use super::{gates, preview};
 use crate::{
@@ -52,6 +54,8 @@ impl RowInsert {
     }
 }
 
+pub use omitted::{InsertFieldValue, OmittedRowInsert};
+
 struct Staged {
     data: placement::Plan,
     long_values: long_values::Plan,
@@ -62,6 +66,7 @@ struct Staged {
 
 #[derive(Clone, Copy)]
 enum AuditRequest<'a> {
+    Omitted(omitted::Original<'a>),
     Explicit(&'a [RowInsert]),
     Incrementing {
         requests: &'a [AutoNumberRowInsert],
@@ -303,6 +308,10 @@ fn finish_with(
 ) -> Result<Ace16WritePreview, EditError> {
     let after = compose::compose(&image, staged, budget, cancelled)?;
     let inserted = match requests {
+        AuditRequest::Omitted(original) => {
+            audit::prove_with(&image, table, requests, staged, &after, budget, cancelled)?;
+            original.requests().len()
+        }
         AuditRequest::Explicit(requests) => {
             audit::prove(&image, table, requests, staged, &after, budget, cancelled)?;
             requests.len()

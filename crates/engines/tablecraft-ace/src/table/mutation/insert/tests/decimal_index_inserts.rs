@@ -1,6 +1,7 @@
 //! NUMERIC secondary membership is independent of its ordinary row storage.
 mod display_metadata;
 mod model;
+mod omitted_defaults;
 mod two_decimal;
 
 use super::model as original;
