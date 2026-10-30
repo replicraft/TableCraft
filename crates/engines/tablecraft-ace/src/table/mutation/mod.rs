@@ -11,6 +11,8 @@ pub(in crate::table) mod fitted;
 pub(in crate::table) mod fixed;
 mod gates;
 #[cfg(feature = "ace16-write-preview")]
+mod guards;
+#[cfg(feature = "ace16-write-preview")]
 mod index_append;
 #[cfg(feature = "ace16-write-preview")]
 mod insert;
@@ -57,6 +59,12 @@ pub use error::{EditError, WriteBlocker};
 pub use fitted::FittedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
 pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};
+#[cfg(feature = "ace16-write-preview")]
+pub use guards::{
+    BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
+    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
+};
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;

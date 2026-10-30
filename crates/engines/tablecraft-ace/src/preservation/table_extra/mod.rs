@@ -13,4 +13,4 @@ pub use model::{TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraPrope
 #[cfg(test)]
 mod program_fixtures;
 #[cfg(test)]
-mod tests;
+pub(crate) mod tests;

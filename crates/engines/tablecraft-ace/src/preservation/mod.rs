@@ -3,7 +3,7 @@ mod dependencies;
 mod image;
 mod payload_data;
 mod payloads;
-mod table_extra;
+pub(crate) mod table_extra;
 
 pub use dependencies::{DependencyCoverage, ObjectDependency};
 pub use image::NativeImage;

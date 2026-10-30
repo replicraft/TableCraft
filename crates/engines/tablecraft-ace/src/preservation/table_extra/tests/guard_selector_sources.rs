@@ -7,6 +7,7 @@ use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
+mod api;
 pub(crate) mod model;
 
 #[test]

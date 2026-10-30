@@ -83,6 +83,12 @@ pub use table::{
     inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
     inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
 };
+#[cfg(feature = "ace16-write-preview")]
+pub use table::{
+    BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
+    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
+};
 pub use table::{
     BinaryIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, TextIndexSelection,
     read_table_binary_index_range, read_table_guid_index, read_table_text_index_range,
