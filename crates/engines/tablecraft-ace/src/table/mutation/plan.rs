@@ -75,6 +75,7 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.edit.plan", assignments = updates.len()).entered();
         check(budget, cancelled)?;
+        self.require_standard_capture()?;
         if self.catalog().header().format() != FileFormat::Jet4 {
             return Err(EditError::Unsupported(WriteBlocker::Format));
         }

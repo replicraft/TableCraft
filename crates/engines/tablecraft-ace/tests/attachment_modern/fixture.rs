@@ -1,5 +1,5 @@
 //! Independent modern complex child layout; no donated names or payload bytes.
-use crate::{old_attachment, support};
+use super::{old_attachment, support};
 
 pub const PAGE: usize = 4096;
 pub const FLAT: usize = 20;

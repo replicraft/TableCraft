@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Explicit larger fixed-update-purpose immutable capture; no writer permission",
+  "default_capture_max_bytes": 67108864,
+  "explicit_capture_max_bytes": 83886080,
+  "exact_immutable_captures": 24,
+  "actual_source_certifications": 20,
+  "header5_rich_source_exact_column_refusals": 4,
+  "over_cap_original_refusals": 2,
+  "public_mutation_preparation_routes_denied": 30,
+  "denial_header_profiles": [
+    1,
+    5,
+    6
+  ],
+  "small_source_and_empty_noop_controls": true,
+  "new_clock_readings": 0,
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "sha256": "8b765c5e07115063d9ff29a3ca95c627e12e4d41566b697bc1151e89f635ac6f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/image.rs",
+      "sha256": "bc7e556cc6601422ff503b6f8761850cd7451e80ed20a281a11af68e2963c5bf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/mod.rs",
+      "sha256": "81adfd62d9822a8598bab24506a7fa05278e9adbfbae37be7c23ed361d70f390"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/larger_capture_tests.rs",
+      "sha256": "adf5895ce1d5b818d321031ef6794694da8d626d128711156f144b1928df9301"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/mod.rs",
+      "sha256": "384a452622dde07bf60cfdabc70e4e22e356b3e34ecc543cd83f2db0aec26fbf"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/mod.rs",
+      "sha256": "ac3342b0d4d2d2d719ad8b769dfd18c7b584110039b77d140652ec8fad289846"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/plan.rs",
+      "sha256": "85a693db325c6de6a9d77b8d3bc3867beaa02adc56fc84baebdddc664e7f5bc0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/preview.rs",
+      "sha256": "9879cd1b4de1c29c23b8c915f111f7b703650dc1d91c8818a7abaca7e323e4d8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/attachment_modern/fixture.rs",
+      "sha256": "107efa4ec5a2bc7e938364591bacf9a30eba5e1dadc00a0db8fe8e3e4d7dd116"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/attachments/fixture.rs",
+      "sha256": "68f00cf5074a297fcea827a72ed01dee81ef6e75240084de3ff627a22ca6e7f0"
+    }
+  ],
+  "checks": [
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/normal-first-root.log",
+      "sha256": "205388c976efbbc0a2279b0797c6f89c950a38b774d1dd147ca65c3f1d9fb062",
+      "name": "normal_all_features",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/minimal-first-root.log",
+      "sha256": "49c272596cfc95b4c8425ba33b84005e1253e167c43891c9fc5b7b370852c0d0",
+      "name": "standalone_no_default_features",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/source-classified-root.log",
+      "sha256": "19c0ec004d8ad18c8e59c0f331c7a75f19f2448ff5aa8f78a516f444ee922061",
+      "name": "actual_capture_source_classification",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/denial-first-root.log",
+      "sha256": "406a9e936d823f58aca1155bc799c442dd0b3d4eedb0aa2f16a02b8572497b70",
+      "name": "all_public_route_denials",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/limits-first-root.log",
+      "sha256": "b5f1e75f25395bd5c39ed181e87b81bfe2951211ad8c2416613361c6ed0abe95",
+      "name": "exact_limits_all_pools_final_cancel",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/mutation-regression-first-root.log",
+      "sha256": "e3f0b9bfe7a9988343286f4df5b70ebf5ac797f7d557b22a52ce9debf9a3de51",
+      "name": "mutation-regression-first",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/preservation-regression-first-root.log",
+      "sha256": "29c8877935a5e3a546da2bbc8a991cd105d32228065084d393b375e53d412aab",
+      "name": "preservation-regression-first",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/fixture-consumers-first-root.log",
+      "sha256": "6798cac16d2b3a46811637dfc242a8463bd8d5a2d4c4b1706eda75f2fa957091",
+      "name": "fixture-consumers-first",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/strict-first-root.log",
+      "sha256": "8ec67385e4d671970804a65ad3f909d0aee35c185560386dbfbb039c3165fef2",
+      "name": "strict-first",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/format-native-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "format-native",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/links-root.log",
+      "sha256": "a8a78763842b448cd1189e87a3566d93252467bb7969135f545a0fe96549092d",
+      "name": "links",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/boundaries-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "name": "boundaries",
+      "exit_code": 0
+    }
+  ],
+  "retained_first_failure": {
+    "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/source-first-root.log",
+    "sha256": "0efa17cb0ca2cf9412ad3cb8c9f438bb485d1e4d97ee380660a0b2babfdc179e",
+    "reason": "Phase2 source expectation incorrectly required header5 rich source to qualify; native7/8 Extended Date/Time scalar carrier is ACE2019-only, so exact Column refusal now retained; images and policy unchanged"
+  },
+  "source_program_receipts": [
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/private-first-coherent-freeze.json",
+      "sha256": "ca6640269574559a416f2b70d51368119fa1d7eadd146a988da1846b5faeb5c2"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/installed-first-freeze.json",
+      "sha256": "4d82283d2a7df83d5dc4afc53aaf14af0d8ac71dd154ba1de90198c3f7aed295"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-capture-phase2-20261030/header5-source-classification-freeze.json",
+      "sha256": "72f24c36309b4b6d6567a0ac7b32f9664c38c46dc4374d03e64875d7ebaa2d07"
+    }
+  ],
+  "original_source_and_expected_constructor_changes": false,
+  "fixture_changes": "Two top imports crate->super; constructor bodies inverse-exact",
+  "normal_save_macro_journal_permission_changed": false,
+  "fixed_writer_permission": false,
+  "allocation_encryption_journal_ceilings_changed": false,
+  "broader_regressions": {
+    "status": "passed",
+    "native_mutation_functions": 541,
+    "preservation_functions": 47,
+    "fixture_consumer_functions": 37,
+    "ignored_export_helpers": 2,
+    "large_source_not_repeated_in_mutation_round": true
+  },
+  "final_strict_minimal": {
+    "status": "passed",
+    "native_all_targets_all_features": true,
+    "standalone_no_default_features": true,
+    "native_format": true,
+    "documentation_links": true,
+    "dependency_boundaries": true
+  }
+}

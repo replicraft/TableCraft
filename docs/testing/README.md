@@ -5,6 +5,7 @@
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
 - [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
 - [Physical secondary-index creation SOURCE qualification](ACE16_SECONDARY_INDEX_CREATION.md)
+- [Explicit larger fixed-update image capture](ACE16_LARGER_FIXED_IMAGES.md)
 - [Verification records](results/)
 
 This directory also owns focused test contracts, reference runners and inert
