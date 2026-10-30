@@ -2,7 +2,7 @@ use super::{UpdateError, source::SnapshotSource};
 use crate::execution::cell::CellValue;
 use crate::{
     ExecutionOptions, QueryError,
-    binding::{BoundUpdate, bind_update},
+    binding::{BoundUpdate, bind_batch_update, bind_update},
     discovery::DiscoveryState,
     execution::{Environment, Runtime},
     profile::MAX_BIND_BYTES,
@@ -11,7 +11,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
+use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth};
 use tablecraft_schema::{Column, NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
@@ -22,27 +22,34 @@ pub struct UpdatePlan<P> {
     backend: P,
     matched_rows: usize,
 }
+
 impl<P> UpdatePlan<P> {
     /// Number of WHERE-matching rows, including assignments of unchanged values.
     pub const fn matched_rows(&self) -> usize {
         self.matched_rows
     }
+
     /// Consume the query wrapper to obtain the backend's validated candidate.
     pub fn into_backend(self) -> P {
         self.backend
     }
 }
 
-/// Plan one local table/one assignment UPDATE against a frozen snapshot.
-/// ExistingInt32 preserves its non-NULL checked integral conversion; StoredScalar
+struct PreparedColumn {
+    name: String,
+    updates: Vec<CellUpdate>,
+}
+
+struct PreparedUpdate {
+    columns: Vec<PreparedColumn>,
+    matched_rows: usize,
+}
+
+/// Plan one local table/one assignment against its frozen original snapshot.
+/// ExistingInt32 keeps its old non-NULL checked integral conversion; StoredScalar
 /// adds nullable NULL and exact stored carriers while retaining that Int32 law.
-/// Every backend still qualifies its actual fields, constraints and persistence.
-/// Optional alias, pure expressions, BETWEEN/IN and three-valued WHERE use the
-/// existing query evaluator. Checked integral narrowing is explicit at assignment.
-/// Parameters, joins, subqueries, calls and other actions are rejected before any
-/// backend planning. All expressions finish before the single backend call.
-/// Caller budgets accumulate across binding allowances/evaluation/backend checks;
-/// no QueryLimits budget reset or durable write occurs here.
+/// Complete evaluation precedes one consuming single-column backend finish.
+/// No durable write or native authorization is implied by this generic planner.
 pub fn plan_update<E: EditableTable>(
     editor: E,
     query: &Query,
@@ -51,47 +58,124 @@ pub fn plan_update<E: EditableTable>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.plan").entered();
-    if cancelled() {
-        return Err(QueryError::Cancelled.into());
-    }
+    let prepared = prepare(&editor, query, false, budget, collation, cancelled)?;
+    let [column] = prepared.columns.as_slice() else {
+        return Err(QueryError::Unsupported.into());
+    };
+    let backend = editor
+        .plan_updates(&column.name, &column.updates, budget, cancelled)
+        .map_err(UpdateError::Backend)?;
+    Ok(UpdatePlan {
+        backend,
+        matched_rows: prepared.matched_rows,
+    })
+}
+
+/// Evaluate all SET expressions from ORIGINAL rows before one multi-column finish.
+/// Duplicate resolved targets are refused before row evaluation. Each selected row
+/// evaluates WHERE once, then every RHS in written order in the unchanged frame.
+/// Capability, source constraints and physical publication remain backend-owned.
+pub fn plan_batch_update<E: EditableBatch>(
+    editor: E,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
+    let _span = tracing::debug_span!("query.update.batch_plan").entered();
+    let prepared = prepare(&editor, query, true, budget, collation, cancelled)?;
     budget
-        .charge(Resource::Steps, 1)
+        .charge_allocation(
+            prepared.columns.len() as u64,
+            size_of::<ColumnUpdates<'_>>() as u64,
+        )
         .map_err(QueryError::from)?;
+    let mut columns = Vec::new();
+    columns
+        .try_reserve_exact(prepared.columns.len())
+        .map_err(|_| QueryError::Allocation)?;
+    for column in &prepared.columns {
+        check(budget, cancelled)?;
+        columns.push(ColumnUpdates {
+            column: &column.name,
+            updates: &column.updates,
+        });
+    }
+    check(budget, cancelled)?;
+    let backend = editor
+        .plan_columns(&columns, budget, cancelled)
+        .map_err(UpdateError::Backend)?;
+    Ok(UpdatePlan {
+        backend,
+        matched_rows: prepared.matched_rows,
+    })
+}
+
+fn prepare<E: EditableTable>(
+    editor: &E,
+    query: &Query,
+    multiple: bool,
+    budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedUpdate, QueryError> {
+    check(budget, cancelled)?;
+
     let profile = editor.update_profile();
     if !matches!(
         profile,
         UpdateProfile::ExistingInt32 | UpdateProfile::StoredScalar
     ) || editor.snapshot().policy().names != NameComparison::AsciiInsensitive
     {
-        return Err(QueryError::Unsupported.into());
+        return Err(QueryError::Unsupported);
     }
-    // Existing binder has independent hard AST/depth/name ceilings. Charge its
-    // maximum retained allocation allowance to the shared edit budget beforehand.
-    budget
-        .charge(Resource::Bytes, MAX_BIND_BYTES as u64)
-        .map_err(QueryError::from)?;
+
+    // The same bounded binder owns names/depth/nodes for either entrypoint.
+    // Its maximum retained allocation is prepaid to this cumulative edit pool.
+    budget.charge(Resource::Bytes, MAX_BIND_BYTES as u64)?;
     let snapshot = editor.snapshot();
     let source = SnapshotSource(snapshot);
     let BoundUpdate {
-        column,
-        value,
+        assignments,
         filter,
-    } = bind_update(query, &source)?;
-    let target = snapshot
-        .columns()
-        .get(column)
-        .ok_or(QueryError::UnknownName)?;
-    if profile == UpdateProfile::ExistingInt32 && target.data_type() != ScalarType::Int32 {
-        return Err(QueryError::Unsupported.into());
-    }
-    let mut column_name = String::new();
-    budget
-        .charge(Resource::Bytes, target.name().len() as u64)
-        .map_err(QueryError::from)?;
-    column_name
-        .try_reserve_exact(target.name().len())
+    } = if multiple {
+        bind_batch_update(query, &source, budget, cancelled)?
+    } else {
+        bind_update(query, &source)?
+    };
+
+    snapshot
+        .rows()
+        .len()
+        .checked_mul(assignments.len())
+        .ok_or(QueryError::StructureLimit)?;
+    budget.charge_allocation(assignments.len() as u64, size_of::<PreparedColumn>() as u64)?;
+    let mut columns = Vec::new();
+    columns
+        .try_reserve_exact(assignments.len())
         .map_err(|_| QueryError::Allocation)?;
-    column_name.push_str(target.name());
+    for assignment in &assignments {
+        check(budget, cancelled)?;
+        let target = snapshot
+            .columns()
+            .get(assignment.column)
+            .ok_or(QueryError::UnknownName)?;
+        if profile == UpdateProfile::ExistingInt32 && target.data_type() != ScalarType::Int32 {
+            return Err(QueryError::Unsupported);
+        }
+        budget.charge(Resource::Bytes, target.name().len() as u64)?;
+        budget.charge(Resource::Steps, target.name().len() as u64)?;
+        let mut name = String::new();
+        name.try_reserve_exact(target.name().len())
+            .map_err(|_| QueryError::Allocation)?;
+        name.push_str(target.name());
+
+        columns.push(PreparedColumn {
+            name,
+            updates: Vec::new(),
+        });
+    }
+
     let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
         owner: crate::external_sources::SourceNamespace::Root,
@@ -109,17 +193,16 @@ pub fn plan_update<E: EditableTable>(
         budget,
     };
     runtime.tick()?;
-    let mut updates = Vec::new();
+
+    let mut matched_rows = 0_usize;
     for (ordinal, row) in snapshot.rows().iter().enumerate() {
         runtime.tick()?;
-        runtime
-            .budget
-            .charge(Resource::Rows, 1)
-            .map_err(QueryError::from)?;
+        runtime.budget.charge(Resource::Rows, 1)?;
         let mut expression_row = runtime.allocate_expression_row(row.len())?;
         for value in row {
             expression_row.push(CellValue::scalar(runtime.copy(value)?));
         }
+
         let env = Environment {
             aggregate_results: None,
             collections: None,
@@ -131,29 +214,65 @@ pub fn plan_update<E: EditableTable>(
         };
         if let Some(filter) = &filter {
             let selected = runtime.eval(filter, env)?;
-            if !Truth::from_value(&selected)
-                .map_err(QueryError::from)?
-                .is_true()
-            {
+            if !Truth::from_value(&selected)?.is_true() {
                 continue;
             }
         }
-        let replacement = assignment(runtime.eval(&value, env)?, target, profile)?;
+
         let handle = snapshot.row_handle(ordinal).ok_or(QueryError::Source)?;
-        runtime.push(&mut updates, CellUpdate::new(handle, replacement))?;
+        for (assignment, column) in assignments.iter().zip(&mut columns) {
+            runtime.tick()?;
+            let target = snapshot
+                .columns()
+                .get(assignment.column)
+                .ok_or(QueryError::UnknownName)?;
+            let replacement =
+                assignment_value(runtime.eval(&assignment.value, env)?, target, profile)?;
+
+            // Each capacity increase is prepaid, including spare Vec capacity.
+            if column.updates.len() == column.updates.capacity() {
+                let added = column.updates.capacity().max(1);
+                runtime
+                    .budget
+                    .charge(Resource::Steps, column.updates.len() as u64)?;
+                runtime
+                    .budget
+                    .charge_allocation(added as u64, size_of::<CellUpdate>() as u64)?;
+                column
+                    .updates
+                    .try_reserve_exact(added)
+                    .map_err(|_| QueryError::Allocation)?;
+            }
+
+            column.updates.push(CellUpdate::new(handle, replacement));
+        }
+
+        matched_rows = matched_rows
+            .checked_add(1)
+            .ok_or(QueryError::StructureLimit)?;
     }
     runtime.tick()?;
-    let matched_rows = updates.len();
-    let backend = editor
-        .plan_updates(&column_name, &updates, budget, cancelled)
-        .map_err(UpdateError::Backend)?;
-    Ok(UpdatePlan {
-        backend,
+
+    Ok(PreparedUpdate {
+        columns,
         matched_rows,
     })
 }
 
-fn assignment(value: Value, target: &Column, profile: UpdateProfile) -> Result<Value, QueryError> {
+fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), QueryError> {
+    if cancelled() {
+        return Err(QueryError::Cancelled);
+    }
+
+    budget.charge(Resource::Steps, 1)?;
+    Ok(())
+}
+
+fn assignment_value(
+    value: Value,
+    target: &Column,
+    profile: UpdateProfile,
+) -> Result<Value, QueryError> {
     if profile == UpdateProfile::ExistingInt32 {
         return integral_assignment(value);
     }

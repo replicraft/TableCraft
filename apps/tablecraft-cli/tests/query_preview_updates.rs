@@ -207,7 +207,6 @@ fn sql_profile_validation_precedes_open_and_late_errors_publish_no_copy() {
     let output = directory.path().join("refused.accdb");
     for sql in [
         "PARAMETERS P LONG; UPDATE Items SET Score=P",
-        "UPDATE Items SET Score=1,Label='x'",
         "UPDATE Items IN 'external.accdb' SET Score=11",
     ] {
         let result = run(sql, &missing, &output, &[]);
@@ -220,6 +219,9 @@ fn sql_profile_validation_precedes_open_and_late_errors_publish_no_copy() {
     let input = directory.path().join("input.accdb");
     fs::write(&input, &before).unwrap();
     for (sql, flags) in [
+        // Multiple targets are valid SQL now, but this fixed/text mixture has no
+        // single native mode and must still refuse against the actual source.
+        ("UPDATE Items SET Score=1,Label='x'", vec![]),
         ("UPDATE Items SET Score=10 \\ (4-Id)", vec![]),
         (
             "UPDATE Items SET Score=11 WHERE Id<0 AND (1 \\ 0)=0",

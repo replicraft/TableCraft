@@ -19,6 +19,9 @@ pub enum QueryError {
     /// Multiple bindings match a name.
     #[error("query name is ambiguous")]
     AmbiguousName,
+    /// More than one SET target resolves to the same original column.
+    #[error("duplicate UPDATE assignment target")]
+    DuplicateAssignment,
     /// A named source depends on itself through the current dependency path.
     #[error("query source dependency cycle")]
     DependencyCycle,

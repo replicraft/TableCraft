@@ -1,0 +1,185 @@
+{
+  "date": "2026-10-29",
+  "feature": "Atomic SQL multi-assignment fixed engineering updates",
+  "checks": {
+    "source_first": {
+      "exit_code": 0,
+      "source_functions": 1,
+      "whole_expected_cases": 6
+    },
+    "neutral_api_first": {
+      "exit_code": 0,
+      "new_functions": 7,
+      "existing_editing_functions": 9
+    },
+    "access_api_first": {
+      "exit_code": 0,
+      "new_batch_functions": 4,
+      "full_library_functions": 36
+    },
+    "executable_api_first": {
+      "exit_code": 0,
+      "functions": 2,
+      "whole_file_comparisons": 6
+    },
+    "corrected_combined_CLI_regression": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 20
+    },
+    "strict_5_packages_after_unrelated_DELETE_test_lint_correction": {
+      "exit_code": 0
+    },
+    "minimal_4_libraries": {
+      "exit_code": 0
+    },
+    "formatting": {
+      "exit_code": 0
+    },
+    "local_documentation_links": {
+      "exit_code": 0,
+      "missing": 0
+    },
+    "dependency_boundaries": {
+      "exit_code": 0,
+      "packages": 15
+    }
+  },
+  "contract": "One original Snapshot; resolve all unique target identities before evaluating; WHERE once per original row; RHS in written order against unchanged frame; all rows/carriers before one consuming finish. Original normal single-column entrypoint remains strict. Fixed native modes only for multiple targets; variable/LVAL modes refuse multiple even with no matches. Shared mask/tuple/history handling uses one native batch, not chained candidates. Capacity, relocation, names and duplicate scans are prepaid.",
+  "code": [
+    {
+      "path": "crates/foundation/tablecraft-db/src/editing/source.rs",
+      "bytes": 2641,
+      "sha256": "0e8fc37fd806e92ce9b17dc2f2e87224b6f18dc218f1c82e21335906ba09498c"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/editing.rs",
+      "bytes": 4835,
+      "sha256": "946cec354088508421178acd7b003a62e6d238be83f1c23fd5247fa78745e2ec"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/error.rs",
+      "bytes": 2658,
+      "sha256": "50a381984eaf2ddc40e94e3750975a000cb4f5614a9b282ddee2eb80228c26d0"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/editing/plan.rs",
+      "bytes": 10417,
+      "sha256": "1ed096458fc9e8f08eb99cec3dcb33287af43639ba1cb1d3a64b593dce18536a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/editing_columns.rs",
+      "bytes": 9131,
+      "sha256": "ad3513c5bd65d1d0688b4e0b740831223138a70cd7f09094a08a7de4ad73fd59"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor.rs",
+      "bytes": 14255,
+      "sha256": "2daadf3d702593eb3675c0760dde09a47d6829ad1b60d81a9ed87fb11ce34159"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/batch.rs",
+      "bytes": 6767,
+      "sha256": "73aa305de88c4fb8a29416976b77282db6b5939d03bd4ad8031d014c7b7a7b52"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/batch/model.rs",
+      "bytes": 8497,
+      "sha256": "e608799c009a1ba7706ed228a68224a7ac46c1eb3f02509d6e399c15eb552e53"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql.rs",
+      "bytes": 3297,
+      "sha256": "9c805c88aad8dfca3c59e2de2efbf6be0310415c1fcdfbfda51ed52ead4c3196"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_update.rs",
+      "bytes": 7330,
+      "sha256": "49b5ebca514e301e5ca1273ab838ab40e491dd2f942322e304652d4e1b40fb65"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_columns.rs",
+      "bytes": 4316,
+      "sha256": "6fff1727f0dc32855634cc83dd03b2063e66ba4ff241b973c92119438f4c67ba"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates.rs",
+      "bytes": 9333,
+      "sha256": "8e981a23adbe083c3cfa7dce949d0da35b919e29a90b93ad6fd00f4632b928c3"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-sql-multiassignment-draft-20261029/source-registration-freeze.json",
+      "bytes": 722,
+      "sha256": "651d837afd7deb1e2022c5119bebf8f2ce6232129061c08619f1f2fe6221754b"
+    },
+    {
+      "path": ".cache/ace16-sql-multiassignment-draft-20261029/integrated-first-freeze.json",
+      "bytes": 3341,
+      "sha256": "b2d1191a6d9cb11654f7769a61c6da601a15b86a1456c4e7eab5c5c121638904"
+    },
+    {
+      "path": ".cache/ace16-sql-multiassignment-draft-20261029/relocation-steps-freeze.json",
+      "bytes": 541,
+      "sha256": "76c64cc78c4027476e18e6fd94fb0fb1a355a5df085d38b9e802910f649ac103"
+    },
+    {
+      "path": ".cache/ace16-sql-multiassignment-draft-20261029/neutral-api-first-root.log",
+      "bytes": 2017,
+      "sha256": "3505ce2aebaaaa0ce0a54d186059cfd21d231b7c27b5a81555fc798f35417113"
+    },
+    {
+      "path": ".cache/ace16-sql-multiassignment-draft-20261029/stale-cli-expectation-freeze.json",
+      "bytes": 547,
+      "sha256": "e21a1742525145b18356a2285545cabca68c79eeb5173c343b1f9dc2f9042860"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/adapter-source-first-root.log",
+      "bytes": 1188,
+      "sha256": "00b9a0ea3c77ec84be8ee857b73df732278304829d15bc21514e5fbcff639d6d"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/access-api-regression-first-root.log",
+      "bytes": 4707,
+      "sha256": "d515566932c35bf3c7d14566234db2c9d9d495183cd15336958c7b812535fc76"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-api-regression-first-root.log",
+      "bytes": 5907,
+      "sha256": "2cc50b3cda8b1fe1a0bbcfbe594f4239728d3748dd51c2fe9ac02aff86908d0b"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-api-regression-second-root.log",
+      "bytes": 6185,
+      "sha256": "609e3757813d765c4455fa35a5fc76fe5e6e8221357932123615b173fe8ba4b6"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-clippy-first-root.log",
+      "bytes": 1461,
+      "sha256": "581db513181eee63eb08dc0fa5d7f43de9733d1cfb90dd427ecd354cce505af1"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-clippy-second-root.log",
+      "bytes": 516,
+      "sha256": "b43f0a475fe991e67d97269912803b3873991b5d91923c8350fc5df4249dcd73"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-minimal-first-root.log",
+      "bytes": 526,
+      "sha256": "553eb6426b54d0a48807dfb7cfbeebaf558f767e03aa622cdfb576f656effae4"
+    }
+  ],
+  "retained_observations": [
+    "Read-only review added explicit relocation Steps accounting before first API run, with exact/one-below/cancellation controls.",
+    "All new APIs and complete-image comparisons pass first actual test runs. The first combined CLI regression later stopped on an old multiple-assignment syntax rejection; the same mixed fixed/text SQL was moved to actual-source mode refusal, preserving its safety assertion. No production/model/expected bytes changed.",
+    "First combined strict run rejected an unrelated DELETE expected-model loop style; test-only enumeration correction and focused rerun retained in DELETE record."
+  ],
+  "native_Access_qualification": false,
+  "limitations": [
+    "One local table and closed pure expressions only",
+    "Multiple targets only in fixed native modes",
+    "Existing allocation/action/carrier and native constraint gates remain",
+    "No ordinary ACE save, required data-macro or durable transaction qualification"
+  ]
+}

@@ -32,9 +32,10 @@ proofs, diagnostic/test corrections and allocation-accounting review findings.
 ## User-facing engineering write copies
 
 SQL-selected [engineering UPDATE copies](access/writes/SQL_ENGINEERING_COPIES.md)
-now use one original snapshot and one backend finish. They support one assignment,
-nullable NULL, exact stored carriers and checked integral-to-Int32 assignment,
-with explicit fixed, variable/index-growth or ordinary Memo/OLE modes. All row
+now use one original snapshot and one backend finish. Fixed modes support multiple
+assignments; variable and ordinary Memo/OLE modes retain one column. Nullable
+NULL, exact stored carriers and checked integral-to-Int32 assignment retain their
+explicit native modes. All row
 selection and replacements complete before publication. Normal ACE saves remain
 gated. Explicit `write preview-insert --incrementing` now captures LAST from the
 same image; it does not infer the stored Increment/Random mode or use live MAX.
@@ -50,6 +51,14 @@ The [publication record](testing/results/shared-write-copy-publication-2026-10-2
 [counter record](testing/results/ace16-captured-increment-policy-2026-10-29.json)
 retain first attempts and test-only compile corrections. These are local checks;
 Microsoft Access save/reopen and required data-macro qualification remain open.
+
+The [multi-column continuation](testing/results/ace16-sql-multiassignment-updates-2026-10-29.json)
+binds duplicate targets before evaluation and computes every right-hand side
+against the original row. One engine batch merges shared NULL masks, tuple keys,
+aliases and membership histories. Seven neutral functions, four adapter functions
+and two executable functions pass; all six independently authored complete output
+images match. The normal single-column editor remains unchanged. Mixed fixed/
+variable/LVAL batches and broader native profiles remain unfinished.
 
 The earlier first-command checkpoint follows:
 

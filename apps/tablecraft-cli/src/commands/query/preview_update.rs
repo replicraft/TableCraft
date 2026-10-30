@@ -19,7 +19,7 @@ const REPORT_CAPACITY: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "Creates only a fresh experimental engineering copy. One local table, one assignment and existing pure expressions are supported. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
+    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; multiple columns require a fixed-field mode. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
 )]
 pub(crate) struct Arguments {
     /// UPDATE text, passed as one shell-quoted argument.
@@ -104,7 +104,7 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
         .map_err(Error::Parse)?;
     // This is a metadata-only syntax check: no source, record scan or output is
     // opened for a join, multiple assignment, parameter or external selector.
-    sql::local_update_table(query.query()).map_err(Error::Query)?;
+    sql::local_batch_update_table(query.query()).map_err(Error::Query)?;
     let collation = args
         .collation
         .map(|policy| TextCollation::from(policy).build())
@@ -137,7 +137,7 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     }
     let image = NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
         .map_err(Error::Native)?;
-    let plan = sql::preview_update(
+    let plan = sql::preview_batch_update(
         image,
         query.query(),
         mode,
