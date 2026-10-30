@@ -49,6 +49,35 @@ pub struct XmlByteSpan {
     pub(super) end: usize,
 }
 
+/// One recognized leaf slot selected without inventing an XML byte range.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MacroProgramTextKind {
+    /// The Condition element's text.
+    Condition,
+    /// The RaiseError Number argument's text.
+    Number,
+    /// The optional RaiseError Description argument's text.
+    Description,
+}
+
+/// Explicitly materialized XML text, without expression evaluation or coercion.
+pub struct MacroProgramText {
+    pub(super) source: XmlByteSpan,
+    pub(super) value: String,
+}
+
+impl MacroProgramText {
+    /// Original inner-XML range, before entity and line-ending normalization.
+    pub const fn source_span(&self) -> XmlByteSpan {
+        self.source
+    }
+
+    /// Decoded XML 1.0 text; whitespace and expression spelling remain intact.
+    pub fn text(&self) -> &str {
+        &self.value
+    }
+}
+
 impl XmlByteSpan {
     /// Inclusive start in the original decoded XML UTF-8 byte buffer.
     pub const fn start(self) -> usize {

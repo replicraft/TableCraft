@@ -86,6 +86,44 @@ are fallible and charged before reservation. Parsing/traversal and final
 publication check work and cancellation. The property decoder consumes no row
 budget; native source capture retains its separate row/read limits.
 
+## Explicit text extraction
+
+`DataMacroProgram::text_content` materializes a selected recognized Condition,
+Number or Description through `MacroProgramTextKind`. Callers select a node and
+slot, not an arbitrary XML fragment. The returned `MacroProgramText` retains the
+original `source_span()` separately from its decoded `text()`. Wrong node/slot
+combinations and opaque nodes refuse. Missing Description returns None; a
+present-empty argument returns an empty text value.
+
+Extraction decodes predefined and numeric references once, joins text and CDATA,
+and excludes XML comments. XML 1.0 literal CRLF/CR become LF; a referenced
+`&#13;` remains a carriage return. Unicode, ordinary whitespace, expression
+spelling and element-leading U+FEFF are preserved. A document BOM remains part of
+the original coordinate buffer. Raw property/XML bytes and spans are unchanged.
+The existing XML safety owner supplies reference validation and the bounded
+text reader; no external entities or resources are resolved.
+
+This does not parse expressions, coerce argument types or execute macros. Plain
+Description text and leading-equals expression spelling remain distinct input
+for future explicit execution. Text extraction uses cumulative byte/work pools,
+fallible output reservation and cancellation through final publication; it
+consumes no row allowance. The existing XML input ceiling also bounds output.
+
+The dedicated source gate passed two functions before extraction API execution:
+32 BOM/no-BOM carriers with 96 exact raw text slots, three absent/present-empty
+carriers, and two opaque controls. Four focused API functions then passed on their
+first run, together with the two source functions. They compare independently
+literal decoded strings, original spans/bytes, absent/empty distinctions,
+wrong/opaque selections, resource refusals, terminal cancellation, repeated
+leading U+FEFF and larger output. Subsequent mechanical changes call the actual
+text owner directly without a forwarding re-export and add a payload-free tracing
+span at the public boundary; no decoding behavior or golden changed.
+The broader native Extra target passes 29 functions, and the existing CLI Extra
+target passes 13, including all 50 structure carriers. Strict ACE/CLI
+all-target/all-feature Clippy and the minimal ACE build pass on their first
+invocations. Checks for this additive extraction slice are recorded in its
+[focused result](../../testing/results/data-macro-program-text-2026-10-30.json).
+
 ## Observed verification
 
 The source gate passed 25 independently authored native MR2/property/XML carriers

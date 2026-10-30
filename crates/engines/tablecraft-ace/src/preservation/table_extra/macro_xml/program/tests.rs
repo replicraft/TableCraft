@@ -9,6 +9,9 @@ use crate::{
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+mod text;
+mod text_sources;
+
 const NAMESPACE: &str = "http://schemas.microsoft.com/office/accessservices/2009/11/application";
 
 fn budget() -> ResourceBudget {

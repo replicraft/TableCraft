@@ -1,10 +1,11 @@
 mod model;
 mod read;
+mod text;
 mod tree;
 
 pub use model::{
     DataMacroProgram, MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode,
-    MacroProgramNodeKind, MacroProgramProfile, XmlByteSpan,
+    MacroProgramNodeKind, MacroProgramProfile, MacroProgramText, MacroProgramTextKind, XmlByteSpan,
 };
 
 use super::super::TableExtraProperty;

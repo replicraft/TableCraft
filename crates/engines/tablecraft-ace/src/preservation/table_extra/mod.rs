@@ -6,7 +6,7 @@ mod model;
 pub use macro_xml::{
     DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, MacroProgramCoverage,
     MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind, MacroProgramProfile,
-    XmlByteSpan,
+    MacroProgramText, MacroProgramTextKind, XmlByteSpan,
 };
 pub use model::{TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty};
 
