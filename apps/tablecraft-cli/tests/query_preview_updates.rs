@@ -1,4 +1,6 @@
 //! SQL-selected user workflows over the independent engineering source owner.
+#[path = "query_preview_updates/dates.rs"]
+mod dates;
 #[path = "query_preview_updates/display_metadata.rs"]
 mod display_metadata;
 #[path = "query_preview_updates/metadata_default.rs"]

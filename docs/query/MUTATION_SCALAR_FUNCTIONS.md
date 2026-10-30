@@ -27,6 +27,8 @@ single-column Int32/Jet 4 editing limits and ordinary ACE refusal.
 | Eager choice | IIf, Nz |
 | Text length, slicing and spaces | Len, Left, Right, Mid, LTrim, RTrim, Trim |
 | Numeric operations | Abs, Int, Fix, Round |
+| Gregorian date components | Year, Month, Day, Hour, Minute, Second |
+| Numeric date/time construction | DateSerial, TimeSerial |
 
 These are existing query function implementations and argument rules. Numeric
 literals, existing literal/date/GUID forms, depth-zero original fields, unary and
@@ -36,7 +38,21 @@ The text argument normalizer is reused, including valid optional substring
 arguments. No ambient locale, clock, encoding or comparison policy is selected.
 Text comparisons still require an explicit admitted host collation.
 
-The function set excludes CStr, CDate and other date calls, case/encoding/formatting
+Date components and constructors reuse the existing query kernels and Jiff civil
+calendar handling. They do not read a clock or parse locale-dependent date text.
+DateSerial uses the explicit existing 1930–2029 two-digit-year window; mutation
+hosts currently expose no window override. Prefer four-digit years when that
+window is not intended. Relative numeric components, checked overflow, eager
+arguments and exact legacy DATE carriers retain the
+[constructor contract](../expressions/dates/DATE_CONSTRUCTORS.md). Component calls
+accept stored date carriers or NULL; they do not implicitly parse text.
+
+For example, `SET Score=Year(DateSerial(2000+Id,1,1))` reads the original Id,
+and `SET Moment=DateSerial(1900,1,1)+TimeSerial(12,0,0)` produces the exact legacy
+DATE serial 2.5. The target must admit that carrier; assigning a constructed Date
+to an Int32 field fails rather than extracting its serial implicitly.
+
+The function set excludes CStr, CDate, DateValue, DateAdd/DateDiff/DatePart and other date calls, case/encoding/formatting
 APIs, Domain functions, Eval, Rnd, clocks, CurrentUser and user-defined or qualified
 calls. Parameters, subqueries, aggregates, collections, correlated fields and
 external/saved edit targets remain closed. Refusal occurs during binding, even
@@ -102,3 +118,20 @@ omitted-fallback carriers; this was a name-only correction after those checks.
 
 These are local engineering checks. They do not qualify native Microsoft Access
 function outcomes, data macros, normal ACE saves or crash recovery.
+
+The later date extension passes five additional neutral controls: original-row
+UPDATE and DELETE, relative construction and components, exact stored DATE,
+nullable components/eager errors, closed arities/runtime calls, and exact resource
+ceilings with final cancellation before backend finish. An actual CLI control publishes the expected typed
+rows on a disposable native copy and preserves the source; wrong target carriers,
+eager date-argument errors and a clock hidden behind false WHERE publish no copy.
+This is typed-row frontend evidence, not a new complete-file physical mutation
+qualification or a native Access comparison.
+
+The first wider round stopped at an older empty-source test that still refused
+`Year(#2026-01-01#)`. That exact SQL now has positive empty-source and real-row
+checks; DateAdd/DateDiff/DatePart and clock refusals remain. The corrected round
+passes 113 query functions across the library and four mutation test targets.
+Strict all-target/all-feature and minimal query checks pass. The first CLI build
+also reported an unused function from concurrent, unregistered macro work; its
+successful date test does not qualify that separate work or a combined strict build.

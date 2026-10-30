@@ -99,6 +99,28 @@ pub(super) fn bind_call(
             }
             Ok(Expr::MathCall(function, values))
         }
+        (Some(Builtin::Date(function)), [FunctionArgument::Expression(value)]) => {
+            Ok(Expr::DateCall(
+                function,
+                Box::new(binder.expression(value, scopes, false, depth + 1)?),
+            ))
+        }
+        (Some(Builtin::DateConstructor(function)), arguments)
+            if function.accepts_arity(arguments.len()) =>
+        {
+            binder.charge(arguments.len() * size_of::<Expr>())?;
+            let mut values = Vec::new();
+            values
+                .try_reserve_exact(arguments.len())
+                .map_err(|_| QueryError::Allocation)?;
+            for argument in arguments {
+                let FunctionArgument::Expression(value) = argument else {
+                    return Err(QueryError::Unsupported);
+                };
+                values.push(binder.expression(value, scopes, false, depth + 1)?);
+            }
+            Ok(Expr::ConstructorCall(function, values))
+        }
         _ => Err(QueryError::Unsupported),
     }
 }
@@ -110,7 +132,10 @@ pub(super) fn admitted(expression: &Expr) -> bool {
         | Expr::NumericLiteral(_)
         | Expr::DateLiteral(..)
         | Expr::Field { depth: 0, .. } => true,
-        Expr::Unary(_, value) | Expr::IsNull(value, _) | Expr::Convert(_, value) => admitted(value),
+        Expr::Unary(_, value)
+        | Expr::IsNull(value, _)
+        | Expr::Convert(_, value)
+        | Expr::DateCall(_, value) => admitted(value),
         Expr::Binary(_, left, right) => admitted(left) && admitted(right),
         Expr::Between(value, first, last, _) | Expr::IIf(value, first, last) => {
             admitted(value) && admitted(first) && admitted(last)
@@ -121,6 +146,9 @@ pub(super) fn admitted(expression: &Expr) -> bool {
         }
         Expr::TextCall(function, values) => text_allowed(*function) && values.iter().all(admitted),
         Expr::MathCall(function, values) => math_allowed(*function) && values.iter().all(admitted),
+        Expr::ConstructorCall(function, values) => {
+            function.accepts_arity(values.len()) && values.iter().all(admitted)
+        }
         _ => false,
     }
 }
