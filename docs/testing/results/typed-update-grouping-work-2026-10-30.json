@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-30",
+  "feature": "Typed UPDATE grouping and ordinal work accounting",
+  "scope": [
+    "Shared typed input pays each ordinal byte before integer parsing",
+    "Each table and column comparison pays its byte-width bound before ASCII comparison and polls cancellation",
+    "Mixed preflight and later parser pay their own actual comparisons; removed duplicate advance payment",
+    "Identifier equality, grouping order, user ordinals, expected values and native dispatch unchanged"
+  ],
+  "checks": {
+    "first_write_unit_subset": {
+      "exit_code": 0,
+      "functions": 10,
+      "new_grouping_controls": 3
+    },
+    "cli_regression": {
+      "exit_code": 0,
+      "unit_functions": 37,
+      "selected_integration_functions": 51
+    },
+    "strict_initial": {
+      "exit_code": 101,
+      "failure": "Nested conditional in changed CLI preflight; style-only let-chain correction"
+    },
+    "strict_corrected": {
+      "exit_code": 0,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "all_features": true
+    }
+  },
+  "observations": [
+    "Independent long-name and leading-zero ordinal inputs verify paid byte work",
+    "Exact and one-below step budgets plus cancellation pass",
+    "Resource prices intentionally increase for previously unmetered work; no version-to-version identical-cost promise",
+    "This is host input accounting; native storage compatibility is not expanded"
+  ],
+  "logs": [
+    {
+      "path": ".cache/typed-update-grouping-work-20261030/unit-first-root.log",
+      "bytes": 1666,
+      "sha256": "b62add9bdb43dd9d36338ea3d9a7169fb8bf854cdb042683a42fbd28f8407397"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/cli-first-root.log",
+      "bytes": 10138,
+      "sha256": "b6aed133a6497ff04e6a3bc640b10378d2f27b836bccb4bbdae1630ec9f328ea"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-first-root.log",
+      "bytes": 1400,
+      "sha256": "78065cd67d4cbb66d900c7bff2b8f9b06ab258d83664567e10433c8a4aa28308"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-corrected-root.log",
+      "bytes": 403,
+      "sha256": "7b1fc0985238a4b1d5f6ba1ed689b58046a1bef802121af8c0ec57bf44e982c2"
+    }
+  ],
+  "final_checks": {
+    "format": 0,
+    "initial_documentation_links": 1,
+    "corrected_documentation_links": 0,
+    "note": "Unrelated new native clock guide had one relative link corrected; parser code was unchanged.",
+    "logs": [
+      {
+        "path": ".cache/typed-update-grouping-work-20261030/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/typed-update-grouping-work-20261030/doclinks-final-root.log",
+        "bytes": 143,
+        "sha256": "ae710e2006bdc938e860f3508e489760dc431c3572899fd92dfd515c944b7b10"
+      },
+      {
+        "path": ".cache/typed-update-grouping-work-20261030/doclinks-corrected-root.log",
+        "bytes": 53,
+        "sha256": "0d8c4d1a621cf99c282445446e5c0392e3a1461b40387fcd8875805f55c45731"
+      }
+    ]
+  }
+}

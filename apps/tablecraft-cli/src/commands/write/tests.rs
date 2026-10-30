@@ -1,3 +1,4 @@
+mod grouping;
 mod mixed;
 
 use super::{args::Command, error::Error, input, updates, values};

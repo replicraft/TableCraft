@@ -153,6 +153,12 @@ one-table/one-variable scope and flags before serializing native groups, prepays
 its grouping name comparisons, and moves fixed/variable cells without cloning
 Text/Binary payloads. The bounded variable/LVAL dispatcher adds Steps for its
 classification pass; overall previous command-cost identity is not claimed.
+
+All typed UPDATE modes pay ordinal text bytes before integer parsing and table
+and column name bytes before each grouping comparison. Long names therefore
+consume more Steps than the earlier comparison-count model. Case matching,
+caller values and grouping order remain the same. Mixed preflight pays its own
+comparisons; the shared parser pays the later grouping pass directly.
 The shared legacy parser remains the complete typed-value authority, and native
 kind, request-count and source constraints remain enforced by the selected engine.
 
