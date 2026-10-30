@@ -28,6 +28,9 @@ pub(crate) struct Arguments {
     /// Fresh output path; existing files, aliases and symlinks are not replaced.
     #[arg(long, value_name = "PATH")]
     output: PathBuf,
+    /// Require supported file and captured-directory durability barriers.
+    #[arg(long)]
+    durable_output: bool,
     /// Cumulative parsing/native/output allowance; structural caps remain separate.
     #[arg(long, default_value_t = WORK_BYTES)]
     work_bytes: u64,
@@ -43,6 +46,7 @@ pub(in crate::commands) enum Error {
     Parse(tablecraft_sql::ParseError),
     Definition(CreateIndexError),
     Source(AccessInputError),
+    SourceRelease(AccessInputError),
     Native(InspectError),
     Publish(native::publication::Error),
     Encrypted,
@@ -56,6 +60,12 @@ impl fmt::Display for Error {
             Self::Parse(error) => error.fmt(formatter),
             Self::Definition(error) => error.fmt(formatter),
             Self::Source(error) => error.fmt(formatter),
+            Self::SourceRelease(error) => {
+                write!(
+                    formatter,
+                    "could not release source before publication: {error}"
+                )
+            }
             Self::Native(error) => error.fmt(formatter),
             Self::Publish(error) => error.fmt(formatter),
             Self::Encrypted => formatter.write_str(
@@ -70,6 +80,13 @@ impl fmt::Display for Error {
 }
 
 pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Error> {
+    run_with_release(args, native::NativeFile::close)
+}
+
+fn run_with_release(
+    args: Arguments,
+    release: impl FnOnce(native::NativeFile) -> Result<(), AccessInputError>,
+) -> Result<String, Error> {
     let _span = tracing::debug_span!("cli.query.preview_create_index").entered();
     let mut budget = ResourceBudget::new(args.work_bytes, args.work_rows, args.work_steps);
     budget
@@ -86,6 +103,13 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     // Inspect the owned statement shape before any database or output is opened.
     sql_index::lower_create_index(query.query(), &mut budget, &|| false)
         .map_err(Error::Definition)?;
+    let output = native::publication::Output::capture(
+        &args.output,
+        args.durable_output,
+        &mut budget,
+        &|| false,
+    )
+    .map_err(Error::Publish)?;
     let mut source = native::open_raw(&args.database, &mut budget).map_err(Error::Source)?;
     if source.is_deployment() {
         return Err(Error::Deployment);
@@ -136,10 +160,14 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     .map_err(|_| Error::Report)?;
     writeln!(report, "Indexed source rows\t{}", metadata.indexed_rows)
         .map_err(|_| Error::Report)?;
+    if args.durable_output {
+        report.push_str(native::publication::REQUIRED_REPORT);
+    }
 
-    native::publication::publish(&args.output, copy.candidate_bytes(), &mut budget, &|| false)
+    release(source).map_err(Error::SourceRelease)?;
+    output
+        .publish(copy.candidate_bytes(), &mut budget, &|| false)
         .map_err(Error::Publish)?;
-    drop(source);
     Ok(report)
 }
 

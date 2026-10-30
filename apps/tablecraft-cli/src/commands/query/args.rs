@@ -142,7 +142,7 @@ pub(crate) enum Command {
     Run(Box<RunArgs>),
     /// Apply a bounded single-table UPDATE to a fresh offline Jet 4 copy.
     #[command(
-        after_help = "Supports one existing non-indexed non-NULL fixed Int32 assignment with pure expressions and WHERE. Requires an offline Jet 4 source and a new output path; never modifies the input. ACE, INSERT/DELETE, joins, parameters and unavailable rules/content are rejected. A write failure after output creation may leave an incomplete copy. Text filters require an explicit collation; ordinal is not an Access locale collation."
+        after_help = "Supports one existing non-indexed non-NULL fixed Int32 assignment with pure expressions and WHERE. Requires an offline Jet 4 source and a new output path; never modifies the input. ACE, INSERT/DELETE, joins, parameters and unavailable rules/content are rejected. Default publication syncs contents without a directory durability claim. Explicit --durable-output requires supported file and captured-directory barriers; it never downgrades. Uncertain or post-publication failures may leave a complete visible copy. Text filters require an explicit collation; ordinal is not an Access locale collation."
     )]
     Update {
         /// UPDATE text, passed as one shell-quoted argument.
@@ -154,6 +154,9 @@ pub(crate) enum Command {
         /// Fresh output copy; an existing path is never overwritten.
         #[arg(long, value_name = "PATH")]
         output: std::path::PathBuf,
+        /// Require supported file and captured-directory durability barriers.
+        #[arg(long)]
+        durable_output: bool,
         /// Explicit text comparison policy.
         #[arg(long, value_enum)]
         collation: Option<super::collation::UpdateCollation>,

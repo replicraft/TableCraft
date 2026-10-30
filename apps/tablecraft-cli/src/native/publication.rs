@@ -2,9 +2,12 @@
 use std::{fmt, fs::File, io::ErrorKind, path::Path};
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_io::publication::{PublicationError, RequiredOutput};
 use tempfile::NamedTempFile;
 
 const COPY_CHUNK_BYTES: usize = 64 * 1024;
+pub(crate) const REQUIRED_REPORT: &str =
+    "Durable output\tFile and captured-directory barriers completed\n";
 
 #[derive(Debug)]
 pub(crate) enum Error {
@@ -13,6 +16,7 @@ pub(crate) enum Error {
     Sync(ErrorKind),
     Persist(ErrorKind),
     Native(InspectError),
+    Required(PublicationError),
 }
 
 impl fmt::Display for Error {
@@ -34,6 +38,53 @@ impl fmt::Display for Error {
                 "could not publish a fresh database copy; existing destinations are never overwritten ({kind:?})"
             ),
             Self::Native(error) => error.fmt(f),
+            Self::Required(error) => error.fmt(f),
+        }
+    }
+}
+
+/// Select publication once, retaining a required captured parent before source I/O.
+pub(crate) enum Output<'a> {
+    ContentOnly(&'a Path),
+    Required(RequiredOutput),
+}
+
+impl<'a> Output<'a> {
+    pub(crate) fn capture(
+        path: &'a Path,
+        required: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        if required {
+            RequiredOutput::capture(path, budget, cancelled)
+                .map(Self::Required)
+                .map_err(Error::Required)
+        } else {
+            Ok(Self::ContentOnly(path))
+        }
+    }
+
+    pub(crate) fn publish(
+        self,
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), Error> {
+        match self {
+            Self::ContentOnly(path) => publish(path, bytes, budget, cancelled),
+            Self::Required(output) => {
+                // IO owns the payload Bytes charge and the complete terminal
+                // publication/barrier/cleanup protocol. Never downgrade/retry.
+                let receipt = output
+                    .publish(bytes, budget, cancelled)
+                    .map_err(Error::Required)?;
+                tracing::debug!(
+                    namespace_synced = receipt.namespace_synced(),
+                    "required output completed"
+                );
+                Ok(())
+            }
         }
     }
 }

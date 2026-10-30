@@ -5,6 +5,9 @@ mod source;
 #[path = "query_preview_create_index/guards.rs"]
 mod guards;
 
+#[path = "query_preview_create_index/durable.rs"]
+mod durable;
+
 use source::{same_bytes, sql};
 use std::{
     fs,

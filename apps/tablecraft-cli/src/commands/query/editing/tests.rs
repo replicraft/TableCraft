@@ -7,6 +7,80 @@ use tablecraft_io::ExclusiveFile;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access::mutation_fixture as fixture;
 
+#[test]
+fn qualify_durable_jet4_original_and_expected_before_publication() {
+    let (before, expected) = source_and_expected();
+    assert_eq!(before.len(), expected.len());
+    assert_eq!(
+        before
+            .iter()
+            .zip(&expected)
+            .filter(|(left, right)| left != right)
+            .count(),
+        1
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn required_jet4_copy_matches_the_existing_independent_image_and_report() {
+    let (before, expected) = source_and_expected();
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("source.mdb");
+    let output = directory.path().join("copy.mdb");
+    fs::write(&input, &before).unwrap();
+    let query = tablecraft_sql::parse_query(
+        "UPDATE Items SET Score=27 WHERE Id=2",
+        tablecraft_sql::ParseLimits::default(),
+    )
+    .unwrap();
+
+    let report = super::run(query.query(), &input, &output, None, true)
+        .unwrap_or_else(|error| panic!("{error}"));
+    assert_eq!(
+        report,
+        "Matched rows\t1\nChanged rows\t1\nDurable output\tFile and captured-directory barriers completed\n"
+    );
+    assert_eq!(fs::read(&output).unwrap(), expected);
+    assert_eq!(fs::read(&input).unwrap(), before);
+    ExclusiveFile::open(&input).unwrap().close().unwrap();
+
+    assert!(super::run(query.query(), &input, &output, None, true).is_err());
+    assert_eq!(fs::read(&output).unwrap(), expected);
+    assert_eq!(fs::read(&input).unwrap(), before);
+    assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 2);
+}
+
+#[test]
+fn required_jet4_closed_shape_refusals_precede_output_and_source_open() {
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("missing-source.mdb");
+    let output = directory.path().join("missing-parent/copy.mdb");
+    for sql in [
+        "SELECT 1",
+        "UPDATE Items SET Id=2, Score=27",
+        "PARAMETERS p LONG; UPDATE Items SET Score=p",
+        "UPDATE [remote].[Items] SET Score=27",
+    ] {
+        let query =
+            tablecraft_sql::parse_query(sql, tablecraft_sql::ParseLimits::default()).unwrap();
+        assert!(matches!(
+            super::run(query.query(), &input, &output, None, true),
+            Err(Error::Retrieval(tablecraft_query::QueryError::Unsupported))
+        ));
+    }
+    let query = tablecraft_sql::parse_query(
+        "UPDATE Items SET Score=27 WHERE Id=2",
+        tablecraft_sql::ParseLimits::default(),
+    )
+    .unwrap();
+    assert!(matches!(
+        super::run(query.query(), &input, &output, None, true),
+        Err(Error::Copy(_))
+    ));
+    assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 0);
+}
+
 fn budget() -> ResourceBudget {
     ResourceBudget::new(128 * 1024 * 1024, 100_000, 100_000_000)
 }

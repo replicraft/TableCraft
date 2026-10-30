@@ -150,11 +150,13 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
             database,
             output,
             collation,
+            durable_output,
         } => editing::run(
             parse(&sql)?.query(),
             &database,
             &output,
             collation.map(Into::into),
+            durable_output,
         ),
     }
 }

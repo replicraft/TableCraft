@@ -8,6 +8,9 @@ use tablecraft_ace::InspectError;
 use tablecraft_core::limits::ResourceBudget;
 use tempfile::NamedTempFile;
 
+#[path = "tests/required.rs"]
+mod required;
+
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1024 * 1024, 100, 1024 * 1024)
 }

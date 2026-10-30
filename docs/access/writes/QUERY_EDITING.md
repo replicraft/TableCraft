@@ -57,7 +57,7 @@ The source is unchanged. No
 SQLite editing, VBA, macros or providers execute. CLI work ceilings are 256 MiB
 cumulative bytes, 100,000 rows and 100,000,000 steps; native structural caps remain.
 
-The [common fresh-copy publisher](ENGINEERING_COPIES.md#bounds-and-publication)
+By default, the [common fresh-copy publisher](ENGINEERING_COPIES.md#bounds-and-publication)
 charges the complete output-byte allowance before creating an owned temporary in
 the output directory. It writes the complete candidate, syncs the file and
 publishes with `persist_noclobber`. Write, file-sync and publication failures clean
@@ -68,6 +68,15 @@ power-loss durability guarantee. The CLI does not edit a live database in place
 or activate a journal. Optional
 [library journal integration](NATIVE_WRITES.md#optional-journaled-persistence)
 remains the separate explicit in-place persistence boundary.
+
+Explicit `--durable-output` instead captures the output parent before source I/O
+and requires supported file/captured-directory barriers through the common
+publisher. The native Jet 4 profile, one-image planning and fallible source close
+remain unchanged. Required never downgrades to default publication. Success
+acknowledges the captured directory, not later resolution of its textual path;
+uncertain/visible failures can retain an output and do not authorize rollback or
+retry. Windows currently refuses Required before staging. See the
+[exact durable-output contract](../../cli/DURABLE_OUTPUT.md).
 
 The separate [experimental engineering-copy commands](ENGINEERING_COPIES.md)
 expose typed ACE UPDATE/INSERT/DELETE preparation on fresh outputs. They do not

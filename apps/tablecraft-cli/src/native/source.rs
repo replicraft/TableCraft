@@ -20,6 +20,22 @@ impl NativeFile {
     pub(crate) fn is_deployment(&self) -> bool {
         self.deployment
     }
+
+    /// Release the original native source guard before publishing an output.
+    /// Deployment inputs have no recoverable native resource and are refused.
+    pub(crate) fn close(self) -> Result<(), AccessInputError> {
+        let source = match self.inner {
+            Kind::Plain(source) => source,
+            Kind::Encrypted(source) => source.into_inner(),
+        };
+        let source = source
+            .into_native()
+            .map_err(|_| AccessInputError::UnsupportedPackage)?;
+        source
+            .close()
+            .map_err(InspectError::from)
+            .map_err(Into::into)
+    }
 }
 
 pub(crate) fn open_raw(
