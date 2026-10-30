@@ -1,0 +1,331 @@
+{
+  "feature": "Explicit SQL secondary-index engineering copies",
+  "date": "2026-10-30",
+  "state": "Separate frontend source-first and complete host API checks, affected regression, final strict and minimal Access all passed; final repository formatting/links/boundaries run by root after documentation freeze",
+  "command": "query preview-create-index SQL --database PATH --output PATH",
+  "scope": {
+    "ordinary_nonunique": true,
+    "include_null": true,
+    "single_previously_unindexed_int32_field": true,
+    "directions": [
+      "ASC",
+      "DESC"
+    ],
+    "standard_capture_max_bytes": 67108864,
+    "default_work_bytes": 268435456,
+    "default_work_rows": 100000,
+    "default_work_steps": 100000000,
+    "changed_data_rows": 0,
+    "normal_native_save_qualification": false,
+    "required_macro_qualification": false,
+    "native_access_conformance": false
+  },
+  "prerequisites": {
+    "shared_owner": "tablecraft_testkit::access::secondary_index",
+    "before_images": 8,
+    "complete_expected_images": 16,
+    "native_source_views": 32,
+    "source_census": "root-reported passed",
+    "extraction_identity": "root-reported exact all49 exported witnesses",
+    "native_mutation_regression_current": 559,
+    "historical_native_regression_549_is_not_rewritten": true
+  },
+  "first_host_preparation": {
+    "normal_cli": "passed",
+    "access_lowering_functions": 3,
+    "cli_preopen_functions": 3,
+    "initial_compile_only_failures": [
+      {
+        "log": {
+          "path": ".cache/ace16-create-index-sql-host-next-20261030/lowering-first-root.log",
+          "bytes": 2032,
+          "sha256": "a60b66335833daa59daab4b5fc5d283b3d0816553c817aee4a10e12165c19fc7"
+        },
+        "reason": "Two pre-existing test fixture imports became private after shared owner extraction; no lowering tests executed"
+      },
+      {
+        "log": {
+          "path": ".cache/ace16-create-index-sql-host-next-20261030/preopen-first-root.log",
+          "bytes": 2853,
+          "sha256": "fac89fc8cc5e26375e7f45c0d3e6eb5097c53cfb109730af45f7d9c81a674c32"
+        },
+        "reason": "Two pre-existing test fixture imports became private after shared owner extraction; no preopen tests executed"
+      }
+    ],
+    "corrected_outcome": "Both three-function subsets pass after root extraction-lane import corrections",
+    "logs": [
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/normal-first-root.log",
+        "bytes": 402,
+        "sha256": "2607aec2a63e88ec510f1086cf69acf733430d9a47075b0139c2b3825e73237a"
+      },
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/lowering-after-imports-root.log",
+        "bytes": 731,
+        "sha256": "57ced6e246c68e616ff1316d9d2bd216222a633a4e353e6b60e5f29974b9ad15"
+      },
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/preopen-after-imports-root.log",
+        "bytes": 984,
+        "sha256": "23e2e9d266cf7ba1f709a8927e9c995fea2c1d69a314758174b32222ac3d371b"
+      }
+    ]
+  },
+  "host_source_first": {
+    "status": "passed first run before host API calls",
+    "functions_each": 1,
+    "pairs_each": 16,
+    "reader_views_each": 32,
+    "logs": [
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/access-source-first-root.log",
+        "bytes": 591,
+        "sha256": "6fabd53d58674b29c548ee1627f660d8be510742a99c6f83ebb4c7bc9705406e"
+      },
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/cli-source-first-root.log",
+        "bytes": 470,
+        "sha256": "ec6059784692a9f2cb5b774c1760b783338ad953917d994522ac8f010952bb78"
+      }
+    ]
+  },
+  "host_api": {
+    "status": "passed first run",
+    "access_full_target_functions": 4,
+    "access_api_functions_excluding_source": 3,
+    "direct_sql_complete_images": 16,
+    "additional_typed_request_parity_images": 1,
+    "cli_full_target_functions": 3,
+    "cli_api_functions_excluding_source": 2,
+    "cli_complete_copies": 16,
+    "cli_occupied_output_refusals": 16,
+    "cli_native_profile_refusals": 5,
+    "cli_source_alias_refusals": 1,
+    "budgets": "cumulative capture/lowering/finish exact Bytes/Rows/Steps together and each one-below; cancellation",
+    "source_and_candidate_bytes": "whole-image exact with bounded mismatch diagnostics",
+    "logs": [
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/access-api-first-root.log",
+        "bytes": 602,
+        "sha256": "5631076eb27500ad48aa2bb723d8dcac2db42ff976b1e35e156e843090f4b6bd"
+      },
+      {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/cli-api-first-root.log",
+        "bytes": 526,
+        "sha256": "3b3ea9e3880e7092c9434ff44baf80f293af84a78a01aecffd20ba8a1896dd71"
+      }
+    ]
+  },
+  "broader_checks": {
+    "status": "passed applicable runtime, corrected strict and minimal Access checks",
+    "native_all_target_strict": "passed, root-reported",
+    "initial_host_strict": {
+      "status": "compile-only failure in old shared fixture imports; not a new host runtime failure",
+      "old_unused_import_diagnostics": 10,
+      "old_private_corpus_base_import_diagnostics": 1,
+      "log": {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/strict-first-root.log",
+        "bytes": 6116,
+        "sha256": "63c1e068b2c2359de3f2ff2a12de654dee2ae6f5938eaed049f3501ec896ed3c"
+      }
+    },
+    "current_correction_owner": "Extraction lane corrected the old fixture imports; no new host production changes after passing API checks",
+    "strict_access_cli_all_targets_all_features": "passed after extraction-import corrections",
+    "strict_final_log": {
+      "path": ".cache/ace16-create-index-sql-host-next-20261030/strict-final-root.log",
+      "bytes": 291,
+      "sha256": "70c5a40d4ce2047b3a692afff4630e5176990ed62fd2004871b47d1eb1a541a6"
+    },
+    "minimal_access": "passed",
+    "minimal_access_log": {
+      "path": ".cache/ace16-create-index-sql-host-next-20261030/access-minimal-first-root.log",
+      "bytes": 301,
+      "sha256": "f7010cb55192e64828b8854065430b06685760f6241b260173578ebf63821851"
+    },
+    "access_library_functions": 67,
+    "cli_unit_functions": 51,
+    "cli_affected_integration_functions": 46,
+    "cli_integration_by_target": {
+      "preserved_boolean_updates": 4,
+      "query_preview_default_long_values": 4,
+      "query_preview_updates": 27,
+      "updates": 4,
+      "write_previews": 7
+    },
+    "regression_logs": [
+      {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/access-unit-first-root.log",
+        "bytes": 8463,
+        "sha256": "36d2a183ec57b07bb7c8e030679bffe553d49290ea10cd54562f9f78928c44bb"
+      },
+      {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/cli-unit-first-root.log",
+        "bytes": 5683,
+        "sha256": "7df9170ff0e8002102bd776f0774fd866080b9c2422eb35565e0a065ed909226"
+      },
+      {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/cli-update-regression-first-root.log",
+        "bytes": 5583,
+        "sha256": "de82b1f1992d0b1a02399d9ebc0ad291fb15fb698356bcf4ac1260646b6cf570"
+      }
+    ],
+    "repository_checks": {
+      "final-format-root": {
+        "exit_code": 0,
+        "log": ".cache/ace16-create-index-sql-host-next-20261030/final-format-root.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-links-root": {
+        "exit_code": 0,
+        "log": ".cache/ace16-create-index-sql-host-next-20261030/final-links-root.log",
+        "sha256": "ed7a7670604f3f6826c0df9d76612e0d75fe911ee3db2247daa7aa378afb9ef1"
+      },
+      "final-boundaries-root": {
+        "exit_code": 0,
+        "log": ".cache/ace16-create-index-sql-host-next-20261030/final-boundaries-root.log",
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      "documentation_targets": 6636,
+      "missing_targets": 0,
+      "workspace_packages": 15
+    }
+  },
+  "independent_sources": {
+    "owner": {
+      "path": "crates/engineering/tablecraft-testkit/src/access/secondary_index.rs",
+      "bytes": 9407,
+      "sha256": "6cdecdca10c540b04232e2b02a21c637f5b070ccaf96f71b5ec8cf724fda5272"
+    },
+    "index_child": {
+      "path": "crates/engineering/tablecraft-testkit/src/access/secondary_index/index.rs",
+      "bytes": 2104,
+      "sha256": "b68ce88d265238d278539e15897c9b07829bea97e3b442749254066c7b996a0d"
+    }
+  },
+  "historical_records_preserved": [
+    "docs/testing/results/ace16-secondary-index-creation-sources-2026-10-30.json",
+    "docs/testing/results/ace16-secondary-index-creation-native-2026-10-30.json",
+    "docs/testing/results/testkit-secondary-index-builder-extraction-2026-10-30.json"
+  ],
+  "pins": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "bytes": 12324,
+      "sha256": "4aaecd3a19568e64679a60e1cb8a3cd226966823665fead8101ebea65e1f4b80"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "bytes": 5972,
+      "sha256": "46801555ef1582bfa01e46d6ccb6e575e5c6f0ae38c1845eada402513d5c6a64"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_create_index.rs",
+      "bytes": 5905,
+      "sha256": "4c6eae494c83f6fcb551de975e6a82a7f4be08c76ed9b0cccc4f059133f6fad8"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/mod.rs",
+      "bytes": 19879,
+      "sha256": "4696e4a8a13a1c640ef8c579f08d5512e088baa03b66314d1267f4b1cdf83ab4"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql_index.rs",
+      "bytes": 2956,
+      "sha256": "eeb0890469872959df30f3a4c8ef6a2384871cb546d76717a45c6d1560e14627"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql_index/tests.rs",
+      "bytes": 3491,
+      "sha256": "30a6ed5f79ffdf77dec0b6ff36aa0efa1aec06a616594d7054ce4f1598ba10e2"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_create_index/tests.rs",
+      "bytes": 2840,
+      "sha256": "3144b28be0b17ed9745e85d3fac6cbaf59289be3c4e3667bff8ce246bbf3f215"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/create_secondary_index.rs",
+      "bytes": 5350,
+      "sha256": "d360bdba82a185692e124f28d7ed4418776fa169efd21d8b707e798cf75b6fa6"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/create_secondary_index/source.rs",
+      "bytes": 10457,
+      "sha256": "8c906c1974996946fb4e9640d52314b3b1cc86ba0139daac6cd69fb5eed6bd32"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_create_index.rs",
+      "bytes": 4144,
+      "sha256": "3c569eba46d0e835cbfdc0cf6b9eeed815459ab70d089e0111dc0617624ac557"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_create_index/guards.rs",
+      "bytes": 5244,
+      "sha256": "bc6b745f0c11c90fb67d339deccb6fafe9600de2297d3fb723e0af7f8fd662d5"
+    }
+  ],
+  "preexecution_import_review": {
+    "change": "Root removed helper model reexport; Access and CLI tests import actual shared model owner directly",
+    "constructor_changes": false,
+    "freeze": {
+      "path": ".cache/ace16-create-index-sql-host-next-20261030/positive-direct-owner-import-review-freeze.json",
+      "bytes": 1056,
+      "sha256": "49d9c1dd375b2e0fef0cdca20284279ed90708690b52ac1476e3366720c1b4a8"
+    }
+  },
+  "guard_coverage_scope": "Dedicated supported-envelope SOURCE gate passed before the command guard API; synthetic test-owned envelopes only, no native Access encryption/signature qualification.",
+  "guard_source_first": {
+    "status": "passed first run before guard API",
+    "functions": 1,
+    "readable_agile_profiles": 1,
+    "deployment_payloads_exact": 2,
+    "compression_profiles": [
+      "stored",
+      "MSZIP"
+    ],
+    "source_counters": [
+      1000,
+      2000
+    ],
+    "log": {
+      "path": ".cache/ace16-create-index-sql-host-next-20261030/guard-source-first-root.log",
+      "bytes": 494,
+      "sha256": "0652699b337fd44f696be3f1f58c6cd38a922bbd13c4d8ae96dd6d38bd46695c"
+    }
+  },
+  "guard_api": {
+    "status": "passed first run",
+    "functions": 1,
+    "calls": 4,
+    "cases": [
+      "encrypted without password",
+      "encrypted with correct password",
+      "stored deployment",
+      "MSZIP deployment"
+    ],
+    "checks": [
+      "exit2 and specific guard error",
+      "stdout empty",
+      "source envelope unchanged",
+      "output absent",
+      "no temporary artifact"
+    ],
+    "log": {
+      "path": ".cache/ace16-create-index-sql-host-next-20261030/guard-api-first-root.log",
+      "bytes": 387,
+      "sha256": "a1d7f73ee0922934eb095f79d710e1700b0cc66ca3727b676ce5027b695d3048"
+    }
+  },
+  "guard_helper_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/support/agile.rs",
+      "bytes": 3787,
+      "sha256": "919c7523bdbf7a6c3d548edacf30993436cc7341e839a53c4ed1acdabba64854"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/support/deployment.rs",
+      "bytes": 1728,
+      "sha256": "b1aacb22b234598d19f05c048b656479fcfc10facc561a8c7c234c88f717eae2"
+    }
+  ]
+}

@@ -19,6 +19,7 @@ mod args;
 mod parameters;
 mod prepare_guards;
 mod preview_calculation;
+mod preview_create_index;
 mod preview_delete;
 mod preview_insert;
 mod preview_update;
@@ -58,6 +59,7 @@ pub(super) enum Error {
     EngineeringDelete(preview_delete::Error),
     EngineeringInsert(preview_insert::Error),
     EngineeringUpdate(preview_update::Error),
+    EngineeringIndex(preview_create_index::Error),
     GuardPreparation(prepare_guards::Error),
 }
 impl fmt::Display for Error {
@@ -89,6 +91,7 @@ impl fmt::Display for Error {
             Self::EngineeringDelete(error) => error.fmt(f),
             Self::EngineeringInsert(error) => error.fmt(f),
             Self::EngineeringUpdate(error) => error.fmt(f),
+            Self::EngineeringIndex(error) => error.fmt(f),
             Self::GuardPreparation(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
@@ -104,6 +107,9 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
         }
         Command::PreviewDelete(args) => {
             preview_delete::run(*args, password).map_err(Error::EngineeringDelete)
+        }
+        Command::PreviewCreateIndex(args) => {
+            preview_create_index::run(*args, password).map_err(Error::EngineeringIndex)
         }
         Command::PreviewUpdate(args) => {
             preview_update::run(*args, password).map_err(Error::EngineeringUpdate)

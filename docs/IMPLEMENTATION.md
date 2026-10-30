@@ -20,8 +20,12 @@ existing rows, indexes and aliases, reserves distinct map/body pages, and proves
 the complete candidate against the original request. The
 [creation contract](testing/ACE16_SECONDARY_INDEX_CREATION.md) records sixteen
 independent whole-image comparisons, correlated-forgery refusals, resource and
-cancellation checks. The native mutation regression passes 549 functions; broader
-key/layout profiles, SQL/CLI integration and normal saves remain unfinished.
+cancellation checks. The native mutation regression passes 559 functions. The
+Access adapter and `query preview-create-index` now provide the explicit SQL
+copy path, with sixteen whole-image comparisons through each consumer, guarded
+publication and encrypted/deployment refusals. See the
+[SQL contract](access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation).
+Broader key/layout profiles and normal saves remain unfinished.
 Independent public-library evidence remains separate from native Access
 qualification. A separate SOURCE-only check accepts sixteen requests on eight
 independently generated originals, with passing existing-owner censuses and

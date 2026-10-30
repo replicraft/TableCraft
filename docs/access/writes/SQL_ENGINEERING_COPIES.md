@@ -348,3 +348,82 @@ The strict retry found two obsolete wrapper imports; removing only those imports
 allowed final all-target/all-feature ACE/Access/CLI strict checks and formatting
 to pass. Both compile-only hygiene failures remain recorded separately from the
 earlier authored expectation failure; no production or encoding policy changed.
+
+## Explicit secondary-index creation
+
+`query preview-create-index` lowers one owned CREATE INDEX definition into the
+Access engineering service and publishes a fresh experimental copy. It adds one
+ordinary nonunique single-Int32 secondary index, including NULL entries, on a
+previously unindexed field:
+
+```sh
+tablecraft query preview-create-index \
+  'CREATE INDEX ScoreLookup ON Items (Score DESC)' \
+  --database offline.accdb --output indexed.accdb
+```
+
+The existing SQL parser owns the statement. The adapter borrows its original
+index, table and field names without SQL interpolation. One field and optional
+ASC/DESC are accepted; UNIQUE, WITH policies, parameters and other statement
+kinds refuse before source open. Native qualification owns actual names,
+metadata, properties, constraints and complete source ownership. Parser
+acceptance alone does not establish write eligibility.
+
+The native profile requires a qualified ordinary fixed Int32 table, supported
+existing single-column indexes, a single-page definition and represented inline
+allocation maps. New index names are ASCII, at most 64 bytes, beginning with a
+letter and containing only letters, digits or underscore. Wider fields, existing
+selected-field indexes, unique/primary/foreign policies, larger tree profiles
+and unsupported properties remain refused. The command uses Standard complete
+capture, retaining its 64 MiB ceiling; there is no `--image-bytes` mode here.
+
+The service returns one non-journalable `EngineeringCopy` with complete before
+and candidate bytes. Its `created_index()` metadata reports the native-audited
+name, separate logical and physical numbers and indexed source-row count.
+`affected_rows()` is zero: index population does not modify data rows. The CLI
+prints only that audited ASCII name and numeric metadata after successful
+publication. It performs no row expression evaluation and no failed-preview
+fallback.
+
+The command retains the read-only source guard, refuses encrypted/deployment
+rewrite profiles, formats the complete report before publication and uses the
+shared synced temporary/no-clobber publisher. Existing outputs, source aliases
+and symlinks are not replaced. It does not claim directory durability, normal
+ACE save permission, required data-macro qualification or in-place editing.
+Defaults remain 256 MiB cumulative work bytes, 100,000 row work and 100,000,000
+steps; the separate Standard image ceiling still applies.
+
+The [native creation contract](../../testing/ACE16_SECONDARY_INDEX_CREATION.md)
+and [host result](../../testing/results/secondary-index-sql-copies-2026-10-30.json)
+separate literal engineering checks from native Access conformance. The shared
+pure source owner preserves eight original images and sixteen complete expected
+images across both qualified headers, both directions and four populations.
+Indexed-row counts 0/3/6/600 remain distinct from fresh family counters
+0/3/4/541. Existing aliases, counters, Sentinel and unrelated bytes are preserved.
+
+The normal CLI check and three Access lowering/three CLI preopen tests pass
+after extraction-related test-import corrections. Both initial compile-only
+failures are retained. Separate Access and CLI SOURCE gates each pass one
+function covering all sixteen source/expected pairs before host API calls.
+The first complete Access target passes four functions, including sixteen exact
+SQL-service images, one typed-request parity image, native-profile refusals and
+cumulative capture/lowering/finish budget controls. The first CLI target passes
+three functions, including sixteen exact fresh copies, sixteen occupied-output
+refusals and native-profile/source-alias no-output controls. Index metadata and
+unchanged original files are checked independently. An additive guard SOURCE
+test then qualifies a supported encrypted reader and both stored/MSZIP deployment
+envelopes before the new guard API test. Its four calls refuse encrypted input
+with and without the correct password and both deployment profiles, preserving
+the original envelope bytes with no output or temporary artifact. These are
+repository-authored envelopes, not native Access encryption/signature evidence.
+
+Native all-target strict checks pass. The first broader host strict compilation
+stopped on eleven old fixture-import issues exposed by shared source extraction;
+those diagnostics are retained separately from the passing new host tests.
+After those import corrections, final Access/CLI all-target/all-feature strict
+checks and minimal Access pass. Broader regressions pass 67 Access library
+functions, 51 CLI unit functions and 46 existing CLI integration functions
+(four preserved-Boolean, four Memo/OLE, 27 SQL UPDATE, four Jet 4 UPDATE and seven
+typed-write functions). No new host production changes were needed after the
+passing API checks. Final repository formatting, links and dependency boundaries
+are checked by the commit owner after this documentation freeze.
