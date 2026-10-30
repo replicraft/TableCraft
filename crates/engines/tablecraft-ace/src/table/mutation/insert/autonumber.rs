@@ -1,5 +1,6 @@
 //! Explicit increment policy, never inferred from a stored AutoNumber flag.
 pub(super) mod audit;
+mod binding;
 #[cfg(test)]
 mod companions;
 pub(super) mod counter;
@@ -9,6 +10,7 @@ pub(super) mod request;
 mod tests;
 
 use crate::Ace16WritePreview;
+pub use binding::Ace16IncrementingInsertBinding;
 pub use request::{AutoNumberRowInsert, IncrementingAutoNumber};
 
 /// A completed incrementing INSERT candidate and its audited generated keys.

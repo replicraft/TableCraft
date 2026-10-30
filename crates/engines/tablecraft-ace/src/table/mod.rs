@@ -42,8 +42,8 @@ pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
-    Ace16AutoNumberInsertPreview, AutoNumberRowInsert, FixedColumnUpdates, FixedScalarUpdate,
-    IncrementingAutoNumber, RowInsert, SlotScalarUpdate,
+    Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
+    FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber, RowInsert, SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};

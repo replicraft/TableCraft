@@ -40,4 +40,5 @@ pub use execution::{
 pub use execution::{
     ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult, StreamError, StreamSummary,
 };
+pub use execution::{InsertError, local_insert_table, plan_insert};
 pub use source::Source;

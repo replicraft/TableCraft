@@ -1,3 +1,4 @@
+pub(in crate::execution) mod assignment;
 mod error;
 mod plan;
 pub(in crate::execution) mod source;

@@ -1,4 +1,4 @@
-use super::{UpdateError, source::SnapshotSource};
+use super::{UpdateError, assignment::update_value, source::SnapshotSource};
 use crate::execution::cell::CellValue;
 use crate::{
     ExecutionOptions, QueryError,
@@ -7,13 +7,10 @@ use crate::{
     execution::{Environment, Runtime},
     profile::MAX_BIND_BYTES,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth};
-use tablecraft_schema::{Column, NameComparison, ScalarType};
+use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
 
 /// A backend candidate after all matching-row expressions have succeeded.
@@ -226,8 +223,7 @@ fn prepare<E: EditableTable>(
                 .columns()
                 .get(assignment.column)
                 .ok_or(QueryError::UnknownName)?;
-            let replacement =
-                assignment_value(runtime.eval(&assignment.value, env)?, target, profile)?;
+            let replacement = update_value(runtime.eval(&assignment.value, env)?, target, profile)?;
 
             // Each capacity increase is prepaid, including spare Vec capacity.
             if column.updates.len() == column.updates.capacity() {
@@ -266,52 +262,4 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
 
     budget.charge(Resource::Steps, 1)?;
     Ok(())
-}
-
-fn assignment_value(
-    value: Value,
-    target: &Column,
-    profile: UpdateProfile,
-) -> Result<Value, QueryError> {
-    if profile == UpdateProfile::ExistingInt32 {
-        return integral_assignment(value);
-    }
-
-    if profile != UpdateProfile::StoredScalar {
-        return Err(QueryError::Unsupported);
-    }
-
-    if matches!(value, Value::Null) {
-        return if target.nullable() {
-            Ok(value)
-        } else {
-            Err(QueryError::Unsupported)
-        };
-    }
-
-    if target.data_type() == ScalarType::Int32 {
-        return integral_assignment(value);
-    }
-
-    if ScalarType::of(&value) != Some(target.data_type())
-        || target.type_descriptor().validate_value(&value).is_err()
-    {
-        return Err(QueryError::Unsupported);
-    }
-
-    Ok(value)
-}
-
-fn integral_assignment(value: Value) -> Result<Value, QueryError> {
-    let integer = match value {
-        Value::Byte(value) => i64::from(value),
-        Value::Int16(value) => i64::from(value),
-        Value::Int32(value) => i64::from(value),
-        Value::Int64(value) => value,
-        _ => return Err(QueryError::Unsupported),
-    };
-
-    i32::try_from(integer)
-        .map(Value::Int32)
-        .map_err(|_| tablecraft_expressions::EvalError::Overflow.into())
 }

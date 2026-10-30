@@ -20,6 +20,7 @@ mod args;
 mod parameters;
 mod preview_calculation;
 mod preview_delete;
+mod preview_insert;
 mod preview_update;
 mod recomputed;
 mod results;
@@ -55,6 +56,7 @@ pub(super) enum Error {
     Update(tablecraft_query::UpdateError<tablecraft_access::NativeEditError>),
     Copy(crate::native::publication::Error),
     EngineeringDelete(preview_delete::Error),
+    EngineeringInsert(preview_insert::Error),
     EngineeringUpdate(preview_update::Error),
 }
 impl fmt::Display for Error {
@@ -84,6 +86,7 @@ impl fmt::Display for Error {
             Self::Update(error) => error.fmt(f),
             Self::Copy(error) => error.fmt(f),
             Self::EngineeringDelete(error) => error.fmt(f),
+            Self::EngineeringInsert(error) => error.fmt(f),
             Self::EngineeringUpdate(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
@@ -91,6 +94,9 @@ impl fmt::Display for Error {
 }
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
+        Command::PreviewInsert(args) => {
+            preview_insert::run(*args, password).map_err(Error::EngineeringInsert)
+        }
         Command::PreviewDelete(args) => {
             preview_delete::run(*args, password).map_err(Error::EngineeringDelete)
         }
