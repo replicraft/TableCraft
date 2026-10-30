@@ -21,3 +21,7 @@ mod transaction;
 pub use transaction::{PreparedImage, prepare, prepare_expected};
 #[cfg(test)]
 mod tests;
+
+/// Explicit retained Unix filesystem pairing; native permission stays with its consumer.
+#[cfg(all(unix, feature = "filesystem-journal"))]
+pub mod filesystem;

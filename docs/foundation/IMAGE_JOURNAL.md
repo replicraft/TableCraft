@@ -256,3 +256,11 @@ validated `NativeEditPlan`. Seven existing native transaction/write-transaction
 semantic tests also pass; this is separate from the strict I/O package check. V2 supplies no new native plan, no conversion from
 `Ace16WritePreview`, and no permission to bypass ACE/data-macro/normal-save gates.
 The current fresh-copy engineering publisher remains a separate host operation.
+
+
+## Explicit filesystem association
+
+The optional [retained filesystem owner](FILESYSTEM_JOURNALS.md) validates existing
+private bundle objects and lends the same locked descriptors to explicit
+recovery. It does not discover journals, qualify native writes or implement
+bundle creation/retirement yet. Generic V1/V2 wire bytes remain unchanged.

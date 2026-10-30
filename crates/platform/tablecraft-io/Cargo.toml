@@ -21,6 +21,7 @@ sha2 = { workspace = true, optional = true }
 default = []
 journal = ["dep:sha2"]
 fresh-publication = ["dep:rustix", "dep:getrandom"]
+filesystem-journal = ["journal", "fresh-publication"]
 
 [target.'cfg(unix)'.dependencies]
 rustix = { workspace = true, optional = true, features = ["std", "fs", "process"] }

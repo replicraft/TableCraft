@@ -10,6 +10,10 @@ use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+const PRIVATE_DIRECTORY_MODE: u32 = 0o700;
+const PRIVATE_FILE_MODE: u32 = 0o600;
+const PERMISSION_MASK: u32 = 0o777;
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) struct ObjectIdentity {
     pub(crate) device: u64,
@@ -154,5 +158,75 @@ impl Location {
 
     pub(crate) fn into_parts(self) -> (HeldDirectory, RelativeName) {
         (self.parent, self.name)
+    }
+}
+
+fn require_private_metadata(
+    metadata: &Metadata,
+    directory: bool,
+    owner: u32,
+) -> Result<(), IoError> {
+    let kind_matches = if directory {
+        metadata.is_dir()
+    } else {
+        metadata.is_file()
+    };
+    let required = if directory {
+        PRIVATE_DIRECTORY_MODE
+    } else {
+        PRIVATE_FILE_MODE
+    };
+    if !kind_matches || metadata.mode() & PERMISSION_MASK != required || metadata.uid() != owner {
+        return Err(IoError::Io(ErrorKind::PermissionDenied));
+    }
+    Ok(())
+}
+
+pub(crate) fn require_private_directory(metadata: &Metadata) -> Result<(), IoError> {
+    require_private_metadata(metadata, true, rustix::process::geteuid().as_raw())
+}
+
+#[cfg(feature = "filesystem-journal")]
+pub(crate) fn require_private_file(metadata: &Metadata) -> Result<(), IoError> {
+    require_private_metadata(metadata, false, rustix::process::geteuid().as_raw())
+}
+
+#[cfg(all(test, feature = "filesystem-journal"))]
+mod tests {
+    use super::{require_private_directory, require_private_file, require_private_metadata};
+    use crate::IoError;
+    use std::{
+        fs::{self, OpenOptions},
+        io::{ErrorKind, Write},
+        os::unix::fs::{DirBuilderExt, MetadataExt, OpenOptionsExt},
+    };
+
+    #[test]
+    fn qualify_private_namespace_owner_metadata_before_pairing() {
+        let root = tempfile::tempdir().unwrap();
+        let directory = root.path().join("private");
+        fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&directory)
+            .unwrap();
+        let file_path = directory.join("record");
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&file_path)
+            .unwrap();
+        file.write_all(b"source").unwrap();
+        let directory_metadata = fs::metadata(&directory).unwrap();
+        let file_metadata = file.metadata().unwrap();
+        require_private_directory(&directory_metadata).unwrap();
+        require_private_file(&file_metadata).unwrap();
+        for (metadata, is_directory) in [(&directory_metadata, true), (&file_metadata, false)] {
+            assert_eq!(
+                require_private_metadata(metadata, is_directory, metadata.uid().wrapping_add(1)),
+                Err(IoError::Io(ErrorKind::PermissionDenied))
+            );
+        }
+        assert_eq!(fs::read(&file_path).unwrap(), b"source");
     }
 }

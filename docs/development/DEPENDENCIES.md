@@ -1348,3 +1348,15 @@ Its actual consumers are `NativeJournalEditor` and the shared SQL recoverable
 planner, retaining original resolved Int32 requests through the existing query
 plan. No new registry dependency or backend-neutral native type is added, and
 default fresh-copy CLI behavior is unchanged.
+
+
+## Retained filesystem journal association (30 October 2026)
+
+`tablecraft-io/filesystem-journal` composes its existing `journal` and
+`fresh-publication` features. The actual target/bundle owner uses the existing
+Unix rustix descriptor operations and SHA-256 binding; no registry dependency,
+version, default feature or runtime is added. Generic native policy stays out of
+I/O. Source-first association checks, fifteen filesystem functions, the complete
+I/O suite, strict checks and the minimal profile pass locally on macOS. Creation,
+retirement and CLI consumers remain unfinished; unsupported hosts gain no save
+capability from enabling the feature.

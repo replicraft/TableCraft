@@ -6,6 +6,9 @@ use std::{
     path::Path,
 };
 
+#[cfg(all(unix, feature = "filesystem-journal"))]
+use std::fs::Metadata;
+
 /// A shared OS lock held by an owned, read-only file handle until it is dropped.
 /// No raw/clone handle or manual unlock is exposed. Locks coordinate cooperating
 /// handles; filesystem/platform semantics can permit unlocked writes or renames.
@@ -61,6 +64,23 @@ impl ExclusiveFile {
         file.try_lock().map_err(lock_error)?;
         Ok(Self(file))
     }
+    #[cfg(all(unix, feature = "filesystem-journal"))]
+    pub(crate) fn from_owned(file: File) -> Result<Self, IoError> {
+        regular(&file)?;
+        file.try_lock().map_err(lock_error)?;
+        Ok(Self(file))
+    }
+
+    #[cfg(all(unix, feature = "filesystem-journal"))]
+    pub(crate) fn metadata(&self) -> Result<Metadata, IoError> {
+        self.0.metadata().map_err(Into::into)
+    }
+
+    #[cfg(all(unix, feature = "filesystem-journal"))]
+    pub(crate) fn try_release(&mut self) -> Result<(), IoError> {
+        self.0.unlock().map_err(Into::into)
+    }
+
     /// Current handle metadata length.
     pub fn length(&self) -> Result<u64, IoError> {
         Ok(self.0.metadata()?.len())
