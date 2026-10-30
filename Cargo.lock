@@ -1731,6 +1731,9 @@ dependencies = [
 [[package]]
 name = "tablecraft-testkit"
 version = "0.1.0"
+dependencies = [
+ "tablecraft-core",
+]
 
 [[package]]
 name = "tempfile"

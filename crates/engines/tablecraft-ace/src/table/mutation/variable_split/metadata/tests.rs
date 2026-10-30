@@ -8,6 +8,7 @@ use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model as source_model;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
@@ -16,24 +17,30 @@ fn budget() -> ResourceBudget {
 fn source(code: u8) -> model::Model {
     let mut original = model::source(code);
     let definition = 10 * 4096;
-    assert_eq!(model::number(&original.bytes, definition + 59, 4), 0);
-    assert_eq!(model::number(&original.bytes, definition + 55, 4), 11 << 8);
+    assert_eq!(source_model::number(&original.bytes, definition + 59, 4), 0);
+    assert_eq!(
+        source_model::number(&original.bytes, definition + 55, 4),
+        11 << 8
+    );
     let owned_range = model::row_range(&original.bytes, 11, 0);
     let owned = original.bytes[owned_range.0..owned_range.1].to_vec();
-    let owner = model::number(&original.bytes, 11 * 4096 + 4, 4) as u32;
+    let owner = source_model::number(&original.bytes, 11 * 4096 + 4, 4) as u32;
     let container = support::data_page(owner, &[(0, owned.clone()), (0, model::map(&[]))]);
     model::install(&mut original.bytes, 11, &container);
     support::put32(&mut original.bytes, definition + 59, (11 << 8) | 1);
 
     assert_eq!(model::row_range(&original.bytes, 11, 0), owned_range);
     assert_eq!(&original.bytes[owned_range.0..owned_range.1], owned);
-    assert_eq!(model::number(&original.bytes, definition + 55, 4), 11 << 8);
     assert_eq!(
-        model::number(&original.bytes, 11 * 4096 + 4, 4),
+        source_model::number(&original.bytes, definition + 55, 4),
+        11 << 8
+    );
+    assert_eq!(
+        source_model::number(&original.bytes, 11 * 4096 + 4, 4),
         owner as usize
     );
     assert_eq!(
-        model::number(&original.bytes, definition + 59, 4),
+        source_model::number(&original.bytes, definition + 59, 4),
         (11 << 8) | 1
     );
     original

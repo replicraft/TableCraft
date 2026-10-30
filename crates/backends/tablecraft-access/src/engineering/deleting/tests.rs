@@ -1,5 +1,5 @@
 use super::AccessEngineeringDeleter;
-use crate::engineering::{DeleteMode, editor::tests::fixture, sql_delete};
+use crate::engineering::{DeleteMode, sql_delete};
 use std::io::Cursor;
 use tablecraft_ace::{
     IndexCheckStatus, NativeImage, RuleCheckStatus, check_table, check_table_constraints,
@@ -8,6 +8,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::DeletableTable;
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

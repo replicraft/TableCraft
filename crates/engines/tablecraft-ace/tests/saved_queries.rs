@@ -1,6 +1,4 @@
-#[path = "mutation/fixture.rs"]
-#[allow(dead_code)]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "saved_queries/fixture.rs"]
 mod fixture;
 use tablecraft_testkit::access as support;

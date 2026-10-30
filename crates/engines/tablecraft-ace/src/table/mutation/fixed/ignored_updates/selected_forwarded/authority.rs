@@ -1,5 +1,5 @@
 //! Physical targets must have one logical owner and remain in the owned map.
-use super::{PAGE, budget, capture, case, model, span, updates};
+use super::{PAGE, budget, capture, case, span, updates};
 use crate::{
     EditError, IndexCheckStatus, InspectError, WriteBlocker, check_table, inspect_table_schema,
     read_table,
@@ -7,6 +7,7 @@ use crate::{
 use std::cell::Cell;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as model;
 
 fn bad_target(alias: bool) -> Vec<u8> {
     let mut before = case(6, false, 2, false, Some(30), false).before;

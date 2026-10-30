@@ -1,19 +1,15 @@
 //! Literal physical ordinals and complete row sizes determine externalization.
 use super::*;
-use crate::{
-    inspect_table_schema,
-    table::mutation::insert::{
-        audit::{
-            long_values::{Resolved, ResolvedRow},
-            records,
-        },
-        record::{self, input},
-    },
-    test_support::base,
-};
+use crate::inspect_table_schema;
+use crate::table::mutation::insert::audit::long_values::Resolved;
+use crate::table::mutation::insert::audit::long_values::ResolvedRow;
+use crate::table::mutation::insert::audit::records;
+use crate::table::mutation::insert::record;
+use crate::table::mutation::insert::record::input;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 1_000_000)

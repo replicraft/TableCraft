@@ -4,6 +4,7 @@ use crate::{RowInsert, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as source_model;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;
@@ -11,7 +12,7 @@ const DATA: usize = 12 * PAGE;
 const PRIMARY: usize = 13 * PAGE;
 
 fn empty_source(code: u8, alias: bool) -> Vec<u8> {
-    let mut bytes = model::source(code, alias, false, None);
+    let mut bytes = source_model::source(code, alias, false, None);
     bytes[DEFINITION + 16..DEFINITION + 20].copy_from_slice(&0_u32.to_le_bytes());
     assert_eq!(
         &bytes[DEFINITION + 67..DEFINITION + 71],

@@ -1,15 +1,16 @@
 //! Healthy full images separate physical inventory and byte authority forgeries.
 use super::*;
 use crate::table::mutation::insert::{counters, tests::multiple_indexes::model as indexes};
+use tablecraft_testkit::access::multiple_indexes as source_indexes;
 
 fn requested() -> Vec<RowInsert> {
     [
-        indexes::Row {
+        source_indexes::Row {
             id: 4,
             group: Some(10),
             binary: None,
         },
-        indexes::Row {
+        source_indexes::Row {
             id: 5,
             group: None,
             binary: Some(vec![]),
@@ -22,15 +23,15 @@ fn requested() -> Vec<RowInsert> {
 
 #[test]
 fn physical_plan_order_and_duplicate_alias_work_are_not_candidate_authority() {
-    let case = indexes::source(6, false, false);
+    let case = source_indexes::source(6, false, false);
     let requests = requested();
     let inserted = [
-        indexes::Row {
+        source_indexes::Row {
             id: 4,
             group: Some(10),
             binary: None,
         },
-        indexes::Row {
+        source_indexes::Row {
             id: 5,
             group: None,
             binary: Some(vec![]),
@@ -88,7 +89,7 @@ fn physical_plan_order_and_duplicate_alias_work_are_not_candidate_authority() {
 
 #[test]
 fn secondary_history_and_unused_leaf_bytes_are_independently_certified() {
-    let case = indexes::source(5, false, false);
+    let case = source_indexes::source(5, false, false);
     let requests = requested();
     let (image, mut stage) = staged(&case.before, &requests);
     let healthy = compose::compose(&image, &stage, &mut budget(), &|| false).unwrap();

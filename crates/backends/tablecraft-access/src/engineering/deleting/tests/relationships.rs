@@ -1,6 +1,6 @@
 //! Reuse the actual authored reciprocal relationship source owner.
 use super::{budget, capture};
-use crate::engineering::{DeleteMode, editor::tests::fixture, sql_delete};
+use crate::engineering::{DeleteMode, sql_delete};
 use std::io::Cursor;
 use tablecraft_ace::{
     ConstraintViolation, EditError, InspectError, RelationshipCheckStatus, check_table_constraints,
@@ -9,6 +9,7 @@ use tablecraft_model::CatalogScope;
 use tablecraft_query::DeleteError;
 use tablecraft_sql::{ParseLimits, parse_query};
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 #[allow(dead_code)]
 #[path = "../../../../../../engines/tablecraft-ace/tests/ace16_cascading_delete_contract/model.rs"]

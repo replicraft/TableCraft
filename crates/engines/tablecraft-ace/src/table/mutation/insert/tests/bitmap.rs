@@ -3,6 +3,7 @@ use super::model;
 use crate::RowInsert;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::insert_seed as source_model;
 
 const PAGE: usize = 4096;
 
@@ -38,7 +39,7 @@ fn install(bytes: &mut [u8], number: usize, page: &[u8]) {
 }
 
 fn source(code: u8, aliases: bool) -> Vec<u8> {
-    let mut bytes = model::source(code, aliases, true, None);
+    let mut bytes = source_model::source(code, aliases, true, None);
     bytes.resize(600 * PAGE, 0);
     let mut deleted = support::data_page(10, &[(0x8000, vec![0x9d; 4000])]);
     deleted[2..4].copy_from_slice(&80_u16.to_le_bytes());

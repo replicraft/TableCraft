@@ -7,7 +7,12 @@ mod lval_growth;
 mod lval_initialization;
 mod multiple;
 
-use super::super::{RowInsert, Staged, compose, finish, preflight, prepare, tests::model};
+use super::super::RowInsert;
+use super::super::Staged;
+use super::super::compose;
+use super::super::finish;
+use super::super::preflight;
+use super::super::prepare;
 use super::prove;
 use crate::{
     EditError, IndexCheckStatus, NativeImage, check_table, check_table_constraints,
@@ -16,6 +21,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const PRIMARY: usize = 13 * PAGE;

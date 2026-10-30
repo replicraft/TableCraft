@@ -1,6 +1,5 @@
 //! Actual SQL multi-column commands over the source-first nullable tuple owner.
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/backends/tablecraft-access/src/engineering/editor/tests/batch/model.rs"]
 mod model;
 use tablecraft_testkit::access as support;

@@ -1,6 +1,4 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ignored_index_checks/boundaries.rs"]
 mod boundaries;
 #[path = "ignored_index_checks/fixture.rs"]
@@ -25,7 +23,6 @@ use tablecraft_testkit::access as support;
 #[path = "ignored_index_checks/tuples.rs"]
 mod tuples;
 
-use base as fixture;
 use std::io::Cursor;
 use tablecraft_ace::{IndexCheckStatus, InspectError, TableCheck, check_table};
 use tablecraft_core::limits::ResourceBudget;

@@ -7,6 +7,7 @@ use crate::table::mutation::{
         tests::{long_value_inserts::growth::model as growth, multiple_indexes::model as ordinary},
     },
 };
+use tablecraft_testkit::access::multiple_indexes as source_ordinary;
 
 fn prepared_growth(
     code: u8,
@@ -335,8 +336,8 @@ fn chained_growth_cannot_follow_an_owned_bitmap_as_the_next_lval_row() {
 
 #[test]
 fn no_long_declaration_or_no_external_request_cannot_hide_owned_bitmap_metadata() {
-    let case = ordinary::source(6, false, false);
-    let added = ordinary::Row {
+    let case = source_ordinary::source(6, false, false);
+    let added = source_ordinary::Row {
         id: 4,
         group: Some(30),
         binary: Some(vec![0x63]),

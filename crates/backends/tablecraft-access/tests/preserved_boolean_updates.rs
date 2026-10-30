@@ -1,6 +1,5 @@
 //! SOURCE-only rich-table projection gate before frontend preservation APIs.
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]

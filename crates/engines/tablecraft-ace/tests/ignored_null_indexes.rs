@@ -1,6 +1,3 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod base;
 #[path = "ignored_null_indexes/fixture.rs"]
 mod ignored;
 #[allow(dead_code)]
@@ -22,7 +19,6 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 
 // The shared mutation fixture calls its sibling "fixture".
-use base as fixture;
 
 const SCOPE: CatalogScope = CatalogScope::new(1);
 const VALUES: &[Option<i32>] = &[Some(20), None, Some(10), Some(30), None, Some(20)];

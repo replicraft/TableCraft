@@ -1,8 +1,7 @@
 //! Actual user-facing engineering-copy workflows over qualified literal sources.
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
 mod index_fixture;
 #[path = "write_previews/model.rs"]

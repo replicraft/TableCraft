@@ -7,6 +7,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as source_base;
 
 mod model;
 use model::{Case, Expected, Maps, PAGE, Row, Shape};
@@ -321,7 +322,7 @@ fn recursive_candidates_respect_all_pools_late_cancel_and_passive_defaults() {
         failed.err(),
         Some(EditError::Inspect(InspectError::Cancelled))
     );
-    let default = base::source(6, true, false, Some(("DefaultValue", "0")));
+    let default = source_base::source(6, true, false, Some(("DefaultValue", "0")));
     base::checked(&default, 3, 2);
     let rows = [base::NewRow {
         id: 4,

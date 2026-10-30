@@ -1,6 +1,4 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "long_value_storage_contract/model.rs"]
 mod model;

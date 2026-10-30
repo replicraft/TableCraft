@@ -1,7 +1,5 @@
 //! SOURCE-only registration precedes explicit inventory command calls.
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs"]
 mod fixture;

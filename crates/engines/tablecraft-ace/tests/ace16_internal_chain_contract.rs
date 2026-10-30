@@ -3,8 +3,6 @@
 #[allow(dead_code)]
 #[path = "ace16_delete_contraction_contract/model.rs"]
 mod contraction_model;
-#[path = "mutation/fixture.rs"]
-mod fixture;
 #[allow(dead_code)]
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;

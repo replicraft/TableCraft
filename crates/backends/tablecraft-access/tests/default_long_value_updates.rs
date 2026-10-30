@@ -2,8 +2,7 @@
 //! Ordinary Memo/OLE source gates and explicit engineering copy consumers.
 #[path = "../../../engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs"]
 mod cases;
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model.rs"]
 pub mod original;
 

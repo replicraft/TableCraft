@@ -1,8 +1,6 @@
 //! Original indexed stored caches, independent of expression evaluation.
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
 use base as fixture;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;

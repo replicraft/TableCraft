@@ -1,10 +1,15 @@
 //! Ten complete GUID components reach the real 198-byte internal-entry limit.
-use super::super::{model as original, multiple_indexes::model as frames};
-use crate::{EditError, IndexConstraintViolation, InspectError, RowInsert, test_support::base};
+use super::super::model as original;
+use crate::EditError;
+use crate::IndexConstraintViolation;
+use crate::InspectError;
+use crate::RowInsert;
 use std::io::Cursor;
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const GUIDS: usize = 10;

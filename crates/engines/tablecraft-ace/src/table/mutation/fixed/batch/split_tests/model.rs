@@ -1,6 +1,6 @@
 //! Literal nullable populations and complete UPDATE images, without planner codecs.
-use crate::table::mutation::insert::tests::multiple_indexes::model as frames;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub const PAGE: usize = 4096;
 const ROWS: usize = 500;

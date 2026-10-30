@@ -1,7 +1,6 @@
 #[path = "support/mod.rs"]
 mod cli_support;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/narrow_indexes/fixture.rs"]

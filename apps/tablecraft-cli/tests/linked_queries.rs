@@ -8,9 +8,7 @@ mod options;
 #[path = "linked_queries/progressive.rs"]
 mod progressive;
 use tablecraft_testkit::access as support;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod target_fixture;
+use tablecraft_testkit::access::mutation_fixture as target_fixture;
 
 use cli_support::run;
 use std::{

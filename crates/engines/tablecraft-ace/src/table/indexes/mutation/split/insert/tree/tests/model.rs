@@ -1,8 +1,9 @@
 //! Independent literal 451-entry child and complete INDEX-phase image.
 //! DATA bodies and counters belong to the caller and remain untouched here.
 use super::*;
-use crate::test_support::{base, map_growth};
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model::declaration_end;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 const ROW_START: usize = 4027;
@@ -231,7 +232,7 @@ pub(super) fn source(code: u8, aliases: bool, right: bool, distant: bool) -> Sou
     };
     install(&mut bytes, 1, &support::data_page(1, &[(0, global)]));
     for number in [2, 7, 10] {
-        let end = map_growth::model::declaration_end(&bytes, number);
+        let end = declaration_end(&bytes, number);
         support::put16(&mut bytes, end, 0xffff);
     }
     Source {

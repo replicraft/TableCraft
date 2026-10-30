@@ -1,14 +1,15 @@
 //! Request geometry must remain authoritative when staged ranges are forged.
 use super::super::{authority::Operation, placement::Plan};
-use crate::{
-    EditError, NativeImage, SlotScalarUpdate,
-    table::mutation::{gates, page_update::stage},
-    test_support::base,
-};
+use crate::EditError;
+use crate::NativeImage;
+use crate::SlotScalarUpdate;
+use crate::table::mutation::gates;
+use crate::table::mutation::page_update::stage;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 

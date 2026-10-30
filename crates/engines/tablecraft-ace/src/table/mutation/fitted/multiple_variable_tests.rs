@@ -5,22 +5,25 @@ mod third;
 mod third_model;
 
 use super::growing::joint_split_tests::model as frames;
-use crate::{
-    IndexCheckStatus, NativeImage, RuleCheckStatus, check_table, check_table_constraints,
-    format::{
-        allocation::{MapRole, RepresentedMap},
-        reader::Reader,
-    },
-    inspect_table_index_counter, read_table,
-    table::mutation::{
-        gates, page_update::roots, rows::RowAssignment, variable_split::metadata::Metadata,
-    },
-    test_support::base,
-};
+use crate::IndexCheckStatus;
+use crate::NativeImage;
+use crate::RuleCheckStatus;
+use crate::check_table;
+use crate::check_table_constraints;
+use crate::format::allocation::MapRole;
+use crate::format::allocation::RepresentedMap;
+use crate::format::reader::Reader;
+use crate::inspect_table_index_counter;
+use crate::read_table;
+use crate::table::mutation::gates;
+use crate::table::mutation::page_update::roots;
+use crate::table::mutation::rows::RowAssignment;
+use crate::table::mutation::variable_split::metadata::Metadata;
 use model::{Family, Placement, Recipe};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 500_000_000)

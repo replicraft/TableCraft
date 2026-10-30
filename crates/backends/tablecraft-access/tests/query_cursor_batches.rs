@@ -1,6 +1,4 @@
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
 use std::{

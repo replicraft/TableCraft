@@ -1,6 +1,5 @@
 //! Genuine fixed C3/V0 tuple declarations and original-association whole images.
 use super::{assert_image, budget, capture};
-use crate::table::mutation::insert::tests::multiple_indexes::model;
 use crate::{
     EditError, FixedColumnUpdates, FixedScalarUpdate, IndexCheckStatus, IndexConstraintViolation,
     InspectError, check_table, check_table_constraints, read_table,
@@ -8,6 +7,7 @@ use crate::{
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as model;
 
 const PAGE: usize = 4096;
 

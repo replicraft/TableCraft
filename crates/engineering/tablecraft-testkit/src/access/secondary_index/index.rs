@@ -1,5 +1,5 @@
 use super::Row;
-use tablecraft_testkit::access as raw;
+use crate::access as raw;
 
 pub(super) fn entries(rows: &[Row], column: usize, descending: bool) -> Vec<Vec<u8>> {
     let mut result = rows

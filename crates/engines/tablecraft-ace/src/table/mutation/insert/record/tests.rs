@@ -1,5 +1,7 @@
 use super::*;
-use crate::{format::reader::Reader, inspect_table_schema, read_table, test_support::base};
+use crate::format::reader::Reader;
+use crate::inspect_table_schema;
+use crate::read_table;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
     limits::{LimitError, Resource},
@@ -7,6 +9,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;

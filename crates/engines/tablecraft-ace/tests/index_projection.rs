@@ -1,6 +1,4 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
 #[path = "index_projection/profiles.rs"]

@@ -1,6 +1,5 @@
 #![cfg(feature = "ace16-write-preview")]
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "guid_composite_indexes/fixture.rs"]
 mod mixed;
 #[path = "composite_indexes/fixture.rs"]

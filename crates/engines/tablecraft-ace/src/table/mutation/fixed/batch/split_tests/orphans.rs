@@ -1,12 +1,14 @@
 //! Same-length original source pair exposing unreachable owned INDEX storage.
 use super::{budget, model, qualify};
-use crate::{
-    EditError, FixedColumnUpdates, FixedScalarUpdate, NativeImage, WriteBlocker,
-    table::mutation::insert::tests::multiple_indexes::model as frames,
-};
+use crate::EditError;
+use crate::FixedColumnUpdates;
+use crate::FixedScalarUpdate;
+use crate::NativeImage;
+use crate::WriteBlocker;
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub(in crate::table::mutation::fixed::batch) struct Sources {
     pub good: Vec<u8>,

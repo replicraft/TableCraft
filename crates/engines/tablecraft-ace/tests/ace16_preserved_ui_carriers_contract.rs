@@ -1,8 +1,7 @@
 //! Source-first passive UI carriers and exact Boolean engineering consumers.
 #[path = "ace16_preserved_ui_carriers_contract/api.rs"]
 mod api;
-#[path = "mutation/fixture.rs"]
-pub mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "complex_schema/fixture.rs"]

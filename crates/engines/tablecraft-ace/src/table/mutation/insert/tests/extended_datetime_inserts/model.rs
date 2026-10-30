@@ -1,8 +1,8 @@
 //! Literal fixed timestamps and whole images; no producer timestamp encoder.
-use super::super::multiple_indexes::model as frames;
 use std::collections::BTreeSet;
 use tablecraft_core::values::{ExtendedDateTime, Value};
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub const PAGE: usize = 4096;
 

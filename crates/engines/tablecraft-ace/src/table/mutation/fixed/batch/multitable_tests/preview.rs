@@ -1,9 +1,11 @@
 //! API comparisons and atomic refusals against the independent two-table owner.
 use super::{budget, capture, model, qualify_table};
-use crate::{
-    EditError, FixedColumnUpdates, FixedScalarUpdate, IndexConstraintViolation, InspectError,
-    WriteBlocker, table::mutation::insert::tests::multiple_indexes::model as frames,
-};
+use crate::EditError;
+use crate::FixedColumnUpdates;
+use crate::FixedScalarUpdate;
+use crate::IndexConstraintViolation;
+use crate::InspectError;
+use crate::WriteBlocker;
 use model::{Case, Mode, PAGE, Settings};
 use std::cell::Cell;
 use tablecraft_core::{
@@ -11,6 +13,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 struct Updates {
     left: Vec<FixedScalarUpdate>,

@@ -1,6 +1,4 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ignored_null_indexes/fixture.rs"]
 mod ignored;

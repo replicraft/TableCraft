@@ -1,7 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "foreign_updates/boolean.rs"]
 mod boolean;
 #[path = "foreign_updates/fixture.rs"]

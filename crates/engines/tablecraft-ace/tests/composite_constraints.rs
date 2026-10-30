@@ -1,5 +1,4 @@
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "composite_constraints/boolean.rs"]
 mod boolean;
 #[path = "composite_constraints/currency.rs"]

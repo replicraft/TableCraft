@@ -4,6 +4,7 @@ use crate::{RowInsert, inspect_table_index_counter, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as source_base;
 
 pub(super) mod model;
 
@@ -114,8 +115,8 @@ fn a_healthy_split_result_accepts_a_fitted_followup_without_changing_its_root() 
             candidate.candidate_bytes().len()
         );
         assert!(
-            followup.candidate_bytes()[13 * base::PAGE..14 * base::PAGE]
-                == candidate.candidate_bytes()[13 * base::PAGE..14 * base::PAGE]
+            followup.candidate_bytes()[13 * source_base::PAGE..14 * source_base::PAGE]
+                == candidate.candidate_bytes()[13 * source_base::PAGE..14 * source_base::PAGE]
         );
         model::assert_image(candidate.candidate_bytes(), &expected);
     }

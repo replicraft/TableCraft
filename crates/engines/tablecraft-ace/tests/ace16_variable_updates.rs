@@ -3,9 +3,7 @@
 #[allow(dead_code)]
 #[path = "ace16_encoded_delete_contract/model.rs"]
 mod encoded_model;
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;

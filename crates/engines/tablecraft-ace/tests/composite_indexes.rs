@@ -1,5 +1,4 @@
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "composite_indexes/edits.rs"]
 mod edits;
 #[path = "composite_indexes/failures.rs"]

@@ -1,0 +1,381 @@
+{
+  "feature": "Shared literal secondary-index SOURCE/expected fixture owner extraction",
+  "date": "2026-10-30",
+  "state": "Complete byte identity, SOURCE/census, mutation/host regressions, native+host strict, minimal and guard checks pass",
+  "ownership": {
+    "new_owner": "tablecraft_testkit::access::secondary_index",
+    "pure_helpers": [
+      "access::mutation_fixture",
+      "access::insert_seed",
+      "access::multiple_indexes",
+      "access::map_growth::model"
+    ],
+    "native_expected_INSERT_algorithms": "Retained in ACE; five function bodies unchanged",
+    "working_dependency": "testkit -> tablecraft-core for actual Row::values conversion; no engine/adapter/parser/layout dependencies",
+    "no_forwarding_shims_or_fixture_graph_copies": true
+  },
+  "scope": {
+    "present_paths": 329,
+    "removed_owners": 3,
+    "total_paths": 332,
+    "manifest": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/ACTUAL_COMMIT_PATHS.txt",
+      "bytes": 21901,
+      "sha256": "db5bacb7978370de1f877b6bab1009856b72ba00b55e9b46a7ff202a3c19b153"
+    },
+    "commit_paths_including_this_result": 333,
+    "mechanical_paths_exclude_this_result": true
+  },
+  "source_text_identity": {
+    "moved_functions": 31,
+    "unchanged": 31,
+    "retained_INSERT_algorithms": 5,
+    "unchanged_algorithms": 5,
+    "not_runtime_byte_identity": true
+  },
+  "authority": {
+    "pre_move_source_record": "docs/testing/results/ace16-secondary-index-creation-sources-2026-10-30.json",
+    "pre_move_native_record": "docs/testing/results/ace16-secondary-index-creation-native-2026-10-30.json",
+    "historical_records_unchanged": true,
+    "historical_model_paths": "Retain original paths/hashes as historical source witnesses; they are not repointed to new owner bytes",
+    "pre_move_export_files": 49,
+    "expected_unique_before": 8,
+    "expected_complete_images": 16,
+    "request_row_order_tsv": 25,
+    "export_manifest": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/preserved-export49-pins.json",
+      "bytes": 10972,
+      "sha256": "41e9916a4600bdbcd305df8383f627d320b545cad927c7725145a324561235ba"
+    },
+    "historical_source_archive": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/before-actual-extraction"
+  },
+  "history": [
+    {
+      "phase": "Static owner review before compilation",
+      "observation": "Two moved files needed crate::access imports inside testkit; restored natural grouped imports in retained owners",
+      "builder_or_expected_body_change": false,
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/coherent-import-corrections.json",
+        "bytes": 387,
+        "sha256": "b541d25c3c1411e07344b2e039993d9de5f91cb46fc12769ad8f7e7c674d3a13"
+      }
+    },
+    {
+      "phase": "First identity command compilation",
+      "exit": 101,
+      "test_functions_executed": 0,
+      "fixture_constructors_executed": 0,
+      "primary_errors": 121,
+      "cause": "Missed consumer bindings inherited from parents, function-local imports and path-loaded logical scopes",
+      "correction": "Direct current-owner imports in18 actual ACE consumers; no public forwarding aliases",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/identity-first-root.log",
+        "bytes": 173290,
+        "sha256": "b5e5b8d3398d9c8c63e765948ee1592dddf25b4a906b183f5864d30f4f15c182"
+      },
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/first-identity-consumer-corrections.json",
+        "bytes": 5802,
+        "sha256": "c0bb5855b1590edc212b414c0afff8b3992516fef6a50779ca641d9720ff437b"
+      }
+    },
+    {
+      "phase": "Host fixture-free compilation",
+      "observation": "Root corrected four Access/CLI direct fixture imports and removed one unused stream support binding; bodies unchanged",
+      "first_logs": [
+        {
+          "path": ".cache/ace16-create-index-sql-host-next-20261030/lowering-first-root.log",
+          "bytes": 2032,
+          "sha256": "a60b66335833daa59daab4b5fc5d283b3d0816553c817aee4a10e12165c19fc7"
+        },
+        {
+          "path": ".cache/ace16-create-index-sql-host-next-20261030/preopen-first-root.log",
+          "bytes": 2853,
+          "sha256": "fac89fc8cc5e26375e7f45c0d3e6eb5097c53cfb109730af45f7d9c81a674c32"
+        }
+      ]
+    },
+    {
+      "phase": "First strict all-target/features check",
+      "exit": 101,
+      "cause": "Unused direct fixture alias in ace16_split_int32 integration target",
+      "correction": "Removed only the unused import; no body/source/expected changes",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/strict-first-root.log",
+        "bytes": 792,
+        "sha256": "dbf03b58347a38a9237c4687e2def7bfc8f5654d9d090ba31d737c47313ef398"
+      },
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/first-strict-unused-correction.json",
+        "bytes": 1136,
+        "sha256": "e1e4dc4bf2ff10c5dc2d3c8b46e915bd10d6a9da7c7b00b460854fc57f27e25a"
+      }
+    },
+    {
+      "phase": "First whole-ACE all-target JSON compilation inventory",
+      "exit": 101,
+      "diagnostic_messages": 7,
+      "primary_diagnostics": 6,
+      "compiler_failure_notes": 1,
+      "cause": "Four unused fixture aliases and two private scanner-number imports",
+      "correction": "Remove unused aliases; import actual scanner function directly",
+      "semantic_or_expected_body_changes": false,
+      "inventory": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/all-targets-inventory-first-root.json",
+        "bytes": 22084,
+        "sha256": "3f7beef86fd0c0a71e83d163c11e9d7f157f158b4686d96a7ffffb5fd4c4a92d"
+      },
+      "raw_log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/all-targets-inventory-first-root.jsonl",
+        "bytes": 171212,
+        "sha256": "2d88b9ef146b460fb530932622b71fc2339dcbc3fc8b0513b4750980b60ccad2"
+      },
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/all-targets-inventory-corrections.json",
+        "bytes": 1438,
+        "sha256": "592cf5149fa4fac2ffd4bcafebde0f26086339cb574d169a66d3784c9731c5a6"
+      }
+    },
+    {
+      "phase": "Complete strict --keep-going inventory",
+      "exit": 101,
+      "cause": "Nine remaining unused imports across tests/examples",
+      "correction": "Removed exactly the nine diagnostic imports; bodies/fixtures unchanged",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/strict-after-imports-root.log",
+        "bytes": 4599,
+        "sha256": "97b3d51e57da75ddff93035feae0df86cbd7cc4d2b608d1f8ee0e0498a0e3427"
+      },
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/keep-going-unused-corrections.json",
+        "bytes": 2581,
+        "sha256": "6a12b213d32867f7632df2e0b3e4ba43d45babdb754891dc6dc72425029e8fbd"
+      }
+    },
+    {
+      "phase": "Final native strict attempt after first unused cleanup",
+      "exit": 101,
+      "cause": "The removed fixture alias exposed an otherwise unused base import in ignored_null_indexes.rs",
+      "correction": "Root removed the sole now-unused import; no remaining base occurrences or body changes",
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/strict-final-root.log",
+        "bytes": 666,
+        "sha256": "b6af826e8d98181e2b4e4e817e1fd8c1d5c5626cc064fb7f5d34d858f10d6c85"
+      }
+    },
+    {
+      "phase": "First host strict --keep-going check",
+      "exit": 101,
+      "cause": "Ten unused fixture/support imports and one inherited private corpus::base binding",
+      "correction": "Remove unused imports and bind larger-fixed host fixture directly to actual mutation_fixture owner",
+      "log": {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/strict-first-root.log",
+        "bytes": 6116,
+        "sha256": "63c1e068b2c2359de3f2ff2a12de654dee2ae6f5938eaed049f3501ec896ed3c"
+      },
+      "receipt": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/host-strict-import-corrections.json",
+        "bytes": 3026,
+        "sha256": "7c0eb650a9173e7c8ac957851766114e462b33cc4e3be8e5b919d8dad54e0f05"
+      },
+      "semantic_or_expected_body_changes": false
+    }
+  ],
+  "runtime_byte_identity": {
+    "exit": 0,
+    "functions": 1,
+    "first_actual_execution": true,
+    "before_images": 8,
+    "complete_expected_images": 16,
+    "all_export_files": 49,
+    "request_row_order_tsv": 25,
+    "log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/identity-after-imports-root.log",
+      "bytes": 510,
+      "sha256": "ec41c2a87245d8e3609a64c0f3d4eccefe1d74b8fa67fc75a708bab274bf6822"
+    }
+  },
+  "source_reader_gate": {
+    "exit": 0,
+    "functions": 1,
+    "source_expected_pairs": 16,
+    "reader_census_views": 32,
+    "log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/source-first-root.log",
+      "bytes": 394,
+      "sha256": "a0166fb2137c203e2f47a6528a11956c84aaaadac59b4edcb05672659e1f6f5e"
+    }
+  },
+  "guards_and_broader_checks": {
+    "boundaries": {
+      "exit": 0,
+      "packages": 15,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/boundaries-first-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    },
+    "boundary_tests": {
+      "exit": 0,
+      "passed": 12,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/boundary-tests-first-root.log",
+        "bytes": 111,
+        "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+      }
+    },
+    "links": {
+      "exit": 0,
+      "targets": 6628,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/links-first-root.log",
+        "bytes": 53,
+        "sha256": "d04fd1e1537698623ee2de9ff61acf9efaba22751c17e2eaa8f0f41c4ad46270"
+      }
+    },
+    "formatter": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/format-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "native_mutation_regression": {
+      "exit": 0,
+      "passed": 559,
+      "ignored": 3,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/mutation-first-root.log",
+        "bytes": 76309,
+        "sha256": "a7b828c7fc3cd008562f78c6259431c1fb73711b5e599f22f1bb3276ddd7c6fb"
+      }
+    },
+    "strict_all_targets_all_features": {
+      "native": {
+        "exit": 0,
+        "log": {
+          "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/strict-final2-root.log",
+          "bytes": 183,
+          "sha256": "b11835ea998cefc7b4aad8216f9fd6a53c701640985cefbc77ab5d210baea91d"
+        }
+      },
+      "host": {
+        "exit": 0,
+        "packages": [
+          "tablecraft-access",
+          "tablecraft-cli"
+        ],
+        "log": {
+          "path": ".cache/ace16-create-index-sql-host-next-20261030/strict-final-root.log",
+          "bytes": 291,
+          "sha256": "70c5a40d4ce2047b3a692afff4630e5176990ed62fd2004871b47d1eb1a541a6"
+        }
+      }
+    },
+    "minimal_testkit": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/minimal-testkit-first-root.log",
+        "bytes": 195,
+        "sha256": "7e77c50806b5e4d41793bdac75a45a15727cb11c57c0310cd164c44bb9082e07"
+      }
+    },
+    "minimal_ace": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/ace-minimal-first-root.log",
+        "bytes": 72,
+        "sha256": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc"
+      }
+    },
+    "minimal_access": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-create-index-sql-host-next-20261030/access-minimal-first-root.log",
+        "bytes": 301,
+        "sha256": "f7010cb55192e64828b8854065430b06685760f6241b260173578ebf63821851"
+      }
+    },
+    "access_unit": {
+      "exit": 0,
+      "passed": 67,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/access-unit-first-root.log",
+        "bytes": 8463,
+        "sha256": "36d2a183ec57b07bb7c8e030679bffe553d49290ea10cd54562f9f78928c44bb"
+      }
+    },
+    "cli_unit": {
+      "exit": 0,
+      "passed": 51,
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/cli-unit-first-root.log",
+        "bytes": 5683,
+        "sha256": "7df9170ff0e8002102bd776f0774fd866080b9c2422eb35565e0a065ed909226"
+      }
+    },
+    "selected_cli_regressions": {
+      "exit": 0,
+      "passed": 46,
+      "targets": {
+        "preserved_updates": 4,
+        "memo_updates": 4,
+        "sql_updates": 27,
+        "jet4_updates": 4,
+        "typed_write_copies": 7
+      },
+      "log": {
+        "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/cli-update-regression-first-root.log",
+        "bytes": 5583,
+        "sha256": "de82b1f1992d0b1a02399d9ebc0ad291fb15fb698356bcf4ac1260646b6cf570"
+      }
+    }
+  },
+  "agent_fixture_or_native_execution": false,
+  "source_execution_coherent_freeze": {
+    "path": ".cache/ace16-create-secondary-index-design-20261030/implementation/extraction/actual-consumer-corrected-freeze.json",
+    "bytes": 67590,
+    "sha256": "e05ce727a9141a582999879c4c71109709514e1b085bdfdca90e2e3c41067b13"
+  },
+  "current_shared_source_owners": [
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/insert_seed.rs",
+      "bytes": 5608,
+      "sha256": "d1f1a08ee4526412af5ab820588d73eb188fa06029c9fa4029bee1d593f97342"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/map_growth/model.rs",
+      "bytes": 1422,
+      "sha256": "0a376f510ef9b4149e46fcca63d5db2598816b209c8aa8adc6830ea2fc9cb511"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/map_growth.rs",
+      "bytes": 88,
+      "sha256": "1cb161c5b609e69bdc37db6545639831e3cce0b8bbec1a4d1f101cf42090d9a3"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/multiple_indexes.rs",
+      "bytes": 9307,
+      "sha256": "60f6e6863ca68df849b84a3c06ca98944150a00d13b306190ebf79b7737826cf"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/mutation_fixture.rs",
+      "bytes": 5667,
+      "sha256": "16cca82c3c1410fcd38e03a87e755d98692d70359e249f3664bbf7d8d674e276"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/secondary_index/index.rs",
+      "bytes": 2104,
+      "sha256": "b68ce88d265238d278539e15897c9b07829bea97e3b442749254066c7b996a0d"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access/secondary_index.rs",
+      "bytes": 9407,
+      "sha256": "6cdecdca10c540b04232e2b02a21c637f5b070ccaf96f71b5ec8cf724fda5272"
+    }
+  ],
+  "final_verified_scope": "Extraction/import ownership only; no new write admission, runtime evaluation or native Access qualification"
+}

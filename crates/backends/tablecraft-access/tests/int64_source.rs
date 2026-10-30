@@ -1,5 +1,4 @@
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]

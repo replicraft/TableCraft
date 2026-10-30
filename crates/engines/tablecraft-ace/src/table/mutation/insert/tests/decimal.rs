@@ -5,6 +5,7 @@ use std::io::Cursor;
 use tablecraft_core::values::{Currency, Decimal, Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::insert_seed as source_model;
 
 const PAGE: usize = 4096;
 const SCORE: usize = 10 * PAGE + 100;
@@ -22,7 +23,7 @@ fn wire(coefficient: i128) -> Vec<u8> {
 }
 
 fn source(code: u8, alias: bool, full: bool) -> Vec<u8> {
-    let mut bytes = model::source(code, alias, full, None);
+    let mut bytes = source_model::source(code, alias, full, None);
     bytes[SCORE] = 16;
     bytes[SCORE + 11] = 28;
     bytes[SCORE + 12] = 4;

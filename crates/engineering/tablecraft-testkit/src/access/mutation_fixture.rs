@@ -1,4 +1,5 @@
-use super::support::{data_page, image, put16, put32, record};
+//! Original literal native fixture owner, shared by actual tests.
+use super::{data_page, image, put16, put32, record};
 
 // Original independent golden format bytes. No external fixture/tool is needed.
 pub fn database() -> Vec<u8> {

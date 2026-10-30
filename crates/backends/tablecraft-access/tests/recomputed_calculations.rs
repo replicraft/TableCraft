@@ -1,10 +1,8 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 #[path = "recomputed_calculations/boundaries.rs"]
 mod boundaries;

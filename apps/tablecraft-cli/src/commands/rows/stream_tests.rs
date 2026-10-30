@@ -1,12 +1,9 @@
-#[allow(dead_code)]
-#[path = "../../../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub(in crate::commands) mod fixture;
 use super::*;
 use std::{
     cell::Cell,
     io::{self, Cursor},
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 fn new_browser() -> NativeBrowser<'static, Cursor<Vec<u8>>> {
     NativeBrowser::new(

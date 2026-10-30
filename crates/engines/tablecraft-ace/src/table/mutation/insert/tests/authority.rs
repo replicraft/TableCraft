@@ -1,4 +1,5 @@
-use super::model::{self, NewRow, PAGE};
+use super::model;
+use super::model::NewRow;
 use crate::{EditError, IndexConstraintViolation, InspectError, RowInsert, WriteBlocker};
 use std::cell::Cell;
 use tablecraft_core::{
@@ -6,11 +7,13 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::insert_seed as source_model;
+use tablecraft_testkit::access::insert_seed::PAGE;
 
 #[test]
 fn passive_defaults_preserve_full_explicit_rows_and_empty_batches() {
     for code in [5, 6] {
-        let before = model::source(code, false, false, Some(("DefaultValue", "0")));
+        let before = source_model::source(code, false, false, Some(("DefaultValue", "0")));
         model::checked(&before, 3, 1);
         for rows in [
             Vec::new(),
@@ -33,7 +36,7 @@ fn passive_defaults_preserve_full_explicit_rows_and_empty_batches() {
 #[test]
 fn generated_ids_and_incomplete_or_wrong_carriers_never_produce_a_candidate() {
     for code in [5, 6] {
-        let before = model::source(code, false, false, None);
+        let before = source_model::source(code, false, false, None);
         model::checked(&before, 3, 1);
         for values in [
             vec![Value::Int32(10)],
@@ -71,7 +74,7 @@ fn generated_ids_and_incomplete_or_wrong_carriers_never_produce_a_candidate() {
 #[test]
 fn existing_and_batch_duplicate_primary_values_keep_typed_unique_failures() {
     for code in [5, 6] {
-        let before = model::source(code, true, false, None);
+        let before = source_model::source(code, true, false, None);
         model::checked(&before, 3, 2);
         for ids in [vec![1], vec![10, 10]] {
             let requests = ids
@@ -95,7 +98,7 @@ fn existing_and_batch_duplicate_primary_values_keep_typed_unique_failures() {
 #[test]
 fn shared_populated_map_roles_do_not_grant_insert_authority() {
     for code in [5, 6] {
-        let mut before = model::source(code, false, false, None);
+        let mut before = source_model::source(code, false, false, None);
         // Both ordinary roles now name the same healthy, populated map row.
         // Current row reads remain valid; mutable role identity is unqualified.
         support::put32(&mut before, 10 * PAGE + 59, 11 << 8);
@@ -121,7 +124,7 @@ fn shared_populated_map_roles_do_not_grant_insert_authority() {
 
 #[test]
 fn shared_quotas_late_cancellation_and_retry_preserve_complete_images() {
-    let before = model::source(6, true, true, None);
+    let before = source_model::source(6, true, true, None);
     model::checked(&before, 3, 2);
     let rows = [NewRow {
         id: 10,

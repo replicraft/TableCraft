@@ -4,6 +4,7 @@ use crate::{EditError, InspectError, LongValueCheckStatus, RowInsert, check_tabl
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 const LVAL: u32 = 16;
 const EOF: u32 = 18;
@@ -22,19 +23,22 @@ fn lval_page(body: Option<Vec<u8>>) -> Vec<u8> {
 }
 
 fn column_maps(bytes: &mut [u8], owned: &[u32], hints: &[u32]) {
-    frames::map_page(
+    source_frames::map_page(
         bytes,
         11,
         vec![
-            frames::map([12]),
-            frames::map([12]),
-            frames::map(owned.iter().copied()),
-            frames::map(hints.iter().copied()),
+            source_frames::map([12]),
+            source_frames::map([12]),
+            source_frames::map(owned.iter().copied()),
+            source_frames::map(hints.iter().copied()),
         ],
     );
 }
 
-pub(in crate::table::mutation::insert) fn original(code: u8, family: Family) -> frames::Case {
+pub(in crate::table::mutation::insert) fn original(
+    code: u8,
+    family: Family,
+) -> source_frames::Case {
     let empty = if matches!(family, Family::Ole) {
         Value::Binary(vec![])
     } else {
@@ -58,8 +62,8 @@ pub(in crate::table::mutation::insert) fn original(code: u8, family: Family) -> 
     raw::put16(&mut case.before, 2 * PAGE + 398, 0xffff);
     raw::put16(&mut case.before, 7 * PAGE + 449, 0xffff);
     column_maps(&mut case.before, &[LVAL], &[LVAL]);
-    frames::install(&mut case.before, LVAL, &lval_page(None));
-    frames::map_page(&mut case.before, 1, vec![frames::map(EOF..512)]);
+    source_frames::install(&mut case.before, LVAL, &lval_page(None));
+    source_frames::map_page(&mut case.before, 1, vec![source_frames::map(EOF..512)]);
     case
 }
 
@@ -79,7 +83,7 @@ fn check_lval(bytes: &[u8]) {
 }
 
 pub(in crate::table::mutation::insert) fn expected(
-    case: &frames::Case,
+    case: &source_frames::Case,
     family: Family,
     value: &Value,
 ) -> Vec<u8> {
@@ -91,7 +95,7 @@ pub(in crate::table::mutation::insert) fn expected(
         .to_vec();
     descriptor.extend((LVAL << 8).to_le_bytes());
     descriptor.extend([0; 4]);
-    let added = frames::Row {
+    let added = source_frames::Row {
         id: 10,
         group: Some(100),
         binary: Some(descriptor),
@@ -104,12 +108,12 @@ pub(in crate::table::mutation::insert) fn expected(
         first.extend(&payload[..4072]);
         let mut last = vec![0; 4];
         last.extend(&payload[4072..]);
-        frames::install(&mut bytes, LVAL, &lval_page(Some(first)));
-        frames::install(&mut bytes, EOF, &lval_page(Some(last)));
+        source_frames::install(&mut bytes, LVAL, &lval_page(Some(first)));
+        source_frames::install(&mut bytes, EOF, &lval_page(Some(last)));
         column_maps(&mut bytes, &[LVAL, EOF], &[EOF]);
-        frames::map_page(&mut bytes, 1, vec![frames::map(EOF + 1..512)]);
+        source_frames::map_page(&mut bytes, 1, vec![source_frames::map(EOF + 1..512)]);
     } else {
-        frames::install(&mut bytes, LVAL, &lval_page(Some(payload)));
+        source_frames::install(&mut bytes, LVAL, &lval_page(Some(payload)));
         column_maps(&mut bytes, &[LVAL], &[LVAL]);
     }
     bytes

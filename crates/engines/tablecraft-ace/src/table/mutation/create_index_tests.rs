@@ -8,7 +8,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
 mod api;
-pub(in crate::table::mutation) mod model;
+use tablecraft_testkit::access::secondary_index as model;
 mod reference;
 
 fn budget() -> ResourceBudget {

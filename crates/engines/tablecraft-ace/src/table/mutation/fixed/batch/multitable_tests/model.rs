@@ -1,8 +1,8 @@
 //! Two genuine table owners and one independent, definition-ordered image model.
 use super::super::split_tests::model::{self as original, Row, Shape};
-use crate::table::mutation::insert::tests::multiple_indexes::model as frames;
 use std::ops::Range;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub(in crate::table) const PAGE: usize = 4096;
 

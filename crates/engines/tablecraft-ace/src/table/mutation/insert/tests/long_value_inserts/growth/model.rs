@@ -1,4 +1,5 @@
 //! Literal map rows, chunk pages and complete images fixed before preview calls.
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 mod indirect;
 
 use super::super::{Family, PAGE, external, frames, original};
@@ -52,7 +53,7 @@ fn lval_page(body: &[u8]) -> Vec<u8> {
     page
 }
 
-fn source(code: u8, eof: u32, empty: bool) -> frames::Case {
+fn source(code: u8, eof: u32, empty: bool) -> source_frames::Case {
     let mut case = external::original(code, Family::Ole);
     case.before.resize(eof as usize * PAGE, 0);
     case.before[16 * PAGE..17 * PAGE].copy_from_slice(&lval_page(&[0x5a; 4076]));
@@ -101,7 +102,7 @@ pub(in crate::table::mutation::insert) fn source_and_expected(
     let mut descriptor = (tag | length as u32).to_le_bytes().to_vec();
     descriptor.extend((eof << 8).to_le_bytes());
     descriptor.extend([0; 4]);
-    let added = frames::Row {
+    let added = source_frames::Row {
         id: 10,
         group: Some(100),
         binary: Some(descriptor),

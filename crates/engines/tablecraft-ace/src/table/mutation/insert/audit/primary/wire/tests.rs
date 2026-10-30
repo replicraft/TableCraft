@@ -1,8 +1,9 @@
 //! Long common prefixes require the actual encoded comparison-width charge.
 use super::*;
-use crate::{NativeImage, table::mutation::insert::tests::multiple_indexes::model};
+use crate::NativeImage;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as model;
 
 fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
     let source = model::source(6, false, false);

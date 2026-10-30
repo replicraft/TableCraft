@@ -47,6 +47,7 @@ mod tests {
     };
     use std::cell::Cell;
     use tablecraft_core::limits::{Resource, ResourceBudget};
+    use tablecraft_testkit::access::insert_seed;
 
     const LIMITS: [u64; 3] = [256 * 1024 * 1024, 100_000, 100_000_000];
 
@@ -71,7 +72,7 @@ mod tests {
         let mut case = model::source(6, State::Fresh);
         // Reuse the actual literal catalog/property owner. Its Score group binds
         // the genuine third field in this generated-primary source.
-        let catalog = original::source(6, false, false, Some((property, value)));
+        let catalog = insert_seed::source(6, false, false, Some((property, value)));
         case.before[4 * 4096..5 * 4096].copy_from_slice(&catalog[4 * 4096..5 * 4096]);
         case.before
     }

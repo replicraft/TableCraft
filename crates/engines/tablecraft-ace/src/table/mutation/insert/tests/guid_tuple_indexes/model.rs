@@ -1,9 +1,9 @@
 //! Literal fixed records and complete physical GUID/tuple image expectations.
-use super::super::multiple_indexes::model as frames;
-use crate::test_support::base;
 use std::collections::BTreeSet;
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 

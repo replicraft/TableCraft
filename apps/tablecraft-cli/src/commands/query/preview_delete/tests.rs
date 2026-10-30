@@ -1,10 +1,10 @@
 use super::{Arguments, run};
-use crate::commands::rows::stream::tests::fixture;
 use clap::Parser;
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{IndexCheckStatus, check_table, check_table_constraints};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 #[derive(Parser)]
 struct Invocation {

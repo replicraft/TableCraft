@@ -2,10 +2,7 @@
 mod cli_support;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod crypto;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 use cli_support::run;
 use std::fs;

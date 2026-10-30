@@ -5,6 +5,7 @@ use std::{collections::BTreeSet, io::Cursor};
 use tablecraft_core::values::{Decimal, Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 #[allow(dead_code)]
 mod fixture {
@@ -107,7 +108,6 @@ fn typed(bytes: &[u8], rows: &[(Row, u32)]) {
 
 #[test]
 fn different_decimal_precision_and_scale_domains_bind_each_written_component() {
-    use super::super::multiple_indexes::model as frames;
     for code in [5, 6] {
         for descending in [false, true] {
             for reversed in [false, true] {

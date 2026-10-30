@@ -1301,3 +1301,7 @@ Cargo dependencies, redistributed JARs or requirements of ordinary builds/CI.
 The Java/Python probe is original repository code and runs only when explicitly
 invoked over registered original fixture copies; numerical differences remain
 observations rather than native conformance findings.
+
+The engineering testkit consumes workspace `tablecraft-core` for the actual
+shared literal-row `Value` conversion used by ACE, Access and CLI fixture
+consumers. It retains independent raw bytes and no engine dependency.

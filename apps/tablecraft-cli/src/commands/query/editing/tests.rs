@@ -1,11 +1,11 @@
 //! A real Jet 4 plan reaches the common publisher once, after source release.
 use super::{Error, publication, run_with_publisher};
-use crate::commands::rows::stream::tests::fixture;
 use std::{cell::Cell, fs, io::Cursor};
 use tablecraft_ace::{IndexCheckStatus, RuleCheckStatus, check_table, check_table_constraints};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::ExclusiveFile;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(128 * 1024 * 1024, 100_000, 100_000_000)

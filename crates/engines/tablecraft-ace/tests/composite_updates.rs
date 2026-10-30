@@ -1,7 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "composite_updates/capacity.rs"]
 mod capacity;
 #[path = "composite_updates/model.rs"]

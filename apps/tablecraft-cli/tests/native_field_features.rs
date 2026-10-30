@@ -1,9 +1,8 @@
 #[path = "support/mod.rs"]
 mod cli_support;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
 use fixture as base;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]

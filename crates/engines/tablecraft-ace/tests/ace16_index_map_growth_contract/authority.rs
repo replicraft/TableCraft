@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_testkit::access::map_growth::model::number;
 
 const SLOT_START: usize = 14;
 const SLOT_BYTES: usize = 2;
@@ -142,7 +143,7 @@ fn incomplete_inventory_and_unreferenced_physical_slots_cannot_disappear() {
     // Adjacent native slot ranges cannot overlap healthily. A zero-length map
     // range is parser corruption, not a fabricated healthy exclusivity case.
     let mut malformed = model::source(6);
-    let start = model::number(
+    let start = number(
         &malformed.bytes,
         model::OTHER_MAP * model::PAGE + SLOT_START,
         SLOT_BYTES,

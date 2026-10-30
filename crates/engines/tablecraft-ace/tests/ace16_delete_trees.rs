@@ -1,7 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ace16_delete_trees/fixture.rs"]
 mod fixture;
 #[allow(dead_code)]

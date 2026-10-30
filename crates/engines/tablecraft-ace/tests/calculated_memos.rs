@@ -1,7 +1,6 @@
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "calculated_memos/hyperlink.rs"]
 mod hyperlink;
 #[path = "calculated_memos/fixture.rs"]

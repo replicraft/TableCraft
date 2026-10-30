@@ -1,7 +1,4 @@
 #[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
-#[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ignored_null_indexes/fixture.rs"]
 mod ignored;
 #[allow(dead_code)]

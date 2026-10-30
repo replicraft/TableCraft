@@ -1,8 +1,9 @@
 //! Literal mask/IEEE/DATE records and index wires, separate from native codecs.
-use super::super::{model as original, multiple_indexes::model as frames};
+use super::super::model as original;
 use std::collections::BTreeSet;
 use tablecraft_core::values::{Double, LegacyDateTime, Single, Value};
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 const PAGE: usize = 4096;
 const GROUP_HEADER: usize = 10 * PAGE + 112;

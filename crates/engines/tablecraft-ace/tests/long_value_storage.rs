@@ -1,8 +1,6 @@
 #[path = "long_value_storage/boundaries.rs"]
 mod boundaries;
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "long_value_storage/model.rs"]
 mod model;
 use tablecraft_testkit::access as support;

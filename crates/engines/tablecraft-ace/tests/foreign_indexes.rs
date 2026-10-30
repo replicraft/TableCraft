@@ -1,5 +1,3 @@
-#[path = "mutation/fixture.rs"]
-mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
 #[path = "foreign_indexes/reads.rs"]

@@ -1,8 +1,7 @@
 //! Source-first file UPDATE images; no transport or native writer calls.
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs"]
 mod cases;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/forwarding_case.rs"]
 mod forwarding;
 #[path = "write_update_files/model.rs"]

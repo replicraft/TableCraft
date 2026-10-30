@@ -204,7 +204,7 @@ fn database_with_properties(properties: &[u8]) -> Vec<u8> {
             (0, item),
         ],
     );
-    let mut bytes = crate::test_support::base::database();
+    let mut bytes = tablecraft_testkit::access::mutation_fixture::database();
     bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
     bytes
 }

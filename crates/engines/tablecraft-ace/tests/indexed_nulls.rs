@@ -1,8 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 #[path = "indexed_nulls/capacity.rs"]
 mod capacity;
-#[path = "mutation/fixture.rs"]
-mod fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
 use tablecraft_testkit::access as support;

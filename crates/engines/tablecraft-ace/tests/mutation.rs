@@ -1,5 +1,4 @@
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "mutation/index_fixture.rs"]
 mod index_fixture;
 #[path = "mutation/non_unique.rs"]

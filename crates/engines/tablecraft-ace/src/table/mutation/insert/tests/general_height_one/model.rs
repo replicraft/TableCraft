@@ -1,8 +1,8 @@
 //! Independent literal child-overflow sources and complete INSERT images.
-use super::super::model as base;
 use crate::RowInsert;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as literal;
+use tablecraft_testkit::access::insert_seed as base;
 
 pub(super) const PAGE: usize = 4096;
 
