@@ -1,0 +1,197 @@
+{
+  "date": "2026-10-29",
+  "feature": "Engineering fixed UPDATE of full-width deleted-column layouts",
+  "checks": {
+    "corrected_literal_source": {
+      "exit_code": 0,
+      "source_expected_pairs": 32,
+      "whole_images": 64
+    },
+    "shorter_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "cases": 2
+    },
+    "api_first": {
+      "exit_code": 0,
+      "functions": 6,
+      "whole_image_comparisons": 64
+    },
+    "CLI_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "pairs": 8
+    },
+    "CLI_api_first": {
+      "exit_code": 0,
+      "functions": 2,
+      "actual_complete_image_copies": 8
+    },
+    "fixed_library_regression_first": {
+      "exit_code": 0,
+      "functions": 54
+    },
+    "shared_consumers_first": {
+      "exit_code": 0,
+      "functions": 36,
+      "targets": [
+        "ace16_fixed_updates",
+        "batch_updates",
+        "mask_updates",
+        "integral_index_updates",
+        "composite_updates"
+      ]
+    },
+    "strict_ACE_first": {
+      "exit_code": 0
+    },
+    "minimal_ACE_first": {
+      "exit_code": 0
+    },
+    "scoped_formatting": {
+      "exit_code": 0
+    }
+  },
+  "contract": "Only engineering FixedUpdate may admit native-number gaps, after complete original logical roots, declared/live counts, exclusive final-record ownership and full physical count/framing prove. No-op and empty requests still qualify all live records. Selected masks use actual native numbers, payloads stored offsets, keys original ROWs. Removed fixed/variable payloads, offsets and NULL bits stay opaque and byte-preserved. Other admission modes remain closed.",
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 450,
+      "sha256": "f6a73142b427e3268359e5fbb397b1635f07ccbaa1c808f827b8a026996f94a9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/historical_columns.rs",
+      "bytes": 5196,
+      "sha256": "e2db6e1011301c9a3aab9af8a586fa869e7a0a1bd8f13b50180f8bc771fe5b45"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/historical_columns/model.rs",
+      "bytes": 8444,
+      "sha256": "53d50dca7f2cf74562815fdb02d76aae00f20b12912269679cec50ac2f101b90"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/historical_columns/preview.rs",
+      "bytes": 10253,
+      "sha256": "a67f303da1274ee28b2e3d347b8f80ea8107c886a8aa257c389c0154c07a3014"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 13127,
+      "sha256": "8d389149d9e932aef49219f0a30c63482d0fea3f31c20258d8ffd89f80c11d71"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates/historical.rs",
+      "bytes": 1948,
+      "sha256": "70e2ed72e9140b149ab33afb4ea397982173fe970e16bddb0c5f488c47a51e57"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_historical_updates.rs",
+      "bytes": 4185,
+      "sha256": "93bd6913e2d2938157985202a37509a64a426828330491563a4afc7338abb0d8"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-registered-freeze.json",
+      "bytes": 1847,
+      "sha256": "db755d43401cc504dd9b5de7ea5c3b37cbcbcb3255087197b6c41fc9e68f8e53"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-first-root.log",
+      "bytes": 1308,
+      "sha256": "c33c6d31eeccd5f77df5dc36010bd3ea00fd891020c40fc9e0298b400f62bcb5"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-rule-diagnostic-root.log",
+      "bytes": 1308,
+      "sha256": "0476993a893c2bdd68d8e71fc86f50e0f8dd074bd89f9f48b0c3af1def58f406"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-null-rule-correction-freeze.json",
+      "bytes": 3173,
+      "sha256": "a1b04440678666670bfd02b90c8299977071d46dbf8ad7854c5a55f269647926"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-null-rule-second-root.log",
+      "bytes": 1602,
+      "sha256": "b90ca18367f0f7025741ee914197cbad88f07244220d1808703a49d5322b0245"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-canonical-row-facts-correction-freeze.json",
+      "bytes": 2427,
+      "sha256": "264ac3f1cf5d861b256f80be36d63251ea8d34005fd73c7838a91ea8255f3233"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/source-canonical-third-root.log",
+      "bytes": 512,
+      "sha256": "521b37b3dda79b15b95fffb1638350f5c3b3fec9f70f54071fa8c5cce1d17e54"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/actual-first-coherent-freeze.json",
+      "bytes": 3584,
+      "sha256": "78f72df78970d41db0c54b32121ff3c3a7712c28de5eed0a29eed6e1f06070fc"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/shorter-source-first-root.log",
+      "bytes": 506,
+      "sha256": "f9b8dfdbef2b3804dccb4370ed49693d898da0aca2b2c7503d06c28054d0e0ed"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/api-first-root.log",
+      "bytes": 1071,
+      "sha256": "91c3348d3d49c8be2b38e28d46ab664b67c5649357cd9107bfa2296162f2b324"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/cli-first-freeze.json",
+      "bytes": 2160,
+      "sha256": "400e7e4f20666d79a4efcae4c39fed0ab6772901a0219515761c404ebe82e3d1"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/cli-source-first-root.log",
+      "bytes": 722,
+      "sha256": "bffa8fb7039d052ee28dcaf6a40c54ad38a1ee03757c3e90c3e3001e9c959deb"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/cli-api-first-root.log",
+      "bytes": 470,
+      "sha256": "bc298abcc83857fa0825bdb2bc36a637a5efcfa234e2ea193b98ddb1ff3abeee"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/fixed-library-regression-first-root.log",
+      "bytes": 7755,
+      "sha256": "318a5bf057ea5590bc65c925615527c93687d30d7baea617aba07334dfbdb5d7"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/shared-consumers-first-root.log",
+      "bytes": 4258,
+      "sha256": "0c5f17fffbb675919f56aad965b7dfa10b74e7fcc31ee0bc0d05f825b8a873fc"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/clippy-first-root.log",
+      "bytes": 184,
+      "sha256": "62350de6f4b3368f8c8dccb05e235899a68eb08832d99427058a1f03fd399792"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/minimal-first-root.log",
+      "bytes": 183,
+      "sha256": "5a2958f83196656adfeb1c2b2e1fccfaa903f7beea58f917688e9cac559a2f1b"
+    },
+    {
+      "path": ".cache/ace16-historical-fixed-update-next-20261029/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "retained_source_authoring_failures": [
+    "First source gate failed because nullable Score under >=0 And <=100 yielded unsupported NULL validation. Diagnostic confirmed exact field/status; nullable sources gained explicit NULL-accepting range expression before any mutation API. Existing non-NULL sources retained original rule. Assertions and engine unchanged.",
+    "Next source gate found authored row facts assumed TD block order. Existing schema sorts native numbers: Score4 follows Label2. Corrected independent row/schema facts only; source and expected byte-construction code remained identical.",
+    "Corrected complete sources and expected images passed before production activation/API. No golden changed after a producer ran."
+  ],
+  "limits": [
+    "Only full-width original records, not shorter old rows/newly absent fields",
+    "Initial corpus qualifies fitting indexes, not allocating historical-table images",
+    "No unrelated attachment/calculated-field mutation or required data-macro handling",
+    "No normal ACE save, journal promotion, native Access or original-file qualification"
+  ],
+  "native_Access_qualification": false
+}
