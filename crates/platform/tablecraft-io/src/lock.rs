@@ -69,6 +69,11 @@ impl ExclusiveFile {
     pub fn sync_all(&mut self) -> io::Result<()> {
         self.0.sync_all()
     }
+    #[cfg(feature = "journal")]
+    pub(crate) fn set_storage_length(&mut self, length: u64) -> io::Result<()> {
+        self.0.set_len(length)
+    }
+
     /// Explicitly release the lock, reporting unlock failure before handle close.
     pub fn close(self) -> Result<(), IoError> {
         self.0.unlock().map_err(Into::into)

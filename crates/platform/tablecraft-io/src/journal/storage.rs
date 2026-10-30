@@ -17,6 +17,22 @@ pub trait DurableStorage: Read + Write + Seek {
     fn sync_storage(&mut self) -> Result<(), IoError>;
 }
 
+/// Exclusive storage whose contiguous writes can extend EOF and whose length
+/// can be explicitly established. Fixed-capacity writers must not implement this
+/// capability. A write may fail after storing a prefix and extending through it;
+/// it must not create holes or change unrelated bytes.
+///
+/// Successful resize establishes exactly the requested length. On failure it may
+/// have changed length partway within the old/requested interval, but must not
+/// undershoot that interval or alter retained bytes. The image protocol writes
+/// its complete chosen image first, so its resize calls only retain or truncate
+/// length. Sync must persist both those writes and the resulting length.
+pub trait ResizableDurableStorage: DurableStorage {
+    /// Establish the requested byte length without changing the cursor. An error
+    /// does not imply that the length remained unchanged; recovery is required.
+    fn resize_storage(&mut self, length: u64) -> Result<(), IoError>;
+}
+
 impl DurableStorage for ExclusiveFile {
     fn storage_len(&mut self) -> Result<u64, IoError> {
         self.length()
@@ -25,6 +41,35 @@ impl DurableStorage for ExclusiveFile {
     fn sync_storage(&mut self) -> Result<(), IoError> {
         self.sync_all().map_err(Into::into)
     }
+}
+
+impl ResizableDurableStorage for ExclusiveFile {
+    fn resize_storage(&mut self, length: u64) -> Result<(), IoError> {
+        self.set_storage_length(length).map_err(Into::into)
+    }
+}
+
+pub(super) fn resize<D: ResizableDurableStorage>(
+    device: &mut D,
+    length: u64,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), JournalError> {
+    check(budget, cancelled)?;
+    // Complete contiguous writes must already have materialized this extent.
+    // Never pre-extend with fabricated zero-filled image data.
+    if device.storage_len()? < length {
+        return Err(JournalError::TargetMismatch);
+    }
+
+    check(budget, cancelled)?;
+    device.resize_storage(length)?;
+    check(budget, cancelled)?;
+    if device.storage_len()? != length {
+        return Err(JournalError::TargetMismatch);
+    }
+
+    check(budget, cancelled)
 }
 
 pub(super) fn check(

@@ -84,6 +84,14 @@ Default fitting and single-variable modes remain unchanged; broader map profiles
 continue separately.
 Normal saves and required macro gates remain.
 
+The optional [generic image journal](foundation/IMAGE_JOURNAL.md) now supports
+independently sized before/after images with explicit resizable storage, final
+truncation ordering and restartable pending rollback. Nine independent record
+pairs and 46 I/O checks pass, including real locked files and injected resize
+failures. Fixed V1 native integration is unchanged. This supplies a storage
+capability for later allocating native plans; engineering candidates remain
+non-journalable, and native Access/power-loss qualification remains open.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

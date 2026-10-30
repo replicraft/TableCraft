@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Recovery for independently sized images
+
+The optional [image journal](foundation/IMAGE_JOURNAL.md) now supports growing,
+shrinking and empty images through an explicit resizable-storage capability.
+The versioned V2 digest binds both lengths and both images. Complete image writes
+precede final truncation and target sync; the commit marker follows that barrier.
+Pending recovery recognizes only actual before/after byte origins and restores
+the exact original. Committed recovery requires exact replacement bytes and
+length, and never rewrites a mismatched target. V1 bytes and APIs stay unchanged.
+
+Nine independent record pairs passed their source gate before transaction APIs.
+After correcting an integration module path, the complete I/O round passes 46
+checks, including locked real-file reopen and resize failures before/after side
+effects, all-byte mixtures, repeated recovery, corruption and resource controls.
+Strict all-target/all-feature and minimal I/O checks pass. These are local modeled
+fault and file checks, not power-loss or native Access save qualification.
+Engineering ACE candidates remain non-journalable; native integration still uses V1.
+
 ## Date expressions in UPDATE and DELETE
 
 The [closed mutation function profile](query/MUTATION_SCALAR_FUNCTIONS.md) now

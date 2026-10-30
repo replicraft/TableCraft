@@ -1,10 +1,12 @@
-# Fixed-length image transaction protocol
+# Image transaction protocols
 
 The optional `tablecraft-io/journal` feature implements prepare, commit, explicit
 rollback and restartable recovery over host-owned DurableStorage resources.
 ExclusiveFile implements that interface using its OS lock and sync_all. The
 protocol is format-independent, experimental and not a Jet/ACE journal format or
-native database writer. Default CLI/native-reader builds do not enable it.
+native database writer. An additive V2 API supports independently sized images
+through explicit resizable storage; the original fixed-length V1 APIs and bytes
+remain unchanged. Default CLI/native-reader builds do not enable the feature.
 
 ## Ownership and durability boundary
 
@@ -22,7 +24,7 @@ Filesystem behavior, correct target identity, namespace setup, native shared-fil
 coordination and ordinary-access exclusion remain host responsibilities. Do not
 read a target normally after an interrupted/failed commit until recovery succeeds.
 
-## Implemented ordering
+## Fixed-length V1 ordering
 
 Only equal, nonempty images up to 64 MiB are supported. Prepare reads the original
 image, owns both images, writes their checked journal and synchronizes it. The
@@ -47,12 +49,12 @@ Rollback never overwrites a partial commit marker. A second interrupted overwrit
 could create a mixed marker that cannot be recognized. Retaining the original
 journal instead makes rollback restartable and repeatable. Completed commit and
 rollback both retain the journal; a host must finish durable cleanup before a new
-transaction. No resizing, multi-file commit, savepoints, page allocation or native
-object semantics are supplied.
+transaction. V1 supplies no resizing, multi-file commit, savepoints, page allocation or native
+object semantics.
 
 ## Framing and resource bounds
 
-The current original TableCraft framing consists of TCIMG001, a little-endian u64
+The original V1 TableCraft framing consists of TCIMG001, a little-endian u64
 image length, a 32-byte SHA-256, then original/replacement images. The digest covers
 magic, length and both images. The optional final marker is COMMIT01 plus that
 digest. Unknown framing, oversized images, trailing bytes and non-prefix partial
@@ -112,3 +114,105 @@ are implemented and independently qualified.
 A changed target fails before journal/target writes, with bounded chunk comparison
 and work charging. The optional [native edit integration](../access/writes/NATIVE_WRITES.md#optional-journaled-persistence)
 uses this entry point; ordinary `prepare` retains its existing contract.
+
+## Additive resizable V2 transactions
+
+`prepare_resizable_expected` binds the complete caller-validated before image and
+returns `PreparedResizableImage`. Its target must implement
+`ResizableDurableStorage`; its separate journal still needs only
+`DurableStorage`. `ExclusiveFile` supplies the real resizable implementation
+without exposing or cloning its locked handle. Fixed-capacity implementations do
+not implicitly acquire the new capability. The complete I/O round passes 36 unit,
+three journal-file, four lock, two seek and one compile-fail documentation test;
+strict all-target/all-feature and minimal checks also pass. The
+[result record](../testing/results/variable-length-image-journal-2026-10-30.json)
+pins current source, independent records and the actual logs.
+
+The new capability requires honest contiguous writes that can extend EOF. Resize
+success establishes exactly the requested length; an error can follow a partial
+length change within the old/requested interval. It cannot change retained bytes
+or undershoot that interval. The protocol always writes its complete image first,
+then establishes the final length, so its resize calls only retain or truncate
+length. It never pre-extends storage or invents zero-filled image tails.
+
+Each image is independently bounded by 64 MiB and may be empty. Preparation
+requires an empty journal and exact actual target length/content agreement with
+the caller's before image, before any journal write. It owns the two exact images,
+writes and synchronizes the journal, and leaves the target untouched. Incomplete
+journals are retained for diagnosis and are never silently overwritten.
+
+Commit rechecks exact before length and bytes. It writes the complete after
+image, establishes its exact length and synchronizes the target before writing
+and synchronizing the commit marker. Truncation is last. A failed write, resize,
+sync or completion check requires recovery; an error does not mean that bytes or
+length stayed unchanged. Dropping the prepared value also retains the journal.
+
+### V2 framing and recovery
+
+The V2 record is `TCIMG002`, a little-endian u64 before length, a separate
+little-endian u64 after length, a 32-byte SHA-256, and the two exact images in that
+order. Its header is 56 bytes. The digest covers the version magic, both encoded
+lengths and both images. Different length splits of the same concatenated bytes
+therefore have different digest domains. The final marker is `COMMIT02` plus the
+same digest. Empty or exact partial marker prefixes remain pending; a complete
+valid marker is committed. Unknown versions, malformed/truncated bodies, size or
+arithmetic violations, mismatched digests, bad prefixes and trailing bytes refuse
+before target mutation. No expected image is padded to the other image's length.
+
+`recover_resizable` reads V1 journals through the unchanged fixed recovery path
+and V2 journals through the new path. The old `recover` continues to reject V2,
+because its target has not promised resize capability. No V1 journal is upgraded,
+rewritten or reused by this dispatch.
+
+For pending V2 recovery, the actual target length must lie between the smaller
+and larger image lengths. Every actual byte within their shared extent must
+match its real before or after counterpart. An existing byte beyond one image's
+EOF must match the other real image; absence is never replaced by a zero byte.
+Out-of-range lengths and unrelated bytes refuse before any write or resize.
+Recovery restores the complete before image, establishes its final length and
+synchronizes target and journal. Contiguous writes and truncate-last ordering
+keep interrupted rollback recognizable and restartable in both size directions.
+Partial markers remain unchanged, including across repeated rollback.
+
+A committed journal requires exact after bytes and length. Target sync already
+preceded marker writes, so successful committed recovery rewrites neither bytes
+nor length: it verifies the after image and re-establishes the two barriers. A
+foreign or postcommit mixture is not repaired merely because its bytes resemble
+the two images. Both outcomes retain the journal for host-owned cleanup.
+
+The host still owns exclusive resources, correct pairing across restart,
+durable namespace setup/cleanup, authorization and blocking-call timeouts. A
+checksum does not authenticate target identity. No native Access shared-file
+protocol, physical power-loss, arbitrary torn-sector or independent filesystem
+metadata/data persistence guarantee is established by the local storage model.
+
+### V2 independent controls and native boundary
+
+Nine independently authored complete pending/committed record goldens and fault
+expectations were frozen before the V2 producer was authored. They cover grow,
+shrink, equal length, both empty directions, empty-to-empty, real zero payload
+and equal concatenated bytes with different length splits. Their source-only
+qualification runs before transaction APIs. The focused tests compare produced
+journal bytes exactly and check every truncation/corruption, all partial marker
+lengths, every common-byte mask for the bounded literals, exact target-length
+bounds, real tail origins and committed refusal with zero writes/resizes.
+
+The existing deterministic fault-device owner also exercises V2 with three-byte
+short writes, errors before/after every callback, full or partial truncation before
+an error, unsynced-device survival/loss and interrupted recovery. Real disposable
+locked-file consumers cover grow/shrink/empty images, retained-journal reopen and
+injected resize failures before, partway through or after their real file effect.
+All these controls pass. Exact/one-below byte and step allowances and final-poll
+cancellation retain explicit recovery state.
+All owned copies, reads, hashing and comparisons use paid, bounded work.
+
+The independent source-golden test passed before transaction APIs. The first
+full-suite invocation stopped at an integration-module path compile error; root
+added only the explicit child-file path and the corrected run passed all 46
+checks. No record golden or protocol behavior changed after API execution.
+
+The actual native consumer above continues to call V1 `prepare_expected` with a
+validated `NativeEditPlan`. Seven existing native transaction/write-transaction
+semantic tests also pass; this is separate from the strict I/O package check. V2 supplies no new native plan, no conversion from
+`Ace16WritePreview`, and no permission to bypass ACE/data-macro/normal-save gates.
+The current fresh-copy engineering publisher remains a separate host operation.
