@@ -13,6 +13,7 @@ use crate::{
     header::check,
     table::indexes::{IndexKeyUpdate, MutationKey, fixed_index_patches},
 };
+use std::iter;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 
@@ -103,6 +104,7 @@ pub(super) fn generate<const WIDTH: usize>(
         budget,
         cancelled,
     )?;
+    super::extended::qualify(&image, &structural, iter::once(column), budget, cancelled)?;
     let staged = stage::<WIDTH, true>(
         &image,
         &structural,

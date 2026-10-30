@@ -1,4 +1,7 @@
-use super::super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview::qualify};
+use super::super::super::{
+    Ace16WritePreview, EditError, WriteBlocker, gates,
+    preview::{qualify, qualify_fixed},
+};
 use super::super::masked;
 use super::FixedColumnUpdates;
 use crate::table::mutation::patch::spans;
@@ -63,7 +66,11 @@ impl NativeImage {
         let _span =
             tracing::debug_span!("native.edit.batch_preview", groups = groups.len()).entered();
         check(budget, cancelled)?;
-        qualify(&self)?;
+        if EXTENDED_FIXED && !ALLOCATING {
+            qualify_fixed(&self)?;
+        } else {
+            qualify(&self)?;
+        }
         if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
             return Err(InspectError::StructureLimit.into());
         }
@@ -112,6 +119,24 @@ impl NativeImage {
                         budget,
                         cancelled,
                     )?;
+                }
+                if self.fixed_update_limits().is_some() {
+                    // Pay comparisons before the borrowed filter. Original groups
+                    // determine this table's complete affected-column set once.
+                    for candidate in groups {
+                        check(budget, cancelled)?;
+                        budget
+                            .charge(
+                                Resource::Steps,
+                                candidate.table().len().max(group.table().len()) as u64,
+                            )
+                            .map_err(InspectError::from)?;
+                    }
+                    let columns = groups
+                        .iter()
+                        .filter(|candidate| candidate.table().eq_ignore_ascii_case(group.table()))
+                        .map(|candidate| candidate.column());
+                    super::super::extended::qualify(&self, &before, columns, budget, cancelled)?;
                 }
                 tables.push(Table {
                     name: group.table(),

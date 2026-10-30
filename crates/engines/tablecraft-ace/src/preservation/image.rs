@@ -9,8 +9,9 @@ use tablecraft_model::CatalogScope;
 /// Explicit complete-image envelope for a fixed-update-purpose capture.
 ///
 /// This is an image-retention bound, not a memory budget or native format maximum.
-/// Capture under this policy currently permits inert reads only: every mutation
-/// and normal edit plan remains refused, including on files below 64 MiB.
+/// Capture under this policy permits only the separately qualified ACE 16 fitting
+/// fixed single/batch previews. Other mutations and normal edit plans remain
+/// refused, including on files below 64 MiB.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedUpdateImageLimits {
     max_bytes: u64,
@@ -59,7 +60,7 @@ impl CapturePolicy {
 
 /// An immutable complete native image, retaining opaque objects and unused bytes.
 /// Default capture is capped at 64 MiB. Explicit fixed-update-purpose capture
-/// retains its own validated ceiling and currently grants no mutation capability.
+/// retains its own validated ceiling and permits only qualified fitting fixed previews.
 /// Both remain independent of the larger read-source envelope and caller budgets.
 ///
 /// Capture requires a stable/offline source. It does not acquire native Access
@@ -91,7 +92,8 @@ impl NativeImage {
     /// and cancellation checks are the same as default capture. This policy is
     /// retained privately, including for small inputs; it cannot authorize other
     /// mutations by presenting a larger work budget or matching image length.
-    /// The current capture-only profile refuses every mutation and normal plan.
+    /// Only qualified fitting fixed previews admit this profile; all other mutations
+    /// and normal plans retain Standard-only admission.
     pub fn capture_for_fixed_updates<R: Read + Seek>(
         source: &mut R,
         scope: CatalogScope,
@@ -151,6 +153,46 @@ impl NativeImage {
             catalog,
             capture,
         })
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
+    pub(crate) fn fixed_update_limits(&self) -> Option<FixedUpdateImageLimits> {
+        match self.capture {
+            CapturePolicy::Standard => None,
+            CapturePolicy::FixedUpdate(limits) => Some(limits),
+        }
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
+    pub(crate) fn require_fixed_update_capture(&self) -> Result<(), InspectError> {
+        let maximum = match self.capture {
+            CapturePolicy::Standard => crate::limits::MAX_IMAGE_BYTES,
+            CapturePolicy::FixedUpdate(limits) => limits.max_bytes(),
+        };
+        if self.bytes.len() as u64 > maximum {
+            return Err(InspectError::StructureLimit);
+        }
+        Ok(())
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
+    pub(crate) fn recapture_fixed_candidate(
+        &self,
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        self.require_fixed_update_capture()?;
+        if bytes.len() != self.bytes.len() {
+            return Err(InspectError::Malformed);
+        }
+        Self::capture_with_policy(
+            &mut Cursor::new(bytes),
+            self.catalog.catalog().scope(),
+            self.capture,
+            budget,
+            cancelled,
+        )
     }
 
     pub(crate) fn require_standard_capture(&self) -> Result<(), InspectError> {
