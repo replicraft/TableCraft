@@ -10,9 +10,12 @@ eight independently generated originals, followed by sixteen passing fresh
 Jackcess readers. Explicit [required fresh-copy publication](cli/DURABLE_OUTPUT.md)
 now completes file and captured-directory barriers through two existing CLI
 consumers. Read-only journal inspection now retains exact images and the same
-journal for policy checks before recovery writes; normal SQL planning is shared
-in the Access adapter. Host-owned journal pairing and qualified recovery are next;
-general ACE saves, required macros and broader index profiles remain open.
+journal for policy checks before recovery writes. The native qualifier now binds
+original typed intent and proves both complete images by rebuilding the normal
+Jet 4 plan; seven focused checks pass. Normal and explicit recoverable SQL
+planning are shared in the Access adapter. Host-owned filesystem pairing and CLI
+save/recover commands are next; general ACE saves, required macros and broader
+index profiles remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
