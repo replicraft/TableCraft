@@ -2,7 +2,7 @@
 use super::{fs, model, qualify, run};
 
 #[path = "../../../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing/model.rs"]
-mod source_model;
+pub(super) mod source_model;
 
 #[test]
 fn qualify_cli_variable_batch_sources_and_complete_expected_before_actions() {

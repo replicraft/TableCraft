@@ -239,3 +239,8 @@ See [SQL UPDATE](../access/writes/SQL_ENGINEERING_COPIES.md),
 [SQL DELETE](../access/writes/SQL_DELETE_COPIES.md),
 [SQL INSERT](../access/writes/SQL_INSERT_COPIES.md) and
 [typed write-copy inputs](../access/writes/ENGINEERING_COPIES.md) for exact limits.
+The typed `write preview-update --variable` command also accepts fixed siblings
+with one Short Text/Binary field in one table. Its `--set` ordinals and expected
+values stay caller-supplied; this is not SQL row selection. Binary values use
+hexadecimal, and mixed INDEX growth or mixed Memo/OLE requests refuse before
+publication. Default typed updates remain fixed-field maintenance.

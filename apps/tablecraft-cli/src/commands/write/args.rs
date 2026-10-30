@@ -58,13 +58,13 @@ pub(crate) struct Update {
     /// text "null"; prefix any literal starting `value:` with another `value:`.
     #[arg(long = "set", required = true, num_args = super::updates::SET_FIELDS, action = clap::ArgAction::Append, allow_hyphen_values = true, value_names = ["TABLE", "COLUMN", "ROW", "KIND", "EXPECTED", "VALUE"])]
     pub(super) cells: Vec<String>,
-    /// Short Text/Binary replacement in one table/column, including DATA forwarding.
+    /// Short Text/Binary DATA placement in one table, optionally with fixed siblings.
     #[arg(long, conflicts_with_all = ["long_value", "cascade_updates"])]
     pub(super) variable: bool,
     /// Ordinary Memo/OLE replacement in one table/column using existing LVAL storage.
     #[arg(long, conflicts_with_all = ["variable", "index_growth", "cascade_updates"])]
     pub(super) long_value: bool,
-    /// Explicitly permit the selected fixed/variable INDEX growth profile.
+    /// Permit fixed or single-variable INDEX growth; mixed variable growth refuses.
     #[arg(long, conflicts_with = "cascade_updates")]
     pub(super) index_growth: bool,
     /// Expand qualified update cascades from original relationship associations.

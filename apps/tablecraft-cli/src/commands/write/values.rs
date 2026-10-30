@@ -95,7 +95,7 @@ pub(super) fn update(kind: &str, data: &str, budget: &mut ResourceBudget) -> Res
     value(kind, data, true, budget)
 }
 
-fn fixed_kind(kind: &str) -> bool {
+pub(super) fn fixed_kind(kind: &str) -> bool {
     matches!(
         kind,
         "boolean"

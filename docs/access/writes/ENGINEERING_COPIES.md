@@ -25,20 +25,34 @@ tablecraft write preview-update offline.accdb edited.accdb \
 
 tablecraft write preview-update contacts.accdb edited.accdb --variable --index-growth \
   --set Contacts Name 0 text Alice Alexandra
+
+tablecraft write preview-update offline.accdb edited.accdb --variable \
+  --set Items Age 3 int32 null 40 \
+  --set Items Name 3 text null aa
+
+tablecraft write preview-update offline.accdb binary-edited.accdb --variable \
+  --set Items Age 3 int32 null 40 \
+  --set Items Name 3 binary null 00ff
 ```
 
 Each `--set` contains `TABLE COLUMN ROW KIND EXPECTED VALUE`. ROW is the zero-based
 original live-row ordinal, not a key value. All assignments refer to one immutable
 captured source. Groups are combined before one engine call; a stale expected
 value or any later failure returns no copy. Multiple fixed-field assignments can
-span qualified tables. A single table/column is required for `--variable` and
-`--long-value`; mixed variable groups are refused rather than applied sequentially.
+span qualified tables. `--variable` can combine fixed siblings with exactly one
+Short Text/Binary column in one table. Expected carriers and ordinals come
+unchanged from the caller, not from a replacement snapshot expectation.
+`--long-value` remains single-table/single-column; mixed LVAL and multiple-variable
+requests refuse rather than being applied sequentially.
 
 The default uses fitting fixed/batch maintenance. Explicit `--index-growth`
 permits the engine's qualified Int32 single/tuple growth profile. `--variable`
-selects Short Text/Binary replacement, including qualified DATA forwarding;
-adding `--index-growth` selects the existing qualified single-key General/Binary
-index growth service. `--long-value` selects ordinary Memo/OLE replacement through
+selects Short Text/Binary replacement, including qualified DATA forwarding.
+With fixed siblings it uses one joint DATA-placement preview: the original page,
+another owned DATA page, or qualified represented EOF allocation. INDEX owners
+must fit. Mixed `--variable --index-growth` refuses before typed group
+serialization; that combination retains the existing qualified single-key
+General/Binary index-growth service only for one variable column. `--long-value` selects ordinary Memo/OLE replacement through
 existing LVAL ownership checks. Those carriers use `text` and `binary` respectively.
 Unknown indexes, collations, maps or record profiles remain typed refusals.
 
@@ -134,6 +148,14 @@ bytes. `--value-bytes` defaults to 1024 input bytes and can be raised up to the
 request-file ceiling. Binary counts encoded hex digits; UPDATE counts escape
 prefixes too.
 
+The mixed protocol preserves the written KIND even for NULL inputs. It validates
+one-table/one-variable scope and flags before serializing native groups, prepays
+its grouping name comparisons, and moves fixed/variable cells without cloning
+Text/Binary payloads. The bounded variable/LVAL dispatcher adds Steps for its
+classification pass; overall previous command-cost identity is not claimed.
+The shared legacy parser remains the complete typed-value authority, and native
+kind, request-count and source constraints remain enforced by the selected engine.
+
 After complete preparation and bounded report formatting, the CLI uses the shared
 [host publisher](../../../apps/tablecraft-cli/src/native/publication.rs), also
 consumed by normal Jet 4 [query update](QUERY_EDITING.md#fresh-copy-cli) and the
@@ -168,3 +190,25 @@ no-clobber publication, output-byte accounting and failure cleanup. Initial
 fixture/setup failures are retained in the
 [verification record](../../testing/results/ace16-engineering-write-workflow-2026-10-29.json).
 No Microsoft Access execution or native save comparison is claimed by these commands.
+
+## Typed mixed DATA-placement validation
+
+Before any new typed CLI action, the source gate qualified all 36 original
+source/expected pairs through the actual shared pure constructor. There are no
+new fixture copies, constructor changes or expected-image repairs. The first
+source compile warned about an unused Value import in the new serializer; only
+that import was removed before the API run, retaining the warning log/freeze.
+
+All three focused serializer tests passed first: exact caller expectations,
+original ordinals, KIND-based NULL classification, scope/category refusals,
+all three cumulative exact pools, one-below limits and final cancellation.
+All four integration functions passed first, including 36 complete typed copies
+across both headers, directions and all three DATA destinations. Twelve use
+non-NULL Binary hexadecimal input. Stale expected values/ordinals publish no
+output, existing output bytes and original sources remain unchanged, and six
+invalid-profile cases refuse before opening a missing source. Current CLI
+regressions passed 34 unit and 25 integration functions: nineteen in the shared
+SQL/typed UPDATE source target and six existing typed write workflows. CLI strict
+all-target/all-feature checks passed. This is the selected consumer regression,
+not a full workspace run. No Microsoft Access application write, normal-save or
+durable-transaction qualification is claimed.

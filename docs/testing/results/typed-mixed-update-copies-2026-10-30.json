@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-30",
+  "feature": "Typed expected-value mixed fixed/variable DATA-placement copies",
+  "checks": {
+    "source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "complete_source_expected_pairs": 36
+    },
+    "unit_api_first": {
+      "exit_code": 0,
+      "functions": 3
+    },
+    "integration_api_first": {
+      "exit_code": 0,
+      "functions": 4,
+      "complete_image_copies": 36,
+      "non_null_binary_copies": 12
+    },
+    "cli_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 34,
+      "integration_functions": 25,
+      "integration_breakdown": {
+        "query_preview_updates": 19,
+        "write_previews": 6
+      }
+    },
+    "strict_cli_all_targets_all_features_first": {
+      "exit_code": 0
+    }
+  },
+  "scope": [
+    "One immutable source image and one existing EngineeringRequest::MixedUpdate, one table/fixed siblings/exactly one Short Text/Binary field",
+    "Caller expected carriers and original ordinals preserved by move, no snapshot substitution or SQL coercion",
+    "Default typed fixed and single-variable legacy native services unchanged; mixed INDEX growth/mixed LVAL/multiple variable/multitable profiles refuse",
+    "Input category derives from original KIND even for NULL; unknown kinds refuse through normal typed parsing",
+    "New mixed preflight pays scope/grouping byte work; bounded dispatcher adds cumulative Steps and no overall old-cost identity is claimed"
+  ],
+  "observations": [
+    "All first source/unit/integration runs passed; the source build reported one unused Value import, removed mechanically before APIs",
+    "Original pure fixture constructor and expected bytes unchanged; no producer-result tuning",
+    "Shared legacy grouping name-byte work gap recorded for a separate focused correction, not claimed solved by this feature"
+  ],
+  "pending": [],
+  "evidence": [
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/source-first-root.log",
+      "bytes": 986,
+      "sha256": "8d4a43b7ad8fbea689b69b69d2c48314b67c1ba4cf942d127f2328d148eee441"
+    },
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/unit-api-first-root.log",
+      "bytes": 706,
+      "sha256": "3d92d2862d153685726a1cefa8c188f62bde73eb78e132d377fbf61a8a3f174e"
+    },
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/cli-api-first-root.log",
+      "bytes": 819,
+      "sha256": "09a706dc806e4169f5d38a6b9a33123b0507a5e58367bb0e728f828755870e6d"
+    },
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/source-first-registered-freeze.json",
+      "bytes": 2535,
+      "sha256": "781d961ec5ab9d03fdb3c4894a067afc9e981a9ee8b2d166081aa443fa6c5815"
+    },
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/cli-regression-first-root.log",
+      "bytes": 6618,
+      "sha256": "7614cab7e6b3fc0855c7ac09afce10e34e1a0973d72b100ce044f1b9f2250b13"
+    },
+    {
+      "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/clippy-first-root.log",
+      "bytes": 634,
+      "sha256": "e0686481e2a4bc374337d6e23b485dfaa9d00e4167bd551b497fccba4ec4155b"
+    }
+  ],
+  "native_Access_qualification": false,
+  "verification_context": "Current broader run is CLI34 unit +25 selected integration functions, not all workspace tests. Standalone native storage behavior remains the separately committed engine proof. New mixed path prepays grouping byte work; shared legacy name-byte accounting correction remains a separate logical change.",
+  "final_format_and_links": {
+    "format": 0,
+    "documentation_links": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-typed-mixed-growing-frontend-next-20261030/doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "c2d922309de0247f59ff45d8f863efdba6bc13ae7cc995aa0dd629718185a9f9"
+      }
+    ]
+  }
+}

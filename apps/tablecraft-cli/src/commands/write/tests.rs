@@ -1,3 +1,5 @@
+mod mixed;
+
 use super::{args::Command, error::Error, input, updates, values};
 use crate::{Cli, commands};
 use clap::Parser;
