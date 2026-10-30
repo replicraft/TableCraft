@@ -72,7 +72,10 @@ pass. Explicit SQL `--variable` now exposes joint DATA growth, with 72 complete
 adapter comparisons and 24 actual CLI Text copies passing. The CLI default
 remains fitted. Typed `write preview-update --variable` now shares this service,
 with 36 exact copies, including Binary, preserving caller expectations and ordinals.
-Mixed INDEX allocation and map promotion continue separately.
+The separate [joint DATA/INDEX engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
+now passes 24 source pairs and 48 complete API comparisons for root and nonroot
+splits, with one shared allocation overlay. Mixed INDEX flag routing is next;
+broader map profiles continue separately.
 Normal saves and required macro gates remain.
 
 ## Delivery snapshot — 27 October 2026

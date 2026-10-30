@@ -17,7 +17,7 @@ pub(super) fn capture<'a>(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Vec<Physical<'a>>, EditError> {
     let mut result: Vec<Physical<'a>> = Vec::new();
-    super::reserve(&mut result, schema.layout.physical_indexes, reader)?;
+    reserve(&mut result, schema.layout.physical_indexes, reader)?;
     for physical in 0..schema.layout.physical_indexes {
         reader.tick()?;
         let number = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
@@ -88,7 +88,7 @@ pub(super) fn require_tree(
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         reader.tick()?;
-        super::reserve(pages, 1, reader)?;
+        reserve(pages, 1, reader)?;
         pages.push(tree.number());
         for child in tree.children() {
             visit(child, pages, reader)?;
@@ -108,5 +108,20 @@ pub(super) fn require_tree(
     if pages != expected {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
+    Ok(())
+}
+
+fn reserve<T>(
+    values: &mut Vec<T>,
+    count: usize,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+) -> Result<(), EditError> {
+    reader
+        .budget
+        .charge_allocation(count as u64, size_of::<T>() as u64)
+        .map_err(InspectError::from)?;
+    values
+        .try_reserve(count)
+        .map_err(|_| InspectError::Allocation)?;
     Ok(())
 }

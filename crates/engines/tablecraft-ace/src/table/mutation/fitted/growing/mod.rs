@@ -1,5 +1,6 @@
 //! Mixed complete-row placement with the existing represented allocation policy.
 mod finish;
+pub(in crate::table) mod joint;
 mod stage;
 
 use super::request::{self, FittedColumnUpdates};
@@ -41,3 +42,6 @@ impl NativeImage {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod joint_split_tests;

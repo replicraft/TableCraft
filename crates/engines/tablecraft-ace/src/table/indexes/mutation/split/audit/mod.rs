@@ -9,10 +9,12 @@ mod purpose_tests;
 mod retained;
 #[cfg(test)]
 mod retained_tests;
+mod rows;
 mod slot;
+mod source;
 
 use super::super::{encoding, plan::keys, profile::SingleProfile, replacement::SlotKeyChanges};
-use super::Plan;
+use super::{Plan, rows::Changes};
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, TableSchema,
     format::{
@@ -29,7 +31,10 @@ use crate::{
             mutation::{IndexKeyUpdate, NumericKey},
             page::ENTRY_START,
         },
-        mutation::CertifiedData,
+        mutation::{
+            CertifiedData, fitted::growing::joint::certified::CertifiedRows, map_authority,
+            variable_update::map_audit::placement_certificate::CertifiedPlacement,
+        },
     },
 };
 use std::io::Cursor;
@@ -90,8 +95,8 @@ pub(super) fn prove_slot_after_data(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     check(budget, cancelled)?;
-    data.require_source(image)?;
-    data.require_after(after)?;
+    data.phase().require_source(image)?;
+    data.phase().require_after(after)?;
     let keys = data.keys(budget, cancelled)?;
     let changes = SlotKeyChanges {
         column: data.column(),
@@ -108,17 +113,46 @@ pub(super) fn prove_slot_after_data(
     )
 }
 
+pub(super) fn prove_rows_after_data(
+    image: &NativeImage,
+    data: &CertifiedRows<'_>,
+    plan: &Plan,
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    data.phase().require_source(image)?;
+    data.phase().require_after(after)?;
+    let keys = data.keys(budget, cancelled)?;
+    let changes = Changes {
+        columns: data.columns(),
+        updates: &keys,
+    };
+    prove_with(
+        image,
+        data.original(),
+        Updates::RowsAfterData(&changes, data),
+        plan,
+        after,
+        budget,
+        cancelled,
+    )
+}
+
 #[derive(Clone, Copy)]
 enum Updates<'a> {
     Fixed(&'a [IndexKeyUpdate]),
     Slot(&'a SlotKeyChanges<'a>),
     AfterData(&'a SlotKeyChanges<'a>, &'a CertifiedData<'a>),
+    RowsAfterData(&'a Changes<'a>, &'a CertifiedRows<'a>),
 }
 
 impl<'a> Updates<'a> {
-    fn data(self) -> Option<&'a CertifiedData<'a>> {
+    fn data(self) -> Option<&'a CertifiedPlacement<'a>> {
         match self {
-            Self::AfterData(_, data) => Some(data),
+            Self::AfterData(_, data) => Some(data.phase()),
+            Self::RowsAfterData(_, data) => Some(data.phase()),
             _ => None,
         }
     }
@@ -126,19 +160,31 @@ impl<'a> Updates<'a> {
     fn slots(self) -> Option<&'a SlotKeyChanges<'a>> {
         match self {
             Self::Slot(changes) | Self::AfterData(changes, _) => Some(changes),
-            Self::Fixed(_) => None,
+            Self::Fixed(_) | Self::RowsAfterData(_, _) => None,
         }
     }
 
     fn len(self) -> usize {
         match self {
             Self::Fixed(updates) => updates.len(),
+            Self::RowsAfterData(changes, _) => changes.updates.len(),
             Self::Slot(changes) | Self::AfterData(changes, _) => changes.updates.len(),
         }
     }
 
     fn affects(self, schema: &TableSchema, index: &NativeIndex) -> bool {
         match self {
+            Self::RowsAfterData(changes, _) => {
+                !changes.updates.is_empty()
+                    && changes.columns.iter().any(|position| {
+                        schema.columns.get(*position).is_some_and(|column| {
+                            index
+                                .columns()
+                                .iter()
+                                .any(|key| key.number() == column.number())
+                        })
+                    })
+            }
             Self::Fixed(updates) => updates.iter().any(|update| {
                 schema.columns.get(update.column).is_some_and(|column| {
                     index
@@ -179,6 +225,27 @@ fn prove_with(
     }
     let schema = checked.schema();
     let indexes = checked.indexes();
+    if matches!(updates, Updates::RowsAfterData(_, _)) {
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        let original = source::capture(&[checked], &mut reader)?;
+        let census = map_authority::capture_catalog(
+            image,
+            reader.budget,
+            cancelled,
+            |schema, indexes, declarations, reader| {
+                original.require_catalog_claims(schema, indexes, declarations, reader)
+            },
+        )?;
+        census.require_exclusive(&original.owners, reader.budget, cancelled)?;
+    }
+
     let mut source = image.reader();
     if plan.append.length != plan.append.original_length {
         allocated_source(
@@ -217,9 +284,10 @@ fn prove_with(
     } else {
         maps::Expected::default()
     };
-    let index_begin = updates
-        .data()
-        .map_or(image.catalog().header().page_count(), CertifiedData::end);
+    let index_begin = updates.data().map_or(
+        image.catalog().header().page_count(),
+        CertifiedPlacement::end,
+    );
     let mut next_eof = index_begin;
     let mut split_position = 0;
     let mut affected_pages = Vec::new();
@@ -323,6 +391,26 @@ fn prove_with(
         if affected && let Some(changes) = updates.slots() {
             let disposition = slot::prove(
                 &slot::Operation {
+                    image,
+                    schema,
+                    index,
+                    changes,
+                },
+                plan,
+                &mut actual,
+                &mut retained::Progress {
+                    next_eof: &mut next_eof,
+                    map_edits: &mut expected_edits,
+                    pages: &mut expected_pages,
+                    split_position: &mut split_position,
+                },
+            )?;
+            split = disposition.split_root;
+            verified_nonroot = disposition.recursive;
+        }
+        if affected && let Updates::RowsAfterData(changes, _) = updates {
+            let disposition = rows::prove(
+                &rows::Operation {
                     image,
                     schema,
                     index,

@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Joint mixed DATA and INDEX growth
+
+The additive [joint-growth engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md) now
+updates fixed fields and one Short Text/Binary field while placing DATA records
+and splitting all affected physical indexes through the same append state. Fresh
+original-row, key, map and complete tree-ownership proofs govern one candidate.
+Existing fitting and DATA-only services retain their separate profiles.
+
+All 24 independently authored source/expected pairs passed before mutation.
+The first API run passes six functions, 48 complete-file comparisons in both
+group orders and two unchanged no-op images. The shared round passes 522 mutation,
+72 native integration, 55 adapter, 37 CLI unit and 51 CLI integration tests,
+strict ACE/Access/CLI checks and minimal ACE/Access builds. Exposing this joint
+service through the existing mixed INDEX flags is next; broader map profiles,
+normal saves and native Access qualification remain unfinished.
+
 ## Explicit clocks for INSERT defaults
 
 `query preview-insert --default-clock[=LOCAL-DATETIME]` now authorizes needed
@@ -46,8 +62,9 @@ The final focused run passes eight growth and eight fitting functions, including
 72 new complete-file comparisons and all 83 existing fitting comparisons.
 Source-role alias and map-capacity controls pass. The earlier shared batch passed
 498 mutation and 72 native integration tests; after tightening map admission,
-the focused rerun, strict ACE lint and minimal build pass. Joint INDEX splitting,
-map growth, normal saves and native Access qualification remain open.
+the focused rerun, strict ACE lint and minimal build pass. Joint INDEX splitting
+uses the separate service above; broader map profiles, normal saves and native
+Access qualification remain open.
 The adapter passes 72 complete-image comparisons and the CLI produces 24 exact
 Text growth copies. The follow-up regression passes 55 adapter functions,
 31 CLI unit and 36 CLI integration functions, with strict ACE/Access/CLI checks

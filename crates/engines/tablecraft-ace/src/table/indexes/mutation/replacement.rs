@@ -1,8 +1,8 @@
 //! Genuine owned-key replacements for variable-slot UPDATE previews.
 pub(super) mod keys;
-mod mixed;
+pub(in crate::table::indexes::mutation) mod mixed;
 mod qualification;
-mod rows;
+pub(in crate::table::indexes::mutation) mod rows;
 use super::super::{
     IndexCheck, NativeIndex, binary, encoded_tuple, key::KeyRow, profile::Coverage, text,
 };

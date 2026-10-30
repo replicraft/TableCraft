@@ -24,7 +24,11 @@ use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
-enum Profile<'a> {
+// Variable, Decimal and GUID classification each resolve native key numbers.
+// Typed constructors retain their additional independently metered work.
+pub(in crate::table::indexes::mutation) const COLUMN_CLASSIFICATION_PASSES: usize = 3;
+
+pub(in crate::table::indexes::mutation) enum Profile<'a> {
     Text(TextProfile),
     Binary(BinaryProfile<'a>),
     Numeric(SingleProfile),
@@ -36,7 +40,7 @@ enum Profile<'a> {
     EncodedTuple(EncodedTupleProfile<'a>),
 }
 
-fn profile<'a>(
+pub(in crate::table::indexes::mutation) fn profile<'a>(
     index: &NativeIndex,
     schema: &'a TableSchema,
     budget: &mut ResourceBudget,
@@ -120,7 +124,7 @@ pub(super) fn qualify(
         .columns()
         .len()
         .checked_mul(schema.columns().len())
-        .and_then(|work| work.checked_mul(3))
+        .and_then(|work| work.checked_mul(COLUMN_CLASSIFICATION_PASSES))
         .ok_or(InspectError::StructureLimit)?;
     budget
         .charge(Resource::Steps, work as u64)
@@ -137,7 +141,7 @@ pub(super) fn replace(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
-    reader.work(3 * index.columns().len() * schema.columns().len())?;
+    reader.work(COLUMN_CLASSIFICATION_PASSES * index.columns().len() * schema.columns().len())?;
     let profile = profile(index, schema, reader.budget, reader.cancelled)?;
     let owner = schema.definition_page();
     match profile {

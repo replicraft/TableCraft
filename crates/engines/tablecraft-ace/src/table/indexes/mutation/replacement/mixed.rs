@@ -1,6 +1,6 @@
 //! One fitted original-to-joint-final transform per affected physical owner.
-mod profiles;
-mod qualification;
+pub(in crate::table::indexes::mutation) mod profiles;
+pub(in crate::table::indexes::mutation) mod qualification;
 pub(in crate::table) use qualification::qualify;
 
 use super::{RowKeyUpdate, rows};

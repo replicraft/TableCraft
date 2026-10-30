@@ -2,7 +2,7 @@
 pub(super) mod audit;
 pub(super) mod authority;
 pub(super) mod finish;
-pub(super) mod map_audit;
+pub(in crate::table) mod map_audit;
 pub(super) mod maps;
 pub(super) mod placement;
 pub(in crate::table::mutation) mod record_proof;

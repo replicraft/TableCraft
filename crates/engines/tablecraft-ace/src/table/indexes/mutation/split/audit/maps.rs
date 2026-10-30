@@ -8,9 +8,9 @@ use crate::{
         reader::Reader,
     },
     table::mutation::{
-        CertifiedData,
         append::owners::OwnerContext,
         map_authority::{self, Census, Owner, RecordIdentity},
+        variable_update::map_audit::placement_certificate::CertifiedPlacement,
     },
 };
 use std::io::Cursor;
@@ -194,7 +194,7 @@ pub(super) fn spans(
 
 pub(super) fn seed(
     image: &NativeImage,
-    data: &CertifiedData<'_>,
+    data: &CertifiedPlacement<'_>,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<Expected, EditError> {
     data.require_source(image)?;
@@ -442,7 +442,7 @@ pub(super) fn finish(
 pub(super) fn cover_suffix(
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     expected: &Expected,
-    data: &CertifiedData<'_>,
+    data: &CertifiedPlacement<'_>,
     end: u32,
 ) -> Result<(), EditError> {
     let count = data
