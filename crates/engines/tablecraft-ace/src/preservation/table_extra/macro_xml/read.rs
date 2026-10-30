@@ -2,10 +2,12 @@ use super::{DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace, names};
 use crate::{InspectError, header::check, limits::MAX_LONG_VALUE_BYTES};
 use quick_xml::{
     NsReader, XmlVersion,
-    events::{BytesStart, Event},
+    events::{BytesRef, BytesStart, Event},
     name::{NamespaceError, ResolveResult},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+pub(super) mod text;
 
 const MAX_DEPTH: usize = 128;
 const MAX_NAMESPACE_BINDINGS: usize = 128;
@@ -160,16 +162,7 @@ fn inspect(
             Event::GeneralRef(reference)
                 if depth > 0 && !matches!(stack[depth - 1], Node::Wrapper) =>
             {
-                if let Some(scalar) = reference
-                    .resolve_char_ref()
-                    .map_err(|_| InspectError::Malformed)?
-                {
-                    if !legal_character(scalar) {
-                        return Err(InspectError::Malformed);
-                    }
-                } else if !matches!(reference.as_ref(), "amp" | "lt" | "gt" | "quot" | "apos") {
-                    return Err(InspectError::Unsupported);
-                }
+                reference_character(&reference)?;
             }
             Event::Comment(_) => {}
             Event::Decl(declaration) if start == 0 && !declaration_seen && !root_seen => {
@@ -308,6 +301,26 @@ fn attributes(
 
 fn legal_character(scalar: char) -> bool {
     matches!(scalar, '\t' | '\n' | '\r' | '\u{20}'..='\u{d7ff}' | '\u{e000}'..='\u{fffd}' | '\u{10000}'..='\u{10ffff}')
+}
+
+fn reference_character(reference: &BytesRef<'_>) -> Result<char, InspectError> {
+    if let Some(scalar) = reference
+        .resolve_char_ref()
+        .map_err(|_| InspectError::Malformed)?
+    {
+        return legal_character(scalar)
+            .then_some(scalar)
+            .ok_or(InspectError::Malformed);
+    }
+
+    match reference.as_ref() {
+        "amp" => Ok('&'),
+        "lt" => Ok('<'),
+        "gt" => Ok('>'),
+        "quot" => Ok('"'),
+        "apos" => Ok('\''),
+        _ => Err(InspectError::Unsupported),
+    }
 }
 
 fn resolution_work(

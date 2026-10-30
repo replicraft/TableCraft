@@ -21,6 +21,12 @@ remain unevaluated ranges in the exact decoded XML UTF-8 input, including its BO
 the original native UTF-16 property bytes remain separately available. Unfamiliar
 structures stay opaque. Present-empty and absent arguments remain distinct.
 
+Recognized Condition/Number/Description slots now also expose bounded decoded
+text with the unchanged original span. XML entities, CDATA, comments and line-end
+normalization are handled without evaluating that text. The text prerequisite
+passes two source and four API controls, 29 native Extra and 13 CLI regression
+functions, strict ACE/CLI checks and the minimal ACE build.
+
 `inspect PATH --table NAME --extra --macro-program` explicitly reports that
 structure without printing stored expression text. All 25 authored XML sources
 and 42 literal node spans pass native checks; all 50 full CLI carriers pass the

@@ -1,0 +1,90 @@
+{
+  "feature": "Explicit bounded recognized data-macro XML text extraction",
+  "date": "2026-10-30",
+  "state": "Source-first two functions, first focused API six functions, post-cleanup native29/CLI13 regressions, strict ACE/CLI and minimal ACE all pass",
+  "authority": "Decoded text with unchanged original raw XML spans; no expression execution, macro absence or normal-save permission",
+  "source_first": {
+    "exit": 0,
+    "functions": 2,
+    "recognized_carriers": 35,
+    "opaque_carriers": 2,
+    "literal_cases": 16,
+    "bom_variants": 2,
+    "exact_raw_slots": 96,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/text-source-first-root.log",
+      "bytes": 660,
+      "sha256": "0e5021259c1af8491c37b097edb3518e367c3cb036dc7d148afbef4840b72c70"
+    },
+    "freeze": {
+      "path": ".cache/ace16-macro-guard-execution-next-20261030/text-source-first-freeze.json",
+      "bytes": 989,
+      "sha256": "10e6cab626df4d290d05f537f831d385e4793852aee25ab661a61ac00fbc5e88"
+    }
+  },
+  "first_focused_api": {
+    "exit": 0,
+    "functions": 6,
+    "source_functions": 2,
+    "new_api_functions": 4,
+    "log": {
+      "path": ".cache/ace16-macro-guard-execution-next-20261030/text-api-first-root.log",
+      "bytes": 1229,
+      "sha256": "667a0375471086cf3b2e6aa1a5b17ab774ba1c2531b2950e93f72d672a3b901e"
+    }
+  },
+  "post_first_pass_cleanup": {
+    "change": "Remove forwarding re-export and call existing read::text::content owner directly; root then adds a payload-free tracing span at the public boundary",
+    "decoder_body_changed": false,
+    "literal_expectations_changed": false,
+    "read_owner_sha256": "a4f5bee9da4bb5dae8841d85247fc575c4604b3dd1de52ead676a6201496bdd5",
+    "program_route_before_tracing_sha256": "4258c621a9374599209a2412e4f89dccdfb3fb996f4694e5d3ad1bef4bfc6f9d",
+    "program_route_validated_sha256": "0e84589f0c7b019b38ddbd9fa40fcc8b8d4c92ee92107bd013f80cea09de78ac"
+  },
+  "post_cleanup_validation": {
+    "native_extra": {
+      "exit": 0,
+      "functions": 29,
+      "log": {
+        "path": ".cache/ace16-macro-guard-execution-next-20261030/text-extra-regressions-first-root.log",
+        "bytes": 4095,
+        "sha256": "faddbaf1cf0ec53077c94a4f315a5421b24af69398db7f85087b28a69a874e1e"
+      }
+    },
+    "existing_cli_extra": {
+      "exit": 0,
+      "functions": 13,
+      "structural_carriers": 50,
+      "log": {
+        "path": ".cache/ace16-macro-guard-execution-next-20261030/text-cli-regressions-first-root.log",
+        "bytes": 1626,
+        "sha256": "7583d1a7e8de02c3114d1041f99865cd93a7d756007776f30bf58306f4bdbf85"
+      }
+    },
+    "strict_ace_cli_all_targets_all_features": {
+      "exit": 0,
+      "first_invocation": true,
+      "log": {
+        "path": ".cache/ace16-macro-guard-execution-next-20261030/text-strict-first-root.log",
+        "bytes": 863,
+        "sha256": "af961f78d9d5ec38146f8d35f707dca8638ac717827116d1bd2ba5531d033ed9"
+      }
+    },
+    "minimal_ace": {
+      "exit": 0,
+      "first_invocation": true,
+      "log": {
+        "path": ".cache/ace16-macro-guard-execution-next-20261030/text-minimal-first-root.log",
+        "bytes": 183,
+        "sha256": "a1fcfb9639899d26a389138a0f3dc90aa44ff398e235b9da2c93e36d12d2d816"
+      }
+    }
+  },
+  "boundaries": [
+    "Only recognized Condition, Number and Description slots are materialized",
+    "Raw inner XML spans remain distinct from decoded text",
+    "Literal CRLF/CR normalization differs from referenced CR",
+    "No expression parsing, coercion, event binding or execution",
+    "No data-macro absence, native Access save/reopen or normal-write qualification"
+  ]
+}

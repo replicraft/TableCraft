@@ -6,7 +6,7 @@ mod read;
 pub use model::{DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace};
 pub use program::{
     DataMacroProgram, MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode,
-    MacroProgramNodeKind, MacroProgramProfile, XmlByteSpan,
+    MacroProgramNodeKind, MacroProgramProfile, MacroProgramText, MacroProgramTextKind, XmlByteSpan,
 };
 
 use super::TableExtraProperty;

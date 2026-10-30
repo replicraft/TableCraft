@@ -12,7 +12,8 @@ pub use payloads::{ObjectPayloads, PayloadPresence};
 pub use table_extra::{
     DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, MacroProgramCoverage,
     MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind, MacroProgramProfile,
-    TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty, XmlByteSpan,
+    MacroProgramText, MacroProgramTextKind, TableExtra, TableExtraCoverage, TableExtraGroup,
+    TableExtraProperty, XmlByteSpan,
 };
 
 pub(crate) const COPY_CHUNK_BYTES: usize = 64 * 1024;
