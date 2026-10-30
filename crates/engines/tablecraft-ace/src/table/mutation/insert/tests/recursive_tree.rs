@@ -1,6 +1,6 @@
 //! Complete independent images for recursive INSERT allocation and framing.
 use super::model as base;
-use crate::{EditError, InspectError, WriteBlocker, read_table};
+use crate::{EditError, InspectError, read_table};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -272,7 +272,7 @@ fn root_leaf_bulk_uses_fresh_right_first_and_more_than_two_fitting_halves() {
 }
 
 #[test]
-fn recursive_candidates_respect_all_pools_late_cancel_and_default_gate() {
+fn recursive_candidates_respect_all_pools_late_cancel_and_passive_defaults() {
     let case = model::source(6, Shape::PrefixLoss, Maps::Inline, true);
     checked(&case, &case.before, &[]);
     let expected = model::expected(&case, &[null(i32::MAX)]);
@@ -323,16 +323,18 @@ fn recursive_candidates_respect_all_pools_late_cancel_and_default_gate() {
     );
     let default = base::source(6, true, false, Some(("DefaultValue", "0")));
     base::checked(&default, 3, 2);
-    let result = base::capture(&default).preview_ace16_insert_rows(
-        "Items",
-        &[null(4).request()],
-        &mut base::budget(),
-        &|| false,
-    );
-    assert_eq!(
-        result.err(),
-        Some(EditError::Unsupported(WriteBlocker::Properties))
-    );
+    let rows = [base::NewRow {
+        id: 4,
+        binary: None,
+    }];
+    let expected = base::expected(&default, &rows).0;
+    base::checked(&expected, 4, 2);
+    let result = base::capture(&default)
+        .preview_ace16_insert_rows("Items", &[rows[0].request()], &mut base::budget(), &|| {
+            false
+        })
+        .unwrap();
+    assert_eq!(result.candidate_bytes(), expected);
 }
 
 #[test]

@@ -8,25 +8,24 @@ use tablecraft_core::{
 use tablecraft_testkit::access as support;
 
 #[test]
-fn defaults_refuse_even_full_explicit_rows_and_empty_batches() {
+fn passive_defaults_preserve_full_explicit_rows_and_empty_batches() {
     for code in [5, 6] {
         let before = model::source(code, false, false, Some(("DefaultValue", "0")));
         model::checked(&before, 3, 1);
-        for requests in [
+        for rows in [
             Vec::new(),
-            vec![
-                NewRow {
-                    id: 10,
-                    binary: None,
-                }
-                .request(),
-            ],
+            vec![NewRow {
+                id: 10,
+                binary: None,
+            }],
         ] {
-            let error = model::capture(&before)
+            let expected = model::expected(&before, &rows).0;
+            model::checked(&expected, 3 + rows.len(), 1);
+            let requests = rows.iter().map(NewRow::request).collect::<Vec<_>>();
+            let candidate = model::capture(&before)
                 .preview_ace16_insert_rows("Items", &requests, &mut model::budget(), &|| false)
-                .err()
                 .unwrap();
-            assert_eq!(error, EditError::Unsupported(WriteBlocker::Properties));
+            assert_eq!(candidate.candidate_bytes(), expected);
         }
     }
 }

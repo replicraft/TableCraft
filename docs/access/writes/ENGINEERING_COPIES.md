@@ -87,7 +87,9 @@ independently revalidates the counter before returning its complete candidate.
 Both incrementing modes take companions only, excluding the generated primary
 column. Every companion must be supplied, including explicit NULLs. The current
 TSV protocol cannot represent a zero-companion row; generated-only tables require
-the engine API. Unqualified NewValues/default properties remain refused.
+the engine API. Qualified field-level text defaults remain inert when all
+ordinary values are supplied; they are never evaluated or substituted for NULL.
+Unqualified default declarations and NewValues properties remain refused.
 Audited generated column/value facts print only after publication. The control
 report is TSV; the global row/table presentation option does not change it.
 The counter helper's two source gates and four API tests pass. Its CLI argument

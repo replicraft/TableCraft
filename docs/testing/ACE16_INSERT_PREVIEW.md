@@ -19,9 +19,13 @@ UTF-16 units; Binary follows its positive native declared width through the
 existing 510-byte ceiling. The historical original-file fixtures below use the
 narrower two-field Int32/Binary255 schema; wider-schema qualification is unrun.
 
-DefaultValue presence refuses, even when every value is explicit or the batch
-is empty. AutoNumber, calculated and complex fields refuse through this manual
-API. A separate [explicit incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+Qualified field-level text `DefaultValue` declarations are preserved inertly
+when complete explicit values are supplied, including NULL and present empty
+values. Defaults are never evaluated or substituted for an explicit NULL;
+missing fields still refuse. Empty batches preserve the original declaration.
+Default declarations on generated or OLE fields, nonfield scopes, opaque/wrong
+property carriers or unqualified flags refuse. AutoNumber, calculated and
+complex fields otherwise refuse through this manual API. A separate [explicit incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 accepts companion values and a caller-selected counter policy; it does not detect
 stored Increment mode or change manual INSERT admission. Existing active
 payload, catalog-child, unsupported-property and constraint blockers remain.
@@ -29,6 +33,28 @@ This admission does not establish absence of unknown data macros. Actual empty
 Text additionally requires an explicit AllowZeroLength declaration; stored false
 still rejects the value through normal constraints. Missing declarations are not
 inferred as native defaults.
+
+The [Microsoft Access INSERT contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql)
+assigns defaults to omitted columns; its
+[DDL contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/modify-a-table-s-design-using-access-sql)
+defines a default as applying when no value is supplied. Keeping an explicitly
+supplied NULL is an inference from those contracts, tested here with independent
+literal records, not a recorded Microsoft Access execution. The
+[DefaultValue property contract](https://support.microsoft.com/en-us/access/defaultvalue-property)
+excludes AutoNumber and OLE Object fields. These declarations do not widen
+Required, AllowZeroLength, validation, NewValues, active-content or normal-save
+admission. Incrementing companions likewise supply every ordinary field.
+
+The passive-default source gate passes before the API change: both ACE16
+layouts, independently constructed complete expected records/images, unchanged
+raw LvProp bytes, explicit value/NULL/empty and metadata refusal controls.
+All five passive-default API functions pass against the unchanged complete
+expected images. They cover explicit value/NULL/empty and empty-batch behavior,
+incrementing companions, Required/carrier/arity/empty-Text/validation failures,
+and unqualified declaration refusals. The first API compilation stopped before
+tests because one migrated test used a request type from a different literal
+fixture owner; correcting that type and removing its unused import changed no
+source or expected bytes. Broader checks for this expansion remain pending.
 
 A unique, required, ascending Int32 primary remains mandatory. Qualified
 [additional scalar physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)

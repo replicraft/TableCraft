@@ -13,7 +13,7 @@ impl NativeImage {
     /// Calling this method explicitly chooses the policy. It neither detects
     /// stored Increment/Random mode nor derives a value from live row IDs.
     /// Existing generated-primary, property and complete before-INSERT gates
-    /// apply, including refusals for unqualified NewValues and defaults.
+    /// apply, including unqualified NewValues refusals and inert default checks.
     ///
     /// The returned policy pins the original counter for
     /// [`Self::preview_ace16_incrementing_insert_rows`], which independently
@@ -129,16 +129,21 @@ mod tests {
     }
 
     #[test]
-    fn unqualified_mode_and_default_declarations_remain_refused() {
-        for (property, value) in [("NewValues", "Random"), ("DefaultValue", "0")] {
-            let bytes = property_source(property, value);
-            let image = original::capture(&bytes);
-            assert!(matches!(
-                image.prepare_ace16_incrementing_insert_policy("Items", &mut budget(), &|| false),
-                Err(EditError::Unsupported(WriteBlocker::Properties))
-            ));
-            assert_eq!(image.as_bytes(), bytes);
-        }
+    fn unqualified_mode_remains_refused_while_companion_defaults_stay_inert() {
+        let bytes = property_source("NewValues", "Random");
+        let image = original::capture(&bytes);
+        assert!(matches!(
+            image.prepare_ace16_incrementing_insert_policy("Items", &mut budget(), &|| false),
+            Err(EditError::Unsupported(WriteBlocker::Properties))
+        ));
+        assert_eq!(image.as_bytes(), bytes);
+        let bytes = property_source("DefaultValue", "0");
+        let image = original::capture(&bytes);
+        let policy = image
+            .prepare_ace16_incrementing_insert_policy("Items", &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(policy.expected_last(), 0);
+        assert_eq!(image.as_bytes(), bytes);
     }
 
     #[test]

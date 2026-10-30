@@ -1,0 +1,124 @@
+{
+  "date": "2026-10-29",
+  "feature": "Passive field DefaultValue declarations on fully explicit engineering INSERT rows",
+  "checks": {
+    "source_first": {
+      "exit_code": 0,
+      "functions": 1
+    },
+    "first_api_build": {
+      "exit_code": 101,
+      "tests_run": 0
+    },
+    "api_after_test_construction_correction": {
+      "exit_code": 0,
+      "functions": 5
+    },
+    "insert_library_regression": {
+      "exit_code": 0,
+      "functions": 292
+    },
+    "strict_ACE_all_targets_all_features": {
+      "exit_code": 0
+    }
+  },
+  "contract": "Decoded text DefaultValue only on actual ordinary fields with qualified flags. Every ordinary field or incrementing companion remains explicitly supplied. No default evaluation, omitted-field filling or NULL replacement. Required, empty-text, validation, generated/OLE and source/macro gates unchanged. NewValues and unqualified scopes/carriers refuse.",
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 12700,
+      "sha256": "72b416e5c1a5c0f0d7127551de8f369d90c591e077341622a97ac124bf89fc61"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates/defaults.rs",
+      "bytes": 1649,
+      "sha256": "c0db598c2159ea42e40a6651d9cad85f66ec4798fe14ccca935ee81aa9101950"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/passive_defaults.rs",
+      "bytes": 5858,
+      "sha256": "646ddf27509746ecca66a0d09ac6ed8fd852b2323ac8b87f525ef46778414dc8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/passive_defaults/model.rs",
+      "bytes": 5476,
+      "sha256": "126c2cb39b04eb7f6a55c4f8fbea5b8b82c35e475cfc88750f970d1736bb58b9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/passive_defaults/api.rs",
+      "bytes": 5744,
+      "sha256": "4d299f26846616e5f63790a33507045cfcdcba3f841fdf9ff2ca429766443d29"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/authority.rs",
+      "bytes": 6413,
+      "sha256": "478618cd3a1ec1c0368a29cbdb38a9d12b51a5d6da27ffd3017ed30112849c89"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/ordinary_rows.rs",
+      "bytes": 17806,
+      "sha256": "5c4e7ec75b73eec7463bd9e4a6dff0a6e3f48e5b4a0f22da7b885364f496565a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/recursive_tree.rs",
+      "bytes": 14380,
+      "sha256": "aa4faca2453debd78f91c4891cf819cab7f78641f5f30c65364f1e70aa04f5a3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/policy.rs",
+      "bytes": 10239,
+      "sha256": "1be0822eb96d3aa788941cd4924d70a8311daa700dcf9faf67f5e25ea884cc28"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/first-freeze.json",
+      "bytes": 2518,
+      "sha256": "94957357119ada481d6ec99c9ff7eb93bbddc12d433200c5a6a209069ef9fb66"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/source-registered-freeze.json",
+      "bytes": 1517,
+      "sha256": "5d52cc27b71cf09652aa1f493a95e1842c43875c968038d445922694ad8a0559"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/source-first-root.log",
+      "bytes": 527,
+      "sha256": "d3d293bfc6a95f13c08048c81b6281a7025488449075b901c03662a9fd8cca40"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/pre-api-freeze.json",
+      "bytes": 2572,
+      "sha256": "8c6b2a4cbb5d4a77af63186d4c94d563021db5bebb1d914bd108e5f4f65860b6"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/api-first-root.log",
+      "bytes": 1439,
+      "sha256": "016386f6868bea48a74fb3e3671dd016c3bf6299a558d308db3b0b691b76e045"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/api-compile-correction-freeze.json",
+      "bytes": 896,
+      "sha256": "25a0966bcb6664e8d4b8a0f7e9b0b5aa4ac76edfb2adc1ba8e239324e7bab989"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/api-second-root.log",
+      "bytes": 1078,
+      "sha256": "9c6f035d162033c2564419a9c8890da5997b14177ae9fdae49831fa5c4cc8374"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/insert-regression-first-root.log",
+      "bytes": 40981,
+      "sha256": "e979ac2a731abb5369ce811386a516103d256824c03836642d56189accd0bb33"
+    },
+    {
+      "path": ".cache/ace16-passive-explicit-insert-defaults-next-20261029/clippy-first-root.log",
+      "bytes": 184,
+      "sha256": "205fab1ee9532506a7da8a065bdd36d7495b06d258ee73086e1da820c0d29f41"
+    }
+  ],
+  "retained_observation": "First API invocation failed before any test: migrated recursive-tree control used Row instead of its actual base fixture NewRow type and retained an unused import. Only test request construction/import corrected; source/expected model unchanged.",
+  "post_check_change": "Three logical blank lines in default qualifier, no statements changed.",
+  "native_Access_qualification": false,
+  "explicit_NULL_default_semantics": "Engineering inference from explicitly supplied fields; direct native Access comparison remains pending."
+}

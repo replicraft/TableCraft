@@ -36,6 +36,15 @@ Microsoft Access save/reopen and required data-macro qualification remain open.
 
 The earlier first-command checkpoint follows:
 
+Fully explicit INSERT rows now preserve qualified passive field defaults without
+evaluating them. Explicit NULL/empty/value inputs remain supplied values; omitted
+fields, unqualified declarations and stored NewValues inference remain closed.
+Five new API functions and the entire 292-function INSERT library slice pass,
+alongside strict ACE all-target/all-feature Clippy. The
+[default-admission record](testing/results/ace16-explicit-insert-defaults-2026-10-29.json)
+retains the source-first gate and test-only compilation correction. Native Access
+comparison remains pending.
+
 The CLI now exposes [explicit UPDATE, INSERT and DELETE copy commands](access/writes/ENGINEERING_COPIES.md).
 Fixed groups, Short Text/Binary replacements, ordinary Memo/OLE replacements and
 explicit incrementing inserts reuse the existing native services. DELETE can
