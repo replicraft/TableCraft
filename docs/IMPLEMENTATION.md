@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## SQL VALUES INSERT copies
+
+`query preview-insert` now evaluates one fully explicit VALUES row and publishes
+one engineering copy. Complete field lists can reorder values; manual positional
+values follow the native schema. Explicit incrementing mode requires all companion
+fields and uses ACE-owned generated-column and LAST metadata from the same image.
+Existing constructors supply exact carriers; defaults, omitted values and external
+sources remain closed. The [INSERT contract](access/writes/SQL_INSERT_COPIES.md)
+keeps generation qualification distinct from ordinary metadata inspection.
+
+All nine neutral functions, four generated-binding functions and three executable
+functions pass on their first API runs. Four source-derived complete output images
+match. The regression round passes 296 engine INSERT functions, 94 query tests,
+36 adapter tests, 31 CLI unit tests and 23 CLI integration tests, with strict
+five-package Clippy and four-library minimal builds. The
+[record](testing/results/ace16-sql-insert-copies-2026-10-29.json) retains the source
+freezes and checks; no normal ACE save or native Access qualification is claimed.
+
 ## SQL-selected DELETE copies
 
 `query preview-delete` now selects original rows through the same bounded pure

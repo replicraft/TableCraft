@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-29",
+  "feature": "One-row SQL VALUES engineering INSERT copies",
+  "checks": {
+    "literal_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "whole_expected_cases": 4
+    },
+    "generated_binding_source_first": {
+      "exit_code": 0,
+      "functions": 1
+    },
+    "generated_binding_api_first": {
+      "exit_code": 0,
+      "functions": 4
+    },
+    "neutral_api_first": {
+      "exit_code": 0,
+      "functions": 9
+    },
+    "executable_api_first": {
+      "exit_code": 0,
+      "functions": 3,
+      "whole_image_comparisons": 4
+    },
+    "query_regression_first": {
+      "exit_code": 0,
+      "library_functions": 78,
+      "integration_functions": 16
+    },
+    "engine_insert_regression_first": {
+      "exit_code": 0,
+      "functions": 296
+    },
+    "access_library_regression_first": {
+      "exit_code": 0,
+      "functions": 36
+    },
+    "CLI_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 23
+    },
+    "strict_5_packages_first": {
+      "exit_code": 0
+    },
+    "minimal_4_libraries_first": {
+      "exit_code": 0
+    },
+    "scoped_formatting": {
+      "exit_code": 0
+    }
+  },
+  "contract": "One complete local VALUES row; all unique field identities bind before written-order evaluation, then one consuming backend finish. Manual positional order is complete native schema order. Incrementing requires explicit complete companion fields and engine-qualified generated position/name/LAST from same image, never mode inference/live MAX. Exact existing scalar constructors and shared UPDATE assignment law; no defaults, omissions, hidden sources or durable save.",
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "bytes": 11987,
+      "sha256": "b5f42e1b887cb18e78e0202242eee44ec2f907ae1bf2023b79a9828440f6b14c"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "bytes": 5444,
+      "sha256": "80c8da771b113942ce419e1f178b481228963a005710e58e59c496e15a938d54"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_insert.rs",
+      "bytes": 5820,
+      "sha256": "8bc678c26aa1074751aee2e6eef2d545b014f12540d1ffc916fac81527abb629"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts.rs",
+      "bytes": 7349,
+      "sha256": "d130d61d92c7d593b5e07b2a8243d6cf17c59fcf3609c2d5f0ef65e40417210b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/mod.rs",
+      "bytes": 10184,
+      "sha256": "812012c0cd481ddeddd0011e419e0500b56cdfa33be44508a2fa64b4269a9768"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/inserter.rs",
+      "bytes": 5783,
+      "sha256": "bddda05f9a21a6b89b2077a4915dd61a1f77b3349a9937e94e3d518600e71608"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql_insert.rs",
+      "bytes": 1185,
+      "sha256": "65be534a3f674c7df6d8b2374bebcf15153783748082f217883ad0fb2fc2b49a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6824,
+      "sha256": "edebfa9fb8f7b7d4bcdbadd1fca618124d128fbc3d7abf6b522592d490bc3e7c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4570,
+      "sha256": "4da82d5e04294820a33ba018ebcb54f396bbf739e6dc44efd9a1624cbb794215"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1671,
+      "sha256": "5808764eb347c2302b25ef4671677076e676833e07f5c5575c06bd53c983d9ea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "bytes": 10595,
+      "sha256": "768b14379a499c3e3f98f021f1f9a1fb4f39643f94495f534e7df5201888cbe7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber.rs",
+      "bytes": 1698,
+      "sha256": "43ee2bfc5d2f09917d9f079d4fef65bca6321d7aac6c9e0906b8d5f9eb1589bb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/binding.rs",
+      "bytes": 2813,
+      "sha256": "651b54aa792446ecb2c23583940d814291300c8705d488f0cbaec2b681f98eda"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/binding/tests.rs",
+      "bytes": 4854,
+      "sha256": "3f84a234e41d6ffe137cbb6935b61975dd9b1de77d00163d2c256cbdd4457290"
+    },
+    {
+      "path": "crates/foundation/tablecraft-db/src/editing/mod.rs",
+      "bytes": 230,
+      "sha256": "7dd841aa78bb1097e8775a77e494e2ea23665ea202262559a5b4e5ccbd9bc8fa"
+    },
+    {
+      "path": "crates/foundation/tablecraft-db/src/editing/inserting.rs",
+      "bytes": 1754,
+      "sha256": "edefad9f9345069c193aaa9934701718f5bc7b8e9beea5b7d4895b3b46319fba"
+    },
+    {
+      "path": "crates/foundation/tablecraft-db/src/lib.rs",
+      "bytes": 519,
+      "sha256": "76e2cbe5ab37983fd0b12af2fd5df26c46e26db26774504d635794cfff3069aa"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/error.rs",
+      "bytes": 2803,
+      "sha256": "1341c0f5d2daca8d6eefa9d205578b3f5d991a38fc4cd95ccfdb4b3bc2676d47"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/editing/mod.rs",
+      "bytes": 188,
+      "sha256": "c0d30aeef51bf97c157802e36bccc1314255e32a36a947b7a6c3af33f8ca383a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/editing/plan.rs",
+      "bytes": 9121,
+      "sha256": "8c9a179524dd6634fe1a228002278a5dfbd60e122a911a08c2d6feac6c078648"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/editing/assignment.rs",
+      "bytes": 1801,
+      "sha256": "0ab056635fb9ef93c70a5f5b706dbee25370f5a38ac2907104f93bbba4ef8e19"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/inserting/mod.rs",
+      "bytes": 6475,
+      "sha256": "275dd5a0e225a8d36008c19223ca66e7a36da670374aec358404a79e7c3e0728"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/inserting/shape.rs",
+      "bytes": 5074,
+      "sha256": "4907e3b087713e2be31aee645d971ebd7706499aa96529da189ef11216ad3d36"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/inserting/tests.rs",
+      "bytes": 11471,
+      "sha256": "a5cd8448866c86a4c9b64af0a2234fc43cc2ad10d892e56295ae071bf6d6811f"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/mod.rs",
+      "bytes": 1081,
+      "sha256": "0e1800e778e87599f51775b210b6e951f447f580ef5a5fdf6e026f6f229a125f"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/lib.rs",
+      "bytes": 1862,
+      "sha256": "3eb3038bb403c07f7b3ee401836ca9797627b400dc122cd478a2462e51f965dc"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/source-target-first-freeze.json",
+      "bytes": 1561,
+      "sha256": "d66f5712a7257c08d84858f6510ebe22030566489e1ce452835e7b584d0f83fe"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/registered-coherent-freeze.json",
+      "bytes": 3467,
+      "sha256": "4bbdfb031fba391a4de4d4194e190dc68ebbdda146b7a4e56e6df736d1070863"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/source-first-root.log",
+      "bytes": 1064,
+      "sha256": "7956911420cc735b30f2d984eb80361579dbb73c8361ba622f9bab2a5c2063d2"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/generated-binding-source-first-root.log",
+      "bytes": 522,
+      "sha256": "f5d350cef767dc77850c5d5d74694010ccd54104afd80e82a50d24d90ad88291"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/generated-binding-api-first-root.log",
+      "bytes": 815,
+      "sha256": "e8e7a9a9106de06e37036376d829a5f1f83bab12cdace4951330dc06d43fe05e"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/neutral-api-first-root.log",
+      "bytes": 1446,
+      "sha256": "7b9598d2cfa82a8732f2dd6aec1250788683797b69dea2766006c4ba8933e885"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/cli-api-first-root.log",
+      "bytes": 1220,
+      "sha256": "5a17036725293ad52edbe8737c2afb7e31d80375dd6a1da84c6aa7d8fd5f197c"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/query-regression-first-root.log",
+      "bytes": 11114,
+      "sha256": "d3c1a55c40fa7bd7df79040cc46afbea2c2a1e8f60d42a3b7a37cb4c8d379b56"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/insert-regression-first-root.log",
+      "bytes": 41522,
+      "sha256": "cc0d2c465db6fc974b52107f6e4105bc44b38e4fa3dda1e905d11210b284c5ab"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/access-regression-first-root.log",
+      "bytes": 4707,
+      "sha256": "3b5a0ce5a93d232078df3de0d451fe70c4d66107ed1309f819571804b8bf7a9e"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/cli-regression-first-root.log",
+      "bytes": 6658,
+      "sha256": "2a7373ea71ce1fe0e4992aeed42f7841668c469ab698423fd159f3a229a4a507"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/clippy-first-root.log",
+      "bytes": 746,
+      "sha256": "1d765d00467fd0caf19f6132031a8cd74ffb2a19d42bebe82f0a9c69166312e0"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/minimal-first-root.log",
+      "bytes": 526,
+      "sha256": "7d840d382e0c773cfb0afd6c4e55b48fdb9a9f0683e797c896d0e254b3e5c53d"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-values-next-20261029/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-sql-insert-neutral-20261029/first-coherent-freeze.json",
+      "bytes": 2375,
+      "sha256": "0f51cd1ff004f8d4ea5e240df24aea274e4fca69970237fe79bdaa4de30bedf7"
+    }
+  ],
+  "observations": [
+    "First source build warned about two unused functions in reused fixture modules; narrow import-level allowances only, no fixture/model/expected changes.",
+    "All source qualification and API/check runs listed above passed on their first actual execution.",
+    "No NewValues wire enum or native Access semantics inferred from unknown metadata."
+  ],
+  "regression_context": "Completed before the separate historical FixedUpdate gate was integrated. That uncommitted source/gate work is not part of this INSERT change or its compatibility claim.",
+  "limitations": [
+    "One VALUES row; no INSERT SELECT, UDF, parameter, external source or implicit missing-field values",
+    "Explicit incrementing policy only; generated-only empty companion schema refused",
+    "Some non-NULL stored carriers require typed TSV because no admitted SQL constructor exists",
+    "Encrypted/deployment rewrites, required data macros, normal ACE saves and durable transactions remain closed"
+  ],
+  "native_Access_qualification": false
+}

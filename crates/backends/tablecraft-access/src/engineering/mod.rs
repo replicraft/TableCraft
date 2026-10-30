@@ -3,8 +3,11 @@ mod deleting;
 pub use deleting::AccessEngineeringDeleter;
 mod editor;
 pub use editor::{AccessEngineeringEditor, ScalarUpdateMode};
+mod inserter;
+pub use inserter::{AccessEngineeringInserter, ScalarInsertMode};
 pub mod sql;
 pub mod sql_delete;
+pub mod sql_insert;
 use tablecraft_ace::{
     Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
     EditError, FixedColumnUpdates, IncrementingAutoNumber, NativeImage, RowDelete, RowInsert,

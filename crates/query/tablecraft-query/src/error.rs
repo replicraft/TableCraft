@@ -22,6 +22,9 @@ pub enum QueryError {
     /// More than one SET target resolves to the same original column.
     #[error("duplicate UPDATE assignment target")]
     DuplicateAssignment,
+    /// An explicit INSERT field list binds one supplied column more than once.
+    #[error("duplicate INSERT field")]
+    DuplicateInsertField,
     /// A named source depends on itself through the current dependency path.
     #[error("query source dependency cycle")]
     DependencyCycle,

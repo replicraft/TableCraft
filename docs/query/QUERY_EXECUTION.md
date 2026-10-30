@@ -24,6 +24,19 @@ The seven neutral batch tests pass alongside the nine existing neutral edit
 tests; native adapter/CLI observations are recorded in the owning engineering
 contract. These checks do not qualify a normal ACE save.
 
+The separate [SQL INSERT VALUES consumer](../access/writes/SQL_INSERT_COPIES.md)
+uses `InsertableTable` metadata without scanning rows to invent its target schema.
+It admits one complete explicit VALUES row, binds all fields before value
+evaluation, evaluates expressions in written order and maps the final row to
+backend order before one consuming finish. It shares UPDATE's actual stored
+assignment laws and permits only its closed pure-expression/constructor profile;
+SELECT sources, defaults, omitted fields, parameters, external targets, field
+references, identity reads and user functions remain refused. This does not
+change read-only retrieval, normal ACE admission or ordinary single-column UPDATE.
+All nine neutral INSERT checks passed on their first run, followed by 78 query
+library and 16 existing editing integration tests. Strict checks for five packages and minimal checks for four libraries also pass;
+native mutation and publication qualification remain separate.
+
 [Retained String keys](keys/RAW_STRING_KEYS.md) now share explicit raw-unit comparison
 across grouping, sets, sorting/TOP and crosstab row keys. Fixed-heading named
 crosstabs also retain raw cells for outer observers. Key comparison keeps strict

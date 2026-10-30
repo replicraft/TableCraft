@@ -37,7 +37,8 @@ mod variable_split;
 mod variable_update;
 #[cfg(feature = "ace16-write-preview")]
 pub use insert::{
-    Ace16AutoNumberInsertPreview, AutoNumberRowInsert, IncrementingAutoNumber, RowInsert,
+    Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
+    IncrementingAutoNumber, RowInsert,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use slot::SlotScalarUpdate;

@@ -66,6 +66,37 @@ Seven neutral batch-planner functions passed, including original-row exchange,
 duplicate-target refusal, zero backend finishes on late failures, unchanged
 single-column admission, exact Bytes/Steps limits and final cancellation.
 
+## Separate DELETE and INSERT capabilities
+
+`DeletableTable` owns a complete original snapshot and consumes selected
+`RowHandle` values in one `plan_deletes` finish. Handles are valid only for that
+same snapshot, not persistent row identities. The Access engineering deleter
+resolves them to original ordinals and captures exact source records from the
+same immutable image before native deletion. The [SQL DELETE copy consumer](../access/writes/SQL_DELETE_COPIES.md)
+evaluates all predicates before that single finish; a zero-match selection still
+passes backend admission. No normal ACE save capability is implied.
+
+`InsertableTable` exposes a canonical target name, complete supplied-column
+metadata and explicit schema/name policy without scanning original records to
+invent a schema. Its consuming `plan_insert` receives one complete owned row in
+backend column order and returns a backend candidate without durable writes.
+There is no neutral default evaluator, automatic identity mode or implicit omitted
+field. A backend may explicitly select a generated-column companion schema and
+require a full field list; engine-owned declaration checks and generation policy
+remain at that backend boundary.
+
+The [SQL VALUES consumer](../access/writes/SQL_INSERT_COPIES.md) binds every supplied
+field exactly once before evaluating values, evaluates in written VALUES order,
+then moves results into backend column order and finishes once. It shares the
+actual UPDATE stored-assignment owner: nullable NULL, exact non-Int32 carriers,
+and the existing checked integral assignment to Int32. INSERT does not broaden
+ordinary UPDATE's `ExistingInt32` law. Nine neutral INSERT controls passed their first actual run. The full query
+regression passed 78 library and 16 existing editing integration tests; broader
+checks also passed: 296 INSERT regressions, 36 Access adapter tests, 31 CLI unit
+and 23 integration functions, strict checks for five packages and minimal checks
+for four libraries. These results do not weaken metadata,
+carrier, source or publication admission and are not native Access qualification.
+
 ## Transaction contract direction
 
 [Transaction ownership](../architecture/TRANSACTIONS.md) keeps physical transactions

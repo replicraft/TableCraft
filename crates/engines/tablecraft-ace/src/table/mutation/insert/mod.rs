@@ -28,7 +28,10 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
-pub use autonumber::{Ace16AutoNumberInsertPreview, AutoNumberRowInsert, IncrementingAutoNumber};
+pub use autonumber::{
+    Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
+    IncrementingAutoNumber,
+};
 
 /// One complete new row in the captured native column order.
 /// Values are neither defaulted nor coerced; the selected insertion profile

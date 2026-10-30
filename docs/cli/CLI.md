@@ -203,7 +203,32 @@ tablecraft query update 'UPDATE Items SET Score=Score+7 WHERE Id=2' \
 ```
 
 Encryption rewrites and qualified Jet 4 fixed Int32 UPDATEs use fresh outputs;
-existing files are not overwritten. General native writes and in-place CLI
-editing are unavailable. A failed write can leave an incomplete new output.
+existing files are not overwritten. Encryption failure behavior is described in
+its owning guide. Jet 4 UPDATE uses a complete synced temporary and no-clobber
+publication. General native saves and in-place CLI editing remain unavailable.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
+
+## Experimental ACE 16 write copies
+
+```sh
+tablecraft query preview-update 'UPDATE Items SET Score=Score+1 WHERE Id=2' \
+  --database offline.accdb --output updated.accdb
+tablecraft query preview-delete 'DELETE FROM Items WHERE Id=2' \
+  --database offline.accdb --output remaining.accdb
+tablecraft query preview-insert "INSERT INTO Items (Id, Score) VALUES (4, 42)" \
+  --database offline.accdb --output inserted.accdb
+```
+
+These commands require schemas admitted by the selected engineering profile.
+They keep the original file and publish one complete copy under a fresh name.
+UPDATE can combine fixed columns; INSERT requires every ordinary field and
+selects generated IDs only with explicit `--incrementing` and companion fields.
+Encrypted/deployment inputs and unsupported schema/constraint shapes refuse.
+The engine's complete-image limit is 64 MiB; native Access saves, required data
+macros and in-place transactions remain unqualified.
+
+See [SQL UPDATE](../access/writes/SQL_ENGINEERING_COPIES.md),
+[SQL DELETE](../access/writes/SQL_DELETE_COPIES.md),
+[SQL INSERT](../access/writes/SQL_INSERT_COPIES.md) and
+[typed write-copy inputs](../access/writes/ENGINEERING_COPIES.md) for exact limits.

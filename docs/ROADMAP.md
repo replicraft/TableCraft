@@ -25,7 +25,9 @@ and [SQL-selected UPDATE](access/writes/SQL_ENGINEERING_COPIES.md).
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
 snapshot handles and explicit Restrict/Cascading actions. Atomic fixed multi-column
 UPDATE now evaluates every assignment from original rows before one backend
-finish. Next delivery work is SQL INSERT, broader INSERT/schema admission and
+finish. [SQL VALUES INSERT](access/writes/SQL_INSERT_COPIES.md) now supplies one
+complete row with explicit incrementing companions when selected. Next delivery
+work is broader real-table schema admission, deterministic write expressions and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
 
