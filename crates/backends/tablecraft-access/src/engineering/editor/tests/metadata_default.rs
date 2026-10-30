@@ -1,6 +1,7 @@
 //! Frontend consumers reuse the engine's independently frozen whole-image owners.
 mod boundaries;
 mod growing;
+mod joint_split;
 use super::{AccessEngineeringEditor, ScalarUpdateMode, budget, fixture as base, image, rows};
 use crate::engineering::{UpdateMode, sql};
 use std::io::Cursor;

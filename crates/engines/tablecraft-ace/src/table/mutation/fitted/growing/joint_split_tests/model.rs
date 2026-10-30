@@ -1,8 +1,12 @@
 //! Private independent complete images; no writer, splitter or key table is used.
 use super::base;
+#[path = "model/data.rs"]
 mod data;
+#[path = "model/index.rs"]
 mod index;
+#[path = "model/keys.rs"]
 mod keys;
+#[path = "model/schema.rs"]
 mod schema;
 
 use data::{append_record, data_page, map_page, record};
@@ -15,26 +19,26 @@ const PAGE: usize = 4096;
 const ROWS: usize = 64;
 
 #[derive(Clone, Copy, Debug)]
-pub(in crate::table::mutation::fitted) enum Family {
+pub enum Family {
     Legacy,
     Modern,
     Binary,
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(in crate::table::mutation::fitted) enum Shape {
+pub enum Shape {
     Root,
     Branch,
 }
 
 #[derive(Clone)]
-pub(in crate::table::mutation::fitted) struct Row {
+pub struct Row {
     pub id: i32,
     pub age: i32,
     pub name: Option<Vec<u8>>,
 }
 
-pub(in crate::table::mutation::fitted) struct Case {
+pub struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub rows: Vec<Row>,
@@ -44,12 +48,7 @@ pub(in crate::table::mutation::fitted) struct Case {
     pub index_pages: Vec<u32>,
 }
 
-pub(in crate::table::mutation::fitted) fn case(
-    code: u8,
-    family: Family,
-    descending: bool,
-    shape: Shape,
-) -> Case {
+pub fn case(code: u8, family: Family, descending: bool, shape: Shape) -> Case {
     let rows = (0..ROWS)
         .map(|ordinal| Row {
             id: ordinal as i32 + 1,

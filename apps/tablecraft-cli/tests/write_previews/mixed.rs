@@ -157,7 +157,7 @@ fn typed_mixed_profile_refusals_happen_before_database_open() {
     for (table, first_kind, second_kind, flags) in [
         ("OtherTable", "int32", "text", &["--variable"][..]),
         (
-            "Items",
+            "OtherTable",
             "int32",
             "text",
             &["--variable", "--index-growth"][..],

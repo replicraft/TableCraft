@@ -10,6 +10,7 @@ use tablecraft_db::ColumnUpdates;
 enum Placement {
     Fitted,
     Growing,
+    GrowingIndexes,
 }
 
 enum Requests {
@@ -72,22 +73,22 @@ impl AccessEngineeringEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<EngineeringCopy, NativeEditError> {
         check(budget, cancelled)?;
-        if columns.len() < 2
-            || columns.len() > self.snapshot.columns().len()
-            || !matches!(
-                self.mode,
-                ScalarUpdateMode::Variable {
-                    index_growth: false
-                }
-            )
-        {
+        let ScalarUpdateMode::Variable { index_growth } = self.mode else {
+            return Err(NativeEditError::Unsupported);
+        };
+        if columns.len() < 2 || columns.len() > self.snapshot.columns().len() {
             return Err(NativeEditError::Unsupported);
         }
         let positions = self.validate_columns(columns, budget, cancelled)?;
         if self.variable_count(&positions, budget, cancelled)? != 1 {
             return Err(NativeEditError::Unsupported);
         }
-        self.joint_columns(columns, positions, Placement::Growing, budget, cancelled)
+        let placement = if index_growth {
+            Placement::GrowingIndexes
+        } else {
+            Placement::Growing
+        };
+        self.joint_columns(columns, positions, placement, budget, cancelled)
     }
 
     fn variable_count(
@@ -180,6 +181,10 @@ impl AccessEngineeringEditor {
                 groups: &groups,
             },
             Placement::Growing => EngineeringRequest::MixedUpdate {
+                table: self.snapshot.name(),
+                groups: &groups,
+            },
+            Placement::GrowingIndexes => EngineeringRequest::MixedSplitUpdate {
                 table: self.snapshot.name(),
                 groups: &groups,
             },

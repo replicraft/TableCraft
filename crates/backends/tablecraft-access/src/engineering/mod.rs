@@ -61,6 +61,13 @@ pub enum EngineeringRequest<'a> {
         /// Original-row groups; INDEX topology must fit without allocation.
         groups: &'a [FittedColumnUpdates<'a>],
     },
+    /// One fixed/variable statement with shared DATA and qualified INDEX growth.
+    MixedSplitUpdate {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original typed groups; native source/ownership constraints stay active.
+        groups: &'a [FittedColumnUpdates<'a>],
+    },
     /// Replace Short Text/Binary values in one actual table and column.
     VariableUpdate {
         /// Exact selected table name.
@@ -254,6 +261,9 @@ pub fn preview(
         EngineeringRequest::MixedUpdate { table, groups } => {
             Candidate::Rows(image.preview_ace16_mixed_updates(table, groups, budget, cancelled)?)
         }
+        EngineeringRequest::MixedSplitUpdate { table, groups } => Candidate::Rows(
+            image.preview_ace16_mixed_split_updates(table, groups, budget, cancelled)?,
+        ),
         EngineeringRequest::VariableUpdate {
             table,
             column,
