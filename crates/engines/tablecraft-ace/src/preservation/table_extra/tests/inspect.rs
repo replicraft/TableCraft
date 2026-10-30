@@ -2,14 +2,15 @@
 pub(super) mod payload_fixture;
 
 use super::{budget, fixture};
-use crate::{
-    InspectError, NativeImage, PayloadPresence, preservation::table_extra::TableExtraCoverage,
-    test_support::base,
-};
+use crate::InspectError;
+use crate::NativeImage;
+use crate::PayloadPresence;
+use crate::preservation::table_extra::TableExtraCoverage;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(

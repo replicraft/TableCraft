@@ -1,12 +1,12 @@
 use super::*;
 use crate::{
-    IndexCheckStatus, TableCheck, check_table, check_table_constraints,
-    test_support::{index_fixture, map_growth},
+    IndexCheckStatus, TableCheck, check_table, check_table_constraints, test_support::index_fixture,
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model::declaration_end;
 
 const PAGE: usize = 4096;
 
@@ -50,7 +50,7 @@ pub(super) fn source(code: u8, aliases: bool) -> Vec<u8> {
     let future = (19..512).collect::<Vec<_>>();
     bytes[PAGE..2 * PAGE].copy_from_slice(&support::data_page(1, &[(0, inline(&future))]));
     for page in [2, 7, 10] {
-        let end = map_growth::model::declaration_end(&bytes, page);
+        let end = declaration_end(&bytes, page);
         support::put16(&mut bytes, end, 0xffff);
     }
     // Retained opaque tails make residue preservation observable.

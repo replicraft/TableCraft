@@ -1,6 +1,6 @@
 //! Existing independent field/key fixtures, with explicit NULL/delete goldens.
-use crate::test_support::base;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 #[allow(dead_code)]
 mod numeric_fixture {

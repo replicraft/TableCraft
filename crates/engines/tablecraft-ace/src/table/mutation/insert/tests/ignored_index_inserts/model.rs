@@ -1,7 +1,7 @@
 //! Eligible streams omit NULL without changing the complete logical ROW universe.
-use super::super::multiple_indexes::model as frames;
 use std::collections::BTreeSet;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub const PAGE: usize = 4096;
 

@@ -16,8 +16,7 @@ use tablecraft_query::{QueryError, UpdateError};
 use tablecraft_sql::{ParseLimits, parse_query};
 use tablecraft_testkit::access as support;
 
-#[path = "../../../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub(in crate::engineering) mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 mod batch;
 mod metadata_default;

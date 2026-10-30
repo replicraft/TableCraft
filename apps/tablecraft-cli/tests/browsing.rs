@@ -1,9 +1,7 @@
 #[path = "browsing/count_all.rs"]
 mod count_all;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
 use fixture as base;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
 mod attachment_fixture;

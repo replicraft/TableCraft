@@ -2,9 +2,7 @@
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
 use tablecraft_testkit::access as support;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod target_fixture;
+use tablecraft_testkit::access::mutation_fixture as target_fixture;
 
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]

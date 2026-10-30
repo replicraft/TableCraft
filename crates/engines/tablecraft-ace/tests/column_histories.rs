@@ -1,6 +1,3 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
 use std::{cell::Cell, io::Cursor};
 use support::{data_page, put16, put32};
 use tablecraft_ace::{
@@ -9,6 +6,7 @@ use tablecraft_ace::{
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 const PAGE_BYTES: usize = 4096;
 const DEFINITION_PAGE: usize = 10;

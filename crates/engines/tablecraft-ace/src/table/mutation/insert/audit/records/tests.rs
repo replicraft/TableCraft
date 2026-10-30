@@ -1,10 +1,11 @@
 //! Literal record bytes distinguish carriers, physical spans and preferred wires.
 mod extended;
 use super::*;
-use crate::{inspect_table_schema, test_support::base};
+use crate::inspect_table_schema;
 use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as literal;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const TABLE: usize = 10 * PAGE;

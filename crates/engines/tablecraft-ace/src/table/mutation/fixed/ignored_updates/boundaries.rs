@@ -2,6 +2,7 @@
 use super::{PAGE, assert_image, budget, capture, example, leaf, model, qualify, requests};
 use crate::{EditError, FixedScalarUpdate, IndexConstraintViolation, InspectError, WriteBlocker};
 use tablecraft_core::values::Value;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 struct NodeCase {
     before: Vec<u8>,
@@ -23,21 +24,21 @@ fn node_case(code: u8, descending: bool, mixed: bool) -> NodeCase {
 
     let original = entries(&[Some(10), Some(10), None], descending);
     let final_keys = entries(&values, descending);
-    let left = model::leaf(None, &original[..1], 0, 0, 17);
-    let right = model::leaf(None, &original[1..], 0, 16, 0);
-    let root = model::root(&before[14 * PAGE..15 * PAGE], 16, 17, &original[0]);
+    let left = frames::leaf(None, &original[..1], 0, 0, 17);
+    let right = frames::leaf(None, &original[1..], 0, 16, 0);
+    let root = frames::root(&before[14 * PAGE..15 * PAGE], 16, 17, &original[0]);
     before[14 * PAGE..15 * PAGE].copy_from_slice(&root);
     before[16 * PAGE..17 * PAGE].copy_from_slice(&left);
     before[17 * PAGE..18 * PAGE].copy_from_slice(&right);
-    expected[14 * PAGE..15 * PAGE].copy_from_slice(&model::root(&root, 16, 17, &final_keys[0]));
-    expected[16 * PAGE..17 * PAGE].copy_from_slice(&model::leaf(
+    expected[14 * PAGE..15 * PAGE].copy_from_slice(&frames::root(&root, 16, 17, &final_keys[0]));
+    expected[16 * PAGE..17 * PAGE].copy_from_slice(&frames::leaf(
         Some(&left),
         &final_keys[..1],
         0,
         0,
         17,
     ));
-    expected[17 * PAGE..18 * PAGE].copy_from_slice(&model::leaf(
+    expected[17 * PAGE..18 * PAGE].copy_from_slice(&frames::leaf(
         Some(&right),
         &final_keys[1..],
         0,
@@ -45,8 +46,12 @@ fn node_case(code: u8, descending: bool, mixed: bool) -> NodeCase {
         0,
     ));
     for image in [&mut before, &mut expected] {
-        model::map_page(image, 1, vec![model::map(18..512)]);
-        model::map_page(image, 15, vec![model::map([13]), model::map([14, 16, 17])]);
+        frames::map_page(image, 1, vec![frames::map(18..512)]);
+        frames::map_page(
+            image,
+            15,
+            vec![frames::map([13]), frames::map([14, 16, 17])],
+        );
     }
     NodeCase {
         before,
@@ -75,7 +80,7 @@ fn entries(values: &[Option<i32>; 3], descending: bool) -> Vec<Vec<u8>> {
 }
 
 fn constrained_source(code: u8, required: bool) -> Vec<u8> {
-    let mut source = model::source(code, false, !required);
+    let mut source = frames::source(code, false, !required);
     source.before[10 * PAGE + 290] = if required { 0x8a } else { 0x83 };
     if required {
         source.rows[2].0.group = Some(30);
@@ -272,7 +277,7 @@ fn node_empty_child_transition_stays_explicit_and_malformed_eligible_sources_ref
     phantom[1][5..9].copy_from_slice(&((12_u32 << 8) | 3).to_be_bytes());
     for entries in [original[..1].to_vec(), with_null, phantom] {
         let mut source = case.source.before.clone();
-        source[14 * PAGE..15 * PAGE].copy_from_slice(&model::leaf(None, &entries, 0, 0, 0));
+        source[14 * PAGE..15 * PAGE].copy_from_slice(&frames::leaf(None, &entries, 0, 0, 0));
         assert_eq!(
             capture(&source)
                 .preview_ace16_fixed_updates(

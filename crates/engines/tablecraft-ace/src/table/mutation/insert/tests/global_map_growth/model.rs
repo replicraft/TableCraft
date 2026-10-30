@@ -6,6 +6,7 @@ use crate::table::mutation::insert::tests::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 const PAGE: usize = 4096;
 
@@ -130,7 +131,7 @@ pub fn long_value(code: u8, eof: usize, hole: bool, phase: Phase) -> Case {
     descriptor.extend([0; 4]);
     let mut expected = frames::expected(
         &source,
-        &[frames::Row {
+        &[source_frames::Row {
             id: 10,
             group: Some(100),
             binary: Some(descriptor),

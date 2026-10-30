@@ -1,6 +1,4 @@
-#[path = "mutation/fixture.rs"]
-#[allow(dead_code)]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;
 #[path = "complex_links/fixture.rs"]

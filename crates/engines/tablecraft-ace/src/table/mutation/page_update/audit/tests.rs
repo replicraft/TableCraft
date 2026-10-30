@@ -1,13 +1,15 @@
 //! Opaque record bytes require independent preservation, not just equal values.
 use super::super::{record as builder, roots};
-use crate::{
-    EditError, NativeImage, SlotScalarUpdate, check_table, table::mutation::gates,
-    test_support::base,
-};
+use crate::EditError;
+use crate::NativeImage;
+use crate::SlotScalarUpdate;
+use crate::check_table;
+use crate::table::mutation::gates;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 const PAGE_BYTES: usize = 4096;
 const DEFINITION_PAGE: usize = 10;

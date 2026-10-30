@@ -1,12 +1,11 @@
 //! Fixed civil inputs and literal DATE bits; no runtime clock or date encoder.
-use super::super::{
-    multiple_indexes::model as frames, ordinary_rows::fixture,
-    passive_defaults::model as properties,
-};
-use crate::test_support::base;
+use super::super::ordinary_rows::fixture;
+use super::super::passive_defaults::model as properties;
 use properties::{Property, field};
 use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Value};
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 

@@ -1,8 +1,6 @@
 #[path = "browsing/cursor.rs"]
 mod cursor;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
 use std::io::Cursor;

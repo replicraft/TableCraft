@@ -1,7 +1,7 @@
 use super::*;
-use crate::table::mutation::insert::tests::multiple_indexes::model;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as model;
 
 const LIMITS: [u64; 3] = [256 * 1024 * 1024, 100_000, 100_000_000];
 

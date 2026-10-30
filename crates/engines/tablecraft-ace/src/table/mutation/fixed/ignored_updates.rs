@@ -1,10 +1,11 @@
 //! Independent SOURCE and complete-image expectations for omitted UPDATE keys.
+use tablecraft_testkit::access::multiple_indexes as source_model;
 mod boundaries;
 mod forwarded;
 mod selected_forwarded;
 mod tuple;
 
-use crate::table::mutation::insert::tests::multiple_indexes::model::{self, Case, PAGE};
+use crate::table::mutation::insert::tests::multiple_indexes::model;
 use crate::{
     EditError, FixedColumnUpdates, FixedScalarUpdate, IndexCheckStatus, InspectError, NativeImage,
     WriteBlocker, check_table, check_table_constraints, read_table,
@@ -15,6 +16,8 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes::Case;
+use tablecraft_testkit::access::multiple_indexes::PAGE;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
@@ -149,7 +152,7 @@ fn leaf(source: &Case, values: &[Option<i32>], original: Option<&[u8]>) -> Vec<u
         })
         .collect::<Vec<_>>();
     entries.sort();
-    model::leaf(original, &entries, 0, 0, 0)
+    source_model::leaf(original, &entries, 0, 0, 0)
 }
 
 fn qualify(bytes: &[u8], groups: &[Option<i32>]) {

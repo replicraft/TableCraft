@@ -5,8 +5,7 @@ mod api;
 mod asymmetric_guids;
 #[path = "ace16_preserved_scalar_updates_contract/authority_sources.rs"]
 mod authority_sources;
-#[path = "mutation/fixture.rs"]
-pub mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "complex_schema/fixture.rs"]

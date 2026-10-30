@@ -3,10 +3,8 @@
 mod calculated_fixture;
 #[path = "support/mod.rs"]
 mod cli_support;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 use cli_support::run;
 use std::{

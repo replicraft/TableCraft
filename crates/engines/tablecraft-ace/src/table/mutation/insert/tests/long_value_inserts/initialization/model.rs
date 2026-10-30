@@ -4,6 +4,7 @@ use crate::{LongValueCheckStatus, check_table_long_values};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 const CONTAINER: u32 = 18;
 const FIRST_BODY: u32 = 19;
@@ -53,7 +54,7 @@ pub(in crate::table::mutation::insert) fn case(code: u8, family: Family, value: 
     descriptor.extend([0; 4]);
     let mut expected = frames::expected(
         &source,
-        &[frames::Row {
+        &[source_frames::Row {
             id: 10,
             group: Some(100),
             binary: Some(descriptor),
@@ -66,13 +67,13 @@ pub(in crate::table::mutation::insert) fn case(code: u8, family: Family, value: 
     expected[pointer..pointer + 4].copy_from_slice(&(CONTAINER << 8).to_le_bytes());
     expected[pointer + 4..pointer + 8].copy_from_slice(&((CONTAINER << 8) | 1).to_le_bytes());
     let records = [
-        (0, frames::map(bodies.iter().copied())),
-        (0, frames::map([*bodies.last().unwrap()])),
+        (0, source_frames::map(bodies.iter().copied())),
+        (0, source_frames::map([*bodies.last().unwrap()])),
     ];
     let mut container = raw::data_page(0, &records);
     container[2..4].copy_from_slice(&3940_u16.to_le_bytes());
     assert_eq!(&container[..4], &[1, 1, 100, 15]);
-    frames::install(&mut expected, CONTAINER, &container);
+    source_frames::install(&mut expected, CONTAINER, &container);
     for (position, part) in chunks.iter().enumerate() {
         let mut body = Vec::new();
         if chained {
@@ -84,7 +85,7 @@ pub(in crate::table::mutation::insert) fn case(code: u8, family: Family, value: 
             );
         }
         body.extend_from_slice(part);
-        frames::install(&mut expected, bodies[position], &long_page(&body));
+        source_frames::install(&mut expected, bodies[position], &long_page(&body));
     }
     // GLOBAL row0 has base zero; clear only actual new container/body cells.
     let row = u16::from_le_bytes(expected[PAGE + 14..PAGE + 16].try_into().unwrap()) as usize;

@@ -8,8 +8,7 @@ mod omissions;
 #[path = "query_preview_inserts/typed_omissions.rs"]
 mod typed_omissions;
 
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
 #[allow(dead_code)]
 mod index_fixture;

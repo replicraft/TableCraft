@@ -1,5 +1,4 @@
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "decimal_indexes/fixture.rs"]
 mod fixture;
 #[path = "composite_indexes/fixture.rs"]

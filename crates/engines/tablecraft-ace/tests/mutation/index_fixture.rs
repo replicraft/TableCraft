@@ -1,4 +1,5 @@
-use super::{fixture, support};
+use super::support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 // Original independent golden definition/entry bytes. An aliased logical index
 // deliberately shares the same physical owner, not a second patchable page.

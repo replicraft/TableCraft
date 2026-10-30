@@ -2,9 +2,7 @@
 mod cursor;
 #[path = "table_pages/faults.rs"]
 mod faults;
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "table_pages/large_long_values.rs"]
 mod large_long_values;
 #[path = "table_pages/large_sources.rs"]

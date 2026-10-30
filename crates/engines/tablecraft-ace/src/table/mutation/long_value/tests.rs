@@ -1,14 +1,20 @@
 //! The final certificate must be bound to the original caller's operation.
 use super::{Operation, admission, finish, maps::Edit as MapEdit, stage};
 use crate as tablecraft_ace;
-use crate::{
-    Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, check_table,
-    check_table_constraints, check_table_long_values, read_table, test_support::fixture,
-};
+use crate::Ace16WritePreview;
+use crate::EditError;
+use crate::InspectError;
+use crate::NativeImage;
+use crate::SlotScalarUpdate;
+use crate::check_table;
+use crate::check_table_constraints;
+use crate::check_table_long_values;
+use crate::read_table;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 #[allow(dead_code)]
 #[path = "../../../../tests/ace16_long_value_updates_contract/model.rs"]

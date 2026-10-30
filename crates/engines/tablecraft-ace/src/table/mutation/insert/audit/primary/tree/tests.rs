@@ -1,16 +1,20 @@
 //! Preserved fitted source controls and recursive raw-proof adversaries.
 mod preservation;
 use super::*;
-use crate::{
-    IndexCheckStatus, RowInsert, check_table, check_table_constraints,
-    table::{
-        indexes::mutation::IndexDataPatch,
-        mutation::insert::{audit, compose, finish, preflight, prepare, tests::model},
-    },
-};
+use crate::IndexCheckStatus;
+use crate::RowInsert;
+use crate::check_table;
+use crate::check_table_constraints;
+use crate::table::indexes::mutation::IndexDataPatch;
+use crate::table::mutation::insert::audit;
+use crate::table::mutation::insert::compose;
+use crate::table::mutation::insert::finish;
+use crate::table::mutation::insert::preflight;
+use crate::table::mutation::insert::prepare;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 13;

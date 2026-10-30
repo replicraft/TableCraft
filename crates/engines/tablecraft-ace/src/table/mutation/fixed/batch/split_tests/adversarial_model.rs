@@ -1,8 +1,9 @@
 //! Additional independent literal sources; the frozen eighty-case model is unchanged.
 use super::model::{self, Case, PAGE, Row, Shape};
-use crate::{FixedScalarUpdate, table::mutation::insert::tests::multiple_indexes::model as frames};
+use crate::FixedScalarUpdate;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 pub(super) fn assignments(case: &Case, right: bool) -> Vec<FixedScalarUpdate> {
     case.original
@@ -110,7 +111,11 @@ pub(super) fn two_tables(code: u8) -> Vec<u8> {
     frames::install(
         &mut bytes,
         18,
-        &crate::test_support::base::definition(&[("Id", 4, 0, 4), ("Score", 4, 4, 4)], 3, 19 << 8),
+        &tablecraft_testkit::access::mutation_fixture::definition(
+            &[("Id", 4, 0, 4), ("Score", 4, 4, 4)],
+            3,
+            19 << 8,
+        ),
     );
     raw::put32(&mut bytes, 18 * PAGE + 59, (19 << 8) | 1);
     frames::map_page(&mut bytes, 19, vec![frames::map([20]), frames::map([20])]);

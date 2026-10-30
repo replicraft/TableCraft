@@ -1,8 +1,9 @@
 //! Literal map-promotion images. No production serializer or candidate is read.
 use super::model::{
     BITMAP_HEADER, DATA, DIRECTORY, EOF, GLOBAL_BITMAP, MAP_BYTES, MAPS, Model, PAGE, PER_PAGE,
-    ROOTS, ROWS, TABLE, number, row_range,
+    ROOTS, ROWS, TABLE, row_range,
 };
+use tablecraft_testkit::access::map_growth::model::number;
 
 const ENTRY: usize = 480;
 const MASK: usize = 27;

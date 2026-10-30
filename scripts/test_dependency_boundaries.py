@@ -92,6 +92,17 @@ class BoundaryTests(unittest.TestCase):
                 else:
                     self.assertTrue(any("development-only" in error for error in errors))
 
+    def test_testkit_core_values_are_allowed_but_engine_layouts_are_not(self):
+        data = deepcopy(self.base)
+        helper = package("tablecraft-testkit", "crates/engineering/tablecraft-testkit",
+                         ["tablecraft-core"])
+        data["packages"].append(helper)
+        data["workspace_members"].append(helper["id"])
+        self.assertEqual(violations(data), [])
+
+        helper["dependencies"].append({"name": "tablecraft-ace"})
+        self.assertTrue(violations(data))
+
     def test_library_placement_is_checked(self):
         data = deepcopy(self.base)
         data["packages"][0]["manifest_path"] = "/repo/apps/core/Cargo.toml"

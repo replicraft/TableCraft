@@ -1,10 +1,7 @@
 //! Real SQL UPDATE consumes the exact engine-owned historical literal model.
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/src/table/mutation/fixed/historical_columns/model.rs"]
 mod model;
-use tablecraft_testkit::access as support;
 
 use std::{fs, io::Cursor, path::Path, process::Command};
 use tablecraft_ace::{

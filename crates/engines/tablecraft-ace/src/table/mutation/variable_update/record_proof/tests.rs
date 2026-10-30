@@ -1,12 +1,15 @@
 //! Literal historical geometry and preferred payload controls, without a writer oracle.
 use super::{payload, reconstruct};
-use crate::{
-    EditError, InspectError, TableSchema, WriteBlocker, inspect_table_schema, table::record_layout,
-    test_support::base,
-};
+use crate::EditError;
+use crate::InspectError;
+use crate::TableSchema;
+use crate::WriteBlocker;
+use crate::inspect_table_schema;
+use crate::table::record_layout;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 10_000, 1_000_000)

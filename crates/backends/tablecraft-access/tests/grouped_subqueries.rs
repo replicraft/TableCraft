@@ -1,6 +1,4 @@
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 use std::io::Cursor;
 use tablecraft_access::NativeSource;

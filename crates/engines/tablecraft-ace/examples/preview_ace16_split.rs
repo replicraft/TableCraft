@@ -53,10 +53,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 #[allow(dead_code)]
-#[path = "../tests/mutation/fixture.rs"]
-mod fixture;
-#[cfg(test)]
-#[allow(dead_code)]
 #[path = "../tests/mutation/index_fixture.rs"]
 mod index_fixture;
 #[cfg(test)]

@@ -6,9 +6,10 @@ use crate::{
 use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as raw_source;
 
 pub(in crate::table::mutation) mod model;
-use model::{Case, PAGE, Row};
+use tablecraft_testkit::access::multiple_indexes::{Case, PAGE, Row};
 
 fn run(case: &Case, rows: &[Row]) -> Vec<u8> {
     original::checked(&case.before, case.rows.len(), 4);
@@ -53,7 +54,7 @@ fn run(case: &Case, rows: &[Row]) -> Vec<u8> {
 #[test]
 fn aliases_duplicate_and_null_secondary_keys_get_one_physical_historical_delta() {
     for code in [5, 6] {
-        let case = model::source(code, false, false);
+        let case = raw_source::source(code, false, false);
         let rows = [(4, Some(10)), (5, Some(20)), (6, Some(20)), (7, None)]
             .into_iter()
             .map(|(id, group)| Row {
@@ -84,7 +85,7 @@ fn aliases_duplicate_and_null_secondary_keys_get_one_physical_historical_delta()
 #[test]
 fn unique_secondary_checks_existing_and_batch_duplicates_but_allows_null_family() {
     for code in [5, 6] {
-        let case = model::source(code, false, true);
+        let case = raw_source::source(code, false, true);
         let rows = [
             Row {
                 id: 4,
@@ -139,7 +140,7 @@ fn unique_secondary_checks_existing_and_batch_duplicates_but_allows_null_family(
 #[test]
 fn two_root_splits_share_data_first_cursor_and_global_byte_without_role_aliasing() {
     for code in [5, 6] {
-        let case = model::source(code, true, false);
+        let case = raw_source::source(code, true, false);
         let rows = (201..253)
             .map(|id| Row {
                 id,
@@ -186,7 +187,7 @@ fn two_root_splits_share_data_first_cursor_and_global_byte_without_role_aliasing
 
 #[test]
 fn per_physical_counter_overflow_and_cancellation_return_no_candidate() {
-    let mut case = model::source(6, false, false);
+    let mut case = raw_source::source(6, false, false);
     raw::put32(&mut case.before, 10 * PAGE + 79, u32::MAX);
     original::checked(&case.before, 3, 4);
     let request = RowInsert::new(
@@ -203,7 +204,7 @@ fn per_physical_counter_overflow_and_cancellation_return_no_candidate() {
             .err(),
         Some(EditError::Inspect(InspectError::StructureLimit))
     );
-    let case = model::source(6, false, false);
+    let case = raw_source::source(6, false, false);
     let cancelled = Cell::new(false);
     let image = original::capture(&case.before);
     cancelled.set(true);
@@ -230,7 +231,7 @@ fn per_physical_counter_overflow_and_cancellation_return_no_candidate() {
 #[test]
 fn descending_secondary_keeps_direction_and_ignored_null_insert_preserves_secondary() {
     for code in [5, 6] {
-        let case = model::descending(model::source(code, false, false));
+        let case = model::descending(raw_source::source(code, false, false));
         run(
             &case,
             &[

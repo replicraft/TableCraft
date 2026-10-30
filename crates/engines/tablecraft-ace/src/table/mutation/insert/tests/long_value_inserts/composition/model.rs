@@ -1,9 +1,13 @@
 //! Literal two-column storage, ordinary rows and index bytes precede the API.
-use super::super::{Family, PAGE, external, frames, original, raw};
-use crate::{LongValueCheckStatus, check_table_long_values, read_table, test_support::base};
+use super::super::{Family, PAGE, external, original, raw};
+use crate::LongValueCheckStatus;
+use crate::check_table_long_values;
+use crate::read_table;
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table::mutation::insert::tests::long_value_inserts) enum MemoMaps {

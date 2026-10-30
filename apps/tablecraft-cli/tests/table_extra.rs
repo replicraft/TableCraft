@@ -1,8 +1,7 @@
 #[path = "table_extra/program.rs"]
 mod program;
 
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "support/mod.rs"]
 mod cli_support;
 #[path = "../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs"]

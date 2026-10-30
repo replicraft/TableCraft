@@ -105,3 +105,14 @@ pub fn image(overflow: bool, indirect: bool) -> Vec<u8> {
     bytes[3 * 4096..4 * 4096].copy_from_slice(&data_page(1, &[(0, map)]));
     bytes
 }
+
+/// Literal ordinary INSERT seeds without native engine dependencies.
+pub mod insert_seed;
+/// Literal definition framing used by source models.
+pub mod map_growth;
+/// Shared literal populations and KEY/ROW framing for two physical owners.
+pub mod multiple_indexes;
+/// Independent original mutation property/definition builders.
+pub mod mutation_fixture;
+/// Complete independently authored secondary-index creation images.
+pub mod secondary_index;

@@ -8,6 +8,7 @@ use crate::{
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as source_original;
 
 const LIMITS: [u64; 3] = [256 * 1024 * 1024, 100_000, 100_000_000];
 
@@ -17,7 +18,7 @@ fn budget() -> ResourceBudget {
 
 fn unknown_mode_source() -> Vec<u8> {
     let mut case = model::source(6, State::HighWater);
-    let catalog = original::source(6, false, false, Some(("NewValues", "Random")));
+    let catalog = source_original::source(6, false, false, Some(("NewValues", "Random")));
     case.before[4 * 4096..5 * 4096].copy_from_slice(&catalog[4 * 4096..5 * 4096]);
     case.before
 }

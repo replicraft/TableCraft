@@ -205,7 +205,7 @@ fn an_existing_empty_text_key_does_not_authorize_new_empty_text_without_a_declar
         ignored: false,
     };
     let mut case = model::source(6, settings, vec![row(1, None, Some(vec![]))]);
-    let baseline = super::multiple_indexes::model::source(6, false, false);
+    let baseline = tablecraft_testkit::access::multiple_indexes::source(6, false, false);
     case.before[4 * PAGE..5 * PAGE].copy_from_slice(&baseline.before[4 * PAGE..5 * PAGE]);
     checked(&case, &case.before, &[]);
 

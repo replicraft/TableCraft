@@ -1,5 +1,4 @@
-#[path = "mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "object_payloads/fixture.rs"]
 mod payload_fixture;
 use tablecraft_testkit::access as support;

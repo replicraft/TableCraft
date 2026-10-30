@@ -1,9 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod decimal_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
 #[allow(dead_code)]

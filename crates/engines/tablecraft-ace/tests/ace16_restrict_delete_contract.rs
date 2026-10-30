@@ -2,9 +2,7 @@
 
 #[path = "ace16_restrict_delete_contract/boundaries.rs"]
 mod boundaries;
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod model;
 #[allow(dead_code)]

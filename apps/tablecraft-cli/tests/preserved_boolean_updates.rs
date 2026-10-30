@@ -1,8 +1,7 @@
 //! Engineering consumers of the independently qualified rich-table source.
 #[path = "preserved_boolean_updates/api.rs"]
 mod api;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-pub mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]

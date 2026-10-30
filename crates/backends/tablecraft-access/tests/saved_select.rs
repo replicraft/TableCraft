@@ -1,6 +1,4 @@
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-#[allow(dead_code)]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "saved_select/crosstabs.rs"]
 mod crosstabs;
 #[path = "saved_select/derived.rs"]

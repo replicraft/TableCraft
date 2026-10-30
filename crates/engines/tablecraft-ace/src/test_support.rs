@@ -4,13 +4,6 @@ use tablecraft_testkit::access as support;
 
 pub(crate) mod tuples;
 
-#[allow(dead_code)]
-#[path = "../tests/mutation/fixture.rs"]
-pub(crate) mod base;
-
-#[cfg(feature = "ace16-write-preview")]
-pub(crate) use base as fixture;
-
 #[cfg(feature = "ace16-write-preview")]
 #[allow(dead_code)]
 #[path = "../tests/mutation/index_fixture.rs"]

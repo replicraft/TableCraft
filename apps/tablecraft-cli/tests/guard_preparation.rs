@@ -1,9 +1,7 @@
 //! SOURCE gates precede explicit guard service and command checks.
 #[path = "guard_preparation/api.rs"]
 mod api;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs"]
 mod fixture;

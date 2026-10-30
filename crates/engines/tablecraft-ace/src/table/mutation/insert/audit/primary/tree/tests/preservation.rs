@@ -1,15 +1,21 @@
 //! Literal source pressure and healthy-semantic adversaries for child growth.
-use crate::{
-    EditError, IndexCheckStatus, NativeImage, RowInsert, check_table, check_table_constraints,
-    table::{
-        indexes::mutation::IndexDataPatch,
-        mutation::insert::{audit, compose, finish, preflight, prepare, tests::model},
-    },
-};
+use crate::EditError;
+use crate::IndexCheckStatus;
+use crate::NativeImage;
+use crate::RowInsert;
+use crate::check_table;
+use crate::check_table_constraints;
+use crate::table::indexes::mutation::IndexDataPatch;
+use crate::table::mutation::insert::audit;
+use crate::table::mutation::insert::compose;
+use crate::table::mutation::insert::finish;
+use crate::table::mutation::insert::preflight;
+use crate::table::mutation::insert::prepare;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const TABLE: usize = 10;

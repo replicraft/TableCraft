@@ -8,8 +8,7 @@ mod metadata_default;
 
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "../../../crates/backends/tablecraft-access/src/engineering/editor/tests/source.rs"]
 mod source;
 use tablecraft_testkit::access as support;

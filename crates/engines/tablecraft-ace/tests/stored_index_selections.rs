@@ -1,9 +1,7 @@
 #[allow(dead_code)]
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "stored_index_projection/fixture.rs"]
 mod indexed;
 use std::{cell::Cell, io::Cursor, ops::Bound};

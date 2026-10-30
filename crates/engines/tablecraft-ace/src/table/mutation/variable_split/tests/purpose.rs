@@ -4,15 +4,13 @@ use crate::table::mutation::variable_update::authority::Operation;
 use crate::{
     EditError, IndexCheckStatus, InspectError, SlotScalarUpdate, check_table,
     check_table_constraints, read_table,
-    test_support::{
-        encoded::{model, split_model},
-        map_growth,
-    },
+    test_support::encoded::{model, split_model},
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model::declaration_end;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 13;
@@ -188,7 +186,7 @@ pub(super) fn source(code: u8, descending: bool, eof: usize, index_base: usize) 
         &support::data_page(0, &[(0, inline(index_base, &[ROOT]))]),
     );
     for definition in [2, 7, 10] {
-        let end = map_growth::model::declaration_end(&bytes, definition);
+        let end = declaration_end(&bytes, definition);
         support::put16(&mut bytes, end, 0xffff);
     }
     bytes

@@ -1,16 +1,17 @@
 //! All-NULL contributions preserve secondary bytes despite ordinary row growth.
 use super::*;
 use crate::table::mutation::insert::{counters, tests::multiple_indexes::model as indexes};
+use tablecraft_testkit::access::multiple_indexes as source_indexes;
 
-fn insertion() -> indexes::Row {
-    indexes::Row {
+fn insertion() -> source_indexes::Row {
+    source_indexes::Row {
         id: 4,
         group: None,
         binary: None,
     }
 }
 
-fn expected(case: &indexes::Case) -> Vec<u8> {
+fn expected(case: &source_indexes::Case) -> Vec<u8> {
     // Reuse the independent visible-record/primary oracle, while preserving
     // the ignored owner's complete page and historical value by its policy.
     let mut expected = indexes::expected(case, &[insertion()]);

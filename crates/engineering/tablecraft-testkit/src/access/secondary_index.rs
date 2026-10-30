@@ -1,24 +1,22 @@
 //! Independent literal SOURCE and complete new-index expectations; no mutation API.
 mod index;
 
-use crate::{
-    table::mutation::insert::tests::multiple_indexes::model as frames, test_support::base,
-};
+use super::{multiple_indexes as frames, mutation_fixture as base};
+use crate::access as raw;
 use std::collections::BTreeSet;
-use tablecraft_testkit::access as raw;
 
-pub(in crate::table::mutation) const PAGE: usize = 4096;
-pub(in crate::table::mutation) const SOURCE_PAGES: u32 = 24;
+pub const PAGE: usize = 4096;
+pub const SOURCE_PAGES: u32 = 24;
 
 #[derive(Clone, Copy, Debug)]
-pub(in crate::table::mutation) enum Population {
+pub enum Population {
     Empty,
     Distinct,
     NullableDuplicate,
     Pressure,
 }
 
-pub(in crate::table::mutation) const POPULATIONS: [Population; 4] = [
+pub const POPULATIONS: [Population; 4] = [
     Population::Empty,
     Population::Distinct,
     Population::NullableDuplicate,
@@ -26,14 +24,14 @@ pub(in crate::table::mutation) const POPULATIONS: [Population; 4] = [
 ];
 
 #[derive(Clone)]
-pub(in crate::table::mutation) struct Row {
+pub struct Row {
     pub id: i32,
     pub score: Option<i32>,
     pub guard: i32,
     pub reference: u32,
 }
 
-pub(in crate::table::mutation) struct Case {
+pub struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub rows: Vec<Row>,
@@ -161,11 +159,7 @@ fn expected_definition(
     (result, length)
 }
 
-pub(in crate::table::mutation) fn source(
-    code: u8,
-    population: Population,
-    descending: bool,
-) -> Case {
+pub fn source(code: u8, population: Population, descending: bool) -> Case {
     let seed = frames::source(code, false, false).before;
     let mut before = seed.clone();
     before.resize(SOURCE_PAGES as usize * PAGE, 0);

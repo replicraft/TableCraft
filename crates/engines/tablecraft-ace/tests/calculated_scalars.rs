@@ -2,8 +2,7 @@
 mod calculated_fixture;
 #[path = "calculated_storage/extended_carriers.rs"]
 mod extended_carriers;
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
 use tablecraft_testkit::access as support;

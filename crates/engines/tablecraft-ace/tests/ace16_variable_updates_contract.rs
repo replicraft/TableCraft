@@ -1,9 +1,7 @@
 #![cfg(feature = "ace16-write-preview")]
 
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 
 #[path = "ace16_variable_updates_contract/model.rs"]
 mod model;

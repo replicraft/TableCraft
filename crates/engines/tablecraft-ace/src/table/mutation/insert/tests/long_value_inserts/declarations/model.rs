@@ -4,6 +4,7 @@ use crate::table::mutation::insert::tests::{
     multiple_indexes::model as frames,
 };
 use tablecraft_core::values::Value;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;
@@ -165,12 +166,12 @@ pub fn external_value(
 
 pub fn inline(code: u8, family: Family) -> Case {
     let mut case = external(code, family, true, false);
-    let mut source = frames::source(code, false, false);
+    let mut source = source_frames::source(code, false, false);
     source.before = case.before.clone();
     source.rows = (1..=3)
         .map(|id| {
             (
-                frames::Row {
+                source_frames::Row {
                     id,
                     group: Some(id * 10),
                     binary: None,
@@ -183,7 +184,7 @@ pub fn inline(code: u8, family: Family) -> Case {
     descriptor.extend([0; 8]);
     case.expected = frames::expected(
         &source,
-        &[frames::Row {
+        &[source_frames::Row {
             id: 10,
             group: Some(100),
             binary: Some(descriptor),

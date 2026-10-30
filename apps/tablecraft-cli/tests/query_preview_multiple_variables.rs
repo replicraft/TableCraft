@@ -1,9 +1,7 @@
 //! Real SQL and typed commands consume independent whole-row literal owners.
 #[path = "query_preview_multiple_variables/api.rs"]
 mod api;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
-#[allow(dead_code)]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model.rs"]
 #[allow(dead_code)]
 mod frames;
@@ -20,7 +18,6 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 500_000_000)

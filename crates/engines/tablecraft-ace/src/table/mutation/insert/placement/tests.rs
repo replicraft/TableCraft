@@ -2,15 +2,13 @@
 use super::*;
 use crate::{
     IndexCheckStatus, check_table, check_table_constraints,
-    test_support::{
-        encoded::{model, split_model},
-        map_growth,
-    },
+    test_support::encoded::{model, split_model},
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::LimitError;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model::declaration_end;
 
 const PAGE: usize = 4096;
 const DATA: [usize; 5] = [12, 15, 16, 17, 18];
@@ -104,7 +102,7 @@ fn source(code: u8, eof: usize, filled: bool, extras: usize, empty_tombstone: bo
         install(&mut bytes, eof - 1, &bitmap(eof..32736));
     }
     for number in [2, 7, 10] {
-        let end = map_growth::model::declaration_end(&bytes, number);
+        let end = declaration_end(&bytes, number);
         support::put16(&mut bytes, end, 0xffff);
     }
     bytes

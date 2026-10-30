@@ -1,7 +1,6 @@
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
 use tablecraft_testkit::access as support;

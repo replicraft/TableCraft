@@ -1,6 +1,7 @@
 //! A declared indirect row gains its missing bitmap without map initialization.
 use super::*;
 use crate::RowInsert;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 fn source_and_expected(code: u8) -> Case {
     let mut case = source(code, 600, true);
@@ -15,7 +16,7 @@ fn source_and_expected(code: u8) -> Case {
     descriptor.extend([0; 4]);
     let mut expected = frames::expected(
         &case,
-        &[frames::Row {
+        &[source_frames::Row {
             id: 10,
             group: Some(100),
             binary: Some(descriptor),

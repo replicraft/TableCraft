@@ -1,7 +1,5 @@
 //! SOURCE-only complete large images; no capture-policy or mutation relaxation.
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-pub mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "complex_schema/fixture.rs"]
 pub mod complex_fixture;

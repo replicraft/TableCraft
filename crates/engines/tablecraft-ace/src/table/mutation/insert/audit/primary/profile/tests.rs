@@ -1,8 +1,9 @@
 //! Literal GUID segments and complete tuple NULL facts, independent of codecs.
 use super::*;
-use crate::{NativeImage, table::mutation::insert::tests::multiple_indexes::model};
+use crate::NativeImage;
 use tablecraft_core::{limits::ResourceBudget, values::Guid};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::multiple_indexes as model;
 
 pub(super) fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
     let source = model::source(6, false, false);

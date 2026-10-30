@@ -1,5 +1,5 @@
 //! Source-local authority survives INDEX routing without accepting new owners.
-use super::super::{frames, original, raw};
+use super::super::{original, raw};
 use super::{
     model::{self, MemoMaps, Row},
     zero_memo::values,
@@ -9,6 +9,7 @@ use crate::{
     format::reader::Reader,
     table::mutation::{append::State, map_authority::Owner, variable_split::metadata::Metadata},
 };
+use tablecraft_testkit::access::multiple_indexes as frames;
 
 const PAGE: usize = 4096;
 

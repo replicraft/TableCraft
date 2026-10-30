@@ -1,15 +1,19 @@
 //! Literal source geometry and adversarial comparison for the independent proof.
 use super::*;
-use crate::{
-    IndexCheckStatus, RowInsert, check_table, check_table_constraints,
-    table::mutation::{
-        insert::{audit, compose, finish, preflight, prepare, tests::model},
-        variable_update::map_audit::ExpectedByte,
-    },
-};
+use crate::IndexCheckStatus;
+use crate::RowInsert;
+use crate::check_table;
+use crate::check_table_constraints;
+use crate::table::mutation::insert::audit;
+use crate::table::mutation::insert::compose;
+use crate::table::mutation::insert::finish;
+use crate::table::mutation::insert::preflight;
+use crate::table::mutation::insert::prepare;
+use crate::table::mutation::variable_update::map_audit::ExpectedByte;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const TABLE: usize = 10;

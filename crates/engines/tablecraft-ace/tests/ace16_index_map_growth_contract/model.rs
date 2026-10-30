@@ -1,5 +1,6 @@
 //! Independent source bytes; shared literal fixtures are read-only inputs.
 use super::{fixed_model, fixture, support};
+use tablecraft_testkit::access::map_growth::model::{declaration_end, number};
 
 pub const PAGE: usize = 4096;
 pub const EOF: usize = 600;
@@ -41,14 +42,6 @@ pub struct Model {
     pub selected_map_ranges: [(usize, usize); 2],
 }
 
-pub fn number(bytes: &[u8], offset: usize, width: usize) -> usize {
-    let mut result = 0;
-    for (position, &byte) in bytes[offset..offset + width].iter().enumerate() {
-        result |= usize::from(byte) << (position * 8);
-    }
-    result
-}
-
 pub fn install(bytes: &mut [u8], page: usize, payload: &[u8]) {
     assert_eq!(payload.len(), PAGE);
     bytes[page * PAGE..(page + 1) * PAGE].copy_from_slice(payload);
@@ -77,28 +70,6 @@ pub fn map(members: &[usize]) -> Vec<u8> {
         result[MAP_HEADER + page / 8] |= 1 << (page % 8);
     }
     result
-}
-
-pub fn declaration_end(bytes: &[u8], definition: usize) -> usize {
-    let base = definition * PAGE;
-    let columns = number(bytes, base + COLUMN_COUNT, 2);
-    let physical = number(bytes, base + PHYSICAL_COUNT, 4);
-    let logical = number(bytes, base + LOGICAL_COUNT, 4);
-    let mut position = base + DEFINITION_HEADER + physical * COUNTER_BYTES;
-    position += columns * COLUMN_BYTES;
-    for _ in 0..columns {
-        let width = number(bytes, position, 2);
-        assert_eq!(width % 2, 0);
-        position += 2 + width;
-    }
-    position += physical * PHYSICAL_BYTES + logical * LOGICAL_BYTES;
-    for _ in 0..logical {
-        let width = number(bytes, position, 2);
-        assert_eq!(width % 2, 0);
-        position += 2 + width;
-    }
-    assert!(position + 2 <= base + PAGE);
-    position
 }
 
 fn complete_empty(bytes: &mut [u8], definition: usize) {

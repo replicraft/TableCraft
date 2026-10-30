@@ -2,7 +2,6 @@
 mod model;
 mod preview;
 
-use crate::test_support::base;
 use crate::{
     IndexCheckStatus, RelationshipCheckStatus, RuleCheckStatus, check_table,
     check_table_constraints, read_table,
@@ -11,6 +10,7 @@ use model::{Case, PAGE};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

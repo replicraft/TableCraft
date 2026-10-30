@@ -1,5 +1,4 @@
-#[path = "../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod base;
+use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod fixture;

@@ -1,9 +1,10 @@
 //! Independent generated-ID records, metadata and complete physical-index images.
-use super::super::{model as original, multiple_indexes::model as frames};
-use crate::test_support::base;
 use std::collections::BTreeSet;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::insert_seed as original;
+use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 pub const PAGE: usize = 4096;
 pub const DEFINITION: usize = 10 * PAGE;

@@ -1,7 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 
-#[path = "mutation/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[path = "foreign_updates/fixture.rs"]
 mod foreign_fixture;
 #[path = "mutation/index_fixture.rs"]

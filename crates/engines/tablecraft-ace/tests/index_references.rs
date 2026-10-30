@@ -1,7 +1,5 @@
-#[allow(dead_code)]
-#[path = "mutation/fixture.rs"]
-mod fixture;
 use fixture as base;
+use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "attachments/fixture.rs"]
 mod attachment_fixture;

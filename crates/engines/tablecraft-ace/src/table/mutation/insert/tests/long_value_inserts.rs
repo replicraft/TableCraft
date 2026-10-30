@@ -5,6 +5,7 @@ use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as raw;
+use tablecraft_testkit::access::multiple_indexes as source_frames;
 
 const PAGE: usize = 4096;
 
@@ -43,7 +44,7 @@ fn payload(value: &Value, family: Family) -> Option<Vec<u8>> {
     }
 }
 
-fn record(id: i32, value: &Value, family: Family) -> frames::Row {
+fn record(id: i32, value: &Value, family: Family) -> source_frames::Row {
     let binary = payload(value, family).map(|payload| {
         assert!(payload.len() <= 64);
         let mut descriptor = (0x80000000_u32 | payload.len() as u32)
@@ -53,15 +54,15 @@ fn record(id: i32, value: &Value, family: Family) -> frames::Row {
         descriptor.extend(payload);
         descriptor
     });
-    frames::Row {
+    source_frames::Row {
         id,
         group: Some(id * 10),
         binary,
     }
 }
 
-fn source(code: u8, family: Family, values: &[Value]) -> frames::Case {
-    let mut case = frames::source(code, false, false);
+fn source(code: u8, family: Family, values: &[Value]) -> source_frames::Case {
+    let mut case = source_frames::source(code, false, false);
     let column = 10 * PAGE + 137;
     case.before[column] = if matches!(family, Family::Ole) {
         11
@@ -86,13 +87,13 @@ fn source(code: u8, family: Family, values: &[Value]) -> frames::Case {
     let records = case
         .rows
         .iter()
-        .map(|(row, _)| (0, frames::record(row)))
+        .map(|(row, _)| (0, source_frames::record(row)))
         .collect::<Vec<_>>();
     let mut page = raw::data_page(10, &records);
     let free =
         PAGE - 14 - 2 * records.len() - records.iter().map(|(_, row)| row.len()).sum::<usize>();
     raw::put16(&mut page, 2, free as u16);
-    frames::install(&mut case.before, 12, &page);
+    source_frames::install(&mut case.before, 12, &page);
 
     // ID1/2/3 remains unchanged; Group is explicitly10/20/30 in this source.
     let entries = case
@@ -105,7 +106,11 @@ fn source(code: u8, family: Family, values: &[Value]) -> frames::Case {
             entry
         })
         .collect::<Vec<_>>();
-    frames::install(&mut case.before, 14, &frames::leaf(None, &entries, 0, 0, 0));
+    source_frames::install(
+        &mut case.before,
+        14,
+        &source_frames::leaf(None, &entries, 0, 0, 0),
+    );
     case
 }
 

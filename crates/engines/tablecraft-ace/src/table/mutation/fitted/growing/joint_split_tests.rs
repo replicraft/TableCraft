@@ -1,7 +1,6 @@
 //! Source-only qualification before any joint INDEX-growth producer is active.
 pub(in crate::table::mutation::fitted) mod model;
 
-use crate::test_support::base;
 use crate::{
     IndexCheckStatus, NativeImage, RuleCheckStatus, check_table, check_table_constraints,
     inspect_table_index_counter, read_table,
@@ -13,6 +12,7 @@ use model::{Family, Shape};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 500_000_000)

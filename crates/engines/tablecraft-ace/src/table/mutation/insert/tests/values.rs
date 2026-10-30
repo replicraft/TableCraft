@@ -1,14 +1,17 @@
-use super::model::{self, NewRow, PAGE};
+use super::model;
+use super::model::NewRow;
 use crate::read_table;
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::access::insert_seed as source_model;
+use tablecraft_testkit::access::insert_seed::PAGE;
 
 #[test]
 fn complete_rows_preserve_null_empty_binary_and_physical_primary_aliases() {
     for code in [5, 6] {
         for alias in [false, true] {
-            let before = model::source(code, alias, false, None);
+            let before = source_model::source(code, alias, false, None);
             let indexes = if alias { 2 } else { 1 };
             model::checked(&before, 3, indexes);
             let empty = model::capture(&before)
@@ -63,7 +66,7 @@ fn complete_rows_preserve_null_empty_binary_and_physical_primary_aliases() {
 #[test]
 fn maximum_binary_batch_composes_two_visible_eof_pages_and_shared_map_bytes() {
     for code in [5, 6] {
-        let before = model::source(code, true, true, None);
+        let before = source_model::source(code, true, true, None);
         model::checked(&before, 3, 2);
         let rows = (0..20)
             .map(|position| NewRow {
@@ -89,7 +92,7 @@ fn maximum_binary_batch_composes_two_visible_eof_pages_and_shared_map_bytes() {
 #[test]
 fn slot254_is_visible_then_count255_forces_a_fresh_visible_root() {
     for code in [5, 6] {
-        let before = model::source(code, false, false, None);
+        let before = source_model::source(code, false, false, None);
         model::checked(&before, 3, 1);
         let rows = (0..253)
             .map(|position| NewRow {

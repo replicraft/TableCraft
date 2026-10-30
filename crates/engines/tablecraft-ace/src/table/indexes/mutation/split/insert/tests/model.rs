@@ -1,7 +1,8 @@
 //! Independent source and complete-frame goldens for one primary-leaf split.
 use super::*;
-use crate::test_support::{base, map_growth};
 use tablecraft_testkit::access as support;
+use tablecraft_testkit::access::map_growth::model::declaration_end;
+use tablecraft_testkit::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 pub(super) const TABLE: usize = 10;
@@ -160,7 +161,7 @@ pub(super) fn source(
     };
     install(&mut bytes, 1, &support::data_page(1, &[(0, global)]));
     for number in [2, 7, TABLE] {
-        let end = map_growth::model::declaration_end(&bytes, number);
+        let end = declaration_end(&bytes, number);
         support::put16(&mut bytes, end, 0xffff);
     }
     (bytes, keys)

@@ -24,7 +24,9 @@ inspection imports formats directly. Generic I/O gains no format knowledge.
 package dependencies. ACE retains native encryption policy, KDF/page mapping,
 header rewriting and preservation. The engine consumes crypto directly.
 
-`tablecraft-testkit` owns independent raw fixtures and has no dependencies.
+`tablecraft-testkit` owns independent raw fixtures. Its core dependency supplies
+the working `Row::values` carrier conversion shared by native and host tests;
+it imports no production engine, adapter, parser or byte layouts.
 Its ACE, Access and CLI consumers use development dependencies; the guard rejects
 normal and build-dependency edges, including renamed/optional declarations.
 Production codecs must not consume these independent expected-byte builders.
