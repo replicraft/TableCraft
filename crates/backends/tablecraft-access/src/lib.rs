@@ -22,7 +22,7 @@ pub use source::{
     NativeSavedSelectError, NativeSource, NativeSourceHandle, NativeTableIdentity,
     PreparedCalculation, RecomputedNativeSource,
 };
-mod editing;
+pub mod editing;
 /// Explicit disposable engineering-copy preparation, separate from ordinary native saves.
 #[cfg(feature = "ace16-write-preview")]
 pub mod engineering;

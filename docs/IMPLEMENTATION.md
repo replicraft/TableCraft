@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Recovery inspection and shared update planning
+
+The I/O journal now exposes a read-only `CheckedV1` session. It retains the exact
+verified images and journal borrow for later consuming recovery, so native policy
+checks can run before any target write. Independent literal controls ran first;
+the full I/O run passes 54 unit, nine integration and two compile-fail tests,
+with strict lint checks passing. This does not yet supply host-owned file pairing
+or native recovery admission. See [the journal contract](foundation/IMAGE_JOURNAL.md).
+
+Normal SQL UPDATE planning now lives in `tablecraft_access::editing::sql` and is
+used by the CLI. The adapter composes the existing snapshot/query/native checks;
+the host keeps file ownership and publication. External selectors are refused
+before file opens in both default and required copy modes. Four adapter and five
+CLI unit checks pass, including a complete-image expected UPDATE. See
+[query editing](access/writes/QUERY_EDITING.md).
+
 ## Required fresh-output publication
 
 `query update` and `query preview-create-index` now accept `--durable-output`.
