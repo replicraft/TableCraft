@@ -13,9 +13,40 @@ use tablecraft_core::{
 const MARKER: [u8; 2] = [0xff, 0xfe];
 const UNIT_BYTES: usize = size_of::<u16>();
 
+enum Compression {
+    MinimumSize,
+    DeclaredPreference(usize),
+}
+
 pub(super) fn encode(
     field: &NativeColumn,
     value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    encode_with(field, value, Compression::MinimumSize, budget, cancelled)
+}
+
+pub(super) fn encode_declared(
+    field: &NativeColumn,
+    value: &Value,
+    capacity: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    encode_with(
+        field,
+        value,
+        Compression::DeclaredPreference(capacity),
+        budget,
+        cancelled,
+    )
+}
+
+fn encode_with(
+    field: &NativeColumn,
+    value: &Value,
+    policy: Compression,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -36,8 +67,12 @@ pub(super) fn encode(
                 count += 1;
                 narrow &= unit != 0 && unit <= u16::from(u8::MAX);
             }
+            let compression_fits = match policy {
+                Compression::MinimumSize => count > MARKER.len(),
+                Compression::DeclaredPreference(capacity) => MARKER.len() + count <= capacity,
+            };
             let compressed = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
-                && count > MARKER.len()
+                && compression_fits
                 && narrow;
             let length = if compressed {
                 MARKER.len() + count
@@ -48,6 +83,12 @@ pub(super) fn encode(
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
+
+    if let Compression::DeclaredPreference(capacity) = policy
+        && length > capacity
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
 
     budget
         .charge_allocation(length as u64, 1)

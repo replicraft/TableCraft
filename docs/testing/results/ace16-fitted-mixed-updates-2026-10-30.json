@@ -1,0 +1,310 @@
+{
+  "date": "2026-10-30",
+  "feature": "One original-source fitted fixed/ShortText-or-Binary record update",
+  "checks": {
+    "initial_source_after_declaration_correction": {
+      "exit_code": 0,
+      "pairs": 39,
+      "images": 78
+    },
+    "zero_slack_source_after_descriptor_offset_correction": {
+      "exit_code": 0,
+      "pairs": 4,
+      "images": 8
+    },
+    "production_compile_first": {
+      "exit_code": 0
+    },
+    "joint_key_API_first": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "first_complete_record_API": {
+      "exit_code": 101,
+      "passed_functions": 5,
+      "failed_functions": 1
+    },
+    "capacity_aware_API": {
+      "exit_code": 0,
+      "functions": 8,
+      "whole_image_comparisons": 83
+    },
+    "existing_independent_record_proof_first": {
+      "exit_code": 0,
+      "functions": 3
+    },
+    "existing_variable_consumers_first": {
+      "exit_code": 0,
+      "functions": 36,
+      "targets": 5
+    },
+    "joint_key_regression_first": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "strict_ACE_first": {
+      "exit_code": 0
+    },
+    "minimal_ACE_first": {
+      "exit_code": 0
+    },
+    "scoped_formatting": {
+      "exit_code": 0
+    }
+  },
+  "contract": "One original table and roots, fixed cells plus exactly one ordinary ShortText/Binary group. Native physical capacity retained; select declared compression if representable and fitting, otherwise legal raw UTF16 if fitting, before emission. No page/INDEX allocation or candidate chaining. Fresh source/request proof independently reconstructs complete rows/caches and joint keys before broad record-span authorization. Each affected physical owner is dispatched once with every alias validated.",
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6849,
+      "sha256": "4a26bff76bb30d1abcd71d6e960bc0ca1040d56f9ee0c30d2acc5dedf8c1e68c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4595,
+      "sha256": "9654cb2c5d7eca1471b78f3ced175a94f2de4a91285600c2e76d18f9c418d7e1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 5349,
+      "sha256": "f74d1380e224f8e2a4ece66d60dfaaa715717776c94568ad44483f2a43d495de"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/mod.rs",
+      "bytes": 2525,
+      "sha256": "e6e8e5cde53aa1574e27b0c1c3e1f9644fbc2c3c2730ced9b7fec1e585b73258"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement.rs",
+      "bytes": 5028,
+      "sha256": "6e7eaf9b550429e4e257ff776fce340882696c2c48eb2daf4a85445081c77312"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/keys.rs",
+      "bytes": 2520,
+      "sha256": "0456e5149fe539372121d398325d3c08470bda56a8a3c6560eb58b3e5a8eeb5f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/rows.rs",
+      "bytes": 3541,
+      "sha256": "229fbcee89c2e7ccdc0bc2cd79087e161a13fa61f1466f1467db9ef290e5e964"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/mixed.rs",
+      "bytes": 1852,
+      "sha256": "b3930221ab891ac777e5e2a9a9b4e51435be44f499ac4b58040d2c35e36a1f1d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1876,
+      "sha256": "9c0efabc4f247b311c7c9f7522004cd1fcc080b0103a437561d313defb6df6e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests.rs",
+      "bytes": 5403,
+      "sha256": "92311f1a14674c9a69af2053c1a77669e6c34a8be07b698cb82b168380a79e81"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/slot/storage.rs",
+      "bytes": 9375,
+      "sha256": "0fdb33fc00523d9d942014fbe2f7c525552cb89c3e98ba9772d7d1447fa37eab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/mod.rs",
+      "bytes": 3843,
+      "sha256": "50f621f319f68506b027e16284862931618463b8e979d45ca5a6169b77516132"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/mod.rs",
+      "bytes": 7227,
+      "sha256": "be9cce0ca5916c296776ea6f1627ee2a6b92ede506c83e37b83d61e9c675bad6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_update/record_proof/payload.rs",
+      "bytes": 3798,
+      "sha256": "a550c86b541ac4bbd214ff167834932298df18eaee68cee32cfe5cf8c44d1635"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/mod.rs",
+      "bytes": 2316,
+      "sha256": "32242e40b8e3dbb1431ffc59ad69e4fc43dbe9254dc943c2a429293ab70acb47"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs",
+      "bytes": 12070,
+      "sha256": "8db66cd52be8d8321b8e5d56fe5602d76a163e25bc1e79631814da96d91ce733"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/request.rs",
+      "bytes": 10415,
+      "sha256": "f4b890a3b03b8cc1a37da456d444a71f7e09318170d07b6adf3222657a274379"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs",
+      "bytes": 10753,
+      "sha256": "15e3d4e01c45988a5a0cd0c0814602a1d89d1a3b316f2aaca3e6f63172b4b3b5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/tests/capacity.rs",
+      "bytes": 1640,
+      "sha256": "c3381e6aa80914b3dd259ff2ffe256b91f8d947d38bf834ef2a82aebd0158ed2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/tests.rs",
+      "bytes": 12324,
+      "sha256": "b40dbee0636175e0f8cc5c6412bca167a1b13e19b86a858011f0854e7b21b2c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/capacity.rs",
+      "bytes": 2539,
+      "sha256": "1c87d48dbec846929e1d861ff44b95d09c16ee08f1eb02796635065383caf177"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/key_changes.rs",
+      "bytes": 5286,
+      "sha256": "f101735ceceae06bd3b3097c3063f55d1a8cc495220f780cff56c93a9a914160"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/model.rs",
+      "bytes": 16250,
+      "sha256": "ccb9fd9306d173c1a4a0f65c25ad144d06779545a56840362950c6570aeaaa0d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/mixed/profiles.rs",
+      "bytes": 6463,
+      "sha256": "dd2594828c5141d8f4b04fcc2f37b9eb993f716fddbf2d3240ed209ebabc9498"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/mixed/qualification.rs",
+      "bytes": 4863,
+      "sha256": "e2a3eab51e42ef16100f2028584c7e69dbf275dc72acf93cba73a9e8571ee4de"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-registered-freeze.json",
+      "bytes": 1167,
+      "sha256": "33711cd0f5831f7a1327a5cf35551006e035af17e93fa520a5dfade52a577727"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-first-root.log",
+      "bytes": 1167,
+      "sha256": "87e6e4b4c13b99795f436e69c59d8e5b823b295b491cccf0d7aea3a31d4cd633"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-declaration-diagnostic-root.log",
+      "bytes": 1335,
+      "sha256": "06fa89eba8a1e0a521b0ffc83703053dfb6023dd1582d84590fcededae125721"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-compression-correction-freeze.json",
+      "bytes": 3581,
+      "sha256": "39af451cfbc5790871f8fdbcc1b67165d8155563ea12aef73d4dc4014820be2b"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-compression-second-root.log",
+      "bytes": 499,
+      "sha256": "0191abb9bcdc0354bce95000626341a60ac27f1924f3c4d9c624a8a29ddd8bc3"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-source-next-20261030/source-iterator-lint-derivative.json",
+      "bytes": 904,
+      "sha256": "8bb3c8e9463920c22d3e3aba0e9c6297d356621d2512c5c1387218f1aa505b1f"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/integrated-first-coherent-freeze.json",
+      "bytes": 3812,
+      "sha256": "ac75b83a921821fb1257c130817ad161f94bfcff2464b216de98602c5ad22c7c"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/check-first-root.log",
+      "bytes": 183,
+      "sha256": "3ebcccf48d19702872bbe6a6b8b20ca7842b50fd052d073d0b57aa6612842b47"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/key-api-first-root.log",
+      "bytes": 646,
+      "sha256": "7045a05e3aa52bfd80c09dc3519e8f57845fb13aea38b7a173fc8b3da779f8e7"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/api-first-root.log",
+      "bytes": 464326,
+      "sha256": "9c4cebc30726c8ab5fedb0057e8a76e28ac50f551eaf6e1deb536b3eba996ade"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/capacity-source-first-freeze.json",
+      "bytes": 3689,
+      "sha256": "772494226542e2f73f8cc5289df38a55f047618a6321a8d6638a7c5c96fc2a41"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/zero-slack-source-first-root.log",
+      "bytes": 1244,
+      "sha256": "dc1716c53c48552730b201e4539ea6b08bb607d893f9b302d4f69b4b3707ceed"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/capacity-source-counter-offset-correction-freeze.json",
+      "bytes": 3699,
+      "sha256": "ff31b071f92def77d2bb06b9d6d111ef7a0901d040bee06649955dfce4371c46"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/zero-slack-source-second-root.log",
+      "bytes": 517,
+      "sha256": "87c8c499b2ea6f9d20c36b7a30532dd984d0bc4e5064ccc3a3edddd1d1480094"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/capacity-api-registered-freeze.json",
+      "bytes": 3283,
+      "sha256": "d1f03271493c977bc9248d5caef1f8922bafd55517dd674225d84ef285e5ddb6"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/api-capacity-second-root.log",
+      "bytes": 1270,
+      "sha256": "76aff280b62b74bf8e5f6a0579e6068d45a96671933845ffeba307140de96f69"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/old-record-proof-regression-first-root.log",
+      "bytes": 675,
+      "sha256": "cc4d339a2f4a2f80cccc5be7146bbc9b1ec39e7b0275fba0412e161a0ac171e1"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/old-variable-consumers-first-root.log",
+      "bytes": 4477,
+      "sha256": "070f77d8c8b6b2ebba9c4ff5a4cd706188e7f0e36856d6f641235bbe976bb09d"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/key-api-regression-first-root.log",
+      "bytes": 534,
+      "sha256": "6e2c40c0f6d6941ccc4c9de48ed303ca242d6f6db56fc8ec47cc002864795371"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/clippy-first-root.log",
+      "bytes": 184,
+      "sha256": "cee3fe0082c34d59c9f2861b69cdb951d12a7802ad4d421059443530afe23f46"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/minimal-first-root.log",
+      "bytes": 183,
+      "sha256": "727228878cca5d8e09503c21ecc20641196fa8fe148659aafcd4664cb94d7b85"
+    },
+    {
+      "path": ".cache/ace16-fitted-mixed-update-implementation-next-20261030/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "retained_observations": [
+    "First source gate refused unsupported Name extended flag2; actual diagnostic identified confused primaryUPDATABLE2 vs extendedUNICODE_COMPRESSION1. Corrected authored declaration before any producer and kept all assertions.",
+    "Equivalent source-model loop enumeration fixed a lint before mutation; literal construction unchanged.",
+    "First producer passed5 adversarial/resource tests but differed in16 DATA/footer bytes on the first full image: previous preferred writer chose2-byte raw1char instead of frozen3-byte compact form. Existing goldens were not changed.",
+    "Added a distinct capacity-aware mixed encoding policy and independent proof; original preferred/minimum-size consumers remain unchanged. New zero-slack/raw1char cases were frozen and read-qualified before those API calls, preventing unnecessary capacity refusals.",
+    "First new zero-slack source constructor used an offset missing3 counter records; corrected that NEW source descriptor offset before its producer. Original39 source/expected constructors unchanged.",
+    "All83 complete images then matched; malformed/stale input, correlated selected/unselected/cache tampering, neither-fitting-form, budgets and final cancellation remain refusals."
+  ],
+  "limitations": [
+    "Exactly one variable group; existing fitting indexes and record capacity only",
+    "No new DATA/INDEX pages, map growth or forwarding placement",
+    "Normal ACE saves, macro qualification, journaling and native Access evidence remain separate",
+    "Adapter/CLI routing not supplied by this engine commit"
+  ],
+  "native_Access_qualification": false
+}

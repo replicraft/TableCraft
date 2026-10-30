@@ -45,6 +45,11 @@ now remain intact during ACE 16 engineering INSERT/UPDATE/DELETE. Formatting and
 numeric display places do not coerce stored values or replace physical Decimal
 precision/scale; broader metadata and normal save admission remain unfinished.
 
+The [joint fitted-record engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now changes
+fixed fields plus one Short Text/Binary field with one original-record proof and
+one joint physical-index transform. Existing-capacity records are qualified;
+adapter routing and broader placement/allocation continue separately.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

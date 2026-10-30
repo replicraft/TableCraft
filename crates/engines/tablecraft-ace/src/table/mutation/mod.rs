@@ -6,6 +6,8 @@ mod delete;
 mod error;
 mod field;
 #[cfg(feature = "ace16-write-preview")]
+mod fitted;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod fixed;
 mod gates;
 #[cfg(feature = "ace16-write-preview")]
@@ -25,6 +27,9 @@ mod preservation;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
 mod rows;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod mixed_fitted_tests;
 #[cfg(feature = "ace16-write-preview")]
 mod slot;
 #[cfg(feature = "ace16-write-preview")]
@@ -48,6 +53,8 @@ pub(in crate::table) use variable_update::map_audit::CertifiedData;
 #[cfg(feature = "ace16-write-preview")]
 pub use delete::{Ace16DeletePreview, RowDelete, TableRowDeletes};
 pub use error::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+pub use fitted::FittedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
 pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};
 pub use plan::{Int32Update, NativeEditPlan};

@@ -112,7 +112,8 @@ pub(super) use mutation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use mutation::{
-    SlotKeyChanges, SlotKeyUpdate, qualify_slot_indexes, slot_patches as index_slot_patches,
+    RowKeyUpdate, SlotKeyChanges, SlotKeyUpdate, qualify_row_indexes, qualify_slot_indexes,
+    row_patches as index_row_patches, slot_patches as index_slot_patches,
 };
 mod read;
 pub use read::{

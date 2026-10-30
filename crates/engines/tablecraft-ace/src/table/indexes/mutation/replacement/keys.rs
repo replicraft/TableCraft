@@ -4,7 +4,7 @@ use super::super::{
     row_key::RowKeyProfile,
     tree::Tree,
 };
-use super::{Original, SlotKeyUpdate};
+use super::rows::{Final, KeyChange, Original};
 use crate::{
     EditError, NativeImage, NativeIndex,
     format::reader::Reader,
@@ -27,7 +27,7 @@ pub(in crate::table::indexes::mutation) fn prepare<P: RowKeyProfile, const N: us
     owner: u32,
     index: &NativeIndex,
     original: P,
-    updates: &[SlotKeyUpdate<'_>],
+    updates: &[impl KeyChange],
 ) -> Result<Prepared<P>, EditError> {
     let profile = Preserved(original);
     let mut entries = Vec::new();
@@ -45,8 +45,11 @@ pub(in crate::table::indexes::mutation) fn prepare<P: RowKeyProfile, const N: us
     for entry in &mut entries {
         reader.tick()?;
         reader.work(updates.len())?;
-        if let Some(update) = updates.iter().find(|update| update.reference == entry.row) {
-            reader.work(2 * profile.components() * update.columns.len())?;
+        if let Some(update) = updates
+            .iter()
+            .find(|update| update.reference() == entry.row)
+        {
+            reader.work(2 * profile.components() * update.columns().len())?;
             let mut work = KeyWork {
                 budget: reader.budget,
                 cancelled: reader.cancelled,
@@ -55,7 +58,7 @@ pub(in crate::table::indexes::mutation) fn prepare<P: RowKeyProfile, const N: us
             if profile.compare(&entry.key, &before) != Ordering::Equal {
                 return Err(EditError::Conflict);
             }
-            let wire = profile.0.encoded_row(update, &mut work)?;
+            let wire = profile.0.encoded_row(&Final(update), &mut work)?;
             entry.key = profile.decode(&wire, &mut work)?.0;
             matched += 1;
         }

@@ -137,6 +137,60 @@ pub(in crate::table::mutation) fn encode_for_span(
     Ok(bytes)
 }
 
+/// Prefer declared compression within the selected field's actual capacity.
+/// Legal raw UTF16 remains available when the marker would exceed that capacity.
+/// Ordinary variable updates continue to use the minimum-size row policy.
+pub(in crate::table::mutation) fn encode_declared(
+    field: &NativeColumn,
+    value: &Value,
+    capacity: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    validate(field, value)?;
+    check(budget, cancelled)?;
+
+    let Value::Text(value_text) = value else {
+        let length = match value {
+            Value::Null => 0,
+            Value::Binary(bytes) => bytes.len(),
+            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+        };
+        if length > capacity {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        return encode_preferred(field, value, budget, cancelled);
+    };
+    let mut units = 0_usize;
+    let mut narrow = true;
+    for unit in value_text.encode_utf16() {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, 1)
+            .map_err(InspectError::from)?;
+        units = units.checked_add(1).ok_or(InspectError::StructureLimit)?;
+        narrow &= unit != 0 && unit <= u16::from(u8::MAX);
+    }
+    let declared_length = COMPRESSED_MARKER
+        .len()
+        .checked_add(units)
+        .ok_or(InspectError::StructureLimit)?;
+    let raw_length = units
+        .checked_mul(UTF16_BYTES)
+        .ok_or(InspectError::StructureLimit)?;
+    let length = if field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
+        && narrow
+        && declared_length <= capacity
+    {
+        declared_length
+    } else if raw_length <= capacity {
+        raw_length
+    } else {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    };
+    encode_for_span(field, value, length, budget, cancelled)
+}
+
 /// Serialize an already qualified field with the canonical complete-row policy.
 /// This chooses payload bytes independently of any existing slot capacity; the
 /// caller owns field admission and the surrounding record offsets and masks.
