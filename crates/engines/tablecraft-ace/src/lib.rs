@@ -146,6 +146,10 @@ pub use transaction::{
 };
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeRecoveryQualificationError, QualifiedJet4Recovery, qualify_jet4_int32_recovery,
+};
 
 pub use properties::{
     NativeProperty, PropertyGroup, PropertyGroupKind, TableProperties, inspect_table_properties,

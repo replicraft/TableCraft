@@ -6,6 +6,12 @@ pub use intent::{
     NativeInt32EditIntent, NativeIntentError, RecoverableEditError, RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
+mod qualified_recovery;
+#[cfg(feature = "journal")]
+pub use qualified_recovery::{
+    NativeRecoveryQualificationError, QualifiedJet4Recovery, qualify_jet4_int32_recovery,
+};
+#[cfg(feature = "journal")]
 mod write;
 use crate::{Header, InspectError, header, inspect_header};
 use std::{

@@ -556,6 +556,33 @@ the passing retry. This addition supplies no journal filesystem lifecycle or
 end-user in-place command; current CLI copies retain
 their separate publication policy.
 
+### Native qualification before recovery writes
+
+`qualify_jet4_int32_recovery` consumes the original `NativeInt32EditIntent` and
+one `CheckedV1` session. It verifies the before binding, captures that exact
+checked BEFORE image, reruns the unchanged normal Jet 4 Int32 planner and
+compares both complete reconstructed images against the journal. No target is
+accepted during qualification, so failure cannot mutate one. An ACE header,
+serialized profile label, arbitrary AFTER image or cached producer plan cannot
+replace these checks.
+
+`QualifiedJet4Recovery` retains the same immutable checked record and mutable
+journal borrow. It offers no replacement-journal or mutable-image API. Its
+consuming `recover` applies existing V1 recovery to the independently paired
+target and returns the known `RecoveryOutcome` directly. A later capture,
+cleanup, unlock or report failure must not erase that outcome. The journal
+remains retained; filesystem identity, durable namespaces, lifecycle/no-replay
+policy and cleanup remain host-owned. Qualification does not establish file
+pairing or normal ACE save/macro permission.
+
+The independent source gates and first seven qualified native API/control
+functions pass. Strict all-target/all-feature checks, minimal builds and seven
+existing native transaction checks also pass. The
+[local result record](../../testing/results/native-int32-intent-recovery-2026-10-30.json)
+keeps source qualification, API checks and retained failed attempts separate.
+Filesystem bundle integration and end-user journal commands remain unfinished.
+
+
 Column fixed/updatable masks follow the pinned
 [ColumnImpl reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
 Only the property DDL flag bit is admitted, confirmed against the reviewed
