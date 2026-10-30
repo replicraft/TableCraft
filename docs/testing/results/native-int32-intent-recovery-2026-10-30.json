@@ -13,7 +13,9 @@
     "intent_functions_including_source": 5,
     "adapter_functions": 6,
     "unchanged_publication_functions": 10,
-    "existing_native_transaction_functions": 7
+    "existing_native_transaction_functions": 7,
+    "recorded_plan_functions": 3,
+    "recorded_plan_whole_images": 8
   },
   "invariants": [
     "Decoded intent is bounded request data, not permission",
@@ -96,6 +98,17 @@
       "sha256": "d28c9304a21e99ec1beebfd916ca10e826a5109eb92ac4a7ac9926cb00fe7d18",
       "outcome": "pass",
       "passing_functions": 7
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/recorded-planner-first-root.log",
+      "sha256": "12d7675a7fcce5478f40d38a867bde46384448313ba93280abf6d6ca2d7baab3",
+      "outcome": "pass",
+      "passing_functions": 3
+    },
+    {
+      "path": ".cache/jet4-native-intent-next-20261030/recorded-planner-strict-root.log",
+      "sha256": "7aef6def0b7493fcb4ca22f90334ad0e12628429989aba86f4a3908ddef226d9",
+      "outcome": "pass"
     }
   ],
   "limitations": [
