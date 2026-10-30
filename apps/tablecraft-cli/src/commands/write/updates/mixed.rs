@@ -4,11 +4,11 @@ use super::super::{
     input::{MAX_REQUESTS, reserve},
     tick, values,
 };
-use super::{Group, SET_FIELDS, parse_with_kind};
+use super::{Group, SET_FIELDS, parse_with_kind, same_name};
 use tablecraft_ace::{
     FittedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 
 struct Scope<'a> {
     table: &'a str,
@@ -80,34 +80,15 @@ pub(in crate::commands::write) fn preflight(
             let _ = values::update(&fields[3], &fields[4], budget)?;
             return Err(input("Unknown update KIND"));
         }
-        if let Some(first) = scopes.first() {
-            budget
-                .charge(
-                    Resource::Steps,
-                    first.table.len().min(fields[0].len()) as u64,
-                )
-                .map_err(InspectError::from)?;
-            if !first.table.eq_ignore_ascii_case(&fields[0]) {
-                return Err(input("Mixed variable updates require one table"));
-            }
+        if let Some(first) = scopes.first()
+            && !same_name(first.table, &fields[0], budget, cancelled)?
+        {
+            return Err(input("Mixed variable updates require one table"));
         }
         let mut found = None;
         for (position, scope) in scopes.iter().enumerate() {
-            tick(budget, cancelled)?;
-            let bytes = scope
-                .table
-                .len()
-                .min(fields[0].len())
-                .checked_add(scope.column.len().min(fields[1].len()))
-                .and_then(|bytes| bytes.checked_mul(2))
-                .ok_or(InspectError::StructureLimit)?;
-            // Prepay this profile scan and the identical grouping name scan
-            // subsequently performed by the shared typed input parser.
-            budget
-                .charge(Resource::Steps, bytes as u64)
-                .map_err(InspectError::from)?;
-            if scope.table.eq_ignore_ascii_case(&fields[0])
-                && scope.column.eq_ignore_ascii_case(&fields[1])
+            if same_name(scope.table, &fields[0], budget, cancelled)?
+                && same_name(scope.column, &fields[1], budget, cancelled)?
             {
                 found = Some(position);
                 break;

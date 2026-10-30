@@ -62,18 +62,26 @@ pub(super) fn parse_with_kind<'a, T>(
         if fields[4].len() > max_value_bytes || fields[5].len() > max_value_bytes {
             return Err(input("An expected/replacement value exceeds --value-bytes"));
         }
+        budget
+            .charge(Resource::Steps, fields[2].len() as u64)
+            .map_err(InspectError::from)?;
         let ordinal = fields[2]
             .parse()
             .map_err(|_| input("ROW must be a nonnegative original live-row ordinal"))?;
         let expected = values::update(&fields[3], &fields[4], budget)?;
         let value = values::update(&fields[3], &fields[5], budget)?;
-        budget
-            .charge(Resource::Steps, groups.len() as u64)
-            .map_err(InspectError::from)?;
-        if let Some(group) = groups.iter_mut().find(|group| {
-            group.table.eq_ignore_ascii_case(&fields[0])
-                && group.column.eq_ignore_ascii_case(&fields[1])
-        }) {
+        let mut found = None;
+        for (position, group) in groups.iter().enumerate() {
+            if same_name(group.table, &fields[0], budget, cancelled)?
+                && same_name(group.column, &fields[1], budget, cancelled)?
+            {
+                found = Some(position);
+                break;
+            }
+        }
+
+        if let Some(position) = found {
+            let group = &mut groups[position];
             reserve(&mut group.rows, 1, budget)?;
             group.rows.push(make(&fields[3], ordinal, expected, value));
         } else {
@@ -90,4 +98,17 @@ pub(super) fn parse_with_kind<'a, T>(
     }
     tick(budget, cancelled)?;
     Ok(groups)
+}
+
+pub(super) fn same_name(
+    left: &str,
+    right: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, Error> {
+    tick(budget, cancelled)?;
+    budget
+        .charge(Resource::Steps, left.len().min(right.len()) as u64)
+        .map_err(InspectError::from)?;
+    Ok(left.eq_ignore_ascii_case(right))
 }
