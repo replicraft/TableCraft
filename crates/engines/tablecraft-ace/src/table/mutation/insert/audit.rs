@@ -1,5 +1,6 @@
 //! Request-bound INSERT proof, separate from construction and composition.
 mod data;
+mod defaults;
 mod global;
 mod long_values;
 mod primary;
@@ -9,7 +10,7 @@ mod tests;
 
 use super::{
     AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber, RowInsert, Staged, autonumber,
-    policies, primary_column,
+    omitted::Original, policies, primary_column,
 };
 use crate::{
     EditError, InspectError, NativeImage,
@@ -99,7 +100,7 @@ pub(super) fn prove_incrementing(
     )
 }
 
-fn prove_with(
+pub(super) fn prove_with(
     image: &NativeImage,
     table: &str,
     input: AuditRequest<'_>,
@@ -124,6 +125,19 @@ fn prove_with(
             gates::before_incrementing_insert(image, table, budget, cancelled)?,
             requests.len(),
         ),
+        AuditRequest::Omitted(Original::Ordinary(requests)) => {
+            if staged.autonumber.is_some() {
+                return Err(EditError::Preservation);
+            }
+            (
+                gates::before_insert(image, table, budget, cancelled)?,
+                requests.len(),
+            )
+        }
+        AuditRequest::Omitted(Original::Incrementing { requests, .. }) => (
+            gates::before_incrementing_insert(image, table, budget, cancelled)?,
+            requests.len(),
+        ),
     };
     if checked
         .rows()
@@ -133,24 +147,43 @@ fn prove_with(
         return Err(InspectError::StructureLimit.into());
     }
     let schema = checked.schema();
-    if matches!(input, AuditRequest::Explicit(_)) {
+    if matches!(
+        input,
+        AuditRequest::Explicit(_) | AuditRequest::Omitted(Original::Ordinary(_))
+    ) {
         records::qualify(schema, budget, cancelled)?;
     }
     let id = primary_column::resolve(&checked, budget, cancelled)?;
-    let generation = match input {
-        AuditRequest::Explicit(_) => None,
-        AuditRequest::Incrementing { requests, policy } => {
-            records::layout::capture_incrementing(schema, id, budget, cancelled)?;
-            let plan = staged.autonumber.as_ref().ok_or(EditError::Preservation)?;
-            Some(autonumber::audit::Operation {
-                image,
-                checked: &checked,
-                requests,
-                policy,
-                plan,
-                returned: &plan.values,
-            })
-        }
+    let defaults = match input {
+        AuditRequest::Omitted(original) => Some(defaults::derive(
+            image, &checked, original, budget, cancelled,
+        )?),
+        _ => None,
+    };
+    let generation_input = match input {
+        AuditRequest::Incrementing { requests, policy } => Some((requests, policy)),
+        AuditRequest::Omitted(Original::Incrementing { policy, .. }) => Some((
+            defaults
+                .as_ref()
+                .ok_or(EditError::Preservation)?
+                .companions()?,
+            policy,
+        )),
+        _ => None,
+    };
+    let generation = if let Some((requests, policy)) = generation_input {
+        records::layout::capture_incrementing(schema, id, budget, cancelled)?;
+        let plan = staged.autonumber.as_ref().ok_or(EditError::Preservation)?;
+        Some(autonumber::audit::Operation {
+            image,
+            checked: &checked,
+            requests,
+            policy,
+            plan,
+            returned: &plan.values,
+        })
+    } else {
+        None
     };
     let expanded = generation
         .as_ref()
@@ -158,7 +191,14 @@ fn prove_with(
         .transpose()?;
     let requests = match input {
         AuditRequest::Explicit(requests) => requests,
-        AuditRequest::Incrementing { .. } => expanded.as_deref().ok_or(EditError::Preservation)?,
+        AuditRequest::Incrementing { .. }
+        | AuditRequest::Omitted(Original::Incrementing { .. }) => {
+            expanded.as_deref().ok_or(EditError::Preservation)?
+        }
+        AuditRequest::Omitted(Original::Ordinary(_)) => defaults
+            .as_ref()
+            .ok_or(EditError::Preservation)?
+            .ordinary()?,
     };
     policies::require_text_declarations(image, schema, requests, budget, cancelled)?;
 

@@ -45,6 +45,11 @@ excludes AutoNumber and OLE Object fields. These declarations do not widen
 Required, AllowZeroLength, validation, NewValues, active-content or normal-save
 admission. Incrementing companions likewise supply every ordinary field.
 
+The separate [omission-aware preview](ACE16_OMITTED_INSERT_DEFAULTS.md) now accepts
+original supplied/omitted intent, resolving qualified literal defaults or nullable
+NULL fallback only for missing ordinary fields. It does not change these complete
+request APIs or infer generation; supplied NULL still remains supplied NULL.
+
 The passive-default source gate passes before the API change: both ACE16
 layouts, independently constructed complete expected records/images, unchanged
 raw LvProp bytes, explicit value/NULL/empty and metadata refusal controls.

@@ -2,6 +2,7 @@
 use super::{
     Ace16AutoNumberInsertPreview, AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber,
     RowInsert, Staged, autonumber, finish_with, gates, prepare_with, preview, record,
+    values::copy_value,
 };
 use crate::{EditError, InspectError, NativeImage, TableCheck, WriteBlocker, header::check};
 use tablecraft_core::{
@@ -133,7 +134,7 @@ fn normalize(
                 values.push(Value::Int32(*key));
             } else {
                 let value = companions.next().ok_or(EditError::Preservation)?;
-                values.push(autonumber::request::copy_value(value, budget, cancelled)?);
+                values.push(copy_value(value, budget, cancelled)?);
             }
         }
         if companions.next().is_some() {

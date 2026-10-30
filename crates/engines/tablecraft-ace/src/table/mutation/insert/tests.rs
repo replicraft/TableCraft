@@ -18,6 +18,7 @@ pub(in crate::table::mutation::insert) mod long_value_inserts;
 pub(super) mod model;
 pub(in crate::table::mutation) mod multiple_indexes;
 mod multiple_numeric_indexes;
+mod omitted_defaults;
 pub(in crate::table::mutation::insert) mod ordinary_rows;
 mod owned_map_promotion;
 mod passive_defaults;

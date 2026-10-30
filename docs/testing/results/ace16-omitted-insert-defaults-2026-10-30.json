@@ -1,0 +1,393 @@
+{
+  "feature": "ACE16 presence-bearing ordinary/incrementing INSERT with closed literal defaults",
+  "date": "2026-10-30",
+  "state": "focused engine/frontend and combined regression/lint/minimal checks pass; final formatting/docs-link checks pending",
+  "source_authority": "Immutable original scoped DefaultValue plus original Supplied/Omitted requests; no producer-expanded cache authority",
+  "first_source": {
+    "passed": 2,
+    "failed": 1,
+    "log": {
+      "path": ".cache/ace16-omitted-insert-defaults-next-20261030/source-first-root.log",
+      "bytes": 1746,
+      "sha256": "2420c3696d2446b40db0247809e2f885c71b1d5560c1f56e71e608e59540f02c"
+    },
+    "reason": "New refusal source used unqualified text comparison. No resolver/API ran."
+  },
+  "corrected_source": {
+    "passed": 3,
+    "log": {
+      "path": ".cache/ace16-omitted-insert-defaults-next-20261030/source-second-root.log",
+      "bytes": 834,
+      "sha256": "1095fa34e1f0425b53b6fb39c5b8947e04a54e3df1f78092b28f0c025689bf49"
+    },
+    "freeze": {
+      "path": ".cache/ace16-omitted-insert-defaults-next-20261030/numeric-validation-source-ready-freeze.json",
+      "bytes": 2372,
+      "sha256": "da8dc4ab6d7e3d6461305b4a88cf01290a3db77f73c484c3c7708ad77f8854e3"
+    },
+    "change": "Numeric ID DefaultValue -1 and checked ValidationRule >0; old IDs1/2/3 unchanged. Positive goldens unchanged."
+  },
+  "first_actual_engine_api": {
+    "functions": 10,
+    "source_functions": 3,
+    "api_functions": 5,
+    "causal_audit_functions": 2,
+    "expected_images": {
+      "ordinary": 24,
+      "incrementing": 2,
+      "decimal": 4,
+      "total": 30
+    },
+    "failures": 0,
+    "log": {
+      "path": ".cache/ace16-omitted-insert-defaults-next-20261030/api-first-root.log",
+      "bytes": 1747,
+      "sha256": "834384e2ed0230b5d0097ab5180b84f565054dc84cb0a4649bb2c19546c74b74"
+    }
+  },
+  "mechanical_derivative": {
+    "freeze": {
+      "path": ".cache/ace16-omitted-insert-defaults-next-20261030/domain-constants-correction-freeze.json",
+      "bytes": 6387,
+      "sha256": "0a68f85aa234a2d756ff8709c3a01133384228359a7e2133b0095ede4e3fc85c"
+    },
+    "reason": "Replace identical precision/scale/Currency values by actual schema/Core constants; no semantic/golden changes"
+  },
+  "scope": {
+    "defaults": [
+      "NULL",
+      "Boolean",
+      "quoted Text",
+      "signed integer",
+      "plain exact numeric literal",
+      "nullable NULL without default"
+    ],
+    "unneeded_default": "No expression evaluation for supplied NULL/value/empty; source declaration profile remains checked",
+    "numeric": "Exact integer widths, Currency scale, native Decimal precision<=28/declared scale; no float Decimal route",
+    "generation": "Explicit source-bound LAST/+1 only; no NewValues inference",
+    "next": [
+      "captured explicit Clock for Date()/Now()",
+      "other qualified constant/coercion forms",
+      "DEFAULT VALUES and zero-field SQL forms"
+    ],
+    "closed": [
+      "ambient clock",
+      "UDF/VBA/runtime defaults",
+      "normal ACE save/journal admission",
+      "native Access compatibility claim"
+    ]
+  },
+  "guides": [
+    {
+      "path": "docs/testing/ACE16_OMITTED_INSERT_DEFAULTS.md",
+      "bytes": 7952,
+      "sha256": "4254aabca5b932c0da01cc0c40d6d704dc20509a283a8e99af16093e53466772"
+    },
+    {
+      "path": "docs/testing/ACE16_INSERT_PREVIEW.md",
+      "bytes": 11322,
+      "sha256": "ac77350bae81e48252d292229664d600bbb4bdfbbde8fec34fc6e39e41bb7623"
+    }
+  ],
+  "no_positive_expected_repair_after_producer": true,
+  "broader_regression_lint_minimal": {
+    "engine_mutation_functions": 498,
+    "shared_native_targets": 10,
+    "shared_native_functions": 72,
+    "access_library_functions": 51,
+    "query_library_functions": 84,
+    "cli_unit_functions": 31,
+    "affected_cli_integration_functions": 33,
+    "strict_packages": 5,
+    "minimal_libraries": [
+      "tablecraft-ace",
+      "tablecraft-access"
+    ],
+    "all_status": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/cli-first-root.log",
+        "bytes": 7522,
+        "sha256": "e12925f85821c4f6a672fcbf75ee6706857adde0ac151ccec7b61d6068fe1e6d"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/clippy-first-root.log",
+        "bytes": 746,
+        "sha256": "f1cefd3324230c398cf2a5e36fac2d6dce339cf79d80d1318b0074ca11ff8bb1"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/engine-mutations-first-root.log",
+        "bytes": 67437,
+        "sha256": "66935b105b423b6c65edc5a3b40a5cc13e2a7e026d10eb15546ba19afeda3d1b"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-access-first-root.log",
+        "bytes": 526,
+        "sha256": "98404b553188a179ed8f210d452628c9ab5f1f61919b034918319c7aec39dcca"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-ace-first-root.log",
+        "bytes": 183,
+        "sha256": "d7965d5133fdb0275d7b62b8c8963c57ca9f62d042110eb78f15fa250782e94a"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/query-access-first-root.log",
+        "bytes": 16540,
+        "sha256": "a12c59f3fb89429bbd36baa68953a6fba264f90b0a82e5f9964a337f7a699418"
+      },
+      {
+        "path": ".cache/ace16-write-defaults-growth-batch-20261030/shared-native-first-root.log",
+        "bytes": 8872,
+        "sha256": "a5744c2a031885afabe08748c28fedc2199d0ef8ca456be25a951a3f5e08969b"
+      }
+    ]
+  },
+  "final_mechanical_checks": {
+    "format_first": 1,
+    "format_corrected": 0,
+    "documentation_links": 0,
+    "note": "Rustfmt sorted two test module declarations; production comment no longer says Private draft. No behavior, helper body or golden changed. Runtime source inventories remain historical; final derivative is separately pinned.",
+    "logs": [
+      {
+        "path": ".cache/ace16-omitted-insert-defaults-next-20261030/native-format-final-root.log",
+        "bytes": 982,
+        "sha256": "d302b9c44869638cbe88bde39993f9ba99940b0dec1efcaef2106856d2265f06"
+      },
+      {
+        "path": ".cache/ace16-omitted-insert-defaults-next-20261030/native-format-corrected-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-omitted-insert-defaults-next-20261030/native-doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "dc32330ff4d5d016795a5e3accc3cfd75bd9acbc74b423c80a382b0803bbcc22"
+      },
+      {
+        "path": ".cache/ace16-omitted-insert-defaults-next-20261030/native-mechanical-final-receipt.json",
+        "bytes": 4795,
+        "sha256": "0bc95138570d06d7bed657707a656b14239b8bac09dee0866a4b4d945e10be00"
+      }
+    ]
+  },
+  "engine_files_before_final_mechanical_pass": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "bytes": 10897,
+      "sha256": "729bd636837396dcbbadf0c0b8d89fa4dc0c5176b4f024f8cb493e5c65101444"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "bytes": 9570,
+      "sha256": "1f1d127ca322bd1d932edb36e142c75477719cd476be538f5ea9345d42dea139"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/incrementing.rs",
+      "bytes": 5101,
+      "sha256": "f8745833cf2f3c14189881828390446ec321984b4b77258e2e5d413c16796bcc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/request.rs",
+      "bytes": 1300,
+      "sha256": "3f5f61e6e99e545db230ead1f54662ed29d16a6974449e13ec2250124c9b7693"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/audit.rs",
+      "bytes": 7311,
+      "sha256": "efa1c279c9618dabbc81ae88895a4a052920292d167d3046ac8f0b1ff79ee14a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions.rs",
+      "bytes": 8922,
+      "sha256": "cfc3542ca8a5990078b7000b6d02652e613354f62320b4b88a061d15f8b132ec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults/literal.rs",
+      "bytes": 6209,
+      "sha256": "0e2ef391aef0e31af96b4861f1645d7ef1f755982120247fd3ed6fc2096cb390"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults.rs",
+      "bytes": 5868,
+      "sha256": "8adf228606d064753b2f488ec1261897ee7685c3443b5f10dd4f5d5911676d84"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/constant.rs",
+      "bytes": 6291,
+      "sha256": "7ba2bc8264809203fd315973d058a2fa04c0aa7a6ab16780b38d33f4d2c69a35"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/mod.rs",
+      "bytes": 5507,
+      "sha256": "a3e02fad6edae691c8dd30a9ba6f584de3dfa6ddfd5d22e2698117d1194506f2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/preview.rs",
+      "bytes": 3710,
+      "sha256": "3032ac939ded2f62809f19dfe0aa1e60d8188baa65e732ecdbddca852a659b82"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/request.rs",
+      "bytes": 965,
+      "sha256": "301bee0e5b6ef8db850ed106ce21db6f9b33dd3dfa164c64e94c19c8d76cb2e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/stage.rs",
+      "bytes": 2488,
+      "sha256": "50c9ec23c11f9c8ec856eb75652b5d184c1a9492419e726f490a0153a5310600"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/values.rs",
+      "bytes": 2540,
+      "sha256": "862f88a23179397d8e9b63294b67dd651a6fb19a1b53742b9c9a9fdf05966843"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 6885,
+      "sha256": "6c85183043d5a749290a9f4d15645b1ba82f968685d1e28b5d2ec2431bba6502"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 4631,
+      "sha256": "de27193c6067a5a875a609139d341be486b1251b1a7047433d490f66b49e19d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 1912,
+      "sha256": "c41adaf24d371e3da774def12f2e4c3b745cc3ce4e7fc719a52ebaa089bb914f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "bytes": 947,
+      "sha256": "2e0c2ebb358651c56ccbd18aa41fceb630304a7a09288da6046b29636c822322"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults.rs",
+      "bytes": 7911,
+      "sha256": "c7d5a97b190026c6248323de97725747c82fd453805e40c59178138e84ae8291"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults/api.rs",
+      "bytes": 7838,
+      "sha256": "67775cad45d8e51c9610cdc684ec5bb64d465ee69b191d5be7fcfdd4af3bc181"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults/authority.rs",
+      "bytes": 4860,
+      "sha256": "264af6f2b5b025847aa8686c9f0a5c3e68628f985f02cd06595ce6495cd3c375"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts.rs",
+      "bytes": 13428,
+      "sha256": "fdc02f697407c445bb5d9f401730a1dd0c9d85e6c5cbd08a50b7268bb27f542e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults.rs",
+      "bytes": 2761,
+      "sha256": "a69312ffc570d79effd4ec8ed24087c10971b47eb2800d3e023abfcedaa4e05d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults/api.rs",
+      "bytes": 2229,
+      "sha256": "34a9de6088487442dbd1f958c5c4a04e792a7e0518304e483378342894aa5c2d"
+    }
+  ],
+  "final_engine_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "sha256": "6c85183043d5a749290a9f4d15645b1ba82f968685d1e28b5d2ec2431bba6502"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "sha256": "de27193c6067a5a875a609139d341be486b1251b1a7047433d490f66b49e19d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "sha256": "1f1d127ca322bd1d932edb36e142c75477719cd476be538f5ea9345d42dea139"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults.rs",
+      "sha256": "8adf228606d064753b2f488ec1261897ee7685c3443b5f10dd4f5d5911676d84"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults/literal.rs",
+      "sha256": "0e2ef391aef0e31af96b4861f1645d7ef1f755982120247fd3ed6fc2096cb390"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/audit.rs",
+      "sha256": "efa1c279c9618dabbc81ae88895a4a052920292d167d3046ac8f0b1ff79ee14a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions.rs",
+      "sha256": "cfc3542ca8a5990078b7000b6d02652e613354f62320b4b88a061d15f8b132ec"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/request.rs",
+      "sha256": "3f5f61e6e99e545db230ead1f54662ed29d16a6974449e13ec2250124c9b7693"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/incrementing.rs",
+      "sha256": "f8745833cf2f3c14189881828390446ec321984b4b77258e2e5d413c16796bcc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "sha256": "729bd636837396dcbbadf0c0b8d89fa4dc0c5176b4f024f8cb493e5c65101444"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/constant.rs",
+      "sha256": "7ba2bc8264809203fd315973d058a2fa04c0aa7a6ab16780b38d33f4d2c69a35"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/mod.rs",
+      "sha256": "ca4b1548c5f19c5534983f37d13f1769260f12661bc03cb209b640317f97626e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/preview.rs",
+      "sha256": "3032ac939ded2f62809f19dfe0aa1e60d8188baa65e732ecdbddca852a659b82"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/request.rs",
+      "sha256": "301bee0e5b6ef8db850ed106ce21db6f9b33dd3dfa164c64e94c19c8d76cb2e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/stage.rs",
+      "sha256": "50c9ec23c11f9c8ec856eb75652b5d184c1a9492419e726f490a0153a5310600"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "sha256": "d330ea4eb972063123a21eda90b216c6dc4631c64b75193fe1345067f0138a2e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts.rs",
+      "sha256": "11a5912edace8f8fbeb31e5084b3325b078ce94c11adbde5590ba8265ecfcf06"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults.rs",
+      "sha256": "a69312ffc570d79effd4ec8ed24087c10971b47eb2800d3e023abfcedaa4e05d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults/api.rs",
+      "sha256": "34a9de6088487442dbd1f958c5c4a04e792a7e0518304e483378342894aa5c2d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults.rs",
+      "sha256": "c7d5a97b190026c6248323de97725747c82fd453805e40c59178138e84ae8291"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults/api.rs",
+      "sha256": "67775cad45d8e51c9610cdc684ec5bb64d465ee69b191d5be7fcfdd4af3bc181"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults/authority.rs",
+      "sha256": "264af6f2b5b025847aa8686c9f0a5c3e68628f985f02cd06595ce6495cd3c375"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/values.rs",
+      "sha256": "862f88a23179397d8e9b63294b67dd651a6fb19a1b53742b9c9a9fdf05966843"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "sha256": "c41adaf24d371e3da774def12f2e4c3b745cc3ce4e7fc719a52ebaa089bb914f"
+    }
+  ]
+}
