@@ -14,6 +14,7 @@ use tablecraft_testkit::access as support;
 #[path = "../../../../tests/ace16_long_value_updates_contract/model.rs"]
 pub(super) mod model;
 
+use model::source::*;
 use model::*;
 
 #[test]

@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-30",
+  "feature": "Metadata-directed SQL engineering UPDATE routing",
+  "checks": {
+    "access_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "whole_source_expected_pairs": 43
+    },
+    "cli_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "whole_source_expected_pairs": 43
+    },
+    "access_api_first": {
+      "exit_code": 0,
+      "functions": 6,
+      "typed_complete_image_comparisons": 86,
+      "sql_complete_image_comparisons": 8
+    },
+    "cli_api_first": {
+      "exit_code": 0,
+      "functions": 4,
+      "complete_image_fresh_copies": 8
+    },
+    "access_regression_first": {
+      "exit_code": 0,
+      "functions": 48
+    },
+    "cli_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 23
+    },
+    "pre_boundary_strict_ace_access_cli_all_targets_all_features": {
+      "exit_code": 0
+    },
+    "pre_boundary_minimal_four_libraries": {
+      "exit_code": 0
+    },
+    "pre_boundary_legacy_cli": {
+      "exit_code": 0,
+      "historical_functions": 2,
+      "normal_jet4_functions": 4
+    },
+    "pre_boundary_dependency_boundaries": {
+      "exit_code": 0
+    },
+    "pre_boundary_document_links": {
+      "exit_code": 0
+    },
+    "memo_ole_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "headers": 2
+    },
+    "long_value_extraction_first": {
+      "exit_code": 101,
+      "phase": "compile before tests",
+      "cause": "path-imported model needed explicit model/source.rs module path"
+    },
+    "long_value_extraction_second": {
+      "exit_code": 0,
+      "functions": 15
+    },
+    "routing_boundaries_access_first": {
+      "exit_code": 0,
+      "editor_functions": 22
+    },
+    "routing_boundaries_strict_first": {
+      "exit_code": 101,
+      "phase": "compile",
+      "cause": "new transitive source glob conflicted with separate mixed-long-value model helpers"
+    },
+    "source_owner_consumer_targets_corrected": {
+      "exit_code": 0,
+      "targets": 5,
+      "functions": 36
+    },
+    "routing_boundaries_strict_corrected": {
+      "exit_code": 101,
+      "phase": "compile",
+      "cause": "nested test consumers still named moved private helpers and model retained unused DECLARATIONS import"
+    },
+    "routing_boundaries_strict_final": {
+      "exit_code": 0
+    },
+    "format_final_corrected": {
+      "exit_code": 0,
+      "rust_files": 23
+    }
+  },
+  "scope": [
+    "Default chooses one service from original resolved target metadata; no failed-preview retry or candidate chaining",
+    "All-fixed uses existing Fitted batch semantics; one Text/Binary uses existing non-INDEX-growth variable service with qualified DATA allocation",
+    "Fixed plus one Short Text/Binary uses joint fitted record capacity and retained INDEX topology",
+    "Explicit Fixed/Variable/LongValue modes unchanged; more than one variable target refuses even for zero matches",
+    "Shared Text/Binary routing does not qualify native Memo/OLE storage or omitted INSERT DefaultValue semantics"
+  ],
+  "observations": [
+    "Frontend source-first gates and focused API runs passed on their first actual execution",
+    "CLI source/API compilation warned Case.family was unused; post-check correction uses the actual case field during source qualification, no constructor or expected-image changes",
+    "Single-variable/default-explicit and all-fixed dispatch consistency are not independent raw-image qualification",
+    "Strict ACE/Access/CLI, four minimal libraries, legacy CLI, boundary and link checks passed before the later routing-specific boundary tests were added; their later focused checks remain pending.",
+    "After the explicit extracted-module path correction, the old long-value contract passed15 and Access editor22 passed including genuine Memo/OLE zero/nonzero route refusals and cumulative Default pool/final-cancel controls.",
+    "Subsequent all-target strict compilation exposed ambiguous source-helper glob imports in another existing integration consumer. Corrected only import ownership: actual public source module, explicit local helper imports, direct consumers import actual owner. All original25 function texts remain exact.",
+    "Second import-correction strict attempt exposed remaining qualified nested model:: helper references and one unused DECLARATIONS import. Updated nested tests to the actual source-owner module and removed unused local import; final strict and scoped formatting passed."
+  ],
+  "pending": [],
+  "logs": [
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/access-source-first-root.log",
+      "bytes": 637,
+      "sha256": "a866cec72f70c61a8a41a804b85503721d01cf5a1d782aa16d945364a94425ed"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/cli-source-first-root.log",
+      "bytes": 1175,
+      "sha256": "77e7d23b925601f636e2e55a4a4e2902c1374b96ec437af99a6c5f0154c9cefa"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/access-api-first-root.log",
+      "bytes": 1049,
+      "sha256": "e9e4ce2ca9fc0c151aba8350edd8f0e31de910215e8389c7a3820be0285bdaec"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/cli-api-first-root.log",
+      "bytes": 1168,
+      "sha256": "6bb85756806c7235f651510e36c8f05b40f808d690b57e617dd7756021c357ab"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/access-regression-first-root.log",
+      "bytes": 5810,
+      "sha256": "ff7f34ccea1e49c79a59c0347eda9f6ede6c9a5fc2bbf4cffac9f537c7a39b03"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/cli-regression-first-root.log",
+      "bytes": 6219,
+      "sha256": "49f092d6c3ca4e4e0d00f5bb586585233ecde75c8b5b0718e9dfffeeea41415e"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/legacy-cli-first-root.log",
+      "bytes": 1085,
+      "sha256": "2689a8560288fc648b8feb0050eb2e39daa3f556918b9eb3d0f75a4053cb8845"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/clippy-first-root.log",
+      "bytes": 403,
+      "sha256": "397d1d069c460bae493202082ea8cc8c022feec6c30e4b4fd7bc3c76d63ff69d"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/minimal-tablecraft-query-root.log",
+      "bytes": 72,
+      "sha256": "fecede7c2157efe2f16c8c8b9dce94b0fb4dd384dca8207046c8bf7636eb0ffe"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/minimal-tablecraft-db-root.log",
+      "bytes": 511,
+      "sha256": "0b1e8efbb8410242cc0313d834c12fdda085c58942c406d336a746ff4219f088"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/minimal-tablecraft-ace-root.log",
+      "bytes": 72,
+      "sha256": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/minimal-tablecraft-access-root.log",
+      "bytes": 301,
+      "sha256": "d63c674d98886e0efec3eaf2fe21e04d90730b0d1f5417391b1011cfac3f87b3"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/boundaries-root.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/document-links-root.log",
+      "bytes": 53,
+      "sha256": "913e4b40bc6874027ee3428f980f7c25b0921e424a2f452a26440d5a03026bfb"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/memo-ole-source-first-root.log",
+      "bytes": 527,
+      "sha256": "e83936dc352ef55eb5971ad6bf202292d46d5fb04a3b9fe46ec9185b87663cc7"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/long-value-extraction-regression-root.log",
+      "bytes": 81410,
+      "sha256": "cf724ec58dd5c81762f64835c655f617559099e6e1e86349d523e0cb77260636"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/long-value-extraction-regression-second-root.log",
+      "bytes": 1782,
+      "sha256": "35402e21af06caa1d486a61e85ae2decf9047a4962f1260412677103e35fcc97"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/routing-boundaries-api-first-root.log",
+      "bytes": 3015,
+      "sha256": "11308d2372788c8791eb1faa2f2f42190c32a4d0afa67ea43f37bca5ff03ccfa"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/routing-boundaries-clippy-first-root.log",
+      "bytes": 55546,
+      "sha256": "b50cfca195a82fd12970785a83f28ed2bf60cfbd799615ebbafa0beb7ead0608"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/routing-boundaries-clippy-corrected-root.log",
+      "bytes": 19423,
+      "sha256": "46be3bcbb28fae69aab3574a59c415363f7702bbf995840abc050e80b92a6467"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/routing-boundaries-clippy-final-root.log",
+      "bytes": 183,
+      "sha256": "fefe5553e57d97c88bdc132fbde6390cb7c289fd160d2e87a549d798db978d1e"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/format-final-corrected-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-mixed-default-routing-20261030/source-owner-consumers-corrected-root.log",
+      "bytes": 5502,
+      "sha256": "5960c154cb3a7404ca0ec0c3e9d9a1277b505f233b1ac1e61d21fda310f8a0c9"
+    }
+  ],
+  "native_Access_qualification": false,
+  "verification_context": "Complete Access48/CLI31+23 and minimal/boundary/link checks preceded the later routing-boundary tests. After adding those tests, Access editor22 passed and five existing source-owner integration targets36 passed; final all-target ACE/Access/CLI strict and scoped23-file formatting passed. No current51-function all-Access-library run is claimed."
+}

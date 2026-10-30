@@ -9,6 +9,7 @@ mod model;
 #[allow(dead_code)]
 use tablecraft_testkit::access as support;
 
+use model::source::*;
 use model::*;
 use std::io::Cursor;
 use tablecraft_ace::{

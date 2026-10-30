@@ -1,6 +1,7 @@
 //! Reader-valid alternate encodings cannot replace exact request wire authority.
 use super::super::super::{admission, encode::Encoded, stage, tests::model};
 use crate::{EditError, SlotScalarUpdate};
+use model::source as source_model;
 use tablecraft_core::values::Value;
 
 #[test]
@@ -14,7 +15,7 @@ fn independently_valid_decoding_does_not_authorize_the_wrong_encoding_policy() {
             [vec![0xff, 0xfe], vec![0x41; 1025]].concat(),
         ),
     ] {
-        let mut before = model::source(6, 1);
+        let mut before = source_model::source(6, 1);
         before[10 * 4096 + 104] = u8::from(compressed);
         let image = model::capture(&before);
         let prepared =

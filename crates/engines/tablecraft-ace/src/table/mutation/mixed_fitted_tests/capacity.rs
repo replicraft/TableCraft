@@ -3,7 +3,7 @@ use super::{model, qualify};
 use model::{Case, Family, PAGE, Recipe};
 use tablecraft_testkit::access as raw;
 
-pub(in crate::table::mutation) fn case(family: Family, descending: bool) -> Case {
+pub fn case(family: Family, descending: bool) -> Case {
     // The independently authored raw UTF16 frame already describes the exact
     // joint permutation. The new source has declared compression but no slack.
     let mut case = model::case(6, family, descending, Recipe::Permutation, false);

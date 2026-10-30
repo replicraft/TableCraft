@@ -10,8 +10,8 @@ pub mod sql_delete;
 pub mod sql_insert;
 use tablecraft_ace::{
     Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
-    EditError, FixedColumnUpdates, IncrementingAutoNumber, NativeImage, RowDelete, RowInsert,
-    SlotScalarUpdate, TableRowDeletes,
+    EditError, FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, NativeImage,
+    RowDelete, RowInsert, SlotScalarUpdate, TableRowDeletes,
 };
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
@@ -44,6 +44,13 @@ pub enum EngineeringRequest<'a> {
         groups: &'a [FixedColumnUpdates<'a>],
         /// Explicit index/action maintenance policy.
         mode: UpdateMode,
+    },
+    /// Compose fixed fields and one Short Text/Binary field in original capacity.
+    FittedUpdate {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original-row typed groups; engine storage admission remains required.
+        groups: &'a [FittedColumnUpdates<'a>],
     },
     /// Replace Short Text/Binary values in one actual table and column.
     VariableUpdate {
@@ -196,6 +203,9 @@ pub fn preview(
                 image.preview_ace16_cascading_updates(groups, budget, cancelled)?
             }
         }),
+        EngineeringRequest::FittedUpdate { table, groups } => {
+            Candidate::Rows(image.preview_ace16_fitted_updates(table, groups, budget, cancelled)?)
+        }
         EngineeringRequest::VariableUpdate {
             table,
             column,

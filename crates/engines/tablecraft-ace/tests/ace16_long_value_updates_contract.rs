@@ -17,6 +17,7 @@ mod model;
 #[path = "ace16_long_value_updates_contract/values.rs"]
 mod values;
 
+use model::source::*;
 use model::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{

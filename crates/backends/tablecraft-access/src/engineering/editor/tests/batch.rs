@@ -157,60 +157,65 @@ fn duplicate_targets_and_multiple_variable_columns_refuse_without_a_candidate() 
 
 #[test]
 fn direct_batch_editor_rejects_cross_snapshot_handles_and_repeated_groups() {
-    let example = case(5, Recipe::Exchange);
-    let first = crate::engineering::AccessEngineeringEditor::new(
-        image(&example.before),
-        "Items",
+    for mode in [
         ScalarUpdateMode::Fixed(UpdateMode::Fitted),
-        &mut budget(),
-        &|| false,
-    )
-    .unwrap();
-    let foreign = first.snapshot().row_handle(0).unwrap();
-    let second = crate::engineering::AccessEngineeringEditor::new(
-        image(&example.before),
-        "Items",
-        ScalarUpdateMode::Fixed(UpdateMode::Fitted),
-        &mut budget(),
-        &|| false,
-    )
-    .unwrap();
-    let updates = [CellUpdate::new(foreign, Value::Int32(20))];
-    assert!(matches!(
-        second.plan_columns(
-            &[ColumnUpdates {
-                column: "Group",
-                updates: &updates
-            }],
+        ScalarUpdateMode::Default,
+    ] {
+        let example = case(5, Recipe::Exchange);
+        let first = crate::engineering::AccessEngineeringEditor::new(
+            image(&example.before),
+            "Items",
+            mode,
             &mut budget(),
             &|| false,
-        ),
-        Err(crate::NativeEditError::Snapshot(_))
-    ));
-
-    let editor = crate::engineering::AccessEngineeringEditor::new(
-        image(&example.before),
-        "Items",
-        ScalarUpdateMode::Fixed(UpdateMode::Fitted),
-        &mut budget(),
-        &|| false,
-    )
-    .unwrap();
-    assert!(matches!(
-        editor.plan_columns(
-            &[
-                ColumnUpdates {
+        )
+        .unwrap();
+        let foreign = first.snapshot().row_handle(0).unwrap();
+        let second = crate::engineering::AccessEngineeringEditor::new(
+            image(&example.before),
+            "Items",
+            mode,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let updates = [CellUpdate::new(foreign, Value::Int32(20))];
+        assert!(matches!(
+            second.plan_columns(
+                &[ColumnUpdates {
                     column: "Group",
-                    updates: &[]
-                },
-                ColumnUpdates {
-                    column: "group",
-                    updates: &[]
-                }
-            ],
+                    updates: &updates
+                }],
+                &mut budget(),
+                &|| false,
+            ),
+            Err(crate::NativeEditError::Snapshot(_))
+        ));
+
+        let editor = crate::engineering::AccessEngineeringEditor::new(
+            image(&example.before),
+            "Items",
+            mode,
             &mut budget(),
             &|| false,
-        ),
-        Err(crate::NativeEditError::Unsupported)
-    ));
+        )
+        .unwrap();
+        assert!(matches!(
+            editor.plan_columns(
+                &[
+                    ColumnUpdates {
+                        column: "Group",
+                        updates: &[]
+                    },
+                    ColumnUpdates {
+                        column: "group",
+                        updates: &[]
+                    }
+                ],
+                &mut budget(),
+                &|| false,
+            ),
+            Err(crate::NativeEditError::Unsupported)
+        ));
+    }
 }
