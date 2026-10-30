@@ -582,6 +582,14 @@ existing native transaction checks also pass. The
 keeps source qualification, API checks and retained failed attempts separate.
 Filesystem bundle integration and end-user journal commands remain unfinished.
 
+Three additional recorded-plan integration tests pass, along with focused strict
+checks. They reuse the already qualified source model for eight complete images,
+retain the moved request allocation, compare exact committed V1 bytes and native
+index metadata, and exercise a failed partial-marker commit followed by repeated
+qualified rollback. Format, property, stale-value, ordinal and duplicate-request
+refusals still belong to the normal native planner. No new physical mutation or
+file-format admission is introduced by these controls.
+
 
 Column fixed/updatable masks follow the pinned
 [ColumnImpl reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
