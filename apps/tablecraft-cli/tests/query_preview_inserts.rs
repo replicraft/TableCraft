@@ -1,6 +1,8 @@
 //! Original-source literal framing is fixed before SQL INSERT candidate calls.
 #[path = "query_preview_inserts/display_metadata.rs"]
 mod display_metadata;
+#[path = "query_preview_inserts/omissions.rs"]
+mod omissions;
 
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;

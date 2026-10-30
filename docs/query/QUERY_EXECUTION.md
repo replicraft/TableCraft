@@ -27,7 +27,7 @@ The seven neutral batch tests pass alongside the nine existing neutral edit
 tests; native adapter/CLI observations are recorded in the owning engineering
 contract. These checks do not qualify a normal ACE save.
 
-The separate [SQL INSERT VALUES consumer](../access/writes/SQL_INSERT_COPIES.md)
+The complete-row `plan_insert` [SQL INSERT consumer](../access/writes/SQL_INSERT_COPIES.md)
 uses `InsertableTable` metadata without scanning rows to invent its target schema.
 It admits one complete explicit VALUES row, binds all fields before value
 evaluation, evaluates expressions in written order and maps the final row to

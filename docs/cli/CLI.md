@@ -222,8 +222,12 @@ tablecraft query preview-insert "INSERT INTO Items (Id, Score) VALUES (4, 42)" \
 
 These commands require schemas admitted by the selected engineering profile.
 They keep the original file and publish one complete copy under a fresh name.
-UPDATE can combine fixed columns; INSERT requires every ordinary field and
-selects generated IDs only with explicit `--incrementing` and companion fields.
+UPDATE can combine fixed fields and one fitted Short Text/Binary field through
+its default metadata route. INSERT can omit named ordinary fields: only needed
+qualified literal defaults or NULL are resolved, while explicit NULL stays
+supplied. Positional VALUES remain complete-width. Generated IDs require explicit
+`--incrementing` and a named companion field list; ordinary companions may also
+be omitted. The complete-row typed TSV command retains its full-width contract.
 Encrypted/deployment inputs and unsupported schema/constraint shapes refuse.
 The engine's complete-image limit is 64 MiB; native Access saves, required data
 macros and in-place transactions remain unqualified.

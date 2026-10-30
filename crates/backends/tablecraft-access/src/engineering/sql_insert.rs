@@ -1,4 +1,4 @@
-//! SQL VALUES composes a neutral complete-row plan with one engineering finish.
+//! SQL VALUES composes complete or omission intent with one engineering finish.
 use super::{
     EngineeringCopy,
     inserter::{AccessEngineeringInserter, ScalarInsertMode},
@@ -28,4 +28,25 @@ pub fn preview_insert(
     let inserter = AccessEngineeringInserter::new(image, table, mode, budget, cancelled)
         .map_err(InsertError::Backend)?;
     tablecraft_query::plan_insert(inserter, query, budget, cancelled)
+}
+
+/// Evaluate explicitly supplied VALUES and retain missing named fields as intent.
+/// Defaults are resolved only by the selected engine after source qualification;
+/// complete rows keep the old complete insertion path. No ambient clock is used.
+pub fn preview_insert_with_omissions(
+    image: NativeImage,
+    query: &Query,
+    mode: ScalarInsertMode,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<EngineeringCopy, InsertError<NativeEditError>> {
+    let table = tablecraft_query::local_insert_table(
+        query,
+        mode == ScalarInsertMode::Incrementing,
+        budget,
+        cancelled,
+    )?;
+    let inserter = AccessEngineeringInserter::new(image, table, mode, budget, cancelled)
+        .map_err(InsertError::Backend)?;
+    tablecraft_query::plan_insert_with_omissions(inserter, query, budget, cancelled)
 }

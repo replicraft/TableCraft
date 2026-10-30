@@ -8,6 +8,7 @@ pub use inserter::{AccessEngineeringInserter, ScalarInsertMode};
 pub mod sql;
 pub mod sql_delete;
 pub mod sql_insert;
+use tablecraft_ace::OmittedRowInsert;
 use tablecraft_ace::{
     Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
     EditError, FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, NativeImage,
@@ -78,6 +79,22 @@ pub enum EngineeringRequest<'a> {
         table: &'a str,
         /// Every field value, with explicit NULLs rather than defaults.
         rows: &'a [RowInsert],
+    },
+    /// Original ordinary field presence; only the engine resolves needed defaults.
+    InsertWithOmissions {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Full native field width, distinguishing supplied NULL from omission.
+        rows: &'a [OmittedRowInsert],
+    },
+    /// Explicit generated-primary policy with original companion presence.
+    IncrementingInsertWithOmissions {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Full companion width excluding only the source-bound generated field.
+        rows: &'a [OmittedRowInsert],
+        /// Caller-selected incrementing policy with original LAST precondition.
+        policy: IncrementingAutoNumber,
     },
     /// Select incrementing engineering behavior; stored mode is not inferred.
     IncrementingInsert {
@@ -226,6 +243,16 @@ pub fn preview(
         EngineeringRequest::Insert { table, rows } => {
             Candidate::Rows(image.preview_ace16_insert_rows(table, rows, budget, cancelled)?)
         }
+        EngineeringRequest::InsertWithOmissions { table, rows } => Candidate::Rows(
+            image.preview_ace16_insert_rows_with_omissions(table, rows, budget, cancelled)?,
+        ),
+        EngineeringRequest::IncrementingInsertWithOmissions {
+            table,
+            rows,
+            policy,
+        } => Candidate::Generated(image.preview_ace16_incrementing_insert_rows_with_omissions(
+            table, rows, policy, budget, cancelled,
+        )?),
         EngineeringRequest::IncrementingInsert {
             table,
             rows,

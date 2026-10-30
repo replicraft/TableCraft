@@ -12,6 +12,26 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Omitted INSERT fields and constant defaults
+
+SQL engineering INSERT now accepts named subsets of ordinary fields, including
+companions of an explicitly selected incrementing AutoNumber. Omitted fields use
+qualified source defaults or NULL; supplied values and explicit NULL remain
+distinct. Only needed defaults are interpreted. The initial native profile
+supports closed numeric, Boolean, quoted Text and NULL literals, with exact
+Decimal assignment and no implicit rounding. Date()/Now(), runtime expressions
+and broader coercions remain open. Positional VALUES and the original complete
+insertion service retain their full-width contracts.
+
+The [native resolver](testing/ACE16_OMITTED_INSERT_DEFAULTS.md) passes ten focused
+functions and 30 complete-image expectations. The
+[SQL service and CLI](access/writes/SQL_INSERT_COPIES.md) pass eight complete
+adapter comparisons and eight exact copies, including generated companions.
+The shared batch passes 498 mutation, 72 native integration, 84 query, 51 adapter,
+31 CLI unit and 33 CLI integration tests. Strict five-package lint and minimal
+ACE/Access checks pass. Normal ACE save and required data-macro qualification
+remain separate.
+
 ## Joint fixed and variable record updates
 
 The SQL engineering UPDATE frontend now selects one native service from the
@@ -95,8 +115,9 @@ after a producer ran. Normal ACE saves and native Access qualification remain op
 one engineering copy. Complete field lists can reorder values; manual positional
 values follow the native schema. Explicit incrementing mode requires all companion
 fields and uses ACE-owned generated-column and LAST metadata from the same image.
-Existing constructors supply exact carriers; defaults, omitted values and external
-sources remain closed. The [INSERT contract](access/writes/SQL_INSERT_COPIES.md)
+Existing constructors supply exact carriers. This original complete-row service
+remains strict; named omissions use the separate service described above, while
+external sources remain closed. The [INSERT contract](access/writes/SQL_INSERT_COPIES.md)
 keeps generation qualification distinct from ordinary metadata inspection.
 
 All nine neutral functions, four generated-binding functions and three executable

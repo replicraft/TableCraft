@@ -36,3 +36,8 @@ one-below limits and final cancellation before the sole backend finish.
 Standalone neutral strict and minimal DB/query checks also passed. Native default resolution,
 Access adapter routing, CLI publication and native Access qualification are
 separate; these neutral tests do not establish those capabilities.
+
+The [Access SQL engineering copy consumer](../access/writes/SQL_INSERT_COPIES.md#named-omissions-and-needed-defaults)
+now routes original presence to one source-bound native preview. Its literal-default
+and fresh-copy checks are recorded separately from these neutral contract tests;
+it does not qualify normal ACE saves or Microsoft Access timing.

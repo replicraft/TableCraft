@@ -1,4 +1,5 @@
 //! Explicit SQL insertion target consuming one existing engineering preview.
+mod omitting;
 use super::{EngineeringCopy, EngineeringRequest, preview};
 use crate::editing::NativeEditError;
 use tablecraft_ace::{
@@ -15,7 +16,9 @@ use tablecraft_schema::{Column, NameComparison, SchemaPolicy};
 /// Explicit row-generation selection; absence never infers a native mode.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScalarInsertMode {
-    /// Every native field is supplied explicitly; generated fields remain refused.
+    /// Ordinary insertion; generated fields remain refused. The complete
+    /// capability requires every field, while the separate omission capability
+    /// may preserve missing ordinary fields for engine resolution.
     Explicit,
     /// Select increment-by-one behavior and omit only the engine-bound primary.
     Incrementing,

@@ -17,7 +17,7 @@ const REPORT_BYTES: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "One local INSERT VALUES row with every field explicitly supplied. Explicit --incrementing requires the complete companion field list; positional VALUES never implies generated-field omission. No defaults, INSERT SELECT, external targets or UDFs execute. Only a fresh engineering copy is published; required macros and normal ACE saves remain unqualified."
+    after_help = "One local INSERT VALUES row. Named fields may omit ordinary columns; the engine resolves only qualified literal defaults or NULL. Explicit NULL remains supplied. Explicit --incrementing requires a named companion field list; positional VALUES never implies generated-field omission. No ambient clock, default functions, INSERT SELECT, external targets or UDFs execute. Only a fresh engineering copy is published; required macros and normal ACE saves remain unqualified."
 )]
 pub(crate) struct Arguments {
     /// INSERT INTO ... VALUES SQL passed as one shell-quoted argument.
@@ -107,7 +107,10 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     }
     let image = NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
         .map_err(Error::Native)?;
-    let copy = sql_insert::preview_insert(image, query.query(), mode, &mut budget, &|| false)
+    let copy =
+        sql_insert::preview_insert_with_omissions(image, query.query(), mode, &mut budget, &|| {
+            false
+        })
         .map_err(Error::Insert)?;
     budget
         .charge_allocation(REPORT_BYTES as u64, 1)
