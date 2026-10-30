@@ -1,3 +1,4 @@
+mod inventory;
 mod program;
 
 use super::{Error, line};
@@ -14,7 +15,7 @@ pub(super) fn run<R: Read + Seek>(
     output: &mut TableOutput,
     budget: ResourceBudget,
 ) -> Result<(), Error> {
-    run_with(source, name, macro_xml, false, output, budget)
+    run_with(source, name, macro_xml, false, false, output, budget)
 }
 
 pub(super) fn run_program<R: Read + Seek>(
@@ -23,7 +24,16 @@ pub(super) fn run_program<R: Read + Seek>(
     output: &mut TableOutput,
     budget: ResourceBudget,
 ) -> Result<(), Error> {
-    run_with(source, name, false, true, output, budget)
+    run_with(source, name, false, true, false, output, budget)
+}
+
+pub(super) fn run_inventory<R: Read + Seek>(
+    source: &mut R,
+    name: &str,
+    output: &mut TableOutput,
+    budget: ResourceBudget,
+) -> Result<(), Error> {
+    run_with(source, name, false, false, true, output, budget)
 }
 
 fn run_with<R: Read + Seek>(
@@ -31,6 +41,7 @@ fn run_with<R: Read + Seek>(
     name: &str,
     macro_xml: bool,
     macro_program: bool,
+    macro_inventory: bool,
     output: &mut TableOutput,
     mut budget: ResourceBudget,
 ) -> Result<(), Error> {
@@ -132,6 +143,9 @@ fn run_with<R: Read + Seek>(
                 )?;
             }
         }
+    }
+    if macro_inventory {
+        inventory::write(&extra, output, &mut budget)?;
     }
     if macro_xml {
         if extra.coverage() != TableExtraCoverage::WideMr2 {
