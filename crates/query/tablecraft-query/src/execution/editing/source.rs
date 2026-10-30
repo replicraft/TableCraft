@@ -3,7 +3,7 @@ use tablecraft_core::values::Value;
 use tablecraft_db::Snapshot;
 use tablecraft_schema::Column;
 
-pub(super) struct SnapshotSource<'a>(pub &'a Snapshot);
+pub(in crate::execution) struct SnapshotSource<'a>(pub &'a Snapshot);
 impl Source for SnapshotSource<'_> {
     fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
         if !self.0.policy().names.equals(table, self.0.name()) {

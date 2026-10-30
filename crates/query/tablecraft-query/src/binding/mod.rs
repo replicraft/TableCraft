@@ -19,6 +19,8 @@ pub use depth::BindingDepth;
 mod distinctrow;
 mod domain;
 pub(crate) use domain::{DomainContext, bind_domain};
+mod deleting;
+pub(crate) use deleting::{BoundDelete, bind_delete};
 mod editing;
 mod expression;
 mod expression_identity;

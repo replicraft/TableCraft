@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## SQL-selected DELETE copies
+
+`query preview-delete` now selects original rows through the same bounded pure
+WHERE evaluator, then invokes one explicit Restrict or Cascading native delete
+service. Snapshot-local handles resolve to exact records in the same original
+image. Empty selections still qualify the source; errors publish no candidate.
+The [DELETE contract](access/writes/SQL_DELETE_COPIES.md) retains the complete
+scalar-snapshot limitation and separate normal-save/data-macro boundaries.
+
+Four neutral planner functions, five adapter functions, three CLI handler
+functions and four executable integration functions pass. The combined round
+passes 31 CLI unit tests, 20 integration tests and all 36 Access adapter tests.
+Strict Clippy for five packages, minimal builds for four libraries, formatting,
+documentation links and dependency boundaries pass. The
+[record](testing/results/ace16-sql-delete-copies-2026-10-29.json) retains source-first
+proofs, diagnostic/test corrections and allocation-accounting review findings.
+
 ## User-facing engineering write copies
 
 SQL-selected [engineering UPDATE copies](access/writes/SQL_ENGINEERING_COPIES.md)

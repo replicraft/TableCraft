@@ -17,7 +17,7 @@ use tablecraft_sql::{ParseLimits, parse_query};
 use tablecraft_testkit::access as support;
 
 #[path = "../../../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
-mod fixture;
+pub(in crate::engineering) mod fixture;
 
 mod source;
 use source::source;

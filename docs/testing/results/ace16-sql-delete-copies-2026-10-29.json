@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-29",
+  "feature": "SQL-selected engineering DELETE copies",
+  "checks": {
+    "adapter_source_first": {
+      "exit_code": 0,
+      "delete_functions": 2,
+      "total_source_functions": 4
+    },
+    "cli_source_and_executable_source": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "neutral_api_first": {
+      "exit_code": 0,
+      "functions": 4
+    },
+    "access_library_api_first": {
+      "exit_code": 0,
+      "functions": 36,
+      "delete_functions": 5
+    },
+    "cli_unit_api_first": {
+      "exit_code": 0,
+      "functions": 31,
+      "delete_functions": 3
+    },
+    "executable_delete_api_first": {
+      "exit_code": 0,
+      "functions": 4
+    },
+    "corrected_combined_CLI_regression": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 20
+    },
+    "strict_5_packages_after_test_loop_lint_correction": {
+      "exit_code": 0
+    },
+    "minimal_4_libraries": {
+      "exit_code": 0
+    },
+    "relationship_test_rerun_after_loop_lint_correction": {
+      "exit_code": 0,
+      "functions": 2
+    },
+    "formatting": {
+      "exit_code": 0
+    },
+    "local_documentation_links": {
+      "exit_code": 0,
+      "missing": 0
+    },
+    "dependency_boundaries": {
+      "exit_code": 0,
+      "packages": 15
+    }
+  },
+  "contract": "One original complete scalar snapshot and one consuming native Restrict/Cascading finish. Snapshot handles resolve same-image original ordinals/records. Pure closed WHERE, no hidden sources or active content. All selected handles and RHS-free predicates finish before native preparation, even empty selection requalifies. Capacity and relocation work paid before allocations. Shared publisher produces fresh no-clobber copies only.",
+  "code": [
+    {
+      "path": "crates/foundation/tablecraft-db/src/editing/deleting.rs",
+      "bytes": 969,
+      "sha256": "6acaeaf7258c94694a0d1d7728a9fdc5d7996e33df47e73bac5f01f5bf472227"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/deleting.rs",
+      "bytes": 3034,
+      "sha256": "53320a17b4895247dc76174606dbe99224e3900b8e6abed142c56b0e9b534b2e"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/deleting/mod.rs",
+      "bytes": 5147,
+      "sha256": "c82a9123a921fb0c792f7920c9dc15b156be239dbbe74572927e3111ed29e422"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/deleting/tests.rs",
+      "bytes": 6579,
+      "sha256": "1479f0c0b9eb40fee6926467dd841ba34e8a9ec5cdf22ea7ffe732f843b3c1c3"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting.rs",
+      "bytes": 3155,
+      "sha256": "75269b75263e5dcbb50c6029eec7ba74b224421f50140c8d00832c2e4cdc66bc"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting/tests.rs",
+      "bytes": 4895,
+      "sha256": "6baae113a05c4f216274b01b3267d5929e40828b604780fe1fa2b65eda1fa5b1"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting/tests/relationships.rs",
+      "bytes": 5675,
+      "sha256": "164c84170bb03b479b37910273a7f9313f289724250fe78f2a6cbbb421751e61"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/sql_delete.rs",
+      "bytes": 2040,
+      "sha256": "ef598f0f14311db317f0cb87a131c27ef551ce71b3d05eb291e99b0d60b374c5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_delete.rs",
+      "bytes": 6436,
+      "sha256": "f945849f721a4c58765b5cacfae892a95bffd5c653618f29b7e7a8441628d5fa"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_delete/tests.rs",
+      "bytes": 3845,
+      "sha256": "479e064517cd5db18dddf696d3ce5485b05e2c36789388ed733c0347819cc57f"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_deletes.rs",
+      "bytes": 8606,
+      "sha256": "a8c116586fe0e03c88ab9b6b590f9290d523fa0b26c9ae823cf0890648f1b60b"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/registered-first-freeze.json",
+      "bytes": 6528,
+      "sha256": "6180781dde177c2ac66fc739cb0788432ee55b78a4822f573f1f77bb2a542c96"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/adapter-source-first-root.log",
+      "bytes": 1188,
+      "sha256": "00b9a0ea3c77ec84be8ee857b73df732278304829d15bc21514e5fbcff639d6d"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-source-first-root.log",
+      "bytes": 60,
+      "sha256": "a7c2703f6f1a0fbdea401f73bf414f9beb89ad573dbca258b794924632da0cad"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-source-second-root.log",
+      "bytes": 1909,
+      "sha256": "646fd20e8dfb918d4fc0d34d647b658f15e9aa0d33b8774b42cd47c59946294e"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-source-third-root.log",
+      "bytes": 1748,
+      "sha256": "839ca34cdea0e6979b09488363a95e49bb25366a6c2eff20dd07e818c0299e05"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/neutral-api-first-root.log",
+      "bytes": 909,
+      "sha256": "5aea4023b181f14c8c4590feae6048931bba56182219f81fdb0838101d4e2e89"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/access-api-regression-first-root.log",
+      "bytes": 4707,
+      "sha256": "d515566932c35bf3c7d14566234db2c9d9d495183cd15336958c7b812535fc76"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-api-regression-first-root.log",
+      "bytes": 5907,
+      "sha256": "2cc50b3cda8b1fe1a0bbcfbe594f4239728d3748dd51c2fe9ac02aff86908d0b"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/cli-api-regression-second-root.log",
+      "bytes": 6185,
+      "sha256": "609e3757813d765c4455fa35a5fc76fe5e6e8221357932123615b173fe8ba4b6"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-clippy-first-root.log",
+      "bytes": 1461,
+      "sha256": "581db513181eee63eb08dc0fa5d7f43de9733d1cfb90dd427ecd354cce505af1"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-clippy-second-root.log",
+      "bytes": 516,
+      "sha256": "b43f0a475fe991e67d97269912803b3873991b5d91923c8350fc5df4249dcd73"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/combined-minimal-first-root.log",
+      "bytes": 526,
+      "sha256": "553eb6426b54d0a48807dfb7cfbeebaf558f767e03aa622cdfb576f656effae4"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/relationship-after-lint-root.log",
+      "bytes": 649,
+      "sha256": "add9c8e319b81b4e6583d422743e70101a470e227ccfa70e6759a8dbcc2d5d39"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/paid-selection-capacity-correction-freeze.json",
+      "bytes": 1365,
+      "sha256": "d21aa056f559466bbec7d9da4cef9b3640666434e2e75df9ce289aa8b16d88e8"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/executable-integration-first-freeze.json",
+      "bytes": 1381,
+      "sha256": "5a512a8acfbb4247258564f30ccd89a7df3116d0c3b200f0496b24f8a111c0d9"
+    },
+    {
+      "path": ".cache/ace16-sql-delete-design-20261029/relationships-before-clippy.rs",
+      "bytes": 5648,
+      "sha256": "a91b3e10dfe86151c280fd0d4b34bf0d6b17c7d5a023e6bb585681087383f884"
+    }
+  ],
+  "retained_observations": [
+    "First CLI invocation selected --lib in binary-only package; exited101 without compilation/tests.",
+    "First actual CLI source compile failed before tests because new test unwrap required Debug; test-only Display diagnostic corrected.",
+    "First CLI source tests passed with one unused shared-fixture function warning; narrowly allowed on the imported test module.",
+    "Read-only review found prepaid-capacity accounting gap; fixed locally before API tests, with exact/one-below and cancellation controls.",
+    "First combined CLI run passed all new DELETE/batch tests then stopped on an old UPDATE multiple-assignment pre-open refusal. That exact SQL was moved to actual-source mode refusal; corrected regression passes.",
+    "First strict run rejected a range-indexed expected-model loop; replaced with identical enumerated iteration. Focused relationship rerun passes."
+  ],
+  "limitations": [
+    "Complete scalar snapshot refuses unsupported attachment/calculated tables",
+    "Native action/index/profile constraints remain",
+    "Encrypted and deployment write sources refused",
+    "No in-place save, journal, directory durability or data-macro qualification"
+  ],
+  "native_Access_qualification": false
+}
