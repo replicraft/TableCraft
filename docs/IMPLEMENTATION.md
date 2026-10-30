@@ -26,10 +26,12 @@ copy path, with sixteen whole-image comparisons through each consumer, guarded
 publication and encrypted/deployment refusals. See the
 [SQL contract](access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation).
 Broader key/layout profiles and normal saves remain unfinished.
-Independent public-library evidence remains separate from native Access
-qualification. A separate SOURCE-only check accepts sixteen requests on eight
-independently generated originals, with passing existing-owner censuses and
-unchanged input hashes; it invokes no writer or candidate construction.
+A fresh committed-source producer also matches sixteen complete independent
+images on eight Jackcess-generated originals. Sixteen fresh Jackcess readers
+then confirm the emitted indexes, row order and counters; originals and candidates
+remain unchanged. The [genuine-file record](testing/results/ace16-secondary-index-genuine-native-2026-10-30.json)
+keeps source admission, independent construction, native production and external
+readback separate. These checks do not establish Microsoft Access qualification.
 
 ## Explicit larger fixed SQL copies
 

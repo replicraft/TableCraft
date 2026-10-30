@@ -182,14 +182,73 @@ and emitted two empty images before a mutable-buffer decoder TypeError. Freezing
 the fully assembled image as immutable bytes corrected that boundary without
 changing construction choices. The final pure run passes all sixteen images.
 
-This is expected-model qualification. Native writer comparison and fresh
-independent-reader candidate opens remain pending; no normal-save or transaction
-permission follows from it.
+This expected-model checkpoint preceded native writer comparison and fresh
+independent-reader candidate opens. The later phases below record those outcomes;
+no normal-save or transaction permission follows from this model.
 
 The [expected-model record](results/ace16-secondary-index-genuine-expected-2026-10-30.json)
 pins the source-only derivations, retained failures and sixteen complete hashes:
 7,208,960 bytes and 2,436 indexed ROW observations across the sixteen cases.
-The separately registered ignored native consumer is still unexecuted. Its
+At that expected-model checkpoint, the separately registered ignored native
+consumer was still unexecuted; the following phase records its later execution. Its
 engineering-test-only `TABLECRAFT_FIXTURE_ROOT` selects the immutable input
 directory independently of the committed producer source/build directory; all
 frozen inputs are checked before any later producer call.
+
+## Native complete-image comparison on generated originals
+
+The first fresh committed-source producer run now passes all sixteen native
+creation calls against the independently frozen complete expected images:
+7,208,960 bytes across both headers, four populations and both directions. All
+source/expected preflight checks finish before writer one. Every call captures
+the original independently; no candidate becomes a later source. API metadata,
+all five native indexes, fresh historical counter and complete typed new-index
+ROW order pass readback. All eight original hashes and expected inputs remain
+unchanged.
+
+The producer was compiled from committed c3a61ddd in an initially absent target,
+using the archived 5,285-file source inventory and the explicitly recorded debug=0
+configuration. Cargo reports fresh=false for the rebuilt test artifact. The
+engineering fixture-root setting keeps private inputs outside that source
+archive; it does not alter capture, index or normal-save admission.
+
+The initial no-run compilation stopped on two hybrid-array digest display
+errors. A per-byte standard-library formatter fixes the test display boundary;
+corrected no-run compilation and native strict library/all-test/all-feature checks
+pass. No source or expected byte changed. Both earlier pure authoring failures
+remain recorded separately.
+
+These matches qualify canonical engineering output on these originals. They do
+not claim Jackcess packing parity, Microsoft Access native saves, macro permission
+or a journalable normal plan.
+
+The [genuine-original native record](results/ace16-secondary-index-genuine-native-2026-10-30.json)
+pins the actual producer archive, source inventory, executable, build receipts,
+native log, sixteen actual candidates and the independent expected-output freeze.
+The earlier SOURCE and pure-model records remain historical and unchanged.
+
+## Fresh independent candidate readers
+
+A separately frozen phase passes sixteen fresh Jackcess read-only JVMs on the
+actual native candidates. All sixteen whole-image matches finish before binding
+reader one; complete comparisons of all candidates against their prefrozen
+images repeat before and after every read. All eight originals and sixteen
+candidates remain unchanged. No candidate writes occur.
+
+The existing bounded reader disables expression evaluation and denies external
+links. Its exact stdout comparison checks original rows, all five index
+names/numbers/flags/policies/counters, complete selected typed ROW order and the
+untouched Sentinel. Counters are 0/3/4/541. All sixteen stderr streams are empty.
+Across the cases, both ordinary and selected-order reads cover 2,436 rows each.
+
+Static review corrected the binding parser before its first execution: the exact
+known Rust test-reporter prefix is allowed only on the first MATCH line. The
+original unexecuted parser, native raw log and receipt remain preserved; the
+producer was not rerun. The executed SDK plan directly pins its reader inputs
+and producer manifest. Separate post-native producer-asset rehashes are recorded
+as documentation checks, not retroactively claimed as SDK pre-run checks.
+
+The same [genuine-original record](results/ace16-secondary-index-genuine-native-2026-10-30.json)
+pins the actual bound plan, execution freeze, reader/comparator, report, command
+receipts and all sixteen stdout/stderr pairs. This is Jackcess fresh-reader
+evidence, not Microsoft Access native-save or transaction qualification.

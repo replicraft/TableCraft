@@ -5,9 +5,10 @@
 Explicit [physical secondary-index creation](testing/ACE16_SECONDARY_INDEX_CREATION.md)
 now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete
 images match through each consumer, including NULL/duplicate keys and root-leaf
-growth. Real generated files pass source admission; full writer comparisons on
-those originals remain next. This advances schema editing without closing
-general saves, required macros or broader index profiles.
+growth. A fresh committed-source producer also matches sixteen whole images on
+eight independently generated originals, followed by sixteen passing fresh
+Jackcess readers. Durable fresh-copy publication is the next usability step.
+General saves, required macros and broader index profiles remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
