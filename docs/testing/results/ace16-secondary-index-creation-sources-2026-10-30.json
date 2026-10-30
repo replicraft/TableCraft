@@ -1,0 +1,115 @@
+{
+  "feature": "Real physical ordinary Int32 secondary-index creation SOURCE prerequisite",
+  "date": "2026-10-30",
+  "state": "SOURCE-qualified only; no new creation writer/API/CLI",
+  "source_first": {
+    "exit": 0,
+    "functions": 1,
+    "source_expected_pairs": 16,
+    "full_reader_census_views": 32,
+    "unique_before_images": 8,
+    "whole_expected_images": 16,
+    "headers": [
+      5,
+      6
+    ],
+    "command": "cargo test -p tablecraft-ace --all-features --lib --locked qualify_real_secondary_index_source_and_complete_expected_before_writer",
+    "log": {
+      "path": ".cache/ace16-create-secondary-index-design-20261030/source-first-root.log",
+      "bytes": 506,
+      "sha256": "35c938632031ca641b635a024b19cbe93970e9b88c2edde2e330119effbd438e"
+    }
+  },
+  "models": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs",
+      "bytes": 9644,
+      "sha256": "aadbb0a283ac017136aa14e7526052393beb5d0eb7f9e5ca1d51289f4adf7785"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests/model.rs",
+      "bytes": 9509,
+      "sha256": "8959a4abcf8ace701acc99804bc4980306afbd6628426e182d3a64a74e02d6f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests/model/index.rs",
+      "bytes": 2117,
+      "sha256": "399d4814d314162ddd86a32af271777971ead53c75827ace5dc698a6b3d93f3b"
+    }
+  ],
+  "actual_reused_helpers": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/multiple_indexes/model.rs",
+      "bytes": 14868,
+      "sha256": "205e9c10e426d276d39972ad625923100b6e47362cf8aba43dca9955bdff03e6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/access.rs",
+      "bytes": 3955,
+      "sha256": "25f4405d450dba9f63738f25d0b73ff9bebf3be397349fb8802f89ce17540ac4"
+    }
+  ],
+  "counter_include_null_review": {
+    "path": ".cache/ace16-create-secondary-index-design-20261030/INDEPENDENT_COUNTER_REVIEW.json",
+    "bytes": 4900,
+    "sha256": "bb0fb534e951e04e2035c399a83960f4a49bcbec6f1aca87983597af73f7d474"
+  },
+  "private_model_freeze": {
+    "path": ".cache/ace16-create-secondary-index-design-20261030/source-model-private-first-freeze.json",
+    "bytes": 3349,
+    "sha256": "bb8990717ece39745b80b3881b6d325ee008147f8eb4929e9447d49282c28f16"
+  },
+  "source_registration_freeze": {
+    "path": ".cache/ace16-create-secondary-index-design-20261030/source-registered-first-freeze.json",
+    "bytes": 1390,
+    "sha256": "f027d98b5810b2da332c62427fa0da242838112fea5097203b1d52ff133b8081"
+  },
+  "expected_profile": {
+    "new_physical": 2,
+    "new_logical": 4,
+    "ordinary_flags": 128,
+    "new_column": "Score",
+    "new_map_container": 24,
+    "new_root": 25,
+    "pressure_leaves": [
+      26,
+      27
+    ],
+    "original_definition_length": 500,
+    "new_definition_lengths": {
+      "ascending": 622,
+      "descending": 624
+    },
+    "source_historical_counters": [
+      1000,
+      2000
+    ],
+    "fresh_counters": [
+      0,
+      3,
+      4,
+      541
+    ]
+  },
+  "assertions": [
+    "All old/new logical indexes fully Checked",
+    "Complete logical ROW/key population, including NULL and duplicate key families",
+    "New physical owner instead of alias reuse",
+    "Actual source-wide DATA/INDEX/map ownership census before writer",
+    "Original values/record slots/index roots/aliases/history/Sentinel preserved",
+    "Relocated definition bytes, exact GLOBAL bit delta, unrelated whole prefix and inactive suffix preserved"
+  ],
+  "quality_checks": {
+    "state": "Root reported strict native library/larger-test, formatter, documentation links and boundaries exit0; source test log pinned separately"
+  },
+  "creation_api_executed": false,
+  "production_writer_installed": false,
+  "native_Access_qualification": false,
+  "third_party_original_copied": false,
+  "normal_save_permission": false
+}
