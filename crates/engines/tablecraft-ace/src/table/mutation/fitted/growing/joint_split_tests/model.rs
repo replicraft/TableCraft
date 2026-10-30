@@ -1,11 +1,11 @@
 //! Private independent complete images; no writer, splitter or key table is used.
 use super::base;
 #[path = "model/data.rs"]
-mod data;
+pub(crate) mod data;
 #[path = "model/index.rs"]
-mod index;
+pub(crate) mod index;
 #[path = "model/keys.rs"]
-mod keys;
+pub(crate) mod keys;
 #[path = "model/schema.rs"]
 mod schema;
 

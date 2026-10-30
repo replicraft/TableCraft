@@ -1,7 +1,7 @@
 //! Independent literal key weights and exact key/ROW ordering.
 use super::{Family, Row};
 
-pub(super) fn name_key(name: Option<&[u8]>, family: Family, descending: bool) -> Vec<u8> {
+pub(crate) fn name_key(name: Option<&[u8]>, family: Family, descending: bool) -> Vec<u8> {
     let Some(name) = name else {
         return vec![if descending { 255 } else { 0 }];
     };

@@ -2,7 +2,7 @@
 use super::{Family, PAGE, Row};
 use tablecraft_testkit::access as raw;
 
-pub(super) fn data_page(rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
+pub(crate) fn data_page(rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     let mut page = raw::data_page(10, rows);
     let payload = rows.iter().map(|(_, bytes)| bytes.len()).sum::<usize>();
     raw::put16(&mut page, 2, (PAGE - 14 - rows.len() * 2 - payload) as u16);
@@ -31,7 +31,7 @@ pub(super) fn record(row: &Row, family: Family) -> Vec<u8> {
     bytes
 }
 
-pub(super) fn map_page(owner: u32, members: &[Vec<u32>]) -> Vec<u8> {
+pub(crate) fn map_page(owner: u32, members: &[Vec<u32>]) -> Vec<u8> {
     let mut records = Vec::new();
     for pages in members {
         let mut map = vec![0; 69];
@@ -45,7 +45,7 @@ pub(super) fn map_page(owner: u32, members: &[Vec<u32>]) -> Vec<u8> {
     page
 }
 
-pub(super) fn append_record(
+pub(crate) fn append_record(
     after: &mut Vec<u8>,
     root: usize,
     bytes: &[u8],
