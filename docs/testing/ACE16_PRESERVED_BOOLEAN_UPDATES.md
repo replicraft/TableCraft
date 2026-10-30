@@ -54,3 +54,36 @@ The [result record](results/ace16-preserved-boolean-updates-2026-10-30.json)
 pins the executed checks and retained donor outcome. The earlier source-only
 qualification failures remain distinct from producer results; original fixture
 constructors and expected images were not repaired after producer execution.
+
+## Wider passive Datasheet carriers
+
+The same Boolean-only profile now retains `ColumnWidth` and `ColumnOrder` with
+native kind 3, flags 0 and a four-byte payload when those bytes exactly sign-extend
+an existing signed 16-bit value. The original two-byte representation remains
+supported. This does not reinterpret global property storage, reorder native
+fields or render a Datasheet. Microsoft describes these as
+[Datasheet width](https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa224081(v=office.11))
+and [Datasheet order](https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa224067(v=office.11))
+properties; their native carrier qualification is separate from those UI contracts.
+
+A new source gate passes six pairs/twelve images before admission changes. The
+API matrix passes six complete single/batch images and three exact no-ops across
+the old representation, extended negative/zero values and a positive width.
+Eight empty/nonempty controls refuse unqualified upper words, three-byte values,
+wrong native kinds and wrong flags. These are unsupported engineering carriers,
+not a claim that every such byte sequence is corrupt native storage. The final
+affected runtime batch passes 540 native mutation functions, 19 table-extra
+functions, 15 preserved tests plus 5 UI-carrier tests, 65 Access tests and 85 CLI
+tests. Three explicit export tests remain ignored. Minimal ACE/Access builds,
+formatting, documentation links and dependency boundaries pass. Final strict
+ACE/Access/CLI checks also pass. The retained strict iterations include guard-only
+style corrections and one iterator-idiom correction in this new source helper.
+The latter happened after the first writer pass and changed no authored fixture
+bytes or complete-image expectations; all five source/API tests pass afterward.
+
+`PublishToWeb=1` remains refused. The official Access-template XML example and
+upstream property declarations do not establish native desktop semantics for
+that value. No donated-file retry was performed for this increment, and the
+previous real-file refusal still applies. The
+[UI-carrier result](results/ace16-preserved-ui-carriers-2026-10-30.json) records
+this narrower evidence.

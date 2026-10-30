@@ -1,0 +1,231 @@
+{
+  "feature": "ACE16 preserved Boolean passive Datasheet carrier extension",
+  "date": "2026-10-30",
+  "scope": "Existing nonjournalable engineering fixed single/batch updates; one qualified unindexed Boolean target; no normal ACE save grant",
+  "admission": {
+    "properties": [
+      "ColumnWidth",
+      "ColumnOrder"
+    ],
+    "native_kind": 3,
+    "flags": 0,
+    "payloads": [
+      "existing signed16 raw2",
+      "raw4 exactly equal to signed16 low word extended to signed32 little endian"
+    ],
+    "unchanged_refusal": "PublishToWeb1"
+  },
+  "source_first": {
+    "log": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/source-first-root.log",
+      "bytes": 516,
+      "sha256": "a9f22e668e2e527b036a1d228bdfe42b0351050467a6464021c1ccfd30d5d777"
+    },
+    "freeze": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/source-registered-first-freeze.json",
+      "bytes": 4012,
+      "sha256": "a92d712e8dce97f946b9e8e68f06ec804a4ac366746ae60dcfc1e522254be742"
+    },
+    "functions": 1,
+    "pairs": 6,
+    "whole_images": 12,
+    "producer_before_gate": false
+  },
+  "api": {
+    "log": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/api-first-root.log",
+      "bytes": 626,
+      "sha256": "c7abe3760472b06f9f40e3f798a74b56c9a6a72e4959ec512b09d7fe3e210b73"
+    },
+    "freeze": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/actual-api-reviewed-freeze.json",
+      "bytes": 1903,
+      "sha256": "5cbb2d05bae36c9019c48e91d567b240733a072936c896ae88c2d6396563e7c7"
+    },
+    "functions": 2,
+    "complete_single_batch_images": 6,
+    "exact_noops": 3,
+    "typed_refusals": 8,
+    "source_or_expected_repairs": false
+  },
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/properties.rs",
+      "bytes": 10246,
+      "sha256": "f0bdb664d7c5b284603417ff071560abda03f65a76808e939bcf40739bb55fed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_ui_carriers_contract.rs",
+      "bytes": 981,
+      "sha256": "2bd6539712764fbb6fe3cde207f81a0b097e41a2313f73b4af32f0e623377bb8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_ui_carriers_contract/source.rs",
+      "bytes": 8753,
+      "sha256": "823ad25cc95797fdbb65ae5d859bf3bd58a7ef9a6127726fec45e74886a985df"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_ui_carriers_contract/api.rs",
+      "bytes": 2685,
+      "sha256": "5c41f718b1981b2a52bf3c96d109eef068db597c03c734e50aabf27c69cb8315"
+    }
+  ],
+  "primary_references": [
+    {
+      "title": "Microsoft ColumnWidth",
+      "url": "https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa224081(v=office.11)"
+    },
+    {
+      "title": "Microsoft ColumnOrder",
+      "url": "https://learn.microsoft.com/en-us/previous-versions/office/developer/office-2003/aa224067(v=office.11)"
+    }
+  ],
+  "reference_evidence": {
+    "path": ".cache/ace16-preserved-ui-carriers-next-20261030/references.json",
+    "bytes": 2860,
+    "sha256": "a11bf48a4acb3a7cbd4d434c0bca1d3295d241a5c96c8f8177509baea0687540"
+  },
+  "broader_checks": {
+    "runtime": {
+      "native_mutation": 540,
+      "native_table_extra": 19,
+      "preserved": {
+        "passed": 15,
+        "ignored": 2
+      },
+      "UI_target": {
+        "passed": 5,
+        "ignored": 1
+      },
+      "access_lib": 63,
+      "access_integration": 2,
+      "CLI_unit": 40,
+      "CLI_integration": 45
+    },
+    "passed_logs": [
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-mutation.log",
+        "bytes": 72917,
+        "sha256": "35b4c543fb1d8ba3a8d27dd0ae11616efd7d8f50e77c7580807c76eba65b2578"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-extra.log",
+        "bytes": 2770,
+        "sha256": "65c0c4f5e640b95fc25148671bc797d08e686388591933fe37da2dc9b6d99ff5"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-preserved.log",
+        "bytes": 3080,
+        "sha256": "4bc3029ba22051383b0af12ad0f55186b051f9019b005a1c8d800f056df58135"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/access-corrected.log",
+        "bytes": 8436,
+        "sha256": "1698889e9780deb560669178634135fe2475650db3216ca34cb042644246b27b"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/cli-phase-corrected.log",
+        "bytes": 9765,
+        "sha256": "9e110088d7ce3388f3a8983f3f282b2a40a75ee1b790283e03ca15b3062c932d"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-ace.log",
+        "bytes": 183,
+        "sha256": "b19d57267f05b82bab91ea7eb2186a0e6b3efba3f4e3599643d43f1c4659745f"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-access.log",
+        "bytes": 301,
+        "sha256": "65c547e1b80bfcee2db76d6e5357575d81af3b8206985a69bbb4c3cd1ad94f24"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/documentation.log",
+        "bytes": 53,
+        "sha256": "f421f8a61e01628430a21938da16a6e0bb9b3980701b9cabd78d96e83e9fd264"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/boundaries.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict-final.log",
+        "bytes": 403,
+        "sha256": "ee770f147df677adee3e44697c4799ad2fb5f9506017e3ffa25252f86946d5de"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/ui-poststyle.log",
+        "bytes": 1072,
+        "sha256": "e311313b1f3488b5740831484e905564635208bcef61d703930ea8527b56bcca"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/format-corrected.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "strict": "Passed final ACE/Access/CLI all-target/all-feature checks",
+    "strict_predecessor": {
+      "path": ".cache/ace16-write-workflows-final-20261030/strict.log",
+      "bytes": 2122,
+      "sha256": "bc23b8a52675d271520c96d4001beed53f6c0cb76c1d005eb85c38e599871c47"
+    },
+    "unrelated_predecessor_runtime_logs": [
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/access.log",
+        "bytes": 8811,
+        "sha256": "1ca543aa9331df7f9c96b0566d0d5027b8ad2d6f885b93ad3972de0abbea1f25"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/cli.log",
+        "bytes": 5115,
+        "sha256": "533a9b98c412385ced4311a898c8a47e1fb5097a76987157bb1cac39d91eeb40"
+      },
+      {
+        "path": ".cache/ace16-write-workflows-final-20261030/cli-corrected.log",
+        "bytes": 9733,
+        "sha256": "e12108106ea05ae6729a242560b709763d0ceb835b14072dcfba64c80860497d"
+      }
+    ]
+  },
+  "donated_database": {
+    "last_observation": "Prior preserved-feature disposable experiment refused Unsupported(Properties), no candidate, original/source unchanged",
+    "rerun_for_this_increment": false,
+    "current_edit_qualification": false,
+    "remaining_explicit_barrier": "PublishToWeb1 semantics/admission remain closed"
+  },
+  "qualification_limits": [
+    "Synthetic authored sources and local engine APIs only",
+    "No native Access save/reopen comparison",
+    "No macro-absence or web-publishing authority",
+    "No global property decoder change"
+  ],
+  "iteration_style_correction": {
+    "freeze": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/iterator-style-corrected-freeze.json",
+      "bytes": 2372,
+      "sha256": "326b48079c3c01a61784e63297e0eb559f2f579b7b8034ad78a9b89b49cba73e"
+    },
+    "diagnostic": {
+      "path": ".cache/ace16-preserved-ui-carriers-next-20261030/before-iterator-style-correction/native-strict-corrected.log",
+      "bytes": 873,
+      "sha256": "61adf9860c87ad1fed1e98f9fee1162a2741bacc898c9255ff0516d68de39f10"
+    },
+    "after_first_writer": true,
+    "source_or_expected_repair": false,
+    "rerun": {
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/ui-poststyle.log",
+        "bytes": 1072,
+        "sha256": "e311313b1f3488b5740831484e905564635208bcef61d703930ea8527b56bcca"
+      },
+      "passed": 5,
+      "ignored": 1
+    }
+  }
+}
