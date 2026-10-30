@@ -12,6 +12,21 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Physical secondary-index creation
+
+The separate native engineering service now creates one ordinary nonunique Int32
+secondary index, including NULL keys, on a previously unindexed field. It retains
+existing rows, indexes and aliases, reserves distinct map/body pages, and proves
+the complete candidate against the original request. The
+[creation contract](testing/ACE16_SECONDARY_INDEX_CREATION.md) records sixteen
+independent whole-image comparisons, correlated-forgery refusals, resource and
+cancellation checks. The native mutation regression passes 549 functions; broader
+key/layout profiles, SQL/CLI integration and normal saves remain unfinished.
+Independent public-library evidence remains separate from native Access
+qualification. A separate SOURCE-only check accepts sixteen requests on eight
+independently generated originals, with passing existing-owner censuses and
+unchanged input hashes; it invokes no writer or candidate construction.
+
 ## Explicit larger fixed SQL copies
 
 `query preview-update --image-bytes N` now selects the existing fixed fitting
