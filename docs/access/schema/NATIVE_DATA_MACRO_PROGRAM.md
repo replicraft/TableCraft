@@ -7,6 +7,10 @@ ConditionalBlock/If/Condition and the documented desktop RaiseError argument
 shape. This is an inspection capability, not macro execution, complete semantic
 detection, an absence certificate or a normal-write permit.
 
+The separate [explicit before-event guard preparation](NATIVE_BEFORE_EVENT_GUARDS.md)
+consumes selected source-owned programs and typed intents. It does not run during
+inspection or turn structural coverage into native event/save authority.
+
 ## Explicit consumer
 
 ```sh

@@ -1,4 +1,5 @@
 //! Identity-bound original SQL selection finishes through one delete service.
+mod guards;
 use super::{DeleteMode, EngineeringCopy, EngineeringError, EngineeringRequest, preview};
 use crate::editing::{NativeEditError, snapshot};
 use tablecraft_ace::{InspectError, NativeImage};

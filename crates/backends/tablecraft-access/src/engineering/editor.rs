@@ -1,4 +1,5 @@
 //! Snapshot-bound SQL assignments finish through one explicit engineering service.
+mod guards;
 mod preserved;
 mod routing;
 use super::{EngineeringCopy, EngineeringError, EngineeringRequest, UpdateMode, preview};

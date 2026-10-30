@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+Explicit [before-event preparation](access/schema/NATIVE_BEFORE_EVENT_GUARDS.md)
+now has a native service and SQL/CLI consumer. It reports only caller-selected
+programs; discovering required native programs and qualifying absence still gate
+general saves. It never grants a write permit.
+
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.
 Single-column Memo/OLE keeps its separate explicit mode; mixed LVAL operations
