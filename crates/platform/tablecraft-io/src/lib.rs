@@ -22,3 +22,6 @@ pub mod journal;
 /// Optional required namespace durability for explicitly selected fresh copies.
 #[cfg(feature = "fresh-publication")]
 pub mod publication;
+
+#[cfg(all(unix, feature = "fresh-publication"))]
+mod namespace;
