@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-30",
+  "feature": "Mixed record-growth source qualification",
+  "source_pairs": 36,
+  "complete_images": 72,
+  "checks": {
+    "first_source_gate": {
+      "exit_code": 101,
+      "failure": "Missing empty native declaration terminators at three independently authored table-definition ends; no producer executed"
+    },
+    "corrected_source_gate": {
+      "exit_code": 0,
+      "functions": 1,
+      "checks": [
+        "complete row reads",
+        "index and constraint checks",
+        "source-role metadata admission",
+        "original logical-root capture",
+        "literal expected placement and forwarding"
+      ]
+    }
+  },
+  "correction": "Only new growth corpus gained explicit FFFF empty-declaration terminators at TD2:398, TD7:449 and TD10:663 before expected-image clone. Existing fitted corpus and engine guards unchanged.",
+  "growth_producer_executed": false,
+  "native_Access_qualification": false,
+  "files": [
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-first-root.log",
+      "bytes": 1228,
+      "sha256": "5ee7be62b49c4d3b73fbf6fb024750aeea29e3d12ee16b1f5b9d89138a031c59"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-second-root.log",
+      "bytes": 509,
+      "sha256": "b788200d429146ac98b36cba4876a069b28dfa8817c6e011a71101d30d739371"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-registered-first-freeze.json",
+      "bytes": 2200,
+      "sha256": "5fe3936b6afd330c4121d0ab600cd6feca54897f7a384d95564ee29b743d601d"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-update-design-20261030/source-declaration-correction-freeze.json",
+      "bytes": 2969,
+      "sha256": "808ff8db90c21f9f267bc7a9ae14a2149cc35d14c273f50e91ee1ada645febdb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs",
+      "bytes": 9820,
+      "sha256": "7df47668dabf67fba4df3b31113cf264fe13d771a88c337d4099b675bb312eaa"
+    }
+  ]
+}
