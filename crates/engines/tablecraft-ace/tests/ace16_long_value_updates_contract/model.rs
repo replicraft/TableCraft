@@ -201,7 +201,7 @@ fn property(bytes: &mut [u8], column: Option<&str>, key: &str, text: &str) {
     );
 }
 
-fn set_member(bytes: &mut [u8], row: usize, number: usize, set: bool) {
+pub fn set_member(bytes: &mut [u8], row: usize, number: usize, set: bool) {
     let start = usize::from(word(bytes, 11, row) & OFFSET_MASK);
     let at = 11 * PAGE + start + MAP_HEADER + number / 8;
     let mask = 1 << (number % 8);

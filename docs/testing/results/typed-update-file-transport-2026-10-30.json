@@ -1,0 +1,214 @@
+{
+  "feature": "Typed UPDATE file transport",
+  "date": "2026-10-30",
+  "scope": "headerless quoted six-field TSV; existing exact typed converters and one native engineering request",
+  "source_first": {
+    "functions": 1,
+    "pairs": 7,
+    "complete_images": 14,
+    "large_memo_utf8_and_encoded_bytes": 262144,
+    "large_chain_pages": 65,
+    "final_pages": 90,
+    "before_transport": true,
+    "log": {
+      "path": ".cache/ace16-update-set-file-next-20261030/source-first-root.log",
+      "bytes": 440,
+      "sha256": "f6b4ffe16a87f03a0379f9059bc628d2475b4ddea968aa14a862de97bdf4768a"
+    },
+    "freeze": {
+      "path": ".cache/ace16-update-set-file-next-20261030/source-registered-first-freeze.json",
+      "bytes": 1844,
+      "sha256": "c92361e36d6f962ccb9595fc4eda8fe83a3de58b70847512442a9c8eb1fc15fb"
+    }
+  },
+  "first_checks": {
+    "normal_cli": "passed",
+    "parser_argument_functions": 4,
+    "file_api_functions": 2,
+    "file_complete_copies": 7,
+    "small_argv_parity_copies": 6,
+    "occupied_output_refusals": 7,
+    "stale_expected_refusals": 1,
+    "malformed_preopen_refusals": 3,
+    "fixed_file_argv_parity_functions": 1,
+    "mixed_file_functions": 1,
+    "mixed_frozen_images": 2,
+    "all_passed_first_runtime": true,
+    "failed_checks": []
+  },
+  "broader_checks": {
+    "affected_cli_regression": {
+      "unit": 47,
+      "query_preview_updates": 27,
+      "write_previews": 7,
+      "write_update_files": 5
+    },
+    "integration_total": 39,
+    "strict_cli_all_targets_all_features": "passed",
+    "logs": [
+      {
+        "path": ".cache/ace16-update-set-file-next-20261030/regression-first-root.log",
+        "bytes": 9827,
+        "sha256": "32ed63782837602da88de06c4e71fdb06191b1569aaeaf7e1bdf24574d68c700"
+      },
+      {
+        "path": ".cache/ace16-update-set-file-next-20261030/strict-first-root.log",
+        "bytes": 403,
+        "sha256": "d928d22778155868344d53ffd33ef0a62af5159a8796c205f95ea1947360d4ee"
+      },
+      {
+        "path": ".cache/ace16-update-set-file-next-20261030/format-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-update-set-file-next-20261030/links-root.log",
+        "bytes": 53,
+        "sha256": "8c408241ea2f4681f8398d011b394ea1be1293a2c62f2d91892011adf9f76d04"
+      },
+      {
+        "path": ".cache/ace16-update-set-file-next-20261030/boundaries-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    ],
+    "final_format_links_boundaries": "passed"
+  },
+  "semantics": [
+    "same TABLE COLUMN ROW KIND EXPECTED VALUE law as --set",
+    "exact null sentinel and value: escapes unchanged",
+    "one mutually-exclusive required transport",
+    "bounded capture/parse before database open",
+    "shared budgets/cancellation and publication",
+    "one original-image finish; no candidate chaining"
+  ],
+  "no_changes": [
+    "native engine requests",
+    "value converters",
+    "existing source/expected constructor bodies",
+    "native limits",
+    "normal save/macro admission"
+  ],
+  "native_access_comparison": false,
+  "logs": [
+    {
+      "path": ".cache/ace16-update-set-file-next-20261030/normal-first-root.log",
+      "bytes": 173,
+      "sha256": "5efea47f9cc4e9dd710593f0d3660a5fff9c27fec12fd9959d36c4627612a5e1"
+    },
+    {
+      "path": ".cache/ace16-update-set-file-next-20261030/parser-first-root.log",
+      "bytes": 830,
+      "sha256": "717fcb0a365349e1549ffc290e854db94fd333a7b051976423e25bceecf67c09"
+    },
+    {
+      "path": ".cache/ace16-update-set-file-next-20261030/api-first-root.log",
+      "bytes": 565,
+      "sha256": "c231a9043376809354e4465a89087e776cdb2a1669f4796b241d8c4993c568a0"
+    },
+    {
+      "path": ".cache/ace16-update-set-file-next-20261030/fixed-first-root.log",
+      "bytes": 470,
+      "sha256": "e6a4b5cb2a8e9a1c5a243382bcd8e831c174058849134cbffbe64fb4a7597ac6"
+    },
+    {
+      "path": ".cache/ace16-update-set-file-next-20261030/mixed-first-root.log",
+      "bytes": 499,
+      "sha256": "c91f40c58f8b63a0ce1863ebb6d6091fe93ce16da03ae8ab23ebbb4648406f15"
+    }
+  ],
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model.rs",
+      "bytes": 9532,
+      "sha256": "851ce90673514780a12f2f7292dfcfe55e607f1add578b2ce1424f26143610c7"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_update_files.rs",
+      "bytes": 5936,
+      "sha256": "7aa902dd2167da1e9e0deb607efc8d429b2eb01e92381efebd141cdd80761598"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_update_files/model.rs",
+      "bytes": 2413,
+      "sha256": "6d345ca14e0c670aaf8ae5b43465c7aaf3fd4959f91fa0cd560cdb81ae897600"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/args.rs",
+      "bytes": 6143,
+      "sha256": "898ab68f3bb9a8bba2ee67a95ba07276e0149e54f84231735368c083a25578e3"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/run.rs",
+      "bytes": 12938,
+      "sha256": "a8c256831498bcfbdd3e703261ea5173ab3dd4d9251ce9c0373528c429c8feea"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input.rs",
+      "bytes": 8596,
+      "sha256": "a498f8703204dbfa4d483b389e3bd575c5e92a1074bf3b7cc73335825f00c311"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input/update_file.rs",
+      "bytes": 1792,
+      "sha256": "a80198d5eabb10ccc63d1310cbed2b523243e5c7e40b3de74fd71020f2838648"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/tests.rs",
+      "bytes": 8029,
+      "sha256": "e0520a2e0b3e386a5dff10310cfd207bc31d1c2138a6336e9fdece275f04c674"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/tests/update_file.rs",
+      "bytes": 4128,
+      "sha256": "eda870b877ac8864007da0c3b94515ddc65c4ff371a4a5a15e6016b241e426b4"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_update_files/api.rs",
+      "bytes": 5160,
+      "sha256": "3149695a6e900cfa423b1aa13e7ff27afe06007674d404d27db7a3cf3628eda8"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_previews.rs",
+      "bytes": 13208,
+      "sha256": "c6aefa79e648d30b8d2dc87b86c53fa5ce754ce707cea24be6ca63df9bfdec15"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_previews/set_file.rs",
+      "bytes": 1429,
+      "sha256": "ab033b0d2519c94b7d2c7a9abc683f41751a9fd8bd3066104e720e5b08ac42f6"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/write_previews/mixed.rs",
+      "bytes": 9258,
+      "sha256": "d03c994566e8300e3118ada50bab36efb523863d24618186822be595089b953c"
+    }
+  ],
+  "input_source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model/source.rs",
+      "bytes": 4976,
+      "sha256": "09fffa0336e59c0b211d8f851819c5e223febaa09a8b5d6258c4e070b831330e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs",
+      "bytes": 4728,
+      "sha256": "376222e9d6c8332da1bca10cde59a3a56940241935a143bb2bf1bf7709593472"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/forwarding_case.rs",
+      "bytes": 2046,
+      "sha256": "5be8bf829e8a14bd31c7452105500d81c93910979f77a26aa25bbfb9720a91d4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "bytes": 5609,
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    }
+  ],
+  "installed_freeze": {
+    "path": ".cache/ace16-update-set-file-next-20261030/transport-api-first-coherent-freeze.json",
+    "bytes": 2726,
+    "sha256": "9dc1a3a02856a64ca02bc119938ea2850834acad043b7fe8f681c99fd6d7b7d1"
+  }
+}

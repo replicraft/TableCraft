@@ -40,6 +40,25 @@ tablecraft write preview-update offline.accdb grown.accdb --variable --index-gro
   --set Items Name 0 binary null 00000000
 ```
 
+Use exactly one request transport: repeated `--set` arguments or a headerless
+quoted TSV file supplied through `--set-file`. Each TSV record has exactly six
+fields in the same order, `TABLE COLUMN ROW KIND EXPECTED VALUE`; tabs and
+newlines within a field must be double-quoted, with embedded quotes doubled.
+The file is captured and completely parsed before the database opens. This lets
+large Memo/OLE values travel outside the process argument list:
+
+```sh
+tablecraft write preview-update offline.accdb edited.accdb --long-value \
+  --set-file updates.tsv --value-bytes 1048576
+```
+
+File fields use the same UPDATE KIND, expected-value and `value:` escape rules
+as `--set`; they do not use INSERT's separate `null` KIND convention. The
+16 MiB request-file and 4096-assignment bounds, per-value byte limit and shared
+operation budget still apply. File transport does not expand native field,
+record, ownership, index, constraint or long-value limits, and never selects a
+mode by retrying a failed candidate.
+
 Each `--set` contains `TABLE COLUMN ROW KIND EXPECTED VALUE`. ROW is the zero-based
 original live-row ordinal, not a key value. All assignments refer to one immutable
 captured source. Groups are combined before one engine call; a stale expected
@@ -235,3 +254,20 @@ SQL/typed UPDATE source target and six existing typed write workflows. CLI stric
 all-target/all-feature checks passed. This is the selected consumer regression,
 not a full workspace run. No Microsoft Access application write, normal-save or
 durable-transaction qualification is claimed.
+
+## File UPDATE transport evidence
+
+Before transport installation, seven source/expected pairs (fourteen images)
+passed native reads/checks. The additive 256 KiB Memo payload has independently
+authored chain fragments, ownership/hint maps, GLOBAL membership and parent/root
+pointers; old bytes outside the qualified spans remain unchanged. Actual CLI
+checks then passed on the first run: seven exact file copies, six small argv
+parity copies, occupied-output and stale-expected refusals, plus malformed-input
+refusal before opening a missing source. The large payload itself is carried
+only in the file. Fixed dispatch parity and two already-qualified mixed
+Text/Binary complete images also passed. Four parser/argument tests cover quoted
+fields, NULL/escape identity, exact cumulative pools, one-below pools and final
+cancellation. Affected regressions passed 47 CLI unit functions and 39 integration
+functions (27 query UPDATE, seven typed write and five file-transport functions).
+All-target/all-feature CLI strict checks passed. These are transport and
+engineering-copy checks, not a native Access comparison.

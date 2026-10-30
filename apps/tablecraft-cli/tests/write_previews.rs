@@ -7,6 +7,8 @@ mod fixture;
 mod index_fixture;
 #[path = "write_previews/model.rs"]
 mod model;
+#[path = "write_previews/set_file.rs"]
+mod set_file;
 use tablecraft_testkit::access as support;
 
 use std::{

@@ -53,13 +53,18 @@ pub(crate) enum Command {
 }
 
 #[derive(Args)]
+#[command(group(clap::ArgGroup::new("update_requests").args(["cells", "set_file"]).required(true).multiple(false)))]
 pub(crate) struct Update {
     #[command(flatten)]
     pub(super) paths: Paths,
     /// One exact original-row assignment. NULL is `null`; `value:null` is literal
     /// text "null"; prefix any literal starting `value:` with another `value:`.
-    #[arg(long = "set", required = true, num_args = super::updates::SET_FIELDS, action = clap::ArgAction::Append, allow_hyphen_values = true, value_names = ["TABLE", "COLUMN", "ROW", "KIND", "EXPECTED", "VALUE"])]
+    #[arg(long = "set", num_args = super::updates::SET_FIELDS, action = clap::ArgAction::Append, allow_hyphen_values = true, value_names = ["TABLE", "COLUMN", "ROW", "KIND", "EXPECTED", "VALUE"])]
     pub(super) cells: Vec<String>,
+    /// Headerless quoted TSV with TABLE/COLUMN/ROW/KIND/EXPECTED/VALUE fields.
+    /// Uses exactly the same NULL and value: escapes as --set.
+    #[arg(long, value_name = "TSV")]
+    pub(super) set_file: Option<PathBuf>,
     /// Short Text/Binary DATA placement in one table, optionally with fixed siblings.
     #[arg(long, conflicts_with_all = ["long_value", "cascade_updates"])]
     pub(super) variable: bool,

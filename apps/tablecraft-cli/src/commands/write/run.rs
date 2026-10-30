@@ -33,14 +33,22 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
 
 fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
     let mut budget = args.paths.limits.budget();
+    let file_cells = if let Some(path) = &args.set_file {
+        let bytes = input::capture(path, &mut budget, &|| false)?;
+        Some(input::update_file::cells(&bytes, &mut budget, &|| false)?)
+    } else {
+        None
+    };
+    let cells = file_cells.as_deref().unwrap_or(&args.cells);
+
     if (args.variable || args.long_value)
-        && updates::mixed::required(&args.cells, &mut budget, &|| false)?
+        && updates::mixed::required(cells, &mut budget, &|| false)?
     {
         if args.long_value {
-            updates::mixed::preflight(&args.cells, &mut budget, &|| false)?;
+            updates::mixed::preflight(cells, &mut budget, &|| false)?;
             return Err(invalid("Mixed Memo/OLE updates are not qualified"));
         }
-        let owned = updates::mixed::prepare(&args.cells, args.value_bytes, &mut budget, &|| false)?;
+        let owned = updates::mixed::prepare(cells, args.value_bytes, &mut budget, &|| false)?;
         let groups = owned.groups(&mut budget, &|| false)?;
         let request = if args.index_growth {
             EngineeringRequest::MixedSplitUpdate {
@@ -58,7 +66,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
 
     if args.variable || args.long_value {
         let groups = updates::parse(
-            &args.cells,
+            cells,
             args.value_bytes,
             SlotScalarUpdate::new,
             &mut budget,
@@ -69,7 +77,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
                 "Variable/Memo/OLE mode requires one table and column; mixed groups are not chained",
             ));
         }
-        let (fields, _) = args.cells.as_chunks::<{ updates::SET_FIELDS }>();
+        let (fields, _) = cells.as_chunks::<{ updates::SET_FIELDS }>();
         if fields
             .iter()
             .any(|fields| !matches!(fields[3].as_str(), "text" | "binary"))
@@ -97,7 +105,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
     }
 
     let owned = updates::parse(
-        &args.cells,
+        cells,
         args.value_bytes,
         FixedScalarUpdate::new,
         &mut budget,
