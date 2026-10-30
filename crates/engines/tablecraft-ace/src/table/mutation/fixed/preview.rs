@@ -1,5 +1,5 @@
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
-use super::{FixedScalarUpdate, masked};
+use super::{FixedColumnUpdates, FixedScalarUpdate, masked, preserved};
 use crate::{
     InspectError, NativeImage, format::data_type::NUMERIC_BYTES, header::check,
     inspect_table_schema, limits::MAX_LIVE_ROWS,
@@ -44,6 +44,14 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
+        if preserved::projected(&schema, budget, cancelled)? {
+            return preserved::preview(
+                self,
+                &[FixedColumnUpdates::new(table, column, updates)],
+                budget,
+                cancelled,
+            );
+        }
         let selected = schema
             .columns()
             .iter()

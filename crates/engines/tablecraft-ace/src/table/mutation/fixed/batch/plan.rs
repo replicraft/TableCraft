@@ -67,6 +67,12 @@ impl NativeImage {
         if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
             return Err(InspectError::StructureLimit.into());
         }
+        if EXTENDED_FIXED
+            && !ALLOCATING
+            && super::super::preserved::selected(&self, groups, budget, cancelled)?
+        {
+            return super::super::preserved::preview(self, groups, budget, cancelled);
+        }
         let mut count = 0_usize;
         let mut tables: Vec<Table<'_>> = Vec::new();
         budget

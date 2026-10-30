@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Boolean copies with advanced-field preservation
+
+The existing engineering fixed service now supports qualified unindexed Boolean
+updates in rich tables while retaining actual attachment and stored calculated
+fields. Its adapter exposes ordinary values and keeps excluded declarations
+unavailable. Original-source ownership/property checks and a complete-image proof
+govern each candidate. The [preservation contract](testing/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
+records passing authored-source, adapter and CLI checks. The donated real database
+still refuses with `Unsupported(Properties)` on a disposable copy; no output was
+created and the original remains unchanged. Normal ACE saves remain unfinished.
+
 ## Fitting UPDATE ownership protection
 
 The [fitting body-role correction](testing/ACE16_FITTING_BODY_ROLES.md) closes a

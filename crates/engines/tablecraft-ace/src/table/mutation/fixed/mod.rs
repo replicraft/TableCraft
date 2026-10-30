@@ -3,6 +3,7 @@ mod cascade;
 mod decimal;
 mod encoding;
 pub(in crate::table::mutation) mod masked;
+mod preserved;
 mod preview;
 mod update;
 

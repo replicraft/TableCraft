@@ -2,6 +2,12 @@
 
 ## Current product priority
 
+The [advanced-field preservation slice](testing/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
+now passes authored-source Boolean copy edits through the engine, adapter and
+CLI. The donated real database still refuses its property profile; qualifying
+that actual representation is the next preservation task. This does not close
+general native saves, required data macros or native Access qualification.
+
 As of 26 October 2026, the active goal is faithful Microsoft Access behavior on
 native files, with ACE 16 primary. SQLite and `.tcraft`/`.tcraftproj/` implementation,
 native-project Python, conversion and modernization are paused until explicitly

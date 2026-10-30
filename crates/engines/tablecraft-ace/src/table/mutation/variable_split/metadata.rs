@@ -29,6 +29,7 @@ enum Capture<'a> {
     Initialization(&'a [usize]),
     Mixed(&'a [usize]),
     Fitted(&'a [usize]),
+    PreservedBoolean,
 }
 
 impl Metadata {
@@ -146,6 +147,23 @@ impl Metadata {
         )
     }
 
+    pub(in crate::table::mutation) fn capture_for_preserved_boolean(
+        image: &NativeImage,
+        schema: &TableSchema,
+        indexes: &[NativeIndex],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_selected(
+            image,
+            schema,
+            indexes.iter(),
+            Capture::PreservedBoolean,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_selected<'i, I>(
         image: &NativeImage,
         schema: &TableSchema,
@@ -182,11 +200,12 @@ impl Metadata {
             map_authority::Owner::OrdinaryOwned { definition },
             map_authority::Owner::OrdinaryCandidate { definition },
         ];
-        let shared: &[map_authority::Owner] = if matches!(capture, Capture::Fitted(_)) {
-            &ordinary
-        } else {
-            &growing
-        };
+        let shared: &[map_authority::Owner] =
+            if matches!(capture, Capture::Fitted(_) | Capture::PreservedBoolean) {
+                &ordinary
+            } else {
+                &growing
+            };
         let capacity = indexes
             .len()
             .checked_add(shared.len())
@@ -212,7 +231,10 @@ impl Metadata {
             definition::read_with_pages(reader, local.definition_page(), |page, reader| {
                 protect(&mut protected_pages, page, reader)
             })?;
-            if matches!(capture, Capture::Mixed(_) | Capture::Fitted(_)) {
+            if matches!(
+                capture,
+                Capture::Mixed(_) | Capture::Fitted(_) | Capture::PreservedBoolean
+            ) {
                 if local.definition_page() != definition {
                     protect_members(&mut protected_pages, local.layout.usage, reader)?;
                 }
@@ -333,6 +355,9 @@ impl Metadata {
                         continue;
                     }
                 }
+                if matches!(capture, Capture::PreservedBoolean) {
+                    continue;
+                }
                 let owner = map_authority::Owner::IndexOwned {
                     definition,
                     physical: native.data_number(),
@@ -368,7 +393,7 @@ impl Metadata {
             reads: 0,
         };
         census.protect_storage(&mut protected_pages, &mut reader)?;
-        if matches!(capture, Capture::Fitted(_)) {
+        if matches!(capture, Capture::Fitted(_) | Capture::PreservedBoolean) {
             // Definition and map storage are protected even if a corrupt
             // payload-owned map also claims their pages.
             census.protect_storage(&mut denied_index_pages, &mut reader)?;
@@ -380,7 +405,7 @@ impl Metadata {
                 }
             }
         }
-        if matches!(capture, Capture::Fitted(_)) {
+        if matches!(capture, Capture::Fitted(_) | Capture::PreservedBoolean) {
             // These roles were checked only for source exclusivity. A fitting
             // operation receives no authority to rewrite their map records.
             mutable.clear();

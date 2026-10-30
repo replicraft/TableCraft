@@ -1,9 +1,10 @@
 //! Snapshot-bound SQL assignments finish through one explicit engineering service.
+mod preserved;
 mod routing;
 use super::{EngineeringCopy, EngineeringError, EngineeringRequest, UpdateMode, preview};
 use crate::editing::{NativeEditError, snapshot};
 use tablecraft_ace::{
-    FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
+    FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate, TableSchema,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -42,6 +43,7 @@ pub struct AccessEngineeringEditor {
     image: NativeImage,
     snapshot: Snapshot,
     mode: ScalarUpdateMode,
+    preserved_schema: Option<TableSchema>,
 }
 
 impl AccessEngineeringEditor {
@@ -55,12 +57,14 @@ impl AccessEngineeringEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
-        let snapshot = snapshot::capture(&image, table, budget, cancelled)?;
+        let (snapshot, preserved_schema) =
+            snapshot::capture_engineering(&image, table, budget, cancelled)?;
 
         Ok(Self {
             image,
             snapshot,
             mode,
+            preserved_schema,
         })
     }
 }
@@ -100,6 +104,7 @@ impl EditableTable for AccessEngineeringEditor {
                     .equals(candidate.name(), column)
             })
             .ok_or(NativeEditError::Unsupported)?;
+        self.check_preserved_target(position, budget, cancelled)?;
         self.check_mode(position)?;
 
         let table = self.snapshot.name();
@@ -336,6 +341,7 @@ impl AccessEngineeringEditor {
                 return Err(NativeEditError::Unsupported);
             }
 
+            self.check_preserved_target(position, budget, cancelled)?;
             self.check_batch_mode(position, columns.len())?;
             positions.push(position);
 

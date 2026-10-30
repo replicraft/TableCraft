@@ -17,7 +17,7 @@ mod projection;
 mod recomputed;
 pub use recomputed::{CalculationView, RecomputedNativeSource};
 mod saved;
-mod schema;
+pub(crate) mod schema;
 pub use saved::{NativeSavedReadError, NativeSavedSelectError};
 mod selection;
 mod snapshot;

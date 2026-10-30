@@ -141,3 +141,6 @@ pub(in crate::table) use mutation::{
     qualify_split_slot_indexes, split_scalar_supported,
     split_slot_patches as index_split_slot_patches, splitting_patches as index_split_patches,
 };
+
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) mod preserved;

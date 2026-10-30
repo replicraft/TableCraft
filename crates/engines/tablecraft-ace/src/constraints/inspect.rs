@@ -72,3 +72,30 @@ pub fn check_table_constraints<R: crate::NativeReadSource>(
         relationships: checks,
     })
 }
+
+/// Internal ordinary-projection constraint audit for schema-stable preservation.
+/// The caller separately certifies every excluded field and its declarations.
+#[cfg(feature = "ace16-write-preview")]
+pub(crate) fn check_scalar_projection(
+    table: &crate::TableSnapshot,
+    properties: &crate::TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    let fields = fields::check_fields(table, properties, budget, cancelled)?;
+    if fields.iter().any(|field| {
+        [field.required(), field.empty_text(), field.validation()]
+            .contains(&super::RuleCheckStatus::Unsupported)
+    }) || rules::audit(
+        table,
+        properties.group(PropertyGroupKind::Table, ""),
+        None,
+        budget,
+        cancelled,
+    )? == super::RuleCheckStatus::Unsupported
+    {
+        return Err(InspectError::Unsupported);
+    }
+    check(budget, cancelled)?;
+    Ok(())
+}
