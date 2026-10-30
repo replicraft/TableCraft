@@ -10,7 +10,7 @@ description = "Bounded Jet/ACE inspection and offline native edits"
 
 [features]
 default = []
-journal = ["tablecraft-io/journal"]
+journal = ["tablecraft-io/journal", "dep:sha2"]
 ace16-write-preview = []
 
 [lints]
@@ -36,6 +36,7 @@ tablecraft-schema.workspace = true
 tablecraft-sql.workspace = true
 tablecraft-expressions = { workspace = true, features = ["sql"] }
 thiserror.workspace = true
+sha2 = { workspace = true, optional = true }
 
 uuid.workspace = true
 jiff.workspace = true

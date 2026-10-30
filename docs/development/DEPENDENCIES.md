@@ -1327,3 +1327,18 @@ library check, corrected ten focused publication functions, full IO49-function
 suite and minimal build passed. Final IO/Access/CLI all-target/all-feature strict
 checks passed after a test-only function-pointer type alias correction. No Windows
 runtime or hardware power-loss qualification is claimed.
+
+## Recorded native Int32 intent binding (30 October 2026)
+
+The optional `tablecraft-ace/journal` feature now directly enables the existing
+workspace `sha2` dependency for its native-owned `TCNI0001` request codec and
+before-image binding. Incremental SHA-256 uses bounded 64 KiB updates with paid
+work and cancellation checks; no hash implementation, SQL text, clock context or
+serialized save permission is introduced. Existing normal planning APIs/costs
+and standalone default features remain unchanged. Independent literal frames
+were frozen before the codec; the Rust literal SOURCE gate and five focused
+intent functions pass. The first strict run found only two iterator-style lints;
+source/model bytes remain unchanged after their equivalent correction. Corrected
+strict/minimal checks pass after clearing exhausted ordinary compiler cache
+space. Fixtures and saved producers were retained, and incremental compilation
+stays enabled.

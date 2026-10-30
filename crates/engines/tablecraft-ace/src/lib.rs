@@ -141,6 +141,10 @@ pub use table::{
 };
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
+pub use transaction::{
+    NativeInt32EditIntent, NativeIntentError, RecoverableEditError, RecoverableNativeEditPlan,
+};
+#[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
 
 pub use properties::{

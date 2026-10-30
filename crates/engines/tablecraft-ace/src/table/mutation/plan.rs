@@ -32,6 +32,18 @@ impl Int32Update {
     pub const fn value(&self) -> i32 {
         self.value
     }
+
+    #[cfg(feature = "journal")]
+    pub(crate) fn validate_intent_requests(
+        updates: &[Self],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        rows::unique(updates, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(())
+    }
 }
 
 /// Complete before/after images confined to validated fields/index-entry spans.

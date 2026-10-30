@@ -507,6 +507,55 @@ new root separator and between the two leaves. Inconsistent intermediate images
 fail a table check; recovery restores all pages together. Successful indexed commits
 and no-op multi-page images reopen/recover with the expected complete bytes.
 
+### Recorded original Int32 intent
+
+The journal feature also provides
+`NativeImage::plan_recoverable_int32_updates`. It accepts a moved
+`Vec<Int32Update>`, first runs the unchanged normal Jet 4 planner, then binds
+`NativeInt32EditIntent` to that plan's exact before image. Only this successful
+normal planning path constructs `RecoverableNativeEditPlan`; ACE engineering
+candidates have no conversion. Existing normal APIs and their costs stay
+unchanged. Intent failure returns no plan and causes no target/journal write.
+
+The wrapper exposes immutable intent, complete before/after bytes and changed
+rows. Its consuming `prepare` delegates the existing expected-image preparation.
+Hosts still establish distinct exclusive resources, durable journal namespace
+and correct pairing. Prepare/commit borrow those resources within their owner;
+no self-referential pair/prepared struct is needed.
+
+`NativeInt32EditIntent::new`, `encode`, `decode` and `verify_before` process request
+data only. The versioned `TCNI0001` record has a fixed 72-byte header, exact UTF8
+table/column bytes and 16 bytes per request: little-endian u64 ordinal plus two
+i32 values. It preserves written order, no-ops, spelling, case and spaces without
+SQL name parsing or normalization. Shared name invariants and the existing
+request count/uniqueness law apply. The conservative 8192-byte name bound derives
+from the implemented native text reader, not an ASCII/64-character restriction.
+Ordinals convert checked to `usize`; actual row membership remains planner-owned.
+
+The before binding is SHA-256 over the exact 16-byte domain
+`TCNI0001:BEFORE\0`, little-endian u64 before length and every before byte.
+It differs from the image journal's digest over both images and establishes
+neither authentication nor filesystem object identity. Unknown versions,
+profiles, flags/reserved fields, malformed lengths/UTF8, duplicate requests and
+trailing data refuse. `MAX_ENCODED_BYTES` supplies the native-owned 278600-byte
+record ceiling for bounded opaque host capture. Decoding never creates a save
+plan or recovery permission; hosts must qualify both the native operation and
+its paired resources before mutation.
+
+The moved request Vec is not cloned or reordered. New name/output allocations,
+validation and incremental hashing consume the shared budget; hashing polls at
+64 KiB boundaries. Late failure publishes no intent/plan. Independent literal
+frames were frozen before implementation and checked independently with standard
+SHA-256. The Rust SOURCE gate and all five focused intent functions pass. The
+first strict run found two iterator-style lints; equivalent `as_chunks` forms
+preserve every literal/model byte, and SOURCE/intent/adapter reruns pass.
+Strict all-target/all-feature IO/ACE/Access checks, minimal builds and seven
+existing native transaction tests pass. One strict attempt exhausted compiler
+cache space; only regenerable ordinary incremental artifacts were cleared before
+the passing retry. This addition supplies no journal filesystem lifecycle or
+end-user in-place command; current CLI copies retain
+their separate publication policy.
+
 Column fixed/updatable masks follow the pinned
 [ColumnImpl reference](https://raw.githubusercontent.com/jahlborn/jackcess/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java).
 Only the property DDL flag bit is admitted, confirmed against the reviewed

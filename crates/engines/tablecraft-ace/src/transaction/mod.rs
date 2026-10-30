@@ -1,5 +1,11 @@
 //! Offline snapshots and optional journaled fixed-image native writes.
 #[cfg(feature = "journal")]
+mod intent;
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeInt32EditIntent, NativeIntentError, RecoverableEditError, RecoverableNativeEditPlan,
+};
+#[cfg(feature = "journal")]
 mod write;
 use crate::{Header, InspectError, header, inspect_header};
 use std::{
