@@ -144,7 +144,7 @@ fn column(field: &NativeColumn, property: &NativeProperty) -> Result<(), EditErr
         .iter()
         .any(|key| key.eq_ignore_ascii_case(name))
     {
-        property.flags() == 0 && typed(property, data_type::INT16, size_of::<i16>())
+        property.flags() == 0 && ui_integer(property)
     } else if name.eq_ignore_ascii_case("ColumnHidden") {
         property.flags() == 0 && ui_boolean(property)
     } else if name.eq_ignore_ascii_case("TextAlign") {
@@ -221,6 +221,25 @@ fn column(field: &NativeColumn, property: &NativeProperty) -> Result<(), EditErr
         return Err(refused());
     }
     Ok(())
+}
+
+// Access-defined Datasheet dimensions retain the INT16 tag even when their
+// native property payload is a signed/zero extended four-byte representation.
+// This reader grants only unchanged display metadata in a Boolean row preview.
+fn ui_integer(property: &NativeProperty) -> bool {
+    if property.native_type() != data_type::INT16 {
+        return false;
+    }
+    match property.raw_value() {
+        [_, _] => true,
+        raw @ [low, high, _, _] => {
+            i32::from(i16::from_le_bytes([*low, *high]))
+                .to_le_bytes()
+                .as_slice()
+                == raw
+        }
+        _ => false,
+    }
 }
 
 fn typed(property: &NativeProperty, kind: u8, width: usize) -> bool {
