@@ -17,7 +17,10 @@ exact stored carriers, with checked integral assignment to Int32.
 one local table and multiple fixed-field assignments. It rejects duplicate
 resolved targets before evaluation and evaluates all RHS expressions against
 original rows before one backend finish. Pure-expression limits remain; the
-single-column `plan_update` and ordinary editor keep their existing scope.
+single-column `plan_update` and ordinary editor keep their existing target and
+assignment scope. UPDATE and DELETE now share a closed
+[deterministic scalar function profile](MUTATION_SCALAR_FUNCTIONS.md), without
+enabling general retrieval calls or changing their eager semantics.
 Variable/LVAL modes retain one target. Normal ACE write admission and retrieval
 behavior are unchanged.
 The seven neutral batch tests pass alongside the nine existing neutral edit
@@ -629,7 +632,8 @@ The native adapter's lazy metadata cache and evidence are in
 filters, sorting and supported aggregate arguments. Built-in arguments participate
 in aggregate/group validation, correlation mapping and source projection pruning;
 IIf retains both branches and their errors. Arity/qualification checks run during
-binding, including on empty sources. UPDATE retains its no-call policy. See
+binding, including on empty sources. UPDATE retains its closed mutation-function
+profile. See
 [built-in contracts and evidence](../expressions/EXPRESSIONS.md#explicit-isnull-and-iif-built-ins).
 
 Query-context `Nz(value[, fallback])` uses the same bound traversal and shared
@@ -671,7 +675,9 @@ includes the documented Monday anomaly and unqualified native week boundaries.
 CByte/CInt/CLng/CLngLng/CBool now bind through shared checked numeric conversion
 kernels, preserving result widths, all argument fields and explicit NULL/overflow
 failures. CByte's Boolean true exception is separate from signed numeric -1.
-No locale-dependent input parsing or UPDATE call permission is introduced. See
+No locale-dependent input parsing is introduced. UPDATE and DELETE admit these
+calls only through the closed [mutation scalar profile](MUTATION_SCALAR_FUNCTIONS.md)
+and retain their stored-result checks. See
 [conversion scope and evidence](../expressions/EXPRESSIONS.md#checked-numeric-and-boolean-conversion-functions).
 
 CSng/CDbl use the existing shared conversion call node, preserving Single/Double
@@ -686,14 +692,17 @@ parameters, aggregate/group validation and correlated references. It returns the
 Currency carrier with the [explicit conversion rules](../expressions/EXPRESSIONS.md#explicit-currency-conversion).
 It does not enable implicit Decimal arithmetic, Currency averages or different
 comparison/promotion rules. NULL failures remain visible through eager evaluation;
-unsupported calls and UPDATE calls remain rejected before execution.
+unlisted calls remain rejected before execution. UPDATE/DELETE can explicitly
+bind this conversion under the closed mutation profile; that does not implicitly
+narrow a Currency result to an Int32 target.
 
 ## Explicit Decimal conversion
 
 CDec uses the existing Convert planning/traversal node and full-range scalar
 Decimal values, independently of declared native field precision. Grouped,
 correlated, parameter and source-field validation retain their existing rules;
-wrong NULL/input shapes fail explicitly and UPDATE calls remain blocked.
+wrong NULL/input shapes fail explicitly. The closed mutation profile now admits
+CDec explicitly; exact stored carrier and declared precision checks remain.
 [Conversion contracts](../expressions/EXPRESSIONS.md#explicit-decimal-conversion-and-expression-range)
 distinguish exact inputs from the unqualified normalized floating profile.
 Decimal arithmetic and aggregates now use the checked kernel below.

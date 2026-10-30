@@ -31,8 +31,11 @@ The current profile permits one local table, an optional alias and one or more
 SET assignments in fixed-field modes. Variable and LVAL modes retain exactly one
 target column. It reuses the existing pure scalar expression/WHERE profile:
 field references, literals, unary/binary expressions, BETWEEN, IN lists and
-three-valued filtering. Only Boolean TRUE selects a row. Parameters, calls,
-aggregates, subqueries, joins and external/saved targets remain refused. Syntax and local-target shape are validated before opening files;
+three-valued filtering. The closed [deterministic mutation function set](../../query/MUTATION_SCALAR_FUNCTIONS.md)
+adds existing conversions, eager IIf/Nz, selected text operations and numeric
+functions. Only Boolean TRUE selects a row. Parameters, unlisted calls,
+aggregates, subqueries, joins and external/saved targets remain refused. Syntax
+and local-target shape are validated before opening files;
 actual names, fields and mutation eligibility are checked against the source.
 
 The editor captures one immutable image and one complete scalar snapshot. Target
@@ -62,7 +65,7 @@ The explicit `StoredScalar` profile accepts nullable NULL and exact stored
 carriers under their shared type descriptors. Int32 targets retain the existing
 checked Byte/Int16/Int32/Int64 assignment law, so ordinary SQL `Score=11` works.
 Other types are not silently coerced. This does not broaden Variant promotion,
-functions or the ordinary `ExistingInt32` editor.
+assignment coercions or the ordinary `ExistingInt32` carrier law.
 
 ## Native mode and publication
 

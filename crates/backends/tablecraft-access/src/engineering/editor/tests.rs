@@ -20,6 +20,7 @@ use tablecraft_testkit::access as support;
 pub(in crate::engineering) mod fixture;
 
 mod batch;
+mod scalar_functions;
 mod source;
 use source::source;
 

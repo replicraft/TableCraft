@@ -69,6 +69,7 @@ fn bind_assignments(
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: false,
+        mutation_scalar: true,
         collection_criteria: false,
         active_queries: Vec::new(),
         owner: crate::external_sources::SourceNamespace::Root,
@@ -116,7 +117,7 @@ fn bind_assignments(
         .map_err(|_| QueryError::Allocation)?;
     for (assignment, column) in update.assignments.iter().zip(columns) {
         let value = binder.expression(&assignment.value, &scopes, false, 1)?;
-        if !pure(&value) {
+        if !super::mutation_scalar::admitted(&value) {
             return Err(QueryError::Unsupported);
         }
         assignments.push(BoundAssignment { column, value });
@@ -127,7 +128,10 @@ fn bind_assignments(
         .as_ref()
         .map(|filter| binder.expression(filter, &scopes, false, 1))
         .transpose()?;
-    if filter.as_ref().is_some_and(|filter| !pure(filter)) {
+    if filter
+        .as_ref()
+        .is_some_and(|filter| !super::mutation_scalar::admitted(filter))
+    {
         return Err(QueryError::Unsupported);
     }
 
@@ -135,17 +139,4 @@ fn bind_assignments(
         assignments,
         filter,
     })
-}
-
-// Bound recursion is already limited by Binder. Reuse scalar/retrieval semantics,
-// but never permit a hidden scan, aggregate, parameter or output-slot dependency.
-fn pure(expression: &Expr) -> bool {
-    match expression {
-        Expr::Literal(_) | Expr::DateLiteral(..) | Expr::Field { depth: 0, .. } => true,
-        Expr::Unary(_, value) | Expr::IsNull(value, _) => pure(value),
-        Expr::Binary(_, left, right) => pure(left) && pure(right),
-        Expr::Between(value, first, last, _) => pure(value) && pure(first) && pure(last),
-        Expr::InList(value, values, _) => pure(value) && values.iter().all(pure),
-        _ => false,
-    }
 }

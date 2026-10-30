@@ -1,0 +1,224 @@
+{
+  "date": "2026-10-29",
+  "feature": "Closed deterministic UPDATE/DELETE scalar functions",
+  "checks": {
+    "all_source_gates_first": {
+      "exit_code": 0,
+      "functions": 3,
+      "tuple_whole_expected_cases": 6,
+      "delete_whole_expected_cases": 8,
+      "Text_expectations": "Typed rows only; no complete raw-image oracle"
+    },
+    "neutral_api_first": {
+      "exit_code": 0,
+      "functions": 7
+    },
+    "access_api_first": {
+      "exit_code": 0,
+      "functions": 42,
+      "new_functions": 6
+    },
+    "query_regression_corrected": {
+      "exit_code": 0,
+      "library_functions": 78,
+      "integration_functions": 44,
+      "integration_targets": 8
+    },
+    "CLI_api_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 29
+    },
+    "strict_5_packages_first": {
+      "exit_code": 0
+    },
+    "minimal_4_libraries_first": {
+      "exit_code": 0
+    },
+    "scoped_formatting": {
+      "exit_code": 0
+    }
+  },
+  "contract": "Dedicated mutation-call binding on UPDATE/DELETE only, not general retrieval permission. Existing numeric/Boolean conversions, eager IIf/Nz, Len/Left/Right/Mid/LTrim/RTrim/Trim, Abs/Int/Fix/Round. Original immutable frames and one finish; exact storage carriers and native admission unchanged. Reject hidden/runtime/domain/UDF/correlated/collection/parameter/source capabilities at binding even on false/empty sources.",
+  "code": [
+    {
+      "path": "crates/query/tablecraft-query/src/binding/mod.rs",
+      "bytes": 12299,
+      "sha256": "003ff602ab7ae7ed088c05cfef5bf1a2c6b2be063eee198b42965e9d28db90a6"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/calls.rs",
+      "bytes": 18727,
+      "sha256": "3443b59904165a0577f57b902824b0dec806fc20dc80c68bd78966f85c486cab"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/mutation_scalar.rs",
+      "bytes": 5421,
+      "sha256": "bede0c9ddba96d921e3150cf29855dc217cf7b2aebb5ddd787945ea7dc3c8500"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/editing.rs",
+      "bytes": 4290,
+      "sha256": "f71a4b4cae15e560fed22b86f0f6bee448af3557e04af5d2e3eac3a5ba460239"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/deleting.rs",
+      "bytes": 2461,
+      "sha256": "f588f86f6ddc2c9e9b8d448668f80c25d9389ee3cb5570a242115545432c0bc0"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/domain/input.rs",
+      "bytes": 2397,
+      "sha256": "d20f3b3636c9f74bf92ac5dcffce5e7142b9fb966a51bc2729364ece8eb09ee4"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/binding/crosstab/constants/tests.rs",
+      "bytes": 6576,
+      "sha256": "d272067959249fa701c8e7851db2219620e667f9bb3d75abf63f24a14af5c549"
+    },
+    {
+      "path": "crates/query/tablecraft-query/src/execution/deleting/tests.rs",
+      "bytes": 6697,
+      "sha256": "2de31f5bffa7031a5a92b939e904de52c1d87e59f5e8b65a05623179370dca68"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/editing.rs",
+      "bytes": 11189,
+      "sha256": "e9bc431975d67c2b8bddcf414dff8029e1a75886ec3d4f4bd86ed75f01a2961c"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mutation_scalar.rs",
+      "bytes": 120,
+      "sha256": "e852e97904c8f82809f24d45868c007e5a28fa713eb0e0324217eebc4a5b025a"
+    },
+    {
+      "path": "crates/query/tablecraft-query/tests/mutation_scalar/mod.rs",
+      "bytes": 9167,
+      "sha256": "51416b65543d14c4e61d530e948d6c58f600fd9d2984924f879b2579e7ac8949"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting.rs",
+      "bytes": 3182,
+      "sha256": "7c76287a7cf9b126c748f79efbe8ceddcc89c81c044601c7be3949b6d540c390"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting/tests.rs",
+      "bytes": 4991,
+      "sha256": "d01a3b9b128c9492908cb9048e1f2a678c9bb7e4fadff01c58f207372e781d88"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting/tests/functions.rs",
+      "bytes": 1659,
+      "sha256": "b2a4a235860a1f8a8350549926ae83bd043810714bb1bfa600b71cb29698486b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests.rs",
+      "bytes": 8431,
+      "sha256": "787bc96184063159f0db3de5c6cefc8139fafa21b613c905e2bcb6146ace794f"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/batch.rs",
+      "bytes": 6782,
+      "sha256": "db8450960ff27605803f700d2ac66d4c6b54387c354e791a6195e4392776399d"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/batch/functions.rs",
+      "bytes": 1775,
+      "sha256": "435438aa9a13d61f5b1b0c2c08acad6cdc8882a13b363ba590df0915534391e0"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/tests/scalar_functions.rs",
+      "bytes": 1636,
+      "sha256": "0710cd5dd45a01a8751db4cdf4d5f865b4ff8773c46bd42b252630b12950cd0d"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_updates.rs",
+      "bytes": 11200,
+      "sha256": "66567ed31e499650ae43b792858b7bdfda342800e652dfa4bd46b7f0419a561a"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_deletes.rs",
+      "bytes": 10809,
+      "sha256": "b60116158f160fb490eee782b6bbb7d4a7ac0de129c53d01e1838ba49c2f3e95"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/complete-source-gate-freeze.json",
+      "bytes": 1981,
+      "sha256": "8d1611dcaa18189bfeeb1e6ff1344a4d25d2909b83daa1a9bd312f66bc394ecc"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/tuple-source-first-root.log",
+      "bytes": 642,
+      "sha256": "9c7e27583601757f634eb6181a6e3ae2718aa0c5ea8a9d07b3d363066666be49"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/text-source-first-root.log",
+      "bytes": 407,
+      "sha256": "0287d140ecb25a61ecd81dd0007b8a2a4196cc91af5c7e98d5ef4f0a8762ce03"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/delete-source-first-root.log",
+      "bytes": 409,
+      "sha256": "bde0742841bcd457e4f0a96625087a53c9d3983466fc855df4d536601034075e"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/integrated-first-freeze.json",
+      "bytes": 3665,
+      "sha256": "2e3c866b440f1f55a65cfdf35b8087c37627ae4f87fd32d067b878e871267844"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/neutral-api-first-root.log",
+      "bytes": 1007,
+      "sha256": "3fa369eb7b8840be9b46324696225f7b5e2e3ad4f70d0f2d9d19aafa3f562123"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/access-api-first-root.log",
+      "bytes": 5268,
+      "sha256": "93aa309fa403b3c29a16e0acf9a9e39c2814919d182497ea5f9713cb48c80be2"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/query-regression-first-root.log",
+      "bytes": 9867,
+      "sha256": "c7c5ea81be5f905c608e2d1d0fa92d35e8ee942b5f008dbce0f581ec9ea6c871"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/stale-expectations-freeze.json",
+      "bytes": 462,
+      "sha256": "308fad5d642ae33d809b0eef4f2a62d7c40466723ee3a8e14980cc37607c9599"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/query-regression-second-root.log",
+      "bytes": 14442,
+      "sha256": "2c236d4dda9726dc03d5717a0026bad41ebb1321f7ba005a057e9a8276051282"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/cli-api-regression-first-root.log",
+      "bytes": 7704,
+      "sha256": "ff5ffa8556cf5a547a02ed31d50e2b2f2511de3eb65aebc8a6af47f4c15268a3"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/clippy-first-root.log",
+      "bytes": 634,
+      "sha256": "72def5672db27ca6ba75df3824f4d84056a06aabed50816ccbf0f61f33b7a742"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/minimal-first-root.log",
+      "bytes": 414,
+      "sha256": "87ad43830535440d44e1fe8f51836177ef21df6b0e8f503df11f61dd38b983ad"
+    },
+    {
+      "path": ".cache/ace16-mutation-scalar-functions-next-20261029/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "retained_observations": [
+    "First broad Query run passed77 library functions and failed one old blanket Abs-call refusal. Exact old Abs DELETE is now a positive one-finish assertion; Rnd/domain remain refused.",
+    "Eight old empty-source UPDATE blanket-call refusals migrated to positive binding/admission controls; genuine real-row nullable/incompatible-carrier failures remain zero-finish refusals. Exact old statements retained, no production or raw-image golden modified.",
+    "Post-check test-name-only correction clarifies omitted Nz fallback carriers. Query-context omitted fallback is empty Text, not expression-only Empty; production already used the documented query evaluator."
+  ],
+  "qualification": "Six tuple and eight deletion complete literal images remain independent expected authorities; Text function output is typed-row qualification. Existing normal Jet4 target restrictions and normal ACE save refusal remain.",
+  "native_Access_qualification": false
+}

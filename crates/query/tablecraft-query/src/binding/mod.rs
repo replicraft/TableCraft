@@ -29,6 +29,7 @@ mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_batch_update, bind_update};
 mod literals;
 mod multivalue;
+mod mutation_scalar;
 mod named;
 mod parameters;
 pub(crate) use parameters::Parameter;
@@ -84,6 +85,7 @@ pub(super) struct Binder<'a> {
     parameter_scope: Vec<usize>,
     // Named sources and scalar calls remain unavailable to UPDATE binding.
     retrieval: bool,
+    mutation_scalar: bool,
     collection_criteria: bool,
     active_queries: Vec<crate::named_identity::NamedIdentity>,
     owner: crate::external_sources::SourceNamespace,
@@ -213,6 +215,7 @@ pub(crate) fn prepare_stage<'a>(
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: true,
+        mutation_scalar: false,
         collection_criteria: false,
         active_queries: Vec::new(),
         owner: options.owner,

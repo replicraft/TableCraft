@@ -296,3 +296,59 @@ fn sql_encrypted_sources_and_conflicting_modes_refuse_without_plaintext_output()
     }
     assert_eq!(fs::read(input).unwrap(), ciphertext);
 }
+
+#[test]
+fn deterministic_text_functions_publish_one_useful_engineering_update() {
+    let directory = tempfile::tempdir().unwrap();
+    let before = source::source();
+    let original = rows(&before);
+    let input = directory.path().join("functions-source.accdb");
+    let output = directory.path().join("functions-edited.accdb");
+    fs::write(&input, &before).unwrap();
+
+    success(
+        run(
+            "UPDATE Items SET Label=Left(Trim(Label & 'X  '),2)",
+            &input,
+            &output,
+            &["--variable"],
+        ),
+        4,
+        4,
+    );
+    let after = rows(&fs::read(&output).unwrap());
+    for (position, label) in ["AX", "BX", "AX", "CX"].iter().enumerate() {
+        assert_eq!(after[position][1], Value::Text((*label).to_owned()));
+        for column in [0, 2, 3] {
+            assert_eq!(after[position][column], original[position][column]);
+        }
+    }
+    assert_eq!(fs::read(input).unwrap(), before);
+}
+
+#[test]
+fn eager_or_forbidden_function_updates_publish_no_prefix() {
+    let directory = tempfile::tempdir().unwrap();
+    let before = source::source();
+    let input = directory.path().join("functions-source.accdb");
+    fs::write(&input, &before).unwrap();
+
+    for (position, sql) in [
+        "UPDATE Items SET Score=IIf(Id=1,10,1/0)",
+        "UPDATE Items SET Score=Nz(Score,1/0)",
+        "UPDATE Items SET Score=Rnd() WHERE FALSE",
+        "UPDATE Items SET Score=DCount('*','Hidden') WHERE FALSE",
+    ]
+    .iter()
+    .enumerate()
+    {
+        let output = directory
+            .path()
+            .join(format!("function-refused-{position}.accdb"));
+        let result = run(sql, &input, &output, &[]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(!output.exists());
+        assert_eq!(fs::read(&input).unwrap(), before);
+    }
+}
