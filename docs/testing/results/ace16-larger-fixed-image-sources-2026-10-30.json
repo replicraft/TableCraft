@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Larger fixed-update complete SOURCE images; no larger capture or mutation permission",
+  "source_pairs": 12,
+  "source_images": 24,
+  "additional_over_cap_originals": 2,
+  "qualifier_functions": 1,
+  "headers": [
+    5,
+    6
+  ],
+  "largest_qualified_pair_bytes": 83886080,
+  "largest_original_only_bytes": 83890176,
+  "default_image_cap_bytes": 67108864,
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images.rs",
+      "sha256": "7702b333688fca348effaf76f31dce5c005fc7a878e5e6034b1b9b4cba90bf96"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/corrected.rs",
+      "sha256": "976b8c849578c09e58df6517f6b1c18a9bc62e8eafd93a80df092bdfc00e4ff2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model/placement.rs",
+      "sha256": "4a56362fa0940b6eae084b69d11927121094ce6262e40d025f536cb4e72d8e47"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model/scalar.rs",
+      "sha256": "40a6a8cd01162b8d8f66cf08d0289630a3f1c6d7c316f22e08251dd71f1bdc7e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model.rs",
+      "sha256": "4b46f25ec84e4115873a60cb87e0994932618689e1a18634e1e0497fdaf01b50"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/source.rs",
+      "sha256": "6f0d9275ddc3d3f65cead34356ca106b5f0f2f2b59429b0e098696d141e2157e"
+    }
+  ],
+  "checks": [
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-abandoned-body-corrected-root.log",
+      "sha256": "1caa824df468663a5714765bcc69a7e14eefae87c0a385fbbfcf6d84e32be2d2",
+      "name": "inert_source_qualification",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-strict-first-root.log",
+      "sha256": "a24c27b8392cac91110e288f6bd03274f638bddf954487b332d2a0955cdf8656",
+      "name": "native_library_and_source_target_strict",
+      "exit_code": 0
+    }
+  ],
+  "additional_root_checks": {
+    "format": "passed",
+    "documentation_links": "passed",
+    "dependency_boundaries": "passed"
+  },
+  "retained_first_failures": [
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-first-root.log",
+      "sha256": "ee08f0f5a8133daf0c67506f9c50bf9d3df9205b5b15c7c0ebfda1e11f67ebe4",
+      "kind": "compile-only",
+      "reason": "IndexInspection collection accessor corrected; no model bytes changed"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-accessor-corrected-root.log",
+      "sha256": "9892c9e765c22b4ee29542ac892062bdbdefdb542354aca4f3549c8c24805f2c",
+      "kind": "inert_SOURCE_runtime",
+      "reason": "Original expected retained a selected change in abandoned low DATA12; additive named derivative restores all abandoned original DATA/INDEX bodies before writer introduction"
+    }
+  ],
+  "predecessor_receipts": [
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-private-first-freeze.json",
+      "sha256": "817d504aaf698cca08f3dad9d19fdc052179588b2786cf75049314436ca7df0a"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-installed-first-freeze.json",
+      "sha256": "69c014c4b402e52c7008094d042a0e9c7e6648de056bca8d64a1615bf65fcda2"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-accessor-corrected-freeze.json",
+      "sha256": "bb57467233356839e31dde6de934116f450917ea1d6cf51857a3e523a70d8226"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-image-source-next-20261030/source-abandoned-body-derivative-freeze.json",
+      "sha256": "34a781bad91d20ed87785bb6cac8261f5048ac147e8c2eddfe5a66f3f82b4cd3"
+    }
+  ],
+  "original_model_constructor_bodies_unchanged": true,
+  "original_source_bytes_unchanged": true,
+  "constructor_derivative": "corrected::case",
+  "nonselected_bytes_and_abandoned_pages_equal": true,
+  "mutation_calls": 0,
+  "production_capture_policy_changes": false,
+  "normal_save_or_journal_or_macro_permission_changed": false
+}
