@@ -1,6 +1,7 @@
 //! Explicit SQL insertion target consuming one existing engineering preview.
 pub(super) mod clock;
 mod guards;
+pub(super) mod named;
 mod omitting;
 use super::{EngineeringCopy, EngineeringRequest, preview};
 use crate::editing::NativeEditError;
@@ -171,6 +172,7 @@ impl InsertableTable for AccessEngineeringInserter {
 
         copy.map_err(|error| match error {
             super::EngineeringError::Engine(error) => NativeEditError::Edit(error),
+            super::EngineeringError::Binding(error) => error,
         })
     }
 }

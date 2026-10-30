@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Named-field bulk INSERT
+
+Typed `write preview-insert --field NAME` now maps repeated field names through
+actual source metadata and finishes the whole TSV batch once. Missing names
+retain omission intent; supplied NULL remains distinct. Generated companions use
+the actual engine binding, and optional clocks retain needed-only evaluation.
+The [CLI contract](access/writes/ENGINEERING_COPIES.md) records 28 source-first
+pairs, 28 direct and 42 CLI whole-image comparisons plus move, name/refusal and
+budget controls, all focused checks passing on their first run. No-field input
+keeps its positional path. The affected round passes 70 adapter, 48 CLI unit
+and 66 CLI integration functions, strict checks and the minimal adapter build.
+Native save and macro qualification do not expand.
+
 ## Typed UPDATE request files
 
 `write preview-update --set-file TSV` now accepts bounded, headerless quoted

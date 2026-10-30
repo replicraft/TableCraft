@@ -44,7 +44,7 @@ pub(crate) enum Command {
     /// Make an experimental expected-value UPDATE copy; required macros do not run.
     #[command(name = "preview-update")]
     Update(Update),
-    /// Make an experimental complete-row INSERT copy from quoted typed TSV.
+    /// Make an experimental INSERT copy from positional or named typed TSV.
     #[command(name = "preview-insert")]
     Insert(Insert),
     /// Make an experimental DELETE copy using exact original record bytes.
@@ -92,6 +92,10 @@ pub(crate) struct Insert {
     /// requires empty DATA. `omitted` KIND with empty DATA resolves only this
     /// field's native default; text DATA "null" or "omitted" remains literal.
     pub(super) requests: PathBuf,
+    /// Written field order, repeated once per TSV KIND/DATA pair. Absent
+    /// native fields retain omission intent; positional input remains strict.
+    #[arg(long = "field", value_name = "NAME")]
+    pub(super) fields: Vec<String>,
     /// Explicit increment policy and original LAST-issued counter precondition.
     /// TSV contains only companions excluding the generated primary column.
     #[arg(long, allow_hyphen_values = true, conflicts_with = "incrementing")]

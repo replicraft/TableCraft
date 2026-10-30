@@ -2,6 +2,12 @@
 
 ## Current product priority
 
+Named-field typed bulk INSERT now accepts repeated
+[`--field NAME`](access/writes/ENGINEERING_COPIES.md) selectors, retaining missing
+fields as original omission intent and completing one source-bound batch.
+Source-first, direct/CLI complete-image checks and affected regressions pass,
+with normal-save and required-macro gates unchanged.
+
 Typed expected-value UPDATE now also accepts bounded
 [`--set-file` quoted TSV](access/writes/ENGINEERING_COPIES.md), so large values
 need not be command arguments. It reuses the existing typed/native services and

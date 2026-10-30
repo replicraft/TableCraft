@@ -100,17 +100,40 @@ The bits kinds supply hexadecimal native value bits rather than rounded display
 numbers. Extended Date/Time uses exactly `YYYY-MM-DDTHH:MM:SS.fffffff` without a
 timezone and remains subject to the ACE2019-only field profile.
 
-## Complete-row INSERT
+## Positional and named-row INSERT
 
 ```sh
 tablecraft write preview-insert offline.accdb inserted.accdb Items rows.tsv
 ```
 
-Input is headerless quoted TSV, with one KIND/DATA pair per column in native
-column order. Fields containing tabs, newlines or quotes use CSV quoting with a
+Without `--field`, input is headerless quoted TSV, with one KIND/DATA pair per
+column in native column order. Fields containing tabs, newlines or quotes use CSV quoting with a
 tab delimiter and doubled quotes. Every row has the same arity. NULL is a `null`
 KIND with empty DATA; `text` DATA containing "null" is literal text. Empty Text and
 Binary are distinct from NULL. All values are parsed before opening the database.
+
+Repeat `--field NAME` to write the file in an explicit named order instead.
+Every row then contains one KIND/DATA pair per written name, in that order;
+fields absent from the name list retain omission intent:
+
+```sh
+tablecraft write preview-insert contacts.accdb inserted.accdb Contacts rows.tsv \
+  --field Name --field Id
+```
+
+For that example the file could contain:
+
+```text
+text	Alice	int32	4
+text	Bob	int32	5
+```
+
+Any unlisted fields must have a qualified needed default or permit NULL. Names
+resolve once under the existing native metadata name policy; duplicate resolved
+fields, unknown names and explicit generated-primary names in incrementing mode
+refuse before defaults. Supplied values move into native declaration/companion
+order without cloning Text/Binary payloads. Every row is mapped before one
+original-image batch finish. No positional/native order is guessed from a name.
 
 `omitted` KIND with empty DATA requests only that field's qualified source
 default or nullable fallback; it is distinct from supplied `null`. Two or more
@@ -130,7 +153,8 @@ int32	5	text	Bob	null	""
 ```
 
 The engine validates the actual schema and requires its qualified primary/index
-profile. Values are never defaulted or coerced. Existing generated columns remain
+profile. Supplied values are never replaced by defaults or coerced; only original
+omissions authorize needed native default/nullable resolution. Existing generated columns remain
 refused by the manual path. Explicit `--incrementing` selects increment-by-one
 engineering behavior and obtains the original LAST-issued counter from the same
 captured image. Use `--incrementing-last LAST` instead to supply an exact counter
@@ -139,8 +163,10 @@ Increment/Random mode or derives a seed from live MAX. The existing engine previ
 independently revalidates the counter before returning its complete candidate.
 
 Both incrementing modes take companions only, excluding the generated primary
-column. Every companion must be supplied, including explicit NULLs. The current
-TSV protocol cannot represent a zero-companion row; generated-only tables require
+column identified by the same source binding. Positional files retain full
+companion width, using explicit NULL or `omitted` markers as intended. Named files
+may select a subset of those companions. The current TSV protocol cannot represent
+a zero-companion row; generated-only tables require
 the engine API. Qualified field-level text defaults remain inert when all
 ordinary values are supplied; they are never evaluated or substituted for NULL.
 Unqualified default declarations and NewValues properties remain refused.
@@ -218,8 +244,7 @@ write/sync/publication failures, existing files and symlink/hardlink aliases,
 final-callback cancellation, and exact versus one-below output-byte quotas. These
 and two normal Jet 4 host controls pass within the complete 28-function CLI unit
 run. The earlier workflow results below remain historical results for the original
-owner before extraction; the four existing normal CLI update integration functions
-are pending the current regression run.
+owner before extraction; subsequent workflow verification is recorded below.
 
 `tablecraft_access::engineering` exposes the same typed preparation for other
 hosts without opening or publishing files. `EngineeringCopy` has no journal,
@@ -271,3 +296,20 @@ cancellation. Affected regressions passed 47 CLI unit functions and 39 integrati
 functions (27 query UPDATE, seven typed write and five file-transport functions).
 All-target/all-feature CLI strict checks passed. These are transport and
 engineering-copy checks, not a native Access comparison.
+
+## Named bulk INSERT evidence
+
+Before the mapper, 28 source/expected pairs (56 images) qualified reordered full
+rows, missing constant/clock-default fields and missing nullable Id with explicit
+zero payload and a cleared presence bit. The original source/expected bodies
+remain unchanged. The first focused round passed one move-only Text/Binary unit
+control, one CLI argument control and seven API functions: 28 direct-service and
+42 CLI complete images, both counter policies, existing-output refusals, resolved
+name/shape/carrier failures, explicit NULL versus omission, zero/one clock reads,
+and shared exact/one-below resource pools with final cancellation. The old
+no-field path and existing native services remain separate and unchanged.
+The affected round passes 70 adapter, 48 CLI unit and 66 CLI integration
+functions. Strict all-target/all-feature checks, the minimal adapter build,
+formatting, documentation links and dependency boundaries pass. This does not
+qualify native Access saves, data-macro absence or additional physical mutation
+profiles.

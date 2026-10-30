@@ -18,14 +18,7 @@ pub(in crate::commands::write) fn inserts<T>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Parsed<T>, Error> {
-    let rows: Vec<Vec<InsertFieldValue>> = super::insert_fields(
-        bytes,
-        max_value_bytes,
-        field,
-        std::convert::identity,
-        budget,
-        cancelled,
-    )?;
+    let rows = rows(bytes, max_value_bytes, budget, cancelled)?;
     let mut omitted = false;
     for row in &rows {
         for value in row {
@@ -61,6 +54,22 @@ pub(in crate::commands::write) fn inserts<T>(
     }
     tick(budget, cancelled)?;
     Ok(Parsed::Complete(complete))
+}
+
+pub(in crate::commands::write) fn rows(
+    bytes: &[u8],
+    max_value_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<InsertFieldValue>>, Error> {
+    super::insert_fields(
+        bytes,
+        max_value_bytes,
+        field,
+        std::convert::identity,
+        budget,
+        cancelled,
+    )
 }
 
 fn field(kind: &str, data: &str, budget: &mut ResourceBudget) -> Result<InsertFieldValue, Error> {

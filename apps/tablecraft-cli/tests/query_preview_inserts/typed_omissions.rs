@@ -3,6 +3,8 @@
 mod api;
 #[path = "typed_omissions/model.rs"]
 mod model;
+#[path = "typed_omissions/named.rs"]
+mod named;
 
 use super::{PAGE, budget, checked};
 use model::{Kind, Row};

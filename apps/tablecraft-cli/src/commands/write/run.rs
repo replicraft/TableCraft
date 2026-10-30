@@ -11,13 +11,14 @@ use crate::{
 };
 use std::fmt::Write;
 use tablecraft_access::engineering::{
-    self, DeleteMode, EngineeringCopy, EngineeringRequest, UpdateMode,
+    self, DeleteMode, EngineeringCopy, EngineeringRequest, NamedInsertMode, UpdateMode,
 };
 use tablecraft_ace::{
     AutoNumberRowInsert, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber,
     InspectError, NativeImage, RowInsert, SlotScalarUpdate, inspect_header,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_expressions::functions::dates::clock::Clock;
 
 const SUMMARY_HEADER_BYTES: usize = 512;
 const GENERATED_SUMMARY_BYTES: usize = 64;
@@ -141,9 +142,35 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
 
 fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     let mut budget = args.paths.limits.budget();
+    if args.fields.len() > input::MAX_INPUT_COLUMNS {
+        return Err(invalid("Too many named INSERT fields"));
+    }
+
     let bytes = input::capture(&args.requests, &mut budget, &|| false)?;
     // Construction does not sample a provider or load the system time zone.
     let clock = args.default_clock.map(HostClock::new);
+
+    if !args.fields.is_empty() {
+        let rows = input::presence::rows(&bytes, args.value_bytes, &mut budget, &|| false)?;
+        let mode = match args.incrementing_last {
+            Some(last) => NamedInsertMode::IncrementingLast(IncrementingAutoNumber::new(last)),
+            None if args.incrementing => NamedInsertMode::Incrementing,
+            None => NamedInsertMode::Ordinary,
+        };
+        return publish(
+            &args.paths,
+            EngineeringRequest::NamedInsert {
+                table: &args.table,
+                fields: &args.fields,
+                rows,
+                mode,
+                clock: clock.as_ref().map(|clock| clock as &dyn Clock),
+            },
+            password,
+            &mut budget,
+        );
+    }
+
     if args.incrementing || args.incrementing_last.is_some() {
         let parsed = input::presence::inserts(
             &bytes,

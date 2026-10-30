@@ -82,6 +82,7 @@ impl DeletableTable for AccessEngineeringDeleter {
         )
         .map_err(|error| match error {
             EngineeringError::Engine(error) => NativeEditError::Edit(error),
+            EngineeringError::Binding(error) => error,
         })
     }
 }

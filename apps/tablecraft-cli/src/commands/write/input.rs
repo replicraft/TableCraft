@@ -19,7 +19,7 @@ const CSV_RETAINED_RECORDS: usize = 3;
 const VALUE_FIELDS: usize = 2;
 const DELETE_FIELDS: usize = 2;
 const MAX_RECORD_BYTES: usize = 4096;
-const MAX_INPUT_COLUMNS: usize = 256;
+pub(super) const MAX_INPUT_COLUMNS: usize = 256;
 const HEX_DIGITS_PER_BYTE: usize = 2;
 
 pub(super) fn value_limit(text: &str) -> Result<usize, String> {

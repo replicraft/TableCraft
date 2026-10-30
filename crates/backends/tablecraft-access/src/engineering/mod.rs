@@ -9,12 +9,12 @@ pub use inserter::{AccessEngineeringInserter, ScalarInsertMode};
 pub mod sql;
 pub mod sql_delete;
 pub mod sql_insert;
-use tablecraft_ace::OmittedRowInsert;
 use tablecraft_ace::{
     Ace16AutoNumberInsertPreview, Ace16DeletePreview, Ace16WritePreview, AutoNumberRowInsert,
     EditError, FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, NativeImage,
     RowDelete, RowInsert, SlotScalarUpdate, TableRowDeletes,
 };
+use tablecraft_ace::{InsertFieldValue, OmittedRowInsert};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::dates::clock::Clock;
 use thiserror::Error;
@@ -39,8 +39,32 @@ pub enum DeleteMode {
     Cascading,
 }
 
+/// Explicit generation choice for named typed rows; no stored mode is inferred.
+#[derive(Clone, Copy)]
+pub enum NamedInsertMode {
+    /// Ordinary fields; missing names retain original omission intent.
+    Ordinary,
+    /// Explicit increment-by-one using LAST from the same captured image.
+    Incrementing,
+    /// Explicit increment-by-one with the caller's LAST precondition.
+    IncrementingLast(IncrementingAutoNumber),
+}
+
 /// Typed intent bound to one immutable image. Values and expected bytes are exact.
 pub enum EngineeringRequest<'a> {
+    /// Map explicitly named typed fields once, then finish one original batch.
+    NamedInsert {
+        /// Exact local table, resolved by the existing native metadata service.
+        table: &'a str,
+        /// Written field order; absent fields retain omission intent.
+        fields: &'a [String],
+        /// Owned original values/presence, moved without cloning payloads.
+        rows: Vec<Vec<InsertFieldValue>>,
+        /// Explicit ordinary/source-counter/expected-LAST selection.
+        mode: NamedInsertMode,
+        /// Borrowed provider; only the native needed-default phase may read it.
+        clock: Option<&'a dyn Clock>,
+    },
     /// Apply original-row expected-value assignments.
     Update {
         /// Groups may span tables; engine profile checks remain authoritative.
@@ -191,6 +215,18 @@ pub enum EngineeringError {
     /// Actual typed native preparation, constraint or preservation error.
     #[error(transparent)]
     Engine(#[from] EditError),
+    /// Actual source metadata, field binding or exact carrier failure.
+    #[error(transparent)]
+    Binding(#[from] crate::NativeEditError),
+}
+
+impl From<EngineeringError> for crate::NativeEditError {
+    fn from(error: EngineeringError) -> Self {
+        match error {
+            EngineeringError::Engine(error) => Self::Edit(error),
+            EngineeringError::Binding(error) => error,
+        }
+    }
 }
 
 enum Candidate {
@@ -263,6 +299,27 @@ pub fn preview(
 ) -> Result<EngineeringCopy, EngineeringError> {
     let _span = tracing::debug_span!("access.edit.engineering_preview").entered();
     let candidate = match request {
+        EngineeringRequest::NamedInsert {
+            table,
+            fields,
+            rows,
+            mode,
+            clock,
+        } => {
+            return AccessEngineeringInserter::preview_named(
+                image,
+                table,
+                inserter::named::Request {
+                    fields,
+                    rows,
+                    mode,
+                    clock,
+                },
+                budget,
+                cancelled,
+            )
+            .map_err(EngineeringError::Binding);
+        }
         EngineeringRequest::Update { groups, mode } => Candidate::Rows(match mode {
             UpdateMode::Fitted => image.preview_ace16_batch_updates(groups, budget, cancelled)?,
             UpdateMode::IndexGrowth => {
