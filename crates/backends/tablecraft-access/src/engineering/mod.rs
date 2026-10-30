@@ -3,6 +3,7 @@ mod deleting;
 pub use deleting::AccessEngineeringDeleter;
 mod editor;
 pub use editor::{AccessEngineeringEditor, ScalarUpdateMode};
+pub mod guards;
 mod inserter;
 pub use inserter::{AccessEngineeringInserter, ScalarInsertMode};
 pub mod sql;

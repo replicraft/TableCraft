@@ -18,6 +18,7 @@ mod number;
 use crate::output;
 mod args;
 mod parameters;
+mod prepare_guards;
 mod preview_calculation;
 mod preview_delete;
 mod preview_insert;
@@ -58,6 +59,7 @@ pub(super) enum Error {
     EngineeringDelete(preview_delete::Error),
     EngineeringInsert(preview_insert::Error),
     EngineeringUpdate(preview_update::Error),
+    GuardPreparation(prepare_guards::Error),
 }
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -88,12 +90,16 @@ impl fmt::Display for Error {
             Self::EngineeringDelete(error) => error.fmt(f),
             Self::EngineeringInsert(error) => error.fmt(f),
             Self::EngineeringUpdate(error) => error.fmt(f),
+            Self::GuardPreparation(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
         }
     }
 }
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
+        Command::PrepareGuards(args) => {
+            prepare_guards::run(*args, password).map_err(Error::GuardPreparation)
+        }
         Command::PreviewInsert(args) => {
             preview_insert::run(*args, password).map_err(Error::EngineeringInsert)
         }

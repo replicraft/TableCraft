@@ -1,0 +1,269 @@
+{
+  "feature": "Explicit source-selected before-event guard preparation",
+  "date": "2026-10-30",
+  "state": "Focused source/native/host APIs, runtime regressions, strict/minimal builds, formatter, documentation and boundaries pass",
+  "scope": "Exact nonempty group-kind/property-name selectors in explicit caller engineering order; no detected native macro storage, required coverage, absence, writable candidate or normal-save permission",
+  "source_prerequisite": "ace16-guard-sources-2026-10-30.json",
+  "native": {
+    "normal_first_exit": 0,
+    "ordinal_source_first": {
+      "exit": 0,
+      "functions": 1,
+      "layouts": 2
+    },
+    "core_api_first": {
+      "exit": 0,
+      "functions": 3,
+      "completed_reports": 20,
+      "typed_no_report_failures": 20
+    },
+    "selector_api_first": {
+      "exit": 0,
+      "functions": 3
+    },
+    "authority_api_first": {
+      "exit": 0,
+      "functions": 4
+    },
+    "example_parser_first": {
+      "exit": 0,
+      "functions": 1
+    },
+    "production_lint_first": {
+      "exit": 101,
+      "cause": "One useless InspectError conversion in guards/buffer.rs",
+      "correction": "Remove .into() only",
+      "behavior_or_goldens_changed": false
+    },
+    "log_namespace": ".cache/ace16-macro-guard-execution-next-20261030/",
+    "commit": "9ffefa08"
+  },
+  "host": {
+    "normal_first_exit": 0,
+    "source_first": {
+      "exit": 0,
+      "functions": 2,
+      "core_carriers": 40,
+      "selector_admitted": 6,
+      "selector_native_malformed_controls": 2
+    },
+    "api_first": {
+      "exit": 0,
+      "api_functions": 3,
+      "target_functions_including_sources": 5,
+      "direct_access_cases": 40,
+      "direct_completed": 20,
+      "direct_typed_failures": 20,
+      "cli_core_calls": 40,
+      "cli_completed": 20,
+      "cli_no_stdout_failures": 20,
+      "additional_cli_selector_calls": 12
+    },
+    "parser_first": {
+      "exit": 0,
+      "functions": 2
+    },
+    "source_mutation_or_candidate_publication": false
+  },
+  "combined_final": {
+    "state": "Runtime, strict/minimal, formatter, documentation and boundary checks pass",
+    "log_namespace": ".cache/ace16-write-workflows-final-20261030/",
+    "native_mutation": {
+      "exit": 0,
+      "passed": 540,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-mutation.log",
+        "bytes": 72917,
+        "sha256": "35b4c543fb1d8ba3a8d27dd0ae11616efd7d8f50e77c7580807c76eba65b2578"
+      }
+    },
+    "native_extra": {
+      "exit": 0,
+      "passed": 19,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-extra.log",
+        "bytes": 2770,
+        "sha256": "65c0c4f5e640b95fc25148671bc797d08e686388591933fe37da2dc9b6d99ff5"
+      }
+    },
+    "native_preserved_contracts": {
+      "exit": 0,
+      "passed": 20,
+      "existing_ignored": 3,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/native-preserved.log",
+        "bytes": 3080,
+        "sha256": "4bc3029ba22051383b0af12ad0f55186b051f9019b005a1c8d800f056df58135"
+      }
+    },
+    "access_corrected": {
+      "exit": 0,
+      "library_passed": 63,
+      "preserved_integration_passed": 2,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/access-corrected.log",
+        "bytes": 8436,
+        "sha256": "1698889e9780deb560669178634135fe2475650db3216ca34cb042644246b27b"
+      }
+    },
+    "cli_corrected": {
+      "exit": 0,
+      "unit_passed": 40,
+      "integration_passed": 45,
+      "integration_targets": {
+        "guard_preparation": 5,
+        "preserved_boolean_updates": 4,
+        "query_preview_multiple_variables": 4,
+        "query_preview_updates": 26,
+        "write_previews": 6
+      },
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/cli-phase-corrected.log",
+        "bytes": 9765,
+        "sha256": "9e110088d7ce3388f3a8983f3f282b2a40a75ee1b790283e03ca15b3062c932d"
+      }
+    },
+    "minimal_ace": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-ace.log",
+        "bytes": 183,
+        "sha256": "b19d57267f05b82bab91ea7eb2186a0e6b3efba3f4e3599643d43f1c4659745f"
+      }
+    },
+    "minimal_access": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/minimal-access.log",
+        "bytes": 301,
+        "sha256": "65c547e1b80bfcee2db76d6e5357575d81af3b8206985a69bbb4c3cd1ad94f24"
+      }
+    },
+    "formatter": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation": {
+      "exit": 0,
+      "targets": 6594,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/documentation.log",
+        "bytes": 53,
+        "sha256": "f421f8a61e01628430a21938da16a6e0bb9b3980701b9cabd78d96e83e9fd264"
+      }
+    },
+    "boundaries": {
+      "exit": 0,
+      "packages": 15,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/boundaries.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    },
+    "strict": {
+      "state": "pass",
+      "first_exit": 101,
+      "first_log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict.log",
+        "bytes": 2122,
+        "sha256": "bc23b8a52675d271520c96d4001beed53f6c0cb76c1d005eb85c38e599871c47"
+      },
+      "findings": "Three chunks_exact-to-as_chunks style findings: two example loops and one authority UTF16 test iterator",
+      "correction": "Use as_chunks::<2>() with typed arrays, retaining existing example even-length validation; no behavior or golden changes",
+      "correction_freeze": ".cache/ace16-macro-guard-execution-next-20261030/as-chunks-style-corrected-freeze.json",
+      "final_exit": 0,
+      "final_log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/strict-final.log",
+        "bytes": 403,
+        "sha256": "ee770f147df677adee3e44697c4799ad2fb5f9506017e3ffa25252f86946d5de"
+      },
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "targets": "all targets, all features",
+      "additional_host_style_finding": {
+        "cause": "CLI selector loop chunks_exact(2)",
+        "log": {
+          "path": ".cache/ace16-write-workflows-final-20261030/strict-owner-corrected.log",
+          "bytes": 1157,
+          "sha256": "68fe25566bf84eb87e2a330e72bac9bf63e8d984d277533ee398fc5b0518ffb3"
+        },
+        "correction": "as_chunks::<2>().0 after unchanged parity validation",
+        "correction_freeze": ".cache/ace16-macro-guard-execution-next-20261030/host-as-chunks-style-corrected-freeze.json",
+        "behavior_or_goldens_changed": false
+      }
+    },
+    "earlier_combined_failures": {
+      "access": {
+        "log": {
+          "path": ".cache/ace16-write-workflows-final-20261030/access.log",
+          "bytes": 8811,
+          "sha256": "1ca543aa9331df7f9c96b0566d0d5027b8ad2d6f885b93ad3972de0abbea1f25"
+        },
+        "cause": "Multi-variable adapter boundary expectation; corrected by its owner before successful Access rerun"
+      },
+      "cli_unit": {
+        "log": {
+          "path": ".cache/ace16-write-workflows-final-20261030/cli.log",
+          "bytes": 5115,
+          "sha256": "533a9b98c412385ced4311a898c8a47e1fb5097a76987157bb1cac39d91eeb40"
+        },
+        "cause": "Unrelated multi-variable argument-boundary expectation; corrected by its owner"
+      },
+      "cli_integration": {
+        "log": {
+          "path": ".cache/ace16-write-workflows-final-20261030/cli-corrected.log",
+          "bytes": 9733,
+          "sha256": "e12108106ea05ae6729a242560b709763d0ceb835b14072dcfba64c80860497d"
+        },
+        "cause": "Unrelated typed mixed-profile boundary expectation; corrected before successful CLI rerun"
+      },
+      "guard_focused_api_or_golden_repairs": false
+    },
+    "post_style_authority": {
+      "exit": 0,
+      "passed": 4,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/guard-authority-poststyle.log",
+        "bytes": 924,
+        "sha256": "025bda32634790380128af8a2c98429e4bb95896d3d778f1a1ae58f77a37a668"
+      }
+    },
+    "post_style_example": {
+      "exit": 0,
+      "passed": 1,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/guard-example-poststyle.log",
+        "bytes": 495,
+        "sha256": "c874027e7b52b0f5efe862b15602a022d9671c971a8d56eb514efde74a714aed"
+      }
+    },
+    "post_style_guard_parser": {
+      "exit": 0,
+      "passed": 2,
+      "log": {
+        "path": ".cache/ace16-write-workflows-final-20261030/guard-parser-poststyle.log",
+        "bytes": 592,
+        "sha256": "64f8dea0b785ee7750ae3c760454eba6d71f189e10d66c98b9273147e3f3d5d6"
+      }
+    }
+  },
+  "boundaries": [
+    "All selected property bodies/slots preflight before macro row evaluation",
+    "Unselected XML is never parsed as a program or executed",
+    "Boolean-only If; NULL/nonBoolean refuse rather than becoming WHERE false",
+    "Checked integral Long Number and optional Text Description; literal versus leading-equals expression",
+    "BeforeDelete Old-only; explicit supplied insert has no Old binding",
+    "Provisional actual Int32/NULL value-change Updated, not native timing qualification",
+    "Original source/selectors/intents rebind independently of staged rows/caches/report; same pure laws reused",
+    "No provider, UDF, dynamic Eval, clock, logging-table write, external effect, normal save or macro absence claim"
+  ]
+}

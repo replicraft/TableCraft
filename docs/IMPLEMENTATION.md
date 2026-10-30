@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit before-event guard preparation
+
+The native [guard service](access/schema/NATIVE_BEFORE_EVENT_GUARDS.md) and
+`query prepare-guards` now prepare caller-selected BeforeChange/BeforeDelete
+programs against source-bound SQL intents. They reuse existing scalar evaluation
+and return buffered reports, without producing a candidate or relaxing write
+gates. Original selectors and intents govern a fresh source rebind. Native,
+adapter and actual CLI controls pass, including refusal/no-output and resource
+checks. Native storage discovery, required-macro coverage and absence remain
+unfinished; explicit selection does not establish them.
+
 ## Multiple variable fields in one UPDATE copy
 
 The existing fitted, DATA-growth and joint DATA/INDEX services now compose

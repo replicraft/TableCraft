@@ -10,6 +10,8 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Explicitly prepare caller-selected before-event guards without creating a write candidate.
+    PrepareGuards(Box<super::prepare_guards::Arguments>),
     /// Evaluate one SQL VALUES row with named omissions and create a fresh experimental ACE INSERT copy.
     PreviewInsert(Box<super::preview_insert::Arguments>),
     /// Select original rows with SQL and create a fresh experimental ACE DELETE copy.

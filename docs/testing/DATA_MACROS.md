@@ -7,6 +7,11 @@ readers. Complete semantic detection, qualified absence and execution remain
 unfinished. All production ACE writes remain blocked. This document does
 not establish native Access qualification.
 
+Explicit [selected-source before-event guard preparation](../access/schema/NATIVE_BEFORE_EVENT_GUARDS.md)
+now provides a separate read-only execution consumer for the documented bounded
+If/RaiseError profile. It does not discover native macro storage, certify required
+coverage/absence or authorize normal saves; the complete acceptance below remains.
+
 ## Current evidence and the write gate
 
 The unchanged registered Access example has three ordinary catalog Macro objects:

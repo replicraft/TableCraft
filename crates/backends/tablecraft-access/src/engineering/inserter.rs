@@ -1,5 +1,6 @@
 //! Explicit SQL insertion target consuming one existing engineering preview.
 pub(super) mod clock;
+mod guards;
 mod omitting;
 use super::{EngineeringCopy, EngineeringRequest, preview};
 use crate::editing::NativeEditError;
