@@ -116,9 +116,11 @@ original-file default mutation qualification is claimed.
 
 ## Intended extensions
 
-Date()/Now() defaults remain part of the goal, through an explicit host-injected
-captured clock. Opening or inspecting metadata must never read ambient time or
-execute defaults. Other constant forms/coercions, deterministic defaults,
-DEFAULT VALUES and zero-field SQL forms need their own qualification; the current
-profile is an initial implementation, not a permanent compatibility boundary.
+The additive [captured-clock previews](ACE16_CLOCK_INSERT_DEFAULTS.md) now resolve
+needed Date()/Now() through an explicit operation input. The literal-only methods
+above retain their no-clock behavior and refusal. Opening or inspecting metadata
+never reads ambient time or executes defaults. Other constant forms/coercions,
+deterministic defaults, DEFAULT VALUES and zero-field SQL forms need their own
+qualification; this profile is an initial implementation, not a permanent
+compatibility boundary.
 VBA/runtime execution and normal-save/data-macro qualification remain separate.

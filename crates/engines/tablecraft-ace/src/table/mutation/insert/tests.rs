@@ -2,6 +2,7 @@
 mod authority;
 mod bitmap;
 mod child_split;
+mod clock_defaults;
 mod decimal;
 mod decimal_index_inserts;
 mod display_metadata;

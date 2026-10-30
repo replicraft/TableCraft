@@ -1,9 +1,10 @@
-//! Closed literal defaults; no call, name binding, clock or floating Decimal path.
+//! Bounded literal defaults and separately authorized Date()/Now() binding.
 use crate::{EditError, InspectError, NativeColumn, WriteBlocker, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Currency, Decimal, Value},
 };
+use tablecraft_expressions::functions::dates::clock::ClockFunction;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 use tablecraft_sql::{
     ParseErrorKind, ParseLimits, parse_expression_strict,
@@ -21,6 +22,51 @@ pub(super) fn resolve(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Value, EditError> {
+    let expression = parse(text, budget, cancelled)?;
+    assign(column, expression, budget, cancelled)
+}
+
+pub(super) enum Bound {
+    Literal(Value),
+    Clock(ClockFunction),
+}
+
+pub(super) fn bind_clock(
+    column: &NativeColumn,
+    text: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    let expression = parse(text, budget, cancelled)?;
+    if let Expression::Call {
+        qualifier,
+        name,
+        arguments,
+    } = &expression
+    {
+        if !qualifier.is_empty() || !arguments.is_empty() {
+            return Err(unsupported());
+        }
+        let function = match ClockFunction::resolve(name.as_str()) {
+            Some(function @ (ClockFunction::Date | ClockFunction::Now)) => function,
+            _ => return Err(unsupported()),
+        };
+        if column.scalar_type() != Some(ScalarType::DateTime)
+            || !column.fixed()
+            || column.storage_length() != size_of::<f64>()
+        {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        return Ok(Bound::Clock(function));
+    }
+    assign(column, expression, budget, cancelled).map(Bound::Literal)
+}
+
+fn parse(
+    text: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Expression, EditError> {
     check(budget, cancelled)?;
     if text.len() > MAX_DEFAULT_BYTES {
         return Err(unsupported());
@@ -54,6 +100,15 @@ pub(super) fn resolve(
     })?;
     check(budget, cancelled)?;
 
+    Ok(expression)
+}
+
+fn assign(
+    column: &NativeColumn,
+    expression: Expression,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Value, EditError> {
     let kind = column
         .scalar_type()
         .ok_or(EditError::Unsupported(WriteBlocker::Column))?;

@@ -24,6 +24,7 @@ use crate::{
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::dates::clock::ClockReading;
 
 const COMPARISON_CHUNK: usize = 256;
 
@@ -109,6 +110,26 @@ pub(super) fn prove_with(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    prove_with_clock(image, table, input, staged, after, None, budget, cancelled)
+}
+
+#[allow(
+    clippy::too_many_arguments,
+    reason = "Original operation clock is separate from staged producer facts"
+)]
+pub(super) fn prove_with_clock(
+    image: &NativeImage,
+    table: &str,
+    input: AuditRequest<'_>,
+    staged: &Staged,
+    after: &[u8],
+    reading: Option<ClockReading>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    if reading.is_some() && !matches!(input, AuditRequest::Omitted(_)) {
+        return Err(EditError::Preservation);
+    }
     check(budget, cancelled)?;
     preview::qualify(image)?;
     let (checked, count) = match input {
@@ -156,7 +177,7 @@ pub(super) fn prove_with(
     let id = primary_column::resolve(&checked, budget, cancelled)?;
     let defaults = match input {
         AuditRequest::Omitted(original) => Some(defaults::derive(
-            image, &checked, original, budget, cancelled,
+            image, &checked, original, reading, budget, cancelled,
         )?),
         _ => None,
     };

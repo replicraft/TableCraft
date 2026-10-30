@@ -15,6 +15,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_expressions::functions::dates::clock::ClockReading;
 
 pub(super) enum Rows {
     Ordinary(Vec<RowInsert>),
@@ -41,6 +42,7 @@ pub(super) fn derive(
     image: &NativeImage,
     checked: &TableCheck,
     original: Original<'_>,
+    reading: Option<ClockReading>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Rows, EditError> {
@@ -73,6 +75,7 @@ pub(super) fn derive(
     } else {
         None
     };
+    let mut used_clock = false;
     let mut rows = Vec::new();
     reserve(&mut rows, original.requests().len(), budget)?;
     for request in original.requests() {
@@ -116,7 +119,14 @@ pub(super) fn derive(
                         }
                     }
                     if let Some(declaration) = declaration {
-                        literal::derive(column, declaration.text()?, budget, cancelled)?
+                        literal::derive(
+                            column,
+                            declaration.text()?,
+                            reading,
+                            &mut used_clock,
+                            budget,
+                            cancelled,
+                        )?
                     } else {
                         Value::Null
                     }
@@ -130,6 +140,9 @@ pub(super) fn derive(
         rows.push(values);
     }
     check(budget, cancelled)?;
+    if used_clock != reading.is_some() {
+        return Err(EditError::Preservation);
+    }
     match original {
         Original::Ordinary(_) => {
             let mut result = Vec::new();

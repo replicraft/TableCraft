@@ -1,4 +1,5 @@
 use crate::InspectError;
+use tablecraft_expressions::EvalError;
 use thiserror::Error;
 
 /// A required write capability outside the implemented offline profile.
@@ -40,6 +41,9 @@ pub enum EditError {
     /// The selected incrementing Int32 generator has no remaining values.
     #[error("incrementing AutoNumber range is exhausted")]
     AutoNumberExhausted,
+    /// An explicitly authorized default clock or projection failed.
+    #[error("native default evaluation failed")]
+    DefaultEvaluation(#[source] EvalError),
     /// An edit changed a byte outside its validated field payloads.
     #[error("native edit preservation proof failed")]
     Preservation,
