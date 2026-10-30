@@ -7,8 +7,10 @@ use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 
-mod cases;
-pub(super) mod model;
+mod api;
+pub(crate) mod cases;
+pub(crate) mod model;
+mod ordinal_source;
 
 #[test]
 fn qualify_native_before_event_guard_sources_and_literal_traces_before_execution() {

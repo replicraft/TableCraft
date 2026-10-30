@@ -1,5 +1,5 @@
 #[derive(Clone, Copy)]
-pub(super) enum Intent {
+pub(crate) enum Intent {
     Update {
         row: usize,
         expected: i32,
@@ -16,7 +16,7 @@ pub(super) enum Intent {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum Outcome {
+pub(crate) enum Outcome {
     Pass,
     Raised {
         number: i32,
@@ -29,7 +29,7 @@ pub(super) enum Outcome {
     ArgumentType,
 }
 
-pub(super) struct Case {
+pub(crate) struct Case {
     pub name: &'static str,
     pub event: &'static str,
     pub body: &'static str,
@@ -41,7 +41,7 @@ pub(super) struct Case {
     pub trace: &'static [&'static str],
 }
 
-pub(super) const CASES: &[Case] = &[
+pub(crate) const CASES: &[Case] = &[
     Case {
         name: "changed value false branch",
         event: "BeforeChange",

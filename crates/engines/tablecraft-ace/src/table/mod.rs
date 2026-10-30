@@ -48,6 +48,12 @@ pub use mutation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
+#[cfg(feature = "ace16-write-preview")]
+pub use mutation::{
+    BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
+    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
+};
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;

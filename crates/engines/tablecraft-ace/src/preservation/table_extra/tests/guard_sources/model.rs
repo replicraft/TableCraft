@@ -1,12 +1,12 @@
 use super::super::{fixture, inspect::payload_fixture};
 use tablecraft_testkit::access as raw;
 
-pub(super) const PAGE: usize = 4096;
-pub(super) const ORIGINAL_ROWS: [[i32; 2]; 3] = [[1, 10], [2, 20], [3, 30]];
+pub(crate) const PAGE: usize = 4096;
+pub(crate) const ORIGINAL_ROWS: [[i32; 2]; 3] = [[1, 10], [2, 20], [3, 30]];
 
 /// Build native catalog-owned MR2/XML plus actual original Items records.
 /// Existing raw payload/framing owners remain the only source builders.
-pub(in super::super) fn source(code: u8, event: &str, body: &str) -> (Vec<u8>, String, Vec<u8>) {
+pub(crate) fn source(code: u8, event: &str, body: &str) -> (Vec<u8>, String, Vec<u8>) {
     let xml = format!(
         "<DataMacro xmlns=\"http://schemas.microsoft.com/office/accessservices/2009/11/application\" Event=\"{event}\">{body}</DataMacro>"
     );
@@ -38,7 +38,7 @@ pub(in super::super) fn source(code: u8, event: &str, body: &str) -> (Vec<u8>, S
     (bytes, xml, bag)
 }
 
-pub(super) fn original_record(ordinal: usize) -> Vec<u8> {
+pub(crate) fn original_record(ordinal: usize) -> Vec<u8> {
     let [id, score] = ORIGINAL_ROWS[ordinal];
     let mut record = 2_u16.to_le_bytes().to_vec();
     record.extend(id.to_le_bytes());
