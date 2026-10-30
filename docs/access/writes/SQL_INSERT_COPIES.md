@@ -86,7 +86,7 @@ parse native properties or expand values and discard the original omission inten
 The initial engine policy admits closed literal NULL, Boolean and Text values,
 and exact signed numeric constants for qualified integer, Currency and Decimal
 fields. Decimal storage precision/scale and exact rescaling apply without a
-binary-float detour or rounding. Calls, names, runtime/clock defaults such as
+binary-float detour or rounding. Without explicit clock selection, calls, names, runtime/clock defaults such as
 `Date()`, unsupported carrier forms and malformed needed expressions refuse.
 This does not execute arbitrary DefaultValue SQL or certify native Access timing.
 Broader default expressions remain future compatibility work.
@@ -96,6 +96,40 @@ to the existing declaration checks. Entirely supplied rows use the unchanged
 complete insertion service. Partial rows retain original presence through the
 engine's independent audit, including the explicit generated companion schema;
 there is one captured image and one candidate, with no preview retry or chaining.
+
+## Explicit clock for stored defaults
+
+```sh
+tablecraft query preview-insert "INSERT INTO Items(Id,Score) VALUES(4,40)" \
+  --database offline.accdb --output dated.accdb --default-clock
+
+tablecraft query preview-insert "INSERT INTO Items(Id) VALUES(4)" \
+  --database offline.accdb --output dated-generated.accdb --incrementing \
+  --default-clock=2000-02-29T12:00:00.7654321
+```
+
+These examples require an omitted legacy DATE field with a qualifying stored
+`Date()` or `Now()` default. `--default-clock[=LOCAL-DATETIME]` explicitly authorizes
+that operation clock. The optional override requires `=` and the existing local
+civil format in years 0100..9999, without an offset. The bare flag uses the existing
+lazy local host clock. DATE/Now projections use whole seconds; supplied fractional
+clock input does not make a legacy DATE default an Extended Date/Time value.
+
+Metadata construction only retains the borrowed provider. All needed default
+shapes, target types and generated LAST/range checks finish before any reading.
+If needed, the native coordinator captures one reading and shares it across the
+operation; independent audit does not call the provider again. Supplied values,
+including explicit NULL, take the old complete path and make zero reads even
+with the flag. Operations needing only literal defaults also make zero reads.
+The flag's absence retains the old literal-only behavior.
+
+This authorizes only stored defaults on qualified legacy DATE fields. It does not
+admit `Date()`/`Now()` calls in SQL VALUES, other default functions, Extended
+Date/Time default coercion or an opening-time clock read. A later uniqueness,
+validation or budget failure may occur after one reading, but returns no copy.
+A provider failure remains a typed error. This is an explicit engineering timing
+policy, not Microsoft Access per-row/per-statement timing or native-save
+qualification.
 
 ## Source and publication boundaries
 
@@ -170,3 +204,31 @@ belong to the complete-row checkpoint; 498 is a mutation subset, not a complete
 ACE library count. After those checks only the CLI command-summary help wording
 was clarified to mention named omissions. No Microsoft Access execution or save
 comparison is claimed.
+
+## Clock frontend validation
+
+The first frontend source attempt stopped during compilation because the test
+provider's Cell counter did not satisfy the Clock thread-safety bounds. Only the
+counter changed to AtomicUsize with relaxed ordering; source and expected values
+were unchanged. The first actual source run then qualified 14 complete pairs and
+four MAX-counter/wrong-target guard sources. The prior omission source gate also
+passed all eight pairs after its real C3 source/property helper was factored for
+reuse. There are no copied fixture factories or post-API golden changes.
+
+All five frontend functions passed on the first API run. Twelve direct Access
+service results and twelve CLI copies match complete expected images across both
+headers and ordinary/generated modes. Eight needed-default cases use fixed
+readings; four supplied-NULL cases use the bare flag and require no ambient read.
+Counting providers establish zero reads during invalid binding, unknown needed
+expressions, wrong targets, exhausted generation and supplied-only rows, and one
+read for needed success without audit replay. Callback error identity is retained.
+Missing clock selection, invalid/equality-required override syntax and SQL VALUES
+clock calls publish no output. Current regressions passed 331 native INSERT
+functions, 55 Access library functions and 88 CLI functions: 37 unit plus 51
+integration (six DELETE, two historical, fourteen INSERT, nineteen UPDATE, four
+normal Jet 4 and six typed write controls). The first strict attempt stopped only
+on a separately owned shared-parser style finding; its style-only correction
+passed strict across three packages. Minimal ACE/Access checks also passed.
+The native total is an INSERT subset, not a full ACE library run. No clock
+production or expected-image repair followed APIs, and no native Access
+write/save/timing claim is made.

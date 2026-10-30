@@ -231,6 +231,11 @@ qualified literal defaults or NULL are resolved, while explicit NULL stays
 supplied. Positional VALUES remain complete-width. Generated IDs require explicit
 `--incrementing` and a named companion field list; ordinary companions may also
 be omitted. The complete-row typed TSV command retains its full-width contract.
+For stored `Date()`/`Now()` defaults on omitted legacy DATE fields, explicitly add
+`--default-clock` or `--default-clock=LOCAL-DATETIME`. The provider is lazy and read
+only if a needed default requests it; the option does not enable clock calls in
+SQL VALUES or alter the literal-only path when absent.
+
 Encrypted/deployment inputs and unsupported schema/constraint shapes refuse.
 The engine's complete-image limit is 64 MiB; native Access saves, required data
 macros and in-place transactions remain unqualified.

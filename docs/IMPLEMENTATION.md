@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit clocks for INSERT defaults
+
+`query preview-insert --default-clock[=LOCAL-DATETIME]` now authorizes needed
+Date()/Now() defaults on legacy DATE fields. The existing lazy CLI clock supplies
+one operation reading, or the caller supplies a fixed local ISO reading. Supplied
+values, explicit NULL, literal-only defaults and empty operations do not read the
+host clock. Metadata binding stays inert. Source shape, target, counter and
+generated-range checks precede the callback; the independent audit uses the
+original immutable reading and never calls the host again.
+
+The [native contract](testing/ACE16_CLOCK_INSERT_DEFAULTS.md) passes 15 focused
+functions and 36 complete-image expectations. Its
+[SQL/CLI consumer](access/writes/SQL_INSERT_COPIES.md) passes 12 direct adapter
+comparisons and 12 exact CLI copies. The shared round passes 331 INSERT,
+55 adapter, 37 CLI unit and 51 CLI integration functions, with corrected strict
+ACE/Access/CLI checks and minimal ACE/Access builds. This is a whole-second
+engineering clock policy; native Access invocation timing, broader default
+expressions/coercions and normal save qualification remain open.
+
 ## Mixed UPDATE record growth
 
 The additive [mixed-update engine service](testing/ACE16_MIXED_GROWING_UPDATES.md)
@@ -46,8 +65,9 @@ companions of an explicitly selected incrementing AutoNumber. Omitted fields use
 qualified source defaults or NULL; supplied values and explicit NULL remain
 distinct. Only needed defaults are interpreted. The initial native profile
 supports closed numeric, Boolean, quoted Text and NULL literals, with exact
-Decimal assignment and no implicit rounding. Date()/Now(), runtime expressions
-and broader coercions remain open. Positional VALUES and the original complete
+Decimal assignment and no implicit rounding. Date()/Now() use the separate
+explicit clock path above; broader runtime expressions and coercions remain open.
+Positional VALUES and the original complete
 insertion service retain their full-width contracts.
 
 The [native resolver](testing/ACE16_OMITTED_INSERT_DEFAULTS.md) passes ten focused

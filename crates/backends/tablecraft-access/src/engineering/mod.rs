@@ -15,6 +15,7 @@ use tablecraft_ace::{
     RowDelete, RowInsert, SlotScalarUpdate, TableRowDeletes,
 };
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::dates::clock::Clock;
 use thiserror::Error;
 
 /// Explicit fixed-field maintenance policy. Unsupported requests never fall back.
@@ -102,6 +103,26 @@ pub enum EngineeringRequest<'a> {
         rows: &'a [OmittedRowInsert],
         /// Caller-selected incrementing policy with original LAST precondition.
         policy: IncrementingAutoNumber,
+    },
+    /// Original ordinary presence with explicit needed-default clock authority.
+    InsertWithClock {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Full native presence intent, retaining explicit NULL.
+        rows: &'a [OmittedRowInsert],
+        /// Borrowed provider; only native preparation may request one reading.
+        clock: &'a dyn Clock,
+    },
+    /// Generated companions with source-bound incrementing and clock authority.
+    IncrementingInsertWithClock {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original companion presence, excluding the actual generated primary.
+        rows: &'a [OmittedRowInsert],
+        /// Explicit incrementing policy bound to original LAST.
+        policy: IncrementingAutoNumber,
+        /// Borrowed provider, never invoked merely to construct this request.
+        clock: &'a dyn Clock,
     },
     /// Select incrementing engineering behavior; stored mode is not inferred.
     IncrementingInsert {
@@ -263,6 +284,21 @@ pub fn preview(
         } => Candidate::Generated(image.preview_ace16_incrementing_insert_rows_with_omissions(
             table, rows, policy, budget, cancelled,
         )?),
+        EngineeringRequest::InsertWithClock { table, rows, clock } => {
+            Candidate::Rows(image.preview_ace16_insert_rows_with_omissions_and_clock(
+                table, rows, clock, budget, cancelled,
+            )?)
+        }
+        EngineeringRequest::IncrementingInsertWithClock {
+            table,
+            rows,
+            policy,
+            clock,
+        } => Candidate::Generated(
+            image.preview_ace16_incrementing_insert_rows_with_omissions_and_clock(
+                table, rows, policy, clock, budget, cancelled,
+            )?,
+        ),
         EngineeringRequest::IncrementingInsert {
             table,
             rows,

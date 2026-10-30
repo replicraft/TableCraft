@@ -1,4 +1,6 @@
 //! Original-source literal framing is fixed before SQL INSERT candidate calls.
+#[path = "query_preview_inserts/default_clock.rs"]
+mod default_clock;
 #[path = "query_preview_inserts/display_metadata.rs"]
 mod display_metadata;
 #[path = "query_preview_inserts/omissions.rs"]

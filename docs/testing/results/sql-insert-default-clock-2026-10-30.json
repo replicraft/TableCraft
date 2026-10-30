@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-30",
+  "feature": "Explicit operation clock for stored INSERT defaults in SQL engineering copies",
+  "checks": {
+    "frontend_source_first_attempt": {
+      "exit_code": 101,
+      "phase": "compile before any source case or API",
+      "cause": "test Cell counter violated Clock Send+Sync bounds"
+    },
+    "frontend_source_second": {
+      "exit_code": 0,
+      "complete_source_expected_pairs": 14,
+      "guard_source_checks": 4,
+      "actual_source_execution": "first"
+    },
+    "old_omission_source_regression": {
+      "exit_code": 0,
+      "source_expected_pairs": 8
+    },
+    "frontend_api_first": {
+      "exit_code": 0,
+      "functions": 5,
+      "direct_access_complete_image_comparisons": 12,
+      "cli_complete_image_copies": 12,
+      "fixed_needed_clock_cases": 8,
+      "bare_flag_supplied_null_cases": 4
+    },
+    "native_insert_regression_first": {
+      "exit_code": 0,
+      "functions": 331
+    },
+    "access_regression_first": {
+      "exit_code": 0,
+      "library_functions": 55
+    },
+    "cli_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 37,
+      "integration_functions": 51,
+      "total_functions": 88,
+      "integration_breakdown": {
+        "delete": 6,
+        "historical": 2,
+        "insert": 14,
+        "update": 19,
+        "normal_jet4": 4,
+        "typed_write": 6
+      }
+    },
+    "strict_three_packages_first": {
+      "exit_code": 101,
+      "cause": "separate shared-parser collapsible_if style finding"
+    },
+    "strict_three_packages_corrected": {
+      "exit_code": 0
+    },
+    "minimal_ace": {
+      "exit_code": 0
+    },
+    "minimal_access": {
+      "exit_code": 0
+    }
+  },
+  "scope": [
+    "Optional equals-only --default-clock override reuses existing lazy HostClock; absent flag retains literal-only service",
+    "Borrowed provider retained during metadata/binding; all supplied values/NULL and no-needed-clock operations read zero times",
+    "Native source shape/target and generation range preflight precede reading; one needed reading shared by operation with no provider replay in audit",
+    "Only needed stored Date()/Now() defaults on qualified legacy DATE; SQL VALUES clock calls remain closed",
+    "One original capture and one engineering copy, no normal save or native timing qualification"
+  ],
+  "observations": [
+    "Only test counter changed from Cell to AtomicUsize Relaxed after first compile failure, without source/golden/provider reading changes",
+    "Actual previous C3 source/property helper factored for reuse; old generated omission expected rows unchanged",
+    "Fixed expected DATE bits independently literal, old opaque NULL payloads preserved and new explicit NULL canonicalized",
+    "Bare flag API checks supply all fields/NULL and require zero provider reads; they do not claim a live system-clock comparison",
+    "Broader strict first attempt stopped only on collapsible_if in the separately owned shared write parser; style-only correction passed strict. No clock production or expected-image repair followed APIs."
+  ],
+  "pending": [],
+  "evidence": [
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/source-first-root.log",
+      "bytes": 1303,
+      "sha256": "95330294a1fb7b7b8328348c8adaf5a0168dcc583d3e7656aa26fbbb2a72c090"
+    },
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/source-second-root.log",
+      "bytes": 496,
+      "sha256": "63154d46ddf0c9433579c7021c29a2575a996a2f4c78cdac47bc5b910a07e040"
+    },
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/old-source-regression-root.log",
+      "bytes": 382,
+      "sha256": "366e9368584e309fa24deafe0add1e0858a7362f621f2e3ebf3a6b6df2d1e361"
+    },
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/api-first-root.log",
+      "bytes": 806,
+      "sha256": "65b0543faa6e717153c1c36f9505ee7ff2493888bf42a1276ee871adfd2ef77e"
+    },
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/frontend-source-first-freeze.json",
+      "bytes": 2488,
+      "sha256": "4573bfb0250d86ec512d4b61c7f9d30266aba447a34b6442d4705595108b680c"
+    },
+    {
+      "path": ".cache/ace16-default-clock-frontend-next-20261030/frontend-atomic-provider-corrected-freeze.json",
+      "bytes": 2690,
+      "sha256": "30192cefb8682a57b635f446a859fcfbf1481a67978455a399c3b57cf172cf80"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/native-insert-first-root.log",
+      "bytes": 46399,
+      "sha256": "b1799d6c35264b34e7a7da177b521c9cd825cd78805ec2f81810408320ad2202"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/access-first-root.log",
+      "bytes": 7033,
+      "sha256": "c5de22ec02789d83852e72fa6e6515f4926b339f1df1d396babd8084d09af1c2"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/cli-first-root.log",
+      "bytes": 10138,
+      "sha256": "b6aed133a6497ff04e6a3bc640b10378d2f27b836bccb4bbdae1630ec9f328ea"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-first-root.log",
+      "bytes": 1400,
+      "sha256": "78065cd67d4cbb66d900c7bff2b8f9b06ab258d83664567e10433c8a4aa28308"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-corrected-root.log",
+      "bytes": 403,
+      "sha256": "7b1fc0985238a4b1d5f6ba1ed689b58046a1bef802121af8c0ec57bf44e982c2"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/minimal-ace-root.log",
+      "bytes": 183,
+      "sha256": "2dddc7ede78023beaef23a4d1387614d1ef20b4e6bf46d574b4fc88b143f7bdc"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-batch-20261030/minimal-access-root.log",
+      "bytes": 301,
+      "sha256": "90710bb49c7a440ff05cf805ddb945bdc6bf885e1d97859b7f17cc4ac36a83e0"
+    }
+  ],
+  "tracing": "No SQL, user names, timestamps or provider readings added to tracing fields",
+  "native_Access_qualification": false,
+  "verification_context": "Native331 is the INSERT regression subset, not a full ACE library run. CLI total88 comprises37unit+51selectedintegration. The shared parser resource correction is a separate logical change; unrelated later joint INDEX work does not change these recorded clock outcomes.",
+  "final_format_and_links": {
+    "format": 0,
+    "documentation_links": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-default-clock-frontend-next-20261030/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-default-clock-frontend-next-20261030/doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "ef23f68ba51416832c990dd73615fd8593e62158e49b91f2c64face9893c2955"
+      }
+    ]
+  }
+}

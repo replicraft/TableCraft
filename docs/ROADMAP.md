@@ -39,7 +39,10 @@ omissions with needed-only constant defaults or NULL, including explicitly
 selected incrementing companions. Supplied NULL stays distinct; positional
 VALUES and the complete-row API remain strict. Native and frontend whole-image
 checks pass, including exact Decimal assignment and generated companions.
-Clock/runtime defaults, broader coercions and normal saves remain open. Next delivery
+Explicit [Date()/Now() default clocks](testing/ACE16_CLOCK_INSERT_DEFAULTS.md)
+now capture one reading only when needed, including source-bound generated
+companions; native and CLI complete-image checks pass. Broader runtime defaults,
+coercions and normal saves remain open. Next delivery
 work is broader real-table schema admission, deterministic write expressions and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
