@@ -2,8 +2,8 @@ use super::{Error, retrieval::TextCollation};
 use crate::native::{self, publication};
 use std::path::Path;
 use tablecraft_access::NativeEditor;
-use tablecraft_ace::NativeImage;
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_ace::{InspectError, NativeImage};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_io::SharedFile;
 use tablecraft_query::QueryError;
@@ -21,10 +21,22 @@ pub(super) fn run(
     input: &Path,
     output: &Path,
     collation: Option<TextCollation>,
+    durable_output: bool,
 ) -> Result<String, Error> {
-    run_with_publisher(query, input, output, collation, |output, bytes, budget| {
-        publication::publish(output, bytes, budget, &|| false)
-    })
+    if durable_output {
+        run_selected(
+            query,
+            input,
+            output,
+            collation,
+            true,
+            |output, bytes, budget| publication::publish(output, bytes, budget, &|| false),
+        )
+    } else {
+        run_with_publisher(query, input, output, collation, |output, bytes, budget| {
+            publication::publish(output, bytes, budget, &|| false)
+        })
+    }
 }
 
 fn run_with_publisher(
@@ -32,6 +44,17 @@ fn run_with_publisher(
     input: &Path,
     output: &Path,
     collation: Option<TextCollation>,
+    publish: impl FnOnce(&Path, &[u8], &mut ResourceBudget) -> Result<(), publication::Error>,
+) -> Result<String, Error> {
+    run_selected(query, input, output, collation, false, publish)
+}
+
+fn run_selected(
+    query: &Query,
+    input: &Path,
+    output: &Path,
+    collation: Option<TextCollation>,
+    durable_output: bool,
     publish: impl FnOnce(&Path, &[u8], &mut ResourceBudget) -> Result<(), publication::Error>,
 ) -> Result<String, Error> {
     // Provisional General policies are read/query-only until native editing
@@ -54,9 +77,20 @@ fn run_with_publisher(
     if !query.parameters.is_empty() {
         return Err(Error::Retrieval(QueryError::Unsupported));
     }
+    if durable_output && table.database.is_some() {
+        return Err(Error::Retrieval(QueryError::Unsupported));
+    }
 
     let _span = tracing::debug_span!("cli.query.update").entered();
     let mut budget = ResourceBudget::new(EDIT_BYTES, EDIT_ROWS, EDIT_STEPS);
+    let required = if durable_output {
+        Some(
+            publication::Output::capture(output, true, &mut budget, &|| false)
+                .map_err(Error::Copy)?,
+        )
+    } else {
+        None
+    };
     let mut source = SharedFile::open(input).map_err(|error| Error::Native(error.into()))?;
     let image = NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
         .map_err(Error::Native)?;
@@ -73,10 +107,25 @@ fn run_with_publisher(
 
     let matched = plan.matched_rows();
     let native = plan.into_backend();
-    let report = format!(
+    let mut report = format!(
         "Matched rows\t{matched}\nChanged rows\t{}\n",
         native.changed_rows()
     );
+    if durable_output {
+        let length = publication::REQUIRED_REPORT.len();
+        budget
+            .charge_allocation(length as u64, 1)
+            .map_err(InspectError::from)
+            .map_err(Error::Native)?;
+        budget
+            .charge(Resource::Steps, length as u64)
+            .map_err(InspectError::from)
+            .map_err(Error::Native)?;
+        report
+            .try_reserve_exact(length)
+            .map_err(|_| Error::Native(InspectError::Allocation))?;
+        report.push_str(publication::REQUIRED_REPORT);
+    }
 
     // The candidate is already owned and fully validated. Finish the fallible
     // source release before publishing a path, so an unlock failure cannot be
@@ -84,7 +133,13 @@ fn run_with_publisher(
     source
         .close()
         .map_err(|error| Error::Native(error.into()))?;
-    publish(output, native.after_bytes(), &mut budget).map_err(Error::Copy)?;
+    if let Some(required) = required {
+        required
+            .publish(native.after_bytes(), &mut budget, &|| false)
+            .map_err(Error::Copy)?;
+    } else {
+        publish(output, native.after_bytes(), &mut budget).map_err(Error::Copy)?;
+    }
     tracing::debug!(
         matched_rows = matched,
         changed_rows = native.changed_rows(),

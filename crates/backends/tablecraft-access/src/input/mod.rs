@@ -62,12 +62,25 @@ impl<R: Read + Seek> AccessInput<R> {
 }
 
 impl<R, S> AccessInput<R, S> {
+    /// Recover the original resource only when this input selected native bytes.
+    /// A captured or spooled deployment retains its complete owner in `Err`.
+    /// This recovers existing ownership, adding no clone or write permission.
+    pub fn into_native(self) -> Result<R, Self> {
+        match self.inner {
+            Input::Native(source) => Ok(source),
+            inner => Err(Self { inner }),
+        }
+    }
+
     /// Whether this source came from a CAB deployment package. Its signature
     /// has not been verified, regardless of any signature bytes present.
     pub fn is_deployment(&self) -> bool {
         matches!(self.inner, Input::Deployment(_) | Input::Captured(_))
     }
 }
+
+#[cfg(test)]
+mod ownership_tests;
 impl<R: Read, S: Read> Read for AccessInput<R, S> {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
         match &mut self.inner {

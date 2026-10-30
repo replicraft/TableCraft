@@ -115,6 +115,16 @@ fn qualify_readable_encrypted_and_deployment_sources_before_index_guard_calls() 
 
 #[test]
 fn index_guard_refusals_keep_ciphertext_and_deployment_inputs_unchanged() {
+    guard_refusals(false);
+}
+
+#[cfg(unix)]
+#[test]
+fn required_index_guard_refusals_keep_envelopes_unpublished() {
+    guard_refusals(true);
+}
+
+fn guard_refusals(durable_output: bool) {
     let inputs = envelopes();
     for (bytes, password, expected_error) in [
         (&inputs.encrypted, None, "encrypted rewrite is unsupported"),
@@ -148,6 +158,9 @@ fn index_guard_refusals_keep_ciphertext_and_deployment_inputs_unchanged() {
             .stdin(Stdio::null());
         if let Some(password) = password {
             command.args(["--password", password]);
+        }
+        if durable_output {
+            command.arg("--durable-output");
         }
         let result = command.output().unwrap();
 

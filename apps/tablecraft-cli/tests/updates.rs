@@ -79,6 +79,35 @@ fn cli_update_creates_a_reopenable_copy_with_exact_original_preservation() {
         .unwrap();
     assert!(read.status.success());
     assert_eq!(read.stdout, b"Score\n27\n");
+
+    #[cfg(unix)]
+    {
+        let durable = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args([
+                "query",
+                "update",
+                "UPDATE Items AS i SET i.Score=i.Score+7 WHERE i.Id=2",
+                "--database",
+            ])
+            .arg(files.0.join("input.mdb"))
+            .arg("--output")
+            .arg(files.0.join("durable.mdb"))
+            .arg("--durable-output")
+            .output()
+            .unwrap();
+        assert!(
+            durable.status.success(),
+            "{}",
+            String::from_utf8_lossy(&durable.stderr)
+        );
+        assert!(durable.stderr.is_empty());
+        assert_eq!(
+            durable.stdout,
+            b"Matched rows\t1\nChanged rows\t1\nDurable output\tFile and captured-directory barriers completed\n"
+        );
+        assert_eq!(fs::read(files.0.join("durable.mdb")).unwrap(), after);
+        assert_eq!(fs::read(files.0.join("input.mdb")).unwrap(), before);
+    }
 }
 
 #[test]

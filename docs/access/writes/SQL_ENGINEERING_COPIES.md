@@ -393,6 +393,17 @@ ACE save permission, required data-macro qualification or in-place editing.
 Defaults remain 256 MiB cumulative work bytes, 100,000 row work and 100,000,000
 steps; the separate Standard image ceiling still applies.
 
+Explicit `--durable-output` selects the
+[required captured-directory publication path](../../cli/DURABLE_OUTPUT.md)
+before source I/O, after closed CREATE INDEX shape validation. All report
+allocation and fallible source release complete before either publication mode;
+this corrects the earlier silent source Drop ordering. Default publication
+contents and metadata reports otherwise stay unchanged. Required success adds a
+captured-directory barrier acknowledgement; uncertain or visible failures can
+retain the final copy and never trigger fallback, retry or final-file deletion.
+This option changes filesystem publication only, not index admission or normal
+native-save/macro authority.
+
 The [native creation contract](../../testing/ACE16_SECONDARY_INDEX_CREATION.md)
 and [host result](../../testing/results/secondary-index-sql-copies-2026-10-30.json)
 separate literal engineering checks from native Access conformance. The shared

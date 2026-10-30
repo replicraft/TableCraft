@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Required fresh-output publication
+
+`query update` and `query preview-create-index` now accept `--durable-output`.
+The [publication contract](cli/DURABLE_OUTPUT.md) binds the actual output parent,
+syncs file contents, publishes without replacement and completes a directory
+barrier. Visible or uncertain failures retain their actual state; they never
+trigger automatic rollback or retry. Source release is checked before publication.
+Default publication remains available; required durability currently refuses on
+unsupported platforms before staging. The Unix implementation is locally tested
+on macOS, with 49 I/O, 69 adapter and 60 CLI unit tests passing plus focused copy
+and regression checks. Native ACE save admission and hardware crash qualification
+remain separate.
+
 ## Physical secondary-index creation
 
 The separate native engineering service now creates one ordinary nonunique Int32

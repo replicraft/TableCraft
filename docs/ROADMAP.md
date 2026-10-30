@@ -7,8 +7,10 @@ now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete
 images match through each consumer, including NULL/duplicate keys and root-leaf
 growth. A fresh committed-source producer also matches sixteen whole images on
 eight independently generated originals, followed by sixteen passing fresh
-Jackcess readers. Durable fresh-copy publication is the next usability step.
-General saves, required macros and broader index profiles remain open.
+Jackcess readers. Explicit [required fresh-copy publication](cli/DURABLE_OUTPUT.md)
+now completes file and captured-directory barriers through two existing CLI
+consumers. Host-owned journal pairing and recovery are next; general ACE saves,
+required macros and broader index profiles remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through

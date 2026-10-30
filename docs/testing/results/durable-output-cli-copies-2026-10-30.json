@@ -1,0 +1,373 @@
+{
+  "feature": "Explicit required captured-directory publication for two CLI write-copy consumers",
+  "date": "2026-10-30",
+  "state": "macOS source-first, IO/host API, full affected runtime, final all-target/all-feature strict and minimal checks passed; final formatting/docs/dependency guards follow documentation freeze",
+  "commands": [
+    "query update SQL --database PATH --output PATH --durable-output",
+    "query preview-create-index SQL --database PATH --output PATH --durable-output"
+  ],
+  "scope": {
+    "default_publisher": "existing content-sync/no-clobber body unchanged",
+    "normal_update": "existing Jet4 only",
+    "index_creation": "existing ACE non-journalable engineering copy only",
+    "required_windows": "currently unsupported before staging, not an OS impossibility claim",
+    "no_fallback": true,
+    "payload_bytes_charge": "selected publisher once; required wrapper delegates to IO",
+    "namespace": "held captured parent; no continued textual pathname claim",
+    "native_save_or_macro_grant": false,
+    "hardware_power_loss_qualification": false
+  },
+  "source_release": {
+    "AccessInput_into_native": "consumes original native R; non-native captured/spooled Self retained on Err",
+    "ownership_functions": 2,
+    "index_correctness_fix": "fallible native source release before publication in both modes, replacing prior silent Drop after publication",
+    "normal_jet4": "existing explicit fallible source close retained"
+  },
+  "first_checks": {
+    "platform": "macOS",
+    "io_publication_functions": 8,
+    "io_library_check": "passed",
+    "normal_cli_check": "passed",
+    "Access_input_ownership_functions": 2,
+    "logs": [
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/compile-first-root.log",
+        "bytes": 351,
+        "sha256": "ea66fb06d2fe2ca0a4dc718fb19424d76709e105a863e3688ef31959f4046a07"
+      },
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-tests-first-root.log",
+        "bytes": 1511,
+        "sha256": "656623ef8671b9203611b55171b47259ce2ce39d76712b8334b356fd52222334"
+      },
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/host-normal-first-root.log",
+        "bytes": 688,
+        "sha256": "a2e4fdac95aadbe92a754f8344fe0e371d721cbd374a5d4aa4cf30eaa09122b4"
+      },
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/input-ownership-first-root.log",
+        "bytes": 923,
+        "sha256": "c52e52851be6b6b23699a0b5abe8df63b2d9605d570bfddbbdeac0182752fe0b"
+      }
+    ]
+  },
+  "host_source_first": {
+    "state": "passed first run before host APIs",
+    "jet4_functions": 1,
+    "index_functions": 1,
+    "index_pairs": 16,
+    "index_views": 32,
+    "logs": [
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/jet4-source-first-root.log",
+        "bytes": 993,
+        "sha256": "dfc249c20d3523f9f8b07df21fd1be34627790049e0cdea5661fb360f5de7f72"
+      },
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/index-source-first-root.log",
+        "bytes": 470,
+        "sha256": "c01c7ad7a242849f4e04ff399fe94430d2c5018b50405b1d8d3b324883cc4c7f"
+      }
+    ]
+  },
+  "host_api": {
+    "state": "passed after the one-literal Jet4 test setup correction",
+    "publisher_functions_passed": 10,
+    "publisher_log": {
+      "path": ".cache/ace16-durable-output-cli-next-20261030/publisher-unit-first-root.log",
+      "bytes": 1291,
+      "sha256": "8c43efb02ce04134d15cbc8321239b2d90a8ff78275ebcd7344aff1331b6d175"
+    },
+    "jet4_first": {
+      "functions_passed": 4,
+      "test_setup_failures": 1,
+      "required_exact_copy": "passed",
+      "reason": "Action grammar UPDATE Items IN ... is unsupported; parse unwrap failed before that test called run",
+      "failed_log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/jet4-unit-first-root.log",
+        "bytes": 1592,
+        "sha256": "6a2cc6bae50386cefda099ee1d99ae4511f1a1727662cfbdda62e7d91b746f9f"
+      },
+      "test_only_correction": "Use existing valid per-table external selector [remote].[Items]; exact reverse-literal comparison verifies no other test body changes",
+      "correction_freeze": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/host-test-valid-selector-corrected-freeze.json",
+        "bytes": 524,
+        "sha256": "c6a008c4494f7201cc184f320bdf50ae17257542352324ff06afff5170dc0f6f"
+      }
+    },
+    "jet4_corrected": {
+      "functions": 5,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/jet4-unit-corrected-root.log",
+        "bytes": 1385,
+        "sha256": "5673661809275cc28b527818d45cca1e99e420bbe71aa5ce435d28d3dd4cdbb6"
+      }
+    },
+    "publisher_corrected": {
+      "functions": 10,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/publisher-unit-corrected-root.log",
+        "bytes": 1291,
+        "sha256": "1af60f4b6cfd8eb96233450a177bcda19a4fbc4e5a447a043a547d2e54d3aa23"
+      }
+    },
+    "index_unit_first": {
+      "functions": 6,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/index-unit-first-root.log",
+        "bytes": 1023,
+        "sha256": "6d36fd0029ef50a40a82a29270495fb65999ac1f90b9d93e79d269acc8a29e72"
+      }
+    },
+    "first_cli_integration": {
+      "functions_by_target": {
+        "query_preview_create_index": 7,
+        "updates": 4
+      },
+      "required_index_whole_images": 16,
+      "required_index_occupied_output_refusals": 16,
+      "required_encrypted_deployment_refusals": 4,
+      "real_jet4_default_required_whole_image_parity": true,
+      "log": {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/host-api-first-root.log",
+        "bytes": 1492,
+        "sha256": "b8d8982bc578b9d3891862aa8033a7fcb0d7a8e96c9c5f178f6f2461d07c5e22"
+      }
+    }
+  },
+  "broader_checks": {
+    "state": "passed runtime, corrected strict and minimal IO/Access",
+    "first_strict": {
+      "status": "compile-only IO test type-complexity lint; no host runtime failure",
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/strict-first-root.log",
+        "bytes": 2488,
+        "sha256": "f5a4e288362891c86d64d3ee0d68922fea80f086162ced79b7a20a1c5b54abf0"
+      },
+      "correction": "IO test helper type alias; no host production change"
+    },
+    "strict_all_targets_all_features": {
+      "packages": [
+        "tablecraft-io",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "status": "passed after IO-test alias-only correction",
+      "log": {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/strict-final-root.log",
+        "bytes": 632,
+        "sha256": "900d066d157a5fa7829760520cf3473272ae7953e1923a4ca27033acdd1c7bb3"
+      }
+    },
+    "full_io_functions": 49,
+    "full_access_functions": 69,
+    "full_cli_unit_functions": 60,
+    "existing_cli_integration_functions": 42,
+    "existing_cli_integration_by_target": {
+      "query_preview_updates": 27,
+      "query_preview_default_long_values": 4,
+      "preserved_boolean_updates": 4,
+      "write_previews": 7
+    },
+    "minimal_io": "passed",
+    "minimal_access": "passed",
+    "logs": [
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-full-first-root.log",
+        "bytes": 5464,
+        "sha256": "3c7edd0f7333be5ad2f96753331863b6fa86c56675240935a94d2e443492bd4f"
+      },
+      {
+        "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-minimal-first-root.log",
+        "bytes": 182,
+        "sha256": "28b71ed98709007a02d14d268f4a81103e6715da28d42350b3eceaef5cbf6445"
+      },
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/access-full-first-root.log",
+        "bytes": 8992,
+        "sha256": "8932659df5e97f9becec94dbba5a1ac9dea8e15f041ca458619af6522ed27558"
+      },
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/access-minimal-first-root.log",
+        "bytes": 530,
+        "sha256": "5a3c2d6a0c6f7916daf9bf7974e5edd3c5e0b93d6310aa8e9a1e2b28330a35b6"
+      },
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/cli-unit-full-first-root.log",
+        "bytes": 7285,
+        "sha256": "7f0a02bc4fff2d2078638f2b307ee6d122a29303ca1012a691ed8fe873a34c21"
+      },
+      {
+        "path": ".cache/ace16-durable-output-cli-next-20261030/existing-write-regression-first-root.log",
+        "bytes": 5069,
+        "sha256": "75bff848efc2aabc92d4614cdd334c12ceb2160c29dc2f675b7acc9aa3b3c2d8"
+      }
+    ],
+    "final_repository_checks": {
+      "final-format-root": {
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-durable-output-cli-next-20261030/final-format-root.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-links-root": {
+        "command": [
+          "python3",
+          "scripts/check_documentation_links.py"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-durable-output-cli-next-20261030/final-links-root.log",
+        "sha256": "17b30f0c41184a066a6e825280bd470b4998ae66262c142ab254d62eeadbcd02"
+      },
+      "final-boundaries-root": {
+        "command": [
+          "python3",
+          "scripts/check_dependency_boundaries.py"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-durable-output-cli-next-20261030/final-boundaries-root.log",
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      "final-boundary-tests-root": {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_dependency_boundaries.py"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-durable-output-cli-next-20261030/final-boundary-tests-root.log",
+        "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+      },
+      "documentation_targets": 6652,
+      "missing_documentation_targets": 0,
+      "workspace_packages": 15,
+      "dependency_policy_tests": 12
+    }
+  },
+  "source_expected_constructors_changed": false,
+  "pre_api_host_plan": {
+    "path": ".cache/ace16-durable-output-cli-next-20261030/host-test-plan-first.json",
+    "bytes": 2437,
+    "sha256": "791a7626088ec38be5af06f7414b90c596872cf706ea118f78bdc7bcf1a5795b"
+  },
+  "host_code_freeze": {
+    "path": ".cache/ace16-durable-output-cli-next-20261030/host-first-coherent-freeze.json",
+    "bytes": 5653,
+    "sha256": "57b0908c6c7ed76d58a1d3795f30dca64cdd48220ee80eab3b358f66cf3395a3"
+  },
+  "pins": [
+    {
+      "path": "crates/backends/tablecraft-access/src/input/mod.rs",
+      "bytes": 7589,
+      "sha256": "260868eef17fe0005ac945408f43ce223923baf658ef60dc29252a1aeab3bcc9"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/input/ownership_tests.rs",
+      "bytes": 2731,
+      "sha256": "dee39410965807bb613f1ba4610bbac6cb6d8f6a95c7cac0c725bd4b0022199a"
+    },
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1398,
+      "sha256": "05c0ba4a67704ac41a1a5c2f463dadc985cb0b6ee606fe5c37b2af69c74664fc"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/native/source.rs",
+      "bytes": 4318,
+      "sha256": "32e3a0d83c4d46c3b73dcf522444d54817c6fbeca02ee9ed7505dd1bab7f6b5e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/native/publication.rs",
+      "bytes": 5782,
+      "sha256": "964c39981e6949b6606fc4b88871086c2a1c955fedba5ed824c1e8c3d779e05b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/native/publication/tests.rs",
+      "bytes": 8905,
+      "sha256": "d4c912202bf5583228e5903f94d571f3a89e3d826774058b104c5662271152da"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/native/publication/tests/required.rs",
+      "bytes": 3940,
+      "sha256": "c9651fe8fd67a7c07b49ae356fb61e4d7bc1fdd28dbadd4cdcfd7ed424fb5f37"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "bytes": 12637,
+      "sha256": "65f4aec1e4795f4cf923d29632d4004b47f090cc8da6b96373e50a911bbd0a15"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "bytes": 6028,
+      "sha256": "a60d5a15e00387f408fc783cd96709a77b72dec6072477168d5f7442fd48640a"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/editing.rs",
+      "bytes": 5162,
+      "sha256": "451b50a6c36d8087b7d9e1b1341f73966b16449d3014d248e25f4dadbd64645a"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/editing/tests.rs",
+      "bytes": 8239,
+      "sha256": "a02b51973c98cc804d5453de3b6e2a5627bdf7d6127ee2a9b02591c515c3a1e0"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_create_index.rs",
+      "bytes": 6768,
+      "sha256": "f77c74eaaf70a6d23636e98f4048a09ad4314e05cca44f93b06e3c93f87b9c31"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_create_index/tests.rs",
+      "bytes": 6191,
+      "sha256": "8660023752f9cfab75fe341596d59ef615a2ff2b943fbd888645b4be67caaf19"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_create_index.rs",
+      "bytes": 4208,
+      "sha256": "b0e693fbc0839b8206c5a97a29f82deff138718e4e456a8d9c62f204a55c11e2"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_create_index/durable.rs",
+      "bytes": 3546,
+      "sha256": "93bc91328a2ffea72028051c2209f4072380dd4072a5a6615b93b4979a9369c8"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_create_index/guards.rs",
+      "bytes": 5513,
+      "sha256": "363cdd8ee944c8ecd7743fab2dfae43ec4edef0ee489d1b2c8c7ca31a3bafc9f"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/updates.rs",
+      "bytes": 7827,
+      "sha256": "965e7aab57ba2f92ca6a74cbeb4716af1765c4f9809b95c51445781758b3b560"
+    }
+  ],
+  "io_current_corrected": {
+    "functions": 10,
+    "log": {
+      "path": ".cache/ace16-durable-fresh-publication-next-20261030/io-tests-corrected-root.log",
+      "bytes": 1478,
+      "sha256": "31840c42ca52db3b43eda4cae38c881d0fcb1bb53a032ee25a65de71fd6bb466"
+    },
+    "owner_result": "docs/testing/results/io-required-fresh-publication-2026-10-30.json",
+    "changes": "IO-only C-string allocation accounting and pre-reserved stage-name work; API shape and host expected images unchanged"
+  },
+  "host_code_continuity": {
+    "all_first_coherent_paths_exact_except_recorded_one_literal_test_correction": true,
+    "production_changes_after_first_checks": false,
+    "source_expected_constructor_changes": false,
+    "default_publication_body_changed": false
+  }
+}

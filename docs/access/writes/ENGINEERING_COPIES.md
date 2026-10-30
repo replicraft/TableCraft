@@ -228,7 +228,8 @@ After complete preparation and bounded report formatting, the CLI uses the share
 [host publisher](../../../apps/tablecraft-cli/src/native/publication.rs), also
 consumed by normal Jet 4 [query update](QUERY_EDITING.md#fresh-copy-cli) and the
 explicit [SQL engineering-copy command](SQL_ENGINEERING_COPIES.md). The publisher
-charges the complete requested output Bytes once before creating any temporary.
+uses the existing content-only path by default, charging the complete requested
+output Bytes once before creating any temporary.
 It writes a host-owned temporary in the output directory, syncs its file, and uses
 `persist_noclobber` to publish a fresh final name. Existing files, source aliases
 and destination symlinks are never overwritten. Failed write/sync/publication
@@ -238,6 +239,13 @@ publication leaves no final copy. This does not install an OS signal handler.
 This supplies no directory-entry
 power-loss guarantee, durable transaction, in-place editing or automatic recovery.
 A later stdout failure can leave the already completed copy in place.
+
+Only normal Jet 4 `query update` and engineering `query preview-create-index`
+currently expose [explicit `--durable-output`](../../cli/DURABLE_OUTPUT.md).
+Required uses the same host publisher with an IO-owned captured-parent capability,
+without a second payload charge. Other preview commands retain their current
+content-sync publication and do not accept this option. Required filesystem
+barriers do not qualify an ACE save, data-macro absence or an in-place transaction.
 
 Seven passing shared publication unit functions cover complete copies, injected
 write/sync/publication failures, existing files and symlink/hardlink aliases,

@@ -280,3 +280,17 @@ authority.
 
 See [the exact SQL engineering contract](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
 and [native index creation](../testing/ACE16_SECONDARY_INDEX_CREATION.md).
+
+## Required durable output
+
+Normal Jet 4 `query update` and engineering `query preview-create-index` accept
+`--durable-output`. It selects supported file and captured-directory barriers
+before source I/O and never falls back to content-only publication. Omission
+retains the existing default publisher. Windows currently refuses Required before
+staging; ordinary copies remain available. Other write-preview commands do not
+accept this option.
+
+The completed report acknowledges the captured directory, not continued
+resolution of the original textual path. Uncertain/visible errors may leave a
+copy and do not imply rollback. Native format/constraint/macro gates stay
+unchanged. See [the exact contract and examples](DURABLE_OUTPUT.md).
