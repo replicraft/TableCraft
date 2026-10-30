@@ -32,7 +32,8 @@ mod repack;
 mod replacement;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use replacement::{
-    SlotKeyChanges, SlotKeyUpdate, patches as slot_patches, qualify as qualify_slot_indexes,
+    RowKeyUpdate, SlotKeyChanges, SlotKeyUpdate, patches as slot_patches,
+    qualify as qualify_slot_indexes, qualify_row_indexes, row_patches,
 };
 #[cfg(feature = "ace16-write-preview")]
 mod retained;

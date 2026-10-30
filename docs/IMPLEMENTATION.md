@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Joint fixed and variable record updates
+
+The [fitted mixed-update engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now composes
+fixed fields and one Short Text/Binary field from one original record. Complete
+record reconstruction and fresh joint key projections precede one final candidate.
+Shared composite indexes and aliases see all final values together. Existing
+record capacity, pages, maps and logical roots are retained.
+
+Eight focused functions pass 83 complete-image comparisons, including zero-slack
+raw UTF-16 records, correlated forgery refusals and resource/cancellation controls.
+The old independent record-proof slice passes three tests and five shared variable
+integration targets pass 36 tests. Joint key controls, strict ACE Clippy and minimal
+builds pass. The [record](testing/results/ace16-fitted-mixed-updates-2026-10-30.json)
+retains source corrections before producers and the initial encoding mismatch;
+no expected image changed after its producer ran. Adapter/CLI routing is the next
+consumer; allocation, normal saves and native Access qualification remain open.
+
 ## Passive display metadata on ACE 16 writes
 
 Engineering writes now preserve qualified field Format and numeric DecimalPlaces

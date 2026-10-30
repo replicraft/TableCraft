@@ -5,7 +5,7 @@ mod finish;
 pub(super) mod map_audit;
 pub(super) mod maps;
 pub(super) mod placement;
-mod record_proof;
+pub(in crate::table::mutation) mod record_proof;
 
 use super::{
     Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, page_update::stage,

@@ -1,6 +1,8 @@
 //! Genuine owned-key replacements for variable-slot UPDATE previews.
 pub(super) mod keys;
+mod mixed;
 mod qualification;
+mod rows;
 use super::super::{
     IndexCheck, NativeIndex, binary, encoded_tuple, key::KeyRow, profile::Coverage, text,
 };
@@ -12,7 +14,10 @@ use crate::{
         reader::Reader,
     },
 };
+pub(in crate::table) use mixed::{patches as row_patches, qualify as qualify_row_indexes};
 pub(in crate::table) use qualification::qualify;
+use rows::KeyChange;
+pub(in crate::table) use rows::RowKeyUpdate;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 pub(in crate::table) struct SlotKeyUpdate<'a> {
@@ -38,18 +43,6 @@ impl KeyRow for SlotKeyUpdate<'_> {
                 .position(|position| *position == column)
                 .and_then(|position| self.before.get(position))
         }
-    }
-}
-
-struct Original<'a>(&'a SlotKeyUpdate<'a>);
-
-impl KeyRow for Original<'_> {
-    fn get(&self, column: usize) -> Option<&Value> {
-        self.0
-            .columns
-            .iter()
-            .position(|position| *position == column)
-            .and_then(|position| self.0.before.get(position))
     }
 }
 
@@ -142,7 +135,7 @@ fn edit<P: RowKeyProfile, const N: usize>(
     owner: u32,
     index: &NativeIndex,
     original: P,
-    updates: &[SlotKeyUpdate<'_>],
+    updates: &[impl KeyChange],
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
     let keys::Prepared {

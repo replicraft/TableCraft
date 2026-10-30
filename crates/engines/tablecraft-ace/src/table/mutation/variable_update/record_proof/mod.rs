@@ -17,11 +17,57 @@ use tablecraft_core::{
 
 const COPY_BYTES: usize = 256;
 
-pub(super) fn reconstruct(
+pub(in crate::table::mutation) fn reconstruct(
     schema: &TableSchema,
     column: usize,
     before: &[u8],
     value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    reconstruct_with(
+        schema,
+        column,
+        before,
+        value,
+        PayloadEncoding::MinimumSize,
+        budget,
+        cancelled,
+    )
+}
+
+/// Independently reconstruct mixed records using the declared compression
+/// preference. Existing variable-update proofs retain their minimum-size policy.
+pub(in crate::table::mutation) fn reconstruct_declared(
+    schema: &TableSchema,
+    column: usize,
+    before: &[u8],
+    value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    reconstruct_with(
+        schema,
+        column,
+        before,
+        value,
+        PayloadEncoding::DeclaredPreference,
+        budget,
+        cancelled,
+    )
+}
+
+enum PayloadEncoding {
+    MinimumSize,
+    DeclaredPreference,
+}
+
+fn reconstruct_with(
+    schema: &TableSchema,
+    column: usize,
+    before: &[u8],
+    value: &Value,
+    encoding: PayloadEncoding,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -45,8 +91,18 @@ pub(super) fn reconstruct(
         .len()
         .checked_sub(layout.data_end)
         .ok_or(EditError::Preservation)?;
-    let payload = payload::encode(field, value, budget, cancelled)?;
     let span = stop.checked_sub(start).ok_or(EditError::Preservation)?;
+    let payload = match encoding {
+        PayloadEncoding::MinimumSize => payload::encode(field, value, budget, cancelled)?,
+        PayloadEncoding::DeclaredPreference => {
+            let preserved_payload = end.checked_sub(span).ok_or(EditError::Preservation)?;
+            let capacity = layout
+                .data_end
+                .checked_sub(preserved_payload)
+                .ok_or(EditError::Preservation)?;
+            payload::encode_declared(field, value, capacity, budget, cancelled)?
+        }
+    };
     let logical_end = end
         .checked_sub(span)
         .and_then(|end| end.checked_add(payload.len()))
