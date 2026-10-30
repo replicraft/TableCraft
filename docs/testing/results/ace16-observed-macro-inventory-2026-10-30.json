@@ -1,0 +1,278 @@
+{
+  "feature": "Explicit bounded observed table-owned macro envelope inventory",
+  "date": "2026-10-30",
+  "state": "Focused source/native/CLI checks and broad runtime, strict/minimal, formatter, documentation and boundary checks pass",
+  "source": {
+    "first_exit": 101,
+    "first_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/source-first-root.log",
+      "bytes": 1276,
+      "sha256": "337f2ed2626204b82400c5f3524935baaa720287bc9ee63e249baa106399e7f9"
+    },
+    "cause": "New NonTextProperty/header5 expected WideMr2; existing flags0/type4 rule retains Opaque coverage with exact parsed property facts",
+    "correction": "Only that new coverage expectation changed to Opaque; source/model bytes and decoder unchanged",
+    "corrected_exit": 0,
+    "corrected_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/source-corrected-root.log",
+      "bytes": 514,
+      "sha256": "82a526a8344bd03ca3614d07eed3293a63509b2adce7040e52b8c40c09474e98"
+    },
+    "functions": 1,
+    "headers": [
+      5,
+      6
+    ],
+    "carriers": 20,
+    "documents": 12,
+    "envelopes": 14
+  },
+  "native_api": {
+    "first_exit": 0,
+    "functions": 2,
+    "log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/api-first-root.log",
+      "bytes": 689,
+      "sha256": "2b99343d97a44d3a6a617974150361363198ee65ec34889d217496e2b99ef748"
+    },
+    "corpus_carriers": 20,
+    "documents": 12,
+    "envelopes": 14,
+    "typed_byte_step_limits_and_early_final_cancellation": true
+  },
+  "cli": {
+    "normal_exit": 0,
+    "normal_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/cli-normal-first-root.log",
+      "bytes": 173,
+      "sha256": "a964e54de75788be4261673a24a3a7da30d07b1e42e5d59e7a806a015a147a4d"
+    },
+    "source_first_exit": 0,
+    "source_functions": 1,
+    "source_carriers": 20,
+    "source_documents": 12,
+    "source_envelopes": 14,
+    "source_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/cli-source-first-root.log",
+      "bytes": 459,
+      "sha256": "76e59e90904cf50b701d03cac39e479f9d67e7fa50ed22821263ae090ee538a0"
+    },
+    "api_first_compile_exit": 101,
+    "api_first_compile_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/cli-api-first-root.log",
+      "bytes": 682,
+      "sha256": "93277b656b784c92c8752d08e58767f54c09def6589c0b4547284ccfbf3060cc"
+    },
+    "api_first_compile_cause": "mod api inserted under model path attribute; E0583 before tests",
+    "registration_corrections": [
+      "Move mod api above model path attribute",
+      "Root preflight makes sources/api.rs child path explicit before retry"
+    ],
+    "first_runtime_exit": 101,
+    "first_runtime_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/cli-api-corrected-root.log",
+      "bytes": 1302,
+      "sha256": "813219742f509543b72a57a4ae4f5054c7c7ea5c932c860b9cb5cc090451ee7d"
+    },
+    "first_runtime_passed": 2,
+    "first_runtime_failed": 1,
+    "first_runtime_cause": "Bordered nine-column report wraps Observed envelope; test incorrectly required an unwrapped substring",
+    "runtime_correction": "Compare exact per-column metadata in actual bordered output while permitting whitespace wrapping, bounded at16KiB; preserve body suppression/conflict/resource controls",
+    "corrected_exit": 0,
+    "corrected_log": {
+      "path": ".cache/ace16-observed-macro-inventory-next-20261030/cli-api-table-corrected-root.log",
+      "bytes": 662,
+      "sha256": "df1e2b3b846c43cec3f6528acd3ee1a86b109c705927975de99a640ff34e7aa0"
+    },
+    "corrected_functions": 3,
+    "functions_include_source_gate": true,
+    "api_functions": 2,
+    "corpus_commands": 20,
+    "other_controls": [
+      "Bordered table metadata content",
+      "Two conflicting macro detail modes refuse before missing source open",
+      "Missing --extra refused",
+      "Native step limit returns no stdout"
+    ],
+    "source_model_expected_metadata_or_production_changes": false
+  },
+  "combined_final": {
+    "state": "pass",
+    "log_namespace": ".cache/ace16-memo-batch-inventory-final-20261030/",
+    "native_extra": {
+      "exit": 0,
+      "passed": 41,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-extra.log",
+        "bytes": 5716,
+        "sha256": "db11311f4fbed3e931b9374159d81ef043c2c7640fc3203d7c9d5263d843b47b"
+      }
+    },
+    "native_long_value_contract": {
+      "exit": 0,
+      "passed": 15,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-lval.log",
+        "bytes": 1782,
+        "sha256": "a3e7af438ec2dec4419998e352590cc3db384c502589ae295490e3c5d0e866fa"
+      }
+    },
+    "access": {
+      "exit": 0,
+      "library_passed": 63,
+      "integration_passed": 6,
+      "total_passed": 69,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/access.log",
+        "bytes": 8963,
+        "sha256": "2eb1e6036bbbe6dbcc5058106459566d3168205252107a6c6af1a2b546e62f15"
+      }
+    },
+    "cli": {
+      "exit": 0,
+      "unit_passed": 43,
+      "integration_passed": 107,
+      "integration_targets": {
+        "clock": 4,
+        "eval": 8,
+        "guard_preparation": 5,
+        "inspect": 11,
+        "macro_inventory": 3,
+        "preserved_boolean_updates": 4,
+        "query_preview_default_long_values": 4,
+        "query_preview_inserts": 19,
+        "query_preview_updates": 26,
+        "table_extra": 13,
+        "updates": 4,
+        "write_previews": 6
+      },
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/cli.log",
+        "bytes": 16949,
+        "sha256": "6e9e771c49803c48b726e3cda7c5eed6c4a362de82ac60f70a77f9b04a4838fc"
+      }
+    },
+    "minimal_ace": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-ace.log",
+        "bytes": 183,
+        "sha256": "d41d4f3e1d55c3cc53608f9be190ee60b380e5df705939897b4ea006e035bdcb"
+      }
+    },
+    "minimal_access": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-access.log",
+        "bytes": 301,
+        "sha256": "a8226e2ae8797b34c3d78ce939f97776be8a7938244fbeda1a25e2a68b4cda99"
+      }
+    },
+    "formatter": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final_exit": 0,
+      "final_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format-final.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation": {
+      "exit": 0,
+      "targets": 6600,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/documentation.log",
+        "bytes": 53,
+        "sha256": "e5f68a2161698a7b60c166e982d35577b03c0e8d50000ad006da84903b6c102c"
+      },
+      "corrected_exit": 0,
+      "corrected_targets": 6601,
+      "corrected_missing": 0,
+      "corrected_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/documentation-corrected.log",
+        "bytes": 53,
+        "sha256": "06719950f41c9aa569b5bc6725cc524014a21b2d616fc5d67edc5a9ffbb65559"
+      }
+    },
+    "boundaries": {
+      "exit": 0,
+      "packages": 15,
+      "log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/boundaries.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      "corrected_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/boundaries-corrected.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    },
+    "strict": {
+      "state": "pass",
+      "first_exit": 101,
+      "first_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict.log",
+        "bytes": 1273,
+        "sha256": "a8e13f7888053d5f17126658b61b601948bca04826d79b3c48747f78cd59cb4d"
+      },
+      "cause": "Unrelated Memo reused fixture source name resolved to importing owner with different signature; corrected to actual original owner before targeted retry",
+      "inventory_production_change": false,
+      "final_exit": 0,
+      "final_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict-final.log",
+        "bytes": 403,
+        "sha256": "76c45216fb5a579e37556cd2f64cfe730bd1431dbc3041fd09850deff1e2264e"
+      },
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "targets": "all targets, all features",
+      "intermediate_exit": 101,
+      "intermediate_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict-corrected.log",
+        "bytes": 1226,
+        "sha256": "14496656ef1351fc10563c95398f313e672ee009a66d9930622b216cd4b21b6d"
+      },
+      "intermediate_cause": "Unrelated Memo shared fixture source::* import unused after direct actual-owner qualification; removed before final strict pass"
+    },
+    "unrelated_fixture_reuse_post_correction": {
+      "exit": 0,
+      "native_passed": 23,
+      "native_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-reuse-corrected.log",
+        "bytes": 2752,
+        "sha256": "8f177d48f38fa1ce6d929fa2501e4cc08342690d7fe4a4dae40eba621187cd51"
+      },
+      "access_passed": 4,
+      "access_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/access-default-posthygiene.log",
+        "bytes": 1182,
+        "sha256": "6d94232f8802bab678a221ec411d096a85eabab9843e97a06dfe4d338ac80f50"
+      },
+      "cli_passed": 4,
+      "cli_log": {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/cli-default-posthygiene.log",
+        "bytes": 1212,
+        "sha256": "0f9761afe3eeeb9b88e20d63dcb9988aba15326c29618c54be8d89c09d60657e"
+      },
+      "inventory_code_or_golden_changes": false
+    }
+  },
+  "boundaries": [
+    "Borrow exact original table identity, native parent, catalog row, Extra/group/property bytes/type/flags and original coverage",
+    "Parsed names associate exactly with unique bank entries; opaque references remain unknown",
+    "No-text, unsupported/malformed XML, opaque content and names-only facts are not absence",
+    "Cancellation/resource/allocation/structural-limit failures propagate without partial inventory",
+    "No action/expression execution, automatic selectors, native dispatch classification or required-coverage authority",
+    "No normal-save or write-gate permission",
+    "Private original corpus unchanged; no third-party original/body copied into authored fixtures"
+  ]
+}

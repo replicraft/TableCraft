@@ -51,6 +51,9 @@ pub(crate) struct Args {
     /// Explicitly inspect documented desktop macro structure; never executes it.
     #[arg(long, requires = "extra", conflicts_with = "macro_xml")]
     macro_program: bool,
+    /// Inventory observed table-owned XML envelopes and unresolved Extra metadata; never executes.
+    #[arg(long, requires = "extra", conflicts_with_all = ["macro_xml", "macro_program"])]
+    macro_inventory: bool,
     /// Inspect inert calculated, complex and presentation field declarations.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
     features: bool,
@@ -97,6 +100,7 @@ impl Args {
             extra,
             macro_xml,
             macro_program,
+            macro_inventory,
             features,
             complex,
             stored_calculation,
@@ -111,7 +115,9 @@ impl Args {
         } else if relationships {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
-            if extra && macro_program {
+            if extra && macro_inventory {
+                Mode::MacroInventory(name)
+            } else if extra && macro_program {
                 Mode::MacroProgram(name)
             } else if extra {
                 Mode::Extra(name, macro_xml)

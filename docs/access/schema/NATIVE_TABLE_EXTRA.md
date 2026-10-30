@@ -52,6 +52,45 @@ The existing narrow `LvProp` decoder is unchanged. These are distinct physical
 profiles despite their shared signature. Table Extra inspection does not parse
 XML, resolve named macro calls, execute actions or evaluate strings as SQL.
 
+## Observed macro inventory
+
+`TableExtra::inspect_macro_inventory` explicitly traverses retained parsed
+properties with the existing inert XML envelope reader. Its result borrows the
+original carrier, retaining identity, raw bytes and original framing coverage
+through `source()`. It observes XML Event/Name and namespace independently of
+property names and group kinds. An authored `ValidateLedger` property contains
+`BeforeChange`; a separate kind 4 property names `RecomputeBalance`.
+
+No-text, unsupported XML and malformed XML values remain unresolved observations.
+Opaque groups and name-bank entries referenced by no parsed property remain
+visible. Unique bank names and exact indexed-name cloning establish parsed
+associations; opaque groups may contain unknown references to the same names.
+Resource, structural-limit, allocation and cancellation failures return no partial
+inventory. Zero envelopes never certify absence or complete required coverage.
+
+```sh
+tablecraft inspect example.accdb --table Orders --extra --macro-inventory
+```
+
+This mode conflicts with `--macro-xml` and `--macro-program`. It reports original
+group/property/document ordinals, observed Event/Name and unresolved status through
+shared quoted TSV/table output, never program text. Default inspection is
+unchanged. It neither chooses guard selectors nor evaluates actions/expressions,
+changes required-macro/write gates or grants a normal save.
+
+Source qualification covers 20 authored carriers across headers 5 and 6, with
+12 XML documents and 14 envelopes, before the two native API functions. The
+separate CLI source gate and the 20-case command matrix pass, as do table-format,
+mode-conflict and resource controls. Preserved failures are a new nontext framing
+expectation, test module registration and an unwrapped-phrase table assertion;
+corrections changed no source bytes, decoder or production semantics. Broader
+checks pass: native Extra 41, LVAL contracts 15, Access 69, and CLI 43 unit plus
+107 integration functions. Strict ACE/Access/CLI checks across all targets and
+features, minimal ACE/Access builds, final formatter, documentation links and
+dependency boundaries pass. The unrelated reused Memo fixture qualification and
+unused-import strict failures are retained in the
+[focused result](../../testing/results/ace16-observed-macro-inventory-2026-10-30.json).
+
 ## Bounds and preservation
 
 The reader projects only `LvExtra` through the existing catalog payload reader.
