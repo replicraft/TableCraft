@@ -1,5 +1,5 @@
 #[path = "../../../../tests/object_payloads/fixture.rs"]
-mod payload_fixture;
+pub(super) mod payload_fixture;
 
 use super::{budget, fixture};
 use crate::{

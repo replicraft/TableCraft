@@ -126,6 +126,31 @@ invocations. Checks for this additive extraction slice are recorded in its
 
 ## Observed verification
 
+### Source witnesses for before-event preparation
+
+Separate source-only tests now qualify 40 literal NativeImage carriers across
+both ACE16 layouts. The same captured image supplies the scoped local table,
+three original Int32 rows and its exact catalog-owned MR2/UTF-16 program bytes.
+Existing typed update/insert/delete requests and 20 independent trace/outcome
+cases are retained as future execution expectations. These source checks do not
+evaluate those programs or establish passing execution semantics.
+
+An additional selector witness passes six admitted MR2 sources and two native
+Malformed controls. It records exact group-kind/property-name scope, caller
+engineering order, two independently authored properties and unselected
+opaque/malformed XML. Its first source attempt incorrectly expected repeated
+parsed group-kind 3 to be admitted; the existing MR2 decoder already rejects
+that source. The corrected test retains the same negative data, expects native
+Malformed and adds phase diagnostics. Original inputs/logs and all 20 original
+program/trace bodies are preserved; no decoder was weakened.
+
+These witnesses do not qualify runtime ambiguity selection, native macro storage
+discovery, required-macro coverage or native dispatch order. The guard evaluator
+and host consumer remain uninstalled and unexecuted at this source prerequisite.
+See the [source-only result](../../testing/results/ace16-guard-sources-2026-10-30.json).
+
+### Structural inspection
+
 The source gate passed 25 independently authored native MR2/property/XML carriers
 and 42 literal node spans before program API execution. They cover both observed
 namespaces, prefixes/rebinding, BOM and multibyte/CDATA input, nested If,
