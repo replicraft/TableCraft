@@ -1,4 +1,4 @@
-//! Bounded fixed-length image transactions over explicitly paired storage.
+//! Bounded versioned image transactions over explicitly paired storage.
 //!
 //! Hosts must hold exclusive access to distinct target/journal resources, bind
 //! the correct pair, and make journal creation/directory entries durable before
@@ -9,7 +9,9 @@
 mod error;
 pub use error::{CommitError, JournalError};
 mod storage;
-pub use storage::DurableStorage;
+pub use storage::{DurableStorage, ResizableDurableStorage};
+mod resizable;
+pub use resizable::{PreparedResizableImage, prepare_resizable_expected, recover_resizable};
 mod format;
 mod recovery;
 pub use recovery::{RecoveryOutcome, recover};

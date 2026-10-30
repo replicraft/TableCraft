@@ -1,0 +1,268 @@
+{
+  "date": "2026-10-30",
+  "feature": "Additive V2 variable-length generic image transactions",
+  "apis": [
+    "ResizableDurableStorage",
+    "prepare_resizable_expected",
+    "PreparedResizableImage::commit",
+    "PreparedResizableImage::rollback",
+    "recover_resizable"
+  ],
+  "contract": {
+    "format": "TCIMG002 + independent before/after little-endian u64 lengths + 32-byte SHA-256 + exact before + exact after; optional COMMIT02 plus same digest",
+    "digest_domain": "Version magic, before length, after length, exact before and exact after. Equal concatenation with a different length split does not preserve the digest.",
+    "limits": "Each image independently 0 through 64 MiB; checked record offsets; paid fallible image ownership, copies, reads/writes and work; bounded cancellation polls.",
+    "storage": "New capability explicitly promises honest contiguous EOF-extending writes and resize with possible partial side effects. Complete image writes precede exact final resize/truncation; target sync precedes every marker byte.",
+    "pending": "Actual length between image lengths; each actual byte must match its real before/after counterpart. No expected zero padding for absent tails. Restore before, truncate last, retain marker and journal; interrupted recovery restarts.",
+    "committed": "Exact after length and bytes required; recovery writes neither target bytes nor length and only re-establishes barriers. Foreign/postcommit mixtures refuse.",
+    "v1": "Original TCIMG001 encoder, transaction and recovery sources byte-exact. Existing fixed APIs stay fixed; new recovery delegates V1 unchanged, old recovery rejects V2.",
+    "host": "Distinct exclusively owned correctly paired resources; durable namespace creation/cleanup, identity, authorization and blocking timeouts remain host obligations.",
+    "engine_boundary": "No NativeEditPlan change, no engineering-preview conversion/promotion, no normal ACE/data-macro/journal activation."
+  },
+  "independent_records": {
+    "cases": 9,
+    "states": [
+      "pending",
+      "committed"
+    ],
+    "profiles": [
+      "grow",
+      "shrink",
+      "equal",
+      "empty before",
+      "empty after",
+      "empty both",
+      "real zero payload",
+      "same concatenation with differing length splits"
+    ],
+    "frozen_before_producer_authoring": true,
+    "expected_repairs_after_api": false
+  },
+  "controls": [
+    "Every complete record compared byte-for-byte with independent goldens",
+    "Every truncation/byte corruption, every valid partial marker length, trailing bytes and oversized lengths",
+    "All common-byte masks for bounded literals at every accepted target length",
+    "Actual absent-tail versus real-zero mismatch and committed mismatch with zero writes/resizes",
+    "Forced three-byte writes; failure before/after every callback and partial truncation side effects",
+    "Independent target/journal unsynced survival/loss; interrupted pending rollback and committed barrier retry",
+    "Exact/one-below Bytes/Steps and final callback cancellation",
+    "Real ExclusiveFile grow/shrink/empty reopen and resize-before/partial/after-effect failure recovery",
+    "Compile-fail guard prevents use with DurableStorage alone"
+  ],
+  "checks": [
+    {
+      "check": "Independent record source qualification before transaction APIs",
+      "exit_code": 0,
+      "functions": 1,
+      "independent_record_pairs": 9,
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/goldens-first-root.log",
+        "bytes": 847,
+        "sha256": "c69e04bf60e2558007b420ebf19385c3773efcb925a095edd1c75cf498385e88"
+      }
+    },
+    {
+      "check": "First full suite compile",
+      "exit_code": 101,
+      "transaction_apis_executed": false,
+      "reason": "E0583 integration child module path; explicit journal_files/resizable.rs path added, no semantic/golden change",
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/api-all-first-root.log",
+        "bytes": 763,
+        "sha256": "b4f220cf27481fbc4f789c99d2baeceeb5754c73a9cdaf7a54b59cb7e076847e"
+      }
+    },
+    {
+      "check": "Corrected full I/O suite",
+      "exit_code": 0,
+      "unit_functions": 36,
+      "journal_file_functions": 3,
+      "lock_functions": 4,
+      "seek_functions": 2,
+      "compile_fail_docs": 1,
+      "total": 46,
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/api-all-second-root.log",
+        "bytes": 5579,
+        "sha256": "7b2f2f650d85983dfcefd6d5ff126586b8a8dfc8679cc31abc350e2b6c3ad65c"
+      }
+    },
+    {
+      "check": "Strict all-target/all-feature Clippy",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/strict-first-root.log",
+        "bytes": 516,
+        "sha256": "f4586e83a9755f9ef21439bfc19ed8bef0d10af1654a5efed25983377c048a67"
+      }
+    },
+    {
+      "check": "Minimal check",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/minimal-first-root.log",
+        "bytes": 182,
+        "sha256": "aa578c9756b864467c9d6974c73b2d134528a7cb9e27a4f73401ba695d81e368"
+      }
+    },
+    {
+      "check": "Unchanged native V1 caller regression",
+      "exit_code": 0,
+      "transaction_functions": 3,
+      "write_transaction_functions": 4,
+      "total": 7,
+      "warning": "Unrelated concurrent macro program_envelopes unused warning retained; no strict native lint claim",
+      "evidence": {
+        "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/native-v1-regressions-first-root.log",
+        "bytes": 1642,
+        "sha256": "5d0b9965e9f17b317385a919d151ab1201f16faeb60abaf121e77a24f6ff0f2e"
+      }
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/platform/tablecraft-io/src/lib.rs",
+      "bytes": 606,
+      "sha256": "8ff40a735913a5d90e7ab439fc75b2bb2671a1f325641450aa083273bcfdc55c"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/lock.rs",
+      "bytes": 4162,
+      "sha256": "8b96cf3b47040c08ac705e6829c8867b4fd8caaff6cb81859c373eb931c1a3c6"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/mod.rs",
+      "bytes": 971,
+      "sha256": "c8e1713d7e564f7426db9acc5d038a467be753b509a5dfd2cd4cc6ad759c0362"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/storage.rs",
+      "bytes": 5325,
+      "sha256": "0df963e752bdfcb281ce3153e5ed66ebe4dd8bc38f53611b71bbdf089877c3d5"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/error.rs",
+      "bytes": 1445,
+      "sha256": "30020f3a9a897e7f05e78e101dd6a18218b242cba623c16693f9ff62e9ae5659"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/tests.rs",
+      "bytes": 2898,
+      "sha256": "fdf670300d18a76d4ab9f2c2359391af1258310940aab0b7308e6fa836f0fad1"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/tests/faults.rs",
+      "bytes": 8359,
+      "sha256": "4251e52ddf87029508b0d969dfdb7b9a70463a91ed161f6f83371928553195ea"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/mod.rs",
+      "bytes": 294,
+      "sha256": "b0c9c1e800a90830052defde2a70f2f95f9f86412d7c9bbdd46a7ce451b60d25"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/images.rs",
+      "bytes": 1806,
+      "sha256": "c64b0b9a7f08352909fb5fa7186b70f0796e38e59045a6bbdeda33bc3f1d0ed7"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/format.rs",
+      "bytes": 5100,
+      "sha256": "e3d65f4455e969dcec4649635d4194a235436630aaa0be1739b5864d29f4308b"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/transaction.rs",
+      "bytes": 5656,
+      "sha256": "11773a836c9735c6fc76be4c8c95c9d79772a5ffaed256e58c1800b1413420b4"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/recovery.rs",
+      "bytes": 4206,
+      "sha256": "414b72f94b142a0014c20bfc41fcbfe97743cc38e124b1eabd716bc1a089a476"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/tests.rs",
+      "bytes": 2187,
+      "sha256": "f338dcb240e08fcf7e19a4a6d6bf7f59877ddf32d55329efbf3afa823f87af8b"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/tests/goldens.rs",
+      "bytes": 6474,
+      "sha256": "a5549b0aba728585f5ac2f9b97cd4fe7f61f5776e1419372449f64d54d9b290f"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/tests/transactions.rs",
+      "bytes": 8401,
+      "sha256": "b42bed6ccb86280b2f5e4fdd7a198cc4fa1f5dc86be52756bbbe898932f9a7e5"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/resizable/tests/validation.rs",
+      "bytes": 6188,
+      "sha256": "20b013bca5601838af40bc912f883ad2f6501d283cb822afe777815f8f6a34df"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/tests/faults/resizable.rs",
+      "bytes": 8878,
+      "sha256": "eae6946759340ab4513d45a8ebc376a1e52c0f90b02315f1b8f8eb2e46260ba2"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/tests/journal_files.rs",
+      "bytes": 3020,
+      "sha256": "135e12e897f7b0d4f0cd42a8811a8b9b0d82787093fae068ab0e0c8a2bec8caf"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/tests/journal_files/resizable.rs",
+      "bytes": 6245,
+      "sha256": "4ab2c27b341643f869f91c90d846d52fc814a8abe248af225ce0bb2a4c073c88"
+    }
+  ],
+  "unchanged_v1_and_native_contracts": [
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/format.rs",
+      "bytes": 4243,
+      "sha256": "166182947160de4654967afe5581de2755d70952c739f4f84c4132e3aba0c966"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/transaction.rs",
+      "bytes": 5713,
+      "sha256": "9d7209e27623dfb3fa36c1918bd7bbb128397e99e0d45aeaa2929bc241a106ff"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/recovery.rs",
+      "bytes": 3154,
+      "sha256": "2c146c958281ebe1a74ebe7a8b9292cfeb38b4e56181139624ef87d96a330d08"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/write.rs",
+      "bytes": 4246,
+      "sha256": "0c2d1a5af5183b5b205376f884b3db401955e7fe2dd0e65592eea5e77ebe6cc8"
+    }
+  ],
+  "independent_evidence": [
+    {
+      "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/literal-intent.json",
+      "bytes": 2031,
+      "sha256": "cb5112f8523ce666a53cab8d1f1d59f057f82e2b44a2f7962aecb5c0f577228c"
+    },
+    {
+      "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/complete-record-goldens.json",
+      "bytes": 4470,
+      "sha256": "cb2b83da461a7c30e4e32dfc9d5b96c2edf576f2b6bcbdbb4e954bb34bc837b4"
+    },
+    {
+      "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/independent-records-first-freeze.json",
+      "bytes": 981,
+      "sha256": "f59fe3f3d5424ff30eff389770f4de31edefe7dc4397de61889a6fb7d8c16037"
+    },
+    {
+      "path": ".cache/ace16-variable-length-image-journal-implementation-20261030/first-coherent-source-freeze.json",
+      "bytes": 4793,
+      "sha256": "7dc7331be12322d76ce540ecf533320f6a9ded2445e5fd1d20357ed1e56bd15e"
+    }
+  ],
+  "qualification_limits": [
+    "Generic memory and disposable locked-file behavior under the documented storage model; no physical power-loss/torn-sector claim",
+    "No native Access behavior, shared-file coordination or allocating NativeEditPlan qualification",
+    "Additional native V1 caller semantic tests pass; strict native lint is not claimed from that run (unrelated concurrent macro warning retained)"
+  ]
+}

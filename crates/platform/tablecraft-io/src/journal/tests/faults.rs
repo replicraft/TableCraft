@@ -1,3 +1,5 @@
+mod resizable;
+
 use super::{MemoryStorage, budget};
 use crate::{
     IoError,
@@ -15,6 +17,7 @@ struct Control {
     fail_at: usize,
     after_effect: bool,
     hit: bool,
+    partial_resize: bool,
     events: Vec<(&'static str, &'static str)>,
 }
 

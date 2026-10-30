@@ -1,5 +1,8 @@
 #![cfg(feature = "journal")]
 
+#[path = "journal_files/resizable.rs"]
+mod resizable;
+
 use std::{
     fs::{self, OpenOptions},
     io::Write,

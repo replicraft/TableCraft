@@ -6,7 +6,7 @@ use tablecraft_core::limits::ResourceBudget;
 mod faults;
 mod validation;
 
-struct MemoryStorage(Cursor<Vec<u8>>);
+pub(super) struct MemoryStorage(pub(super) Cursor<Vec<u8>>);
 
 impl Read for MemoryStorage {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {

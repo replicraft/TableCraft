@@ -17,7 +17,7 @@ pub enum JournalError {
     /// A journal cannot be overwritten/reused implicitly.
     #[error("journal storage is not empty")]
     JournalNotEmpty,
-    /// Only equal, nonempty image lengths up to the protocol limit are supported.
+    /// An image length does not satisfy the selected protocol's size limits.
     #[error("unsupported image transaction size")]
     ImageSize,
     /// A bounded fallible allocation failed.

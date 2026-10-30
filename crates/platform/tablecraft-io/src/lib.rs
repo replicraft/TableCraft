@@ -14,6 +14,6 @@ mod read;
 pub use read::{read_exact, read_exact_at};
 mod write;
 pub use write::write_exact_at;
-/// Optional fixed-length image journal protocol over explicitly owned storage.
+/// Optional fixed and resizable image journals over explicitly owned storage.
 #[cfg(feature = "journal")]
 pub mod journal;
