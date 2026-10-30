@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Inert data-macro program structure
+
+The [program reader](access/schema/NATIVE_DATA_MACRO_PROGRAM.md) now retains
+Statements, one-If ConditionalBlock, Condition and desktop RaiseError structure
+from explicitly inspected table Extra properties. Conditions and argument contents
+remain unevaluated ranges in the exact decoded XML UTF-8 input, including its BOM;
+the original native UTF-16 property bytes remain separately available. Unfamiliar
+structures stay opaque. Present-empty and absent arguments remain distinct.
+
+`inspect PATH --table NAME --extra --macro-program` explicitly reports that
+structure without printing stored expression text. All 25 authored XML sources
+and 42 literal node spans pass native checks; all 50 full CLI carriers pass the
+corrected consumer round. The first CLI comparison stopped at a test parser that
+incorrectly expected blank TSV section separators; the CSV-based test correction
+leaves production and golden bytes unchanged. Native checks pass 13 focused and
+23 broader functions, strict ACE checks and the minimal build. CLI regressions
+pass 37 unit, 24 UPDATE and 13 Extra functions, plus strict CLI checks. Macro
+execution, qualified absence and normal ACE save eligibility remain unfinished.
+
 ## Recovery for independently sized images
 
 The optional [image journal](foundation/IMAGE_JOURNAL.md) now supports growing,

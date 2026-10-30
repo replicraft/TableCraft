@@ -1,8 +1,13 @@
 mod model;
 mod names;
+mod program;
 mod read;
 
 pub use model::{DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace};
+pub use program::{
+    DataMacroProgram, MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode,
+    MacroProgramNodeKind, MacroProgramProfile, XmlByteSpan,
+};
 
 use super::TableExtraProperty;
 use crate::InspectError;

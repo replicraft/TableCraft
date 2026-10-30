@@ -1,3 +1,5 @@
+mod program;
+
 use super::{Error, line};
 use crate::{native, output::TableOutput};
 use std::io::{Read, Seek};
@@ -9,6 +11,26 @@ pub(super) fn run<R: Read + Seek>(
     source: &mut R,
     name: &str,
     macro_xml: bool,
+    output: &mut TableOutput,
+    budget: ResourceBudget,
+) -> Result<(), Error> {
+    run_with(source, name, macro_xml, false, output, budget)
+}
+
+pub(super) fn run_program<R: Read + Seek>(
+    source: &mut R,
+    name: &str,
+    output: &mut TableOutput,
+    budget: ResourceBudget,
+) -> Result<(), Error> {
+    run_with(source, name, false, true, output, budget)
+}
+
+fn run_with<R: Read + Seek>(
+    source: &mut R,
+    name: &str,
+    macro_xml: bool,
+    macro_program: bool,
     output: &mut TableOutput,
     mut budget: ResourceBudget,
 ) -> Result<(), Error> {
@@ -173,6 +195,12 @@ pub(super) fn run<R: Read + Seek>(
                 },
             ],
         )?;
+    }
+    if macro_program {
+        if extra.coverage() != TableExtraCoverage::WideMr2 {
+            return Err(Error::Read(InspectError::Unsupported));
+        }
+        program::report(&extra, output, &mut budget)?;
     }
     Ok(())
 }

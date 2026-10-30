@@ -1,0 +1,315 @@
+{
+  "feature": "Explicit inert documented-desktop data-macro program structure inspection",
+  "date": "2026-10-30",
+  "state": "Source-first native/CLI gates, focused and broader tests, strict ACE/CLI and minimal ACE pass; first CLI TSV test-helper failure retained, production/goldens unchanged",
+  "profile": "Caller-selected DocumentedDesktop structural subset, never namespace/header-mode autodetection or execution/absence/write permission",
+  "source_first": {
+    "native": {
+      "exit": 0,
+      "functions": 1,
+      "complete_mr2_property_xml_carriers": 25,
+      "literal_node_ranges": 42,
+      "log": {
+        "path": ".cache/ace16-inert-data-macro-program-next-20261030/source-first-root.log",
+        "bytes": 515,
+        "sha256": "ab2571b9d10e80fec2aa2a63fc67aab27c476e6735cf1bb3cff93ed9cc58793c"
+      },
+      "freeze": {
+        "path": ".cache/ace16-inert-data-macro-program-next-20261030/source-registered-first-freeze.json",
+        "bytes": 2104,
+        "sha256": "dcaa68ca5097ac8254d1fb81e377abe184721951c9570ccfeab3e3783272e5e1"
+      }
+    },
+    "cli": {
+      "exit": 0,
+      "functions": 1,
+      "complete_source_carriers": 50,
+      "header_codes": [
+        5,
+        6
+      ],
+      "log": {
+        "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-source-first-root.log",
+        "bytes": 901,
+        "sha256": "196c0f1fcbe6f9356a4c16a9a7ea3e14e2336c7b6e9d8fe128201c23e021396e"
+      },
+      "freeze": {
+        "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-source-registered-first-freeze.json",
+        "bytes": 1272,
+        "sha256": "95788d7bffea53d538a153c2ac7f9448565f4938d8b25e0912e848ae43951781"
+      }
+    },
+    "retained_executed_source_files": [
+      {
+        "original": {
+          "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/mod.rs",
+          "bytes": 275,
+          "sha256": "0d4bad06a6c35733049887ccb50ac58293798ba752b301e5b3e1306dfe21774e"
+        },
+        "retained": {
+          "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-source-parent-executed.rs",
+          "bytes": 275,
+          "sha256": "0d4bad06a6c35733049887ccb50ac58293798ba752b301e5b3e1306dfe21774e"
+        }
+      },
+      {
+        "original": {
+          "path": "apps/tablecraft-cli/tests/table_extra/program.rs",
+          "bytes": 2468,
+          "sha256": "17d4ece6a7e234bef660fee325699097c7186214ab4af0eeef4e6e345d124be9"
+        },
+        "retained": {
+          "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-program-source-only-executed.rs",
+          "bytes": 2468,
+          "sha256": "17d4ece6a7e234bef660fee325699097c7186214ab4af0eeef4e6e345d124be9"
+        }
+      }
+    ]
+  },
+  "native_first_api": {
+    "exit": 0,
+    "functions": 13,
+    "new_program_functions": 5,
+    "existing_envelope_functions": 8,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-api-first-root.log",
+      "bytes": 2058,
+      "sha256": "7a388adbc12c1d98de8154b113e57002055eeaf2aa91d6c146f772211d1536a6"
+    },
+    "freeze": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-first-coherent-freeze.json",
+      "bytes": 2926,
+      "sha256": "76eb4677d5abaeed101dbe859d572a0a7b1c7e85639dd84a9380a7b9d496b840"
+    }
+  },
+  "native_broader": {
+    "exit": 0,
+    "table_extra_functions": 23,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-extra-regressions-first-root.log",
+      "bytes": 3141,
+      "sha256": "518643598fd6a12e43833d33a2de6e1ac25feaa717d56e84388f4ab2cf0e8fea"
+    },
+    "strict_exit": 0,
+    "strict_log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-strict-first-root.log",
+      "bytes": 294,
+      "sha256": "2e3c3d0ab451ddb6ef0c1623b9fd3e017116878d29b95531312a0f98367d9679"
+    },
+    "minimal_exit": 0,
+    "minimal_log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/native-minimal-first-root.log",
+      "bytes": 293,
+      "sha256": "89fb3804f7870cc0a6f07f7510860fa52fb8b4e6ac2400ffc375ca39f143793b"
+    }
+  },
+  "cli_first_api": {
+    "exit": 101,
+    "passed": 3,
+    "failed": 1,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-api-first-root.log",
+      "bytes": 1875,
+      "sha256": "c20f656851f5a44f86bca07be424c1bb2e9ce8a5fdf4e9812f4005f480d1b74c"
+    },
+    "reason": "Test section helper assumed blank TSV section separators and included subsequent summary rows; node/span rows already matched. No producer or expected correction.",
+    "freeze": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-consumer-first-coherent-freeze.json",
+      "bytes": 2629,
+      "sha256": "600b67e4e85182315c067f36a30b5a92ef3d78b3f042c5270f837f60a5e5bba7"
+    }
+  },
+  "cli_test_only_derivative": {
+    "freeze": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-tsv-parser-correction-freeze.json",
+      "bytes": 1944,
+      "sha256": "3f422ae505a4b86f994b086ca6b9608cc14476d242c7ec2256df6377d83539d6"
+    },
+    "changes": [
+      "Use existing csv ReaderBuilder for quoted TSV and stop at record-width boundary",
+      "Move Outcome import to top level",
+      "Add one pure quoted-tab/newline parser control"
+    ],
+    "native_consumer_and_source_goldens_unchanged": true
+  },
+  "cli_corrected_api": {
+    "exit": 0,
+    "functions": 5,
+    "source_functions": 1,
+    "actual_cli_functions": 3,
+    "pure_parser_functions": 1,
+    "main_matrix_calls": 50,
+    "main_matrix_success_reports": 38,
+    "main_matrix_atomic_refusals": 12,
+    "main_matrix_definition_rows": 40,
+    "main_matrix_node_rows": 84,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-api-second-root.log",
+      "bytes": 792,
+      "sha256": "e4e0bbf2ace1794e5b25e9dd69fcf1209095b8af534b5294e5ed37d1556e9f6f"
+    }
+  },
+  "cli_broader": {
+    "exit": 0,
+    "unit_functions": 37,
+    "query_update_integration_functions": 24,
+    "table_extra_integration_functions": 13,
+    "total_functions": 74,
+    "log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-regressions-first-root.log",
+      "bytes": 7967,
+      "sha256": "cb7259a169212f5e4cebf210aa890d7189bbbfa89feb77abae3f002f38846807"
+    },
+    "strict_first_exit": 0,
+    "strict_log": {
+      "path": ".cache/ace16-inert-data-macro-program-next-20261030/cli-strict-first-root.log",
+      "bytes": 863,
+      "sha256": "fdee8d8255eea0685ce9a201ab5dfc2a4247de5ceb6c7bfbdd7b944b6b3ef081"
+    }
+  },
+  "scope": {
+    "recognized": [
+      "Statements",
+      "ConditionalBlock with one If/Condition/Statements shape",
+      "RaiseError with Number and optional Description element presence"
+    ],
+    "unknown": "Whole opaque subtree and diagnostic; no first/last argument selection, no globally-malformed claim for unsupported structural forms",
+    "present_empty": "Distinct from missing; no Long/Boolean/nonempty expression claim",
+    "source_coordinates": "Exact original decoded XML UTF8 buffer including BOM; not native UTF16/LvExtra/LVAL/file offsets",
+    "retention": "Original property bytes and outer TableExtra raw payload retained separately",
+    "lexical": "Shared safety owner, separately paid bounded program arena pass; foreign/rebound descendants opaque, truly malformed or unbound/DTD/entity profiles fail atomically",
+    "limits": {
+      "xml_utf8_bytes": 2097152,
+      "depth": 128,
+      "attributes_per_element": 64,
+      "namespace_bindings": 128,
+      "definitions": 1024,
+      "xml_staging_elements": 16384,
+      "program_nodes": 4096,
+      "known_namespace_action_child_elements": 64
+    },
+    "setfield": "Opaque; desktop/Services context contracts are not conflated",
+    "normal_write_gates": "Unchanged",
+    "not_qualified": [
+      "expression evaluation/field binding",
+      "event execution/old-new/IsInsert/Updated behavior",
+      "transaction effects and rollback",
+      "complete native storage detection",
+      "native ACE16 macro absence",
+      "normal saves or native Access timing/save/reopen"
+    ]
+  },
+  "primary_references": [
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event",
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/raiseerror-macro-action",
+    "https://learn.microsoft.com/en-us/office/client-developer/access/raiseerror-macro-action-access-custom-web-app",
+    "https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-axl2/212dd877-a6f7-45e1-9f33-2d7a33ce5e5d",
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/setfield-macro-action"
+  ],
+  "new_dependencies": false,
+  "no_copied_third_party_macro_programs": true,
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/args.rs",
+      "bytes": 7011,
+      "sha256": "a36afb4a658e204bd6d8d16cca3230c8582b0b58bd41e53faaec0724f8c3a034"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/extra.rs",
+      "bytes": 7051,
+      "sha256": "4ffb0b21a7770dbe1610101a9f8ad985bed5aa89a598a43270f72e629ab42db0"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/extra/program.rs",
+      "bytes": 7632,
+      "sha256": "611efeced03131fe2850b84e7a7005c610e4ee00ba3c39296636f9f3c022dd41"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/mod.rs",
+      "bytes": 11128,
+      "sha256": "4e6dd157a750c050bf618766e21037b4dd180a7ef6798bb33e649084c48d8885"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/table_extra.rs",
+      "bytes": 12461,
+      "sha256": "e912c3a5a1aaabd5739532027e006fc753516186265fbd4a6b0cc14abf147c05"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/table_extra/program.rs",
+      "bytes": 11978,
+      "sha256": "afdd4191ccaad1b944e19b4dfd3c91c2646926931634a6fd3de629e8f9932f59"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 7031,
+      "sha256": "aad780906cb558f9a5a71ca37a97369a0846956b0ad053efd0f63523ea86d2b6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/mod.rs",
+      "bytes": 650,
+      "sha256": "aa142773320473efb040d6cadf628337269a4cb55712c7432f36befdbf64da35"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/mod.rs",
+      "bytes": 1048,
+      "sha256": "f668908a1bdb07273eeb68f2d13f9d1214412670d65b9f28a338190ba6e1186c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/mod.rs",
+      "bytes": 891,
+      "sha256": "887be6d5a86f02607e232d4478c492ad9b0e36afedf29d31e9cde90cdedfff6f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/model.rs",
+      "bytes": 5967,
+      "sha256": "5c1990eea01a4ffb40196422de391951d395fac9d3bba61b1c02a3f81fe05587"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/read.rs",
+      "bytes": 11225,
+      "sha256": "502e81f067b05640cc947f3f11e9b3d3266b29755d7a44d1cdc327205646da9e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/tests.rs",
+      "bytes": 9805,
+      "sha256": "a75031779dde5754c23c204b4fe146e5845acd7297d1452916db9578b3253f21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/tree.rs",
+      "bytes": 9523,
+      "sha256": "2d3aa55227c8da2e72d2a8ad2886a42f34df6a5f4b4941ad87bc86e740ef2f1e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/read.rs",
+      "bytes": 14449,
+      "sha256": "c4f65802b90bb5900532c726709af9daf0e3d50427746a2f5f915a249504175b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/mod.rs",
+      "bytes": 428,
+      "sha256": "bebc3a8b17f4613d69ec76efa8f75e567e5f02d8687899b611ae86cfb0ec7664"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/program_fixtures.rs",
+      "bytes": 26719,
+      "sha256": "3f2fe785dff29e175cd8ca325281633fce1b0b0f5003afecce10cfe612ea861a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests.rs",
+      "bytes": 201,
+      "sha256": "1827f107b669943e96f154f12a2003308d4aee34295a17bb548c1bed82b7b866"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/program_sources.rs",
+      "bytes": 2735,
+      "sha256": "ab19ecf3e2ee9ed2fb32a21aecdba3d95272fc7cb88833e16a18268ba132f5f9"
+    }
+  ],
+  "guide": {
+    "path": "docs/access/schema/NATIVE_DATA_MACRO_PROGRAM.md",
+    "bytes": 7530,
+    "sha256": "ee3e5bd578cd54842fc284fb98c868c6a989783e444d8da9129f192d7c7c64ba"
+  },
+  "historical_envelope_evidence": "Separate unchanged result/consumer/source witnesses; no current program qualification inferred from it",
+  "final_scoped_format_docs_links_and_historical_saved_replay": "Root pending final checks"
+}
