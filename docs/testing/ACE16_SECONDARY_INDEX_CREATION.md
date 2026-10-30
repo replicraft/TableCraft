@@ -157,3 +157,39 @@ reopen or Microsoft Access save behavior on these generated originals. A later
 whole-image comparison must first freeze independent expectations from these
 originals and the original requests; public reference AFTER bytes cannot supply
 those canonical expectations.
+
+## Independent complete images for generated originals
+
+A private pure constructor now qualifies all eight original files before deriving
+sixteen complete canonical images from those originals and the frozen ASC/DESC
+requests. No native writer, Java process, reference AFTER image or candidate
+participates. All original hashes remain unchanged. Both previously completed
+empty-image hashes remain exact after the immutable-buffer correction.
+
+The model projects the actual original catalog identity, native-numbered fields
+and original logical ROWs, verifies complete old key streams and maps, then
+independently emits the requested TD insertion, new count/map and fresh INDEX
+pages. It protects old rows, existing counters/aliases/index pages, inactive TD
+suffix and every unrelated original byte. Canonical append placement is an
+engineering policy; it does not claim Jackcess or Microsoft Access packing parity.
+
+Two pure authoring failures remain preserved. The first stopped before admitting
+source one because the reused decoder required a present first bitmap pointer;
+the legitimate empty owned map has seventeen absent references. A new private
+wrapper accepts only an exact checked 69-byte kind1/all-zero-reference row,
+leaving the maintained helper unchanged. The second admitted all eight sources
+and emitted two empty images before a mutable-buffer decoder TypeError. Freezing
+the fully assembled image as immutable bytes corrected that boundary without
+changing construction choices. The final pure run passes all sixteen images.
+
+This is expected-model qualification. Native writer comparison and fresh
+independent-reader candidate opens remain pending; no normal-save or transaction
+permission follows from it.
+
+The [expected-model record](results/ace16-secondary-index-genuine-expected-2026-10-30.json)
+pins the source-only derivations, retained failures and sixteen complete hashes:
+7,208,960 bytes and 2,436 indexed ROW observations across the sixteen cases.
+The separately registered ignored native consumer is still unexecuted. Its
+engineering-test-only `TABLECRAFT_FIXTURE_ROOT` selects the immutable input
+directory independently of the committed producer source/build directory; all
+frozen inputs are checked before any later producer call.
