@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-30",
+  "feature": "SQL engineering INSERT named omissions and literal defaults",
+  "checks": {
+    "frontend_source_first": {
+      "exit_code": 0,
+      "functions": 1,
+      "complete_source_expected_pairs": 8
+    },
+    "frontend_api_first": {
+      "exit_code": 0,
+      "functions": 4,
+      "direct_access_complete_image_comparisons": 8,
+      "cli_complete_image_copies": 8,
+      "no_output_refusals": 6
+    },
+    "shared_engine_mutation_regression_first": {
+      "exit_code": 0,
+      "functions": 498
+    },
+    "shared_native_regressions_first": {
+      "exit_code": 0,
+      "targets": 10,
+      "functions": 72
+    },
+    "query_access_regressions_first": {
+      "exit_code": 0,
+      "access_library_functions": 51,
+      "query_library_functions": 84
+    },
+    "cli_regressions_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 33,
+      "integration_breakdown": {
+        "delete": 6,
+        "historical": 2,
+        "insert": 9,
+        "update": 12,
+        "normal_jet4": 4
+      }
+    },
+    "strict_five_packages_first": {
+      "exit_code": 0
+    },
+    "minimal_ace_first": {
+      "exit_code": 0
+    },
+    "minimal_access_first": {
+      "exit_code": 0
+    }
+  },
+  "scope": [
+    "One original capture, presence-bearing original intent, one selected engine preview and fresh-copy publication",
+    "Named ordinary omissions resolve only needed original closed literal defaults or nullable NULL; explicit NULL remains supplied",
+    "Existing complete planner/service stays strict and entirely supplied rows use old complete engine path",
+    "Explicit generated companion width excludes actual engine-bound primary; C3 ordinary companion default99 maps to [4,31,99]"
+  ],
+  "observations": [
+    "Static review corrected authored C3 maximum native slot count41 from2 to3 before first source/API execution; predecessor preserved",
+    "All first frontend source/API runs passed; no expected image changed after an API result",
+    "After these checks only CLI command-summary documentation changed to describe named omissions; no semantic rerun is claimed for that help-only text."
+  ],
+  "pending": [],
+  "evidence": [
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/frontend-source-first-root.log",
+      "bytes": 1055,
+      "sha256": "1e08fcb7dc8b833127c440522319b19f0877067238bdb656ff8ae1b84d999a1d"
+    },
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/frontend-api-first-root.log",
+      "bytes": 681,
+      "sha256": "5994c9e3a6eb6e3c326a869004cf71b3bd139cfdd164965dc67ccf22f1e5961c"
+    },
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/frontend-c3-max-slot-corrected-freeze.json",
+      "bytes": 2031,
+      "sha256": "4266172f6fcfd68efa2a02214ff9053084d9a32219fb652f91ed81f37d651264"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/engine-mutations-first-root.log",
+      "bytes": 67437,
+      "sha256": "66935b105b423b6c65edc5a3b40a5cc13e2a7e026d10eb15546ba19afeda3d1b"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/shared-native-first-root.log",
+      "bytes": 8872,
+      "sha256": "a5744c2a031885afabe08748c28fedc2199d0ef8ca456be25a951a3f5e08969b"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/query-access-first-root.log",
+      "bytes": 16540,
+      "sha256": "a12c59f3fb89429bbd36baa68953a6fba264f90b0a82e5f9964a337f7a699418"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/cli-first-root.log",
+      "bytes": 7522,
+      "sha256": "e12925f85821c4f6a672fcbf75ee6706857adde0ac151ccec7b61d6068fe1e6d"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/clippy-first-root.log",
+      "bytes": 746,
+      "sha256": "f1cefd3324230c398cf2a5e36fac2d6dce339cf79d80d1318b0074ca11ff8bb1"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-ace-first-root.log",
+      "bytes": 183,
+      "sha256": "d7965d5133fdb0275d7b62b8c8963c57ca9f62d042110eb78f15fa250782e94a"
+    },
+    {
+      "path": ".cache/ace16-write-defaults-growth-batch-20261030/minimal-access-first-root.log",
+      "bytes": 526,
+      "sha256": "98404b553188a179ed8f210d452628c9ab5f1f61919b034918319c7aec39dcca"
+    }
+  ],
+  "native_Access_qualification": false,
+  "regression_context": "Shared batch also covered separately authored mixed-growing UPDATE work. Counts are engine mutation subset498, not a complete ACE library claim; current minimal checks cover ACE/Access, while neutral DB/query minimal results remain in their separate committed record.",
+  "final_format_and_links": {
+    "format": 0,
+    "documentation_links": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-omitted-insert-frontend-next-20261030/frontend-format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-omitted-insert-frontend-next-20261030/frontend-doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "b799c43cde173e3da0e8617b20b4fb1a874a16d590e46a1826ff5453aeb41317"
+      }
+    ]
+  }
+}

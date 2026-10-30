@@ -34,8 +34,12 @@ evaluate omitted-field defaults or qualify normal ACE saves.
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
 snapshot handles and explicit Restrict/Cascading actions. Atomic fixed multi-column
 UPDATE now evaluates every assignment from original rows before one backend
-finish. [SQL VALUES INSERT](access/writes/SQL_INSERT_COPIES.md) now supplies one
-complete row with explicit incrementing companions when selected. Next delivery
+finish. [SQL VALUES INSERT](access/writes/SQL_INSERT_COPIES.md) now supports named
+omissions with needed-only constant defaults or NULL, including explicitly
+selected incrementing companions. Supplied NULL stays distinct; positional
+VALUES and the complete-row API remain strict. Native and frontend whole-image
+checks pass, including exact Decimal assignment and generated companions.
+Clock/runtime defaults, broader coercions and normal saves remain open. Next delivery
 work is broader real-table schema admission, deterministic write expressions and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
@@ -56,8 +60,8 @@ precision/scale; broader metadata and normal save admission remain unfinished.
 
 The [joint fitted-record engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now changes
 fixed fields plus one Short Text/Binary field with one original-record proof and
-one joint physical-index transform. Existing-capacity records are qualified;
-adapter routing and broader placement/allocation continue separately.
+one joint physical-index transform. Existing-capacity records and metadata-directed
+adapter routing are qualified; broader placement/allocation continue separately.
 
 ## Delivery snapshot — 27 October 2026
 

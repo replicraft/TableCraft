@@ -10,7 +10,7 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
-    /// Evaluate one explicit SQL VALUES row and create a fresh experimental ACE INSERT copy.
+    /// Evaluate one SQL VALUES row with named omissions and create a fresh experimental ACE INSERT copy.
     PreviewInsert(Box<super::preview_insert::Arguments>),
     /// Select original rows with SQL and create a fresh experimental ACE DELETE copy.
     PreviewDelete(Box<super::preview_delete::Arguments>),
