@@ -20,6 +20,13 @@ from scripts.compat_artifacts import ArtifactStore
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RECORD = 'docs/testing/results/data-macro-xml-envelopes-2026-10-29.json'
+SOURCE_WITNESS_MANIFEST = 'docs/testing/ace16_data_macro_xml/source-witnesses.json'
+SOURCE_WITNESS_ROOT = 'docs/testing/ace16_data_macro_xml/witnesses'
+SOURCE_RECORD_PIN = {
+    'path': DEFAULT_RECORD,
+    'bytes': 11028,
+    'sha256': '0c87da53dedeecaf0aa115529502ea523c45e36fe04da9564a227bd96c25868f',
+}
 NAMESPACE = 'http://schemas.microsoft.com/office/accessservices/2009/11/application'
 MAX_PAYLOAD_BYTES = 2 * 1024 * 1024
 MAX_DEPTH = 128
@@ -27,19 +34,100 @@ MAX_ATTRIBUTES = 64
 MAX_NODES = 65_536
 
 
+def canonical_pin(value):
+    assert set(value) == {'path', 'bytes', 'sha256'}, 'invalid artifact pin fields'
+    path = value['path']
+    assert isinstance(path, str) and path, 'missing artifact path'
+    selected = Path(path)
+    assert not selected.is_absolute() and '..' not in selected.parts
+    assert selected.as_posix() == path and '\\' not in path, 'noncanonical artifact path'
+    assert type(value['bytes']) is int and value['bytes'] >= 0, 'invalid artifact byte count'
+    digest = value['sha256']
+    assert isinstance(digest, str) and len(digest) == 64
+    assert all(character in '0123456789abcdef' for character in digest), 'invalid SHA-256'
+    return selected
+
+
+class SourceWitnesses:
+    """Resolve exact historical source bytes as data, never as executable code."""
+
+    def __init__(self, store, record_path, record):
+        self.store = store
+        self.record_pin = dict(SOURCE_RECORD_PIN)
+        canonical_pin(self.record_pin)
+        assert store.pin(record_path) == self.record_pin, 'original result record changed'
+        assert store.load(record_path) == record, 'record facts differ from the saved original'
+
+        self.manifest_pin = store.pin(SOURCE_WITNESS_MANIFEST)
+        manifest = store.load(SOURCE_WITNESS_MANIFEST)
+        assert manifest['record'] == self.record_pin, 'source witness record binding differs'
+        originals = {}
+        for expected in record['source_files']:
+            canonical_pin(expected)
+            assert expected['path'] not in originals, 'duplicate original source path'
+            originals[expected['path']] = expected
+
+        self.entries = {}
+        for entry in manifest['source_witnesses']:
+            original = entry['original']
+            witness = entry['witness']
+            original_path = canonical_pin(original)
+            canonical_pin(witness)
+            assert original['path'] in originals, 'unrecognized original source witness'
+            assert original == originals[original['path']], 'historical source pin differs'
+            assert original['path'] not in self.entries, 'duplicate source witness mapping'
+            assert (witness['bytes'], witness['sha256']) == (original['bytes'], original['sha256']), \
+                'witness is not the exact original source'
+            assert witness['path'] == (Path(SOURCE_WITNESS_ROOT) / original_path).as_posix(), \
+                'source witness is outside its dedicated namespace'
+            store.path(witness['path']).relative_to(store.path(SOURCE_WITNESS_ROOT))
+            assert store.pin(witness['path']) == witness, witness['path']
+            self.entries[original['path']] = entry
+
+        assert self.entries.keys() == originals.keys(), 'incomplete source witness inventory'
+
+    def select(self, expected):
+        entry = self.entries.get(expected['path'])
+        if entry is None:
+            return None
+        assert expected == entry['original'], 'requested source pin is not historical input'
+        # Recheck every selection, even when it was checked earlier in this run.
+        witness = entry['witness']
+        canonical_pin(witness)
+        assert (witness['bytes'], witness['sha256']) == (expected['bytes'], expected['sha256']), \
+            'selected witness is not the requested historical source'
+        assert witness['path'] == (Path(SOURCE_WITNESS_ROOT) / expected['path']).as_posix()
+        self.store.path(witness['path']).relative_to(self.store.path(SOURCE_WITNESS_ROOT))
+        assert self.store.pin(witness['path']) == witness, witness['path']
+        return witness
+
+    def revalidate(self):
+        assert self.store.pin(SOURCE_WITNESS_MANIFEST) == self.manifest_pin, \
+            'source witness manifest changed during replay'
+        assert self.store.pin(self.record_pin['path']) == self.record_pin, \
+            'original result record changed during replay'
+        for entry in self.entries.values():
+            self.select(entry['original'])
+
+
 class Pins:
-    def __init__(self, store, captured, retained):
+    def __init__(self, store, captured, retained, witnesses=None):
         self.store = store
         self.captured = captured
         self.retained = retained
+        self.witnesses = witnesses
         self.count = 0
         self.paths = set()
 
     def check(self, expected):
+        canonical_pin(expected)
         selected = expected
         if expected['path'] == self.captured['path']:
             assert expected == self.captured
             selected = self.retained
+        elif self.witnesses is not None:
+            selected = self.witnesses.select(expected) or expected
+        canonical_pin(selected)
         actual = self.store.pin(selected['path'])
         assert actual == selected, selected['path']
         self.count += 1
@@ -221,7 +309,10 @@ def verify(record_path):
     assert captured_path.as_posix() == captured['path']
     captured_argv = str(ROOT / captured_path)
     assert (retained['bytes'], retained['sha256']) == (captured['bytes'], captured['sha256'])
-    pins = Pins(store, captured, retained)
+    witnesses = SourceWitnesses(store, record_path, record)
+    pins = Pins(store, captured, retained, witnesses)
+    pins.check(witnesses.manifest_pin)
+    pins.check(witnesses.record_pin)
     pins.check(retained)
 
     def record_pins(value):
@@ -293,9 +384,11 @@ def verify(record_path):
                         ('definitions', 9), ('names_only', 2)]:
         assert comparison[name] == count
     assert comparison['all_input_pins_unchanged'] is True
+    witnesses.revalidate()
     return {'verified': True, 'calls': 7, 'exact_records': 130, 'documents': 9,
             'definitions': 9, 'names_only': 2, 'pins': pins.count,
-            'paths': len(pins.paths), 'children': 0, 'absence_qualified': False}
+            'paths': len(pins.paths), 'children': 0, 'absence_qualified': False,
+            'historical_source_witnesses': len(witnesses.entries)}
 
 
 def main():
