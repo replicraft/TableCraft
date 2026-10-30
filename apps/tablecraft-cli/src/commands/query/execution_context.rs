@@ -1,5 +1,6 @@
 //! Shared host policies live for one buffered or progressive query operation.
 use super::{Error, retrieval::Controls};
+use crate::commands::clock::HostClock;
 use tablecraft_expressions::{
     comparison::Collation,
     functions::{
@@ -22,7 +23,7 @@ pub(super) fn with_context<T, E: From<Error>>(
         .as_ref()
         .map(|provider| provider as &dyn Collation)
         .or(collation);
-    let clock = super::clock::HostClock::new(controls.clock);
+    let clock = HostClock::new(controls.clock);
     let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(controls.random_seed).map_err(|_| Error::Parameter)?;
 

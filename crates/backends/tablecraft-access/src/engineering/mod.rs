@@ -112,6 +112,22 @@ pub enum EngineeringRequest<'a> {
         /// Caller-selected incrementing policy with original LAST precondition.
         policy: IncrementingAutoNumber,
     },
+    /// Select increment-by-one using original LAST, retaining companion presence.
+    IncrementingInsertWithOmissionsFromSource {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original companion presence, excluding only the generated primary.
+        rows: &'a [OmittedRowInsert],
+    },
+    /// Source-bound increment-by-one with explicit lazy default-clock authority.
+    IncrementingInsertWithClockFromSource {
+        /// Exact selected table name.
+        table: &'a str,
+        /// Original companion presence; supplied NULL never becomes omission.
+        rows: &'a [OmittedRowInsert],
+        /// Borrowed provider read only by the native needed-default phase.
+        clock: &'a dyn Clock,
+    },
     /// Original ordinary presence with explicit needed-default clock authority.
     InsertWithClock {
         /// Exact selected table name.
@@ -295,6 +311,22 @@ pub fn preview(
         } => Candidate::Generated(image.preview_ace16_incrementing_insert_rows_with_omissions(
             table, rows, policy, budget, cancelled,
         )?),
+        EngineeringRequest::IncrementingInsertWithOmissionsFromSource { table, rows } => {
+            let policy =
+                image.prepare_ace16_incrementing_insert_policy(table, budget, cancelled)?;
+            Candidate::Generated(image.preview_ace16_incrementing_insert_rows_with_omissions(
+                table, rows, policy, budget, cancelled,
+            )?)
+        }
+        EngineeringRequest::IncrementingInsertWithClockFromSource { table, rows, clock } => {
+            let policy =
+                image.prepare_ace16_incrementing_insert_policy(table, budget, cancelled)?;
+            Candidate::Generated(
+                image.preview_ace16_incrementing_insert_rows_with_omissions_and_clock(
+                    table, rows, policy, clock, budget, cancelled,
+                )?,
+            )
+        }
         EngineeringRequest::InsertWithClock { table, rows, clock } => {
             Candidate::Rows(image.preview_ace16_insert_rows_with_omissions_and_clock(
                 table, rows, clock, budget, cancelled,

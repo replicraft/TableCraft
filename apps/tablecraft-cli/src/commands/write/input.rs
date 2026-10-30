@@ -1,4 +1,5 @@
 //! Capture and fully parse explicit request inputs before opening a database.
+pub(super) mod presence;
 mod quotes;
 use super::{
     error::{Error, input},
@@ -7,10 +8,7 @@ use super::{
 use csv::{ByteRecord, ReaderBuilder};
 use std::{fs::File, path::Path};
 use tablecraft_ace::{InspectError, RowDelete};
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) const MAX_REQUESTS: usize = 4096;
 pub(super) const MAX_INPUT_BYTES: u64 = 16 * 1024 * 1024;
@@ -104,10 +102,11 @@ fn reader<'a>(
     Ok((reader, ByteRecord::with_capacity(bytes.len(), fields)))
 }
 
-pub(super) fn inserts<T>(
+fn insert_fields<F, T>(
     bytes: &[u8],
     max_value_bytes: usize,
-    make: fn(Vec<Value>) -> T,
+    parse: fn(&str, &str, &mut ResourceBudget) -> Result<F, Error>,
+    make: fn(Vec<F>) -> T,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<T>, Error> {
@@ -149,7 +148,7 @@ pub(super) fn inserts<T>(
             if data.len() > max_value_bytes {
                 return Err(input("A value exceeds the requested value-byte limit"));
             }
-            fields.push(values::value(kind, data, false, budget)?);
+            fields.push(parse(kind, data, budget)?);
         }
         reserve(&mut rows, 1, budget)?;
         rows.push(make(fields));

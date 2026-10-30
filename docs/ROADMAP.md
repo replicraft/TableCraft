@@ -2,6 +2,13 @@
 
 ## Current product priority
 
+The working copy workflows now also include [typed batch omissions/defaults](testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+and native-metadata-driven single Memo/OLE routing. Explicit
+[observed macro inventory](access/schema/NATIVE_TABLE_EXTRA.md) reports stored
+envelopes and unresolved content; it does not qualify required-event discovery
+or absence. General saves, required macro handling and the donated file's
+remaining property-profile refusal are still open.
+
 Explicit [before-event preparation](access/schema/NATIVE_BEFORE_EVENT_GUARDS.md)
 now has a native service and SQL/CLI consumer. It reports only caller-selected
 programs; discovering required native programs and qualifying absence still gate

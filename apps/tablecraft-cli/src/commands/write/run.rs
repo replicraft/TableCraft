@@ -2,9 +2,13 @@
 use super::{
     args::{Command, Delete, Insert, Paths, Update},
     error::{Error, input as invalid},
-    input, tick, updates,
+    input::{self, presence::Parsed},
+    tick, updates,
 };
-use crate::native::{self, publication};
+use crate::{
+    commands::clock::HostClock,
+    native::{self, publication},
+};
 use std::fmt::Write;
 use tablecraft_access::engineering::{
     self, DeleteMode, EngineeringCopy, EngineeringRequest, UpdateMode,
@@ -130,43 +134,92 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
 fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     let mut budget = args.paths.limits.budget();
     let bytes = input::capture(&args.requests, &mut budget, &|| false)?;
+    // Construction does not sample a provider or load the system time zone.
+    let clock = args.default_clock.map(HostClock::new);
     if args.incrementing || args.incrementing_last.is_some() {
-        let rows = input::inserts(
+        let parsed = input::presence::inserts(
             &bytes,
             args.value_bytes,
             AutoNumberRowInsert::new,
             &mut budget,
             &|| false,
         )?;
-        let request = match args.incrementing_last {
-            Some(last) => EngineeringRequest::IncrementingInsert {
-                table: &args.table,
-                rows: &rows,
-                policy: IncrementingAutoNumber::new(last),
-            },
-            None => EngineeringRequest::IncrementingInsertFromSource {
-                table: &args.table,
-                rows: &rows,
-            },
-        };
-        publish(&args.paths, request, password, &mut budget)
+        match parsed {
+            Parsed::Complete(rows) => {
+                let request = match args.incrementing_last {
+                    Some(last) => EngineeringRequest::IncrementingInsert {
+                        table: &args.table,
+                        rows: &rows,
+                        policy: IncrementingAutoNumber::new(last),
+                    },
+                    None => EngineeringRequest::IncrementingInsertFromSource {
+                        table: &args.table,
+                        rows: &rows,
+                    },
+                };
+                publish(&args.paths, request, password, &mut budget)
+            }
+            Parsed::Omitted(rows) => {
+                let request = match (args.incrementing_last, clock.as_ref()) {
+                    (Some(last), Some(clock)) => EngineeringRequest::IncrementingInsertWithClock {
+                        table: &args.table,
+                        rows: &rows,
+                        policy: IncrementingAutoNumber::new(last),
+                        clock,
+                    },
+                    (Some(last), None) => EngineeringRequest::IncrementingInsertWithOmissions {
+                        table: &args.table,
+                        rows: &rows,
+                        policy: IncrementingAutoNumber::new(last),
+                    },
+                    (None, Some(clock)) => {
+                        EngineeringRequest::IncrementingInsertWithClockFromSource {
+                            table: &args.table,
+                            rows: &rows,
+                            clock,
+                        }
+                    }
+                    (None, None) => EngineeringRequest::IncrementingInsertWithOmissionsFromSource {
+                        table: &args.table,
+                        rows: &rows,
+                    },
+                };
+                publish(&args.paths, request, password, &mut budget)
+            }
+        }
     } else {
-        let rows = input::inserts(
+        let parsed = input::presence::inserts(
             &bytes,
             args.value_bytes,
             RowInsert::new,
             &mut budget,
             &|| false,
         )?;
-        publish(
-            &args.paths,
-            EngineeringRequest::Insert {
-                table: &args.table,
-                rows: &rows,
-            },
-            password,
-            &mut budget,
-        )
+        match parsed {
+            Parsed::Complete(rows) => publish(
+                &args.paths,
+                EngineeringRequest::Insert {
+                    table: &args.table,
+                    rows: &rows,
+                },
+                password,
+                &mut budget,
+            ),
+            Parsed::Omitted(rows) => {
+                let request = match clock.as_ref() {
+                    Some(clock) => EngineeringRequest::InsertWithClock {
+                        table: &args.table,
+                        rows: &rows,
+                        clock,
+                    },
+                    None => EngineeringRequest::InsertWithOmissions {
+                        table: &args.table,
+                        rows: &rows,
+                    },
+                };
+                publish(&args.paths, request, password, &mut budget)
+            }
+        }
     }
 }
 

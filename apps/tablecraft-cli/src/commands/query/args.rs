@@ -1,6 +1,7 @@
 use super::preview_calculation::PreviewCalculationArgs;
 use super::run_args::RunArgs;
-use super::{calendar, character, clock, date_text, number};
+use super::{calendar, character, date_text, number};
+use crate::commands::clock;
 use clap::Subcommand;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;

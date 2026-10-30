@@ -25,7 +25,7 @@ const SOURCE_ROWS: [(i32, i32, Option<u64>); 3] = [
     (3, 30, Some(0xbff4000000000000)),
 ];
 
-fn source(code: u8, generated: bool, expression: &str) -> Vec<u8> {
+pub(super) fn source(code: u8, generated: bool, expression: &str) -> Vec<u8> {
     let mut before = omissions::three_field_source(code, generated);
     let column = 10 * PAGE + 75 + 2 * 25;
     assert_eq!(before[column], 4);

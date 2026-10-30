@@ -1,5 +1,6 @@
 mod grouping;
 mod mixed;
+mod omissions;
 
 use super::{args::Command, error::Error, input, updates, values};
 use crate::{Cli, commands};
@@ -158,7 +159,11 @@ fn explicit_modes_and_conflicts_are_checked_before_database_open() {
 #[test]
 fn quoted_tsv_preserves_null_empty_text_binary_and_companion_order() {
     let encoded = b"int32\t7\ttext\t\"Alice\tB\n\"\"C\"\"\"\tnull\t\tbinary\t00ff\nint32\t8\ttext\t\tnull\t\tbinary\t\n";
-    let rows = input::inserts(encoded, 1024, RowInsert::new, &mut budget(), &|| false).unwrap();
+    let input::presence::Parsed::Complete(rows) =
+        input::presence::inserts(encoded, 1024, RowInsert::new, &mut budget(), &|| false).unwrap()
+    else {
+        panic!("Supplied quoted values must remain complete rows");
+    };
     assert_eq!(rows.len(), 2);
     assert_eq!(
         rows[0].values(),
@@ -188,11 +193,16 @@ fn quoted_tsv_preserves_null_empty_text_binary_and_companion_order() {
         b"text\t\"closed\"junk\n",
         b"text\tx\r",
     ] {
-        assert!(input::inserts(invalid, 1024, RowInsert::new, &mut budget(), &|| false).is_err());
+        assert!(
+            input::presence::inserts(invalid, 1024, RowInsert::new, &mut budget(), &|| false)
+                .is_err()
+        );
     }
-    assert!(input::inserts(encoded, 1, RowInsert::new, &mut budget(), &|| false).is_err());
     assert!(
-        input::inserts(
+        input::presence::inserts(encoded, 1, RowInsert::new, &mut budget(), &|| false).is_err()
+    );
+    assert!(
+        input::presence::inserts(
             encoded,
             1024,
             RowInsert::new,
@@ -202,7 +212,7 @@ fn quoted_tsv_preserves_null_empty_text_binary_and_companion_order() {
         .is_err()
     );
     assert!(matches!(
-        input::inserts(encoded, 1024, RowInsert::new, &mut budget(), &|| true),
+        input::presence::inserts(encoded, 1024, RowInsert::new, &mut budget(), &|| true),
         Err(Error::Native(tablecraft_ace::InspectError::Cancelled))
     ));
 }

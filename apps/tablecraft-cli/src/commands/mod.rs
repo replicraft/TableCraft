@@ -1,4 +1,5 @@
 //! CLI command arguments, dispatch and feature-specific handlers.
+mod clock;
 mod execution;
 pub(crate) use execution::ExecutionError;
 mod encryption;
