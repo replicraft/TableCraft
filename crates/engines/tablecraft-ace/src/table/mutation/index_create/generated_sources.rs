@@ -1,4 +1,5 @@
-//! Private ignored diagnostic for immutable public-API originals. Never creates an index.
+//! Finite private source and candidate qualification of immutable originals.
+mod candidates;
 use super::{SecondaryIndexCreate, source};
 use crate::{
     EditError, NativeImage, TableCheck, check_table,

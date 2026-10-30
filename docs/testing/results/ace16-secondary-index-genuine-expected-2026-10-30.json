@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Pure source/request-only expected-image model; no native writer comparison yet",
+  "status": "passed",
+  "source_gates": 8,
+  "expected_images": 16,
+  "expected_bytes": 7208960,
+  "indexed_row_observations": 2436,
+  "originals_unchanged": 8,
+  "subprocess_calls": 0,
+  "writer_calls": 0,
+  "prior_empty_images_exact": 2,
+  "failures_retained": [
+    {
+      "phase": "first pure run",
+      "type": "Historical raw helper requires first reference bitmap pointer",
+      "sources_admitted": 0,
+      "images_completed": 0,
+      "correction": "New exact empty-reference private decoder wrapper only; historical helper and original files unchanged"
+    },
+    {
+      "phase": "empty-reference derivative",
+      "type": "Mutable candidate slices unhashable in raw decoder",
+      "sources_admitted": 8,
+      "images_completed": 2,
+      "correction": "Immutable snapshot after final page append, before proof; old two image hashes asserted exact"
+    }
+  ],
+  "final_pure_log": {
+    "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/construct-first-root.log",
+    "sha256": "92a6a029f56c52bf1bc6a8698db205b666f5761549155ac04467cd692325b4de"
+  },
+  "pins": [
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/output-freeze.json",
+      "sha256": "0b2e68fb5c81cce9ec7cae377c9c50f36f03f6d84ffa48cda4489b981c7fa381"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/report.json",
+      "sha256": "4cee56d4224f6e0bd6ada9f0e1d75bbc1e8b81eba00edd290075e6bcd9d1fcbf"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/construct-first-root.log",
+      "sha256": "92a6a029f56c52bf1bc6a8698db205b666f5761549155ac04467cd692325b4de"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/construct-first-root.json",
+      "sha256": "07fe308da474f32f0dcac2299cf1e4b8a644f143d9fa6cc284be6331cc8b1f97"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/input-freeze.json",
+      "sha256": "7089c782b41b7e4a472fd3250e3313771401cf72e961ecb6fa6b93bc4336a405"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/source.py",
+      "sha256": "8e1b096940ff28328221b6ef534344def8a1d99bcddb1c6a8c4899b4b415f443"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/model.py",
+      "sha256": "d897b15bc6939b895741603b3f0e6557cbf661fda9e2497e2369f43161388b46"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/prepare.py",
+      "sha256": "3768f616f879e6be9a38913dc62de78e64b8f9326d410718c24434b0fb49449a"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/recipes.json",
+      "sha256": "a7cb26d8c4dd421ad9cf7f710a1a37c0d49785fe6138ece5cbe2ff005ed40b60"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/input-freeze.json",
+      "sha256": "82ce4ae1b7f767fbced69bae560c1232e021daa59032f76dabae2efc4690120e"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/source.py",
+      "sha256": "44a1fa0de12464529f22514b27f38b29adda4dc195e1d5983a242e93ba85e8f7"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/model.py",
+      "sha256": "d897b15bc6939b895741603b3f0e6557cbf661fda9e2497e2369f43161388b46"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/prepare.py",
+      "sha256": "3768f616f879e6be9a38913dc62de78e64b8f9326d410718c24434b0fb49449a"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/recipes.json",
+      "sha256": "a7cb26d8c4dd421ad9cf7f710a1a37c0d49785fe6138ece5cbe2ff005ed40b60"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/input-freeze.json",
+      "sha256": "f252ac6ca854c4f1d3f95b2c8ced9bcff46af852277f2eadfa3d041dd04de860"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/source.py",
+      "sha256": "44a1fa0de12464529f22514b27f38b29adda4dc195e1d5983a242e93ba85e8f7"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/model.py",
+      "sha256": "c500bd96865508a44582268155fecfe881088e2a61f7959e62b597871ac40e6d"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/prepare.py",
+      "sha256": "704d72b47166b4523b9fa67376b4193ab74857a25aa9749e413da9a07f0fb6a6"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-immutable-next-20261030/recipes.json",
+      "sha256": "a7cb26d8c4dd421ad9cf7f710a1a37c0d49785fe6138ece5cbe2ff005ed40b60"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/construct-first-root.json",
+      "sha256": "12f44687d4bf0406918f761cc2d8a189005de67d26ce914a44a1b89def6d08f5"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-next-20261030/construct-first-root.log",
+      "sha256": "50f8c9045713159b9639e45dd8bf61153d7cf5219c094d97e8fe8d44219f9852"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/construct-first-root.json",
+      "sha256": "1c48ee5d31fe1a70e40e4ecdae119241bd1f98fa7333111f907c334dedd99a61"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-expected-empty-map-next-20261030/construct-first-root.log",
+      "sha256": "9abb741be92dcfacd5ade5cea2f013579366bc9014a5b2738fa43044501b0d43"
+    },
+    {
+      "path": ".cache/ace16-index-create-genuine-candidates-next-20261030/compile-first-root.log",
+      "sha256": "be889206bd560dc9b5e364a299c0373b8d845314f727873704e830c2f1812f90"
+    }
+  ],
+  "expected_output_freeze": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/output-freeze.json",
+  "boundaries": [
+    "Source/request-only canonical expectations; registered native consumer compilation/runtime is separate and pending.",
+    "No public reference AFTER or candidate is construction authority.",
+    "Private original binaries and expected images remain untracked.",
+    "No Microsoft Access/native save/transaction qualification."
+  ],
+  "expected": [
+    {
+      "bytes": 405504,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-empty-asc.json",
+      "detail_sha256": "95b8c30ad14d5ecebae6b5d4393659a416c37fc348506c4b8a1d6c1988f76c6a",
+      "id": "h5-empty-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-empty-asc.accdb",
+      "sha256": "006f94e050f62f0f080c2b900a52c7ca808a0910f8ae55fe266b4ec8743afb93"
+    },
+    {
+      "bytes": 405504,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-empty-desc.json",
+      "detail_sha256": "c8e97e2bc56a698f999d22b3fec567d0d5437f76479c6caedf2522b6afb3517f",
+      "id": "h5-empty-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-empty-desc.accdb",
+      "sha256": "403750477893bbf9cf8bdfb060a5cbde6abe487a5b7ce73dd47301d189982abf"
+    },
+    {
+      "bytes": 413696,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-distinct-asc.json",
+      "detail_sha256": "0ba0c87dbab1c0462f5b0a23927dd49a455fa472f1ca6becc6eae6e9553bd0c1",
+      "id": "h5-distinct-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-distinct-asc.accdb",
+      "sha256": "fc59cff8639a2b9b3691bc0a5b556e635c9c7056a8626fa1765cfeab630e94ee"
+    },
+    {
+      "bytes": 413696,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-distinct-desc.json",
+      "detail_sha256": "bb2ee9bf0e2ad4d9038cb981a2971e55d5204b948f1cecc82ac3fee0942b7ad3",
+      "id": "h5-distinct-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-distinct-desc.accdb",
+      "sha256": "d6d63ebac77e9e0d44254b7e77f3c2ebced11a2a9abe6fd2c15a084536b20919"
+    },
+    {
+      "bytes": 413696,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-nullable-asc.json",
+      "detail_sha256": "8cad56494a38aa16c1fe505b6ded128e1c040cb26d46bad0e806c0bef7bca305",
+      "id": "h5-nullable-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-nullable-asc.accdb",
+      "sha256": "a4fd33e4149ab4f92cd4fc2eef25648c148b25405ee50a597f2372b5564749c9"
+    },
+    {
+      "bytes": 413696,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-nullable-desc.json",
+      "detail_sha256": "aefb959ba3b97444ba03c4746c44daa71be2a12e419f34850ab51913aa770efb",
+      "id": "h5-nullable-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-nullable-desc.accdb",
+      "sha256": "463c1c56aa7d719608fd81dc791b3eb6f3acc8d12183c100409809dec5e6562f"
+    },
+    {
+      "bytes": 430080,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-pressure-asc.json",
+      "detail_sha256": "f8cd33a41feb746dd5e00016e9c0378f3015f6cdb854e9a84ed0de7638a245bb",
+      "id": "h5-pressure-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-pressure-asc.accdb",
+      "sha256": "96d0b2cc6be81d24662df2de40a4887e70c59d6fc3b99f72807b043ea2745acb"
+    },
+    {
+      "bytes": 430080,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-pressure-desc.json",
+      "detail_sha256": "6c825483a2d5fa7364158ac510045c12b1d97b08552c230455c3da53ca1f46ab",
+      "id": "h5-pressure-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h5-pressure-desc.accdb",
+      "sha256": "b6d55d5b40bb5e4428b07dec31799740f4459a262c48049a8fa3ebb23f13fb54"
+    },
+    {
+      "bytes": 475136,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-empty-asc.json",
+      "detail_sha256": "a9059dff3124286307d717b8833b18054b3f8f126e56c17e56c64a237c568d8b",
+      "id": "h6-empty-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-empty-asc.accdb",
+      "sha256": "476243fc97eaee330c563b00601d44856fb57b0fea1f235f05e6bf7fc2e33578"
+    },
+    {
+      "bytes": 475136,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-empty-desc.json",
+      "detail_sha256": "95c6d5a71cef0e917c2347bc29e192ebc6487835de284ea56cadfaa8c39a5e9b",
+      "id": "h6-empty-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-empty-desc.accdb",
+      "sha256": "c5ed28b34a0956a1ec1c791b9ef70575b22331dfb159b127b309b5162c6bacdf"
+    },
+    {
+      "bytes": 483328,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-distinct-asc.json",
+      "detail_sha256": "974fb678eb690dde16d7ef567a444f29c5e12764a42ff3bc7ff8933fdda0056d",
+      "id": "h6-distinct-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-distinct-asc.accdb",
+      "sha256": "b8a82d8d0b9a7ef8c4e73df3161e6eda615ec26bb37d851440b841a6aae94fd6"
+    },
+    {
+      "bytes": 483328,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-distinct-desc.json",
+      "detail_sha256": "cf511a36336f96405560505e04410a9696d4bbf34d2399941c8d5b26f2e3b564",
+      "id": "h6-distinct-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-distinct-desc.accdb",
+      "sha256": "f840e34e14a9bc52c547eb054f484097c82864e696d00d4f111a24adda203605"
+    },
+    {
+      "bytes": 483328,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-nullable-asc.json",
+      "detail_sha256": "85ead4417518b3d58720cd4fb8ffb983ae9c21651088bd6ec7627d26adda8c29",
+      "id": "h6-nullable-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-nullable-asc.accdb",
+      "sha256": "842f38181d283f1491e62d8005a3bd34b2c788263a12ce472d1bd55876fee452"
+    },
+    {
+      "bytes": 483328,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-nullable-desc.json",
+      "detail_sha256": "f5c42cd2fd52a5b9d8a965f8870e6abe9f630484789505d12a27d55c7c26bac7",
+      "id": "h6-nullable-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-nullable-desc.accdb",
+      "sha256": "34efb9d7f273dddc91af7d444b9450cbee054dbebbb2e32e1cbc58cfb2159988"
+    },
+    {
+      "bytes": 499712,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-pressure-asc.json",
+      "detail_sha256": "25d49d080eec9e28622525ae3e2127c8ae67136c8816060c6b62c7f158985638",
+      "id": "h6-pressure-asc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-pressure-asc.accdb",
+      "sha256": "350e71214452411bc9b0c1b6c1c240e4b41b95c7d654c4208769ac4dc1f487be"
+    },
+    {
+      "bytes": 499712,
+      "detail": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-pressure-desc.json",
+      "detail_sha256": "ff82423b71fd90d6c4d5733141a7f256dea5e71a0766a8083b40be9da34e1cc1",
+      "id": "h6-pressure-desc",
+      "image": ".cache/ace16-index-create-genuine-expected-immutable-first-20261030/h6-pressure-desc.accdb",
+      "sha256": "860bfcf004a2c884a5b0ed0739b1e7537e898b2bff527a1904bd7b6dee0c3173"
+    }
+  ],
+  "native_consumer": {
+    "status": "registered, runtime unrun",
+    "engineering_fixture_root": "TABLECRAFT_FIXTURE_ROOT selects a canonical existing directory; compile-root fallback retained",
+    "purpose": "Sixteen fresh original captures/public calls after all source/expected preflight; no normal plan or save conversion",
+    "writer_calls": 0,
+    "compilation_history": [
+      {
+        "phase": "first no-run compilation",
+        "exit_code": 101,
+        "runtime_calls": 0,
+        "diagnostics": "Two LowerHex trait errors on the current sha2 hybrid-array digest output.",
+        "log": ".cache/ace16-index-create-genuine-candidates-next-20261030/compile-first-root.log",
+        "sha256": "be889206bd560dc9b5e364a299c0373b8d845314f727873704e830c2f1812f90",
+        "correction": "Display bytes through a std fmt::Write per-u8 lowercase hexadecimal helper; no dependency, source, request, expected-image or digest value change.",
+        "corrected_no_run": {
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--lib",
+            "--no-run",
+            "--locked",
+            "--config",
+            "profile.test.package.tablecraft-ace.debug=1"
+          ],
+          "exit_code": 0,
+          "log": ".cache/ace16-index-create-genuine-candidates-next-20261030/compile-corrected-root.log",
+          "sha256": "4aa826d4e5d576f4a252528bfabd5d1b62b1e6bb062dbfce46ae92bfba39658e"
+        },
+        "strict": {
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--lib",
+            "--tests",
+            "--keep-going",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "log": ".cache/ace16-index-create-genuine-candidates-next-20261030/strict-first-root.log",
+          "sha256": "233b5efb3aca1aaad0725d30d7cae2e62764a9c77233c41d696ce11574db3e72"
+        }
+      }
+    ],
+    "repository_checks": {
+      "format-first-root": {
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-index-create-genuine-candidates-next-20261030/format-first-root.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "links-first-root": {
+        "command": [
+          "python3",
+          "scripts/check_documentation_links.py"
+        ],
+        "exit_code": 0,
+        "log": ".cache/ace16-index-create-genuine-candidates-next-20261030/links-first-root.log",
+        "sha256": "983646bc2b954ef33107490cce961332748e53dec3b27789f856a1b50177d2b4"
+      }
+    }
+  }
+}
