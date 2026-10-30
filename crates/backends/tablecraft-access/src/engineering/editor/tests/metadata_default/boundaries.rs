@@ -190,13 +190,13 @@ fn run_default(
 
 #[test]
 fn default_route_cumulative_pools_and_final_cancellation_cover_capture_through_finish() {
-    let case = model::case(
+    let case = super::framed::framed(model::case(
         6,
         model::Family::Modern,
         true,
         model::Recipe::Permutation,
         true,
-    );
+    ));
     let resources = [Resource::Bytes, Resource::Rows, Resource::Steps];
     let limits = [256 * 1024 * 1024, 100_000, 100_000_000];
     let mut work = ResourceBudget::new(limits[0], limits[1], limits[2]);

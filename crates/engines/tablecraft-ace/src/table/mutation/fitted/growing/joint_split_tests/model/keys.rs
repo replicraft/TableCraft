@@ -48,7 +48,7 @@ pub(crate) fn name_key(name: Option<&[u8]>, family: Family, descending: bool) ->
     key
 }
 
-pub(super) fn entries(rows: &[Row], family: Family, descending: bool, tuple: bool) -> Vec<Vec<u8>> {
+pub(crate) fn entries(rows: &[Row], family: Family, descending: bool, tuple: bool) -> Vec<Vec<u8>> {
     let mut entries = Vec::new();
     for (ordinal, row) in rows.iter().enumerate() {
         let mut key = name_key(row.name.as_deref(), family, descending);

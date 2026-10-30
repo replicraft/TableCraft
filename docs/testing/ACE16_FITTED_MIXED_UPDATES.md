@@ -9,6 +9,12 @@ joint-key regression functions pass. Strict ACE all-target/all-feature Clippy an
 minimal ACE checks pass. This is engineering preview evidence; native Access
 save and original-file mixed-update qualification are not claimed.
 
+The subsequent [body-ownership correction](ACE16_FITTING_BODY_ROLES.md)
+adds complete source-role protection to this nonallocating route. Historical
+fixture constructors remain unchanged; positive regression controls now use
+explicitly framed ownership-list derivatives qualified before their mutation
+calls. The earlier counts above describe the original feature validation.
+
 ## Working API and admission
 
 `NativeImage::preview_ace16_fitted_updates` takes borrowed

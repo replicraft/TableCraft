@@ -99,6 +99,12 @@ literal node ranges; the explicit CLI consumer covers 50 native carriers.
 This advances the required macro work without supplying execution, qualified
 absence or normal native-save permission.
 
+Fitting UPDATE now has [complete body-role protection](testing/ACE16_FITTING_BODY_ROLES.md),
+closing a reproduced reader-valid DATA/INDEX ownership overlap. Both producer and
+fresh proof revalidate original roles and allocated membership without granting
+map rewrite authority. Historical source images remain intact; independently
+qualified framed derivatives retain their positive/proof/resource checks.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

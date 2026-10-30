@@ -1,4 +1,8 @@
 //! Real command consumers of the unchanged joint-record literal source owners.
+#[path = "../../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/framed.rs"]
+mod framed;
+#[path = "metadata_default/framed_sources.rs"]
+mod framed_sources;
 #[path = "metadata_default/growing.rs"]
 mod growing;
 #[path = "metadata_default/joint_split.rs"]
@@ -121,7 +125,9 @@ fn default_sql_joint_updates_publish_exact_frozen_images_without_new_flags() {
             for case in [
                 model::case(6, family, descending, model::Recipe::Permutation, false),
                 capacity::case(family, descending),
-            ] {
+            ]
+            .map(framed::framed)
+            {
                 let directory = tempfile::tempdir().unwrap();
                 let input = directory.path().join("before.accdb");
                 let output = directory.path().join("after.accdb");

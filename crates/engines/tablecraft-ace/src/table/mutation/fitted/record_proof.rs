@@ -9,12 +9,16 @@ use super::{
 use crate::{
     EditError, InspectError, NativeImage,
     format::{
+        page::PAGE_BYTES,
         reader::Reader,
-        row::{COLUMN_COUNT_BYTES, MASK_BITS},
+        row::{COLUMN_COUNT_BYTES, MASK_BITS, reference_page},
     },
     table::{
         indexes::{IndexDataPatch, qualify_row_indexes},
-        mutation::{gates, page_update::roots, variable_update::record_proof},
+        mutation::{
+            gates, page_update::roots, variable_split::metadata::Metadata,
+            variable_update::record_proof,
+        },
         record, record_layout,
     },
 };
@@ -141,6 +145,23 @@ pub(super) fn records(
     }
 
     let captured = roots::capture(image, schema, &bound.rows, budget, cancelled)?;
+
+    if matches!(policy, RecordPolicy::FittedDeclared) {
+        let metadata = Metadata::capture_for_fitted_updates(
+            image,
+            schema,
+            original.indexes(),
+            &bound.columns,
+            budget,
+            cancelled,
+        )?;
+        for root in &captured.selected {
+            metadata.require_data_page(reference_page(root.reference), budget, cancelled)?;
+            let terminal = u32::try_from(root.final_record.offset / PAGE_BYTES)
+                .map_err(|_| InspectError::StructureLimit)?;
+            metadata.require_data_page(terminal, budget, cancelled)?;
+        }
+    }
     budget
         .charge_allocation(
             captured.selected.len() as u64,
