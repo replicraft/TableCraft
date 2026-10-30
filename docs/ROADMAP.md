@@ -719,11 +719,12 @@ and Jet 4 reads and queries, with SQLite expansion still paused.
 
 ## Current execution order
 
-The immediate user priority is reliable read-only access and query execution for
-**both ACE 16 `.accdb` and Jet 4 `.mdb`**. This supersedes the previous write-first
-execution order. ACE 16 remains the long-term primary compatibility target;
-Jet 4 read/query reliability is part of the immediate objective, not optional
-legacy expansion.
+The immediate priority is usable native writes, as requested on 29 October 2026:
+end-to-end INSERT/UPDATE/DELETE, mixed-schema preservation, validation and required
+macros, followed by durable native save/recovery. ACE 16 is the primary target.
+Reliable local reads and queries for **both ACE 16 `.accdb` and Jet 4 `.mdb`**
+remain required foundations. Preserve their working coverage and fix regressions
+while extending writes; the remaining qualification gaps below are still open.
 
 The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope)
 also includes `.accdr`, `.accde`, `.mde`, `.accdt` and `.accdc`. Raw runtime/compiled
@@ -748,13 +749,12 @@ Access collation and expression equivalence still need actual Access evidence.
 [Jet 4 qualification](access/profiles/NATIVE_JET4.md) adds exact legacy Decimal indexes/tuples,
 relationship checks and preservation around unrelated offline Int32 edits, plus
 saved-SELECT comparisons. ACE-only advanced fields are not Jet 4 parity targets.
-The user clarified on 23 October 2026 that the entire remaining local-file
-read/query checklist, including storage reliability, comes before further write
-expansion. Complete value/text semantics, query composition, applicable advanced
-fields and storage/scale work in the order below; existing write previews remain
-available but do not change that implementation priority. Other legacy expansion
-and broad SQLite work remain paused. Windows testing will be performed later by
-the user. Independent read/query implementation and fixture work continue now;
+The 23 October read/query-first sequence was superseded by the later write
+priority; it is not a competing instruction to postpone current write work.
+The remaining value/text, query, advanced-field and storage/scale acceptance
+items below retain their own scope and evidence requirements. Other legacy
+expansion and SQLite work remain paused. Windows testing will be performed later
+by the user. Independent implementation and fixture work continue now;
 do not label native Access conformance or mixed-client safety established without
 actual evidence. Required write-safety and native qualification gates remain
 separate from independent read/query checks.
