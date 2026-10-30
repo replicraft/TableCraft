@@ -32,8 +32,9 @@ native Access collation equivalence is inferred.
 
 The current profile permits one local table, an optional alias and one or more
 SET assignments. Default metadata routing supports fixed fields together with
-at most one Short Text/Binary field. Explicit variable and LVAL modes retain
-exactly one target column. It reuses the existing pure scalar expression/WHERE profile:
+at most one Short Text/Binary field. Explicit `--variable` can also combine one
+such field with fixed siblings under its joint DATA-placement profile. Explicit
+LVAL retains exactly one target column. It reuses the existing pure scalar expression/WHERE profile:
 field references, literals, unary/binary expressions, BETWEEN, IN lists and
 three-valued filtering. The closed [deterministic mutation function set](../../query/MUTATION_SCALAR_FUNCTIONS.md)
 adds existing conversions, eager IIf/Nz, selected text operations and numeric
@@ -89,9 +90,24 @@ including when WHERE selects no rows. This routing `Default` is unrelated to
 omitted INSERT fields or native `DefaultValue` evaluation.
 
 `--index-growth` explicitly selects existing Int32 fixed INDEX allocation.
-`--variable` selects one Short Text/Binary column and can combine with
-`--index-growth` for its existing variable/index service. `--long-value` selects
-one ordinary Memo/OLE column. `--cascade-updates` selects qualified fixed update
+`--variable` retains its existing service for one Short Text/Binary target.
+With fixed siblings it selects [joint DATA placement](../../testing/ACE16_MIXED_GROWING_UPDATES.md)
+once, allowing a hidden target on the original or another owned DATA page, or
+qualified represented EOF allocation. INDEX owners must still fit. For example:
+
+```sh
+tablecraft query preview-update "UPDATE Contacts SET Age=40, Name='Alice' WHERE Id=4" \
+  --database contacts.accdb --output edited.accdb --variable
+```
+
+Mixed requests with `--variable --index-growth` refuse before request
+serialization, including zero matches. That combination retains its existing
+qualified INDEX growth only for a single variable target. Variable mode also
+refuses fixed-only groups or more than one variable target. Native Short
+Text/Binary qualification remains inside the selected engine service; Memo/OLE
+is never inferred from shared Text/Binary carriers. Default routing stays fitted
+for joint fixed/variable updates; it does not retry with DATA growth.
+`--long-value` selects one ordinary Memo/OLE column. `--cascade-updates` selects qualified fixed update
 cascades and conflicts with variable, long-value and index-growth modes. These
 explicit modes keep their existing profiles; unsupported shapes refuse without
 fallback. Separate sequential previews are not an atomic mixed-update substitute.
@@ -198,3 +214,26 @@ files passed. The complete 48-function Access run predates these added boundary
 tests; the later Access editor subset passed 22. No newer full-library total is
 claimed. All three test-only compilation failures and corrections remain recorded. These checks do not establish Microsoft Access
 write/save qualification.
+
+## Explicit variable batch DATA placement
+
+The engine, Access frontend and CLI source gates each qualified all 36 original
+source/expected pairs before new frontend APIs. The actual pure constructor now
+lives in `mixed_fitted_tests/growing/model.rs`; original constructor bodies and
+expected bytes remain unchanged, and old engine gate/API consumers use that
+actual owner. The first CLI source compile failed because its path-imported test
+module needed an explicit child-module path. That path-only correction preceded
+its successful source gate and every new frontend API.
+
+The four Access controls passed on their first API run, including 72 whole-image
+comparisons in both group orders, all three DATA destinations and non-NULL Binary.
+Three CLI controls passed first, including 24 complete Text copies, source
+preservation, fitted-default refusal and mixed INDEX-growth/multiple-variable
+no-output refusals. The zero-match mixed INDEX-growth adapter control uses a
+zero-Bytes planning budget and still receives the explicit mode refusal before
+request allocation. The targeted old/new native fixture regression passed all
+16 functions, the Access library passed 55, and CLI regressions passed 31 unit
+plus 36 integration functions (six DELETE, two historical, nine INSERT, fifteen
+UPDATE and four normal Jet 4). Strict ACE/Access/CLI all-target/all-feature checks
+and minimal Access checks also passed. These are scoped local engineering-copy
+checks, not a full ACE library run or native Access save qualification.

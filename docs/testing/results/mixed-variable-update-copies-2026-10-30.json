@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-30",
+  "feature": "Existing --variable SQL profile with fixed siblings and joint DATA placement",
+  "checks": {
+    "engine_source_first": {
+      "exit_code": 0,
+      "complete_source_expected_pairs": 36
+    },
+    "access_source_first": {
+      "exit_code": 0,
+      "complete_source_expected_pairs": 36
+    },
+    "cli_source_first": {
+      "exit_code": 101,
+      "phase": "compile before source gate or frontend API",
+      "cause": "path-imported metadata_default test module required explicit metadata_default/growing.rs child path"
+    },
+    "cli_source_second": {
+      "exit_code": 0,
+      "complete_source_expected_pairs": 36
+    },
+    "access_api_first": {
+      "exit_code": 0,
+      "functions": 4,
+      "complete_image_comparisons": 72
+    },
+    "cli_api_first": {
+      "exit_code": 0,
+      "functions": 3,
+      "complete_text_image_copies": 24
+    },
+    "native_fixture_regression_first": {
+      "exit_code": 0,
+      "functions": 16
+    },
+    "access_regression_first": {
+      "exit_code": 0,
+      "library_functions": 55
+    },
+    "cli_regression_first": {
+      "exit_code": 0,
+      "unit_functions": 31,
+      "integration_functions": 36,
+      "integration_breakdown": {
+        "delete": 6,
+        "historical": 2,
+        "insert": 9,
+        "update": 15,
+        "normal_jet4": 4
+      }
+    },
+    "strict_ace_access_cli_all_targets_all_features_first": {
+      "exit_code": 0
+    },
+    "minimal_access_first": {
+      "exit_code": 0
+    }
+  },
+  "scope": [
+    "Single-variable old service and single-variable INDEX growth preserved",
+    "Multiple targets require exactly one variable and at least one fixed target, explicit Variable(index_growth:false), and one source-bound native mixed preview",
+    "Default joint mode remains original-record fitted; mixed INDEX growth and mixed LVAL remain refused",
+    "Original/other-owned/represented EOF DATA targets with fitting INDEX owners, one fresh copy and no candidate chaining"
+  ],
+  "observations": [
+    "Pure source-owner extraction preserves all constructor bodies and expected bytes; old real consumers use actual owner",
+    "CLI test-module path-only correction preceded successful CLI source gate and all new frontend APIs",
+    "Post-check help wording clarified that only Default joint changes must fit original capacity; no behavior changed"
+  ],
+  "pending": [],
+  "evidence": [
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/engine-source-first-root.log",
+      "bytes": 510,
+      "sha256": "d283b7f12c6d39a8143ab8b20d7b84fed87366acfdd9a2868325f0051e5c1bb4"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/access-source-first-root.log",
+      "bytes": 644,
+      "sha256": "272a2cd1cb333d792f3f8b8cc1718dbdcef9fbd83dd1c3ce5867988ba1862441"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/cli-source-first-root.log",
+      "bytes": 1017,
+      "sha256": "7f8840e65006b0c18f96be98dedc4aa26099c2fa0e73434f35b4bcbeb64a9052"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/cli-source-second-root.log",
+      "bytes": 501,
+      "sha256": "0ded5181ee8c5c12847dafb2d284b2df6d8dc489500c1404e85655db122cb629"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/access-api-first-root.log",
+      "bytes": 836,
+      "sha256": "52d5e1d0995b32dbd23cb4916ea1fda74c3a0d4f47740662d8e01da7125b2614"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/cli-api-first-root.log",
+      "bytes": 609,
+      "sha256": "07a63cec4fab77f1cdfef0f24cbaec3e1eb682038be72b83693e7af2965e9e29"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/native-fixture-regression-first-root.log",
+      "bytes": 2059,
+      "sha256": "d2c78797c7008e7ac3db6bd194e8a002e0944ab3cfeca34de174bc14d6eb64c3"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/access-regression-first-root.log",
+      "bytes": 6803,
+      "sha256": "e748534aeb3e3c83f6a72b90ddea8a125bff58f84aa82eba05658de44894c4b8"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/cli-regression-first-root.log",
+      "bytes": 7841,
+      "sha256": "9a408b70e0594eff24d03a2b4be7ee3b59ced4b47f34ac1459049ffc9939772e"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/clippy-first-root.log",
+      "bytes": 403,
+      "sha256": "9d97e4fe0c0816f733099452631dae051efa10462cb930a647b3bbf343031613"
+    },
+    {
+      "path": ".cache/ace16-mixed-growing-frontend-next-20261030/minimal-access-first-root.log",
+      "bytes": 72,
+      "sha256": "2b34696728dc82b03cbf6311d7e3a6a41658bbde097834c3010a78bc82842c1a"
+    }
+  ],
+  "native_Access_qualification": false,
+  "verification_context": "Native fixture regression16 is the targeted old/new shared source-owner producer subset; no full ACE library claim. Help and public SQL comment wording was clarified after first APIs and before the completed regression/strict batch. No fixture or expected-image changes followed APIs.",
+  "final_format_links_and_boundaries": {
+    "format": 0,
+    "documentation_links": 0,
+    "dependency_boundaries": 0,
+    "logs": [
+      {
+        "path": ".cache/ace16-mixed-growing-frontend-next-20261030/format-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-mixed-growing-frontend-next-20261030/doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "c2d922309de0247f59ff45d8f863efdba6bc13ae7cc995aa0dd629718185a9f9"
+      },
+      {
+        "path": ".cache/ace16-mixed-growing-frontend-next-20261030/boundaries-final-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    ]
+  }
+}

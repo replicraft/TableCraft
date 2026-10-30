@@ -14,15 +14,17 @@ The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_CO
 opts into `StoredScalar` assignment through the same planner: nullable NULL and
 exact stored carriers, with checked integral assignment to Int32.
 `plan_batch_update` consumes the explicit neutral `EditableBatch` capability for
-one local table and multiple fixed-field assignments. It rejects duplicate
+one local table and multiple assignments admitted by the selected backend. It rejects duplicate
 resolved targets before evaluation and evaluates all RHS expressions against
 original rows before one backend finish. Pure-expression limits remain; the
 single-column `plan_update` and ordinary editor keep their existing target and
 assignment scope. UPDATE and DELETE now share a closed
 [deterministic scalar function profile](MUTATION_SCALAR_FUNCTIONS.md), without
 enabling general retrieval calls or changing their eager semantics.
-Variable/LVAL modes retain one target. Normal ACE write admission and retrieval
-behavior are unchanged.
+The Access default fits fixed fields with one Short Text/Binary field into the
+original record; explicit variable mode permits joint DATA placement while INDEX
+owners fit. Mixed INDEX growth refuses; LVAL retains one target. Normal ACE write
+admission and retrieval behavior are unchanged.
 The seven neutral batch tests pass alongside the nine existing neutral edit
 tests; native adapter/CLI observations are recorded in the owning engineering
 contract. These checks do not qualify a normal ACE save.

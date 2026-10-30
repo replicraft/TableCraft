@@ -1,5 +1,5 @@
 //! A represented GLOBAL/owned frontier does not grant candidate-map growth.
-use super::{growing, model::Family, qualify};
+use super::{growing::model as growing, model::Family, qualify};
 use crate::{
     InspectError, NativeImage,
     format::{

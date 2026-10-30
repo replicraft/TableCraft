@@ -24,7 +24,8 @@ pub enum ScalarUpdateMode {
     Default,
     /// Fixed-field maintenance using the selected existing fitting/growth/action profile.
     Fixed(UpdateMode),
-    /// One Short Text/Binary column, with optional qualified encoded INDEX growth.
+    /// One Short Text/Binary field, optionally with fixed siblings for DATA
+    /// growth. Qualified encoded INDEX growth remains single-column only.
     Variable {
         /// Select the existing variable-plus-index split service explicitly.
         index_growth: bool,
@@ -169,6 +170,10 @@ impl EditableBatch for AccessEngineeringEditor {
             return self.default_columns(columns, budget, cancelled);
         }
 
+        if matches!(self.mode, ScalarUpdateMode::Variable { .. }) && columns.len() > 1 {
+            return self.variable_columns(columns, budget, cancelled);
+        }
+
         let ScalarUpdateMode::Fixed(mode) = self.mode else {
             let [column] = columns else {
                 return Err(NativeEditError::Unsupported);
@@ -272,6 +277,23 @@ impl AccessEngineeringEditor {
         Ok(())
     }
 
+    fn check_batch_mode(&self, position: usize, width: usize) -> Result<(), NativeEditError> {
+        // The explicit non-INDEX-growth variable batch may include fixed siblings.
+        // Its router still requires exactly one variable target and native kind
+        // qualification remains inside the one selected engine service.
+        if width > 1
+            && matches!(
+                self.mode,
+                ScalarUpdateMode::Variable {
+                    index_growth: false
+                }
+            )
+        {
+            return Ok(());
+        }
+        self.check_mode(position)
+    }
+
     fn validate_columns(
         &self,
         columns: &[ColumnUpdates<'_>],
@@ -321,7 +343,7 @@ impl AccessEngineeringEditor {
                 return Err(NativeEditError::Unsupported);
             }
 
-            self.check_mode(position)?;
+            self.check_batch_mode(position, columns.len())?;
             positions.push(position);
 
             let target = &self.snapshot.columns()[position];

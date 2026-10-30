@@ -19,7 +19,7 @@ const REPORT_CAPACITY: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; Default routing supports fixed fields and at most one Short Text/Binary field. Mixed fixed/variable changes must fit existing record capacity; a single variable field can use qualified DATA growth. Explicit flags retain their selected profiles. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
+    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; Default routing supports fixed fields and at most one Short Text/Binary field. --variable permits joint DATA placement with fixed siblings; mixed INDEX growth remains refused. Without --variable, mixed fixed/variable changes must fit existing record capacity; a single variable field can use qualified DATA growth. Explicit flags retain their selected profiles. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
 )]
 pub(crate) struct Arguments {
     /// UPDATE text, passed as one shell-quoted argument.
@@ -31,7 +31,7 @@ pub(crate) struct Arguments {
     /// Fresh output name; existing files, source aliases and symlinks are not replaced.
     #[arg(long, value_name = "PATH")]
     output: PathBuf,
-    /// Select one Short Text/Binary column, including qualified DATA forwarding.
+    /// Permit Short Text/Binary DATA growth, optionally with fixed siblings.
     #[arg(long, conflicts_with_all = ["long_value", "cascade_updates"])]
     variable: bool,
     /// Select one ordinary Memo/OLE column under existing LVAL ownership rules.
