@@ -75,7 +75,7 @@ fn qualify_original_memo_ole_source_before_default_routing_refusal() {
 }
 
 #[test]
-fn default_memo_ole_storage_refuses_zero_and_nonzero_single_and_joint_requests() {
+fn default_memo_ole_single_requests_use_lval_while_joint_requests_refuse() {
     for code in [5, 6] {
         let before = long_value_source::source(code, 1);
         for (name, replacement) in [
@@ -137,12 +137,17 @@ fn default_memo_ole_storage_refuses_zero_and_nonzero_single_and_joint_requests()
                             updates: &fixed,
                         });
                     }
-                    assert!(matches!(
-                        editor.plan_columns(&groups, &mut budget(), &|| false),
-                        Err(NativeEditError::Edit(EditError::Unsupported(
-                            WriteBlocker::Column
-                        )))
-                    ));
+                    let result = editor.plan_columns(&groups, &mut budget(), &|| false);
+                    if joint {
+                        assert!(matches!(
+                            result,
+                            Err(NativeEditError::Edit(EditError::Unsupported(
+                                WriteBlocker::Column
+                            )))
+                        ));
+                    } else {
+                        assert_eq!(result.unwrap().candidate_bytes(), before);
+                    }
                 }
             }
         }

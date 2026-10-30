@@ -39,6 +39,26 @@ impl AccessEngineeringEditor {
         // Text/Binary is routing metadata, not native Short Text/Binary authority.
         // Each selected engine entry point still checks its real storage kind.
         if let [column] = columns {
+            if self.ordinary_long_value_column(positions[0], budget, cancelled)? {
+                let rows = self.requests(
+                    positions[0],
+                    column.updates,
+                    SlotScalarUpdate::new,
+                    budget,
+                    cancelled,
+                )?;
+                return preview(
+                    self.image,
+                    EngineeringRequest::LongValueUpdate {
+                        table: self.snapshot.name(),
+                        column: column.column,
+                        rows: &rows,
+                    },
+                    budget,
+                    cancelled,
+                )
+                .map_err(engine_error);
+            }
             let rows = self.requests(
                 positions[0],
                 column.updates,

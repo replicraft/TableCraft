@@ -2,6 +2,7 @@
 mod guards;
 mod preserved;
 mod routing;
+mod storage;
 use super::{EngineeringCopy, EngineeringError, EngineeringRequest, UpdateMode, preview};
 use crate::editing::{NativeEditError, snapshot};
 use tablecraft_ace::{
@@ -21,8 +22,9 @@ use tablecraft_schema::ScalarType;
 pub enum ScalarUpdateMode {
     /// Select one service from resolved target metadata before native planning:
     /// fixed batch, one variable field, or a fitted whole-row variable statement.
-    /// Shared Text/Binary metadata does not certify Short Text/Binary storage;
-    /// the selected engine service still refuses Memo/OLE or other wrong kinds.
+    /// A single ordinary Memo/OLE declaration selects the existing LVAL service.
+    /// Other Text/Binary declarations retain native storage-kind qualification
+    /// in their selected engine service.
     Default,
     /// Fixed-field maintenance using the selected existing fitting/growth/action profile.
     Fixed(UpdateMode),
@@ -44,7 +46,8 @@ pub struct AccessEngineeringEditor {
     image: NativeImage,
     snapshot: Snapshot,
     mode: ScalarUpdateMode,
-    preserved_schema: Option<TableSchema>,
+    native_schema: TableSchema,
+    projected_schema: bool,
 }
 
 impl AccessEngineeringEditor {
@@ -58,14 +61,14 @@ impl AccessEngineeringEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
-        let (snapshot, preserved_schema) =
-            snapshot::capture_engineering(&image, table, budget, cancelled)?;
+        let captured = snapshot::capture_engineering(&image, table, budget, cancelled)?;
 
         Ok(Self {
             image,
-            snapshot,
+            snapshot: captured.snapshot,
             mode,
-            preserved_schema,
+            native_schema: captured.schema,
+            projected_schema: captured.projected,
         })
     }
 }

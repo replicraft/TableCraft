@@ -229,16 +229,7 @@ fn parent_forwarding_and_column_allocation_share_one_exact_eof_ledger() {
     old_chunks_unchanged(&gap_source, fallback_bytes);
     // A NULL source has no descriptor storage. External encoding adds12 bytes
     // to the parent and needs a fourth EOF page after three LVAL pages.
-    let mut null_source = source(6, 1);
-    let ole = single(1, OLE, 0);
-    install(
-        &mut null_source,
-        ROOT,
-        &page(
-            10,
-            &[(0, record(1, None, Some(&ole))), (HIDDEN, vec![0x9b; 4040])],
-        ),
-    );
+    let null_source = null_memo_pressure_source();
     assert_eq!(body(&null_source, ROOT, 0).len(), 27);
     check(&null_source);
     let large = Value::Text("Ā".repeat(4073));
