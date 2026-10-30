@@ -16,7 +16,7 @@ mod domain;
 pub use deleting::{DeleteError, DeletePlan, plan_delete};
 mod editing;
 mod inserting;
-pub use inserting::{InsertError, local_insert_table, plan_insert};
+pub use inserting::{InsertError, local_insert_table, plan_insert, plan_insert_with_omissions};
 mod execute;
 pub use editing::{UpdateError, UpdatePlan, plan_batch_update, plan_update};
 pub(crate) use execute::ExecutionContext;

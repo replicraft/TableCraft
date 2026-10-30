@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-30",
+  "feature": "Separate presence-bearing neutral INSERT intent and planner",
+  "checks": {
+    "neutral_api_first": {
+      "exit_code": 0,
+      "new_omission_functions": 6,
+      "existing_complete_functions": 9
+    },
+    "neutral_strict_first": {
+      "exit_code": 0
+    },
+    "minimal_db_first": {
+      "exit_code": 0
+    },
+    "minimal_query_first": {
+      "exit_code": 0
+    }
+  },
+  "contracts": [
+    "Existing complete InsertableTable/plan_insert remains strict and keeps its preparation cost phases",
+    "Separate OmittingInsertableTable receives full exposed-schema width InsertValue::Supplied(Value)/Omitted",
+    "Explicit NULL is supplied; only named field lists may omit, positional VALUES remain complete-width",
+    "One shared metadata/name binder and written-order expression evaluator, duplicate binding before evaluation, one consuming finish",
+    "No SQL/native metadata/default parser/evaluator or concrete backend dependency in DB/query"
+  ],
+  "limitations": [
+    "No native default resolution, adapter/CLI or native save qualification established by these neutral controls",
+    "No DEFAULT VALUES, INSERT SELECT, parameter, external target, UDF or ambient clock expansion"
+  ],
+  "observations": [
+    "All15 neutral functions and standalone strict/minimal checks passed on their first execution",
+    "Post-check comment-only precision distinguishes complete rows from omission intent and explicitly selected needed-only backend defaults"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/neutral-api-first-root.log",
+      "bytes": 2193,
+      "sha256": "046b5728b167174e9317f2900f4b9bbf2847d5583e07f79f69c099805f092e69"
+    },
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/neutral-clippy-first-root.log",
+      "bytes": 423,
+      "sha256": "ef080edce9517bcc4f59fc76e9548abd680c611f2e1c61b057190ee34ef4dc6e"
+    },
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/minimal-db-first-root.log",
+      "bytes": 184,
+      "sha256": "53e7d3739e849eea2af45b727a1053d7b830b0081d69bce0802596a97f1319f5"
+    },
+    {
+      "path": ".cache/ace16-omitted-insert-frontend-next-20261030/minimal-query-first-root.log",
+      "bytes": 297,
+      "sha256": "515691790263c5bb19acc2b5a22e2c73b9562938b193f6b41b9eb28a95cc6348"
+    }
+  ],
+  "native_Access_qualification": false
+}

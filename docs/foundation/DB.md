@@ -97,6 +97,24 @@ and 23 integration functions, strict checks for five packages and minimal checks
 for four libraries. These results do not weaken metadata,
 carrier, source or publication admission and are not native Access qualification.
 
+## Explicit INSERT omission intent
+
+The separate `OmittingInsertableTable` capability consumes a complete-width
+`Vec<InsertValue>` over that same exposed schema. `Supplied(Value::Null)` retains
+explicit NULL; `Omitted` retains absence. It carries no SQL expression, native
+property, storage code or default evaluator. The concrete backend resolves only
+needed defaults under its explicit policy, then enforces its constraints.
+A generated companion schema excludes only its backend-bound generated field;
+absence never guesses that field or selects identity generation.
+
+The [presence-bearing planner](../query/INSERT_OMISSIONS.md) allows named subsets,
+binds identities before evaluating expressions in written order, and invokes one
+consuming finish. Positional VALUES remain complete-width. The original complete
+trait and planner retain their old strict behavior. Six new neutral tests and all
+nine existing complete INSERT tests passed on their first run. Standalone neutral strict
+and minimal DB/query checks also passed; no native default, adapter, CLI or native save
+qualification is inferred from this neutral capability.
+
 ## Transaction contract direction
 
 [Transaction ownership](../architecture/TRANSACTIONS.md) keeps physical transactions

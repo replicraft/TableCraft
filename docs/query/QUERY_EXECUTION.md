@@ -40,6 +40,15 @@ All nine neutral INSERT checks passed on their first run, followed by 78 query
 library and 16 existing editing integration tests. Strict checks for five packages and minimal checks for four libraries also pass;
 native mutation and publication qualification remain separate.
 
+The opt-in [presence-bearing INSERT planner](INSERT_OMISSIONS.md) shares that
+metadata binder and evaluator while preserving `Supplied(Value)` versus
+`Omitted` in complete backend schema order. Explicit field lists may omit ordinary
+positions; positional VALUES stay full-width, and explicit generated companion
+schemas require names. There is no query-layer default parser or evaluator.
+The original complete planner remains strict. Six new omission controls and nine
+existing complete INSERT controls passed first; standalone neutral strict and minimal DB/query checks
+also passed. Adapter/default/publication qualification is separate.
+
 [Retained String keys](keys/RAW_STRING_KEYS.md) now share explicit raw-unit comparison
 across grouping, sets, sorting/TOP and crosstab row keys. Fixed-heading named
 crosstabs also retain raw cells for outer observers. Key comparison keeps strict
