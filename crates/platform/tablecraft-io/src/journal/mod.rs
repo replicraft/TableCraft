@@ -15,6 +15,8 @@ pub use resizable::{PreparedResizableImage, prepare_resizable_expected, recover_
 mod format;
 mod recovery;
 pub use recovery::{RecoveryOutcome, recover};
+mod checked_v1;
+pub use checked_v1::{CheckedV1, V1State, inspect_v1};
 mod transaction;
 pub use transaction::{PreparedImage, prepare, prepare_expected};
 #[cfg(test)]
