@@ -5,6 +5,8 @@ pub(crate) mod guard_selector_sources;
 #[cfg(feature = "ace16-write-preview")]
 pub(crate) mod guard_sources;
 mod inspect;
+#[cfg(feature = "ace16-write-preview")]
+mod observed_macro_inventory;
 mod program_sources;
 
 use tablecraft_core::limits::ResourceBudget;
