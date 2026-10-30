@@ -33,6 +33,11 @@ The adapter passes 72 complete-image comparisons and the CLI produces 24 exact
 Text growth copies. The follow-up regression passes 55 adapter functions,
 31 CLI unit and 36 CLI integration functions, with strict ACE/Access/CLI checks
 and a minimal Access build. Single-variable modes retain their existing services.
+Typed `write preview-update --variable` now uses the same service for one table,
+fixed siblings and one variable field, preserving caller expectations and original
+ordinals. All 36 complete copies pass, including 12 Binary cases. Its focused
+regression passes 34 CLI unit and 25 selected integration tests, plus strict CLI
+checks; unsupported mixed INDEX/LVAL modes refuse before opening the source.
 
 ## Omitted INSERT fields and constant defaults
 

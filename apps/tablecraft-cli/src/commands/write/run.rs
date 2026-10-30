@@ -29,6 +29,32 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
 
 fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
     let mut budget = args.paths.limits.budget();
+    if (args.variable || args.long_value)
+        && updates::mixed::required(&args.cells, &mut budget, &|| false)?
+    {
+        if args.long_value {
+            updates::mixed::preflight(&args.cells, false, &mut budget, &|| false)?;
+            return Err(invalid("Mixed Memo/OLE updates are not qualified"));
+        }
+        let owned = updates::mixed::prepare(
+            &args.cells,
+            args.value_bytes,
+            args.index_growth,
+            &mut budget,
+            &|| false,
+        )?;
+        let groups = owned.groups(&mut budget, &|| false)?;
+        return publish(
+            &args.paths,
+            EngineeringRequest::MixedUpdate {
+                table: owned.table,
+                groups: &groups,
+            },
+            password,
+            &mut budget,
+        );
+    }
+
     if args.variable || args.long_value {
         let groups = updates::parse(
             &args.cells,

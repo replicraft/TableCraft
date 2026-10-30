@@ -1,4 +1,5 @@
 //! Move exact typed values into groups, without cloning row contents.
+pub(super) mod mixed;
 use super::{
     error::{Error, input},
     input::{MAX_REQUESTS, reserve},
@@ -22,6 +23,22 @@ pub(super) fn parse<'a, T>(
     cells: &'a [String],
     max_value_bytes: usize,
     make: fn(usize, Value, Value) -> T,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Group<'a, T>>, Error> {
+    parse_with_kind(
+        cells,
+        max_value_bytes,
+        |_, ordinal, expected, value| make(ordinal, expected, value),
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn parse_with_kind<'a, T>(
+    cells: &'a [String],
+    max_value_bytes: usize,
+    make: impl Fn(&str, usize, Value, Value) -> T,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Group<'a, T>>, Error> {
@@ -58,11 +75,11 @@ pub(super) fn parse<'a, T>(
                 && group.column.eq_ignore_ascii_case(&fields[1])
         }) {
             reserve(&mut group.rows, 1, budget)?;
-            group.rows.push(make(ordinal, expected, value));
+            group.rows.push(make(&fields[3], ordinal, expected, value));
         } else {
             let mut rows = Vec::new();
             reserve(&mut rows, 1, budget)?;
-            rows.push(make(ordinal, expected, value));
+            rows.push(make(&fields[3], ordinal, expected, value));
             reserve(&mut groups, 1, budget)?;
             groups.push(Group {
                 table: &fields[0],
