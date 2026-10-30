@@ -125,6 +125,46 @@ evaluation, engine work and publication: defaults are 256 MiB, 100,000 rows and
 Native structural caps remain independent. Library callbacks support cancellation;
 the CLI does not install a signal handler for this operation.
 
+## Explicit larger fixed-update copies
+
+`--image-bytes N` selects only the existing fixed fitting UPDATE profile under a
+validated, retained complete-image ceiling, currently at most 80 MiB. Without
+this flag, capture retains its 64 MiB ceiling and current Default metadata routing.
+The flag does not resize a file or authorize variable/LVAL edits, INDEX growth,
+cascades, normal saves or data macros. Those mode flags conflict before opening
+the source; nonfixed target columns still require actual source metadata and
+refuse even when WHERE selects no rows. No failed preview retries another mode.
+
+Image retention and cumulative operation work are separate. Defaults remain
+256 MiB Bytes, 100,000 Rows and 100,000,000 Steps; selecting a larger image does
+not raise them. For the qualified 80 MiB fixed-copy profile, this explicit example
+provides independent byte and step allowances:
+
+```sh
+tablecraft query preview-update 'UPDATE Items SET [Score]=11 WHERE [Id]=1' \
+  --database offline.accdb --output fixed.accdb --image-bytes 83886080 \
+  --work-bytes 2147483648 --work-rows 100000 --work-steps 1000000000
+```
+
+The host captures the original once through `capture_for_fixed_updates`, passes
+it to the existing SQL batch editor in `Fixed(Fitted)` mode, and uses the common
+fresh-copy publisher. Actual native field, index, ownership and preservation
+checks remain mandatory. See the [native image contract](../../testing/ACE16_LARGER_FIXED_IMAGES.md)
+for its separately recorded limits and native qualification.
+
+The inert CLI source gate qualified twelve source/expected pairs, including ten
+native-eligible recipes and two header-5 rich recipes that remain refused. A
+separate ordinary Memo source passed metadata/constraint/LVAL reads before the
+host change. The first host API round passed five functions: ten complete frozen
+copies, ten occupied-output controls, default/one-below/independent-budget
+refusals, four conflicting modes and four invalid limits before opening a source,
+two header-5 rich refusals, and a small Memo zero-match contrast. Default routing
+publishes that Memo source unchanged; the explicit fixed profile refuses it.
+Source and expected constructors remain unchanged. Affected regressions pass
+48 CLI unit and 46 integration functions, and all-target/all-feature CLI strict
+checks pass. This is authored engineering-copy evidence, not a native Access
+save comparison or a general larger-write claim.
+
 The bounded summary is prepared before publication. The common fresh-copy
 publisher writes an owned same-directory temporary, syncs it and publishes with
 `persist_noclobber`. Existing outputs, source aliases and symlinks are not replaced;

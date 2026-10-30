@@ -2,6 +2,13 @@
 
 ## Current product priority
 
+A single explicit larger-image host now supports
+[fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
+`--image-bytes`, up to the native 80 MiB ceiling with independent work budgets.
+Ten frozen complete copies pass; other write profiles, default capture and
+normal-save/macro gates remain unchanged. Affected CLI regressions and strict
+checks pass.
+
 Named-field typed bulk INSERT now accepts repeated
 [`--field NAME`](access/writes/ENGINEERING_COPIES.md) selectors, retaining missing
 fields as original omission intent and completing one source-bound batch.

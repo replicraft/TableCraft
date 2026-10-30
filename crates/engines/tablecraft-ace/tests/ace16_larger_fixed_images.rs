@@ -6,9 +6,9 @@ pub mod base;
 #[path = "complex_schema/fixture.rs"]
 pub mod complex_fixture;
 #[path = "ace16_larger_fixed_images/corrected.rs"]
-mod corrected;
+pub mod corrected;
 #[path = "ace16_larger_fixed_images/model.rs"]
-mod model;
+pub mod model;
 #[allow(dead_code)]
 #[path = "attachment_modern/fixture.rs"]
 pub mod modern_attachment;

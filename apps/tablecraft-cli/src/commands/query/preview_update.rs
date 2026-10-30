@@ -7,7 +7,7 @@ use tablecraft_access::{
     AccessInputError, NativeEditError,
     engineering::{ScalarUpdateMode, UpdateMode, sql},
 };
-use tablecraft_ace::{InspectError, NativeImage, inspect_header};
+use tablecraft_ace::{FixedUpdateImageLimits, InspectError, NativeImage, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_query::{QueryError, UpdateError};
@@ -19,7 +19,7 @@ const REPORT_CAPACITY: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; Default routing supports fixed fields and multiple Short Text/Binary fields in one fitted original row. --variable permits joint DATA placement for variable fields and optional fixed siblings; add --index-growth for the qualified joint DATA/INDEX continuation. Without --variable, mixed fixed/variable changes must fit existing record capacity; a single variable field can use qualified DATA growth. Explicit flags retain their selected profiles. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
+    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; Default routing supports fixed fields and multiple Short Text/Binary fields in one fitted original row. --variable permits joint DATA placement for variable fields and optional fixed siblings; add --index-growth for the qualified joint DATA/INDEX continuation. Without --variable, mixed fixed/variable changes must fit existing record capacity; a single variable field can use qualified DATA growth. Explicit flags retain their selected profiles. --image-bytes selects only fixed fitting updates under an explicit complete-image ceiling; its work budget is separate. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
 )]
 pub(crate) struct Arguments {
     /// UPDATE text, passed as one shell-quoted argument.
@@ -43,10 +43,14 @@ pub(crate) struct Arguments {
     /// Expand qualified declared update cascades, without invoking active content.
     #[arg(long)]
     cascade_updates: bool,
+    /// Explicit complete-image byte ceiling for fixed fitting UPDATE only.
+    /// Independent of --work-bytes; no variable, LVAL, INDEX growth or cascades.
+    #[arg(long, value_name = "BYTES", value_parser = image_limits, conflicts_with_all = ["variable", "long_value", "index_growth", "cascade_updates"])]
+    image_bytes: Option<FixedUpdateImageLimits>,
     /// Explicit comparison policy for Text predicates; no ambient locale is selected.
     #[arg(long, value_enum)]
     collation: Option<UpdateCollation>,
-    /// Cumulative SQL/native/output bytes; the engine's complete-image cap remains.
+    /// Cumulative SQL/native/output bytes, independent of --image-bytes.
     #[arg(long, default_value_t = WORK_BYTES)]
     work_bytes: u64,
     /// Cumulative snapshot/evaluation/native row allowance.
@@ -110,7 +114,9 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
         .map(|policy| TextCollation::from(policy).build())
         .transpose()
         .map_err(Error::Native)?;
-    let mode = if args.variable {
+    let mode = if args.image_bytes.is_some() {
+        ScalarUpdateMode::Fixed(UpdateMode::Fitted)
+    } else if args.variable {
         ScalarUpdateMode::Variable {
             index_growth: args.index_growth,
         }
@@ -133,8 +139,17 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     {
         return Err(Error::Encrypted);
     }
-    let image = NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
-        .map_err(Error::Native)?;
+    let image = match args.image_bytes {
+        Some(limits) => NativeImage::capture_for_fixed_updates(
+            &mut source,
+            native::CATALOG_SCOPE,
+            limits,
+            &mut budget,
+            &|| false,
+        ),
+        None => NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false),
+    }
+    .map_err(Error::Native)?;
     let plan = sql::preview_batch_update(
         image,
         query.query(),
@@ -171,4 +186,16 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     // source, second capture, normal save plan or candidate chain is introduced.
     drop(source);
     Ok(report)
+}
+
+fn image_limits(text: &str) -> Result<FixedUpdateImageLimits, String> {
+    let maximum = text
+        .parse::<u64>()
+        .map_err(|_| "Expected a positive complete-image byte ceiling".to_owned())?;
+    FixedUpdateImageLimits::new(maximum).map_err(|_| {
+        format!(
+            "Expected a positive image byte ceiling no greater than {}",
+            FixedUpdateImageLimits::MAX_BYTES
+        )
+    })
 }

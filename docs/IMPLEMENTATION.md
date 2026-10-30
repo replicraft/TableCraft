@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit larger fixed SQL copies
+
+`query preview-update --image-bytes N` now selects the existing fixed fitting
+service with a retained validated capture ceiling up to 80 MiB. Standard capture
+and Default routing remain unchanged without the flag. Byte/step work limits
+remain independent; conflicting variable/LVAL/growth/cascade modes refuse before
+opening files. The [host contract](access/writes/SQL_ENGINEERING_COPIES.md) records
+ten exact copies and five first-pass API functions, source-first qualification,
+occupied-output controls and retained profile refusals. Affected host regressions
+pass 48 CLI unit and 46 integration functions; all-target/all-feature CLI strict
+checks pass. Normal-save and macro gates do not expand.
+
 ## Named-field bulk INSERT
 
 Typed `write preview-insert --field NAME` now maps repeated field names through

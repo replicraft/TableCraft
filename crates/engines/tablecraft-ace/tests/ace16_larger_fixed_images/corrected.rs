@@ -9,7 +9,7 @@ fn original_roots(shape: Shape) -> &'static [usize] {
     }
 }
 
-pub(super) fn selected_offsets(case: &Case) -> Vec<usize> {
+pub fn selected_offsets(case: &Case) -> Vec<usize> {
     let first = model::row_span(&case.before, case.data, 0);
     let mut offsets = if case.shape.preserved() {
         vec![first.end - 1]
@@ -20,7 +20,7 @@ pub(super) fn selected_offsets(case: &Case) -> Vec<usize> {
     offsets
 }
 
-pub(super) fn abandoned_pages(case: &Case) -> Vec<usize> {
+pub fn abandoned_pages(case: &Case) -> Vec<usize> {
     let mut abandoned = Vec::new();
     if case.data != 12 {
         abandoned.push(12);
@@ -33,7 +33,7 @@ pub(super) fn abandoned_pages(case: &Case) -> Vec<usize> {
     abandoned
 }
 
-pub(super) fn case(code: u8, shape: Shape) -> Case {
+pub fn case(code: u8, shape: Shape) -> Case {
     // The original constructor remains callable and byte-identical to its first
     // freeze. Its source is moved intact; only its expected image is corrected.
     let original = model::case(code, shape);

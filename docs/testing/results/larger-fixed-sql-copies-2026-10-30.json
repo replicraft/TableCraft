@@ -1,0 +1,128 @@
+{
+  "feature": "Explicit larger fixed SQL engineering copies",
+  "date": "2026-10-30",
+  "scope": "one CLI consumer; existing Fixed(Fitted), one original capture and common publisher",
+  "capture": {
+    "flag": "--image-bytes",
+    "maximum_bytes": 83886080,
+    "standard_capture_bytes_unchanged": 67108864,
+    "defaults_unchanged": {
+      "work_bytes": 268435456,
+      "work_rows": 100000,
+      "work_steps": 100000000
+    },
+    "positive_example_allowances": {
+      "work_bytes": 2147483648,
+      "work_rows": 100000,
+      "work_steps": 1000000000
+    }
+  },
+  "source_first": {
+    "large_pairs": 12,
+    "large_images": 24,
+    "native_eligible_recipes": 10,
+    "header5_rich_recipes_retained": 2,
+    "large_log": {
+      "path": ".cache/ace16-larger-fixed-cli-next-20261030/source-first-root.log",
+      "bytes": 862,
+      "sha256": "b15a3824e92f039dc460f33fd398a2f3b0dc576c039087b5cc2338007dba42d5"
+    },
+    "memo_metadata_lval_functions": 1,
+    "memo_log": {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/memo-source-first-root.log",
+      "bytes": 464,
+      "sha256": "8e0cff54bcea60af8f27eb76757e547c4a92986462367238d562f3441ac2d995"
+    },
+    "constructor_changes": false
+  },
+  "first_host_round": {
+    "normal_cli": "passed",
+    "api_functions": 5,
+    "whole_image_copies": 10,
+    "occupied_output_controls": 10,
+    "default_onebelow_budget_refusals": 3,
+    "preopen_mode_conflicts": 4,
+    "preopen_invalid_limit_controls": 4,
+    "header5_rich_refusals": 2,
+    "memo_default_zero_match_exact_control": 1,
+    "memo_explicit_fixed_zero_match_refusal": 1,
+    "status": "passed first applicable run",
+    "logs": [
+      {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/normal-first-root.log",
+        "bytes": 402,
+        "sha256": "e18a11461c56b8bd29a26d33f6cff0426a8f0efc95fc5b26532bc0ccbd3adcdc"
+      },
+      {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/api-first-root.log",
+        "bytes": 952,
+        "sha256": "fbc566d20093d2a459a8042d6b5e51fd56fadabfc499c1bd73a3ea6c0748a7e4"
+      }
+    ]
+  },
+  "broader_host_checks": {
+    "cli_unit_functions": 48,
+    "cli_integration_functions": 46,
+    "per_target": {
+      "preserved_boolean_updates": 4,
+      "query_preview_default_long_values": 4,
+      "query_preview_updates": 27,
+      "updates": 4,
+      "write_previews": 7
+    },
+    "strict_cli_all_targets_all_features": "passed",
+    "logs": [
+      {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/regression-first-root.log",
+        "bytes": 10809,
+        "sha256": "9abc45ad00cd6cca59360515f3eade570ef837984a1563ecf9a49cc9a9a3c4ca"
+      },
+      {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/strict-first-root.log",
+        "bytes": 403,
+        "sha256": "80dfd20605773997a71a75a5536d42e764960308e37049f2c22e7f91f9e1febc"
+      }
+    ]
+  },
+  "source_visibility_seams": "actual test-owner modules and functions only; inverse-exact constructor bodies",
+  "unchanged": [
+    "native production",
+    "no-flag default capture and routing",
+    "Access SQL/editor services",
+    "shared publication",
+    "normal save and macro authority"
+  ],
+  "native_access_comparison": false,
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_update.rs",
+      "bytes": 8948,
+      "sha256": "49a3e3d34d1c861a87d840766fedaeefefcba69f63cd5167d48633a62f362490"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images.rs",
+      "bytes": 735,
+      "sha256": "a8eaf2e3b437de3428b5ebef9390aa05afdac3980e695e29cf9d98c450522df0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/corrected.rs",
+      "bytes": 2898,
+      "sha256": "9e510637473f26f3e69b2937856015e490e129f026710a55bcdc4d02df7d4d57"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_larger_fixed.rs",
+      "bytes": 1454,
+      "sha256": "c3a76cde8d946e7f278eed548b0035b705200a782e284889b91f481d3b269e81"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_larger_fixed/api.rs",
+      "bytes": 7166,
+      "sha256": "2bc2c73a29b8c304a381a07141045cf480ef6dd53a25ede8313455ae72225fd1"
+    }
+  ],
+  "installed_freeze": {
+    "path": ".cache/ace16-larger-fixed-cli-next-20261030/host-api-installed-first-freeze.json",
+    "bytes": 1878,
+    "sha256": "060d35e53788fdcb8db478f4f430bfa1a71b9c877831f4d5ff46a6a6c7b591d5"
+  }
+}
