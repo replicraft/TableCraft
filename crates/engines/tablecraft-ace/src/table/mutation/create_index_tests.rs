@@ -8,6 +8,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
 mod model;
+mod reference;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(128 * 1024 * 1024, 100_000, 16_000_000)
