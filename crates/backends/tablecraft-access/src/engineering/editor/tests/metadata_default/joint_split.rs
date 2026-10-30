@@ -9,7 +9,7 @@ use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable};
 use tablecraft_model::CatalogScope;
 
 #[path = "../../../../../../../engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model.rs"]
-mod source_model;
+pub(in crate::engineering::editor::tests) mod source_model;
 use source_model::{Family, Shape};
 
 fn cases() -> Vec<source_model::Case> {

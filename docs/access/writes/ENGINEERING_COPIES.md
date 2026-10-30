@@ -43,20 +43,20 @@ Each `--set` contains `TABLE COLUMN ROW KIND EXPECTED VALUE`. ROW is the zero-ba
 original live-row ordinal, not a key value. All assignments refer to one immutable
 captured source. Groups are combined before one engine call; a stale expected
 value or any later failure returns no copy. Multiple fixed-field assignments can
-span qualified tables. `--variable` can combine fixed siblings with exactly one
-Short Text/Binary column in one table. Expected carriers and ordinals come
+span qualified tables. `--variable` combines Short Text/Binary columns and
+optional fixed siblings in one table through the [whole-row service](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md). Expected carriers and ordinals come
 unchanged from the caller, not from a replacement snapshot expectation.
-`--long-value` remains single-table/single-column; mixed LVAL and multiple-variable
-requests refuse rather than being applied sequentially.
+`--long-value` remains single-table/single-column; mixed LVAL requests refuse
+rather than being applied sequentially.
 
 The default uses fitting fixed/batch maintenance. Explicit `--index-growth`
 permits the engine's qualified Int32 single/tuple growth profile. `--variable`
 selects Short Text/Binary replacement, including qualified DATA forwarding.
-With fixed siblings it uses one joint DATA-placement preview: the original page,
+With multiple variable targets or fixed siblings it uses one joint DATA-placement preview: the original page,
 another owned DATA page, or qualified represented EOF allocation. INDEX owners
 must fit unless `--index-growth` is also selected. Together, `--variable
 --index-growth` selects one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
-for fixed siblings with exactly one Short Text/Binary column. One captured
+for multiple Short Text/Binary targets and optional fixed siblings. One captured
 original image supplies both the DATA placement and INDEX allocation ledger;
 there is no intermediate candidate or fallback. The one-variable combination
 retains its existing General/Binary index-growth service. `--long-value` selects ordinary Memo/OLE replacement through
@@ -156,7 +156,7 @@ request-file ceiling. Binary counts encoded hex digits; UPDATE counts escape
 prefixes too.
 
 The mixed protocol preserves the written KIND even for NULL inputs. It validates
-one-table/one-variable scope and flags before serializing native groups, prepays
+one-table scope, fixed/variable KIND categories and flags before serializing native groups, prepays
 its grouping name comparisons, and moves fixed/variable cells without cloning
 Text/Binary payloads. The bounded variable/LVAL dispatcher adds Steps for its
 classification pass; overall previous command-cost identity is not claimed.
@@ -219,7 +219,7 @@ All four integration functions passed first, including 36 complete typed copies
 across both headers, directions and all three DATA destinations. Twelve use
 non-NULL Binary hexadecimal input. Stale expected values/ordinals publish no
 output, existing output bytes and original sources remain unchanged, and six
-invalid-profile cases refuse before opening a missing source. Current CLI
+invalid-profile cases refuse before opening a missing source. That checkpoint's CLI
 regressions passed 34 unit and 25 integration functions: nineteen in the shared
 SQL/typed UPDATE source target and six existing typed write workflows. CLI strict
 all-target/all-feature checks passed. This is the selected consumer regression,

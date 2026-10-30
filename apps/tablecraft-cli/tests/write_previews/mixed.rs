@@ -164,7 +164,6 @@ fn typed_mixed_profile_refusals_happen_before_database_open() {
         ),
         ("Items", "int32", "text", &["--long-value"][..]),
         ("Items", "int32", "unknown-kind", &["--variable"][..]),
-        ("Items", "text", "text", &["--variable"][..]),
         ("Items", "int32", "int32", &["--variable"][..]),
     ] {
         let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
@@ -195,4 +194,34 @@ fn typed_mixed_profile_refusals_happen_before_database_open() {
         assert!(!String::from_utf8_lossy(&result.stderr).contains("NotFound"));
         assert!(!after.exists());
     }
+
+    // Two variable scopes are valid protocol. Native field kinds still need
+    // the authorized source, so this case must reach the missing-file open.
+    let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .args(["write", "preview-update"])
+        .arg(&before)
+        .arg(&after)
+        .args([
+            "--variable",
+            "--set",
+            "Items",
+            "Age",
+            "3",
+            "text",
+            "null",
+            "null",
+            "--set",
+            "Items",
+            "Name",
+            "3",
+            "text",
+            "null",
+            "null",
+        ])
+        .output()
+        .unwrap();
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("NotFound"));
+    assert!(!after.exists());
 }

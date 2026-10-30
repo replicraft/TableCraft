@@ -1,7 +1,9 @@
 # ACE 16 fitted mixed UPDATE previews
 
-The engine can apply fixed scalar assignments and one Short Text/Binary field
-jointly to one original table. All eight focused mutation functions pass,
+The engine can apply Short Text/Binary fields and optional fixed scalar
+assignments jointly to one original table; see the [multiple-variable
+extension](ACE16_MULTIPLE_VARIABLE_UPDATES.md). The original one-variable
+feature passed all eight focused mutation functions,
 including 83 complete-image comparisons. Both source-only gates passed before
 their respective mutation cases. Three existing independent record-proof tests,
 36 existing variable-update functions across five integration targets and two
@@ -19,8 +21,8 @@ calls. The earlier counts above describe the original feature validation.
 
 `NativeImage::preview_ace16_fitted_updates` takes borrowed
 `FittedColumnUpdates::Fixed` and `FittedColumnUpdates::Variable` groups. Requests
-must contain at least one fixed group and exactly one ordinary Short Text/Binary
-group. Every cell carries an original row ordinal, exact expected stored value
+must contain at least one ordinary Short Text/Binary group; fixed groups are
+optional. Multiple variable fields are composed jointly. Every cell carries an original row ordinal, exact expected stored value
 and replacement. Duplicate columns or repeated assignments within a column
 refuse. Expected values are representational preconditions, including exact
 Text/Binary bytes; they are not collation-based SQL comparisons.

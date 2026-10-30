@@ -47,14 +47,14 @@ pub enum EngineeringRequest<'a> {
         /// Explicit index/action maintenance policy.
         mode: UpdateMode,
     },
-    /// Compose fixed fields and one Short Text/Binary field in original capacity.
+    /// Compose Short Text/Binary fields and optional fixed siblings in original capacity.
     FittedUpdate {
         /// Exact selected table name.
         table: &'a str,
         /// Original-row typed groups; engine storage admission remains required.
         groups: &'a [FittedColumnUpdates<'a>],
     },
-    /// Joint fixed and one Short Text/Binary replacement with DATA placement.
+    /// Joint Short Text/Binary replacements and optional fixed siblings with DATA placement.
     MixedUpdate {
         /// Exact selected table name.
         table: &'a str,

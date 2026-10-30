@@ -67,7 +67,31 @@ fn variable_batch_flag_publishes_all_text_growth_destinations_exactly() {
 }
 
 #[test]
-fn default_capacity_and_multiple_variable_refusals_never_publish() {
+fn default_capacity_refusal_never_publishes() {
+    let case = source_model::case(
+        6,
+        model::Family::Legacy,
+        false,
+        source_model::Destination::EndOfFile,
+    );
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("before.accdb");
+    let output = directory.path().join("refused.accdb");
+    fs::write(&input, &case.before).unwrap();
+    let result = run(
+        "UPDATE Items SET Age=40,Name='aa' WHERE Id=4",
+        &input,
+        &output,
+        &[],
+    );
+    assert_eq!(result.status.code(), Some(2));
+    assert!(result.stdout.is_empty());
+    assert!(!output.exists());
+    assert_eq!(fs::read(&input).unwrap(), case.before);
+}
+
+#[test]
+fn multiple_variable_empty_commands_publish_exact_source_in_both_growth_modes() {
     let case = source_model::case(
         6,
         model::Family::Legacy,
@@ -77,27 +101,23 @@ fn default_capacity_and_multiple_variable_refusals_never_publish() {
     let directory = tempfile::tempdir().unwrap();
     let input = directory.path().join("before.accdb");
     fs::write(&input, &case.before).unwrap();
-    for (ordinal, (sql, flags)) in [
-        ("UPDATE Items SET Age=40,Name='aa' WHERE Id=4", &[][..]),
-        (
-            "UPDATE Items SET Name='a',Other='b' WHERE FALSE",
-            &["--variable", "--index-growth"][..],
-        ),
-        (
-            "UPDATE Items SET Name='a',Other='b' WHERE FALSE",
-            &["--variable"][..],
-        ),
-    ]
-    .into_iter()
-    .enumerate()
+    for (ordinal, flags) in [&["--variable"][..], &["--variable", "--index-growth"][..]]
+        .into_iter()
+        .enumerate()
     {
-        let output = directory.path().join(format!("refused{ordinal}.accdb"));
-        let result = run(sql, &input, &output, flags);
-        assert_eq!(result.status.code(), Some(2));
-        assert!(result.stdout.is_empty());
-        assert!(!output.exists());
+        let output = directory.path().join(format!("empty{ordinal}.accdb"));
+        let result = run(
+            "UPDATE Items SET Name='a',Other='b' WHERE FALSE",
+            &input,
+            &output,
+            flags,
+        );
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(fs::read(&output).unwrap(), case.before);
         assert_eq!(fs::read(&input).unwrap(), case.before);
     }
-    // Existing single-variable dispatch consistency is exercised by the parent
-    // metadata-default test; it is not a second independently authored image.
 }

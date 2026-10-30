@@ -218,43 +218,74 @@ pub(super) fn records(
             continue;
         }
 
-        // This is the separate existing immutable record-proof implementation,
-        // not page_update::record::build or a producer-built after image.
-        let variable = &groups[bound.variable_group];
-        reader.work(variable.len())?;
-        let cell = (0..variable.len())
-            .filter_map(|i| variable.cell(i))
-            .find(|cell| cell.row == root.update.0);
-        let variable_value = if let Some(cell) = cell {
-            if request::values_equal(cell.expected, cell.value, reader.budget, cancelled)? {
-                None
-            } else {
-                Some(cell.value)
+        // Derive every changed variable from original groups and source names,
+        // independently of producer-bound group positions or encoded payloads.
+        reader
+            .budget
+            .charge_allocation(
+                groups.len() as u64,
+                size_of::<record_proof::multiple::Requested<'_>>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        let mut variables = Vec::new();
+        variables
+            .try_reserve_exact(groups.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for group in groups {
+            if !matches!(group, FittedColumnUpdates::Variable { .. }) {
+                continue;
             }
-        } else {
-            None
-        };
-        let mut expected = if let Some(value) = variable_value {
-            match policy {
+            reader.tick()?;
+            reader.work(group.len() + schema.columns().len())?;
+            request::pay_name_scan(schema, group.name(), reader.budget, cancelled)?;
+            let column = schema
+                .columns()
+                .iter()
+                .position(|field| field.name().eq_ignore_ascii_case(group.name()))
+                .ok_or(EditError::Preservation)?;
+            let cell = (0..group.len())
+                .filter_map(|position| group.cell(position))
+                .find(|cell| cell.row == root.update.0);
+            if let Some(cell) = cell
+                && !request::values_equal(cell.expected, cell.value, reader.budget, cancelled)?
+            {
+                variables.push(record_proof::multiple::Requested {
+                    column,
+                    value: cell.value,
+                });
+            }
+        }
+        let mut expected = match variables.as_slice() {
+            [] => super::stage::copy(before, reader.budget, cancelled)?,
+            [one] => match policy {
                 RecordPolicy::FittedDeclared => record_proof::reconstruct_declared(
                     schema,
-                    bound.columns[bound.variable_group],
+                    one.column,
                     before,
-                    value,
+                    one.value,
                     reader.budget,
                     cancelled,
                 )?,
                 RecordPolicy::GrowingPreferred => record_proof::reconstruct(
                     schema,
-                    bound.columns[bound.variable_group],
+                    one.column,
                     before,
-                    value,
+                    one.value,
                     reader.budget,
                     cancelled,
                 )?,
-            }
-        } else {
-            super::stage::copy(before, reader.budget, cancelled)?
+            },
+            _ => record_proof::multiple::reconstruct(
+                schema,
+                before,
+                &variables,
+                match policy {
+                    RecordPolicy::FittedDeclared => record_proof::multiple::Encoding::Fitted,
+                    RecordPolicy::GrowingPreferred => record_proof::multiple::Encoding::Growing,
+                },
+                reader.budget,
+                cancelled,
+            )?,
         };
         if matches!(policy, RecordPolicy::FittedDeclared) && expected.len() != before.len() {
             return Err(EditError::Preservation);

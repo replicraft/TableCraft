@@ -151,7 +151,7 @@ fn default_sql_joint_updates_publish_exact_frozen_images_without_new_flags() {
 }
 
 #[test]
-fn default_single_variable_matches_explicit_route_and_multiple_variable_refuses() {
+fn default_single_variable_matches_explicit_route_and_unknown_column_refuses() {
     let directory = tempfile::tempdir().unwrap();
     let input = directory.path().join("before.accdb");
     let default = directory.path().join("default.accdb");
@@ -171,7 +171,7 @@ fn default_single_variable_matches_explicit_route_and_multiple_variable_refuses(
     // Dispatch consistency, separate from the independent whole-image goldens.
     assert_eq!(fs::read(default).unwrap(), fs::read(explicit).unwrap());
     let result = run(
-        "UPDATE Items SET Label='m', Other='n' WHERE FALSE",
+        "UPDATE Items SET Label='m', MissingColumn='n' WHERE FALSE",
         &input,
         &refused,
         &[],

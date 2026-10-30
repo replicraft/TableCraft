@@ -63,8 +63,8 @@ pub fn preview_update(
 }
 
 /// Evaluate all SET targets against the original snapshot, then finish once.
-/// Default routing combines fixed fields and at most one Short Text/Binary field.
-/// Explicit variable mode permits joint DATA placement with fixed siblings and
+/// Default routing jointly fits Short Text/Binary fields and optional fixed siblings.
+/// Explicit variable mode permits joint DATA placement for variable/fixed fields and
 /// optional qualified INDEX growth. Explicit LVAL retains one-column scope.
 /// Normal NativeEditor/save admission and the old single-column entry stay strict.
 pub fn preview_batch_update(

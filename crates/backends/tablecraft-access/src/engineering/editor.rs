@@ -19,13 +19,13 @@ use tablecraft_schema::ScalarType;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScalarUpdateMode {
     /// Select one service from resolved target metadata before native planning:
-    /// fixed batch, one variable field, or a fitted fixed/variable statement.
+    /// fixed batch, one variable field, or a fitted whole-row variable statement.
     /// Shared Text/Binary metadata does not certify Short Text/Binary storage;
     /// the selected engine service still refuses Memo/OLE or other wrong kinds.
     Default,
     /// Fixed-field maintenance using the selected existing fitting/growth/action profile.
     Fixed(UpdateMode),
-    /// One Short Text/Binary field, optionally with fixed siblings for DATA
+    /// Short Text/Binary fields, optionally with fixed siblings for DATA
     /// growth. INDEX growth uses one qualified DATA/INDEX continuation.
     Variable {
         /// Select the existing variable-plus-index split service explicitly.
@@ -283,8 +283,8 @@ impl AccessEngineeringEditor {
     }
 
     fn check_batch_mode(&self, position: usize, width: usize) -> Result<(), NativeEditError> {
-        // The explicit variable batch may include fixed siblings.
-        // Its router still requires exactly one variable target and native kind
+        // The explicit variable batch may include multiple variable fields and
+        // fixed siblings. Its router requires at least one variable; native kind
         // qualification remains inside the one selected engine service.
         if width > 1 && matches!(self.mode, ScalarUpdateMode::Variable { .. }) {
             return Ok(());

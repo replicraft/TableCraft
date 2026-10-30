@@ -1,7 +1,11 @@
 //! New complete C5/V3 images authored from original rows and immutable requests.
+#[path = "model/keys.rs"]
 mod keys;
+#[path = "model/pages.rs"]
 mod pages;
+#[path = "model/records.rs"]
 mod records;
+#[path = "model/schema.rs"]
 mod schema;
 
 use super::{base, frames};

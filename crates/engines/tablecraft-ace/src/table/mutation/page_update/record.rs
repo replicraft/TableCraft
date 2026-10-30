@@ -1,4 +1,5 @@
-//! Rebuild one selected variable field while retaining physical capacity on fit.
+//! Original single-field builders and separate joint variable composition.
+pub(in crate::table::mutation) mod multiple;
 use super::super::{EditError, WriteBlocker, slot::storage};
 use crate::{
     InspectError, TableSchema,

@@ -23,7 +23,7 @@ struct Staged {
 }
 
 impl NativeImage {
-    /// Preview fixed and one Short Text/Binary field jointly with DATA placement
+    /// Preview optional fixed and ordinary Short Text/Binary fields with DATA placement
     /// and qualified INDEX splitting under one append cursor. Original groups
     /// independently certify complete records, keys, ownership and map effects.
     ///

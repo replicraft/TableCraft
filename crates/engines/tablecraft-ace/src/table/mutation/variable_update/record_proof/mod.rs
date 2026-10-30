@@ -1,4 +1,5 @@
 //! Immutable requested serialization and complete historical record framing.
+pub(in crate::table::mutation) mod multiple;
 mod payload;
 #[cfg(test)]
 mod tests;

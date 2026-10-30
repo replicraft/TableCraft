@@ -32,9 +32,6 @@ impl AccessEngineeringEditor {
 
         let positions = self.validate_columns(columns, budget, cancelled)?;
         let variable_count = self.variable_count(&positions, budget, cancelled)?;
-        if variable_count > 1 {
-            return Err(NativeEditError::Unsupported);
-        }
         if variable_count == 0 {
             return self.fixed_columns(columns, positions, UpdateMode::Fitted, budget, cancelled);
         }
@@ -80,7 +77,7 @@ impl AccessEngineeringEditor {
             return Err(NativeEditError::Unsupported);
         }
         let positions = self.validate_columns(columns, budget, cancelled)?;
-        if self.variable_count(&positions, budget, cancelled)? != 1 {
+        if self.variable_count(&positions, budget, cancelled)? == 0 {
             return Err(NativeEditError::Unsupported);
         }
         let placement = if index_growth {

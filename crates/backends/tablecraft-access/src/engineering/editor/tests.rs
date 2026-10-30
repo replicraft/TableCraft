@@ -21,6 +21,7 @@ pub(in crate::engineering) mod fixture;
 
 mod batch;
 mod metadata_default;
+mod multiple_variable;
 mod scalar_functions;
 mod source;
 use source::source;

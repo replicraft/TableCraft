@@ -48,7 +48,10 @@ pub(in crate::commands::write) fn required(
     }
     for fields in assignments {
         tick(budget, cancelled)?;
-        if !variable_kind(&fields[3]) {
+        if !variable_kind(&fields[3])
+            || !same_name(&assignments[0][0], &fields[0], budget, cancelled)?
+            || !same_name(&assignments[0][1], &fields[1], budget, cancelled)?
+        {
             return Ok(true);
         }
     }
@@ -116,9 +119,9 @@ pub(in crate::commands::write) fn preflight(
         tick(budget, cancelled)?;
         variables += usize::from(scope.variable);
     }
-    if variables != 1 || scopes.len() < 2 {
+    if variables == 0 || scopes.len() < 2 {
         return Err(input(
-            "Mixed variable updates require fixed siblings and exactly one text/binary column",
+            "Joint variable updates require at least two columns and one text/binary target",
         ));
     }
     Ok(())

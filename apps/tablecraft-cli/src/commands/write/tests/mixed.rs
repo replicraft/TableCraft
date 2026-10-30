@@ -64,7 +64,10 @@ fn mixed_scope_conflicts_and_unknown_kinds_refuse_without_native_groups() {
         let mut input = cells("text");
         match change {
             0 => input[6] = "OtherTable".to_owned(),
-            1 => input[3] = "text".to_owned(),
+            1 => {
+                input[3] = "boolean".to_owned();
+                input[5] = "not-a-boolean".to_owned();
+            }
             2 => input[7] = "Age".to_owned(),
             3 => input[3] = "unknown-kind".to_owned(),
             _ => unreachable!(),
@@ -123,4 +126,21 @@ fn mixed_parser_and_borrowed_groups_obey_exact_pools_and_final_cancel() {
         result,
         Err(Error::Native(tablecraft_ace::InspectError::Cancelled))
     ));
+}
+
+#[test]
+fn variable_only_multiple_columns_select_one_joint_protocol() {
+    let mut input = cells("text");
+    input[1] = "First".to_owned();
+    input[3] = "text".to_owned();
+    input[5] = "a".to_owned();
+    assert!(updates::mixed::required(&input, &mut budget(), &|| false).unwrap());
+    let owned = updates::mixed::prepare(&input, 1024, &mut budget(), &|| false).unwrap();
+    let groups = owned.groups(&mut budget(), &|| false).unwrap();
+    assert_eq!(groups.len(), 2);
+    assert!(
+        groups
+            .iter()
+            .all(|group| matches!(group, FittedColumnUpdates::Variable { .. }))
+    );
 }
