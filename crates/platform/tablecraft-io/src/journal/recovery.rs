@@ -26,7 +26,17 @@ pub fn recover<D: DurableStorage, J: DurableStorage>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RecoveryOutcome, JournalError> {
     let record = format::load(journal, budget, cancelled)?;
-    verify_target(target, &record, record.state, budget, cancelled)?;
+    recover_loaded(target, journal, &record, budget, cancelled)
+}
+
+pub(super) fn recover_loaded<D: DurableStorage, J: DurableStorage>(
+    target: &mut D,
+    journal: &mut J,
+    record: &Record,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RecoveryOutcome, JournalError> {
+    verify_target(target, record, record.state, budget, cancelled)?;
 
     if record.state == State::Pending {
         storage::write_image(target, 0, &record.before, budget, cancelled)?;

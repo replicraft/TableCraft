@@ -115,6 +115,37 @@ A changed target fails before journal/target writes, with bounded chunk comparis
 and work charging. The optional [native edit integration](../access/writes/NATIVE_WRITES.md#optional-journaled-persistence)
 uses this entry point; ordinary `prepare` retains its existing contract.
 
+## Read-only V1 inspection sessions
+
+`inspect_v1(journal, budget, cancelled)` checks the existing V1 framing, equal
+image lengths, digest and complete or partial marker without supplying or
+changing a target. It reads/seeks the journal but neither writes nor synchronizes
+it. The returned `CheckedV1` owns the already paid immutable images and retains
+a mutable borrow of that same journal. `before_bytes()` and `after_bytes()`
+borrow those images without another copy; `state()` reports `V1State::Pending`
+or `Committed`. Dropping the session leaves the journal intact.
+
+Consuming `CheckedV1::recover(target, budget, cancelled)` uses that exact loaded
+record and the same journal, with no journal replacement or reload. It applies
+the existing target checks and recovery write/barrier sequence. The one-shot
+`recover` API, V1 bytes, callback ordering and cumulative resource behavior remain
+unchanged. Inspection failures do not write either resource; consuming recovery
+can fail after changes and retains the existing recovery-required contract.
+
+This is an integrity-inspection boundary, not authentication, target identity,
+native policy approval or a normal-save capability. Hosts still own exclusive
+access and correct pairing. A native consumer must independently qualify its
+original intent and both images before asking this generic session to recover;
+inspection does not perform those checks.
+
+The independent literal qualifier passed first: 41 valid marker forms, 64
+incomplete bodies and 104 single-byte corruptions, with writes and syncs forbidden.
+All five inspection/session tests then passed, including same-journal recovery,
+old/new callback and budget equivalence, cancellation and foreign-target refusal.
+The complete I/O run passes 54 unit tests, nine integration tests and two
+compile-fail documentation tests; strict all-target/all-feature Clippy passes.
+These are local protocol checks, not physical power-loss qualification.
+
 ## Additive resizable V2 transactions
 
 `prepare_resizable_expected` binds the complete caller-validated before image and
