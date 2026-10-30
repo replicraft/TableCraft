@@ -1,4 +1,5 @@
-//! Real immutable capture/source qualification while every mutation stays denied.
+//! Immutable capture/source certification and retained non-fixed policy refusals.
+mod api;
 use crate::test_support::base;
 use support as raw;
 use tablecraft_testkit::access as support;
@@ -20,9 +21,9 @@ mod old_attachment;
 mod preserved_model;
 
 use crate::{
-    BeforeEventGuardError, BeforeEventIntents, EditError, FixedColumnUpdates, FixedScalarUpdate,
-    FixedUpdateImageLimits, IncrementingAutoNumber, InspectError, Int32Update, NativeImage,
-    RowDelete, SlotScalarUpdate, WriteBlocker, inspect_table_schema,
+    BeforeEventGuardError, BeforeEventIntents, EditError, FixedUpdateImageLimits,
+    IncrementingAutoNumber, InspectError, Int32Update, NativeImage, RowDelete, SlotScalarUpdate,
+    WriteBlocker, inspect_table_schema,
     table::mutation::{gates, variable_split::metadata::Metadata},
 };
 use std::{cell::Cell, io::Cursor};
@@ -236,7 +237,7 @@ fn qualify_actual_extended_capture_and_ownership_for_prefrozen_large_sources() {
 }
 
 #[test]
-fn every_public_mutation_entry_refuses_small_extended_captures_including_empty_intents() {
+fn all_other_public_mutation_entries_refuse_extended_captures_including_empty_intents() {
     macro_rules! denied {
         ($result:expr) => {
             assert!(matches!(
@@ -256,23 +257,6 @@ fn every_public_mutation_entry_refuses_small_extended_captures_including_empty_i
             &|| false
         ));
         denied!(small_image(code).preview_ace16_int32_updates(
-            "Items",
-            "Score",
-            &[],
-            &mut budget(),
-            &|| false
-        ));
-        denied!(small_image(code).preview_ace16_fixed_updates(
-            "Items",
-            "Score",
-            &[],
-            &mut budget(),
-            &|| false
-        ));
-        denied!(small_image(code).preview_ace16_batch_updates(&[], &mut budget(), &|| false));
-        denied!(small_image(code).preview_ace16_split_batch_updates(&[], &mut budget(), &|| false));
-        denied!(small_image(code).preview_ace16_cascading_updates(&[], &mut budget(), &|| false));
-        denied!(small_image(code).preview_ace16_slot_updates(
             "Items",
             "Score",
             &[],
@@ -417,23 +401,6 @@ fn every_public_mutation_entry_refuses_small_extended_captures_including_empty_i
             Err(BeforeEventGuardError::Inspect(InspectError::StructureLimit))
         ));
 
-        let fixed = [FixedScalarUpdate::new(
-            0,
-            Value::Int32(10),
-            Value::Int32(10),
-        )];
-        denied!(small_image(code).preview_ace16_fixed_updates(
-            "Items",
-            "Score",
-            &fixed,
-            &mut budget(),
-            &|| false
-        ));
-        denied!(small_image(code).preview_ace16_batch_updates(
-            &[FixedColumnUpdates::new("Items", "Score", &fixed)],
-            &mut budget(),
-            &|| false
-        ));
         denied!(small_image(code).preview_ace16_int32_updates(
             "Items",
             "Score",

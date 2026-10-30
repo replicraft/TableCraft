@@ -2,6 +2,7 @@ pub(in crate::table) mod batch;
 mod cascade;
 mod decimal;
 mod encoding;
+mod extended;
 pub(in crate::table::mutation) mod masked;
 mod preserved;
 mod preview;

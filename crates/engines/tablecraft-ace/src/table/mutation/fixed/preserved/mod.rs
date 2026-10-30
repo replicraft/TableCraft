@@ -11,7 +11,6 @@ use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, WriteBlocker, header::check,
     inspect_table_schema, preservation::COPY_CHUNK_BYTES, table::mutation::patch::BytePatch,
 };
-use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn selected(
@@ -91,12 +90,7 @@ pub(super) fn preview(
     // The proof receives original requests, never staged patches or normalized
     // values. It recomputes all permitted bits and compares the complete image.
     proof::prove(&image, groups, &after, changed, budget, cancelled)?;
-    let candidate = NativeImage::capture(
-        &mut Cursor::new(&after),
-        image.catalog().catalog().scope(),
-        budget,
-        cancelled,
-    )?;
+    let candidate = image.recapture_fixed_candidate(&after, budget, cancelled)?;
     source::capture(&candidate, first.table(), budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(Ace16WritePreview::from_candidate(

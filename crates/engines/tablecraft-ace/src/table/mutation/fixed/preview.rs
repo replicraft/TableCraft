@@ -1,4 +1,4 @@
-use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
+use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify_fixed};
 use super::{FixedColumnUpdates, FixedScalarUpdate, masked, preserved};
 use crate::{
     InspectError, NativeImage, format::data_type::NUMERIC_BYTES, header::check,
@@ -33,7 +33,7 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.edit.fixed_preview", assignments = updates.len())
             .entered();
         check(budget, cancelled)?;
-        qualify(&self)?;
+        qualify_fixed(&self)?;
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

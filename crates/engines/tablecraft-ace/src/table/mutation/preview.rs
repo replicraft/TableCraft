@@ -87,6 +87,15 @@ impl NativeImage {
 
 pub(super) fn qualify(image: &NativeImage) -> Result<(), EditError> {
     image.require_standard_capture()?;
+    qualify_format(image)
+}
+
+pub(super) fn qualify_fixed(image: &NativeImage) -> Result<(), EditError> {
+    image.require_fixed_update_capture()?;
+    qualify_format(image)
+}
+
+fn qualify_format(image: &NativeImage) -> Result<(), EditError> {
     if !matches!(
         image.catalog().header().format(),
         FileFormat::Ace2016 | FileFormat::Ace2019

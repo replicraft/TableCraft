@@ -1,0 +1,261 @@
+{
+  "feature": "Native phase-3 fixed-update-purpose image admission",
+  "date": "2026-10-30",
+  "scope": "existing ACE16 fixed single and nonallocating batch engineering services only",
+  "capture": {
+    "maximum_bytes": 83886080,
+    "standard_default_bytes": 67108864,
+    "validated_policy_retained": true,
+    "candidate_exact_same_length": true,
+    "candidate_recapture_copies_exact_original_ceiling": true
+  },
+  "source_first": {
+    "original_pairs": 12,
+    "original_images": 24,
+    "eligible_pairs": 10,
+    "header5_rich_pairs_refused": 2,
+    "additional_small_resource_and_alias_functions": 1,
+    "log": {
+      "path": ".cache/ace16-larger-fixed-native-phase3-20261030/source-first-root.log",
+      "bytes": 544,
+      "sha256": "7e6ec0bdbdd3b0c408b467896c2dbdf430b9082c6aa4d190cd7f949ab80ca6c2"
+    },
+    "installed_freeze": {
+      "path": ".cache/ace16-larger-fixed-native-phase3-20261030/installed-first-freeze.json",
+      "bytes": 10302,
+      "sha256": "9e1e249a9908694f2d755f055ad4a8359283d1c131e7d7e817faf2d4dda9d594"
+    },
+    "constructor_body_changes": false
+  },
+  "before_shared_guard": {
+    "normal": "passed",
+    "suite_functions": 6,
+    "changed_single_batch_complete_candidates": 20,
+    "exact_noops": 20,
+    "other_route_denial_functions": 1,
+    "remaining_denied_entry_roots": 28,
+    "logs": [
+      {
+        "path": ".cache/ace16-larger-fixed-native-phase3-20261030/normal-first-root.log",
+        "bytes": 183,
+        "sha256": "031484149ee365d62bdc4fdb0135b0e41ad451209c8691f7a9c93c4ee84928cc"
+      },
+      {
+        "path": ".cache/ace16-larger-fixed-native-phase3-20261030/api-first-root.log",
+        "bytes": 1328,
+        "sha256": "3c0790f01ab0b82bdd7772e3f64b8845165d66e4d5c0b1c310e53858676d7a17"
+      },
+      {
+        "path": ".cache/ace16-larger-fixed-native-phase3-20261030/denial-first-root.log",
+        "bytes": 425,
+        "sha256": "72de6ea68eef3e633ae9d46b282a354ae43d0535b4e176d6c621823b82fecbab"
+      }
+    ]
+  },
+  "standard_diagnostic": {
+    "outcome": "failed as a causal witness: Standard fixed accepted reader-valid DATA/INDEX body overlap",
+    "log": {
+      "path": ".cache/ace16-larger-fixed-native-phase3-20261030/standard-diagnostic-first-root.log",
+      "bytes": 1303,
+      "sha256": "5671da6b18748616e90529972d8ab95acc3470d0434ea2c37da4d328ffed648f"
+    },
+    "shared_correction_guide": "docs/testing/ACE16_FIXED_INDEX_BODY_OWNERSHIP.md",
+    "shared_correction_record": "docs/testing/results/ace16-fixed-index-body-ownership-2026-10-30.json"
+  },
+  "after_shared_guard": {
+    "suite_functions": 7,
+    "changed_single_batch_complete_candidates": 20,
+    "exact_noops": 20,
+    "standard_diagnostic": "passed",
+    "log": {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/large-native-after-guard-root.log",
+      "bytes": 1467,
+      "sha256": "6ca3f3187e723d2b53be3577e35c4d1439bc0f34328010046201e6052e939071"
+    },
+    "other_shared_checks": {
+      "old_mutation_functions": 541,
+      "old_mutation_ignored": 1,
+      "strict_native_all_targets_all_features": "passed",
+      "minimal_native": "passed",
+      "logs": [
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/mutation-regression-first-root.log",
+          "bytes": 73130,
+          "sha256": "81bbe6cc5b868eddfa7d70860141651e66d773115045b2f1a12008d89ff25f3d"
+        },
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/strict-first-root.log",
+          "bytes": 184,
+          "sha256": "0236ccfce5115f10962d5df28dff471f182abab24dc81ef7004346c2a20a265f"
+        },
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/minimal-first-root.log",
+          "bytes": 183,
+          "sha256": "00e631ed928f6ebeeb4e8bb747e1c682fa3ca009a0eb2f27ca499bafda8aa112"
+        }
+      ]
+    }
+  },
+  "admission_proof": [
+    "ExtendedFixed-only ordinary-table original-name affected-column union",
+    "complete Metadata body/map and exclusive logical-root/final-record certification",
+    "GLOBAL allocated storage and owned DATA/physical INDEX body membership",
+    "no map rewrite authority",
+    "original-request reconstruction before policy-preserving same-length recapture",
+    "no target invented for entirely empty groups; named empty groups still certify"
+  ],
+  "controls": [
+    "header5rich Column refusal and Jet4 Format refusal",
+    "late stale/repeated requests and final unique-key failures",
+    "source role-alias empty/changed refusals",
+    "exact and one-below Bytes Rows Steps",
+    "final cancellation",
+    "remaining28 other routes denied"
+  ],
+  "native_access_comparison": false,
+  "normal_save_or_journal_admission": false,
+  "source_history_records": [
+    "docs/testing/results/ace16-larger-fixed-image-sources-2026-10-30.json",
+    "docs/testing/results/ace16-larger-fixed-image-capture-2026-10-30.json"
+  ],
+  "code": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/image.rs",
+      "bytes": 8326,
+      "sha256": "d9dffd20d10e68b6e6459ca15fbc2343a4876d76018d6d6900619ed2f1a724e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 12809,
+      "sha256": "64f4b7170b4749b08ef48e421fef9eb6c25ddb57693712d1c4dafb7b5ca676c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/extended.rs",
+      "bytes": 4303,
+      "sha256": "be1df25ab239f989f47250d7a5b8a33f81e8b8625d5b1c23fe431dc5340d31e9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "bytes": 9862,
+      "sha256": "c17ba70b7f66a031446cc6ca753843de1e4ce87f026fabff0f116033340749fe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 479,
+      "sha256": "291871cd623524de06003edebe6a068962b7b071b5034fc317a6cd96f95a372c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/larger_capture_tests/api.rs",
+      "bytes": 13673,
+      "sha256": "780155c010c48a04349f0c6ec171cec3048dd7215f1bdc4e1bbbe15c1ec23b95"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/larger_capture_tests.rs",
+      "bytes": 14083,
+      "sha256": "1f909d8f9dc04381aed9d3e8a1b906bb2147f94aebb5b406c2de9bc67dc3a3f7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/mod.rs",
+      "bytes": 5428,
+      "sha256": "7b0f405daf94b915b9d4619969e27f749fec452b8c6ba02a586dfa7b3b710fa7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preview.rs",
+      "bytes": 4314,
+      "sha256": "72df97ce13901e6117e208e6adcbb6344eb0841b147ceb9e8e5f4391f911aa80"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/preview.rs",
+      "bytes": 4094,
+      "sha256": "f77f3296ab3e1150d2b0785d842eed91e60f48337a2897aa6489087731944797"
+    }
+  ],
+  "historical_source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images.rs",
+      "sha256": "7702b333688fca348effaf76f31dce5c005fc7a878e5e6034b1b9b4cba90bf96",
+      "archived_copy": {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/before-host-install/crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images.rs",
+        "sha256": "7702b333688fca348effaf76f31dce5c005fc7a878e5e6034b1b9b4cba90bf96"
+      },
+      "current_visibility_only_version": {
+        "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images.rs",
+        "sha256": "a8eaf2e3b437de3428b5ebef9390aa05afdac3980e695e29cf9d98c450522df0"
+      }
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/corrected.rs",
+      "sha256": "976b8c849578c09e58df6517f6b1c18a9bc62e8eafd93a80df092bdfc00e4ff2",
+      "archived_copy": {
+        "path": ".cache/ace16-larger-fixed-cli-next-20261030/before-host-install/crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/corrected.rs",
+        "sha256": "976b8c849578c09e58df6517f6b1c18a9bc62e8eafd93a80df092bdfc00e4ff2"
+      },
+      "current_visibility_only_version": {
+        "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/corrected.rs",
+        "sha256": "9e510637473f26f3e69b2937856015e490e129f026710a55bcdc4d02df7d4d57"
+      }
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model/placement.rs",
+      "sha256": "4a56362fa0940b6eae084b69d11927121094ce6262e40d025f536cb4e72d8e47"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model/scalar.rs",
+      "sha256": "40a6a8cd01162b8d8f66cf08d0289630a3f1c6d7c316f22e08251dd71f1bdc7e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/model.rs",
+      "sha256": "4b46f25ec84e4115873a60cb87e0994932618689e1a18634e1e0497fdaf01b50"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_larger_fixed_images/source.rs",
+      "sha256": "6f0d9275ddc3d3f65cead34356ca106b5f0f2f2b59429b0e098696d141e2157e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model.rs",
+      "sha256": "94639f57fa383e77c16de1a787705c286052609edceab8106f1464e947db765d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model/properties.rs",
+      "sha256": "88e564b2de56b2a5dd433d56c80f0a4cd95e9c2e1a1009ddd6c64e48732b87f6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model/records.rs",
+      "sha256": "adfc315b6cfa30202745f9e096cd18d6003ea42cd3812feaaf5d109c602442ad"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model/schema.rs",
+      "sha256": "1a29e47706bc15310246143ba7a389f53b8c2479073e17ec062fb5af4a0ffe84"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/attachments/fixture.rs",
+      "sha256": "68f00cf5074a297fcea827a72ed01dee81ef6e75240084de3ff627a22ca6e7f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/attachment_modern/fixture.rs",
+      "sha256": "107efa4ec5a2bc7e938364591bacf9a30eba5e1dadc00a0db8fe8e3e4d7dd116"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/mutation/fixture.rs",
+      "sha256": "9d66669d6fce171118e39d07afe54f6f3298f8168f5d088befbc8649baf6bae3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs",
+      "sha256": "0829b082640251606a94a593fc019ba7d6066ffd44630071232be2cdeae1fa8b"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "b7b4b43a2ad44f1c6e6a5e1567dc2c397034ab57f4348c0641869faea4013934"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-native-phase3-20261030/DESIGN.md",
+      "sha256": "7dc004eb21abef68a41704742d8d3b58abab33160dfc49994a4fb7a7da3aed90"
+    },
+    {
+      "path": ".cache/ace16-larger-fixed-native-phase3-20261030/STANDARD_ROLE_PROBE.rs",
+      "sha256": "5ffa7d7c40b09123cc1c30281882fa31a8745fae8fc4a91cfae93838afc6524c"
+    }
+  ],
+  "host_test_visibility_only": "two imported test-owner visibility seams are separately recorded in host receipt; constructor/literal bodies inverse-exact",
+  "historical_source_note": "Original source identities retained; host visibility-only versions and immutable predecessor copies are separately bound"
+}
