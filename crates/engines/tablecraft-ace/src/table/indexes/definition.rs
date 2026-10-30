@@ -9,7 +9,7 @@ use crate::{
     format::{
         bytes::{u16_at, u32_at},
         definition,
-        layout::INDEX_KEY_COLUMNS,
+        layout::{INDEX_KEY_COLUMNS, Layout},
         reader::Reader,
         text,
     },
@@ -152,4 +152,44 @@ pub(in crate::table) fn read_with_tail<R: crate::NativeReadSource>(
         indexes,
         tail: position,
     })
+}
+
+/// Read authoritative owned-map references in physical data-number order.
+/// This does not qualify key semantics or require a logical alias; callers may
+/// use it only for source ownership exclusion, never to invent maintenance.
+pub(in crate::table) fn physical_owned_maps<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+    layout: &Layout,
+) -> Result<Vec<u32>, InspectError> {
+    if layout.physical_indexes == 0 {
+        return Ok(Vec::new());
+    }
+
+    let bytes = definition::read(reader, definition)?;
+    let width = layout
+        .physical_indexes
+        .checked_mul(PHYSICAL_BYTES)
+        .ok_or(InspectError::StructureLimit)?;
+    let end = layout
+        .index_start
+        .checked_add(width)
+        .ok_or(InspectError::StructureLimit)?;
+    let records = bytes
+        .get(layout.index_start..end)
+        .ok_or(InspectError::Truncated)?;
+
+    reader
+        .budget
+        .charge_allocation(layout.physical_indexes as u64, size_of::<u32>() as u64)?;
+    let mut maps = Vec::new();
+    maps.try_reserve_exact(layout.physical_indexes)
+        .map_err(|_| InspectError::Allocation)?;
+
+    for record in records.as_chunks::<PHYSICAL_BYTES>().0 {
+        reader.tick()?;
+        maps.push(u32_at(record, USAGE_OFFSET)?);
+    }
+
+    Ok(maps)
 }

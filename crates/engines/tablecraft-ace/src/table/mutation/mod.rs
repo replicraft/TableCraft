@@ -3,6 +3,7 @@ pub(in crate::table) mod append;
 mod apply;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod create_index_tests;
+mod data_ownership;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;
 mod error;

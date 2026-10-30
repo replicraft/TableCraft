@@ -100,13 +100,22 @@ impl NativeImage {
                 .iter()
                 .any(|table| table.name.eq_ignore_ascii_case(group.table()))
             {
+                let before = if EXTENDED_FIXED {
+                    gates::before_fixed_update(&self, group.table(), budget, cancelled)?
+                } else {
+                    gates::before(&self, group.table(), budget, cancelled)?
+                };
+                if !ALLOCATING {
+                    super::super::super::data_ownership::require_index_disjointness(
+                        &self,
+                        before.schema(),
+                        budget,
+                        cancelled,
+                    )?;
+                }
                 tables.push(Table {
                     name: group.table(),
-                    before: if EXTENDED_FIXED {
-                        gates::before_fixed_update(&self, group.table(), budget, cancelled)?
-                    } else {
-                        gates::before(&self, group.table(), budget, cancelled)?
-                    },
+                    before,
                     keys: Vec::new(),
                 });
             }

@@ -1,0 +1,340 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Shared fixed UPDATE ordinary-DATA/physical-INDEX ownership exclusion",
+  "independent_commit_baseline": "c82bc2c6",
+  "source": {
+    "healthy_complete_pairs": 9,
+    "reader_valid_bad_originals": 9,
+    "views": 27,
+    "additional_selected_orphan_views": 3,
+    "headers": [
+      1,
+      5,
+      6
+    ],
+    "constructors_and_expected_bytes_changed": false
+  },
+  "chronology": [
+    {
+      "event": "Original small-pair/body-alias SOURCE qualified before unit acceptance diagnostic",
+      "log": {
+        "path": ".cache/ace16-larger-fixed-native-phase3-20261030/source-first-root.log",
+        "sha256": "7e6ec0bdbdd3b0c408b467896c2dbdf430b9082c6aa4d190cd7f949ab80ca6c2"
+      },
+      "exit_code": 0
+    },
+    {
+      "event": "Original Standard fixed diagnostic accepted overlap and failed its refusal assertion",
+      "log": {
+        "path": ".cache/ace16-larger-fixed-native-phase3-20261030/standard-diagnostic-first-root.log",
+        "sha256": "5671da6b18748616e90529972d8ab95acc3470d0434ea2c37da4d328ffed648f"
+      },
+      "exit_code": 101
+    },
+    {
+      "event": "Independent P0 SOURCE gate",
+      "log": {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/source-first-root.log",
+        "sha256": "c29df9081102b2de043c6a64d8050b1d6be9977ef7094f8490ab1ba6bda312e8"
+      },
+      "exit_code": 0
+    },
+    {
+      "event": "Additive selected-orphan SOURCE gate",
+      "log": {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/selected-orphan-source-first-root.log",
+        "sha256": "01d56cdcc827d6fce0c09862fde273063531550444348895068e8f69267ef0e4"
+      },
+      "exit_code": 0
+    },
+    {
+      "event": "Finite pre-fix matrix: healthy42 matched; body42 accepted; selected-orphan14 already IndexedColumn refusals",
+      "log": {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/probe-first-root.log",
+        "sha256": "c5bd403fc62bf61d98af281e26fa07b2ff45e25f491fb5bc2059d77f08fffd9a"
+      },
+      "exit_code": 101
+    },
+    {
+      "event": "Diagnostic-only error expectation corrected to existing IndexedColumn; no new maintenance rule",
+      "receipt": {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/probe-orphan-contract-correction.json",
+        "sha256": "d87aef495f7df0c6e191c24c803d85199e8f333bb78739e9a9a917ea5393117b"
+      }
+    },
+    {
+      "event": "Shared guard normal/causal/original-diagnostic all pass",
+      "logs": [
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/normal-first-root.log",
+          "sha256": "a36b8b29ce8e5b7593ce0b3316f8aa7703b469b8a7dd41f48de24c13e96bdcbc"
+        },
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/causal-first-root.log",
+          "sha256": "50b60d863206aeba66fecec46833d5e60c499687bd8e4ec88b6a5212bfd8792d"
+        },
+        {
+          "path": ".cache/ace16-fixed-index-body-p0-20261030/original-diagnostic-corrected-root.log",
+          "sha256": "d27a7479e44d6531e3ea1e39b581682661a8664bc458f36aa47fa0fb8e5d2b7f"
+        }
+      ],
+      "exit_code": 0
+    }
+  ],
+  "causal_counts": {
+    "healthy_full_images": 42,
+    "corrected_body_row_layout_refusals": 42,
+    "existing_selected_orphan_indexed_column_refusals": 14,
+    "bad_outcomes_collected_without_early_exit": 56,
+    "pre_fix_body_acceptances": 42
+  },
+  "selected_orphan_contract": {
+    "owner": "crates/engines/tablecraft-ace/src/table/indexes/mutation/plan.rs::patches_with",
+    "behavior": "Checks every physical declaration has a logical owner before empty-update return; Unsupported(IndexedColumn)",
+    "prior_static_inference_corrected": true,
+    "new_coverage_rule_added": false
+  },
+  "checks": [
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/source-first-root.log",
+      "sha256": "c29df9081102b2de043c6a64d8050b1d6be9977ef7094f8490ab1ba6bda312e8",
+      "name": "independent_same_foreign_orphan_source",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/selected-orphan-source-first-root.log",
+      "sha256": "01d56cdcc827d6fce0c09862fde273063531550444348895068e8f69267ef0e4",
+      "name": "selected_orphan_source",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/normal-first-root.log",
+      "sha256": "a36b8b29ce8e5b7593ce0b3316f8aa7703b469b8a7dd41f48de24c13e96bdcbc",
+      "name": "normal_compile",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/causal-first-root.log",
+      "sha256": "50b60d863206aeba66fecec46833d5e60c499687bd8e4ec88b6a5212bfd8792d",
+      "name": "healthy_and_all_typed_causal_outcomes",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/original-diagnostic-corrected-root.log",
+      "sha256": "d27a7479e44d6531e3ea1e39b581682661a8664bc458f36aa47fa0fb8e5d2b7f",
+      "name": "original_standard_unit_diagnostic",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/mutation-regression-first-root.log",
+      "sha256": "81bbe6cc5b868eddfa7d70860141651e66d773115045b2f1a12008d89ff25f3d",
+      "name": "native_mutation_541_one_ignored",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/large-native-after-guard-root.log",
+      "sha256": "6ca3f3187e723d2b53be3577e35c4d1439bc0f34328010046201e6052e939071",
+      "name": "combined_working_tree_larger_native_7",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/access-regression-first-root.log",
+      "sha256": "7898ef0ae12cb4c915115dbeb8493d10c5d9f57f47b769d354151ab149deb909",
+      "name": "access_64_library_plus_5_integrations",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/cli-regression-corrected-root.log",
+      "sha256": "3c7bacee6d9319c02f1de05266af38e10b263aa5d5878efcef52e89670db48bb",
+      "name": "cli_48_unit_plus_38_integrations",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/strict-first-root.log",
+      "sha256": "0236ccfce5115f10962d5df28dff471f182abab24dc81ef7004346c2a20a265f",
+      "name": "native_all_targets_all_features_strict",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/minimal-first-root.log",
+      "sha256": "00e631ed928f6ebeeb4e8bb747e1c682fa3ca009a0eb2f27ca499bafda8aa112",
+      "name": "native_minimal",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/format-first-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "format",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/links-first-root.log",
+      "sha256": "8726ac12aaef877e81ad753ba37f4ab66caf3a3f394fd2f4e68919b6d84cba21",
+      "name": "documentation_links",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/boundaries-first-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "name": "dependency_boundaries",
+      "exit_code": 0
+    },
+    {
+      "name": "foreign-pools-first",
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/foreign-pools-first-root.log",
+      "sha256": "c02e0d1a5dd1e949273e39735f108ee5111f0f73fd8a408db152526cc39b6d3a",
+      "exit_code": 0
+    },
+    {
+      "name": "matrix-after-helper",
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/matrix-after-helper-root.log",
+      "sha256": "81f82cb580059039fe9a4c7f7702e9d97e969a82a0a4ceb95368e447a7db8354",
+      "exit_code": 0
+    },
+    {
+      "name": "strict-test-final",
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/strict-test-final-root.log",
+      "sha256": "e13dbfe7e21d5f4cd97c98be18e994a84748a08d51e25f6ff98955b34c53d9f1",
+      "exit_code": 0
+    }
+  ],
+  "counts": {
+    "native_mutation_passed": 541,
+    "native_mutation_existing_ignored_helpers": 1,
+    "combined_larger_native_passed": 7,
+    "access_library_passed": 64,
+    "access_editing_integrations_passed": 3,
+    "access_preserved_integrations_passed": 2,
+    "access_total_passed": 69,
+    "cli_unit_passed": 48,
+    "cli_query_update_integration_passed": 27,
+    "cli_normal_update_integration_passed": 4,
+    "cli_write_integration_passed": 7,
+    "cli_total_passed": 86
+  },
+  "retained_unrun_invocation": {
+    "path": ".cache/ace16-fixed-index-body-p0-20261030/cli-regression-first-root.log",
+    "sha256": "0d9e452de9b2ead1930876349fd68cc64b4f5ef69ad964cb749c9a8abde1de25",
+    "reason": "Root invoked nonexistent query_editing target; zero tests ran; corrected CLI log is runtime evidence"
+  },
+  "budget_cancellation_evidence": {
+    "current_mutation_regression_test": "historical_source_proof_is_paid_and_final_cancellation_publishes_no_candidate",
+    "coverage": "Standard fixed full operation with exact/one-below Bytes Rows Steps and final observed cancellation; now includes new guard",
+    "combined_larger_regression_test": "extended_fixed_operation_pays_exact_pools_and_final_cancellation",
+    "combined_scope": "Single/batch exact pools and final cancellation in pending larger working tree; not an independent P0 capability claim",
+    "dedicated_foreign_orphan_guard_full_operation_test": {
+      "name": "probe::foreign_index_scan_full_operations_pay_exact_pools_and_final_cancellation",
+      "status": "passed_first_run",
+      "routes": [
+        "Jet4 normal plan",
+        "ACE2019 fixed batch preview"
+      ],
+      "fixture": "existing frozen Family::Foreign healthy source; other-table ordinary INDEX, no foreign-key qualification",
+      "scope": "Real immutable capture through native finish; exact/one-below Bytes Rows Steps and final observed cancellation"
+    }
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/definition.rs",
+      "sha256": "eb8c78051b7e22d9ee83e77563e5ecd852a4e71b7fc6b8df5b5220432f5e5c2c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "sha256": "235599d356c6512d148e0e97eae0ee5c3d3ce1a95b797594d1db812eb855405d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/data_ownership.rs",
+      "sha256": "6b4f145c4ff5259408114d188bbfa2a91fcdf068761027cf6f4edba395047453"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "sha256": "64f4b7170b4749b08ef48e421fef9eb6c25ddb57693712d1c4dafb7b5ca676c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs",
+      "sha256": "c17ba70b7f66a031446cc6ca753843de1e4ce87f026fabff0f116033340749fe"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "sha256": "2bf38fa9e2f3dfbeba031c294a2a7a80f9bfd0760eae5756d4b6879b65e796c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/plan.rs",
+      "sha256": "b9fa71dd1d275e9d5e60b250d943e4f012fc797c0e3d68afab044fec9291a0c0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_index_body_ownership.rs",
+      "sha256": "67b07e2227577e251a2d52ad4a4ec0a8ddc620375c326250fe51deb96c86b5f1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_index_body_ownership/model.rs",
+      "sha256": "cc93e75a503df03a346a9c997d2c7305565888009ad3efef3fe8b33ee36ca321"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_index_body_ownership/probe.rs",
+      "sha256": "581c65bfc36ffc7e97618bcfa57f6f554502be6857aa207c32392b6c5869935c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_index_body_ownership/selected_orphan.rs",
+      "sha256": "39e080c36e1df25401a03fcadcaa6313d71207bc163d325edbaccd1e58cfe57f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_fixed_index_body_ownership/source.rs",
+      "sha256": "21b4412bd89a9adb37abfc47e7bfd2fb92f3dc96406b43ce285b66902a0a7a9a"
+    }
+  ],
+  "independent_staging_receipt": {
+    "path": ".cache/ace16-fixed-index-body-p0-20261030/guard-installed-first-freeze.json",
+    "sha256": "a6a9ffa723eb70a0f813dc0be290a4732989432eff92c1026188a930b9491927"
+  },
+  "new_dependencies": false,
+  "new_map_write_or_allocation_permission": false,
+  "normal_ace_save_macro_journal_permission_changed": false,
+  "larger_image_permission_part_of_this_fix": false,
+  "test_only_followup": {
+    "probe_predecessor": {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/probe-before-foreign-pool-control.rs",
+      "sha256": "bc9f370410dac58d7eed6ca5182d14e515a1757df703c8acdd45acc8841fde27"
+    },
+    "production_changes": false,
+    "source_or_expected_constructor_changes": false,
+    "scope": "One public-operation exact-resource/final-cancellation function; existing matrix delegates through identical passed allowance/callback"
+  },
+  "independent_staged_snapshot_verification": {
+    "tree": "2df8d95aafc3a832ecec041a15aa64f06b93b6f8",
+    "archive_sha256": "3ad3dae4f90ec794459a28bb04794ef2a85f5eeb60dc0a526ae603e869af779c",
+    "target_initially_absent": true,
+    "engine_compilation_observed": true,
+    "all12_staged_code_blobs_match": true,
+    "binary": {
+      "path": ".cache/ace16-fixed-index-body-p0-20261030/independent-staged/target/debug/deps/ace16_fixed_index_body_ownership-e6f5e99444bf77d4",
+      "bytes": 16827824,
+      "sha256": "f9eff15a3249869285ef0e861aff94af07b9eab264f6c53aafeea3b309e4e53b"
+    },
+    "checks": [
+      {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/independent-staged/source-first.log",
+        "sha256": "d8ffeb3b6a0404a2c00122f089b94729a78bd983ccc8651b30a10dd32131a7a0",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/independent-staged/orphan-source.log",
+        "sha256": "8ca20ab01e3d6b38a9790c6916a5b2c0aa153cfb9b1babbac00619f23ea68eb8",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/independent-staged/causal.log",
+        "sha256": "b414806697f88d0fa9868d15455ba9a7803a5493322fab1ec512d764a208ea99",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-fixed-index-body-p0-20261030/independent-staged/pools.log",
+        "sha256": "113c2370a68b081f95d8a355915866b1753f75dae92f63730d26c6377f3b7abf",
+        "exit_code": 0
+      }
+    ],
+    "debug_info": 0,
+    "incremental": "default; unchanged"
+  }
+}

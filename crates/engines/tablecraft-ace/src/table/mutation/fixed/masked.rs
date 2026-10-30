@@ -97,6 +97,12 @@ pub(super) fn generate<const WIDTH: usize>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
     let structural = gates::before_fixed_update(&image, table, budget, cancelled)?;
+    super::super::data_ownership::require_index_disjointness(
+        &image,
+        structural.schema(),
+        budget,
+        cancelled,
+    )?;
     let staged = stage::<WIDTH, true>(
         &image,
         &structural,
