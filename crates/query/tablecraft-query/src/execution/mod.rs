@@ -16,7 +16,7 @@ mod domain;
 pub use deleting::{DeleteError, DeletePlan, plan_delete};
 mod editing;
 mod execute;
-pub use editing::{UpdateError, UpdatePlan, plan_update};
+pub use editing::{UpdateError, UpdatePlan, plan_batch_update, plan_update};
 pub(crate) use execute::ExecutionContext;
 mod exact_keys;
 mod expression;

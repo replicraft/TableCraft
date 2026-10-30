@@ -8,7 +8,9 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_db::{CellUpdate, EditableTable, Snapshot, UpdateProfile};
+use tablecraft_db::{
+    CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, UpdateProfile,
+};
 use tablecraft_schema::ScalarType;
 
 /// One explicit engine maintenance policy, never a retry or save authorization.
@@ -87,26 +89,7 @@ impl EditableTable for AccessEngineeringEditor {
                     .equals(candidate.name(), column)
             })
             .ok_or(NativeEditError::Unsupported)?;
-        let target = &self.snapshot.columns()[position];
-
-        match self.mode {
-            ScalarUpdateMode::Variable { .. } | ScalarUpdateMode::LongValue => {
-                if !matches!(target.data_type(), ScalarType::Text | ScalarType::Binary) {
-                    return Err(NativeEditError::Unsupported);
-                }
-            }
-            ScalarUpdateMode::Fixed(_)
-                if matches!(target.data_type(), ScalarType::Text | ScalarType::Binary) =>
-            {
-                return Err(NativeEditError::Unsupported);
-            }
-            ScalarUpdateMode::Fixed(UpdateMode::IndexGrowth)
-                if target.data_type() != ScalarType::Int32 =>
-            {
-                return Err(NativeEditError::Unsupported);
-            }
-            _ => {}
-        }
+        self.check_mode(position)?;
 
         let table = self.snapshot.name();
         let request = match self.mode {
@@ -159,7 +142,190 @@ impl EditableTable for AccessEngineeringEditor {
     }
 }
 
+impl EditableBatch for AccessEngineeringEditor {
+    fn plan_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<EngineeringCopy, NativeEditError> {
+        check(budget, cancelled)?;
+        if columns.is_empty() || columns.len() > self.snapshot.columns().len() {
+            return Err(NativeEditError::Unsupported);
+        }
+
+        let ScalarUpdateMode::Fixed(mode) = self.mode else {
+            let [column] = columns else {
+                return Err(NativeEditError::Unsupported);
+            };
+            return self.plan_updates(column.column, column.updates, budget, cancelled);
+        };
+
+        let positions = self.validate_columns(columns, budget, cancelled)?;
+        budget
+            .charge_allocation(
+                columns.len() as u64,
+                size_of::<Vec<FixedScalarUpdate>>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        let mut requests = Vec::new();
+        requests
+            .try_reserve_exact(columns.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for (column, position) in columns.iter().zip(positions) {
+            requests.push(self.requests(
+                position,
+                column.updates,
+                FixedScalarUpdate::new,
+                budget,
+                cancelled,
+            )?);
+        }
+
+        budget
+            .charge_allocation(
+                columns.len() as u64,
+                size_of::<FixedColumnUpdates<'_>>() as u64,
+            )
+            .map_err(InspectError::from)?;
+        let mut groups = Vec::new();
+        groups
+            .try_reserve_exact(columns.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for (column, rows) in columns.iter().zip(&requests) {
+            check(budget, cancelled)?;
+            groups.push(FixedColumnUpdates::new(
+                self.snapshot.name(),
+                column.column,
+                rows,
+            ));
+        }
+        check(budget, cancelled)?;
+
+        preview(
+            self.image,
+            EngineeringRequest::Update {
+                groups: &groups,
+                mode,
+            },
+            budget,
+            cancelled,
+        )
+        .map_err(engine_error)
+    }
+}
+
 impl AccessEngineeringEditor {
+    fn check_mode(&self, position: usize) -> Result<(), NativeEditError> {
+        let target = self
+            .snapshot
+            .columns()
+            .get(position)
+            .ok_or(NativeEditError::Unsupported)?;
+
+        match self.mode {
+            ScalarUpdateMode::Variable { .. } | ScalarUpdateMode::LongValue => {
+                if !matches!(target.data_type(), ScalarType::Text | ScalarType::Binary) {
+                    return Err(NativeEditError::Unsupported);
+                }
+            }
+            ScalarUpdateMode::Fixed(_)
+                if matches!(target.data_type(), ScalarType::Text | ScalarType::Binary) =>
+            {
+                return Err(NativeEditError::Unsupported);
+            }
+            ScalarUpdateMode::Fixed(UpdateMode::IndexGrowth)
+                if target.data_type() != ScalarType::Int32 =>
+            {
+                return Err(NativeEditError::Unsupported);
+            }
+            _ => {}
+        }
+
+        Ok(())
+    }
+
+    fn validate_columns(
+        &self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<usize>, NativeEditError> {
+        budget
+            .charge_allocation(columns.len() as u64, size_of::<usize>() as u64)
+            .map_err(InspectError::from)?;
+        let mut positions = Vec::new();
+        positions
+            .try_reserve_exact(columns.len())
+            .map_err(|_| InspectError::Allocation)?;
+
+        let mut assignments = 0_usize;
+        for column in columns {
+            check(budget, cancelled)?;
+            assignments = assignments
+                .checked_add(column.updates.len())
+                .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
+                .ok_or(InspectError::StructureLimit)?;
+
+            let position = self
+                .snapshot
+                .columns()
+                .iter()
+                .position(|candidate| {
+                    self.snapshot
+                        .policy()
+                        .names
+                        .equals(candidate.name(), column.column)
+                })
+                .ok_or(NativeEditError::Unsupported)?;
+            budget
+                .charge(Resource::Steps, positions.len() as u64)
+                .map_err(InspectError::from)?;
+            if positions.contains(&position) {
+                return Err(NativeEditError::Unsupported);
+            }
+
+            self.check_mode(position)?;
+            positions.push(position);
+
+            let target = &self.snapshot.columns()[position];
+            budget
+                .charge_allocation(column.updates.len() as u64, size_of::<usize>() as u64)
+                .map_err(InspectError::from)?;
+            let mut ordinals = Vec::new();
+            ordinals
+                .try_reserve_exact(column.updates.len())
+                .map_err(|_| InspectError::Allocation)?;
+            for update in column.updates {
+                check(budget, cancelled)?;
+                let ordinal = self.snapshot.ordinal(update.row())?;
+                self.snapshot.resolve(update.row())?;
+                budget
+                    .charge(Resource::Steps, ordinals.len() as u64)
+                    .map_err(InspectError::from)?;
+                if ordinals.contains(&ordinal) {
+                    return Err(NativeEditError::Unsupported);
+                }
+
+                ordinals.push(ordinal);
+                if matches!(update.value(), Value::Null) {
+                    if !target.nullable() {
+                        return Err(NativeEditError::Unsupported);
+                    }
+                } else if ScalarType::of(update.value()) != Some(target.data_type())
+                    || target
+                        .type_descriptor()
+                        .validate_value(update.value())
+                        .is_err()
+                {
+                    return Err(NativeEditError::Unsupported);
+                }
+            }
+        }
+
+        Ok(positions)
+    }
+
     fn requests<T>(
         &self,
         position: usize,

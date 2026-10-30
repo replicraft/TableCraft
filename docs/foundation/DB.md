@@ -53,6 +53,19 @@ also implements this consuming contract. It binds one original NativeImage to
 one snapshot and finishes once into a non-journalable EngineeringCopy. This does
 not change NativeEditor admission or introduce persistence into DB.
 
+`EditableBatch: EditableTable` is an explicit capability for a single consuming
+multi-column finish. Its borrowed `ColumnUpdates` groups hold canonical target
+names and snapshot-issued `CellUpdate` handles. The caller retains each complete
+column vector through the finish; the backend validates duplicate targets,
+repeated/stale handles, aggregate limits and actual native eligibility. The Access
+engineering editor implements it for one fixed-field batch. Variable/LVAL modes
+retain one target; ordinary NativeEditor does not acquire this capability.
+The contract does not authorize sequential candidate chaining, cross-backend
+atomicity, durable changes or journal conversion.
+Seven neutral batch-planner functions passed, including original-row exchange,
+duplicate-target refusal, zero backend finishes on late failures, unchanged
+single-column admission, exact Bytes/Steps limits and final cancellation.
+
 ## Transaction contract direction
 
 [Transaction ownership](../architecture/TRANSACTIONS.md) keeps physical transactions

@@ -19,6 +19,7 @@ use tablecraft_testkit::access as support;
 #[path = "../../../../../engines/tablecraft-ace/tests/mutation/fixture.rs"]
 pub(in crate::engineering) mod fixture;
 
+mod batch;
 mod source;
 use source::source;
 

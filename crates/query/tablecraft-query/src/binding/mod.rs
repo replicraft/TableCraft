@@ -26,7 +26,7 @@ mod expression;
 mod expression_identity;
 mod external;
 mod grouping;
-pub(crate) use editing::{BoundUpdate, bind_update};
+pub(crate) use editing::{BoundUpdate, bind_batch_update, bind_update};
 mod literals;
 mod multivalue;
 mod named;

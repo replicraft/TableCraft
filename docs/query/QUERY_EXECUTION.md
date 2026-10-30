@@ -12,9 +12,17 @@ The separate [query editing API](../access/writes/QUERY_EDITING.md) plans bounde
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_COPIES.md)
 opts into `StoredScalar` assignment through the same planner: nullable NULL and
-exact stored carriers, with checked integral assignment to Int32. It retains one
-local table/one assignment, pure expressions and complete evaluation before one
-backend finish. Normal ACE write admission and retrieval behavior are unchanged.
+exact stored carriers, with checked integral assignment to Int32.
+`plan_batch_update` consumes the explicit neutral `EditableBatch` capability for
+one local table and multiple fixed-field assignments. It rejects duplicate
+resolved targets before evaluation and evaluates all RHS expressions against
+original rows before one backend finish. Pure-expression limits remain; the
+single-column `plan_update` and ordinary editor keep their existing scope.
+Variable/LVAL modes retain one target. Normal ACE write admission and retrieval
+behavior are unchanged.
+The seven neutral batch tests pass alongside the nine existing neutral edit
+tests; native adapter/CLI observations are recorded in the owning engineering
+contract. These checks do not qualify a normal ACE save.
 
 [Retained String keys](keys/RAW_STRING_KEYS.md) now share explicit raw-unit comparison
 across grouping, sets, sorting/TOP and crosstab row keys. Fixed-heading named

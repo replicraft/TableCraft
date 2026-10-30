@@ -21,10 +21,11 @@ and must be reported separately from local implementation evidence.
 
 The first usable-copy steps now include direct typed INSERT/UPDATE/DELETE,
 source-captured incrementing AutoNumbers, shared no-clobber output publication
-and [SQL-selected single-column UPDATE](access/writes/SQL_ENGINEERING_COPIES.md).
+and [SQL-selected UPDATE](access/writes/SQL_ENGINEERING_COPIES.md).
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
-snapshot handles and explicit Restrict/Cascading actions. Next delivery work is
-atomic multi-column UPDATE, followed by broader INSERT/schema admission and
+snapshot handles and explicit Restrict/Cascading actions. Atomic fixed multi-column
+UPDATE now evaluates every assignment from original rows before one backend
+finish. Next delivery work is SQL INSERT, broader INSERT/schema admission and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
 

@@ -36,3 +36,25 @@ pub trait EditableTable: Sized {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error>;
 }
+
+/// One target column and its complete original-snapshot replacements.
+/// The name is canonical to the editor's schema; handles remain snapshot-local.
+pub struct ColumnUpdates<'a> {
+    /// Target name resolved under the editor's declared name policy.
+    pub column: &'a str,
+    /// Complete replacements for this column; repeated handles are refused.
+    pub updates: &'a [CellUpdate],
+}
+
+/// Explicit capability for one consuming multi-column finish over one snapshot.
+/// Implementations must validate every group before producing a candidate;
+/// sequential candidate chaining is not an implementation of this contract.
+pub trait EditableBatch: EditableTable {
+    /// Finish all columns together. Planning never publishes durable changes.
+    fn plan_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error>;
+}
