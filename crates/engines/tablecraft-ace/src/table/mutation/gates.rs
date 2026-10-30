@@ -20,7 +20,7 @@ use crate::{
     check_table_constraints, format::page::PAGE_NUMBER_MASK, header::check,
     inspect_foreign_index_links, inspect_table_properties,
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 // PropertyMapImpl.DDL_FLAG in the pinned Jackcess reference; all other stored
 // property flag bits remain unqualified for native mutation.
@@ -190,23 +190,7 @@ fn before_with(
             }
         }
     }
-    let origin = image
-        .catalog()
-        .origins()
-        .iter()
-        .find(|origin| origin.object_id() == structural.schema().object_id())
-        .ok_or(crate::InspectError::Malformed)?;
-    if origin.flags() != 0
-        || image.catalog().origins().iter().any(|other| {
-            (other.flags() != 0
-                || (other.object_id() != origin.object_id()
-                    && other.type_code() == origin.type_code()))
-                && other.native_id() as u32 & PAGE_NUMBER_MASK
-                    == structural.schema().definition_page()
-        })
-    {
-        return Err(EditError::Unsupported(WriteBlocker::Table));
-    }
+    source_origin(image, schema, 0, budget, cancelled)?;
     // ACE families reach this helper only through engineering-preview entry
     // points. A completed foreign check includes reciprocal/catalog agreement;
     // final relationship membership must still pass after the complete edit.
@@ -238,22 +222,7 @@ fn before_with(
         // edge whose native foreign declarations were removed or disguised.
         inspect_foreign_index_links(&mut image.reader(), scope, table, budget, cancelled)?;
     }
-    // A NULL local Lv/LvModule/LvExtra does not qualify separately owned catalog
-    // objects. Keep their potentially active/unknown behavior outside this writer.
-    if !image
-        .inspect_object_children(structural.schema().object_id(), budget, cancelled)?
-        .is_empty()
-    {
-        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
-    }
-    let payloads =
-        image.inspect_object_payloads(structural.schema().object_id(), budget, cancelled)?;
-    if [payloads.body(), payloads.module(), payloads.extra()]
-        .iter()
-        .any(|presence| *presence != PayloadPresence::Absent)
-    {
-        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
-    }
+    inert_payloads(image, schema, budget, cancelled)?;
     let properties =
         inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;
     for group in properties.groups() {
@@ -358,4 +327,65 @@ fn blocks_binary_update(admission: &Admission) -> bool {
         #[cfg(feature = "ace16-write-preview")]
         _ => false,
     }
+}
+
+// This is source identity/payload admission, not a macro-absence certificate.
+pub(super) fn source_origin(
+    image: &NativeImage,
+    schema: &crate::TableSchema,
+    allowed_flags: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    let identity_work = image
+        .catalog()
+        .origins()
+        .len()
+        .checked_mul(2)
+        .ok_or(crate::InspectError::StructureLimit)?;
+    budget
+        .charge(Resource::Steps, identity_work as u64)
+        .map_err(crate::InspectError::from)?;
+    let origin = image
+        .catalog()
+        .origins()
+        .iter()
+        .find(|origin| origin.object_id() == schema.object_id())
+        .ok_or(crate::InspectError::Malformed)?;
+    if origin.flags() & !allowed_flags != 0
+        || image.catalog().origins().iter().any(|other| {
+            (other.flags() & !allowed_flags != 0
+                || (other.object_id() != origin.object_id()
+                    && (allowed_flags != 0 || other.type_code() == origin.type_code())))
+                && other.native_id() as u32 & PAGE_NUMBER_MASK == schema.definition_page()
+        })
+    {
+        return Err(EditError::Unsupported(WriteBlocker::Table));
+    }
+    Ok(())
+}
+
+pub(super) fn inert_payloads(
+    image: &NativeImage,
+    schema: &crate::TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    // A NULL local Lv/LvModule/LvExtra does not qualify separately owned catalog
+    // objects. Keep their potentially active/unknown behavior outside this writer.
+    if !image
+        .inspect_object_children(schema.object_id(), budget, cancelled)?
+        .is_empty()
+    {
+        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
+    }
+    let payloads = image.inspect_object_payloads(schema.object_id(), budget, cancelled)?;
+    if [payloads.body(), payloads.module(), payloads.extra()]
+        .iter()
+        .any(|presence| *presence != PayloadPresence::Absent)
+    {
+        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
+    }
+    Ok(())
 }

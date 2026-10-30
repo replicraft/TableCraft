@@ -1,0 +1,305 @@
+{
+  "date": "2026-10-30",
+  "state": "Engineering Boolean copies on authored rich sources; normal saves and Microsoft Access qualification unfinished",
+  "passing_counts": {
+    "native_mutation_functions": 530,
+    "preserved_contract_functions": 15,
+    "preserved_contract_ignored_exports": 2,
+    "access_lib_functions": 58,
+    "access_source_functions": 2,
+    "cli_unit_functions": 37,
+    "cli_integration_functions": 35,
+    "postlint_native_api_functions": 6,
+    "postlint_frontend_api_functions": 2,
+    "frontend_complete_copies": 6,
+    "frontend_refusal_calls": 9
+  },
+  "strict_packages": [
+    "tablecraft-ace",
+    "tablecraft-access",
+    "tablecraft-cli"
+  ],
+  "minimal_packages": [
+    "tablecraft-ace",
+    "tablecraft-access"
+  ],
+  "retained_failures": {
+    "frontend_first": "E0603 private test import; corrected to existing public ScalarUpdateMode; no producer/golden change",
+    "cli_regressions_first": "Root command selected --lib on binary-only CLI; no tests ran; corrected to --bin tablecraft",
+    "strict_first": "Two redundant match guards and four collapsible if conditions; syntax/style corrections, no expected-image changes"
+  },
+  "donated_database": {
+    "child_exit": 2,
+    "candidate_present": false,
+    "error": "Unsupported(Properties)",
+    "original_unchanged": true,
+    "source_copy_unchanged": true,
+    "report": {
+      "path": ".cache/ace16-preserved-boolean-donor-first-20261030/report.json",
+      "bytes": 1566,
+      "sha256": "d6a5a885f7e9edadee5597dfedda6c5f97215dbf575b2ea2f7eaef16e7708d3b"
+    },
+    "plan": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/donor/plan-first-root.json",
+      "bytes": 1961,
+      "sha256": "de6873d82925d07a348603310d8f403ad48ab1289263939df5c0bb0e6a2a09e1"
+    },
+    "scope": "One disposable copy attempt; no native Access outcome or donor write-support claim"
+  },
+  "executed_logs": {
+    "normal-first-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/normal-first-root.log",
+      "bytes": 974,
+      "sha256": "c891db0736ef9866611b28460caea5ef95cb4e059b34080bc5be5dd09b89dddc"
+    },
+    "api-first-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/api-first-root.log",
+      "bytes": 978,
+      "sha256": "8b7293999fe5f04f0e757c8355451c5414dc1a22dacabc2b43bbb550026cae33"
+    },
+    "frontend-api-first-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/frontend-api-first-root.log",
+      "bytes": 1110,
+      "sha256": "6907eb311d3be93331ca4d716906898d640fe6e704fdddf570d3e025fd608193"
+    },
+    "frontend-api-corrected-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/frontend-api-corrected-root.log",
+      "bytes": 599,
+      "sha256": "bebbe5a5e37c2ecedd9a2614828354d58376aa8d9e67a7ada4192a843f009f5f"
+    },
+    "native-mutation-regressions-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/native-mutation-regressions-root.log",
+      "bytes": 71562,
+      "sha256": "961f298bf62081bad3f7f0c22de148436e6416e0567377b01eeb5c86c7882a03"
+    },
+    "native-contract-regressions-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/native-contract-regressions-root.log",
+      "bytes": 2192,
+      "sha256": "cac58fa7a7213cfc768298705cf052b72e6a095fb7fdfaf043b8ea483a207743"
+    },
+    "access-regressions-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/access-regressions-root.log",
+      "bytes": 7862,
+      "sha256": "f570a06e00f4ec90018b312f6be8ad9865cac071ff676aafde39fd7e531ec600"
+    },
+    "cli-regressions-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/cli-regressions-root.log",
+      "bytes": 60,
+      "sha256": "a7c2703f6f1a0fbdea401f73bf414f9beb89ad573dbca258b794924632da0cad"
+    },
+    "cli-regressions-corrected-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/cli-regressions-corrected-root.log",
+      "bytes": 8410,
+      "sha256": "78618c1e39439fc34f14e561fed27a5218c276dc410291c166c4907c0963f4e7"
+    },
+    "strict-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/strict-root.log",
+      "bytes": 5312,
+      "sha256": "6b2e34bf2e03dc4219c60c9e4d3902177af92cf30bb7fa4110389ed7233af4fd"
+    },
+    "strict-corrected-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/strict-corrected-root.log",
+      "bytes": 403,
+      "sha256": "1bc7cc4864882faaee959038e05612540052621b5fafb3ea7621da6ebd356ab7"
+    },
+    "minimal-ace-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/minimal-ace-root.log",
+      "bytes": 183,
+      "sha256": "d1e57505b2bb111afe1b3025ca41429efbf882ef9e800edd2207775f808e9b91"
+    },
+    "minimal-access-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/minimal-access-root.log",
+      "bytes": 301,
+      "sha256": "88dd2981e4e3cd84d7f9dffefcb18eb99fd2cdd91f240b21dd7711f0da146202"
+    },
+    "native-api-postlint-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/native-api-postlint-root.log",
+      "bytes": 978,
+      "sha256": "8d03c7b6b00efa0b8c71f655a8c7ed5219389fb67e46cf35698d6c8db95424ab"
+    },
+    "frontend-api-postlint-root": {
+      "path": ".cache/ace16-preserved-scalar-update-next-20261030/frontend-api-postlint-root.log",
+      "bytes": 828,
+      "sha256": "932f6885b2e63e4dabb7dd54b6a7011f5d4627470823f28c7f725b5ba28d66d0"
+    }
+  },
+  "source_pins": [
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/snapshot.rs",
+      "bytes": 3285,
+      "sha256": "26865443f3a2bc1e5448ac06f4902ef33172e0314d9b19df003684d3de9de0cc"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor.rs",
+      "bytes": 17174,
+      "sha256": "83f776a3c2f9024091dffdf45f8b831840adc249837850251a8f87b921f1747a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source/schema.rs",
+      "bytes": 11134,
+      "sha256": "bb56d91811917aafd3e90a05f7fc9ad3fd5676c74a517b91912b4e58cf57903b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/source.rs",
+      "bytes": 17187,
+      "sha256": "f9279c9073c31ea7f0bab7edc6e47a13dc86b6708cf55493e83fc04044a554ab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/inspect.rs",
+      "bytes": 3745,
+      "sha256": "e268fcf6b4eb16a80637427017dd4ec68f4965101b159ba6fef90511afbfef57"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/constraints/mod.rs",
+      "bytes": 367,
+      "sha256": "5ee7b58084d092994743be7e0268ae093a79e1ef4c3c2e7703e553e1a94ad76c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/mod.rs",
+      "bytes": 5426,
+      "sha256": "4ca127af8ef0f41fd6712eaaec60fbc80f1f9607cf0aef3be8ec6e65c8b8e4ca"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 11374,
+      "sha256": "33d1be087e4a5bb00310aeaf6d8b0ab98d74966b8026905d26c37b302dcd8b79"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 465,
+      "sha256": "28b8d80c6d0a9e594e0d3cc3b8e5c11f677d98b90ecd8566d9ff1eb9e9cb69c4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preview.rs",
+      "bytes": 4302,
+      "sha256": "d07bc73f57aa5a65bb084069d8b693bd7bd1047c774a9dd6ff57fe6bef4760d1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 14625,
+      "sha256": "403b29e128606d1f3dded01bc0cbc553bbd72fb288e1b17e7a3e3db1eb754117"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership/profile.rs",
+      "bytes": 1222,
+      "sha256": "99683ac81f9216c7b351da43f3579cd8eca81e4bc94b3ea84f2e3d025e5ffd3b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/long_value/ownership.rs",
+      "bytes": 17113,
+      "sha256": "5b60f52e210319ed2897c15ab4239b9433289a298d9182e7363926d23e115e8c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs",
+      "bytes": 19431,
+      "sha256": "85ed3aee0dab61e82c5b9845afe60f3155570376c232d3014e960bb67558df71"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/dependencies.rs",
+      "bytes": 5396,
+      "sha256": "6d0653c22c1d386acffd177f23e5624d48678e24da8071ee59c7c5618a5fb565"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/mod.rs",
+      "bytes": 5490,
+      "sha256": "c5e3fd17f3258eb053e7ee76dac65de1bf4c5935530b4cbc1f3c78930bde87ab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/namemap.rs",
+      "bytes": 9127,
+      "sha256": "eacba5825262941aae5f78fdf75796bec2b65b4b9a66176edffe88df96fd361c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/proof.rs",
+      "bytes": 5719,
+      "sha256": "41893e0c6ef88c721e11af322e2360b653018d75ac6b2cbee33e53bb27dd4b25"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/properties.rs",
+      "bytes": 9639,
+      "sha256": "9f906cb7a3a7d13d6b2ace21a8dff542f07f6cf8d56023388054bd33e21bc077"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/source.rs",
+      "bytes": 13944,
+      "sha256": "e3fa41b625052f369d513f4d91fec3721c56f296702193fb268a9bd5e68c2d81"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/stage.rs",
+      "bytes": 4895,
+      "sha256": "009c2347d4f7c360d6e218fc28479735ad0f664cddfcebf93c93d2c744d4f6f0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/indexes/preserved.rs",
+      "bytes": 3854,
+      "sha256": "2211429cd251352690c8f585fa12edb1195a92d63c7e7a7fb459049832b38c55"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/preserved.rs",
+      "bytes": 1835,
+      "sha256": "8b30b674780d2d08657997c1d2083537b6c9cdbc5f0fb0bbb9e27ae75047279d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract.rs",
+      "bytes": 12470,
+      "sha256": "fdb22b5eec8d6a11fef952955c6c6f37fcee163d6cd8d9b1a666fd2f224b94e7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/api.rs",
+      "bytes": 8343,
+      "sha256": "0c9ad1f726ba80c6c32618bfd6270a8d9dcee9f9be2892d0b96643903ea8f04b"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/preserved_boolean_updates.rs",
+      "bytes": 1227,
+      "sha256": "275dc4a9882e9340bf68445671d6fd68a7c492dee80274767ebac04e2c47e026"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/preserved_boolean_updates/api.rs",
+      "bytes": 5227,
+      "sha256": "52ca91a6850e15a50291e5cb789f3268537de7c68d792b31a25340f7f8c4c3f8"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates.rs",
+      "bytes": 1126,
+      "sha256": "e1304420f51f03d88e04f25154a410d3cf351e1a6d66a6afa03a728935b08388"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/authority_sources.rs",
+      "bytes": 2769,
+      "sha256": "6e6ef850c5b66cc7ddc999d902b5957645efe49d202379d30d3e4317faf403ff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/name_map.rs",
+      "bytes": 10037,
+      "sha256": "62f445e2e8608b6afb901902b2fea1452081f42aa3cf113a718bb22207e3516b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/catalog_flag.rs",
+      "bytes": 3568,
+      "sha256": "a033a9f389b7ece388a164ec1381aa7cce830723f15feadf5d8749420f7adc7c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/outer_url.rs",
+      "bytes": 5625,
+      "sha256": "66ef4ee7b51fdd9c78c35e8ebc00e171388b95f5c206c7d7dad41b7c9de5d3c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/frontend_source.rs",
+      "bytes": 2140,
+      "sha256": "b23b09903a24dd8c3146cb36e610aaeeeb0cbb6f4f4214bc3f23c78f141d9006"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/asymmetric_guids.rs",
+      "bytes": 6970,
+      "sha256": "7ca86f432f49c38ce29f7e9987f1a5f1b4b727394ad9724d928faf8e2aee56ab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/name_map_controls.rs",
+      "bytes": 4206,
+      "sha256": "244ff0f83ce784da2977acb84f391f7b73dee3f9a378c81578bb93517fece6c9"
+    }
+  ],
+  "scope": "One qualified unindexed Boolean target; actual ordinary projection, retained unavailable declarations, complete source ownership/property checks and original-request whole-image proof. No multi-Boolean, general advanced-field edits, normal save, macro-absence, or native Access claim.",
+  "source_pin_note": "editor.rs pins the exact preserved-only version used in this round; later pending multi-variable comment changes remain outside this commit."
+}

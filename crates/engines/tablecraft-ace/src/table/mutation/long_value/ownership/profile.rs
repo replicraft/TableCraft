@@ -8,8 +8,8 @@ use crate::{
     table::{calculated, long_value::profile},
 };
 
-// Observed on the live system attachment FileData backing field. Its value
-// wrapper stays opaque; only the already established outer LVAL is followed.
+// Observed on modern attachment FileData/FileURL backing fields. Their value
+// wrappers stay opaque; only the already established outer LVAL is followed.
 const OBSERVED_OPAQUE_COMPLEX_EXT_FLAGS: u8 = 0x10;
 
 pub(super) fn readable(column: &NativeColumn) -> bool {
@@ -29,7 +29,7 @@ pub(super) fn readable(column: &NativeColumn) -> bool {
         return true;
     }
 
-    column.native_type() == OLE
+    matches!(column.native_type(), LONG_TEXT | OLE)
         && column.storage_length() == 0
         && column.flags() == UPDATABLE_FLAG
         && column.extended_flags() == OBSERVED_OPAQUE_COMPLEX_EXT_FLAGS

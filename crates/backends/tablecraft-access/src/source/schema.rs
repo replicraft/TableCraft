@@ -6,11 +6,11 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::{QueryError, source::TextCollationId};
 use tablecraft_schema::{Column, SchemaName};
 
-pub(super) struct ScalarSchema {
+pub(crate) struct ScalarSchema {
     pub columns: Vec<Column>,
     pub unavailable: Vec<SchemaName>,
     pub text_collations: Vec<Option<TextCollationId>>,
-    pub cached: Vec<Option<StoredShape>>,
+    pub(super) cached: Vec<Option<StoredShape>>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -250,7 +250,7 @@ fn empty(count: usize, budget: &mut ResourceBudget) -> Result<ScalarSchema, Insp
     })
 }
 
-fn classify(
+pub(crate) fn classify(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

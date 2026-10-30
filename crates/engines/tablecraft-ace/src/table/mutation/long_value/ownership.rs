@@ -103,6 +103,32 @@ pub(in crate::table::mutation) struct InitializationSources {
 }
 
 impl Inventory {
+    pub(in crate::table::mutation) fn require_no_long_value_data_overlap(
+        &self,
+        pages: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        for page in pages {
+            check(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    (self.claims.len() + self.live.len()) as u64,
+                )
+                .map_err(InspectError::from)?;
+            if self
+                .claims
+                .iter()
+                .chain(&self.live)
+                .any(|claim| claim.page == *page)
+            {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            }
+        }
+        Ok(())
+    }
+
     pub fn capture(
         image: &NativeImage,
         budget: &mut ResourceBudget,
