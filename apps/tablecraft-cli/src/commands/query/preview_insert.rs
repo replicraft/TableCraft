@@ -1,5 +1,5 @@
 //! Explicit one-row SQL VALUES engineering copy; ordinary SQL saves stay unchanged.
-use super::clock::{HostClock, parse_reading};
+use crate::commands::clock::{HostClock, parse_reading};
 use crate::native;
 use clap::Args;
 use std::{fmt, fmt::Write, path::PathBuf};

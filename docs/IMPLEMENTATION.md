@@ -12,6 +12,35 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Typed batch INSERT omissions and defaults
+
+Typed INSERT TSV now distinguishes `omitted` with empty DATA from supplied NULL
+and supplied values. Qualified batches use the existing default/generation
+services once over the original image; fully supplied batches retain their old
+path. Explicit default clocks share the existing lazy provider, now owned by a
+shared CLI command module. The [batch contract](testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+records 24 exact CLI copies, 16 clock-service comparisons and four complete-input
+comparisons, plus atomic failure controls. Native save and macro gates remain.
+
+## Default Memo/OLE routing
+
+Default single-column SQL engineering UPDATE now selects the existing LVAL
+service from genuine native storage metadata. It retains original schema without
+cloning it, keeps rich-schema restrictions and never retries a failed variable
+candidate. Explicit modes and mixed-LVAL refusals remain. The
+[consumer contract](access/writes/SQL_ENGINEERING_COPIES.md) records source,
+complete-image and CLI checks, including an independently corrected physical
+placement expectation with the original failed expectation retained.
+
+## Observed table macro inventory
+
+`inspect --table NAME --extra --macro-inventory` now reports inert Event/Name
+observations and unresolved coverage from retained native Extra properties.
+The [inventory contract](access/schema/NATIVE_TABLE_EXTRA.md) keeps exact source
+identity, raw bytes and names-only/opaque states visible. It does not infer
+required-event storage from property names, execute programs or certify absence.
+The native and CLI source/API controls and affected regression checks pass.
+
 ## Explicit before-event guard preparation
 
 The native [guard service](access/schema/NATIVE_BEFORE_EVENT_GUARDS.md) and

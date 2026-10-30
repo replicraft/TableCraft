@@ -5,6 +5,8 @@ mod default_clock;
 mod display_metadata;
 #[path = "query_preview_inserts/omissions.rs"]
 mod omissions;
+#[path = "query_preview_inserts/typed_omissions.rs"]
+mod typed_omissions;
 
 #[path = "../../../crates/engines/tablecraft-ace/tests/mutation/fixture.rs"]
 mod fixture;

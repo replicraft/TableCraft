@@ -15,7 +15,8 @@ Use a stable, offline source and a fresh output path. The source opens read-only
 under the CLI's existing shared OS lock. This does not coordinate Access's live
 shared-file protocol. Encrypted databases and deployment packages are refused;
 supplying `--password` does not enable an encrypted rewrite or publish a decrypted
-plaintext copy. No database content, stored code or providers execute.
+plaintext copy. Stored code and database-selected external providers do not execute. Only needed
+defaults use the existing explicitly bounded native default resolver.
 
 ## Expected-value UPDATE
 
@@ -91,6 +92,15 @@ column order. Fields containing tabs, newlines or quotes use CSV quoting with a
 tab delimiter and doubled quotes. Every row has the same arity. NULL is a `null`
 KIND with empty DATA; `text` DATA containing "null" is literal text. Empty Text and
 Binary are distinct from NULL. All values are parsed before opening the database.
+
+`omitted` KIND with empty DATA requests only that field's qualified source
+default or nullable fallback; it is distinct from supplied `null`. Two or more
+TSV rows still finish through one original-image INSERT, with no per-row
+candidate chaining. Optional `--default-clock[=LOCAL-DATETIME]` authorizes only
+needed stored Date()/Now() defaults; complete/supplied fields never read it.
+The existing incrementing flags also support omitted companions while excluding
+only the actual generated primary. See [typed batch omissions](../../testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+for the protocol and focused evidence.
 
 For example, a table with Int32 ID, Short Text Name and nullable Int32 Score could
 use these six fields per row:

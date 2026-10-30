@@ -1,4 +1,5 @@
 use super::{Error, output::TableOutput};
+use crate::commands::clock::HostClock;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
 use tablecraft_expressions::functions::session::AccessSessionContext;
@@ -46,7 +47,7 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
     // One shared allowance across all output columns, including intermediates.
     let limits = EvalLimits::default();
     let mut budget = ResourceBudget::new(limits.max_text_bytes as u64, 0, MAX_EVAL_STEPS);
-    let clock = super::clock::HostClock::new(clock);
+    let clock = HostClock::new(clock);
     let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(random_seed).map_err(|_| Error::Parameter)?;
     let mut evaluator = Evaluator::new(&NoBindings, &mut budget, limits)

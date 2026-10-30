@@ -1,10 +1,11 @@
+use crate::commands::clock;
 mod dispatch;
 
 use super::comparison_limits::Args as ComparisonArgs;
 use super::execution_limits::Args as ExecutionArgs;
 use super::large_values::Args as LargeValueArgs;
 use super::retrieval::{TextCollation, Wildcards};
-use super::{calendar, character, clock, date_text, number};
+use super::{calendar, character, date_text, number};
 use clap::Args as ClapArgs;
 use std::{ffi::OsString, path::PathBuf};
 use tablecraft_ace::{AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits};

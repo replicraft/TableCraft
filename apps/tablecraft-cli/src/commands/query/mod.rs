@@ -1,7 +1,6 @@
 mod binding_depth;
 mod calendar;
 mod character;
-mod clock;
 mod collation;
 mod comparison_limits;
 mod date_text;

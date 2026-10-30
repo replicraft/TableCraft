@@ -1,8 +1,10 @@
 //! Explicit engineering operations and host work limits.
 use super::input;
+use crate::commands::clock::parse_reading;
 use clap::{Args, Subcommand};
 use std::path::PathBuf;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::dates::clock::ClockReading;
 
 const WRITE_BYTES: u64 = 256 * 1024 * 1024;
 const WRITE_ROWS: u64 = 100_000;
@@ -82,7 +84,8 @@ pub(crate) struct Insert {
     /// Exact local table name.
     pub(super) table: String,
     /// Headerless quoted TSV: KIND/DATA pairs in native field order. `null` KIND
-    /// requires empty DATA. Text DATA "null" is always literal text.
+    /// requires empty DATA. `omitted` KIND with empty DATA resolves only this
+    /// field's native default; text DATA "null" or "omitted" remains literal.
     pub(super) requests: PathBuf,
     /// Explicit increment policy and original LAST-issued counter precondition.
     /// TSV contains only companions excluding the generated primary column.
@@ -92,6 +95,10 @@ pub(crate) struct Insert {
     /// image. Stored Increment/Random mode is not detected. TSV supplies companions.
     #[arg(long, conflicts_with = "incrementing_last")]
     pub(super) incrementing: bool,
+    /// Authorize only needed stored Date()/Now() defaults. Optional =civil
+    /// reading pins time; complete/supplied fields never read the provider.
+    #[arg(long, num_args = 0..=1, require_equals = true, value_name = "LOCAL-DATETIME", value_parser = parse_reading)]
+    pub(super) default_clock: Option<Option<ClockReading>>,
     /// Maximum TSV DATA bytes per value; binary counts encoded hexadecimal digits.
     #[arg(long, default_value_t = input::DEFAULT_VALUE_BYTES, value_parser = input::value_limit)]
     pub(super) value_bytes: usize,

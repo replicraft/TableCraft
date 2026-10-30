@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "feature": "Typed batch original INSERT omissions and existing lazy default clock",
+  "source_pairs": 16,
+  "source_images": 32,
+  "rows_per_batch": [
+    2,
+    3
+  ],
+  "checks": [
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/source-corrected-root.log",
+      "sha256": "e72d1e27f0a63255eda462c2c90cf8c4015d5c268ab1fa7a7ac157cfeea677a3",
+      "name": "source16_pairs",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/consumer-normal-first-root.log",
+      "sha256": "216cd3bb4708bd43f1523bc6d22a76ef54f55eed153a749292db8b26ee971894",
+      "name": "normal_cli",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/parser-first-root.log",
+      "sha256": "727770f68a60f2daf43476d9b817f0d17e409d4700b0532dbf663e49b769d0ab",
+      "name": "presence_parser3",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/quoted-tsv-regression-root.log",
+      "sha256": "8f758ea9ab186a1b74c513367d5359c5302c88a89663dc446a274220b98559df",
+      "name": "existing_quoted_tsv1",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/api-first-root.log",
+      "sha256": "0d1a5cbaa5e1a883c9b9eb0ed61da493691d9ef6dfff30b0271d369388bc19b6",
+      "name": "typed_batch_api4",
+      "exit_code": 0
+    }
+  ],
+  "complete_image_comparisons": {
+    "cli_omission_copies": 24,
+    "service_clock_zero_or_one_reads": 16,
+    "fully_supplied_old_paths": 4
+  },
+  "retained_first_failures": [
+    {
+      "path": ".cache/ace16-typed-batch-omissions-next-20261030/source-first-root.log",
+      "sha256": "e5f422883c2633121ac97534996777487d3173dab4f97f957309285f7f31efcf",
+      "reason": "SOURCE compile-only E0583 explicit child module path corrected before SOURCE runtime; no byte construction changes"
+    }
+  ],
+  "original_requests_retained": true,
+  "clock_provider_inverse_exact_move": {
+    "before": "apps/tablecraft-cli/src/commands/query/clock.rs",
+    "after": "apps/tablecraft-cli/src/commands/clock.rs",
+    "body_changed": false,
+    "forwarding_reexport": false
+  },
+  "new_defaults_evaluator": false,
+  "engine_changes": false,
+  "expected_bytes_changed_after_first_consumer": false,
+  "normal_save_or_journal_or_macro_permission_changed": false,
+  "broader_regressions": {
+    "status": "passed",
+    "native_long_value_functions": 15,
+    "native_extra_functions": 41,
+    "access_library_functions": 63,
+    "access_integration_functions": {
+      "default_long_value_updates": 4,
+      "preserved_boolean_updates": 2
+    },
+    "cli_unit_functions": 43,
+    "cli_integration_functions": 107,
+    "cli_integration_targets": 12,
+    "logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-lval.log",
+        "sha256": "a3e7af438ec2dec4419998e352590cc3db384c502589ae295490e3c5d0e866fa",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/native-extra.log",
+        "sha256": "db11311f4fbed3e931b9374159d81ef043c2c7640fc3203d7c9d5263d843b47b",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/access.log",
+        "sha256": "2eb1e6036bbbe6dbcc5058106459566d3168205252107a6c6af1a2b546e62f15",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/cli.log",
+        "sha256": "6e9e771c49803c48b726e3cda7c5eed6c4a362de82ac60f70a77f9b04a4838fc",
+        "exit_code": 0
+      }
+    ]
+  },
+  "strict_minimal": {
+    "strict_status": "passed",
+    "minimal_status": "passed",
+    "minimal_logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-ace.log",
+        "sha256": "d41d4f3e1d55c3cc53608f9be190ee60b380e5df705939897b4ea006e035bdcb",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/minimal-access.log",
+        "sha256": "a8226e2ae8797b34c3d78ce939f97776be8a7938244fbeda1a25e2a68b4cda99",
+        "exit_code": 0
+      }
+    ],
+    "format_docs_boundaries_status": "passed",
+    "format_docs_boundaries_logs": [
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/format-corrected.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/documentation-corrected.log",
+        "sha256": "06719950f41c9aa569b5bc6725cc524014a21b2d616fc5d67edc5a9ffbb65559",
+        "exit_code": 0
+      },
+      {
+        "path": ".cache/ace16-memo-batch-inventory-final-20261030/boundaries-corrected.log",
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+        "exit_code": 0
+      }
+    ],
+    "strict_initial_failure": {
+      "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict.log",
+      "sha256": "a8e13f7888053d5f17126658b61b601948bca04826d79b3c48747f78cd59cb4d",
+      "reason": "Independent Memo fixture source-owner qualification compile error; corrected outside typed omission implementation before passing final strict run"
+    },
+    "strict_log": {
+      "path": ".cache/ace16-memo-batch-inventory-final-20261030/strict-final.log",
+      "sha256": "76c45216fb5a579e37556cd2f64cfe730bd1431dbc3041fd09850deff1e2264e",
+      "exit_code": 0
+    },
+    "strict_scope": "ACE, Access and CLI; all targets and all features",
+    "final_format_log": {
+      "path": ".cache/ace16-memo-batch-inventory-final-20261030/format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    }
+  }
+}
