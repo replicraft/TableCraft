@@ -42,6 +42,7 @@ fn binder<'a>(
         parameters: Vec::new(),
         parameter_scope: Vec::new(),
         retrieval: true,
+        mutation_scalar: false,
         collection_criteria: false,
         active_queries: Vec::new(),
         owner: crate::external_sources::SourceNamespace::Root,

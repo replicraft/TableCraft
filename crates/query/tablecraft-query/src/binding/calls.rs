@@ -23,6 +23,12 @@ impl Binder<'_> {
         aggregates: bool,
         depth: usize,
     ) -> Result<Expr, QueryError> {
+        if self.mutation_scalar {
+            return super::mutation_scalar::bind_call(
+                self, qualifier, name, arguments, scopes, depth,
+            );
+        }
+
         if self.retrieval && qualifier.is_empty() {
             let builtin = Builtin::resolve(name.as_str());
             if let Some(Builtin::Text(function)) = builtin {

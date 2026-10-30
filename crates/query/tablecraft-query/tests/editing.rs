@@ -142,15 +142,9 @@ fn late_expression_and_eager_filter_errors_never_call_the_backend() {
 fn unsupported_shapes_and_unknown_fields_fail_even_for_empty_tables() {
     for sql in [
         "UPDATE Items SET Score=1,Id=2",
-        "UPDATE Items SET Score=Abs(Score)",
-        "UPDATE Items SET Score=IIf(True,1,2)",
-        "UPDATE Items SET Score=Nz(Score,0)",
-        "UPDATE Items SET Score=Len('x')",
+        "UPDATE Items SET Score=Rnd()",
+        "UPDATE Items SET Score=DCount('*','Hidden')",
         "UPDATE Items SET Score=Year(#2026-01-01#)",
-        "UPDATE Items SET Score=CInt(1)",
-        "UPDATE Items SET Score=CCur(1)",
-        "UPDATE Items SET Score=CDec(1)",
-        "UPDATE Items SET Score=CDbl(1)",
         "UPDATE Items SET Score=DatePart('d',#2026-01-01#)",
         "UPDATE Items SET Score=DateDiff('d',#2026-01-01#,#2026-01-02#)",
         "UPDATE Items SET Score=Day(DateAdd('d',1,#2026-01-01#))",
@@ -272,4 +266,60 @@ fn integer_assignment_operators_do_not_broaden_final_edit_predicates() {
     let (candidate, calls) = editor(false);
     assert!(plan_update(candidate, query.query(), &mut budget(), None, &|| false).is_err());
     assert_eq!(calls.get(), 0);
+}
+
+#[test]
+fn deterministic_calls_bind_on_empty_sources_without_widening_assignment_carriers() {
+    // These exact statements formerly refused only because all calls were closed.
+    // Empty selection still performs one backend admission without inventing a
+    // hypothetical result value or bypassing the actual target field profile.
+    for sql in [
+        "UPDATE Items SET Score=Abs(Score)",
+        "UPDATE Items SET Score=IIf(True,1,2)",
+        "UPDATE Items SET Score=Nz(Score,0)",
+        "UPDATE Items SET Score=Len('x')",
+        "UPDATE Items SET Score=CInt(1)",
+        "UPDATE Items SET Score=CCur(1)",
+        "UPDATE Items SET Score=CDec(1)",
+        "UPDATE Items SET Score=CDbl(1)",
+    ] {
+        let (editor, calls) = editor(true);
+        let query = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = plan_update(editor, query.query(), &mut budget(), None, &|| false).unwrap();
+        assert_eq!(plan.matched_rows(), 0);
+        assert!(plan.into_backend().is_empty());
+        assert_eq!(calls.get(), 1);
+    }
+
+    for (sql, expected) in [
+        ("UPDATE Items SET Score=IIf(True,1,2)", vec![1, 1, 1]),
+        ("UPDATE Items SET Score=Nz(Score,0)", vec![10, 20, 0]),
+        ("UPDATE Items SET Score=Len('x')", vec![1, 1, 1]),
+        ("UPDATE Items SET Score=CInt(1)", vec![1, 1, 1]),
+    ] {
+        let (editor, calls) = editor(false);
+        let query = parse_query(sql, ParseLimits::default()).unwrap();
+        let plan = plan_update(editor, query.query(), &mut budget(), None, &|| false).unwrap();
+        let expected = expected
+            .into_iter()
+            .enumerate()
+            .map(|(ordinal, value)| (ordinal, Value::Int32(value)))
+            .collect::<Vec<_>>();
+        assert_eq!(plan.into_backend(), expected);
+        assert_eq!(calls.get(), 1);
+    }
+
+    // ExistingInt32 still rejects a NULL result or nonintegral constructor
+    // carrier on actual rows; function admission adds no assignment coercion.
+    for sql in [
+        "UPDATE Items SET Score=Abs(Score)",
+        "UPDATE Items SET Score=CCur(1)",
+        "UPDATE Items SET Score=CDec(1)",
+        "UPDATE Items SET Score=CDbl(1)",
+    ] {
+        let (editor, calls) = editor(false);
+        let query = parse_query(sql, ParseLimits::default()).unwrap();
+        assert!(plan_update(editor, query.query(), &mut budget(), None, &|| false).is_err());
+        assert_eq!(calls.get(), 0);
+    }
 }

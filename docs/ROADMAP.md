@@ -35,6 +35,11 @@ Qualified [historical full-width layouts](testing/ACE16_HISTORICAL_FIXED_UPDATES
 now permit engineering fixed updates across deleted-column native-number gaps.
 Old shorter records and other mutation modes retain their existing refusals.
 
+The [deterministic write expression profile](query/MUTATION_SCALAR_FUNCTIONS.md)
+now shares explicit numeric conversions, eager IIf/Nz, selected Text functions
+and Abs/Int/Fix/Round between UPDATE and DELETE. Hidden retrieval/runtime calls
+and broader function semantics remain outside that capability.
+
 ## Delivery snapshot — 27 October 2026
 
 The numbered milestones below are broad epics, rather than individual tasks.

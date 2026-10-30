@@ -1,7 +1,7 @@
 # Bounded query editing
 
 `tablecraft_query::plan_update` consumes a backend-neutral `EditableTable` and
-owned SQL query, returning an `UpdatePlan` with matched-row count and a concrete
+borrows a SQL query, returning an `UpdatePlan` with matched-row count and a concrete
 backend candidate. It imports [DB contracts](../../foundation/DB.md), never concrete engines or
 adapters. Planning performs no durable writes. The Access adapter delegates native
 checks/preservation to [ACE](NATIVE_WRITES.md).
@@ -9,8 +9,8 @@ checks/preservation to [ACE](NATIVE_WRITES.md).
 ## Supported profile
 
 The ordinary `ExistingInt32` profile supports one local table, optional alias
-and one SET assignment to an Int32 field. Qualified/unqualified references use the existing ASCII-insensitive
-binder. Pure scalar expressions, BETWEEN, IN lists and three-valued WHERE reuse
+and one SET assignment to an Int32 field. Qualified/unqualified references use
+the existing ASCII-insensitive binder. Pure scalar expressions, BETWEEN, IN lists and three-valued WHERE reuse
 retrieval evaluation, including eager operand errors. Only Boolean TRUE selects a
 row; final numeric predicate coercion belongs to read-only retrieval. Shared
 [exact integer operators](../../expressions/numeric/INTEGER_LOGIC.md) can compute assignment values and
@@ -23,7 +23,11 @@ truncate or silently coerce. Native changes additionally require existing non-NU
 fixed Int32 storage and every native rule/preservation gate. Indexed fields also
 require the qualified [existing-tree Int32 profile](NATIVE_WRITES.md#existing-tree-int32-index-maintenance).
 
-Parameters, multiple assignments, joins, subqueries, calls/aggregates, saved or
+The closed [deterministic mutation functions](../../query/MUTATION_SCALAR_FUNCTIONS.md)
+reuse existing evaluator semantics, including eager IIf/Nz arguments and explicit
+stored-result checks. This adds no new function implementation or ambient policy.
+
+Parameters, multiple assignments, joins, subqueries, unlisted calls/aggregates, saved or
 external sources, INSERT/DELETE and DDL remain unsupported for editing. Binding
 rejects unavailable forms/names even on empty tables. All matching expressions
 finish before one consuming backend call; a late error publishes no candidate.
@@ -75,7 +79,7 @@ convert engineering candidates into qualified save/journal plans.
 Microsoft documents [UPDATE syntax and criteria](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/update-statement-microsoft-access-sql).
 The implemented single-field profile is narrower than Access SQL.
 
-Six query tests cover aliases, binding on empty inputs, checked assignments,
+Query tests cover aliases, binding on empty inputs, checked assignments,
 BETWEEN/IN/NULL behavior, explicit collation, late/eager errors and limits/cancellation
 with a backend-call spy. Adapter integration drives SQL into a native plan. Three
 CLI tests cover exact byte changes, read-only source preservation, rejected

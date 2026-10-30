@@ -96,4 +96,4 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
 }
 
 #[cfg(test)]
-mod tests;
+pub(in crate::engineering) mod tests;

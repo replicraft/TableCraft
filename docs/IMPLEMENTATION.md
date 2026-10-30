@@ -12,6 +12,21 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Deterministic UPDATE and DELETE expressions
+
+The [closed mutation function profile](query/MUTATION_SCALAR_FUNCTIONS.md) now
+admits existing numeric conversions, IIf/Nz, selected Text operations and
+Abs/Int/Fix/Round. A dedicated binder capability serves UPDATE and DELETE without
+enabling retrieval/runtime calls. Original-row evaluation, eager errors, explicit
+comparison policies and one backend finish remain intact.
+
+Seven neutral functions, all 42 adapter library functions, 122 query regression
+tests and 31 CLI unit plus 29 CLI integration tests pass. Strict five-package
+Clippy and four-library minimal checks pass. The
+[record](testing/results/mutation-scalar-functions-2026-10-29.json) preserves stale
+blanket-call test migrations; production semantics and source goldens were not
+changed to accommodate those older expectations.
+
 ## Fixed updates on historical column layouts
 
 Engineering fixed UPDATE now admits deleted-column native-number gaps when every

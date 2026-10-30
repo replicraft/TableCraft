@@ -30,8 +30,11 @@ references, literals, unary/binary operators, IS NULL, BETWEEN and IN lists.
 Only Boolean TRUE selects a row; FALSE and NULL skip it. Text predicates require
 an explicit `--collation ordinal`; no ambient locale is chosen.
 
-Parameters, joins, derived or external sources, multiple targets, calls,
-aggregates and subqueries remain unsupported. Local-target syntax is checked
+The closed [deterministic mutation scalar functions](../../query/MUTATION_SCALAR_FUNCTIONS.md)
+are also available, with existing eager argument semantics and explicit
+stored-result/comparison policies. Parameters, joins, derived or external
+sources, multiple targets, unlisted calls, aggregates and subqueries remain
+unsupported. Local-target syntax is checked
 before opening a file. Actual field binding still occurs against the source,
 including when it has no rows. Eager expression errors retain their existing
 behavior. Every selected handle is collected before one consuming backend call;

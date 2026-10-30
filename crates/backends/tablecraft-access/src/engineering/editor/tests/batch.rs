@@ -9,6 +9,7 @@ use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable};
 use tablecraft_model::CatalogScope;
 
+mod functions;
 mod model;
 use model::{Recipe, case};
 

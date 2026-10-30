@@ -263,3 +263,74 @@ fn executable_encrypted_source_refuses_even_with_the_correct_password() {
         assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
     }
 }
+
+#[test]
+fn deterministic_function_predicates_publish_the_original_exact_delete_images() {
+    let directory = tempfile::tempdir().unwrap();
+    for code in [5, 6] {
+        for (position, (predicate, selected)) in [
+            ("Len(Trim('  x  '))=0", vec![]),
+            ("Abs(Id-2)=0", vec![1]),
+            ("CLng(Round(Id/2.0,0))<>1", vec![0, 2]),
+            ("Nz(Id,0)=Id", vec![0, 1, 2]),
+        ]
+        .iter()
+        .enumerate()
+        {
+            let before = source(code);
+            let after = expected(&before, selected);
+            let input = directory
+                .path()
+                .join(format!("{code}-{position}-functions.accdb"));
+            let output = directory
+                .path()
+                .join(format!("{code}-{position}-deleted.accdb"));
+            fs::write(&input, &before).unwrap();
+
+            success(
+                run(
+                    &format!("DELETE FROM Items WHERE {predicate}"),
+                    &input,
+                    &output,
+                    &[],
+                ),
+                selected.len(),
+                selected.len(),
+            );
+            assert_eq!(fs::read(&output).unwrap(), after);
+            assert_eq!(fs::read(&input).unwrap(), before);
+        }
+    }
+}
+
+#[test]
+fn eager_and_forbidden_function_predicates_leave_no_output() {
+    let directory = tempfile::tempdir().unwrap();
+    let before = source(5);
+    let input = directory.path().join("functions-source.accdb");
+    fs::write(&input, &before).unwrap();
+
+    for (position, predicate) in [
+        "IIf(Id>0,TRUE,1/0)",
+        "Nz(Id,1/0)=Id",
+        "FALSE AND Rnd()>0",
+        "FALSE AND DCount('*','Hidden')>0",
+    ]
+    .iter()
+    .enumerate()
+    {
+        let output = directory
+            .path()
+            .join(format!("function-refused-{position}.accdb"));
+        let result = run(
+            &format!("DELETE FROM Items WHERE {predicate}"),
+            &input,
+            &output,
+            &[],
+        );
+        assert_eq!(result.status.code(), Some(2));
+        assert!(result.stdout.is_empty());
+        assert!(!output.exists());
+        assert_eq!(fs::read(&input).unwrap(), before);
+    }
+}

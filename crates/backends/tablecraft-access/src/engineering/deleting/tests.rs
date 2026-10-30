@@ -23,14 +23,14 @@ fn capture(bytes: &[u8]) -> NativeImage {
     .unwrap()
 }
 
-fn source(code: u8) -> Vec<u8> {
+pub(in crate::engineering) fn source(code: u8) -> Vec<u8> {
     let mut bytes = fixture::database();
     bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
     bytes[20] = code;
     bytes
 }
 
-fn expected(before: &[u8], selected: &[usize]) -> Vec<u8> {
+pub(in crate::engineering) fn expected(before: &[u8], selected: &[usize]) -> Vec<u8> {
     let mut after = before.to_vec();
     after[10 * 4096 + 16..10 * 4096 + 20]
         .copy_from_slice(&(3_u32 - selected.len() as u32).to_le_bytes());
@@ -42,7 +42,7 @@ fn expected(before: &[u8], selected: &[usize]) -> Vec<u8> {
     after
 }
 
-fn qualify(bytes: &[u8], rows: usize) {
+pub(in crate::engineering) fn qualify(bytes: &[u8], rows: usize) {
     let checked = check_table(
         &mut Cursor::new(bytes),
         CatalogScope::new(1),
@@ -157,4 +157,5 @@ fn delete_rejects_cross_snapshot_handles_and_duplicate_original_handles() {
     );
 }
 
+mod functions;
 mod relationships;
