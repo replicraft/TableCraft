@@ -1,4 +1,5 @@
 //! Real memory consumers and independent complete-record authority.
+mod generated;
 pub(in crate::journal) mod goldens;
 mod transactions;
 mod validation;
