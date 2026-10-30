@@ -1,4 +1,5 @@
 //! Explicit one-row SQL VALUES engineering copy; ordinary SQL saves stay unchanged.
+use super::clock::{HostClock, parse_reading};
 use crate::native;
 use clap::Args;
 use std::{fmt, fmt::Write, path::PathBuf};
@@ -8,6 +9,7 @@ use tablecraft_access::{
 };
 use tablecraft_ace::{InspectError, NativeImage, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_expressions::functions::dates::clock::ClockReading;
 use tablecraft_query::{InsertError, QueryError};
 
 const WORK_BYTES: u64 = 256 * 1024 * 1024;
@@ -17,7 +19,7 @@ const REPORT_BYTES: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "One local INSERT VALUES row. Named fields may omit ordinary columns; the engine resolves only qualified literal defaults or NULL. Explicit NULL remains supplied. Explicit --incrementing requires a named companion field list; positional VALUES never implies generated-field omission. No ambient clock, default functions, INSERT SELECT, external targets or UDFs execute. Only a fresh engineering copy is published; required macros and normal ACE saves remain unqualified."
+    after_help = "One local INSERT VALUES row. Named fields may omit ordinary columns; the engine resolves only qualified literal defaults or NULL. Explicit NULL remains supplied. Explicit --incrementing requires a named companion field list; positional VALUES never implies generated-field omission. Needed stored Date()/Now() defaults require explicit --default-clock[=LOCAL-DATETIME]; construction and supplied fields never read it. Other default functions, INSERT SELECT, external targets and UDFs remain refused. Only a fresh engineering copy is published; required macros and normal ACE saves remain unqualified."
 )]
 pub(crate) struct Arguments {
     /// INSERT INTO ... VALUES SQL passed as one shell-quoted argument.
@@ -29,9 +31,13 @@ pub(crate) struct Arguments {
     #[arg(long, value_name = "PATH")]
     output: PathBuf,
     /// Explicitly select increment-by-one behavior using the captured LAST.
-    /// Name every companion field; stored Increment/Random mode is not inferred.
+    /// Use names for supplied companions; stored Increment/Random is not inferred.
     #[arg(long)]
     incrementing: bool,
+    /// Authorize needed stored Date()/Now() defaults; optional =LOCAL-DATETIME
+    /// pins the civil reading. No provider is read during metadata construction.
+    #[arg(long, num_args = 0..=1, require_equals = true, value_name = "LOCAL-DATETIME", value_parser = parse_reading)]
+    default_clock: Option<Option<ClockReading>>,
     /// Cumulative parser/native/output byte allowance; image caps remain separate.
     #[arg(long, default_value_t = WORK_BYTES)]
     work_bytes: u64,
@@ -107,11 +113,22 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     }
     let image = NativeImage::capture(&mut source, native::CATALOG_SCOPE, &mut budget, &|| false)
         .map_err(Error::Native)?;
-    let copy =
+    let clock = args.default_clock.map(HostClock::new);
+    let copy = if let Some(clock) = &clock {
+        sql_insert::preview_insert_with_omissions_and_clock(
+            image,
+            query.query(),
+            mode,
+            clock,
+            &mut budget,
+            &|| false,
+        )
+    } else {
         sql_insert::preview_insert_with_omissions(image, query.query(), mode, &mut budget, &|| {
             false
         })
-        .map_err(Error::Insert)?;
+    }
+    .map_err(Error::Insert)?;
     budget
         .charge_allocation(REPORT_BYTES as u64, 1)
         .map_err(InspectError::from)

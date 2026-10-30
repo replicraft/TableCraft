@@ -5,11 +5,24 @@ use super::{
 };
 use tablecraft_ace::{InsertFieldValue, OmittedRowInsert};
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
+use tablecraft_expressions::functions::dates::clock::Clock;
 
 impl OmittingInsertableTable for AccessEngineeringInserter {
     fn plan_insert_with_omissions(
         self,
         values: Vec<InsertValue>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<EngineeringCopy, NativeEditError> {
+        self.plan_presence(values, None, budget, cancelled)
+    }
+}
+
+impl AccessEngineeringInserter {
+    pub(super) fn plan_presence(
+        self,
+        values: Vec<InsertValue>,
+        clock: Option<&dyn Clock>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<EngineeringCopy, NativeEditError> {
@@ -60,17 +73,27 @@ impl OmittingInsertableTable for AccessEngineeringInserter {
         check(budget, cancelled)?;
         let rows = [OmittedRowInsert::new(fields)];
 
-        let request = if let Some(policy) = self.policy {
-            EngineeringRequest::IncrementingInsertWithOmissions {
+        let request = match (self.policy, clock) {
+            (Some(policy), Some(clock)) => EngineeringRequest::IncrementingInsertWithClock {
                 table: &self.name,
                 rows: &rows,
                 policy,
-            }
-        } else {
-            EngineeringRequest::InsertWithOmissions {
+                clock,
+            },
+            (None, Some(clock)) => EngineeringRequest::InsertWithClock {
                 table: &self.name,
                 rows: &rows,
-            }
+                clock,
+            },
+            (Some(policy), None) => EngineeringRequest::IncrementingInsertWithOmissions {
+                table: &self.name,
+                rows: &rows,
+                policy,
+            },
+            (None, None) => EngineeringRequest::InsertWithOmissions {
+                table: &self.name,
+                rows: &rows,
+            },
         };
         preview(self.image, request, budget, cancelled).map_err(|error| match error {
             super::super::EngineeringError::Engine(error) => NativeEditError::Edit(error),

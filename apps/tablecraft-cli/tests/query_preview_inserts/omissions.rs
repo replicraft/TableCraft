@@ -74,8 +74,8 @@ fn cases(code: u8) -> Vec<Case> {
     result
 }
 
-fn generated_case(code: u8) -> Case {
-    let mut before = source(code, true);
+pub(super) fn three_field_source(code: u8, generated: bool) -> Vec<u8> {
+    let mut before = source(code, generated);
     let original_definition = before[10 * PAGE..11 * PAGE].to_vec();
     let fields = fixture::definition(
         &[("Id", 4, 0, 4), ("Score", 4, 4, 4), ("Other", 4, 8, 4)],
@@ -90,7 +90,7 @@ fn generated_case(code: u8) -> Case {
     assert_eq!(&definition[43..45], &[0, 0]);
     support::put16(&mut definition, 45, 3);
     definition[75..180].copy_from_slice(&fields[63..168]);
-    definition[75 + 25 + 15] = 7;
+    definition[75 + 25 + 15] = if generated { 7 } else { 3 };
     // Retain the actual original physical/logical primary and key name. Only
     // declaration positioning changes to accommodate the third fixed field.
     assert_eq!(&original_definition[241..243], &[255, 255]);
@@ -99,7 +99,14 @@ fn generated_case(code: u8) -> Case {
     support::put16(&mut definition, 2, (PAGE - 280 - 8) as u16);
     before[10 * PAGE..11 * PAGE].copy_from_slice(&definition);
 
-    let mut properties = fixture::with_rule("DefaultValue", "99");
+    set_other_default(&mut before, "99");
+    let source_rows = [[1, 10, 100], [2, 20, 200], [3, 30, 300]];
+    before[12 * PAGE..13 * PAGE].copy_from_slice(&three_field_page(&source_rows));
+    before
+}
+
+pub(super) fn set_other_default(before: &mut [u8], expression: &str) {
+    let mut properties = fixture::with_rule("DefaultValue", expression);
     let score = [83, 0, 99, 0, 111, 0, 114, 0, 101, 0];
     let other = [79, 0, 116, 0, 104, 0, 101, 0, 114, 0];
     let hits = properties[4 * PAGE..5 * PAGE]
@@ -111,9 +118,11 @@ fn generated_case(code: u8) -> Case {
     let at = 4 * PAGE + hits[0];
     properties[at..at + other.len()].copy_from_slice(&other);
     before[4 * PAGE..5 * PAGE].copy_from_slice(&properties[4 * PAGE..5 * PAGE]);
+}
 
+fn generated_case(code: u8) -> Case {
+    let before = three_field_source(code, true);
     let source_rows = [[1, 10, 100], [2, 20, 200], [3, 30, 300]];
-    before[12 * PAGE..13 * PAGE].copy_from_slice(&three_field_page(&source_rows));
     let mut wanted = expected(&before, true);
     wanted[12 * PAGE..13 * PAGE].copy_from_slice(&three_field_page(&[
         source_rows[0],
