@@ -63,6 +63,11 @@ physical capacity, and each INDEX replacement must fit the existing writer
 profile. Existing exclusive forwarded targets can be updated; creating a new
 forwarding placement is outside this operation.
 
+The additive [mixed DATA-growth service](ACE16_MIXED_GROWING_UPDATES.md) now
+handles qualified new physical targets under represented-map limits. It uses
+the existing minimum-size variable serializer; this fitting route retains its
+own declared-form preference and capacity contract.
+
 Available selected payload capacity is derived from original checked framing:
 `data_end - (payload_end - selected_span)`. It preserves every unselected
 payload extent and permits consuming only genuine internal padding. Padding is

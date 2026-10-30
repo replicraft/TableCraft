@@ -61,7 +61,12 @@ precision/scale; broader metadata and normal save admission remain unfinished.
 The [joint fitted-record engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now changes
 fixed fields plus one Short Text/Binary field with one original-record proof and
 one joint physical-index transform. Existing-capacity records and metadata-directed
-adapter routing are qualified; broader placement/allocation continue separately.
+adapter routing are qualified. The separate
+[mixed DATA-growth service](testing/ACE16_MIXED_GROWING_UPDATES.md) now admits
+hidden-record placement and appended DATA pages under complete original-source
+role checks. Its 72 new complete-image comparisons and the 83 fitting comparisons
+pass. The CLI default remains fitted; exposing growth, joint INDEX splitting and
+map promotion continue separately. Normal saves and required macro gates remain.
 
 ## Delivery snapshot — 27 October 2026
 

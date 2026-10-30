@@ -1,5 +1,5 @@
 //! Append hidden targets without moving or reusing any original physical slot.
-use super::super::{EditError, SlotScalarUpdate, WriteBlocker, patch::BytePatch};
+use super::super::{EditError, WriteBlocker, patch::BytePatch, rows::RowAssignment};
 use super::{roots::Root, space::Space};
 use crate::{
     InspectError, NativeImage,
@@ -125,10 +125,10 @@ impl Plan {
         self.pages.last_mut().ok_or(EditError::Preservation)
     }
 
-    pub(super) fn apply(
+    pub(super) fn apply<U: RowAssignment>(
         &mut self,
         image: &NativeImage,
-        root: &Root<'_, SlotScalarUpdate>,
+        root: &Root<'_, U>,
         record: &[u8],
         space: &Space,
         budget: &mut ResourceBudget,

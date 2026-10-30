@@ -227,3 +227,24 @@ impl Verified {
         Ok(keys)
     }
 }
+
+impl super::map_audit::record::RecordImage for ChangedRecord {
+    fn reference(&self) -> u32 {
+        self.reference
+    }
+    fn root_word(&self) -> u16 {
+        self.root_word
+    }
+    fn root_range(&self) -> &Range<usize> {
+        &self.root_range
+    }
+    fn final_offset(&self) -> usize {
+        self.final_offset
+    }
+    fn original_length(&self) -> usize {
+        self.original_length
+    }
+    fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+}

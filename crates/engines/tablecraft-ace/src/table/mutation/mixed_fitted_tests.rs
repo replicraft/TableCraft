@@ -1,6 +1,8 @@
 //! SOURCE-only read gates over independently authored complete final images.
 pub(in crate::table::mutation) mod capacity;
-mod growing;
+pub(in crate::table::mutation) mod growing;
+pub(in crate::table::mutation) mod growing_boundary;
+mod growing_roles;
 mod key_changes;
 pub(in crate::table::mutation) mod model;
 

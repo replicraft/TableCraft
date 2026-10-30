@@ -198,7 +198,7 @@ fn reconstruct_with(
     Ok(expected)
 }
 
-pub(super) fn equal(
+pub(in crate::table::mutation) fn equal(
     expected: &[u8],
     actual: &[u8],
     budget: &mut ResourceBudget,

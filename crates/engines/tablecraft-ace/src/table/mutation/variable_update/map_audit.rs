@@ -1,6 +1,7 @@
 //! Independent placement replay derives map authority without planner masks.
 mod certified;
 pub(in crate::table::mutation) mod hint;
+pub(in crate::table::mutation) mod record;
 #[cfg(test)]
 mod tests;
 
@@ -9,6 +10,7 @@ pub(in crate::table::mutation) use certified::certify;
 
 use super::super::EditError;
 use super::super::variable_split::metadata::Metadata;
+#[cfg(test)]
 use super::authority::ChangedRecord;
 use super::placement::{DataView, Plan};
 use crate::{
@@ -24,6 +26,7 @@ use crate::{
     },
     header::check,
 };
+use record::RecordImage;
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -97,11 +100,11 @@ fn cell(
     }
 }
 
-pub(super) fn prove(
+pub(super) fn prove<R: RecordImage>(
     image: &NativeImage,
     schema: &TableSchema,
     plan: &Plan,
-    records: &[ChangedRecord],
+    records: &[R],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -109,11 +112,37 @@ pub(super) fn prove(
     compare(&replay.edits, plan, budget, cancelled)
 }
 
-fn replay(
+/// Mixed updates supply fresh independently reconstructed records and source
+/// metadata. This is the same replay, not a producer-mask allowlist.
+pub(in crate::table::mutation) fn prove_protected<R: RecordImage>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    plan: &Plan,
+    records: &[R],
+    metadata: &Metadata,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    metadata.require_source(image, schema.definition_page())?;
+    record::compare(records, plan.view(), budget, cancelled)?;
+    super::audit::pages(plan.view(), budget, cancelled)?;
+    let replay = replay(
+        image,
+        schema,
+        plan.view(),
+        records,
+        Some(metadata),
+        budget,
+        cancelled,
+    )?;
+    compare(&replay.edits, plan, budget, cancelled)
+}
+
+fn replay<R: RecordImage>(
     image: &NativeImage,
     schema: &TableSchema,
     plan: DataView<'_>,
-    records: &[ChangedRecord],
+    records: &[R],
     metadata: Option<&Metadata>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -191,37 +220,37 @@ fn replay(
         reader.tick()?;
         if let Some(metadata) = metadata {
             metadata.require_data_page(
-                reference_page(record.reference),
+                reference_page(record.reference()),
                 reader.budget,
                 cancelled,
             )?;
-            let final_page = u32::try_from(record.final_offset / PAGE_BYTES)
+            let final_page = u32::try_from(record.final_offset() / PAGE_BYTES)
                 .map_err(|_| EditError::Preservation)?;
             metadata.require_data_page(final_page, reader.budget, cancelled)?;
         }
-        if event.root != record.reference
-            || event.word != record.root_word
-            || event.root_range != record.root_range
+        if event.root != record.reference()
+            || event.word != record.root_word()
+            || event.root_range != *record.root_range()
         {
             return Err(EditError::Preservation);
         }
 
         // Record capacity and preferred wire bytes come from the original
         // request proof, never the builder's selected destination range.
-        let length = record.bytes.len();
-        if length == record.original_length {
+        let length = record.bytes().len();
+        if length == record.original_length() {
             let end = record
-                .final_offset
+                .final_offset()
                 .checked_add(length)
                 .ok_or(EditError::Preservation)?;
-            if event.appended.is_some() || event.target != (record.final_offset..end) {
+            if event.appended.is_some() || event.target != (record.final_offset()..end) {
                 return Err(EditError::Preservation);
             }
 
             continue;
         }
 
-        if length < record.original_length {
+        if length < record.original_length() {
             return Err(EditError::Preservation);
         }
 
