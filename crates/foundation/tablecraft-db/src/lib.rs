@@ -8,8 +8,8 @@ mod snapshot;
 mod views;
 
 pub use editing::{
-    CellUpdate, ColumnUpdates, DeletableTable, EditableBatch, EditableTable, InsertableTable,
-    UpdateProfile,
+    CellUpdate, ColumnUpdates, DeletableTable, EditableBatch, EditableTable, InsertValue,
+    InsertableTable, OmittingInsertableTable, UpdateProfile,
 };
 pub use error::SnapshotError;
 pub use snapshot::{RowHandle, Snapshot};
