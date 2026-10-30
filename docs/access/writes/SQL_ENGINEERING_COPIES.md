@@ -10,6 +10,9 @@ absence, execute active content or produce a journalable `NativeEditPlan`.
 tablecraft query preview-update 'UPDATE Contacts SET Name=Name & " Jr" WHERE Id=2' \
   --database contacts.accdb --output edited.accdb --variable --index-growth
 
+tablecraft query preview-update "UPDATE Contacts SET Age=20, Name='Alice' WHERE Id=2" \
+  --database contacts.accdb --output renamed.accdb
+
 tablecraft query preview-update 'UPDATE Items SET Score=11 WHERE Id BETWEEN 1 AND 3' \
   --database offline.accdb --output scored.accdb
 
@@ -28,8 +31,9 @@ native Access collation equivalence is inferred.
 ## Selection and assignment
 
 The current profile permits one local table, an optional alias and one or more
-SET assignments in fixed-field modes. Variable and LVAL modes retain exactly one
-target column. It reuses the existing pure scalar expression/WHERE profile:
+SET assignments. Default metadata routing supports fixed fields together with
+at most one Short Text/Binary field. Explicit variable and LVAL modes retain
+exactly one target column. It reuses the existing pure scalar expression/WHERE profile:
 field references, literals, unary/binary expressions, BETWEEN, IN lists and
 three-valued filtering. The closed [deterministic mutation function set](../../query/MUTATION_SCALAR_FUNCTIONS.md)
 adds existing conversions, eager IIf/Nz, selected text operations and numeric
@@ -48,7 +52,7 @@ original values rather than reading an earlier assignment's replacement.
 All selected replacements finish before one consuming backend call. Handles are
 snapshot-local; the adapter recovers original expected values from those handles,
 validates all groups under one aggregate assignment ceiling, and passes one
-complete fixed-column batch to the engine. Shared NULL-mask bytes and composite
+complete typed statement to one engine service. Shared NULL-mask bytes and composite
 index keys are maintained together. Logical index aliases do not create separate
 physical rewrites; ignored-NULL history follows the engine's original-association
 law. Final Required, uniqueness and relationship checks remain engine-owned.
@@ -69,15 +73,28 @@ assignment coercions or the ordinary `ExistingInt32` carrier law.
 
 ## Native mode and publication
 
-The default selects existing fitting fixed-field maintenance. `--index-growth`
-selects the existing Int32 fixed INDEX allocation profile. `--variable` selects
-one Short Text/Binary column and can combine with `--index-growth` for its existing
-variable/index service. `--long-value` selects one ordinary Memo/OLE column.
-`--cascade-updates` explicitly selects qualified fixed update cascades and conflicts
-with variable, long-value and index-growth modes. A multi-column variable/LVAL
-request refuses, including when WHERE selects no rows. Atomic multi-column
-variable/LVAL maintenance remains a backend gap; separate sequential previews
-are not a substitute. Other unsupported shapes refuse with no fallback.
+The default resolves the complete target set from the original snapshot and
+selects one service before native planning. All-fixed targets use existing fitting
+fixed/batch maintenance and retain its history policy. One Text/Binary target
+uses the existing variable service without INDEX growth; its qualified DATA
+placement may allocate pages. Fixed targets with exactly one Text/Binary target
+use [joint fitted-record maintenance](../../testing/ACE16_FITTED_MIXED_UPDATES.md):
+one original/final row projection, existing record capacity and retained INDEX
+topology. There is no failed-preview retry or intermediate candidate.
+
+Shared Text/Binary metadata selects a route; the engine still certifies actual
+Short Text/Binary storage. It does not silently route Memo/OLE to the long-value
+service. More than one variable target and mixed LVAL changes remain unsupported,
+including when WHERE selects no rows. This routing `Default` is unrelated to
+omitted INSERT fields or native `DefaultValue` evaluation.
+
+`--index-growth` explicitly selects existing Int32 fixed INDEX allocation.
+`--variable` selects one Short Text/Binary column and can combine with
+`--index-growth` for its existing variable/index service. `--long-value` selects
+one ordinary Memo/OLE column. `--cascade-updates` selects qualified fixed update
+cascades and conflicts with variable, long-value and index-growth modes. These
+explicit modes keep their existing profiles; unsupported shapes refuse without
+fallback. Separate sequential previews are not an atomic mixed-update substitute.
 
 Sources open read-only under the existing native host guard. Deployment packages
 and encrypted rewrites are refused; passwords cannot authorize a plaintext
@@ -127,8 +144,9 @@ from the older typed-row tests and do not qualify native Access saves.
 The combined CLI regression then stopped at an older pre-open test that treated
 all multiple assignments as unsupported syntax. That obsolete expectation was
 removed from its missing-source list: actual fixed-field batch positives are in
-the new CLI tests. Its mixed fixed/text request remains an actual-source refusal,
-because no single current native mode admits that mixture. Parameters/external
+the new CLI tests. At that checkpoint its mixed fixed/text request remained an actual-source
+refusal. The metadata-routing continuation below admits qualifying joint fitted
+requests; the old statement is retained as an explicit fixed INDEX-growth refusal. Parameters/external
 syntax, late errors and source preservation controls remain. The first failed
 regression log and predecessor test are retained. The corrected CLI regression
 passed: 31 unit functions and 20 integration functions, including the prior four SQL UPDATE, four normal Jet 4 UPDATE and six
@@ -145,3 +163,38 @@ save compatibility.
 The [ordinary query editor](QUERY_EDITING.md) and its ACE refusal remain distinct.
 [Explicit typed engineering commands](ENGINEERING_COPIES.md) expose INSERT,
 DELETE and direct expected-value UPDATE requests without SQL selection.
+
+## Metadata-routing continuation
+
+Both frontend source gates passed before the new API checks. They reuse 39 original
+engine source/expected pairs and four zero-slack raw one-character pairs without
+changing their constructors or expected bytes. Typed adapter controls include
+non-NULL Binary, shared NULL masks, both group orders and explicit-mode refusal;
+SQL/CLI Text consumers compare complete frozen images. Single-variable and
+all-fixed route-consistency checks are separate from those independent goldens.
+The adapter's six focused functions passed on their first run, including 86 typed
+whole-image comparisons in both group orders and eight SQL Text comparisons.
+The CLI's four focused functions also passed on their first run, including eight
+fresh copies matching the complete frozen images and source preservation. Its
+first build warned that the shared Case.family field was unread in the CLI
+consumer; the test now qualifies each case using that actual field rather than
+the loop variable. Constructor and expected bytes did not change. The complete Access library
+regression passed 48 functions; CLI regressions passed 31 unit and 23 integration
+functions. Before the later routing-boundary test additions, strict ACE/Access/CLI
+all-target/all-feature checks, four minimal libraries, two historical and four
+normal Jet 4 CLI regressions, dependency boundaries and documentation links all
+passed. The new genuine Memo/OLE source gate passed before routing tests. The old
+long-value contract passed 15 functions after its extracted test module needed
+an explicit path; all 22 Access editor functions then passed, including actual
+Memo/OLE single/joint zero/nonzero refusal, shared stale handles, and cumulative
+Default capture-through-finish exact pools, one-below pools and final cancellation.
+All-target strict compilation subsequently exposed ambiguous source-helper glob
+imports in another existing long-value test consumer. Only import ownership was
+corrected: all 25 original fixture functions remain text-exact. Five existing source-owner integration targets then passed all 36 functions.
+A further strict attempt found remaining nested private-helper references and
+one unused local import; these were corrected to name the actual source owner.
+Final all-target ACE/Access/CLI strict checks and scoped formatting of 23 Rust
+files passed. The complete 48-function Access run predates these added boundary
+tests; the later Access editor subset passed 22. No newer full-library total is
+claimed. All three test-only compilation failures and corrections remain recorded. These checks do not establish Microsoft Access
+write/save qualification.

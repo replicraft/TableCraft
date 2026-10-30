@@ -1,6 +1,8 @@
 //! SQL-selected user workflows over the independent engineering source owner.
 #[path = "query_preview_updates/display_metadata.rs"]
 mod display_metadata;
+#[path = "query_preview_updates/metadata_default.rs"]
+mod metadata_default;
 
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
@@ -222,9 +224,9 @@ fn sql_profile_validation_precedes_open_and_late_errors_publish_no_copy() {
     let input = directory.path().join("input.accdb");
     fs::write(&input, &before).unwrap();
     for (sql, flags) in [
-        // Multiple targets are valid SQL now, but this fixed/text mixture has no
-        // single native mode and must still refuse against the actual source.
-        ("UPDATE Items SET Score=1,Label='x'", vec![]),
+        // Explicit fixed growth still refuses a Text target. Default metadata
+        // routing is covered separately by the joint fitted consumer.
+        ("UPDATE Items SET Score=1,Label='x'", vec!["--index-growth"]),
         ("UPDATE Items SET Score=10 \\ (4-Id)", vec![]),
         (
             "UPDATE Items SET Score=11 WHERE Id<0 AND (1 \\ 0)=0",

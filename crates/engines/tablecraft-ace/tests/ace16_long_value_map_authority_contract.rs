@@ -15,6 +15,7 @@ mod model;
 mod values;
 
 use model::*;
+use original_model::source::*;
 use original_model::*;
 use std::io::Cursor;
 use tablecraft_ace::{

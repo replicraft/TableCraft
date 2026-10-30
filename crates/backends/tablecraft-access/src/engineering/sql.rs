@@ -63,7 +63,8 @@ pub fn preview_update(
 }
 
 /// Evaluate all SET targets against the original snapshot, then finish once.
-/// Fixed modes can combine columns; variable/LVAL modes retain one-column scope.
+/// Default routing combines fixed fields and at most one Short Text/Binary field.
+/// Explicit fixed modes combine columns; variable/LVAL modes retain one-column scope.
 /// Normal NativeEditor/save admission and the old single-column entry stay strict.
 pub fn preview_batch_update(
     image: NativeImage,

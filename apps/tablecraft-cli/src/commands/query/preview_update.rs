@@ -19,7 +19,7 @@ const REPORT_CAPACITY: usize = 512;
 
 #[derive(Args)]
 #[command(
-    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; multiple columns require a fixed-field mode. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
+    after_help = "Creates only a fresh experimental engineering copy. One local table and original-row SET expressions are supported; Default routing supports fixed fields and at most one Short Text/Binary field. Mixed fixed/variable changes must fit existing record capacity; a single variable field can use qualified DATA growth. Explicit flags retain their selected profiles. Required macros are neither qualified nor executed; normal ACE save/journal admission is unchanged. NULL differs from quoted text 'null'. Encrypted and deployment-package sources are refused. Unsupported modes never fall back."
 )]
 pub(crate) struct Arguments {
     /// UPDATE text, passed as one shell-quoted argument.
@@ -103,7 +103,7 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     let query = tablecraft_sql::parse_query(&args.sql, tablecraft_sql::ParseLimits::default())
         .map_err(Error::Parse)?;
     // This is a metadata-only syntax check: no source, record scan or output is
-    // opened for a join, multiple assignment, parameter or external selector.
+    // opened for a join, parameter or external selector.
     sql::local_batch_update_table(query.query()).map_err(Error::Query)?;
     let collation = args
         .collation
@@ -116,14 +116,12 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
         }
     } else if args.long_value {
         ScalarUpdateMode::LongValue
+    } else if args.index_growth {
+        ScalarUpdateMode::Fixed(UpdateMode::IndexGrowth)
+    } else if args.cascade_updates {
+        ScalarUpdateMode::Fixed(UpdateMode::Cascading)
     } else {
-        ScalarUpdateMode::Fixed(if args.index_growth {
-            UpdateMode::IndexGrowth
-        } else if args.cascade_updates {
-            UpdateMode::Cascading
-        } else {
-            UpdateMode::Fitted
-        })
+        ScalarUpdateMode::Default
     };
     let mut source = native::open_raw(&args.database, &mut budget).map_err(Error::Source)?;
     if source.is_deployment() {

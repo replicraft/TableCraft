@@ -4,18 +4,23 @@ use crate::{
     EditError, InspectError, WriteBlocker,
     table::mutation::map_authority::{self, Owner},
 };
+use model::source as source_model;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as support;
 
 fn original(shared: bool) -> Vec<u8> {
-    let mut bytes = model::source(6, 1);
-    model::set_maps(&mut bytes, &[], &[], &[model::OLE]);
-    let row = model::record(
+    let mut bytes = source_model::source(6, 1);
+    source_model::set_maps(&mut bytes, &[], &[], &[source_model::OLE]);
+    let row = source_model::record(
         1,
         Some(&model::inline(&[65, 0])),
-        Some(&model::single(1, model::OLE, 0)),
+        Some(&source_model::single(1, source_model::OLE, 0)),
     );
-    model::install(&mut bytes, model::ROOT, &model::page(10, &[(0, row)]));
+    source_model::install(
+        &mut bytes,
+        source_model::ROOT,
+        &source_model::page(10, &[(0, row)]),
+    );
     model::other_table_alias(&mut bytes, true, false);
     if shared {
         support::put32(&mut bytes, 15 * 4096 + 131, (11 << 8) | 2);
@@ -72,7 +77,7 @@ fn finalizer_rechecks_empty_map_identity_against_the_original_catalog() {
 
 #[test]
 fn readable_unreferenced_physical_slot_does_not_establish_complete_map_authority() {
-    let healthy = model::source(6, 1);
+    let healthy = source_model::source(6, 1);
     let image = model::capture(&healthy);
     super::Inventory::capture(&image, &mut model::budget(), &|| false).unwrap();
 
@@ -82,7 +87,7 @@ fn readable_unreferenced_physical_slot_does_not_establish_complete_map_authority
     // orphan physical slot adds its 12-byte pre-column record and 52-byte body.
     definition.copy_within(63..4096 - 12, 75);
     definition[63..75].fill(0);
-    let index_start = model::DECLARATIONS + 12;
+    let index_start = source_model::DECLARATIONS + 12;
     definition.copy_within(index_start..4096 - 52, index_start + 52);
     definition[index_start..index_start + 52].fill(0);
     support::put32(definition, 51, 1);
@@ -112,8 +117,8 @@ fn readable_unreferenced_physical_slot_does_not_establish_complete_map_authority
 
 #[test]
 fn metadata_footprints_do_not_grant_payload_membership_or_write_authority() {
-    let mut bytes = model::source(6, 1);
-    bytes[model::MEMO * 4096..model::MEMO * 4096 + 2].fill(0);
+    let mut bytes = source_model::source(6, 1);
+    bytes[source_model::MEMO * 4096..source_model::MEMO * 4096 + 2].fill(0);
     let image = model::capture(&bytes);
     let census = map_authority::capture_catalog(
         &image,

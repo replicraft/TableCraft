@@ -22,6 +22,15 @@ and must be reported separately from local implementation evidence.
 The first usable-copy steps now include direct typed INSERT/UPDATE/DELETE,
 source-captured incrementing AutoNumbers, shared no-clobber output publication
 and [SQL-selected UPDATE](access/writes/SQL_ENGINEERING_COPIES.md).
+The UPDATE frontend now chooses one metadata-directed engineering service for
+fixed targets, one variable field, or a joint fitted fixed/variable statement;
+both 43-pair frontend source gates and focused adapter/CLI consumers pass.
+Explicit modes keep their existing profiles. The broader frontend regressions,
+strict and minimal checks pass. Added Memo/OLE refusal and cumulative default-route
+budget/cancellation controls pass; affected fixture consumers and final strict
+checks also pass, with test-only extraction/import corrections recorded.
+Multiple variable fields and mixed LVAL updates remain open; routing does not
+evaluate omitted-field defaults or qualify normal ACE saves.
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
 snapshot handles and explicit Restrict/Cascading actions. Atomic fixed multi-column
 UPDATE now evaluates every assignment from original rows before one backend

@@ -64,7 +64,7 @@ fn request(directory: &Directory, name: &str, kind: &str, value: &str) -> PathBu
 #[test]
 fn real_chained_memo_candidate_is_complete_fresh_and_preserves_source_and_old_chunks() {
     let directory = Directory::new();
-    let source = model::source(6, 1);
+    let source = model::source::source(6, 1);
     model::check(&source);
     let source_path = directory.file("source.accdb", &source);
     let output = directory.0.join("candidate.accdb");

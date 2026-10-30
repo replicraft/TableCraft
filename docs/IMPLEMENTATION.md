@@ -14,6 +14,19 @@ engineering previews and independent comparisons do not establish full parity.
 
 ## Joint fixed and variable record updates
 
+The SQL engineering UPDATE frontend now selects one native service from the
+complete target metadata. Fixed-only requests retain their existing batch
+profile; one variable field uses the existing variable service; fixed fields and
+one Short Text/Binary field use the joint fitted service. Explicit modes remain
+available. Memo/OLE still require their explicit mode, and multiple variable
+targets refuse even when no rows match. This routing does not evaluate defaults.
+
+Both frontend source gates pass on 43 independently authored source/expected
+pairs. Typed adapter consumers pass 86 complete-image comparisons, SQL consumers
+pass eight, and eight actual CLI copies match their complete expected images.
+The [frontend contract](access/writes/SQL_ENGINEERING_COPIES.md) distinguishes
+single-variable DATA growth from mixed updates within existing record capacity.
+
 The [fitted mixed-update engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now composes
 fixed fields and one Short Text/Binary field from one original record. Complete
 record reconstruction and fresh joint key projections precede one final candidate.
@@ -26,8 +39,9 @@ The old independent record-proof slice passes three tests and five shared variab
 integration targets pass 36 tests. Joint key controls, strict ACE Clippy and minimal
 builds pass. The [record](testing/results/ace16-fitted-mixed-updates-2026-10-30.json)
 retains source corrections before producers and the initial encoding mismatch;
-no expected image changed after its producer ran. Adapter/CLI routing is the next
-consumer; allocation, normal saves and native Access qualification remain open.
+no expected image changed after its producer ran. Metadata-directed adapter/CLI
+consumers now use this service; mixed record allocation, normal saves and native
+Access qualification remain open.
 
 ## Passive display metadata on ACE 16 writes
 

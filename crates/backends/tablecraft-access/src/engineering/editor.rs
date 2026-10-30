@@ -1,4 +1,5 @@
 //! Snapshot-bound SQL assignments finish through one explicit engineering service.
+mod routing;
 use super::{EngineeringCopy, EngineeringError, EngineeringRequest, UpdateMode, preview};
 use crate::editing::{NativeEditError, snapshot};
 use tablecraft_ace::{
@@ -16,6 +17,11 @@ use tablecraft_schema::ScalarType;
 /// One explicit engine maintenance policy, never a retry or save authorization.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ScalarUpdateMode {
+    /// Select one service from resolved target metadata before native planning:
+    /// fixed batch, one variable field, or a fitted fixed/variable statement.
+    /// Shared Text/Binary metadata does not certify Short Text/Binary storage;
+    /// the selected engine service still refuses Memo/OLE or other wrong kinds.
+    Default,
     /// Fixed-field maintenance using the selected existing fitting/growth/action profile.
     Fixed(UpdateMode),
     /// One Short Text/Binary column, with optional qualified encoded INDEX growth.
@@ -78,6 +84,10 @@ impl EditableTable for AccessEngineeringEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<EngineeringCopy, NativeEditError> {
         check(budget, cancelled)?;
+        if self.mode == ScalarUpdateMode::Default {
+            return self.default_columns(&[ColumnUpdates { column, updates }], budget, cancelled);
+        }
+
         let position = self
             .snapshot
             .columns()
@@ -93,6 +103,7 @@ impl EditableTable for AccessEngineeringEditor {
 
         let table = self.snapshot.name();
         let request = match self.mode {
+            ScalarUpdateMode::Default => return Err(NativeEditError::Unsupported),
             ScalarUpdateMode::Fixed(mode) => {
                 let rows =
                     self.requests(position, updates, FixedScalarUpdate::new, budget, cancelled)?;
@@ -154,6 +165,10 @@ impl EditableBatch for AccessEngineeringEditor {
             return Err(NativeEditError::Unsupported);
         }
 
+        if self.mode == ScalarUpdateMode::Default {
+            return self.default_columns(columns, budget, cancelled);
+        }
+
         let ScalarUpdateMode::Fixed(mode) = self.mode else {
             let [column] = columns else {
                 return Err(NativeEditError::Unsupported);
@@ -162,6 +177,19 @@ impl EditableBatch for AccessEngineeringEditor {
         };
 
         let positions = self.validate_columns(columns, budget, cancelled)?;
+        self.fixed_columns(columns, positions, mode, budget, cancelled)
+    }
+}
+
+impl AccessEngineeringEditor {
+    fn fixed_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        positions: Vec<usize>,
+        mode: UpdateMode,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<EngineeringCopy, NativeEditError> {
         budget
             .charge_allocation(
                 columns.len() as u64,
@@ -213,9 +241,7 @@ impl EditableBatch for AccessEngineeringEditor {
         )
         .map_err(engine_error)
     }
-}
 
-impl AccessEngineeringEditor {
     fn check_mode(&self, position: usize) -> Result<(), NativeEditError> {
         let target = self
             .snapshot
@@ -224,6 +250,7 @@ impl AccessEngineeringEditor {
             .ok_or(NativeEditError::Unsupported)?;
 
         match self.mode {
+            ScalarUpdateMode::Default => {}
             ScalarUpdateMode::Variable { .. } | ScalarUpdateMode::LongValue => {
                 if !matches!(target.data_type(), ScalarType::Text | ScalarType::Binary) {
                     return Err(NativeEditError::Unsupported);
@@ -267,6 +294,15 @@ impl AccessEngineeringEditor {
                 .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
                 .ok_or(InspectError::StructureLimit)?;
 
+            for candidate in self.snapshot.columns() {
+                check(budget, cancelled)?;
+                budget
+                    .charge(
+                        Resource::Steps,
+                        candidate.name().len().min(column.column.len()) as u64,
+                    )
+                    .map_err(InspectError::from)?;
+            }
             let position = self
                 .snapshot
                 .columns()
@@ -312,13 +348,23 @@ impl AccessEngineeringEditor {
                     if !target.nullable() {
                         return Err(NativeEditError::Unsupported);
                     }
-                } else if ScalarType::of(update.value()) != Some(target.data_type())
-                    || target
-                        .type_descriptor()
-                        .validate_value(update.value())
-                        .is_err()
-                {
-                    return Err(NativeEditError::Unsupported);
+                } else {
+                    let work = match update.value() {
+                        Value::Text(value) => value.len(),
+                        Value::Binary(value) => value.len(),
+                        _ => 0,
+                    };
+                    budget
+                        .charge(Resource::Steps, work as u64)
+                        .map_err(InspectError::from)?;
+                    if ScalarType::of(update.value()) != Some(target.data_type())
+                        || target
+                            .type_descriptor()
+                            .validate_value(update.value())
+                            .is_err()
+                    {
+                        return Err(NativeEditError::Unsupported);
+                    }
                 }
             }
         }

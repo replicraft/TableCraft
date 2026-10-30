@@ -3,31 +3,31 @@ use super::base;
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access as raw;
 
-pub(in crate::table::mutation) const PAGE: usize = 4096;
+pub const PAGE: usize = 4096;
 const ROOTS: [usize; 3] = [13, 15, 16];
 
 #[derive(Clone, Copy, Debug)]
-pub(in crate::table::mutation) enum Family {
+pub enum Family {
     Legacy,
     Modern,
     Binary,
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(in crate::table::mutation) enum Recipe {
+pub enum Recipe {
     Permutation,
     Shorter,
     Nulls,
 }
 
 #[derive(Clone)]
-pub(in crate::table::mutation) struct Row {
+pub struct Row {
     pub id: i32,
     pub age: Option<i32>,
     pub name: Option<Vec<u8>>,
 }
 
-pub(in crate::table::mutation) struct Case {
+pub struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub rows: Vec<Row>,
@@ -61,7 +61,7 @@ impl Family {
     }
 }
 
-pub(in crate::table::mutation) fn values(row: &Row, family: Family) -> Vec<Value> {
+pub fn values(row: &Row, family: Family) -> Vec<Value> {
     vec![
         Value::Int32(row.id),
         row.age.map_or(Value::Null, Value::Int32),
@@ -70,7 +70,7 @@ pub(in crate::table::mutation) fn values(row: &Row, family: Family) -> Vec<Value
     ]
 }
 
-pub(in crate::table::mutation) fn name_value(row: &Row, family: Family) -> Value {
+pub fn name_value(row: &Row, family: Family) -> Value {
     match &row.name {
         None => Value::Null,
         Some(bytes) if family.text() => {
@@ -206,7 +206,7 @@ fn name_key(value: Option<&[u8]>, family: Family, descending: bool) -> Vec<u8> {
     bytes
 }
 
-fn index_page(
+pub(super) fn index_page(
     original: &[u8],
     rows: &[Row],
     physical: usize,
@@ -256,13 +256,7 @@ fn data_page(owner: u32, rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     page
 }
 
-pub(in crate::table::mutation) fn case(
-    code: u8,
-    family: Family,
-    descending: bool,
-    recipe: Recipe,
-    forwarded: bool,
-) -> Case {
+pub fn case(code: u8, family: Family, descending: bool, recipe: Recipe, forwarded: bool) -> Case {
     let compressed = family.text() && code == 5;
     let low = family.low();
     let high = family.high();
