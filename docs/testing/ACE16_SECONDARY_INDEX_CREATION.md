@@ -51,3 +51,28 @@ proof and actual CLI/shared-service consumer remain unimplemented. Unknown
 tails/chains and wider policies must not be admitted by inference. Blank-database
 creation, general CREATE/ALTER TABLE, required macro coverage, transactions and
 normal ACE saves remain separate unfinished work.
+
+## Independent public-API reference
+
+The first Jackcess comparison stopped on its first read-only open, before any
+index creation. The authored system catalog has a zero free-space-map reference;
+Jackcess requires that map during bootstrap. All source/expected images stayed
+unchanged, and the remaining 55 planned calls were unrun. The frozen corpus was
+not patched to make this independent reader accept it.
+
+A separate corpus was then generated through Jackcess 5.0.4's public API. All
+48 first-run processes pass: eight source creations, eight read-only source
+getters, sixteen actual index creations and sixteen fresh read-only getters.
+Both profiles, all four populations and both directions retain complete rows
+and the frozen semantic index order. New nonunique/include-NULL indexes have
+flags 0x80 and distinct-family counters 0/3/4/541, including one NULL family and
+all duplicate ROW entries.
+
+Generated catalogs, existing counters and physical allocation differ from the
+authored byte models. These are semantic reference results, not whole-image
+equivalence or direct qualification of those authored files. All generated
+sources and the original authored images remain unchanged. Reference databases
+use the pinned library's embedded templates privately; no third-party fixture
+bytes are added to the repository. The [reference record](results/ace16-secondary-index-public-reference-2026-10-30.json)
+retains the initial refusal, unrun calls, frozen programs and separate passing
+series. No Microsoft Access, native-save or transaction qualification is implied.

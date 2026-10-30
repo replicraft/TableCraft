@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-30",
+  "feature": "Secondary index public-reference investigation",
+  "authored_image_series": {
+    "readonly_attempts": 1,
+    "readonly_refusals": 1,
+    "creation_attempts": 0,
+    "unrun_commands": 55,
+    "reason": "Jackcess system-catalog bootstrap requires a nonzero free-space-map reference; the authored MSysObjects definition leaves it0",
+    "original_bytes_patched": false,
+    "full_authored_interoperability_qualified": false
+  },
+  "separate_generated_series": {
+    "source_creations": 8,
+    "source_getters": 8,
+    "index_creations": 16,
+    "fresh_index_getters": 16,
+    "all_processes_passed_first_run": true,
+    "profiles": [
+      "V2016",
+      "V2019"
+    ],
+    "populations": [
+      "empty",
+      "distinct",
+      "nullable duplicate",
+      "600-row pressure"
+    ],
+    "directions": [
+      "ASC",
+      "DESC"
+    ],
+    "new_key_family_counts": [
+      0,
+      3,
+      4,
+      541
+    ],
+    "new_flags": 128,
+    "nonunique": true,
+    "includes_nulls": true,
+    "complete_rows_and_order_match_frozen_semantics": true,
+    "generated_sources_unchanged_after_creation": true,
+    "literal_source_and_expected_images_unchanged": true,
+    "source_catalogs_and_old_counters_equal_literal_models": false,
+    "full_physical_equivalence_claim": false
+  },
+  "reference": "Pinned Jackcess5.0.4 runtime; own bounded public-API programs; privately generated sources use its embedded templates",
+  "runtime_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+  "native_access": false,
+  "normal_saves_or_transactions_qualified": false,
+  "inputs_and_evidence": [
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/first-freeze.json",
+      "bytes": 3677,
+      "sha256": "d0d8c5213758658f0d4a564b2bdca0c1c984de539def6e832dc285eafc938e24"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/export-first-manifest.json",
+      "bytes": 10331,
+      "sha256": "0d26dec47016086e9c9ecec5c75819e34d68be6b54b85755a1a8b857e58022f3"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/export-first-root.log",
+      "bytes": 388,
+      "sha256": "2e93883bb6ae98a86220a76e1b3a98506fcd5435d5922813f30c6a7da00dce69"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/compile-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/public-first-plan.json",
+      "bytes": 22929,
+      "sha256": "0279b473330fbf9bdce2a2fde5379f6740b88cbb67a5665adc8d8d727802471a"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/public-controller-first-freeze.json",
+      "bytes": 901,
+      "sha256": "7722f77601d8cb3e446c14fb5177df6b0e0b5bb6832941683bcb7f8a69877d4d"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/public-first-report.json",
+      "bytes": 1352,
+      "sha256": "a42f583d827c3310af8a560a60b88564029e1d5986b66af7d616fd8d2e6a93e4"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/public-first-logs/h5-empty-source-read.stderr",
+      "bytes": 903,
+      "sha256": "7bc68d4cc82113e8df5d30ea719e44cbfa773209d63087006cd65dd53320040e"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-reference-source-first-plan.json",
+      "bytes": 1190,
+      "sha256": "c52498d89987025550a33ea05d23077fd5523468cf481e91f887ceb47b75964c"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-bounded-source-freeze.json",
+      "bytes": 835,
+      "sha256": "aba66484c334d28253f84cb1c337fa851aac036d0688bb96b062f0765804e6e6"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-compile-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-class-first-freeze.json",
+      "bytes": 218,
+      "sha256": "3ee6c3466b332f30e835ff9640a4145ce463bba2f5a712e1ea7f16c56931fb23"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-public-first-plan.json",
+      "bytes": 19329,
+      "sha256": "5a5ce1365f68bc0234cafd3e531b42a159e78182616a17542f8341962c22cd1d"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-controller-first-freeze.json",
+      "bytes": 1142,
+      "sha256": "a0234efe8aa7ee4e56edfc26fa190f7fcd92defeafde1e04747a1b5580eb9a76"
+    },
+    {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-first-report.json",
+      "bytes": 63522,
+      "sha256": "d6396b23a4e28e82f91dd283d86d45976550f94de80163a1a81728705c33c738"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/create_index_tests/reference.rs",
+      "bytes": 3269,
+      "sha256": "592a759935b79b4ec40d8395659c2beb900b60ad534c756d48029ce1106e9e05"
+    }
+  ],
+  "checks": {
+    "strict-first": {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/strict-first-root.log",
+      "sha256": "31a5153f1d295aadc1c7b24a68fee7778aa4a437265ad707982d2a0e8e29420e",
+      "exit_code": 0
+    },
+    "format-first": {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/format-first-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    "links-first": {
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/links-first-root.log",
+      "sha256": "8726ac12aaef877e81ad753ba37f4ab66caf3a3f394fd2f4e68919b6d84cba21",
+      "exit_code": 0
+    }
+  }
+}
