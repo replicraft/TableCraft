@@ -5,6 +5,45 @@ use std::{
     process::{Command, Output},
 };
 
+#[test]
+fn file_transport_preserves_qualified_joint_text_and_binary_requests() {
+    for family in [model::Family::Legacy, model::Family::Binary] {
+        let case = source_model::case(6, family, false, source_model::Destination::EndOfFile);
+        let directory = tempfile::tempdir().unwrap();
+        let input = directory.path().join("before.accdb");
+        let output = directory.path().join("after.accdb");
+        let requests = directory.path().join("requests.tsv");
+        fs::write(&input, &case.before).unwrap();
+        let binary = matches!(family, model::Family::Binary);
+        fs::write(
+            &requests,
+            format!(
+                "Items\tAge\t3\tint32\tnull\t40\nItems\tName\t3\t{}\tnull\t{}\n",
+                if binary { "binary" } else { "text" },
+                if binary { "00ff" } else { "aa" },
+            ),
+        )
+        .unwrap();
+        let result = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+            .args(["write", "preview-update"])
+            .arg(&input)
+            .arg(&output)
+            .arg("--set-file")
+            .arg(&requests)
+            .arg("--variable")
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let actual = fs::read(&output).unwrap();
+        assert!(actual == case.expected, "qualified joint complete image");
+        assert!(fs::read(&input).unwrap() == case.before);
+    }
+}
+
 fn run(
     before: &Path,
     after: &Path,

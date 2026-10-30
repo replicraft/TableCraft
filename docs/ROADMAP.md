@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+Typed expected-value UPDATE now also accepts bounded
+[`--set-file` quoted TSV](access/writes/ENGINEERING_COPIES.md), so large values
+need not be command arguments. It reuses the existing typed/native services and
+keeps their limits and save gates; focused source-first copy checks pass.
+
 The working copy workflows now also include [typed batch omissions/defaults](testing/ACE16_TYPED_BATCH_OMISSIONS.md)
 and native-metadata-driven single Memo/OLE routing. Explicit
 [observed macro inventory](access/schema/NATIVE_TABLE_EXTRA.md) reports stored
@@ -49,11 +54,14 @@ The UPDATE frontend now chooses one metadata-directed engineering service for
 fixed targets, one variable field, or a joint fitted fixed/variable statement;
 both 43-pair frontend source gates and focused adapter/CLI consumers pass.
 Explicit modes keep their existing profiles. The broader frontend regressions,
-strict and minimal checks pass. Added Memo/OLE refusal and cumulative default-route
-budget/cancellation controls pass; affected fixture consumers and final strict
-checks also pass, with test-only extraction/import corrections recorded.
-Multiple variable fields and mixed LVAL updates remain open; routing does not
-evaluate omitted-field defaults or qualify normal ACE saves.
+strict and minimal checks pass. The earlier Memo/OLE refusal controls and
+cumulative default-route budget/cancellation checks are retained as observed
+history; current single-column Memo/OLE routing is described above. Affected
+fixture consumers and final strict checks also pass, with test-only
+extraction/import corrections recorded. Multiple variable fields now use the
+[whole-row service](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md); mixed LVAL updates
+remain open. UPDATE routing does not evaluate omitted-field defaults or qualify
+normal ACE saves.
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
 snapshot handles and explicit Restrict/Cascading actions. Atomic fixed multi-column
 UPDATE now evaluates every assignment from original rows before one backend

@@ -1,6 +1,7 @@
 //! Capture and fully parse explicit request inputs before opening a database.
 pub(super) mod presence;
 mod quotes;
+pub(super) mod update_file;
 use super::{
     error::{Error, input},
     tick, values,

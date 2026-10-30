@@ -1,6 +1,7 @@
 mod grouping;
 mod mixed;
 mod omissions;
+mod update_file;
 
 use super::{args::Command, error::Error, input, updates, values};
 use crate::{Cli, commands};

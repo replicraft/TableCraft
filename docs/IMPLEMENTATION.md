@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Typed UPDATE request files
+
+`write preview-update --set-file TSV` now accepts bounded, headerless quoted
+six-field UPDATE requests using the existing typed converters and selected
+engine service once. It preserves exact expected values, NULL/`value:` escapes,
+publication controls and all native limits. The
+[CLI contract](access/writes/ENGINEERING_COPIES.md) records source-first fourteen
+images, a 256 KiB file-only Memo payload, seven exact file copies, six argv parity
+copies and focused parser/fixed/mixed checks. Affected CLI regressions pass 47
+unit and 39 integration functions, and all-target/all-feature CLI strict checks
+pass. Normal-save and native Access qualification do not expand.
+
 ## Typed batch INSERT omissions and defaults
 
 Typed INSERT TSV now distinguishes `omitted` with empty DATA from supplied NULL
