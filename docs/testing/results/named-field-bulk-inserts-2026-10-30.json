@@ -1,0 +1,242 @@
+{
+  "feature": "Named-field typed bulk INSERT",
+  "date": "2026-10-30",
+  "scope": "adapter-owned explicit names and original presence over existing native batch services; engineering copies only",
+  "source_first": {
+    "functions": 1,
+    "pairs": 28,
+    "images": 56,
+    "reordered_full_pairs": 16,
+    "missing_other_default_pairs": 8,
+    "missing_nullable_id_pairs": 4,
+    "status": "passed before producer",
+    "log": {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/source-first-root.log",
+      "bytes": 482,
+      "sha256": "5b1a8a58df797d0eae81208f8dac6542e663587dfa9db21fe45be3c150cf26ee"
+    },
+    "freeze": {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/source-registered-first-freeze.json",
+      "bytes": 1386,
+      "sha256": "7ab49c7572ea3aa63411679c61f65400a4bc306e6789d7a47ac9b617a017ddba"
+    }
+  },
+  "focused_first_round": {
+    "normal_cli": "passed",
+    "move_only_text_binary_unit": 1,
+    "cli_argument_unit": 1,
+    "api_functions": 7,
+    "direct_complete_images": 28,
+    "cli_complete_images": 42,
+    "existing_output_refusals": 42,
+    "cli_other_no_output_refusals": 8,
+    "direct_name_shape_carrier_counter_refusals": 6,
+    "complete_path_clock_reads": 0,
+    "needed_default_clock_reads_per_batch": 1,
+    "resource_controls": "capture+binding+mapping+finish exact all pools, one-below each, final cancellation",
+    "status": "all passed first runtime"
+  },
+  "broader_checks": {
+    "cli_unit": 48,
+    "cli_integration": 66,
+    "cli_per_target": {
+      "query_preview_inserts": 27,
+      "query_preview_updates": 27,
+      "write_previews": 7,
+      "write_update_files": 5
+    },
+    "cli_status": "passed",
+    "cli_log": {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/cli-regression-first-root.log",
+      "bytes": 12702,
+      "sha256": "8bd1eaf80c5d6cfe2d9d42520cfaa82c325ceab45aa597eed4430cf32c1c0ad1"
+    },
+    "access_first_invocation": {
+      "status": "unrun; two incorrect target names stopped before compilation or tests",
+      "product_failure": false,
+      "log": {
+        "path": ".cache/ace16-named-bulk-insert-next-20261030/access-regression-first-root.log",
+        "bytes": 1627,
+        "sha256": "5f46a7ad9cd780aa73bfba71f99eddd902c7af199a09cbc6753fee67a75de03b"
+      }
+    },
+    "access_corrected": {
+      "status": "passed",
+      "unit_functions": 64,
+      "default_long_value_functions": 4,
+      "preserved_boolean_functions": 2
+    },
+    "minimal_access": "passed",
+    "strict_access_cli": "passed all targets/all features",
+    "strict_log": {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/strict-first-root.log",
+      "bytes": 522,
+      "sha256": "a099c92055d5ff8158583a3de5a3613ed20bd7d2d8a00359ba7923b929241d08"
+    },
+    "minimal_log": {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/minimal-first-root.log",
+      "bytes": 301,
+      "sha256": "e264ee96a99b5667a175dc54a20fa7bf720e4cb7b94a39a0db59b65302647918"
+    },
+    "final_format_links_boundaries": "passed"
+  },
+  "no_field_path": "original positional parser/dispatch retained",
+  "name_policy": "existing AccessEngineeringInserter SchemaPolicy; duplicate detection by resolved position",
+  "ownership": "supplied owned payloads moved once; borrowed names/Clock; defaults remain native and needed-only",
+  "no_native_engine_db_query_or_kind_changes": true,
+  "native_access_comparison": false,
+  "normal_save_qualified": false,
+  "chronology": "root observed in-flight formatting gaps before coherent handoff; scoped formatter and manual spacing corrected before normal/API acceptance, with no source/expected change",
+  "code": [
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/typed_omissions.rs",
+      "bytes": 4581,
+      "sha256": "6b220db284d0bafd2f7d2b6c35bd205b1f862d2df4ed91f1695583fb551c1278"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/typed_omissions/model.rs",
+      "bytes": 7687,
+      "sha256": "a4b65b758e8fff452be28ab80487425bdb3e4c7a3ed19a717f968f1866673350"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/typed_omissions/named.rs",
+      "bytes": 2557,
+      "sha256": "809718ba24f046d2d5358ed0fa0d1b75d78afafb92088d88f43b2e4538c7f473"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/typed_omissions/named/model.rs",
+      "bytes": 4917,
+      "sha256": "d1c8ef80ac52e41ca771408785b86da55076183d498f08318974401e79a72b36"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/mod.rs",
+      "bytes": 18064,
+      "sha256": "2616d07d9045b7f156dce3ebabe66af4d3d37a669900b4bf91710605c4d28f26"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/inserter.rs",
+      "bytes": 6053,
+      "sha256": "cce158d29f70494e2ac6437634c874a64b5e04b77fc326fb36debaeece920ecc"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/inserter/named.rs",
+      "bytes": 10933,
+      "sha256": "dfc1be30b22b492eedc5fbbccb0481f124563fba5e2798f274d26a485453e7c4"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/inserter/omitting.rs",
+      "bytes": 3957,
+      "sha256": "f0e9ebb8a1594d041e992ebf884ac8dd76491638cbd9a3bd7fc4b435b040621b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor.rs",
+      "bytes": 17376,
+      "sha256": "3a860d052bf8f45dc7fe7ab813d47a056261c5767c9b28ed744abcab27324f58"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/deleting.rs",
+      "bytes": 3249,
+      "sha256": "2f1bf90213dd53a020ed5e93f9602dd1f8d520873f1fdc42a4ebdf733d13f798"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/args.rs",
+      "bytes": 6380,
+      "sha256": "9cb37aafbf6409d3cd9396d711fa14597627d81a401649b1faabaf5904c7efff"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input.rs",
+      "bytes": 8607,
+      "sha256": "c5af7a841c2d9a6ede3dc652c28a428da76ef1b3a3dc23e63c686d427f3a57ec"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/input/presence.rs",
+      "bytes": 2784,
+      "sha256": "06f54896766f16f51ce0bcf30057525475ea33e45f1beaa53aca7cc092d11877"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/run.rs",
+      "bytes": 13905,
+      "sha256": "7faa81fdfed8335e29ad2df80ce667c2f29cb8eb7f1cf6b03d6425e8d8f79267"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/tests.rs",
+      "bytes": 8040,
+      "sha256": "c860d06a4594ff4b4a51ba49aceeaf55f5199428678752ecfa8736bc374d7ca7"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/write/tests/named.rs",
+      "bytes": 844,
+      "sha256": "c18b24a65c4c623244652c12a1521315a43ef9109f064d9661843667d3cd2b9b"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/query_preview_inserts/typed_omissions/named/api.rs",
+      "bytes": 14258,
+      "sha256": "9c2d2245d0347a5834f22d070acbaf0c6533f7107dd443b06d0aee978373f1e3"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/normal-first-root.log",
+      "bytes": 402,
+      "sha256": "0d7c4421444a15413b71097fdd483bddbd33a9a6585683791b0710d5ccf996ae"
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/move-first-root.log",
+      "bytes": 622,
+      "sha256": "331a47325fc862d4feb7dff91c84aefc96a6c8bb5526d42a618d4eb441ced07f"
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/args-first-root.log",
+      "bytes": 705,
+      "sha256": "8d3357b888f6181622e88bf4f5a9763b8357533aa983a9812c5656f909f93fd2"
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/api-first-root.log",
+      "bytes": 1158,
+      "sha256": "c9862d45435fe9928299f29fdfc41c421812b34dedb4ccd42f3930756f003c83"
+    }
+  ],
+  "installed_freeze": {
+    "path": ".cache/ace16-named-bulk-insert-next-20261030/production-and-api-first-coherent-freeze.json",
+    "bytes": 3461,
+    "sha256": "7d9ae35ba756e4157728210c589959385b471f76ac17fb6811f51892842e152d"
+  },
+  "final_check_logs": [
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/access-regression-corrected-root.log",
+      "bytes": 9080,
+      "sha256": "7b321116982f1ab7a3d806cfefe8a0016b32b3e3d0b525f5b6a262034faf4474",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/strict-first-root.log",
+      "bytes": 522,
+      "sha256": "a099c92055d5ff8158583a3de5a3613ed20bd7d2d8a00359ba7923b929241d08",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/minimal-first-root.log",
+      "bytes": 301,
+      "sha256": "e264ee96a99b5667a175dc54a20fa7bf720e4cb7b94a39a0db59b65302647918",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/format-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/links-root.log",
+      "bytes": 53,
+      "sha256": "8d025f82cb323f81f5672b3af4168d387a83a0ef7e9cca239ffbb8a26738af50",
+      "exit_code": 0
+    },
+    {
+      "path": ".cache/ace16-named-bulk-insert-next-20261030/boundaries-root.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "exit_code": 0
+    }
+  ]
+}

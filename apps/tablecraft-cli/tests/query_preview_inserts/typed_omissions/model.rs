@@ -164,7 +164,7 @@ fn wire(row: &Row, kind: Kind) -> Vec<u8> {
     bytes
 }
 
-fn append(before: &[u8], generated: bool, kind: Kind, added: &[Row]) -> Vec<u8> {
+pub(super) fn append(before: &[u8], generated: bool, kind: Kind, added: &[Row]) -> Vec<u8> {
     let mut after = before.to_vec();
     let data = 12 * PAGE;
     assert_eq!(&before[data + 12..data + 14], &[3, 0]);

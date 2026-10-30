@@ -476,6 +476,7 @@ fn copy(
 fn engine_error(error: EngineeringError) -> NativeEditError {
     match error {
         EngineeringError::Engine(error) => NativeEditError::Edit(error),
+        EngineeringError::Binding(error) => error,
     }
 }
 

@@ -97,6 +97,7 @@ impl AccessEngineeringInserter {
         };
         preview(self.image, request, budget, cancelled).map_err(|error| match error {
             super::super::EngineeringError::Engine(error) => NativeEditError::Edit(error),
+            super::super::EngineeringError::Binding(error) => error,
         })
     }
 }
