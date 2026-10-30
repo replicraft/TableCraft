@@ -1,9 +1,13 @@
 //! Audit literal projection is independent of producer assignment/rescale code.
-use crate::{EditError, InspectError, NativeColumn, WriteBlocker, header::check};
+use crate::{
+    EditError, InspectError, NativeColumn, WriteBlocker, header::check,
+    table::mutation::insert::default_clock,
+};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Currency, Decimal, Value},
 };
+use tablecraft_expressions::functions::dates::clock::{ClockFunction, ClockReading};
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 use tablecraft_sql::{
     ParseErrorKind, ParseLimits, parse_expression_strict,
@@ -18,6 +22,8 @@ const DEPTH_LIMIT: usize = 16;
 pub(super) fn derive(
     column: &NativeColumn,
     text: &str,
+    reading: Option<ClockReading>,
+    used_clock: &mut bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Value, EditError> {
@@ -53,6 +59,33 @@ pub(super) fn derive(
         }
     })?;
     let kind = column.scalar_type().ok_or_else(carrier)?;
+    // Independently bind the original source call, never a producer default/cache.
+    if let Expression::Call {
+        qualifier,
+        name,
+        arguments,
+    } = &expression
+    {
+        if !qualifier.is_empty() || !arguments.is_empty() {
+            return Err(property());
+        }
+        let function = if name.as_str().eq_ignore_ascii_case("Date") {
+            ClockFunction::Date
+        } else if name.as_str().eq_ignore_ascii_case("Now") {
+            ClockFunction::Now
+        } else {
+            return Err(property());
+        };
+        let reading = reading.ok_or_else(property)?;
+        if kind != ScalarType::DateTime
+            || !column.fixed()
+            || column.storage_length() != size_of::<i64>()
+        {
+            return Err(carrier());
+        }
+        *used_clock = true;
+        return default_clock::project(function, reading, budget, cancelled);
+    }
     let mut sign = 1_i128;
     let mut numeric_unary = false;
     loop {

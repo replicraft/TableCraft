@@ -1,0 +1,400 @@
+{
+  "feature": "Explicit captured Date()/Now() defaults for ACE16 omission INSERT previews",
+  "date": "2026-10-30",
+  "state": "Normal/focused source/API and broader native/Access/CLI regression checks pass; strict passes after unrelated shared CLI parser style correction; minimal ACE/Access pass",
+  "authority": "Immutable original source + presence-bearing requests + explicit generation policy + separate coordinator-captured ClockReading; staged cache is not input authority",
+  "source_before_api": [
+    {
+      "functions": 2,
+      "expected_images": 24,
+      "exit": 0,
+      "note": "First selector selected positive/date image and refusal functions only",
+      "log": {
+        "path": ".cache/ace16-clock-defaults-next-20261030/source-first-root.log",
+        "bytes": 650,
+        "sha256": "23afce351ad05325738f5ae5f7298fd105fa0922307ac77cc6cde4a0e8c42d42"
+      }
+    },
+    {
+      "functions": 1,
+      "expected_images": 4,
+      "exit": 0,
+      "note": "Separately selected supplied/alias/empty source function; no failure or retry",
+      "log": {
+        "path": ".cache/ace16-clock-defaults-next-20261030/source-supplied-first-root.log",
+        "bytes": 417,
+        "sha256": "f4b9405bb1aba06ca91eb413d11b4808b7eb43ed1865b230d6339b6119173736"
+      }
+    },
+    {
+      "functions": 1,
+      "source_cases": 2,
+      "exit": 0,
+      "note": "Raw i32::MAX LAST with existing live IDs1/2; empty expected equals source",
+      "log": {
+        "path": ".cache/ace16-clock-defaults-next-20261030/source-max-first-root.log",
+        "bytes": 505,
+        "sha256": "fe62f549697993e3f87949fc91c1ee1ce601e123f06bb46dbf9d66b593e80c91"
+      }
+    },
+    {
+      "functions": 1,
+      "expected_images": 8,
+      "exit": 0,
+      "note": "Mixed needed Date/supplied NULL and omitted literal NULL before first clock APIs",
+      "log": {
+        "path": ".cache/ace16-clock-defaults-next-20261030/source-extra-first-root.log",
+        "bytes": 529,
+        "sha256": "91cc2dc2bcef7b87b9a17cc0bfe9a131c1e347c2e66db7cb191ae1f3960f67ec"
+      }
+    }
+  ],
+  "first_normal_check": {
+    "exit": 0,
+    "log": {
+      "path": ".cache/ace16-clock-defaults-next-20261030/normal-check-first-root.log",
+      "bytes": 183,
+      "sha256": "ae206eaa4ebe01d165d7c82968bee821233ee72494e191de7faa94fd62de18b7"
+    }
+  },
+  "first_actual_api": {
+    "exit": 0,
+    "functions": 15,
+    "source_functions": 5,
+    "api_functions": 8,
+    "causal_audit_functions": 2,
+    "complete_expected_images": 36,
+    "log": {
+      "path": ".cache/ace16-clock-defaults-next-20261030/api-first-root.log",
+      "bytes": 2253,
+      "sha256": "e78fec3368ffd05581a0ded4fe8b178177237486f2646d7d8e225ac3381f0d29"
+    }
+  },
+  "scope": {
+    "forms": [
+      "unqualified zero-argument Date()",
+      "unqualified zero-argument Now()"
+    ],
+    "target": "legacy fixed DATE only",
+    "reading": "One explicit provider read after source/shape/target/width/counter/range preflight; same immutable reading all rows/fields",
+    "zero_reads": [
+      "supplied value/NULL",
+      "empty operations",
+      "omitted literal NULL",
+      "unsupported needed shapes/targets/widths",
+      "stale LAST",
+      "known generated Int32 exhaustion",
+      "early cancellation/resource refusal"
+    ],
+    "projection": "Existing ClockReading whole-second civil DATE semantics; fractions truncated, no timezone or instant inference",
+    "errors": "Cancelled/Limit/Allocation explicitly map to Inspect; other EvalError callbacks/projections map DefaultEvaluation without blanket From or retry",
+    "old_api": "Literal-only/complete APIs and paid old paths retained; needed Date()/Now() still refused without explicit clock capability",
+    "closed": [
+      "Time/Timer and other runtime calls",
+      "qualified/argument calls",
+      "Extended Date/Time defaults",
+      "ambient clock in engine/inspection",
+      "NewValues autodetection",
+      "normal ACE save/data-macro qualification",
+      "native Access statement timing claim"
+    ]
+  },
+  "source_and_expected_changes_after_api": false,
+  "frontend_status": "Actual Access/CLI source/API evidence is recorded separately; this native result does not substitute for consumer qualification",
+  "freezes": [
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/first-private-source-freeze.json",
+      "bytes": 3082,
+      "sha256": "5fae8b0d6a7d051be668af4ad7caec916319e1fcce8f1952d3c902638785c2ac"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/source-registered-freeze.json",
+      "bytes": 1149,
+      "sha256": "a09b86586e15aa1146bcd52b900c8c050b34b6bf22b337d4707cb64f1f5cd73a"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/max-counter-source-freeze.json",
+      "bytes": 1315,
+      "sha256": "ee071d556e0cae92c01d8297ad1b5fa2999c72426aa5f107e3e123a7edbf6945"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/producer-registered-first-freeze.json",
+      "bytes": 4086,
+      "sha256": "f42fb6d1ad3f5277ac3795ccdb92855bcbc970b3960619c2a2535e1d345f7c65"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/producer-registered-import-freeze.json",
+      "bytes": 4486,
+      "sha256": "31436b58a8d8d745433e0002049035e3344bf8086c9618e1ec42c2812fa661f7"
+    },
+    {
+      "path": ".cache/ace16-clock-defaults-next-20261030/extra-source-registered-freeze.json",
+      "bytes": 4850,
+      "sha256": "6295c5810aff8c9ed55ef04090882c7c5ae6d11fcd91e17d7bb2042878bb35c1"
+    }
+  ],
+  "sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/error.rs",
+      "bytes": 2188,
+      "sha256": "4b663d66c2657ac2d402e70ef48e5fa79cbf5fb71a4761282376a2a59c08d372"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults/literal.rs",
+      "bytes": 7313,
+      "sha256": "3e79f473f5b63b844af985ffc5187aecd01d51950150727ce279e831516cc1eb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults.rs",
+      "bytes": 6315,
+      "sha256": "8b327880b068f0bff8cda07c65553877328f7a89111e8d679f0c2a86d90efb01"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "bytes": 10251,
+      "sha256": "9820fcbe8aac0d3d71f58c0e5b06a9743b4ce24dc117ec95bd5217d01c63efea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/default_clock.rs",
+      "bytes": 1512,
+      "sha256": "edd62da39f5852a1da2ce784fc1f37814373ae8c9b72744bb750ce0373ac43f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "bytes": 11373,
+      "sha256": "269a8a7693aa1d4e1d26874e485908c3817b5a24b0e5cd67d2fb76320470ae03"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/clock/preview.rs",
+      "bytes": 4064,
+      "sha256": "5742f156e2caf2f9e4a717e89b686578c02deb2260a58f00fb4dddfbccb18b4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/clock.rs",
+      "bytes": 5741,
+      "sha256": "af5dee4f05028b93061f1592c17ac3d16e176907b51b371bfafc81abaf13dba2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/constant.rs",
+      "bytes": 7861,
+      "sha256": "2b5564abb0cddaa8f94ef9e66d277fe01149c4b41e8d004d1c4786abc5afc389"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/mod.rs",
+      "bytes": 5587,
+      "sha256": "cadba9f55d133bf1ad1b543ec0ee319ed3807ea19f9981911cbe903ebb37d1c0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/api.rs",
+      "bytes": 14340,
+      "sha256": "acb3b0d38234b891a271364a52a3b40dffabb87529addbc13330dd870c9b5258"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/authority.rs",
+      "bytes": 5349,
+      "sha256": "108ea5ca0c89764b1616bbdb6fe702a4d3a1b7715b9215a685aa0e27bbadcf9b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults.rs",
+      "bytes": 4117,
+      "sha256": "e297788368981110f506701144260d4aa70954e12ed4c977854ccf346544f4e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/model.rs",
+      "bytes": 8754,
+      "sha256": "848a7d0af357c88fefd7b9b694b723e770377185269f74e4f0fe60ea84f23300"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/extra_sources.rs",
+      "bytes": 1944,
+      "sha256": "eecd0d69e4e7e358d1890e13a4524ae45ac7f3223ed42bcc5ad2fec60f183f07"
+    }
+  ],
+  "guide": {
+    "path": "docs/testing/ACE16_CLOCK_INSERT_DEFAULTS.md",
+    "bytes": 6324,
+    "sha256": "a8bddb981dfc644cba3f7a33568116583842f92cf42646a9a6234bd329310ab5"
+  },
+  "primary_references": [
+    {
+      "url": "https://support.microsoft.com/en-us/access/introduction-to-expressions",
+      "supports": "Date() as field DefaultValue; required parentheses and no leading equals in this field form"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-defaultvalue-property-dao",
+      "supports": "Bounded string/expression property and field applicability; no per-operation timing proof"
+    },
+    {
+      "url": "https://support.microsoft.com/en-us/access/functions/now-function",
+      "supports": "Current date/time function result and query examples; no native rounding/capture-count claim"
+    }
+  ],
+  "broader_clock_checks": {
+    "native_insert": {
+      "exit": 0,
+      "functions": 331,
+      "log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/native-insert-first-root.log",
+        "bytes": 46399,
+        "sha256": "b1799d6c35264b34e7a7da177b521c9cd825cd78805ec2f81810408320ad2202"
+      }
+    },
+    "access_library": {
+      "exit": 0,
+      "functions": 55,
+      "log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/access-first-root.log",
+        "bytes": 7033,
+        "sha256": "c5de22ec02789d83852e72fa6e6515f4926b339f1df1d396babd8084d09af1c2"
+      }
+    },
+    "cli": {
+      "exit": 0,
+      "unit_functions": 37,
+      "integration_functions": 51,
+      "integration_breakdown": {
+        "delete": 6,
+        "history": 2,
+        "insert": 14,
+        "update": 19,
+        "Jet4": 4,
+        "write": 6
+      },
+      "total_functions": 88,
+      "log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/cli-first-root.log",
+        "bytes": 10138,
+        "sha256": "b6aed133a6497ff04e6a3bc640b10378d2f27b836bccb4bbdae1630ec9f328ea"
+      }
+    },
+    "strict": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "initial_exit": 101,
+      "initial_log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-first-root.log",
+        "bytes": 1400,
+        "sha256": "78065cd67d4cbb66d900c7bff2b8f9b06ab258d83664567e10433c8a4aa28308"
+      },
+      "reason": "One clippy::collapsible_if in shared CLI write/updates/mixed.rs; root corrected style only, outside native clock paths",
+      "corrected_exit": 0,
+      "corrected_log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/clippy-corrected-root.log",
+        "bytes": 403,
+        "sha256": "7b1fc0985238a4b1d5f6ba1ed689b58046a1bef802121af8c0ec57bf44e982c2"
+      },
+      "native_clock_or_expected_change": false
+    },
+    "minimal_ace": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/minimal-ace-root.log",
+        "bytes": 183,
+        "sha256": "2dddc7ede78023beaef23a4d1387614d1ef20b4e6bf46d574b4fc88b143f7bdc"
+      }
+    },
+    "minimal_access": {
+      "exit": 0,
+      "log": {
+        "path": ".cache/ace16-clock-defaults-batch-20261030/minimal-access-root.log",
+        "bytes": 301,
+        "sha256": "90710bb49c7a440ff05cf805ddb945bdc6bf885e1d97859b7f17cc4ac36a83e0"
+      }
+    }
+  },
+  "final_format_and_links": {
+    "initial_format": 1,
+    "corrected_format": 0,
+    "documentation_links": 0,
+    "mechanical_changes": [
+      "Sorted source-only test module declaration after runtime checks",
+      "Corrected relative link to existing SQL INSERT guide"
+    ],
+    "logs": [
+      {
+        "path": ".cache/ace16-clock-defaults-next-20261030/format-final-root.log",
+        "bytes": 474,
+        "sha256": "4f61fdfe09f4e9237a8de9a3d2db0f4c18a15aed102eb873522d66c2e21e15cc"
+      },
+      {
+        "path": ".cache/ace16-clock-defaults-next-20261030/format-corrected-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-clock-defaults-next-20261030/doclinks-final-root.log",
+        "bytes": 53,
+        "sha256": "0d8c4d1a621cf99c282445446e5c0392e3a1461b40387fcd8875805f55c45731"
+      }
+    ]
+  },
+  "final_source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/error.rs",
+      "sha256": "4b663d66c2657ac2d402e70ef48e5fa79cbf5fb71a4761282376a2a59c08d372"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit.rs",
+      "sha256": "9820fcbe8aac0d3d71f58c0e5b06a9743b4ce24dc117ec95bd5217d01c63efea"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults.rs",
+      "sha256": "8b327880b068f0bff8cda07c65553877328f7a89111e8d679f0c2a86d90efb01"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/audit/defaults/literal.rs",
+      "sha256": "3e79f473f5b63b844af985ffc5187aecd01d51950150727ce279e831516cc1eb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/default_clock.rs",
+      "sha256": "edd62da39f5852a1da2ce784fc1f37814373ae8c9b72744bb750ce0373ac43f4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/mod.rs",
+      "sha256": "269a8a7693aa1d4e1d26874e485908c3817b5a24b0e5cd67d2fb76320470ae03"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/clock.rs",
+      "sha256": "af5dee4f05028b93061f1592c17ac3d16e176907b51b371bfafc81abaf13dba2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/clock/preview.rs",
+      "sha256": "5742f156e2caf2f9e4a717e89b686578c02deb2260a58f00fb4dddfbccb18b4f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/constant.rs",
+      "sha256": "2b5564abb0cddaa8f94ef9e66d277fe01149c4b41e8d004d1c4786abc5afc389"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/omitted/mod.rs",
+      "sha256": "cadba9f55d133bf1ad1b543ec0ee319ed3807ea19f9981911cbe903ebb37d1c0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests.rs",
+      "sha256": "e823b011d1d49cf0fb74f2e03402ff2d6382e2c250d035b5c31685d95a0c5db2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults.rs",
+      "sha256": "e297788368981110f506701144260d4aa70954e12ed4c977854ccf346544f4e0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/api.rs",
+      "sha256": "acb3b0d38234b891a271364a52a3b40dffabb87529addbc13330dd870c9b5258"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/authority.rs",
+      "sha256": "108ea5ca0c89764b1616bbdb6fe702a4d3a1b7715b9215a685aa0e27bbadcf9b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/extra_sources.rs",
+      "sha256": "eecd0d69e4e7e358d1890e13a4524ae45ac7f3223ed42bcc5ad2fec60f183f07"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/insert/tests/clock_defaults/model.rs",
+      "sha256": "848a7d0af357c88fefd7b9b694b723e770377185269f74e4f0fe60ea84f23300"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 //! Resolve original insertion intent after full source qualification.
+pub(super) mod clock;
 mod constant;
 pub(super) mod preview;
 mod request;
@@ -6,8 +7,9 @@ pub(super) mod stage;
 
 use super::{IncrementingAutoNumber, autonumber, values::copy_value};
 use crate::{
-    EditError, InspectError, NativeImage, PropertyGroupKind, TableCheck, WriteBlocker,
-    header::check, inspect_table_properties, limits::MAX_LIVE_ROWS,
+    EditError, InspectError, NativeColumn, NativeImage, NativeProperty, PropertyGroupKind,
+    TableCheck, TableProperties, WriteBlocker, header::check, inspect_table_properties,
+    limits::MAX_LIVE_ROWS,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -104,32 +106,12 @@ pub(super) fn prepare<'a>(
             let value = match intent {
                 InsertFieldValue::Supplied(value) => copy_value(value, budget, cancelled)?,
                 InsertFieldValue::Omitted => {
-                    let mut selected = None;
-                    for group in properties.as_ref().ok_or(EditError::Preservation)?.groups() {
-                        check(budget, cancelled)?;
-                        budget
-                            .charge(
-                                Resource::Steps,
-                                group.name().len().min(column.name().len()) as u64,
-                            )
-                            .map_err(InspectError::from)?;
-                        if group.kind() != PropertyGroupKind::Column
-                            || !group.name().eq_ignore_ascii_case(column.name())
-                        {
-                            continue;
-                        }
-                        for property in group.properties() {
-                            check(budget, cancelled)?;
-                            budget
-                                .charge(Resource::Steps, property.name().len() as u64)
-                                .map_err(InspectError::from)?;
-                            if property.name().eq_ignore_ascii_case("DefaultValue")
-                                && selected.replace(property).is_some()
-                            {
-                                return Err(EditError::Unsupported(WriteBlocker::Properties));
-                            }
-                        }
-                    }
+                    let selected = declaration(
+                        column,
+                        properties.as_ref().ok_or(EditError::Preservation)?,
+                        budget,
+                        cancelled,
+                    )?;
                     match selected {
                         Some(property) => {
                             constant::resolve(column, property.text()?, budget, cancelled)?
@@ -158,4 +140,39 @@ fn reserve<T>(
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
     Ok(())
+}
+
+fn declaration<'a>(
+    column: &NativeColumn,
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<&'a NativeProperty>, EditError> {
+    let mut selected = None;
+    for group in properties.groups() {
+        check(budget, cancelled)?;
+        budget
+            .charge(
+                Resource::Steps,
+                group.name().len().min(column.name().len()) as u64,
+            )
+            .map_err(InspectError::from)?;
+        if group.kind() != PropertyGroupKind::Column
+            || !group.name().eq_ignore_ascii_case(column.name())
+        {
+            continue;
+        }
+        for property in group.properties() {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, property.name().len() as u64)
+                .map_err(InspectError::from)?;
+            if property.name().eq_ignore_ascii_case("DefaultValue")
+                && selected.replace(property).is_some()
+            {
+                return Err(EditError::Unsupported(WriteBlocker::Properties));
+            }
+        }
+    }
+    Ok(selected)
 }

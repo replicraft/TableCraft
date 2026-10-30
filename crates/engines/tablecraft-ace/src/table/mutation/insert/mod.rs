@@ -3,6 +3,7 @@ mod audit;
 mod autonumber;
 mod compose;
 mod counters;
+mod default_clock;
 mod incrementing;
 mod indexes;
 mod long_values;
@@ -29,6 +30,7 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_expressions::functions::dates::clock::ClockReading;
 
 pub use autonumber::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
@@ -306,10 +308,24 @@ fn finish_with(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
+    finish_with_clock(image, table, requests, staged, None, budget, cancelled)
+}
+
+fn finish_with_clock(
+    image: NativeImage,
+    table: &str,
+    requests: AuditRequest<'_>,
+    staged: &Staged,
+    reading: Option<ClockReading>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ace16WritePreview, EditError> {
     let after = compose::compose(&image, staged, budget, cancelled)?;
     let inserted = match requests {
         AuditRequest::Omitted(original) => {
-            audit::prove_with(&image, table, requests, staged, &after, budget, cancelled)?;
+            audit::prove_with_clock(
+                &image, table, requests, staged, &after, reading, budget, cancelled,
+            )?;
             original.requests().len()
         }
         AuditRequest::Explicit(requests) => {
