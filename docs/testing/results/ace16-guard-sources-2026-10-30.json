@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-30",
+  "state": "SOURCE qualification only; evaluator and host remain private/uninstalled and unexecuted",
+  "current_source_witness_files": [
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests.rs", "bytes": 328, "sha256": "8cd12ca15989f8cfb0c5fc350f1d133c040ca96c364d25dd30703ca2d8156dbe"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/inspect.rs", "bytes": 8031, "sha256": "b3d1714390a7f4e2e096bc70187b3ecc29dc465329ecd369b3d3e8559ef261bd"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/guard_sources.rs", "bytes": 7867, "sha256": "05ba05636251efb68e9256e06668721ad91a36a6206b7daf6414424ae04ba3d3"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/guard_sources/model.rs", "bytes": 1996, "sha256": "477bc8213cab2fa4320aa78605f9e90acb53e53e42abccae1b967b7352448356"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/guard_sources/cases.rs", "bytes": 13389, "sha256": "21f6a44351f9f6248c29d66c47f1450a32a3ddf8b8dccb5f44de3380342da359"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/guard_selector_sources.rs", "bytes": 8108, "sha256": "463e94adc17637b45b274328ce8fb50d0c5351ca32a6d7517627e6bd75b28240"},
+    {"path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/guard_selector_sources/model.rs", "bytes": 2751, "sha256": "7e96f828bce75976ff81237991a5465c1fcef6720caadbd4370fd9b44bbbb6d8"}
+  ],
+  "original_source_first": {
+    "exit": 0,
+    "functions": 1,
+    "literal_cases": 20,
+    "complete_native_images": 40,
+    "log": {
+      "path": ".cache/ace16-macro-guard-execution-next-20261030/guard-source-first-root.log",
+      "bytes": 524,
+      "sha256": "a2e30270e27cb79d30280ab11ea3ed61c9c5ae48c5ff17b9a7a99ef84cd9fb87"
+    }
+  },
+  "selector_source_first": {
+    "exit": 101,
+    "functions_passed": 0,
+    "cause": "The source test incorrectly expected repeated parsed native group-kind3 to be admitted. Existing MR2 decoding rejects it as Malformed before any selector or guard evaluation.",
+    "retained_inputs": ".cache/ace16-macro-guard-execution-next-20261030/selector-source-before-duplicate-kind-fix/",
+    "log": {
+      "path": ".cache/ace16-macro-guard-execution-next-20261030/selector-source-first-root.log",
+      "bytes": 1274,
+      "sha256": "0f6761cb71b660374b5f17c0e005fc92c80c1d12b62268fed0e6f0123d395e5f"
+    }
+  },
+  "selector_source_corrected": {
+    "exit": 0,
+    "functions": 1,
+    "complete_native_images": 8,
+    "admitted_extra_metadata": 6,
+    "native_malformed_controls": 2,
+    "changes": "Retain duplicate-kind data as negative source, rename its diagnostic label, require native Malformed, add phase diagnostics and exact six/two counters",
+    "decoder_or_producer_changed": false,
+    "original_twenty_program_trace_or_constructor_bodies_changed": false,
+    "runtime_selector_ambiguity_qualified": false,
+    "log": {
+      "path": ".cache/ace16-macro-guard-execution-next-20261030/selector-source-corrected-root.log",
+      "bytes": 410,
+      "sha256": "c02118fd67a4544f6565600acd4895c97f8a62ec97487e7b0cce97b025c52cc4"
+    }
+  },
+  "scope": "Explicit exact source group-kind/property-name selectors, caller engineering order; no detected native macro storage, required-macro coverage, absence, normal save or Microsoft Access execution claim"
+}
