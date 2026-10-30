@@ -109,6 +109,12 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         rows::unique(updates, budget, cancelled)?;
         let structural = gates::before(&self, table, budget, cancelled)?;
+        super::data_ownership::require_index_disjointness(
+            &self,
+            structural.schema(),
+            budget,
+            cancelled,
+        )?;
         let schema = structural.schema();
         let position = field::fixed_column(schema, column, kind, WIDTH)?;
         let selected = &schema.columns[position];

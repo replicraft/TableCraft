@@ -7,7 +7,7 @@ mod decimal;
 pub use decimal::DecimalIndexSelection;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use decimal::DecimalType;
-mod definition;
+pub(in crate::table) mod definition;
 pub use definition::IndexHistoricalCounter;
 pub(in crate::table) use definition::read_with_tail as definitions_with_tail;
 mod floating;
