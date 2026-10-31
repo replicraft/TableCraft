@@ -1,4 +1,4 @@
-# Fresh ACE 16 fixed-scalar construction
+# Fresh ACE 16 scalar construction
 
 The optional standalone `ace16-create` feature constructs a complete header-5
 database in memory with one ordinary table. `create_ace16_database` accepts named
@@ -14,7 +14,8 @@ existing native name checks. Declarations are validated even for empty tables or
 all-NULL input. Present values must have the exact declared carrier; there is no
 numeric conversion. Boolean uses its value bit without payload bytes and refuses
 NULL. Other admitted fields allow NULL with zeroed inactive payload bytes.
-Decimal, variable fields and extended DateTime declarations remain unsupported.
+Short Text, Short Binary and Decimal use explicit declarations described below.
+Extended DateTime and long-value declarations remain unsupported.
 
 Catalog table names use a prevalidated stored-text encoding plan. Leading U+FEFF
 is escaped where the qualified representation is reversible; unsupported
@@ -54,6 +55,43 @@ The [generic constructor result](results/ace16-native-fixed-creation-2026-10-31.
 records the first execution and encoder regressions. The
 [Int32 constructor result](results/ace16-native-int32-creation-2026-10-31.json)
 retains the earlier implementation phase.
+
+## Explicit variable declarations
+
+`CreateColumn::short_text(name, max_utf16_units)` and
+`CreateColumn::short_binary(name, max_bytes)` validate positive capacities through
+255. Text limits count UTF-16 code units; Binary limits count bytes.
+`CreateColumn::decimal(name, DecimalConstraints)` reuses the shared validated
+precision and retained scale. A matching Decimal value must have exactly that
+scale and a coefficient within precision; creation does not rescale or round.
+
+Scalar-only `CreateColumn::new` declarations for Text, Binary and Decimal remain
+unsupported, including empty tables and all-NULL columns. Names, declarations,
+exact carriers, value limits and actual row fit are validated before image
+allocation. Variable payload plans borrow Text/Binary and copy Decimal values;
+they do not clone full payloads. Their allocation is fallible and budgeted.
+
+NULL and present empty Text/Binary retain distinct presence bits even when their
+payload spans are both empty. Decimal zero remains a present 17-byte value.
+Text uses the same qualified leading-BOM encoding as catalog names; unsupported
+representations return `TextEncoding` without normalization or replacement.
+The current positive capacity restriction is a constructor limit, not proof
+that zero native declarations are impossible.
+
+Each actual record supplies its own offsets and length. Candidate-map membership
+uses space for a minimum legal row plus its directory slot, rather than promising
+that every requested record fits. The two independently read-qualified
+[capacity sources](ACE16_VARIABLE_CAPACITY_SOURCES.md) exercise this boundary.
+The one-table, sixteen-column, sixty-four-row and single-DATA-page limits remain.
+No indexes, relationships, AutoNumbers or Required properties are inferred.
+
+The first standalone creation run passes nineteen tests, retaining all fourteen
+previous tests and adding five variable/capacity checks. Seven new complete
+images match the independent source owners committed before producer execution
+(`dd000ad6` and `e5f6dd9c`). This extends fresh construction only; imported-file
+normal save, required-macro safety and native Access qualification remain separate.
+The [variable creation result](results/ace16-native-variable-creation-2026-10-31.json)
+records these phases and host verification.
 
 ### Authored header-5 source qualification, version 1
 

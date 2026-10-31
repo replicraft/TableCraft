@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "native_variable_scalar_database_creation",
+  "status": "engine_shared_service_and_final_checks_passed",
+  "source_first_commits": {
+    "variable_sources": "dd000ad6",
+    "variable_capacity_sources": "e5f6dd9c"
+  },
+  "original_private_producer_freeze": {
+    "path": ".cache/ace16-native-variable-creator-next-20261031/private-freeze.json",
+    "bytes": 6004,
+    "sha256": "2ccd70b72559a081cbe5af1335ce03ea5c363446b7c5af6bad578bfb85525ed5"
+  },
+  "profile": {
+    "feature": "ace16-create",
+    "header": 5,
+    "file_bytes": 36864,
+    "pages": 9,
+    "user_tables": 1,
+    "columns": {
+      "minimum": 1,
+      "maximum": 16
+    },
+    "rows_maximum": 64,
+    "physical_fit_required": true,
+    "additive_metadata": {
+      "short_text": "explicit 1..255 UTF-16 units",
+      "short_binary": "explicit 1..255 bytes",
+      "decimal": "validated DecimalConstraints precision/scale"
+    },
+    "factory_methods": [
+      "CreateColumn::short_text",
+      "CreateColumn::short_binary",
+      "CreateColumn::decimal"
+    ],
+    "metadata_getters": [
+      "max_text_utf16_units",
+      "max_binary_bytes",
+      "decimal_constraints"
+    ],
+    "generic_operation_unchanged": "create_ace16_database(table, columns, rows, budget, cancelled)",
+    "typed_access_consumer_unchanged": "CreationDestination::prepare_typed",
+    "cli_creation_profile": "Int32 only; no new variable CLI parsing or flags"
+  },
+  "laws": {
+    "exact_carriers": true,
+    "null_preserves_declared_type": true,
+    "boolean_null_refused": true,
+    "null_differs_from_present_empty": true,
+    "text_counts_utf16_not_scalars_or_encoded_bytes": true,
+    "binary_counts_bytes": true,
+    "decimal_exact_retained_scale_and_precision_no_rounding": true,
+    "unbound_scalar_only_variable_metadata_refused_including_empty_and_all_null": true,
+    "required_allow_zero_length_properties": "not authored",
+    "variable_slots": "ordinary declaration order; no new LVALs",
+    "candidate_bit": "minimum legal all-nonBoolean-NULL record plus directory slot; fixed-only behavior unchanged",
+    "no_page_growth": true
+  },
+  "errors": {
+    "Declaration": "Text/Binary dimension outside 1..255",
+    "DeclaredValue": "matching carrier exceeds declared Text/Binary bound or Decimal precision/scale",
+    "TextEncoding": "otherwise valid text without the qualified reversible representation",
+    "Carrier": "wrong exact carrier or Boolean NULL",
+    "UnsupportedType": "variable scalar lacks explicit native parameters or type remains unsupported"
+  },
+  "acceptance": {
+    "standalone_engine": {
+      "status": "passed_first_producer_execution",
+      "functions_passed": 19,
+      "failed": 0,
+      "ignored": 0,
+      "previous_functions": 14,
+      "new_variable_functions": 4,
+      "new_capacity_functions": 1,
+      "seconds": 0.01,
+      "compile_seconds": 7.99,
+      "complete_new_source_images": {
+        "variable": 5,
+        "capacity": 2,
+        "total": 7
+      },
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/engine-first-root.log",
+        "bytes": 2319,
+        "sha256": "a5224a9ce7d0f4ce668933080b2db4a11f95b49c1294d7cdd8e2cb731f64ff1d"
+      }
+    },
+    "focused_controls": [
+      "all five complete independent variable images",
+      "both complete independent capacity images",
+      "empty/all-NULL metadata does not infer native declarations",
+      "UTF-16 overflow including supplementary characters",
+      "Binary byte overflow",
+      "Decimal precision and exact scale refusals before allocation",
+      "unrepresentable leading-BOM value and wrong exact carrier refusals",
+      "zero Bytes/Rows/Steps pools",
+      "cancellation at the final observed poll",
+      "all existing Int32/fixed/IEEE/catalog whole-image regressions"
+    ],
+    "shared_access_service": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/access-first-root.log",
+        "bytes": 1287,
+        "sha256": "d4fc33ad9e2748d52c2b1b6fd8cb33ba1183f1cf8214b285460c016e11a422fb"
+      },
+      "functions_passed": 7,
+      "failed": 0,
+      "new_complete_variable_publications": 5,
+      "retained_fixed_and_ieee_images": 10,
+      "retained_int32_images": 6,
+      "seconds": 0.37
+    },
+    "strict": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/strict-first-root.log",
+        "bytes": 526,
+        "sha256": "02f2d35a6a130c7f71611821a0adf671fcfac6f317225cbdcfb518a199e13b09"
+      }
+    },
+    "minimal": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/minimal-first-root.log",
+        "bytes": 301,
+        "sha256": "ddb565fca848e2200dcb8f51279c0d8b62f3413ca4a3a3b1daac9e11a6a16002"
+      }
+    },
+    "format": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "docs": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/links-first-root.log",
+        "bytes": 53,
+        "sha256": "bc530a3bf0536861eef78503d9f9f94bfc78d91fc7259b2a8426a9fcc6b544c3"
+      }
+    },
+    "dependencies": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-variable-creator-next-20261031/dependencies-first-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    }
+  },
+  "source_evidence": {
+    "variable": "docs/testing/results/ace16-variable-creation-source-2026-10-31.json",
+    "capacity": "docs/testing/results/ace16-variable-capacity-source-2026-10-31.json",
+    "sdk_scope": "Previously qualified independent original SOURCE images; no new SDK call on producer artifacts claimed here",
+    "reader_only_raw_bom_alias": "Excluded from five positive producer goldens; retained as separate reader control"
+  },
+  "limitations": [
+    "No native Access or Windows save/reopen qualification",
+    "No normal imported ACE save, journal, rule or macro permission",
+    "No Required/AllowZeroLength declaration promise",
+    "No LVAL/attachment/extended DATE creation",
+    "No variable CLI parser/TSV carrier support"
+  ],
+  "author_runtime_calls": 0
+}

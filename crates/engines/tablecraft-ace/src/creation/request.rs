@@ -2,7 +2,7 @@
 use super::{
     input::{Cell, Columns, Rows},
     profile::{self, Field, Fields},
-    stored_text,
+    stored_text, variable,
 };
 use crate::{InspectError, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::{
@@ -39,13 +39,19 @@ pub enum CreateDatabaseError {
     /// A checked internal layout bound was not satisfied; no artifact is returned.
     #[error("creation layout bounds were not satisfied")]
     Layout,
-    /// The requested family is outside the qualified ordinary fixed profile.
-    #[error("creation requires a qualified ordinary fixed scalar type")]
+    /// The requested family has no qualified bound declaration in this profile.
+    #[error("creation requires a qualified native scalar declaration")]
     UnsupportedType,
     /// A cell has the wrong exact carrier or supplies NULL for Boolean.
     #[error("creation cell does not match its declared native scalar type")]
     Carrier,
-    /// The name is valid but has no representation in the qualified stored-text profile.
+    /// An explicit native variable declaration is outside this constructive profile.
+    #[error("creation native declaration is outside the constructive profile")]
+    Declaration,
+    /// A matching carrier exceeds its capacity or differs from the exact Decimal scale.
+    #[error("creation cell violates its explicit native declaration")]
+    DeclaredValue,
+    /// Text is valid but has no representation in the qualified stored-text profile.
     #[error("creation text has no qualified reversible native encoding")]
     TextEncoding,
     /// Cancellation, allocation or a shared resource limit rejected the operation.
@@ -59,10 +65,18 @@ pub(super) struct Request<'a> {
     pub rows: Rows<'a>,
     pub row_bytes: usize,
     pub free_bytes: usize,
+    pub minimum_row_bytes: usize,
+    pub variable: Option<variable::Prepared<'a>>,
     fields: [Field<'a>; profile::MAX_COLUMNS],
 }
 
 impl Request<'_> {
+    pub fn row_length(&self, row: usize) -> usize {
+        self.variable
+            .as_ref()
+            .map_or(self.row_bytes, |plans| plans.row_length(row))
+    }
+
     pub fn fields(&self) -> Fields<'_> {
         Fields::new(&self.fields[..self.columns.count()])
     }
@@ -108,6 +122,7 @@ pub(super) fn validate<'a>(
         kind: 0,
         offset: None,
         width: 0,
+        decimal: None,
     }; profile::MAX_COLUMNS];
     let mut fixed_bytes = 0_usize;
     for (position, field) in fields[..columns.count()].iter_mut().enumerate() {
@@ -120,17 +135,12 @@ pub(super) fn validate<'a>(
                 return Err(CreateDatabaseError::DuplicateColumn);
             }
         }
-        let (kind, width) = profile::fixed_kind(columns.scalar(position))
-            .ok_or(CreateDatabaseError::UnsupportedType)?;
-        *field = Field {
-            name: column,
-            kind,
-            offset: Some(if width == 0 { 0 } else { fixed_bytes }),
-            width,
-        };
-        fixed_bytes = fixed_bytes
-            .checked_add(width)
-            .ok_or(CreateDatabaseError::Layout)?;
+        *field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
+        if field.offset.is_some() {
+            fixed_bytes = fixed_bytes
+                .checked_add(field.width)
+                .ok_or(CreateDatabaseError::Layout)?;
+        }
     }
     if rows.count() > profile::MAX_ROWS {
         return Err(CreateDatabaseError::RowLimit);
@@ -165,14 +175,32 @@ pub(super) fn validate<'a>(
         .checked_add(fixed_bytes)
         .and_then(|length| length.checked_add(columns.count().div_ceil(u8::BITS as usize)))
         .ok_or(CreateDatabaseError::Layout)?;
-    let used = rows
-        .count()
-        .checked_mul(row_bytes + size_of::<u16>())
-        .and_then(|bytes| bytes.checked_add(super::record::DATA_HEADER_BYTES))
-        .ok_or(CreateDatabaseError::PageCapacity)?;
-    let free_bytes = PAGE_BYTES
-        .checked_sub(used)
-        .ok_or(CreateDatabaseError::PageCapacity)?;
+    let variables = Fields::new(&fields[..columns.count()]).variable_count();
+    let variable = if variables == 0 {
+        None
+    } else {
+        Some(variable::prepare(
+            columns,
+            rows,
+            size_of::<u16>() + fixed_bytes,
+            variables,
+            budget,
+            cancelled,
+        )?)
+    };
+    let (free_bytes, minimum_row_bytes) = if let Some(prepared) = &variable {
+        (prepared.free_bytes, prepared.minimum_row_bytes)
+    } else {
+        let used = rows
+            .count()
+            .checked_mul(row_bytes + size_of::<u16>())
+            .and_then(|bytes| bytes.checked_add(super::record::DATA_HEADER_BYTES))
+            .ok_or(CreateDatabaseError::PageCapacity)?;
+        let free_bytes = PAGE_BYTES
+            .checked_sub(used)
+            .ok_or(CreateDatabaseError::PageCapacity)?;
+        (free_bytes, row_bytes)
+    };
     if super::definition::length(Fields::new(&fields[..columns.count()]), false)? > PAGE_BYTES {
         return Err(CreateDatabaseError::PageCapacity);
     }
@@ -184,6 +212,8 @@ pub(super) fn validate<'a>(
         rows,
         row_bytes,
         free_bytes,
+        minimum_row_bytes,
+        variable,
         fields,
     })
 }

@@ -1,5 +1,5 @@
 //! Borrowed typed and legacy Int32 inputs share a single physical builder.
-use super::CreateColumn;
+use super::{CreateColumn, column::Declaration};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
@@ -25,9 +25,13 @@ impl<'a> Columns<'a> {
     }
 
     pub fn scalar(self, position: usize) -> ScalarType {
+        self.declaration(position).scalar()
+    }
+
+    pub fn declaration(self, position: usize) -> Declaration {
         match self {
-            Self::Int32(_) => ScalarType::Int32,
-            Self::Values(columns) => columns[position].scalar_type(),
+            Self::Int32(_) => Declaration::Fixed(ScalarType::Int32),
+            Self::Values(columns) => columns[position].declaration(),
         }
     }
 }

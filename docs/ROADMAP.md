@@ -2,6 +2,14 @@
 
 ## Current product priority
 
+Fresh ACE 16 construction now covers ten fixed families plus explicitly declared
+Short Text, Short Binary and Decimal through the existing typed creation service.
+It remains one table and one user DATA page; multiple tables, indexes,
+relationships and schema changes remain creation work. This does not enable
+ordinary saves to imported ACE files. See the [creation contract](testing/ACE16_DATABASE_CREATION.md).
+
+
+
 [Joint preserved fixed updates](testing/ACE16_PRESERVED_JOINT_FIXED.md) now compose
 qualified Boolean, Int32, Int64, Currency and legacy DateTime groups over one
 original image. Shared mask bits merge, changed rows count once and final

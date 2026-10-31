@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fresh variable-field creation
+
+Fresh ACE 16 creation now accepts explicitly bounded Short Text/Binary and exact
+Decimal declarations through the engine and existing typed Access publisher.
+The standalone creator passes nineteen tests, including complete-image matches
+for five variable sources and two page-capacity boundaries. NULL and present
+empty values remain distinct; Text bounds use UTF-16 units and Decimal values
+retain their exact declared scale. The [creation contract](testing/ACE16_DATABASE_CREATION.md)
+retains the one-table/one-DATA-page limits and separate native Access/save gates.
+Earlier fixed-only acceptance below describes its original implementation phase.
+
 ## Fresh ACE 16 database construction
 
 The optional standalone `ace16-create` engine accepts typed declarations and
