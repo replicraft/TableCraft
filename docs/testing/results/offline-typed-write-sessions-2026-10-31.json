@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "status": "implemented_typed_session_boundary_and_regressions_passed",
+  "scope": "typed OfflineTableEditor over the existing normal offline session/staged journal apply",
+  "normal_permission": {
+    "format": "existing qualified Jet4",
+    "target": "existing non-NULL fixed Int32",
+    "ace_normal_writes": false,
+    "engineering_conversion": false,
+    "native_access_save_comparison": false
+  },
+  "source_evidence": {
+    "source_commit": "7a604fa7",
+    "model": {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/model.rs",
+      "bytes": 615,
+      "sha256": "ce317fee2d4e24fd56ff0399dd79caa7d157b7bdef9ff565897932884b86ea3e"
+    },
+    "source_gate": {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions_sources.rs",
+      "bytes": 1922,
+      "sha256": "21f3b1417664239d2ab17fe2b5bb5833a7d96ce5ef635818f24a2aae871724dc"
+    },
+    "source_log": {
+      "path": ".cache/offline-write-session-next-20261031/source-first-root.log",
+      "bytes": 607,
+      "sha256": "ca63fe53b73bedfdaf355a906e7dbbb2477fe36024e06a1722eb103847ab9d6e"
+    },
+    "expected_images": "unchanged complete original Score10, then literal Score12 and Score17"
+  },
+  "baseline": {
+    "normal_service_commit": "293ddbb5",
+    "cli_commit": "842c0258",
+    "owning_record": {
+      "path": "docs/testing/results/offline-write-sessions-2026-10-31.json",
+      "bytes": 13212,
+      "sha256": "c8820e7d5849d2d1f3c7464a3f7f50bf9d99d6628a221f55f783b6eb9a809edb"
+    }
+  },
+  "checks": [
+    {
+      "phase": "typed-first",
+      "status": "pass",
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "filtered": 11,
+      "elapsed_seconds": 0.16,
+      "log": {
+        "path": ".cache/offline-typed-session-next-20261031/results/typed-first-root.log",
+        "bytes": 680,
+        "sha256": "a9b6b338753ef9c338ad8740109f467c48d424f566736991691ebe7509c8516a"
+      }
+    },
+    {
+      "phase": "explicit-ACE-profile-boundary",
+      "status": "pass",
+      "owner": "separate fourth typed test",
+      "passed": 1,
+      "normal_profile": "Unavailable",
+      "normal_finish": "Unsupported(Format)"
+    },
+    {
+      "phase": "complete-session-target",
+      "status": "pass",
+      "passed": 15,
+      "failed": 0,
+      "elapsed_seconds": 0.55
+    },
+    {
+      "phase": "CLI-journal-eight",
+      "status": "pass",
+      "passed": 8,
+      "failed": 0,
+      "elapsed_seconds": 1.03
+    },
+    {
+      "phase": "strict",
+      "status": "pass",
+      "packages": [
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "all_features": true
+    },
+    {
+      "phase": "minimal",
+      "status": "pass",
+      "default_features": false
+    },
+    {
+      "phase": "format-links-boundaries",
+      "status": "pass",
+      "dependencies_changed": false,
+      "boundary_guard": "not rerun; no dependency or policy changes",
+      "documentation_targets": 6846,
+      "missing": 0,
+      "diff_check": "passed"
+    }
+  ],
+  "unexpected_failures": [],
+  "controls_first_pass": [
+    "same retained lease and real snapshot read",
+    "fresh second snapshot and stale old handle refusal retaining previous receipt",
+    "normal typed12 then17 whole images",
+    "exact no-op and snapshot/plan abandonment",
+    "duplicate and foreign snapshot handles before bundle creation"
+  ],
+  "production_code": [
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/table.rs",
+      "bytes": 3436,
+      "sha256": "a92cf9869a97cc3c78e454a40837a2676321d9cc2029b5e17a88ce0ee098bc3f"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/mod.rs",
+      "bytes": 11929,
+      "sha256": "ff2fe9f23631312029d9219db90b3893c3b2e676f61de9eae8cadde1a37e5cd3"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/error.rs",
+      "bytes": 10417,
+      "sha256": "184b9c4867dfcb96f8923e2688fb18522d514eacabb4741fb04b10b60d924124"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/update.rs",
+      "bytes": 6013,
+      "sha256": "28ba8dabc31b2b5da52b9ca246bdfe1305e0312c70c1e86f5a775b1ca656d6bc"
+    }
+  ],
+  "installed_freeze": {
+    "path": ".cache/offline-typed-session-next-20261031/installed-freeze.json",
+    "bytes": 2082,
+    "sha256": "d9437da7da7ebe123e238360915406e71c403e25df99b6ec82999e14971b3d67"
+  },
+  "runtime_by_record_author": false,
+  "test_pins": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions.rs",
+      "bytes": 983,
+      "sha256": "5797898c62066b74c5be7f7e27802fe658fe6d56f6a75ac31b97593c206600b0"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/typed.rs",
+      "bytes": 10310,
+      "sha256": "3692386b55dbc2de6a199f856c196639065209f5e4874d29b69f5afd83ea7f27"
+    }
+  ],
+  "final_evidence": [
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/session-batch-root.log",
+      "bytes": 1744,
+      "sha256": "2698fe4093bbc16e0afa1aa13990d4a5f7428c3b41176765c8d4428f5d3b7db9"
+    },
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/strict-root.log",
+      "bytes": 632,
+      "sha256": "0e7904875578d77338a868c2956c3c75ab9b7ac108c198b0befb9221caabf485"
+    },
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/minimal-root.log",
+      "bytes": 72,
+      "sha256": "299f16a2c523be18fef769975d2df00e0505521db047540feea3a74b94666887"
+    },
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/cli-regression-root.log",
+      "bytes": 1173,
+      "sha256": "af18b13da024132576f81c2157fdb20e7ea98b5a853c5c8431763fa07158154d"
+    },
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/fmt-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/offline-typed-session-next-20261031/results/docs-root.log",
+      "bytes": 53,
+      "sha256": "675564ed985d866cce795f476178b5b3368f9cc758c0f194e763f19971936738"
+    }
+  ]
+}

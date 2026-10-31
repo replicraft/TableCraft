@@ -11,6 +11,8 @@ mod lifecycle;
 mod model;
 #[path = "offline_sessions/refresh.rs"]
 mod refresh;
+#[path = "offline_sessions/typed.rs"]
+mod typed;
 
 use std::{
     fs,

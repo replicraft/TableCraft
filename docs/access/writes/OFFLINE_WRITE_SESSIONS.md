@@ -81,6 +81,48 @@ commit occurred. `Applied` and `Recovered` receipts instead expose their native
 `RecoveryOutcome`. Partial retired garbage remains outside this intact-bundle
 confirmation path. See [image journals](../../foundation/IMAGE_JOURNAL.md).
 
+## Typed table edits under the retained lease
+
+`session.edit_table(table, budget, cancelled)` consumes the offline session and
+returns `OfflineTableEditor`. It captures from the same exclusively held target
+descriptor and delegates to the existing `NativeJournalEditor`. The editor
+implements `tablecraft_db::EditableTable`: hosts can inspect its real `snapshot()`
+and `update_profile()` and build ordinary `CellUpdate` requests from that
+snapshot's row handles. This is a backend capability; no GUI is introduced.
+
+`editor.plan_updates(column, updates, budget, cancelled)` consumes the editor and
+returns the existing `StagedUpdate`. Handle identity, duplicate ordinals, original
+expected values and native eligibility remain in the normal editor/planner.
+`matched_rows()` includes supplied no-ops; `changed_rows()` comes from the normal
+native plan. Hosts can prepare their report before the existing journaled `apply`.
+There is no public constructor accepting raw images or invented change counts.
+
+Both `editor.into_session()` and `staged.into_session()` explicitly abandon an
+unprepared snapshot/plan while retaining the target lease. After a committed edit,
+a new editor captures fresh values and issues fresh handles. Handles from the old
+or another snapshot refuse before bundle creation, even when database bytes match.
+Failure retains the same session and any previous completed receipt. It does not
+unlock, retry, reset blocked state or discard a pending journal.
+
+Typed and SQL edits share the same staged persistence capability. Existing SQL
+planning, resource/cancellation checks and error precedence are unchanged. The
+normal write profile remains qualified non-NULL fixed Int32 on Jet 4; ACE can be
+read only within its existing reader profile and still advertises normal updates
+as unavailable. No engineering candidate conversion, new DB contract, CLI mode,
+macro-absence certificate or normal ACE write permission is added. Hosts must
+not await an external approval while holding this offline lease.
+
+### Typed acceptance
+
+The first focused run passes three functions. It exercises snapshot reads under
+the actual held lease, typed 10→12→17 whole-image saves, stale/foreign/duplicate
+handles, previous-receipt retention, snapshot/plan abandonment and exact no-op
+bytes using the unchanged source-qualified images from `7a604fa7`. The fourth typed control confirms that a readable ACE snapshot still advertises
+normal writes as unavailable and refuses a valid typed request at the format
+gate. The complete session target passes 15 functions; all eight CLI journal
+regressions, strict checks, default-disabled compilation and formatting pass.
+See the [typed result](../../testing/results/offline-typed-write-sessions-2026-10-31.json).
+
 ## Evidence
 
 The independently authored original and successive complete expected images were
