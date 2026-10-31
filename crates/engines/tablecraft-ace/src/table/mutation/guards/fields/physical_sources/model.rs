@@ -4,12 +4,12 @@ use crate::table::mutation::fixed::batch::split_tests::model as original;
 use tablecraft_testkit::access as raw;
 use tablecraft_testkit::access::multiple_indexes as frames;
 
-pub(super) const PAGE: usize = 4096;
-pub(super) const TARGET: usize = 300;
-pub(super) const BODY: &str = "<Statements><Action Name=\"SetField\"><Argument Name=\"Field\">Group</Argument><Argument Name=\"Value\">[Score]</Argument></Action><Action Name=\"SetField\"><Argument Name=\"Field\">Score</Argument><Argument Name=\"Value\">[ID]</Argument></Action></Statements>";
-pub(super) const LATE_BODY: &str = "<Statements><Action Name=\"SetField\"><Argument Name=\"Field\">Group</Argument><Argument Name=\"Value\">[Score]</Argument></Action><Action Name=\"SetField\"><Argument Name=\"Field\">Score</Argument><Argument Name=\"Value\">[ID]</Argument></Action><ConditionalBlock><If><Condition>[ID]=302</Condition><Statements><Action Name=\"RaiseError\"><Argument Name=\"Number\">17</Argument><Argument Name=\"Description\">rejected</Argument></Action></Statements></If></ConditionalBlock></Statements>";
+pub(in crate::table::mutation::guards::fields) const PAGE: usize = 4096;
+pub(in crate::table::mutation::guards::fields) const TARGET: usize = 300;
+pub(in crate::table::mutation::guards::fields) const BODY: &str = "<Statements><Action Name=\"SetField\"><Argument Name=\"Field\">Group</Argument><Argument Name=\"Value\">[Score]</Argument></Action><Action Name=\"SetField\"><Argument Name=\"Field\">Score</Argument><Argument Name=\"Value\">[ID]</Argument></Action></Statements>";
+pub(in crate::table::mutation::guards::fields) const LATE_BODY: &str = "<Statements><Action Name=\"SetField\"><Argument Name=\"Field\">Group</Argument><Argument Name=\"Value\">[Score]</Argument></Action><Action Name=\"SetField\"><Argument Name=\"Field\">Score</Argument><Argument Name=\"Value\">[ID]</Argument></Action><ConditionalBlock><If><Condition>[ID]=302</Condition><Statements><Action Name=\"RaiseError\"><Argument Name=\"Number\">17</Argument><Argument Name=\"Description\">rejected</Argument></Action></Statements></If></ConditionalBlock></Statements>";
 
-pub(super) struct Case {
+pub(in crate::table::mutation::guards::fields) struct Case {
     pub before: Vec<u8>,
     pub expected: Vec<u8>,
     pub original: Vec<original::Row>,
@@ -54,7 +54,11 @@ fn component(value: Option<i32>, descending: bool) -> Vec<u8> {
     bytes
 }
 
-pub(super) fn entries(rows: &[original::Row], physical: usize, descending: bool) -> Vec<Vec<u8>> {
+pub(in crate::table::mutation::guards::fields) fn entries(
+    rows: &[original::Row],
+    physical: usize,
+    descending: bool,
+) -> Vec<Vec<u8>> {
     let mut keys = Vec::new();
     for row in rows {
         if physical == 1 && row.left.is_none() && row.right.is_none() {
@@ -75,7 +79,12 @@ pub(super) fn entries(rows: &[original::Row], physical: usize, descending: bool)
     keys.into_iter().map(|entry| entry.0).collect()
 }
 
-pub(super) fn source(code: u8, descending: bool, unique: bool, late_raise: bool) -> Case {
+pub(in crate::table::mutation::guards::fields) fn source(
+    code: u8,
+    descending: bool,
+    unique: bool,
+    late_raise: bool,
+) -> Case {
     let original_case = original::source(code, original::Shape::Mixed, descending, unique, false);
     let mut before = original_case.before;
     let body = if late_raise { LATE_BODY } else { BODY };

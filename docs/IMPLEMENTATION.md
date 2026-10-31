@@ -32,6 +32,13 @@ pass, along with strict and minimal builds. Its
 retains the initial test-boundary and incomplete-fixture failures. The original
 inspection fixtures remain separate from the fully framed physical derivatives.
 
+Complete selected [before-event collections](testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+now preflight BeforeChange and BeforeDelete together, then execute only the
+operation-matching definitions. Twenty-four independent source pairs, five API
+functions, two authority controls and the 21-function guard regression pass.
+Public structural inspection and guard-only preparation retain their existing
+contracts. Required native event discovery and normal saves remain unfinished.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal

@@ -5,7 +5,9 @@ intents and explicitly selected BeforeChange programs, then creates one fitting
 ACE16 engineering candidate. `Ace16BeforeChangePreview` exposes complete original/
 candidate bytes, distinct changed-row count and program/trace metadata. It has no
 normal-plan conversion or journal/commit operation. This native API introduces no
-CLI command and does not enable normal ACE saves.
+CLI command and does not enable normal ACE saves. A [complete explicitly selected
+before-event collection](ACE16_BEFORE_EVENT_COLLECTIONS.md) may also contain
+dormant BeforeDelete definitions; all are preflighted before the UPDATE runs.
 
 ## One original source, one jointly final update
 

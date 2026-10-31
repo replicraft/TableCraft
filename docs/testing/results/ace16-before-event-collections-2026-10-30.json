@@ -1,0 +1,208 @@
+{
+  "feature": "complete explicitly selected BeforeChange/BeforeDelete collections",
+  "date": "2026-10-30",
+  "scope": {
+    "existing_field_preparation_and_fixed_update_consumer": true,
+    "complete_selected_coverage": true,
+    "public_guard_admission_unchanged": true,
+    "public_structural_profile_unchanged": true,
+    "normal_save_or_journal_permission": false,
+    "native_locator_or_required_event_coverage": false,
+    "physical_insert_delete": false,
+    "before_delete_preflight_without_execution_during_change": true
+  },
+  "source_before_new_compiler": {
+    "pairs": 24,
+    "views": 48,
+    "first_exit": 0,
+    "constructors_and_expected_unchanged": true
+  },
+  "retained_first_consumer": {
+    "normal_exit": 0,
+    "api_functions_passed": 1,
+    "api_functions_failed": 3,
+    "exit": 101,
+    "cause": "existing public BeforeChangeFields inspection rejects BeforeDelete before tree construction",
+    "causal_not_run": true
+  },
+  "correction": {
+    "private_complete_before_event_inspection": true,
+    "public_inspector_restriction_unchanged": true,
+    "models_and_expected_unchanged": true,
+    "legacy_counter_precedence_preserved": true
+  },
+  "corrected_checks": {
+    "normal_exit": 0,
+    "api_functions_passed": 5,
+    "causal_functions_passed": 2,
+    "full_guard_regression_passed": 21,
+    "distinct_changed_fullimages": 10,
+    "empty_original_fullimages": 10,
+    "additional_budget_repeat_fullimages": 2,
+    "invalid_program_or_selection_calls": 24,
+    "active_raise_calls": 2,
+    "legacy_guard_refusal_calls": 2,
+    "logical_insert_header_cases": 2,
+    "logical_insert_rows_per_case": 1,
+    "insert_constraint_or_physical_permission": false,
+    "exact_pools_one_below_and_final_cancellation": true
+  },
+  "broader_checks": {
+    "public_extra_regression_passed": 46,
+    "includes_original_logical_18_case_corpus": true,
+    "native_all_targets_all_features_strict_exit": 0,
+    "native_no_default_features_check_exit": 0,
+    "native_formatter_exit": 0
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/multievent_sources.rs",
+      "bytes": 1334,
+      "sha256": "37f9437a684bd016797dc445f3e929e270aa69ff0cc449af8730790a84e832f2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests.rs",
+      "bytes": 557,
+      "sha256": "172d06411bf5c5d8f288aacf54d41a416aeff18f226760c5e5c87d6e56bbd9dd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/multievent_sources/model.rs",
+      "bytes": 6179,
+      "sha256": "f35f37ba0d638625c12e4702818cd758c727521253c39abcf844ab18b968c7f1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/multievent_sources.rs",
+      "bytes": 4468,
+      "sha256": "a2f34301d6c6df7b303ba6a31c3570a5f609737d55c0a7a63284c79771794dcb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical_sources/model.rs",
+      "bytes": 7054,
+      "sha256": "33983d1602f12a3087ec4162fa7354cb0e22106ab104a82cabb6dbbcc9c495a9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical_sources.rs",
+      "bytes": 9396,
+      "sha256": "7cce2d9378ae097801c79ea37e4ff5557877b303c5a59a0cf514bc53b7f81abc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields.rs",
+      "bytes": 3415,
+      "sha256": "970a58620be8882ae703e1c07cd6500d6912fe6cca5e4ad0e8076616dedc6110"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/compile.rs",
+      "bytes": 14155,
+      "sha256": "d00618760f6510d98bece2ed52adc761f916495d2fd46bbec55b7060f5ded052"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/multievent_sources/api.rs",
+      "bytes": 8175,
+      "sha256": "4aca0b9f3bcedeaa0b2f1e62a7b38468ea4f4e8b6e7b69de90500c8804e56db2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/multievent_sources/causal.rs",
+      "bytes": 3074,
+      "sha256": "964e15ef78f4c322bdbee1fb258948b200b88bdc53be55b2a98ba1406913695a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/read.rs",
+      "bytes": 15272,
+      "sha256": "a733191f269eaf45026392e3795c5187b856e15709ebd74a148c771b5c91f155"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/mod.rs",
+      "bytes": 1487,
+      "sha256": "87ec76803db09738a99d52b688f1bde7af592b65eb1a3e4771b991a01774c7a5"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/source-first-root.log",
+      "bytes": 518,
+      "sha256": "31b9841b95bb195c7c57c610a7f3816ac68b3afc11cf8b3d12d3a10be0414f67"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/compile-first-root.log",
+      "bytes": 293,
+      "sha256": "cfa4646d9dc651074511ff05624718507e59a9c862964511b6f745288408e377"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/api-first-root.log",
+      "bytes": 3032,
+      "sha256": "88ca68a8ce435d5a29d520982dcaa02e57c7e742723c7351b3cab1523e34a602"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/compile-envelope-correction-root.log",
+      "bytes": 183,
+      "sha256": "1e1c063bd79d5c893fd0f178e43dbe962a3af9bc910a5ac451b1b2de68b3b281"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/api-envelope-correction-root.log",
+      "bytes": 1092,
+      "sha256": "eb4d3ada5a505df8fb1512dcfda35d33ab947cf8c5d5f35ddc30ba19b778d8c1"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/causal-envelope-correction-root.log",
+      "bytes": 556,
+      "sha256": "2194c2663dcf44003c1e2f43fec898862982b3f3661a0169efdb6796011041fd"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/guards-regression-root.log",
+      "bytes": 3192,
+      "sha256": "7f0be0d5e4ea58cf79725dc62cb0e3fc1beb4f7ba2f43cd9f0f7805b5f225c23"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/public-extra-regression-root.log",
+      "bytes": 6405,
+      "sha256": "ea264f3248d384c70912386c338a02b89483fa391625fd7288c152b7e35b1627"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/strict-first-root.log",
+      "bytes": 294,
+      "sha256": "22c1421e2e64955e4ee9cb9ed5a3119c6820ce72aeae02959c07a57de4cbb270"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/minimal-root.log",
+      "bytes": 183,
+      "sha256": "b9ad95a029a80a4ccd8f93dbadc0e1fceab84c426951432ea8badbd4af81aecd"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/fmt-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "freezes": [
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/source-first-private-freeze.json",
+      "bytes": 3154,
+      "sha256": "64a9d0eada0b6d0ba5cd99a9307b46c2f4b52ef424aec1438af17c10d65fba26"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/source-installed-first-freeze.json",
+      "bytes": 1908,
+      "sha256": "6906230e0711c75706389e9c3ea72611d144c6849e60107012783d334393f6bf"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/producer-first-private-freeze.json",
+      "bytes": 2256,
+      "sha256": "fa23f27cdd9472c0c460e829fdf85c773b6edb6dae36b362345022d829e80c2a"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/producer-installed-first-freeze.json",
+      "bytes": 1769,
+      "sha256": "26ad118e3bb15a0f08e79916ee4b31b4f807381ba08ffda7b25e696e56d7ac49"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/envelope-correction-private-freeze.json",
+      "bytes": 2089,
+      "sha256": "f3d6e678d61582fa971334321606b83702b5d8a02c7126ebbfa3250ce39626e1"
+    },
+    {
+      "path": ".cache/ace16-multievent-before-preparation-next-20261030/envelope-correction-installed-freeze.json",
+      "bytes": 1300,
+      "sha256": "9e0027d7474e7eed32aa8bc459962f0af760db9ea28f6b90de9ef0b13aad9c86"
+    }
+  ]
+}

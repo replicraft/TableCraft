@@ -10,9 +10,47 @@ use tablecraft_core::limits::ResourceBudget;
 const MAX_PROGRAM_NODES: usize = 4096;
 const MAX_ACTION_CHILDREN: usize = 64;
 
+#[derive(Clone, Copy)]
+enum EnvelopePolicy {
+    SelectedProfile,
+    #[cfg(feature = "ace16-write-preview")]
+    CompleteBeforeEvents,
+}
+
 pub(super) fn inspect<'a>(
     property: &'a TableExtraProperty,
     profile: MacroProgramProfile,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DataMacroProgram<'a>, InspectError> {
+    inspect_for(
+        property,
+        profile,
+        EnvelopePolicy::SelectedProfile,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn inspect_complete_before_events<'a>(
+    property: &'a TableExtraProperty,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DataMacroProgram<'a>, InspectError> {
+    inspect_for(
+        property,
+        MacroProgramProfile::BeforeChangeFields,
+        EnvelopePolicy::CompleteBeforeEvents,
+        budget,
+        cancelled,
+    )
+}
+
+fn inspect_for<'a>(
+    property: &'a TableExtraProperty,
+    profile: MacroProgramProfile,
+    policy: EnvelopePolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DataMacroProgram<'a>, InspectError> {
@@ -23,7 +61,14 @@ pub(super) fn inspect<'a>(
     if profile == MacroProgramProfile::BeforeChangeFields {
         for definition in envelopes.definitions() {
             check(budget, cancelled)?;
-            if definition.event() != Some("BeforeChange") {
+            let supported = match policy {
+                EnvelopePolicy::SelectedProfile => definition.event() == Some("BeforeChange"),
+                #[cfg(feature = "ace16-write-preview")]
+                EnvelopePolicy::CompleteBeforeEvents => {
+                    matches!(definition.event(), Some("BeforeChange" | "BeforeDelete"))
+                }
+            };
+            if !supported {
                 return Err(InspectError::Unsupported);
             }
         }

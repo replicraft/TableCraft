@@ -15,6 +15,12 @@ const MAX_DESCRIPTION_BYTES: usize = EvalLimits::DEFAULT_TEXT_BYTES;
 // Explicit native MR2 carrier profile; no broader property-flag meaning inferred.
 const BEFORE_CHANGE_PROPERTY_FLAGS: u8 = 0x01;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CompilationPolicy {
+    SelectedEvent,
+    CompleteFields,
+}
+
 pub(super) enum Description {
     Literal(String),
     Expression(Expression),
@@ -100,6 +106,10 @@ fn derive_for(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Compiled, BeforeEventGuardError> {
+    let policy = match profile {
+        PreparationProfile::Guards => CompilationPolicy::SelectedEvent,
+        PreparationProfile::BeforeChangeFields => CompilationPolicy::CompleteFields,
+    };
     selection::validate(selectors, budget, cancelled)?;
     let extra = image.inspect_table_extra(table.schema().object_id(), budget, cancelled)?;
     if extra.presence() != PayloadPresence::Present
@@ -115,6 +125,7 @@ fn derive_for(
     let mut instructions = Vec::new();
     let mut programs = Vec::new();
     let mut selected = 0_usize;
+    let mut compiled_operations = 0_usize;
     for selector in selectors {
         check(budget, cancelled)?;
         let selected_property = selection::resolve(&extra, *selector, budget, cancelled)?;
@@ -129,14 +140,16 @@ fn derive_for(
                 BeforeGuardUnsupported::Structure,
             ));
         }
-        let program = property.inspect_macro_program(
-            match profile {
-                PreparationProfile::Guards => MacroProgramProfile::DocumentedDesktop,
-                PreparationProfile::BeforeChangeFields => MacroProgramProfile::BeforeChangeFields,
-            },
-            budget,
-            cancelled,
-        )?;
+        let program = match policy {
+            CompilationPolicy::CompleteFields => {
+                property.inspect_complete_before_events(budget, cancelled)?
+            }
+            CompilationPolicy::SelectedEvent => property.inspect_macro_program(
+                MacroProgramProfile::DocumentedDesktop,
+                budget,
+                cancelled,
+            )?,
+        };
         let program_index = programs.len();
         let mut source = buffer::vector(property.raw().len(), budget, cancelled)?;
         source.extend_from_slice(property.raw());
@@ -171,12 +184,28 @@ fn derive_for(
                     BeforeGuardUnsupported::Context,
                 ));
             }
-            if declared != source::event_name(event) {
+            let active = declared == source::event_name(event);
+            if policy == CompilationPolicy::SelectedEvent && !active {
                 return Err(BeforeEventGuardError::Unsupported(
                     BeforeGuardUnsupported::Context,
                 ));
             }
-            selected += 1;
+            if active {
+                selected += 1;
+            }
+            // Dormant definitions validate under their own documented bindings.
+            // They cannot borrow Current/IsInsert permission from this UPDATE.
+            let event = if declared == "BeforeDelete" {
+                BeforeEvent::Delete
+            } else {
+                event
+            };
+            let profile =
+                if policy == CompilationPolicy::CompleteFields && event == BeforeEvent::Delete {
+                    PreparationProfile::Guards
+                } else {
+                    profile
+                };
             for (node_index, node) in program.nodes().iter().enumerate() {
                 check(budget, cancelled)?;
                 if node.definition() != definition {
@@ -215,6 +244,11 @@ fn derive_for(
                         }
                     }
                     MacroProgramNodeKind::SetField { .. } => {
+                        if event == BeforeEvent::Delete {
+                            return Err(BeforeEventGuardError::Unsupported(
+                                BeforeGuardUnsupported::Context,
+                            ));
+                        }
                         let target = program
                             .text_content(
                                 node_index,
@@ -292,6 +326,17 @@ fn derive_for(
                     }
                     _ => continue,
                 };
+                // The ceiling covers every compiled operation, even when its
+                // dormant value is discarded before the next definition.
+                if policy == CompilationPolicy::CompleteFields {
+                    compiled_operations = compiled_operations
+                        .checked_add(1)
+                        .filter(|count| *count <= MAX_INSTRUCTIONS)
+                        .ok_or(InspectError::StructureLimit)?;
+                }
+                if !active {
+                    continue;
+                }
                 buffer::push(
                     &mut instructions,
                     Instruction {

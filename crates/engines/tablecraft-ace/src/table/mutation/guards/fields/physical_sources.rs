@@ -1,6 +1,6 @@
 //! Independent full images before the explicit physical SetField consumer.
 mod api;
-mod model;
+pub(super) mod model;
 
 use crate::{
     FixedScalarUpdate, IndexCheckStatus, InspectError, MacroProgramCoverage, MacroProgramNodeKind,
@@ -20,7 +20,9 @@ fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 500_000_000)
 }
 
-fn values(row: &crate::table::mutation::fixed::batch::split_tests::model::Row) -> Vec<Value> {
+pub(super) fn values(
+    row: &crate::table::mutation::fixed::batch::split_tests::model::Row,
+) -> Vec<Value> {
     vec![
         Value::Int32(row.id),
         row.left.map_or(Value::Null, Value::Int32),
@@ -30,7 +32,7 @@ fn values(row: &crate::table::mutation::fixed::batch::split_tests::model::Row) -
 
 // Independent literal height-zero/prefix-zero fixture decoder. Production
 // check_table separately supplies its qualified ignored-membership traversal.
-fn raw_wires(page: &[u8]) -> Vec<Vec<u8>> {
+pub(super) fn raw_wires(page: &[u8]) -> Vec<Vec<u8>> {
     assert_eq!(page.len(), 4096);
     assert_eq!(&page[..2], &[4, 1]);
     assert_eq!(&page[4..8], &10_u32.to_le_bytes());

@@ -61,6 +61,11 @@ unfinished; the candidate type grants no journal or ordinary save permission.
 The shared Access SQL planner now consumes that service for a bounded one-column
 UPDATE. Focused service and existing guard/adapter checks pass; the explicit CLI
 copy consumer is the next host step.
+Complete selected [before-event collections](testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+now validate inactive BeforeDelete definitions as well as active BeforeChange
+definitions before rows execute. Inactive definitions do not run during a change;
+unsupported content still refuses empty operations. Native required-program
+discovery and normal save admission remain open.
 
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.

@@ -50,6 +50,8 @@ impl NativeImage {
 }
 
 #[cfg(test)]
+mod multievent_sources;
+#[cfg(test)]
 mod physical_sources;
 
 struct Prepared {
