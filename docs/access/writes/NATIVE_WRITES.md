@@ -581,7 +581,15 @@ existing native transaction checks also pass. The
 [local result record](../../testing/results/native-int32-intent-recovery-2026-10-30.json)
 keeps source qualification, API checks and retained failed attempts separate.
 [Explicit CLI update/recovery](../../cli/JOURNAL_EDITING.md) now composes these
-checks with retained filesystem pairing. Restart-finalization resolution,
+checks with retained filesystem pairing. The additive consuming
+`QualifiedJet4Recovery::confirm_completed` verifies a settled target without
+writes: committed requires full AFTER; pending/partial requires full BEFORE.
+Both barriers must acknowledge. Original-intent binding, normal Jet4 replan and
+both full journal images remain required. Its outcome is a current complete-image
+fact, not proof of historical actions. The intact retired filesystem path can
+acknowledge its parent and clean up without renaming or replaying recovery.
+[Source/API and broader checks pass](../../testing/results/intact-retired-confirmation-2026-10-30.json);
+CLI finalization is a separate consumer qualification. Partial-garbage resolution,
 automatic discovery, Windows lifecycle support and normal ACE saves remain open.
 
 Three additional recorded-plan integration tests pass, along with focused strict

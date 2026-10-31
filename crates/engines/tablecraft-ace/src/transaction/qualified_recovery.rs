@@ -55,6 +55,20 @@ impl<J: DurableStorage> QualifiedJet4Recovery<'_, J> {
         let _span = tracing::debug_span!("native.jet4_recovery.apply").entered();
         self.checked.recover(target, budget, cancelled)
     }
+
+    /// Verify only a complete already settled original/replacement image, with
+    /// storage barriers and no writes. Pending requires exact BEFORE; mixed
+    /// or opposite images are never repaired. The returned outcome describes current bytes, not historical events
+    /// or external effects. All original-intent/native qualification still holds.
+    pub fn confirm_completed<D: DurableStorage>(
+        self,
+        target: &mut D,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoveryOutcome, JournalError> {
+        let _span = tracing::debug_span!("native.jet4_recovery.confirm_completed").entered();
+        self.checked.confirm_completed(target, budget, cancelled)
+    }
 }
 
 fn equal_image(

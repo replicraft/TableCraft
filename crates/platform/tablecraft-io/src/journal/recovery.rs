@@ -5,12 +5,14 @@ use super::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-/// Durable outcome established by successful recovery of a retained journal.
+/// Complete image and storage barriers established by recovery or confirmation.
+/// This is a current byte-image fact, not proof of historical events or effects.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RecoveryOutcome {
     /// The complete commit marker and exact new image agree.
     Committed,
-    /// The original image is restored and synchronized; the journal is retained.
+    /// The exact original image is present and synchronized; the journal is retained.
+    /// Recovery may restore it; confirmation only verifies it without writes.
     RolledBack,
 }
 

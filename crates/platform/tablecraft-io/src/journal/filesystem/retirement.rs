@@ -256,6 +256,34 @@ fn confirm_barrier(
     Ok(())
 }
 
+pub(super) fn acknowledge_completed(
+    bundle: &ExistingBundle,
+    state: &mut PairState,
+    permit: &mut TerminalPermit,
+    outcome: RecoveryOutcome,
+) -> Result<(), FinalizationError> {
+    if *state != PairState::RetiredVerificationRequired || !permit.retire {
+        return Err(failure(
+            FinalizationPhase::State,
+            outcome,
+            PairError::InvalidState,
+        ));
+    }
+    permit.retire = false;
+    *state = PairState::RetirementBlocked;
+    bundle
+        ._parent
+        .verify_child(bundle.name.as_c_str(), bundle.binding.bundle)
+        .map_err(|cause| failure(FinalizationPhase::RetirementBarrier, outcome, cause))?;
+    *state = PairState::RetirementUnconfirmed;
+    bundle
+        ._parent
+        .sync()
+        .map_err(|cause| failure(FinalizationPhase::RetirementBarrier, outcome, cause))?;
+    *state = PairState::Retired;
+    Ok(())
+}
+
 pub(super) fn confirm(
     bundle: &ExistingBundle,
     state: &mut PairState,

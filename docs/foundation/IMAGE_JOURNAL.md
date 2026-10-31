@@ -263,8 +263,9 @@ The current fresh-copy engineering publisher remains a separate host operation.
 
 The optional [retained filesystem owner](FILESYSTEM_JOURNALS.md) validates existing
 private bundle objects and lends the same locked descriptors to explicit
-recovery. It does not discover journals, qualify native writes or implement
-bundle creation/retirement yet. Generic V1/V2 wire bytes remain unchanged.
+recovery. The current owner also implements explicit creation and retirement,
+described below. It does not discover journals or qualify native writes. Generic
+V1/V2 wire bytes remain unchanged.
 
 
 ## Explicit filesystem pairing and retirement
@@ -279,6 +280,14 @@ qualification remains with its consumer; this feature grants no normal ACE save.
 Setup reserves incomplete-resource ownership fallibly before effects and retains
 it on error. Known commit/recovery outcome is recorded before fallible retirement;
 namespace/barrier/cleanup/unlock errors preserve that outcome. Same-process
-barrier-only confirmation is explicit. Restart resolution of a retired bundle
-still requires a future completed-target verification/cleanup path, so this is
-not yet a complete crash lifecycle or native power-loss qualification.
+barrier-only confirmation is explicit. Intact retired bundles can now reopen
+through `open_retired` for write-denied completed-image confirmation and cleanup.
+`CheckedV1::confirm_completed` verifies exact AFTER for a committed marker or exact
+BEFORE for a pending/partial marker, then synchronizes both resources without
+writes. Mixed/opposite images refuse. Its outcome describes current complete bytes
+and barriers, not historical events. The native consumer retains original-intent
+qualification before this operation. Parent acknowledgement never renames.
+
+[Focused source/API and broader checks pass](../testing/results/intact-retired-confirmation-2026-10-30.json).
+Partial garbage, missing children, automatic discovery, unsupported platforms and
+hardware power-loss qualification remain outside this intact-bundle path.
