@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Native authored qualification, minimal builds and combined strict checks passed; consumer qualification separate",
+  "scope": "Explicit source-bound selected BeforeChange rich fixed batches under Standard capture; engineering candidates only",
+  "source_before_writer": {
+    "original_catalog_commit": "d78cacb0",
+    "expected_commit": "bd35525f",
+    "original_catalog_views": 36,
+    "healthy_required_originals": 4,
+    "recipes": 29,
+    "header6_positive_expected_images": 15,
+    "header6_refusal_controls": 14,
+    "selected_source_before_expected_views": 30,
+    "header5_scope": "Unsupported Extended Date siblings in this authored rich profile, preserving earlier role/selection refusals"
+  },
+  "observed": {
+    "native_focused": {
+      "status": "passed",
+      "functions": 10,
+      "complete_image_comparisons": 60,
+      "first_execution": true,
+      "group_orders": 2,
+      "row_orders": 2
+    },
+    "mutation_regression": {
+      "status": "passed",
+      "passed": 629,
+      "ignored": 11,
+      "failed": 0
+    },
+    "source_after_fixture_extraction": {
+      "status": "passed",
+      "functions": 3,
+      "failed": 0
+    },
+    "extra_after_fixture_extraction": {
+      "status": "passed",
+      "functions": 36,
+      "failed": 0,
+      "includes": "Legacy logical complete-final-row SetField coverage"
+    },
+    "constraints": "Healthy Required transient NULL repaired by SetField succeeds; unrepaired and physically self-consistent final NULL refuses",
+    "causal": "Same-byte different-image binding, valid XML operator/Extra changes, alternate original intent, physical payload/mask/opaque/count corruption, original stale/NULL/duplicate/ordinal metadata, and late RaiseError",
+    "resources": "Cumulative exact Bytes/Rows/Steps, each one-below, final observed cancellation",
+    "public_preserved_contract": {
+      "status": "passed",
+      "passed": 54,
+      "ignored": 2,
+      "failed": 0
+    }
+  },
+  "history": [
+    {
+      "phase": "Original Source preflight",
+      "outcome": "failed assertion before full gate completion",
+      "detail": "Original ID already had actual flags7/0; assertion incorrectly expected3/0. Assertion classification corrected without fixture-byte changes.",
+      "log": "initial_source_counter_assertion_failure"
+    },
+    {
+      "phase": "First combined compile",
+      "outcome": "failed E0603 before tests",
+      "detail": "Private batch::frames module prevented evaluator access to internal ProjectedRow; narrow owning visibility seam corrected.",
+      "log": "initial_compile_visibility_failure"
+    },
+    {
+      "phase": "Corrected compile",
+      "outcome": "completed with two unused Bound guard warnings",
+      "detail": "New owned prepare boundary consumes actual source/table guards; no old Source or fixture body change.",
+      "log": "corrected_compile_with_warnings"
+    },
+    {
+      "phase": "First strict check",
+      "outcome": "failed on three collapsible_if diagnostics",
+      "detail": "One projected name-match and two original-group metadata name-match conditionals; no test/expected output change.",
+      "log": "initial_strict_collapsible_failure"
+    }
+  ],
+  "final_checks": {
+    "strict": {
+      "status": "passed",
+      "packages": [
+        "ACE",
+        "Access",
+        "CLI",
+        "testkit"
+      ],
+      "all_targets": true,
+      "all_features": true
+    },
+    "minimal": {
+      "status": "passed",
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-testkit"
+      ],
+      "default_features": false
+    },
+    "final_format": {
+      "status": "passed",
+      "scope": "workspace; one bound.rs method-separation blank line added after strict"
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6828,
+      "missing": 0,
+      "evidence": "Root-reported final link-check outcome"
+    },
+    "diff_check": "passed"
+  },
+  "consumers": {
+    "access": "Separate qualification record; no pass inferred from native evidence",
+    "cli": "Separate consumer scope; no new flags or publication capability established here"
+  },
+  "limits": [
+    "No normal ACE save, journal, implicit macro dispatch or required-event discovery permission.",
+    "Explicit selected complete before-event properties only; body/module/child/unknown/unselected payload refusals retained.",
+    "User targets Boolean/Int32/Int64/Currency/legacy DATE, unindexed and calculation independent; macro frame ordinary Int32/NULL only.",
+    "Readonly counter/indexed Int32 operands do not confer target write authority; opaque/complex association keys excluded.",
+    "No DATA/INDEX allocation, growth, cascades or opaque field value fabrication.",
+    "No genuine-file or Microsoft Access save/reopen/native timing qualification."
+  ],
+  "evidence": {
+    "initial_source_counter_assertion_failure": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/source-first-root.log",
+      "bytes": 4765,
+      "sha256": "393e3a4fd84ae24e2bd6d90cdf046bdf4e2c5c1657fde24fdb11aa4f92859ef4"
+    },
+    "corrected_source_originals": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/source-counter-corrected-root.log",
+      "bytes": 535,
+      "sha256": "c6199e4c3a3ecc3ba341aec4a18d367498ea8c9d6a2139c4942914a70eebe00f"
+    },
+    "required_source_first": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/required-source-first-root.log",
+      "bytes": 542,
+      "sha256": "f22047249fc4a720eadb4f22e6f71ad3e6ae0374c9e9d351078f4fe77f411ff5"
+    },
+    "expected_source_first": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/expected-draft/expected-source-first-root.log",
+      "bytes": 536,
+      "sha256": "8a6d6ef1ff07c87cd8f1c10189e8b9f229e38724a7aa0989434e9496c2b97cb5"
+    },
+    "initial_compile_visibility_failure": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/first-check-root.log",
+      "bytes": 2011,
+      "sha256": "e1e25b90f4ecb913e9a0332f7d5d3853136c4cba47dcb03844c9c10748b384c2"
+    },
+    "corrected_compile_with_warnings": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/check-corrected-root.log",
+      "bytes": 1219,
+      "sha256": "56a773667600d398ae7ff235ecc5352457cc2d3ec76b2ccc2ddf9489f21dce59"
+    },
+    "native_focused_first": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/native-first-root.log",
+      "bytes": 1784,
+      "sha256": "bfd72acc8f75cd0cdcaf42af14837571bb5faf977d06ddb9ebff522f56d20a52"
+    },
+    "initial_strict_collapsible_failure": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/strict-first-root.log",
+      "bytes": 3036,
+      "sha256": "0a1bd7f410764a1aa9490135d26310d85f82da4f95c099ec6ba09a5a4faab26a"
+    },
+    "source_after_fixture_extraction": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-after-extraction-root.log",
+      "bytes": 967,
+      "sha256": "5c5e78d509ff4b216147cae574dcff5e0cf08e0e419d0f408a40fa7dc4443b82"
+    },
+    "extra_after_fixture_extraction": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/extra-regression-after-extraction-root.log",
+      "bytes": 5421,
+      "sha256": "b49bf02afe5cea8ccd8c0559a5d973f68e67ce83a39a98074d68db810ddd959f"
+    },
+    "mutation_regression": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/mutation-batch-first-root.log",
+      "bytes": 88030,
+      "sha256": "0b25f838b3844d16b45c0526c0daa09753d9b0e05a4d0aad5994a715211352e0"
+    },
+    "format_after_fixture_extraction": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/format-after-extraction-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "public_preserved_contract": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/public-contract-root.log",
+      "bytes": 6303,
+      "sha256": "d0acd3eaadfe3911a30bbc8f80c55269f5e7ea11d83a8f618b317ae7c435304b"
+    },
+    "strict_corrected": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/strict-corrected-root.log",
+      "bytes": 4089,
+      "sha256": "8be0e43a7dc447781e0bf4098564234d4b9c0a0412c254a5c58a3edcf9743754"
+    },
+    "final_format": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/fmt-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "minimal": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/minimal-root.log",
+      "bytes": 2433,
+      "sha256": "232005f3b2cb61080e460c736691dc352b844d962be570ca90f6d436295bbd6e"
+    }
+  }
+}

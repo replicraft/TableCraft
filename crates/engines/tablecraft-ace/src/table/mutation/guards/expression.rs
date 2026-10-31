@@ -1,5 +1,6 @@
+use super::resolver::Fields;
 use super::{BeforeEvent, BeforeEventGuardError, BeforeGuardUnsupported, PreparationProfile};
-use crate::{InspectError, TableSnapshot, header::check};
+use crate::{InspectError, header::check};
 use std::fmt::Write;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
@@ -19,7 +20,7 @@ const MAX_DEPTH: usize = 16;
 pub(super) fn compile(
     text: &str,
     event: BeforeEvent,
-    table: &TableSnapshot,
+    fields: Fields<'_>,
     profile: PreparationProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -44,7 +45,7 @@ pub(super) fn compile(
             BeforeEventGuardError::Expression
         }
     })?;
-    lower(&mut expression, event, table, profile, budget, cancelled)?;
+    lower(&mut expression, event, fields, profile, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(expression)
 }
@@ -55,26 +56,6 @@ fn limits() -> ParseLimits {
         max_tokens: MAX_TOKENS,
         max_depth: MAX_DEPTH,
     }
-}
-
-fn position(
-    name: &str,
-    table: &TableSnapshot,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<usize, BeforeEventGuardError> {
-    for (position, column) in table.columns().iter().enumerate() {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, (column.name().len() + name.len()) as u64)
-            .map_err(InspectError::from)?;
-        if column.name().eq_ignore_ascii_case(name) {
-            return Ok(position);
-        }
-    }
-    Err(BeforeEventGuardError::Unsupported(
-        BeforeGuardUnsupported::Context,
-    ))
 }
 
 fn binding(
@@ -102,7 +83,7 @@ fn binding(
 fn lower(
     expression: &mut Expression,
     event: BeforeEvent,
-    table: &TableSnapshot,
+    fields: Fields<'_>,
     profile: PreparationProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -122,7 +103,7 @@ fn lower(
                 }
                 (
                     OLD,
-                    position(field.name.as_str(), table, budget, cancelled)?,
+                    fields.position(field.name.as_str(), budget, cancelled)?,
                 )
             } else if field.name.as_str().eq_ignore_ascii_case("IsInsert") {
                 if event == BeforeEvent::Delete {
@@ -139,17 +120,17 @@ fn lower(
                 }
                 (
                     CURRENT,
-                    position(field.name.as_str(), table, budget, cancelled)?,
+                    fields.position(field.name.as_str(), budget, cancelled)?,
                 )
             };
             *expression = binding(space, selected, budget)?;
         }
         Expression::Unary { expression, .. } | Expression::IsNull { expression, .. } => {
-            lower(expression, event, table, profile, budget, cancelled)?;
+            lower(expression, event, fields, profile, budget, cancelled)?;
         }
         Expression::Binary { left, right, .. } => {
-            lower(left, event, table, profile, budget, cancelled)?;
-            lower(right, event, table, profile, budget, cancelled)?;
+            lower(left, event, fields, profile, budget, cancelled)?;
+            lower(right, event, fields, profile, budget, cancelled)?;
         }
         Expression::Call {
             qualifier,
@@ -178,7 +159,7 @@ fn lower(
                         BeforeGuardUnsupported::Expression,
                     ));
                 };
-                let selected = position(name, table, budget, cancelled)?;
+                let selected = fields.position(name, budget, cancelled)?;
                 *expression = binding(UPDATED, selected, budget)?;
             } else if name.as_str().eq_ignore_ascii_case("IsNull") {
                 let [FunctionArgument::Expression(value)] = arguments.as_mut_slice() else {
@@ -186,7 +167,7 @@ fn lower(
                         BeforeGuardUnsupported::Expression,
                     ));
                 };
-                lower(value, event, table, profile, budget, cancelled)?;
+                lower(value, event, fields, profile, budget, cancelled)?;
             } else {
                 return Err(BeforeEventGuardError::Unsupported(
                     BeforeGuardUnsupported::Expression,
@@ -206,7 +187,7 @@ fn lower(
 
 pub(super) fn target(
     text: &str,
-    table: &TableSnapshot,
+    fields: Fields<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, BeforeEventGuardError> {
@@ -216,5 +197,5 @@ pub(super) fn target(
     }
     // Field is a static metadata-name string, not a SQL expression. Reserved
     // SQL words and punctuation have no special meaning in this selector.
-    position(text, table, budget, cancelled)
+    fields.target(text, budget, cancelled)
 }

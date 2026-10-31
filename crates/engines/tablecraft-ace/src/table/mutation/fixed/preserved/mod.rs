@@ -1,4 +1,5 @@
 //! Source-certified mixed-schema copies for fixed scalars and fitting Short Text.
+mod before_change;
 mod dependencies;
 mod int32;
 mod joint;

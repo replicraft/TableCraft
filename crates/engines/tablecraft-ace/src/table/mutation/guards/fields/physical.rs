@@ -336,3 +336,19 @@ impl NativeImage {
 
 #[cfg(test)]
 mod tests;
+
+impl Ace16BeforeChangePreview {
+    pub(in crate::table::mutation) fn from_parts(
+        candidate: Ace16WritePreview,
+        programs: Vec<BeforeGuardProgramRevision>,
+        trace: Vec<BeforeGuardTrace>,
+        assignments: Vec<BeforeChangeAssignment>,
+    ) -> Self {
+        Self {
+            candidate,
+            programs,
+            trace,
+            assignments,
+        }
+    }
+}

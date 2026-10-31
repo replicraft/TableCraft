@@ -123,3 +123,82 @@ links (6,697 targets, no broken links) pass. CLI adoption is a separate consumer
 The [shared-service record](results/ace16-before-change-sql-service-2026-10-30.json)
 keeps original read pairs, physically qualified derivatives and failed attempts
 separate. Required discovery, native timing and normal ACE saves remain open.
+
+## Rich-schema original fixed batches
+
+`NativeImage::preview_ace16_before_change_batch_updates` is an additive native
+engineering service for preservation-qualified rich schemas under Standard
+capture. It accepts the existing `FixedColumnUpdates` groups and exact borrowed
+program selectors. User targets may be ordinary unindexed, calculation-independent
+Boolean, Int32, Int64, Currency or legacy DateTime fields. Macro operands and
+SetField remain Int32/NULL only; wide values and Boolean user intents stay outside
+that frame. This does not broaden the existing single-column physical service or
+its public complete logical final-row contract.
+
+All original user assignments are checked against the same captured source. Their
+row union, including rows selected only by wide or no-op intents, supplies one
+BeforeChange event per original logical row in source order. Every Int32 Current
+replacement is seeded before the event; Old stays frozen. Sequential SetField
+writes update Current. Final output targets are the union of user declarations
+and potential active-event SetField targets, rather than every readable column.
+Empty declarations still receive full metadata and program qualification.
+
+Ordinary indexed or AutoNumber Int32 operands can be read without granting write
+permission. Complex association keys, calculated capsules and other opaque
+fields are not fabricated as Int32 values. All selected and dormant definitions
+compile before rows run; indexed, dependent, counter or otherwise ineligible
+SetField targets refuse even under false conditions or with no selected rows.
+BeforeDelete definitions remain dormant for this UPDATE and cannot contain
+SetField. Unknown, opaque, named or unselected Extra content, body/module payloads
+and separately owned children retain their refusals.
+
+One source-bound admission retains complete actual Extra coverage and exact
+selectors; equal bytes in a different captured image do not reuse its authority.
+The final fitting batch preserves indexes, catalog, maps, EOF, opaque siblings,
+calculated caches, inactive NULL payloads and Int32 padding. There is no DATA/INDEX allocation,
+record growth, cascading or intermediate candidate. Required and other qualified
+rules apply after the complete transformation, so a transient user NULL can be
+repaired by SetField; an unrepaired final NULL still refuses. Changed rows count
+the final original-root union, including zero changes when programs restore the
+original values. RaiseError returns no candidate, including after earlier rows.
+
+An independent physical proof reacquires selected programs and complete Source,
+replays original user intents, and compares exact program receipts, traces,
+native-position assignments, projected row results and derived groups. Only its
+own replayed groups reach the existing independent fixed-byte auditor and final
+original-property validation. Fresh candidate program/Source admission follows.
+No staged group or partial logical row grants physical authority.
+
+### Authored qualification
+
+The original catalog corpus was committed as `d78cacb0`; healthy Required
+originals were separately read-qualified before their expectations were authored.
+The 29-case corpus has 15 complete header-6 expected images and 14 refusal
+controls. Its header-5 rich siblings retain their unsupported Extended Date
+profile boundary; this is not a general header-5 BeforeChange refusal. The exact
+expectations were committed as `bd35525f` before this batch producer ran.
+
+All ten focused native functions passed on their first execution, including 60
+complete-image comparisons across group and row orders, original Current/Old
+semantics, final restoration to the original image, readonly counter operands,
+empty-operation preflight and late rejection. Causal controls cover source
+identity, well-formed Extra changes, alternate original intents, byte/mask/count
+forgeries and final Required enforcement. Exact Bytes/Rows/Steps pools, each
+one-below limit and final cancellation pass.
+
+After the fixture-owner extractions, three read-only source functions passed
+again, covering catalog originals, healthy Required originals and all 30 positive
+before/expected views through actual selected Source admission. The full mutation
+suite passed 629 functions with 11 ignored helpers. The focused Extra regression
+passed 36 functions, including legacy complete-final-row SetField coverage.
+The public preserved contract passed 54 functions with two ignored helpers.
+Combined all-target/all-feature strict checks passed for ACE, Access, CLI and
+testkit; workspace formatting and 6,828 documentation link targets passed.
+No-default-feature builds pass for ACE, Access and testkit. Access/CLI consumer
+qualification remains separately tracked; it is not implied by native results.
+
+These authored engineering observations do not establish genuine-file or
+Microsoft Access save/reopen compatibility, required-event discovery, native
+ordering/timing, normal ACE saves, journal permission or macro absence. See
+[the complete collection contract](ACE16_BEFORE_EVENT_COLLECTIONS.md) and
+[data-macro acceptance](DATA_MACROS.md).

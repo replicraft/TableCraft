@@ -87,6 +87,11 @@ original-request reconstruction, complete Extra preservation and existing index/
 constraint checks. Eight whole-image comparisons and the mutation regression pass.
 Physical INSERT handling, required-event discovery and normal ACE saves remain
 unfinished; the candidate type grants no journal or ordinary save permission.
+The additive rich-schema batch service now composes ordinary fixed user intents
+with Int32 macro operands/targets over preserved mixed tables, including final
+Required repair and original Current/Old semantics. Sixty authored whole-image
+comparisons and 629 mutation functions pass; this does not grant normal saves
+or qualify native required-program discovery.
 The shared Access SQL planner now consumes that service for a bounded one-column
 UPDATE. The explicit [`query preview-before-change`](cli/BEFORE_CHANGE_COPY.md)
 copy consumer now supports default or required-durability publication, with typed

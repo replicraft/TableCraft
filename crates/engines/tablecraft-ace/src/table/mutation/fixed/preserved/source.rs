@@ -25,6 +25,8 @@ use tablecraft_core::{
     values::Value,
 };
 
+use crate::table::mutation::guards::fields::batch::SelectedPrograms;
+
 const CATALOG_HAS_COMPLEX: u32 = 0x0004_0000;
 
 pub(super) struct Record {
@@ -56,6 +58,38 @@ struct ComplexKeys {
 pub(super) fn capture(
     image: &NativeImage,
     table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(image, table, PayloadAdmission::Inert, budget, cancelled)
+}
+
+/// Exact selected Extra admission; all other Source checks are shared unchanged.
+pub(super) fn capture_before_change(
+    image: &NativeImage,
+    table: &str,
+    selected: &SelectedPrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(
+        image,
+        table,
+        PayloadAdmission::Selected(selected),
+        budget,
+        cancelled,
+    )
+}
+
+enum PayloadAdmission<'admission, 'image> {
+    Inert,
+    Selected(&'admission SelectedPrograms<'image>),
+}
+
+fn capture_with_payload(
+    image: &NativeImage,
+    table: &str,
+    payload: PayloadAdmission<'_, '_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
@@ -169,7 +203,12 @@ pub(super) fn capture(
         budget,
         cancelled,
     )?;
-    gates::inert_payloads(image, schema, budget, cancelled)?;
+    match payload {
+        PayloadAdmission::Inert => gates::inert_payloads(image, schema, budget, cancelled)?,
+        PayloadAdmission::Selected(selected) => {
+            selected.require_source(image, schema, budget, cancelled)?
+        }
+    }
     let properties = inspect_table_properties(
         &mut image.reader(),
         image.catalog().catalog().scope(),

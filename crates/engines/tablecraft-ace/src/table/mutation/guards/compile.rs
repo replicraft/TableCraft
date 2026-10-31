@@ -2,6 +2,7 @@ use super::{
     BeforeEvent, BeforeEventGuardError, BeforeEventGuardSelector, BeforeGuardProgramRevision,
     BeforeGuardUnsupported, PreparationProfile, buffer, expression, selection, source,
 };
+use super::{fields::batch::projection::Int32Projection, resolver::Fields};
 use crate::{
     InspectError, MacroProgramNodeKind, MacroProgramProfile, MacroProgramTextKind, NativeImage,
     PayloadPresence, TableExtraCoverage, TableSnapshot, XmlByteSpan, header::check,
@@ -64,7 +65,7 @@ pub(super) fn derive(
 ) -> Result<Compiled, BeforeEventGuardError> {
     derive_for(
         image,
-        table,
+        Fields::Complete(table),
         selectors,
         event,
         PreparationProfile::Guards,
@@ -88,7 +89,7 @@ pub(super) fn derive_fields(
     }
     derive_for(
         image,
-        table,
+        Fields::Complete(table),
         selectors,
         event,
         PreparationProfile::BeforeChangeFields,
@@ -97,9 +98,30 @@ pub(super) fn derive_fields(
     )
 }
 
+/// New rich path only: Source has already admitted the exact selected payloads.
+/// This still performs complete selection/action/field compilation, including
+/// dormant definitions, before any staging permission can be constructed.
+pub(super) fn derive_projected(
+    image: &NativeImage,
+    projection: &Int32Projection<'_>,
+    selectors: &[BeforeEventGuardSelector<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Compiled, BeforeEventGuardError> {
+    derive_for(
+        image,
+        Fields::Projected(projection),
+        selectors,
+        BeforeEvent::Update,
+        PreparationProfile::BeforeChangeFields,
+        budget,
+        cancelled,
+    )
+}
+
 fn derive_for(
     image: &NativeImage,
-    table: &TableSnapshot,
+    fields: Fields<'_>,
     selectors: &[BeforeEventGuardSelector<'_>],
     event: BeforeEvent,
     profile: PreparationProfile,
@@ -111,7 +133,7 @@ fn derive_for(
         PreparationProfile::BeforeChangeFields => CompilationPolicy::CompleteFields,
     };
     selection::validate(selectors, budget, cancelled)?;
-    let extra = image.inspect_table_extra(table.schema().object_id(), budget, cancelled)?;
+    let extra = image.inspect_table_extra(fields.object_id(), budget, cancelled)?;
     if extra.presence() != PayloadPresence::Present
         || extra.coverage() != TableExtraCoverage::WideMr2
     {
@@ -229,7 +251,7 @@ fn derive_for(
                         let expression = expression::compile(
                             text.text(),
                             event,
-                            table,
+                            fields,
                             profile,
                             budget,
                             cancelled,
@@ -265,11 +287,11 @@ fn derive_for(
                                 cancelled,
                             )?
                             .ok_or(InspectError::Malformed)?;
-                        let column = expression::target(target.text(), table, budget, cancelled)?;
+                        let column = expression::target(target.text(), fields, budget, cancelled)?;
                         let expression = expression::compile(
                             value.text().strip_prefix('=').unwrap_or(value.text()),
                             event,
-                            table,
+                            fields,
                             profile,
                             budget,
                             cancelled,
@@ -288,7 +310,7 @@ fn derive_for(
                         let number = expression::compile(
                             number.text().strip_prefix('=').unwrap_or(number.text()),
                             event,
-                            table,
+                            fields,
                             profile,
                             budget,
                             cancelled,
@@ -303,7 +325,7 @@ fn derive_for(
                             .map(|text| {
                                 if let Some(value) = text.text().strip_prefix('=') {
                                     expression::compile(
-                                        value, event, table, profile, budget, cancelled,
+                                        value, event, fields, profile, budget, cancelled,
                                     )
                                     .map(Description::Expression)
                                 } else {

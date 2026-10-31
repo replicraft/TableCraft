@@ -1,5 +1,6 @@
 //! Explicit BeforeChange row transformations, separate from guard-only behavior.
 mod authority;
+pub(in crate::table::mutation) mod batch;
 mod evaluate;
 mod model;
 pub(in crate::table::mutation) mod physical;
