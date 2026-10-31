@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Read-only originals and independent expectations qualified before candidate execution",
+  "scope": "One fitting ordinary Short Text group with ordinary Boolean/Int32/Int64/Currency/legacy DATE groups; preserved authored mixed schemas",
+  "recipes_per_header": 27,
+  "positive_recipes_per_header": 18,
+  "healthy_refusal_originals_per_header": 9,
+  "read_views": 90,
+  "native_source_admissions_header_6": 45,
+  "native_source_column_refusals_header_5": 45,
+  "producer_calls": 0,
+  "original_helpers_unchanged": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model.rs",
+      "bytes": 4736,
+      "sha256": "94639f57fa383e77c16de1a787705c286052609edceab8106f1464e947db765d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/model.rs",
+      "bytes": 8795,
+      "sha256": "0378fb3ea2d8d628ac935afba17bf19e148b9d5c4c6cf917563af7520d5264a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/zero_length_source.rs",
+      "bytes": 3493,
+      "sha256": "edbbb16ed1ac3a64698326db262444b3d14d47fe955a7c043ef92cf3cb1f618a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/joint_fixed_sources/model.rs",
+      "bytes": 22699,
+      "sha256": "f9e9712402deda7a0f38900c26ece5659df13b37454b45daf4975d7e67c64ea3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/fixed_scalar_sources/model.rs",
+      "bytes": 13386,
+      "sha256": "6837453647f5efc3f5e9879bb058ca4c4840885fdf9da7253f3839fe546ceb14"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources/model.rs",
+      "bytes": 2737,
+      "sha256": "1a310f92dfc6ba8c2aa8edb5f279786e27f6a85d25f054e61b2abc09c853747f"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/joint_fixed_sources.rs",
+      "bytes": 3848,
+      "sha256": "17efde8bc36bffeaf8857bda0802ea294b177160843828bfd81b1a070eff9c5a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/joint_fixed_sources/model.rs",
+      "bytes": 24909,
+      "sha256": "cfc016803de6a3a9751767084354a1910f0a8177c916fdf14cf0177e90e536ed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/short_text_sources/joint_fixed_sources.rs",
+      "bytes": 3037,
+      "sha256": "65b56605950f4319ec827a0e4df921c949d59ea109f6c153c897d8f955ef2ca0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources.rs",
+      "bytes": 5474,
+      "sha256": "963e42e9718b7dfec9aef6daa7037b425d4863d12ff1d09ab44721565e0ebfd5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/short_text_sources.rs",
+      "bytes": 4004,
+      "sha256": "c00225073e650278eec78a3eec60060b012618e2ced9a64534e0c626deabbf62"
+    }
+  ],
+  "checks": [
+    {
+      "kind": "complete_native_source",
+      "exit_code": 0,
+      "passed": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-source-next-20261031/native-source-first-root.log",
+        "bytes": 1632,
+        "sha256": "12ba73a65250a3c692d3e2ab733601197ad16edb5e56599785d86f4d868d553b"
+      }
+    },
+    {
+      "kind": "initial_exact_filter_did_not_select_test",
+      "exit_code": 0,
+      "passed": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-source-next-20261031/read-source-first-root.log",
+        "bytes": 438,
+        "sha256": "1e028005885f4c94f9c102864c21dc263c62a605566bfe01e255d262305e0e34"
+      }
+    },
+    {
+      "kind": "qualified_exact_read_source_filter",
+      "exit_code": 0,
+      "passed": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-source-next-20261031/read-source-qualified-root.log",
+        "bytes": 440,
+        "sha256": "7488426725196855c0e13f3f2406410ff2d4f9a45f2be7904d012a28384bf180"
+      }
+    }
+  ],
+  "notes": [
+    "First native Source run passed with unused Time import and property_patch dead-code warnings. Removed unused import and asserted the already-authored property byte in assert_protected; constructors and expected bytes unchanged.",
+    "Initial public read gate used an unqualified exact selector and ran zero tests. The corrected qualified selector ran one passing test; zero-test output is retained separately.",
+    "Header 5 authored originals retain unsupported Extended Date siblings, so Column refusal is specific to this corpus.",
+    "TextRequired original promotes its NULL Text row before enabling Required. ALZ and numeric Required use independently checked healthy originals.",
+    "No normal save, journal authority, required-macro absence or Microsoft Access qualification is established."
+  ]
+}

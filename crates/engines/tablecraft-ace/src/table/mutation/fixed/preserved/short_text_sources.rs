@@ -92,3 +92,6 @@ fn qualify_preserved_short_text_zero_length_prohibition_as_healthy_original() {
     assert_eq!(before[patch], 0);
     assert_eq!(image.as_bytes(), before);
 }
+
+#[path = "short_text_sources/joint_fixed_sources.rs"]
+mod joint_fixed_sources;
