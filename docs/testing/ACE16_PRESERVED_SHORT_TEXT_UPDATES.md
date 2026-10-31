@@ -113,6 +113,39 @@ from subsequent passing checks. The fixture lint correction replaces a constant
 source and expected bytes remain unchanged. Source and literal expected
 bytes were not retuned from producer output.
 
-These are authored-source engineering checks. Genuine-file qualification,
+These are authored-source engineering checks. Genuine-file candidate qualification,
 Microsoft Access save/reopen, required-macro discovery and ordinary ACE saves
 remain separate work.
+
+
+## Independently generated Short Text source admission
+
+Two fresh Jackcess 5.0.4 public-builder originals, V2016 and V2019, pass the
+strongest preserved-source capture before expected-image or candidate
+construction. The [repository-authored creation recipe](preserved_short_text_originals/PreservedShortTextOriginals.java)
+creates nullable ordinary `Short_Text` with 40 UTF16 units, declared compression,
+Required false and AllowZeroLength true. Original values are `alpha`, NULL and
+`omega`. Manual ID/Base indexes, deliberately stale Cached values 999 / -333 / 0,
+Memo/OLE, Boolean, attachments and Sentinel remain part of the source profile.
+PublishToWeb BYTE 0 is declared during creation, without patching an existing file.
+
+Five bounded source processes pass: one creation-generator compilation, two
+creations and two fresh readonly inventories. The readonly inventories reuse the
+unchanged `PreservedInt32Originals --inspect` class and its maintained bounded
+channel; no getter or old class is recompiled. Original hashes remain stable.
+The ignored `qualify_genuine_preserved_short_text_originals_before_expected_or_producer`
+function then admits both actual originals through private `source::capture`,
+with no preview or writer calls. It requires explicit
+`TABLECRAFT_PRESERVED_SHORT_TEXT_SOURCE_DIR`; use an absolute directory because
+Cargo tests run from the crate directory. The first relative-directory invocation
+failed at file open; the unchanged helper passed after correcting only that
+environment path. Both logs are retained.
+
+System timestamps, GUIDs and physical allocation are measured/pinned artifacts,
+not byte-identical regeneration promises. Actual record capacity must be derived
+from these original records, including possibly zero-length NULL spans; the
+hand-authored corpus's 10-byte and two-byte capacities are not assumed. Independent
+framing/expectations, candidate comparisons and SDK candidate readbacks remain
+pending. This source checkpoint supplies no native Microsoft Access save/reopen,
+required-macro absence or normal ACE save permission. Exact provenance, source
+pins and observations are in the [source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json).
