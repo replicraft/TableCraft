@@ -63,7 +63,7 @@ impl Reports {
     }
 }
 
-fn buffer(budget: &mut ResourceBudget) -> Result<String, InspectError> {
+pub(super) fn buffer(budget: &mut ResourceBudget) -> Result<String, InspectError> {
     budget.charge_allocation(REPORT_CAPACITY as u64, 1)?;
     budget.charge(Resource::Steps, REPORT_CAPACITY as u64)?;
 

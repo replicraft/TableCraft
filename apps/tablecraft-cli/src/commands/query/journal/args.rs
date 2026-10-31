@@ -45,6 +45,21 @@ pub(crate) struct RecoveryArguments {
 }
 
 #[derive(Args)]
+#[command(
+    after_help = "Confirm the current original/replacement image of an intact retired Jet4 journal bundle, then acknowledge its captured-parent barrier and clean up. No SQL, rollback or recovery replay is performed. Missing records, partial garbage, active bundles and mismatched current images refuse without fallback. The image report does not establish historical commit/rollback events. Keep other applications and ordinary readers closed until completion. Supported filesystem lifecycle: macOS and Linux."
+)]
+pub(crate) struct FinalizeArguments {
+    /// Original target object, retained under one exclusive file lock.
+    #[arg(long, value_name = "PATH")]
+    pub(super) database: PathBuf,
+    /// Intact nonce-named retired bundle, selected explicitly after interruption.
+    #[arg(long, value_name = "RETIRED_DIRECTORY")]
+    pub(super) journal: PathBuf,
+    #[command(flatten)]
+    pub(super) work: Work,
+}
+
+#[derive(Args)]
 pub(super) struct Work {
     /// Cumulative capture, planning, intent, journal and lifecycle bytes.
     #[arg(long = "work-bytes", default_value_t = WORK_BYTES)]

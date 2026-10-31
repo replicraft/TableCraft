@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "scope": "Explicit intact-retired normal Jet4 CLI finalization; current image/barrier facts, no historical event claim or ACE save authority",
+  "source_order": [
+    "Unchanged committed parent source/complete expected reader qualifier passes before new host APIs",
+    "Then four presentation/argument units and three black-box API functions"
+  ],
+  "coverage": {
+    "source_functions": 1,
+    "source_pairs_reused": 1,
+    "source_views_reused": 2,
+    "new_unit_functions": 4,
+    "new_blackbox_functions": 3,
+    "whole_target_image_confirmations": 2,
+    "refusal_controls": {
+      "active_bundle": 1,
+      "missing_or_partial_garbage": 3,
+      "opposite_current_image": 2
+    },
+    "known_image_write_flush_broken_pipe_controls": 4,
+    "secondary_error_image_label_controls": 2,
+    "final_confirmation_unit_functions": 5,
+    "full_cli_binary_unit_functions": 70,
+    "full_journal_integration_functions": 8,
+    "full_journal_integration_breakdown": {
+      "source": 1,
+      "existing_active_api": 4,
+      "new_confirmation_api": 3
+    },
+    "retained_error_slot_exact_and_one_below_controls": 3,
+    "retained_error_cause_allocation_and_lock_owner_control": 1,
+    "focused_tests_overlap_full_targets": true
+  },
+  "invariants": [
+    "Explicit retired directory only; no SQL or active-recovery fallback",
+    "Same retained target/journal resources and write-denied confirmation views",
+    "Original intent and both full normal native images requalified before current image comparison",
+    "Committed record requires exact replacement; pending/qualified partial marker requires exact original",
+    "Current image and both storage barriers verified before parent-only acknowledgement; no rename replay",
+    "Verified Original/Replacement facts survive namespace/release/output errors, without historical outcome labels",
+    "No target/journal payload writes; cleanup removes only owned retired namespace after verification"
+  ],
+  "limits": {
+    "ordinary_native_profile": "Existing clear Jet4 fixed Int32 gates unchanged",
+    "automatic_journal_discovery": false,
+    "incomplete_or_partially_cleaned_bundle_repair": false,
+    "opposite_or_mixed_image_copyback": false,
+    "ace_save_authority": false,
+    "hardware_power_loss_qualification": false
+  },
+  "retained_attempts": [
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/source-first-root.log",
+      "sha256": "44f1f362a479b4c0bbded29aa3034d06ad6f90c6d02b0af70a5abf44c603dee6",
+      "outcome": "pass",
+      "passing_functions": 1,
+      "evidence": "root log finished result"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/unit-first-root.log",
+      "sha256": "95f176ca63132fbbf5e9d75f4bf19d8d94a281269ed8e03f11f8e9a2f436c2ec",
+      "outcome": "pass",
+      "passing_functions": 4,
+      "evidence": "root log finished result"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/api-first-root.log",
+      "sha256": "561f36b70080e0556a205d0c757d4749c190b01b85fcc102446dbae461d426d0",
+      "outcome": "pass",
+      "passing_functions": 3,
+      "evidence": "root log finished result"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-host-strict-first-root.log",
+      "sha256": "955ea2a2943be374d2fa728459a46b7b19476c66569ad822bfaef357318251a3",
+      "outcome": "strict_failure",
+      "cause": "Journal Error payload reported at least128 bytes, propagated through universal ExecutionError; ten diagnostics from one size issue; broad unit/API chain unrun at this attempt"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/strict-retained-owner-root.log",
+      "sha256": "1c3982e93a90c29e30d0b7fd2a83f99f978e1ed027ba6275988596d9fcfda075",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/unit-all-root.log",
+      "sha256": "6937b736a91bedbb245188466a70fda2baeebc787946fe74a80ba438c52e294f",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 70
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/api-all-root.log",
+      "sha256": "b0b83c18cfc428fa937230a6647945031677a05fab5a71ae2b7f34dc17cf8123",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 8
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/fmt-final-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/links-final-root.log",
+      "sha256": "1fe48794b40c404f914831a0c9a7f57943c77137ae309f9480f9aecda9ac4753",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/boundaries-final-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/boundary-tests-final-root.log",
+      "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9",
+      "outcome": "pass",
+      "reported_by": "root"
+    }
+  ],
+  "shared_prerequisites": [
+    "docs/testing/results/native-int32-intent-recovery-2026-10-30.json",
+    "docs/testing/results/filesystem-journal-lifecycle-2026-10-30.json",
+    "docs/testing/results/jet4-journal-cli-2026-10-30.json"
+  ],
+  "pending_checks": [],
+  "source_parent_registration_inverse_exact": true,
+  "active_mutating_runner_unchanged": true,
+  "code_pins": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/mod.rs",
+      "sha256": "f0bd4e3156bdc6a326b5387a9a02d14f3789562bfee1f7ee9d7303c81e815c3b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/args.rs",
+      "sha256": "5d3765ab1bdf504d2ebbc7d9212942c06a322cba4fe2a8507e8f792ea2b56167"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/report.rs",
+      "sha256": "b91ee87872099ef2cd5887afbdef64a37c44ad5daa586d3728f187eeeb4bfbae"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/error.rs",
+      "sha256": "fc3e39ddccae54e7b52294fb27be0072668d88e0d4d03b678e2044733443bc15"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "sha256": "4962bc3b8da70a5f06ba0d47033fb6a2b5069b0ceb78bcd9648246f08c48e963"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "sha256": "f3a3e1dc4a87dc3315d0563b107ee48f7fc5a74dc60c3f11f03709de41f0538b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/execution.rs",
+      "sha256": "b8b5517a73526c46a9a3237706dd64b457915eca03322837217993c9d45099d1"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/journal_editing.rs",
+      "sha256": "83f7393e8f346dd4d6b1ed28ac164866bab4e4386282aa94f7f9b6abee5e387d"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/confirmation.rs",
+      "sha256": "0d3cd0934190a1fdb10a3e4d37457f017213d09f0162b01c9a93f4f03154009d"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/confirmation/tests.rs",
+      "sha256": "3b742f00e117e2d467933466ac65d270263711d4bcb42564ad0a47616380f593"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/journal_editing/finalization.rs",
+      "sha256": "bd642a269abfe0024442e4fef8a08ba417dd202fa01c528722b403af9afb6e91"
+    }
+  ],
+  "behavioral_test_failures": [],
+  "correction": {
+    "reason": "retained setup-error sizing",
+    "observed_first_diagnostic_minimum_payload_bytes": 128,
+    "mechanism": "Only new RetiredOpen stores a Vec<PairSetupFailure> with one slot paid and fallibly reserved before OfflineTarget::open. Error path moves complete owner into existing capacity; no late allocation, cause/capability discard or lint allowance.",
+    "old_apply_recover_runner_unchanged": true,
+    "exact_corrected_enum_sizes": "not published; test output captured; actual corrected strict passes",
+    "additional_dispatch_test": "drafted privately, not registered; root accepted existing ownership unit and full journal suite"
+  },
+  "final_checks": {
+    "cli_access_package_formatting": "pass",
+    "documentation_links": {
+      "targets": 6695,
+      "missing": 0
+    },
+    "dependency_guard": {
+      "packages": 15,
+      "outcome": "pass"
+    },
+    "dependency_policy_tests": {
+      "passed": 12,
+      "failed": 0
+    }
+  }
+}

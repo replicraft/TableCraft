@@ -24,6 +24,9 @@ impl Command {
     ) -> Result<(), ExecutionError> {
         match self {
             Self::Query {
+                command: query::Command::FinalizeUpdate(args),
+            } => query::journal::finalize(*args, password, writer).map_err(ExecutionError::Journal),
+            Self::Query {
                 command: query::Command::JournalUpdate(args),
             } => query::journal::update(*args, password, writer).map_err(ExecutionError::Journal),
             Self::Query {

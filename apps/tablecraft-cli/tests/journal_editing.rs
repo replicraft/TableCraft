@@ -251,3 +251,6 @@ fn recover_update_uses_real_pending_and_committed_pairs_then_retires_them() {
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
     }
 }
+
+#[path = "journal_editing/finalization.rs"]
+mod finalization;

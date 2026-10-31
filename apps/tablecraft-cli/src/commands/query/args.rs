@@ -11,6 +11,8 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Confirm an intact retired Jet4 bundle without replaying its edit.
+    FinalizeUpdate(Box<super::journal::FinalizeArguments>),
     /// Apply one normal Jet4 UPDATE in place with an explicit retained journal.
     JournalUpdate(Box<super::journal::UpdateArguments>),
     /// Recover one explicitly paired normal Jet4 edit without replaying SQL.

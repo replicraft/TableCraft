@@ -1,3 +1,4 @@
+use super::confirmation::VerifiedImage;
 use std::{fmt, io};
 use tablecraft_ace::{InspectError, NativeIntentError, NativeRecoveryQualificationError};
 use tablecraft_io::{
@@ -26,6 +27,24 @@ impl fmt::Display for FinalizationPhase {
 #[derive(Debug)]
 pub(crate) enum Error {
     Credentials,
+    RetiredOpen(Vec<PairSetupFailure>),
+    RetiredPair(PairError),
+    ConfirmationIntent(NativeIntentError),
+    ConfirmationResources(InspectError),
+    ConfirmationQualification(NativeRecoveryQualificationError),
+    Confirmation(JournalError),
+    VerifiedFinalization {
+        image: VerifiedImage,
+        error: FinalizationError,
+    },
+    VerifiedRelease {
+        image: VerifiedImage,
+        error: PairError,
+    },
+    VerifiedOutput {
+        image: VerifiedImage,
+        error: io::Error,
+    },
     Parse(tablecraft_sql::ParseError),
     Shape(tablecraft_query::QueryError),
     Native(InspectError),
@@ -75,6 +94,51 @@ impl Error {
 impl fmt::Display for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::RetiredOpen(retained) => {
+                formatter.write_str(
+                    "retired journal association refused; retain the target and remaining bundle for diagnosis",
+                )?;
+                if retained.is_empty() {
+                    return formatter.write_str("; setup failure details are missing");
+                }
+                for error in retained {
+                    write!(formatter, ": {error}")?;
+                }
+                Ok(())
+            }
+            Self::RetiredPair(error) => write!(
+                formatter,
+                "retired journal storage refused; no recovery fallback: {error}"
+            ),
+            Self::ConfirmationIntent(error) => write!(
+                formatter,
+                "retired intent refused; retain the target and remaining bundle: {error}"
+            ),
+            Self::ConfirmationResources(error) => write!(
+                formatter,
+                "confirmation preparation failed; retain the target and remaining bundle: {error}"
+            ),
+            Self::ConfirmationQualification(error) => write!(
+                formatter,
+                "retired journal qualification refused; no recovery replay: {error}"
+            ),
+            Self::Confirmation(error) => write!(
+                formatter,
+                "current-image confirmation failed; no recovery replay: {error}"
+            ),
+            Self::VerifiedFinalization { image, error } => write!(
+                formatter,
+                "verified target image {image}; namespace finalization failed ({:?}); do not rerun SQL: {}",
+                error.phase, error.cause
+            ),
+            Self::VerifiedRelease { image, error } => write!(
+                formatter,
+                "verified target image {image}; exclusive release failed; do not rerun SQL: {error}"
+            ),
+            Self::VerifiedOutput { image, error } => write!(
+                formatter,
+                "verified target image {image}; completion output failed; do not rerun SQL: {error}"
+            ),
             Self::Credentials => formatter.write_str(
                 "journal editing accepts only unencoded Jet4 files; --password is unsupported",
             ),
