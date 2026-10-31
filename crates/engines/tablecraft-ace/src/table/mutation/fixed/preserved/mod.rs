@@ -209,3 +209,6 @@ mod fixed_scalar_sources;
 
 #[cfg(test)]
 mod joint_fixed_sources;
+
+#[cfg(test)]
+mod rich_before_change_sources;

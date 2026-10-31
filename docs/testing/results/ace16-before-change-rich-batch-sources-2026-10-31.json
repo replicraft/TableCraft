@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Thirty-six original rich event-bearing sources qualified through readers before any new batch writer",
+  "scope": "Authored rich/Int32 catalog payload-role derivatives; original source inspection only",
+  "originals": 36,
+  "recipes_per_header": 18,
+  "headers": [
+    5,
+    6
+  ],
+  "mutation_expected_images": 0,
+  "selected_program_or_batch_writer_calls": 0,
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources.rs",
+      "bytes": 9280,
+      "sha256": "ad946088896cb137511af4ec015b3b115dafc9457b92e38bfeb4c3736963dfc8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/model.rs",
+      "bytes": 10267,
+      "sha256": "1f0afef39c0120fa9fab691bf02f4d33e9c476db2953f89a35084f8ab3977eda"
+    }
+  ],
+  "corrected_source_freeze": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/source-counter-corrected-freeze.json",
+    "bytes": 4362,
+    "sha256": "a19102afa4a939bd9372723ef0f80f763ef900cede8217f821ebb3f43a5eafd4"
+  },
+  "initial_failure_log": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/source-first-root.log",
+    "bytes": 4765,
+    "sha256": "393e3a4fd84ae24e2bd6d90cdf046bdf4e2c5c1657fde24fdb11aa4f92859ef4"
+  },
+  "passing_source_log": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/source-counter-corrected-root.log",
+    "bytes": 535,
+    "sha256": "c6199e4c3a3ecc3ba341aec4a18d367498ea8c9d6a2139c4942914a70eebe00f"
+  },
+  "notes": [
+    "New catalog carriers reuse the actual rich and Int32 original owners and existing WideMR2 fixture encoder once. Existing fixture/model bytes remain unchanged.",
+    "Readers qualify full nine-field catalog roles with distinct LvProp/LvExtra, explicit body/module observations, decoded macro declarations, original scalar values, stored calculations, attachment links, indexes and map ownership. They execute no macro or writer.",
+    "The first Source run exposed an incorrect assumption that the original ID descriptor flags were 3. Actual flags are 7, already AutoNumber. Corrected counter cases reuse that unchanged original descriptor; failed source/helper/freeze/log are archived separately.",
+    "Semantic compiler and physical admission of the selected programs remain unimplemented in this tranche. Body/module/child/opaque/unselected carriers and forbidden references are read observations, not newly granted permissions.",
+    "No normal-save, required native event discovery, journal or Microsoft Access qualification follows."
+  ]
+}
