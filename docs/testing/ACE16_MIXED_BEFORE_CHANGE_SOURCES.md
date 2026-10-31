@@ -41,9 +41,20 @@ Both source/anchor owners pass two tests each, with exclusive exports ignored in
 ordinary runs. Strict all-target/all-feature checks for ACE/testkit pass. Readable
 exporter continuations reproduce all first-export images and manifests exactly.
 
-Independent SDK observations and normal mixed-schema writer acceptance remain
-separate pending phases. Static review found the rich authored catalog lacks the
-Tables container required by the SDK's ordinary open path; a selected projection
-does not repair that precondition. Rich native/raw evidence must remain separate
-from complete independent SDK inventories. These sources do not establish Microsoft Access program
-execution, save/reopen, generated writes or general mixed-schema compatibility.
+All eighty independent SDK observations pass against exact stdout frozen before
+calls: forty complete ordinary inventories, twenty primary-index metadata reads
+and twenty named index cursors. The fixed observer is unchanged; a bounded new
+six-column observer handles the appended Score, counter metadata and primary
+index. Original images, literal outcomes, observer sources and class inventories
+retain their hashes. The saved-only verifier rechecks all observations with zero
+child processes. Neither observer executes native event programs.
+
+A separate single rich open/projection probe fails with the predicted missing
+Tables catalog-container precondition. It reaches no selected row observation and
+qualifies no complete rich SDK inventory. The actual rich native/raw checks remain
+separate. The record preserves this first failure, a compile-controller inventory
+error and an artifact-binder predecessor rather than rewriting their history.
+
+Normal mixed-schema writer acceptance is still pending. These sources and
+independent reads do not establish Microsoft Access program execution, native
+save/reopen, generated writes or general mixed-schema compatibility.
