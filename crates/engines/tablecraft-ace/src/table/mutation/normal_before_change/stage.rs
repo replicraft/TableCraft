@@ -4,22 +4,27 @@ use super::{
     protection::Protection,
 };
 use crate::{
-    BeforeChangeFieldPreparation, InspectError, NativeImage, TableSchema, TableSnapshot,
-    WriteBlocker, format::reader::Reader, header::check,
+    BeforeChangeFieldPreparation, InspectError, NativeImage, TableCheck, TableSnapshot,
+    WriteBlocker,
+    format::reader::Reader,
+    header::check,
+    table::indexes::{IndexDataPatch, IndexKeyUpdate, MutationKey, index_patches},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_schema::ScalarType;
 
 pub(super) struct Staged {
     pub patches: Vec<physical::Patch<{ size_of::<i32>() }>>,
+    pub indexes: Vec<IndexDataPatch>,
     pub changed_rows: usize,
 }
 
 pub(super) fn derive(
     image: &NativeImage,
-    schema: &TableSchema,
+    checked: &TableCheck,
     snapshot: &TableSnapshot,
     prepared: &BeforeChangeFieldPreparation<'_>,
     protection: &Protection,
@@ -27,6 +32,8 @@ pub(super) fn derive(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
     check(budget, cancelled)?;
+    let schema = checked.schema();
+    let indexes = checked.indexes();
     if prepared.source_bytes().as_ptr() != image.as_bytes().as_ptr()
         || prepared.source_bytes().len() != image.as_bytes().len()
         || prepared.table_object_id() != schema.object_id()
@@ -40,6 +47,11 @@ pub(super) fn derive(
         .checked_mul(schema.columns().len())
         .ok_or(InspectError::StructureLimit)?;
     let mut patches = buffer::vector(maximum, budget, cancelled)?;
+    let mut keys = if indexes.is_empty() {
+        Vec::new()
+    } else {
+        buffer::vector(maximum, budget, cancelled)?
+    };
     for column in 0..schema.columns().len() {
         check(budget, cancelled)?;
         let mut updates = buffer::vector(rows.len(), budget, cancelled)?;
@@ -71,6 +83,15 @@ pub(super) fn derive(
         };
         let staged =
             physical::patches::<_, _, { size_of::<i32>() }>(&mut reader, schema, column, &updates)?;
+        let mut indexed = false;
+        for index in indexes {
+            for key in index.index().columns() {
+                check(reader.budget, cancelled)?;
+                if key.number() == schema.columns()[column].number() {
+                    indexed = true;
+                }
+            }
+        }
         for patch in staged {
             protection.require(
                 image,
@@ -80,6 +101,15 @@ pub(super) fn derive(
                 reader.budget,
                 cancelled,
             )?;
+            if indexed {
+                let kind = MutationKey::new(ScalarType::Int32)?;
+                keys.push(IndexKeyUpdate {
+                    reference: patch.reference,
+                    column,
+                    expected: Some(kind.stored(&patch.before)?),
+                    value: Some(kind.stored(&patch.after)?),
+                });
+            }
             patches.push(patch);
         }
     }
@@ -109,8 +139,16 @@ pub(super) fn derive(
     references.sort_unstable();
     references.dedup();
     check(budget, cancelled)?;
+    let indexes = if indexes.is_empty() {
+        Vec::new()
+    } else {
+        // Apply all original-to-final field changes together. In particular,
+        // unique swaps never pass through a partially changed key population.
+        index_patches(image, schema, indexes, &keys, budget, cancelled)?
+    };
     Ok(Staged {
         patches,
+        indexes,
         changed_rows: references.len(),
     })
 }

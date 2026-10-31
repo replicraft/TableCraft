@@ -352,9 +352,12 @@ The optional `journal` feature adds a separate normal route for unencoded ACE
 binding and complete supported program preflight are required even for empty
 requests. Actual XML events determine dispatch, rather than caller-selected
 property aliases. All table fields must fit the supported fixed Int32 profile;
-indexes, relationships, opaque/incomplete event coverage and unsupported required
-effects refuse. No final NULL field, allocation, index mutation, general
-ACE save permission or macro-absence certificate is introduced.
+relationships, opaque/incomplete event coverage and unsupported required
+effects refuse. Checked non-NULL Int32 indexes may occupy one prefix-zero root
+leaf per physical index, with ascending/descending components, composites,
+consistent aliases and complete final uniqueness checks. Ignore-NULL indexes,
+interior nodes, splits, map/storage growth and final NULL fields refuse. This
+introduces no general ACE save permission or macro-absence certificate.
 
 Original user requests retain exact row/expected/replacement values. Any supplied
 equal assignment refuses with `EventTiming`, including one within a mixed list,
@@ -367,7 +370,11 @@ original image; unknown bodies or RaiseError do not yield a partial plan.
 [journal editor and offline session](OFFLINE_WRITE_SESSIONS.md). It composes final
 field changes into a normal plan with independent original-intent replay,
 complete-image comparison and full final constraints, never by converting an
-engineering candidate. Fresh metadata/map protection excludes non-DATA storage.
+engineering candidate. Fresh metadata/map protection separates permitted DATA
+payloads and checked INDEX leaves from all other storage. Full final key deltas are staged once per
+physical index; independent original-intent proof reconstructs both DATA and
+INDEX bytes.
+
 The [owning contract](NORMAL_ACE_BEFORE_CHANGE.md) records the exact admitted
 program, source, proof and lifecycle boundaries. Ordinary fresh-copy
 `query update` remains Jet4-only.
@@ -448,7 +455,8 @@ prefix/header/height rejection and CLI output atomicity. A separate
 replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This index-maintenance path remains an offline Jet4 profile. The separate normal
-ACE BeforeChange route refuses indexes.
+ACE BeforeChange route has its separate bounded Int32 root-leaf profile; see
+[its contract](NORMAL_ACE_BEFORE_CHANGE.md).
 
 Complete Boolean/numeric/GUID composite index reads/checks now work, but an update touching
 any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regression
@@ -466,7 +474,8 @@ it enables no floating target edits, key mutation or ACE writes. Physical IEEE
 index checks do not qualify native Access non-finite write acceptance.
 Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
 Jet4 Int32 edits; DateTime target/key mutation remains outside this writer. The
-separate ACE BeforeChange route admits no indexes.
+separate ACE BeforeChange route admits only its qualified Int32 root-leaf
+profile, not DateTime key updates.
 ACE 16-family single/composite Decimal index reads/checks do not qualify normal
 Decimal target/key mutation or expand either normal route. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and

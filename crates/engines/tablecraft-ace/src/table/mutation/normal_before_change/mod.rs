@@ -7,7 +7,7 @@ use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker, ace_profile, g
 use crate::{
     BeforeChangeFieldPreparation, BeforeEventGuardError, BeforeEventIntents, FixedScalarUpdate,
     InspectError, NativeImage, TableCheck, TableSchema, TableSnapshot, header::check,
-    inspect_table_schema, read_table,
+    inspect_table_schema, read_table, table::indexes::mutation::normal_leaf_audit::Ownership,
 };
 use tablecraft_core::{
     ids::ObjectId,
@@ -123,7 +123,7 @@ fn qualify(
     };
     let checked = gates::before_native_fields(image, table, &witness, budget, cancelled)?;
     if !checked.indexes().is_empty() {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        Ownership::capture(image, &checked, budget, cancelled)?;
     }
     let constraints =
         crate::check_table_constraints(&mut image.reader(), scope, table, budget, cancelled)?;
@@ -210,7 +210,7 @@ pub(crate) fn plan(
     let protection = protection::Protection::capture(&image, checked.schema(), budget, cancelled)?;
     let staged = stage::derive(
         &image,
-        checked.schema(),
+        &checked,
         &snapshot,
         &prepared,
         &protection,
@@ -221,7 +221,7 @@ pub(crate) fn plan(
     let plan = image.finish_updates(
         table,
         &staged.patches,
-        &[],
+        &staged.indexes,
         staged.changed_rows,
         budget,
         cancelled,
@@ -236,3 +236,6 @@ mod tests;
 
 #[cfg(test)]
 mod evaluation_tests;
+
+#[cfg(test)]
+mod index_tests;

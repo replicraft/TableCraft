@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_indexed_ace_before_change_updates",
+  "status": "bounded_indexed_normal_saves_recovery_cli_and_checks_passed",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "subversion": 0,
+    "encoding": "unencoded",
+    "fields": "all fields of all original rows ordinary non-NULL Int32",
+    "programs": "positive complete native pure BeforeChange; complete dormant BeforeDelete preflight",
+    "indexes": "one prefix-zero owned root leaf per physical index, checked complete membership",
+    "components": "ascending/descending non-NULL Int32, including composites",
+    "logical_aliases": "complete agreeing physical ownership; final constraints checked for every alias",
+    "atomic_unique_swaps": true,
+    "macro_only_indexed_targets": true,
+    "supplied_equal_assignments": "EventTiming refusal",
+    "original_request_record": "TCNI0002/profile2 unchanged",
+    "jet4_record": "TCNI0001/profile1 unchanged"
+  },
+  "sources": {
+    "record": "ace16-indexed-before-change-sources-2026-10-31.json",
+    "source_commit": "ec942235",
+    "independent_reader_commit": "0082a5af",
+    "originals": 18,
+    "modeled_positive_images": 16,
+    "readonly_sdk_observations": 106,
+    "all_source_checks_and_readers_precede_indexed_producer_installation": true,
+    "writer_or_production_serializer_supplies_expected_images": false
+  },
+  "proof": {
+    "authority": "fresh BEFORE capture plus original user requests and native programs",
+    "original_population": "raw original DATA roots, field bytes and masks",
+    "key_wire": "independent signed Int32/direction/row suffix construction; no staged key arrays",
+    "ownership": "catalog census plus complete map members, GLOBAL allocation, physical alias coverage and DATA/TD/LVAL/map/other-index exclusion",
+    "comparison": "entire expected AFTER and distinct changed DATA-root count"
+  },
+  "observed": {
+    "native_first_runtime": {
+      "tests": 6,
+      "status": "passed",
+      "corpus_complete_images": 16,
+      "commits_including_reverse_swap_orders": 18,
+      "additive_prequalified_tie_images": 4
+    },
+    "direct_proof_first_runtime": {
+      "tests": 3,
+      "status": "passed",
+      "literal_images_without_staging": 16,
+      "coverage": "key/row/bitmap/header/tail/count/request forgery; final unique/primary alias constraints; map-record/member/GLOBAL/orphan conflicts"
+    },
+    "offline_sessions_first_runtime": {
+      "tests": 2,
+      "status": "passed",
+      "typed_and_sql_complete_image_saves": 32,
+      "conflict_refusals_before_bundle": 4,
+      "same_lease_and_refreshed_snapshots": true
+    },
+    "native_legacy_and_intent_regression": {
+      "tests": [
+        1,
+        25,
+        3
+      ],
+      "status": "passed"
+    },
+    "all_feature_strict": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "status": "passed"
+    },
+    "standalone_journal_compile": {
+      "status": "passed",
+      "engineering_preview": false
+    },
+    "cli": {
+      "fresh_build": "passed",
+      "complete_commit_images": 16,
+      "exact_row_readbacks": 16,
+      "conflict_refusals": 2,
+      "indexed_help": "passed",
+      "original_sources_unchanged": true,
+      "status": "passed"
+    },
+    "all_normal_direct_proof_regression": {
+      "tests": 6,
+      "status": "passed"
+    },
+    "generated_signed_tuple_order": {
+      "tests": 1,
+      "status": "passed",
+      "oracle": "Rust signed tuple comparison and original row suffix, independent of staging encoding"
+    },
+    "access_unindexed_and_session_regression": {
+      "tests": [
+        2,
+        3,
+        15,
+        1
+      ],
+      "status": "passed"
+    },
+    "cli_journal_regression": {
+      "tests": 7,
+      "status": "passed"
+    },
+    "default_disabled": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access"
+      ],
+      "status": "passed"
+    },
+    "journal_only_strict": {
+      "package": "tablecraft-ace",
+      "all_targets": true,
+      "status": "passed"
+    },
+    "final_all_feature_strict_retry": {
+      "status": "passed",
+      "all_targets": true,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ]
+    },
+    "format_and_boundaries": {
+      "formatter": "passed",
+      "documentation_targets": 6924,
+      "documentation_missing": 0,
+      "dependency_packages": 15,
+      "status": "passed"
+    }
+  },
+  "preserved_initial_outcomes": {
+    "first_producer_and_session_runtime_failures": 0,
+    "first_direct_proof_runtime_failures": 0,
+    "first_formatter_check": "required only module-order normalization; applied before final formatter check",
+    "ordinary_incremental_cache": "cleared only after all compiler handles were terminal; incremental remained enabled; source/evidence retained",
+    "final_strict_infrastructure_failure": "strict-final-root.log retained No space left on device while writing ordinary incremental query cache; after compiler termination only that cache was cleared and exact command passed in strict-final-retry-root.log"
+  },
+  "not_qualified_or_unfinished": [
+    "Native Microsoft Access event execution, event timing and save/reopen",
+    "Interior nodes, nonzero prefixes, splits and allocation in this normal profile",
+    "Nullable or mixed-type indexed populations, ignore-NULL and relationship mutation",
+    "General ACE UPDATE/INSERT/DELETE or macro absence qualification",
+    "Encrypted editing, native shared-file coordination and Windows filesystem journal host",
+    "Physical power-loss and network-filesystem durability"
+  ],
+  "evidence_namespace": ".cache/ace16-native-before-change-indexed-next-20261031",
+  "logs": [
+    "journal-check-first-root.log",
+    "native-first-root.log",
+    "proof-first-root.log",
+    "session-first-root.log",
+    "native-and-legacy-final-root.log",
+    "strict-first-root.log",
+    "cli-build-first-root.log",
+    "cli-smoke-first-root.log",
+    "normal-proof-final-root.log",
+    "generated-wire-order-first-root.log",
+    "access-regression-final-root.log",
+    "cli-journal-final-root.log",
+    "default-disabled-final-root.log",
+    "journal-strict-final-root.log",
+    "strict-final-root.log",
+    "strict-final-retry-root.log",
+    "journal-strict-last-root.log"
+  ],
+  "cli_precall": {
+    "path": ".cache/ace16-native-before-change-indexed-next-20261031/cli-precall-root.json",
+    "bytes": 356,
+    "sha256": "c83c24811ad8f3d9cbf7ec62709bc9c70e8212ed96842be0316c68b755776bc9"
+  }
+}

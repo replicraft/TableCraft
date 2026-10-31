@@ -615,3 +615,6 @@ fn recovery_exact_pools_final_cancel_and_stale_target_never_write() {
         assert_eq!(journal.writes, 0);
     }
 }
+
+#[path = "normal/indexed.rs"]
+mod indexed;
