@@ -113,7 +113,6 @@ fn preserved_int32_stale_null_wrong_carriers_and_mixed_groups_refuse() {
     for (expected, value) in [
         (Value::Int32(999), Value::Int32(-101)),
         (Value::Null, Value::Int32(-101)),
-        (Value::Int32(1000), Value::Null),
         (Value::Boolean(false), Value::Boolean(true)),
         (Value::Int32(1000), Value::Int64(-101)),
     ] {

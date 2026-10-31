@@ -100,3 +100,9 @@ fn preserved_int32_authority_rejects_padding_opaque_bytes_and_wrong_count() {
         Err(EditError::Preservation)
     );
 }
+
+#[path = "nullable_sources.rs"]
+mod nullable_sources;
+
+#[path = "nullable_proof_tests.rs"]
+mod nullable_proof_tests;

@@ -2,7 +2,7 @@
 
 The existing fixed/batch engineering services gain a separate closed path for one
 ordinary, nonindexed, calculation-independent Int32 target in a qualified mixed
-schema. Requests must supply exact non-NULL Int32 expected/new values. This creates
+schema. Requests supply exact Int32 or NULL expected/new values. This creates
 an `Ace16WritePreview`, not a normal edit plan or journal/save permission. Existing
 Boolean-only requests retain their prior staging/proof bodies and charged costs.
 
@@ -15,15 +15,17 @@ GLOBAL/map allocation. Participating relationships remain refused. Required and
 validation checks still apply. `PublishToWeb=1` remains unqualified/refused; this
 feature does not establish donated-file editing support.
 
-Only one Int32 column group is admitted. Boolean/numeric mixtures, NULL carriers,
+Only one Int32 column group is admitted. Boolean/numeric mixtures,
 indexed/generated/calculated/dependent targets and other field representations
 remain outside this new path. Original field metadata and original requests select
 and validate the numeric profile. An empty numeric request may enter only after
 exact metadata qualification of an ordinary fixed Int32; no staging, resource,
 conflict or cancellation failure triggers an alternate writer.
 
-Staging emits only the original four-byte field span, retaining the native NULL
-mask and fixed-area padding. A separate proof recaptures source facts and rebuilds
+Non-NULL staging emits only the original four-byte field span, retaining the native
+NULL mask and fixed-area padding. NULL transitions additionally update only the
+selected presence bit; inactive payload bytes remain exact. A separate proof
+recaptures source facts and rebuilds
 expected bytes from original requests and records. It rejects an alternative
 valid candidate made from a different request, unrelated byte changes and an
 incorrect changed-row count. Candidate source certification runs again afterward.
@@ -86,7 +88,7 @@ The Access engineering editor admits an exact ordinary Int32 target alongside it
 existing preserved Boolean target under Default or explicit fitting fixed mode.
 The existing `query preview-update` and typed `write preview-update` commands use
 that same native service; no new flag, retry, normal-save or journal permission is
-introduced. Native admission still requires one non-NULL, nonindexed,
+introduced. Native admission requires one ordinary, nonindexed,
 calculation-independent Int32 target. Mixed Boolean/numeric groups, multiple
 numeric groups, unavailable operands and other update modes remain refused.
 The existing Boolean lookup and charged scans stay unchanged.
@@ -182,3 +184,44 @@ and external observations distinct. The maintained
 images without running a database process. These results qualify the stated
 engineering-copy profile, not Microsoft Access save/reopen, normal ACE saves,
 required macro handling or general mixed-schema editing.
+
+## Nullable Int32 transitions
+
+The same single-target service now admits Int32/NULL expected and replacement
+values. Native declaration checks select the actual Int32 field even when the
+first expected value is NULL; no failed stage is retried through another writer.
+Existing Boolean and non-NULL Int32 work retains its previous resource charges.
+
+| Original | Replacement | Permitted changes |
+| --- | --- | --- |
+| NULL | NULL | None; preserve the inactive payload exactly |
+| NULL | Int32 | Set the target presence bit and replace its four payload bytes |
+| Int32 | NULL | Clear the target presence bit; retain all payload bytes |
+| Int32 | Int32 | Existing four-byte replacement; equal values change nothing |
+
+Expected NULL checks the original presence bit rather than interpreting inactive
+bytes. Every other mask bit, padding byte, record footer and unrelated payload
+remains original. A separate proof reconstructs the complete image and distinct
+changed-row count from original requests. Mandatory candidate source admission
+then applies the existing Required and validation checks; a Required-to-NULL
+request returns a typed constraint error rather than an escaping candidate.
+
+Seven authored originals and six independently expected images passed full source
+admission before writer changes. Twelve fixed/batch whole-image comparisons pass,
+including mixed transitions across three rows and inactive nonzero payloads.
+Two proof functions reject payload, neighboring-mask, opaque-byte and count
+forgeries. The native contract passes 26 functions with two existing helpers
+ignored. Existing Access and CLI targets pass 13 and 14 functions, including four
+new typed/SQL complete-copy comparisons. Empty requests, stale values, duplicate
+ordinals, unsupported carriers/groups, exact resource pools and cancellation
+retain explicit controls.
+
+The preserved unit regression also passes 15 functions, with one explicit
+genuine-source helper ignored, including the existing larger-image cases.
+
+All-target/all-feature ACE, Access and CLI Clippy, scoped formatting and minimal
+ACE/Access builds pass. The [nullable result](results/ace16-preserved-int32-nullable-2026-10-30.json)
+retains the initial fixture typing failure separately; its correction changed no
+literal source or expected bytes. This is authored-source evidence. The genuine
+SDK Score field above is Required, so its positive non-NULL results do not qualify
+genuine nullable storage, Microsoft Access saves or normal write permission.

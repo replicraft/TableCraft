@@ -104,10 +104,9 @@ fn preserved_int32_typed_and_sql_copies_follow_native_header_admission() {
 }
 
 #[test]
-fn preserved_int32_refuses_dependent_indexed_null_and_joint_targets() {
+fn preserved_int32_refuses_dependent_indexed_and_joint_targets() {
     let case = model::source(6, 101);
     for statement in [
-        "UPDATE Items SET Large_Number=NULL WHERE ID=1",
         "UPDATE Items SET [Number]=12 WHERE ID=1",
         "UPDATE Items SET [Number]=12 WHERE ID=-1",
         "UPDATE Items SET ID=12 WHERE ID=1",
@@ -131,4 +130,45 @@ fn preserved_int32_refuses_dependent_indexed_null_and_joint_targets() {
             "{statement}"
         );
     }
+}
+
+#[test]
+fn preserved_int32_null_copy_keeps_original_inactive_bytes_through_shared_services() {
+    let case = model::source(6, 101);
+    let mut expected = case.before.clone();
+    expected[13 * 4096 - 2] &= !16;
+    let editor = AccessEngineeringEditor::new(
+        image(&case.before),
+        "Items",
+        ScalarUpdateMode::Default,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let handle = editor.snapshot().row_handle(0).unwrap();
+    let typed = editor
+        .plan_updates(
+            "Large_Number",
+            &[CellUpdate::new(handle, Value::Null)],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(typed.candidate_bytes(), expected);
+
+    let query = parse_query(
+        "UPDATE Items SET Large_Number=NULL WHERE ID=1",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let sql = sql::preview_batch_update(
+        image(&case.before),
+        query.query(),
+        ScalarUpdateMode::Default,
+        &mut budget(),
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(sql.into_backend().candidate_bytes(), expected);
 }

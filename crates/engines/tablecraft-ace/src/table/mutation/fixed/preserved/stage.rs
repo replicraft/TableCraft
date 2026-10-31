@@ -48,7 +48,7 @@ pub(super) fn prepare(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     // Original typed intent chooses this extra closed profile; the numeric
-    // stage independently checks actual native declaration and non-NULL values.
+    // stage independently checks the actual native declaration and carriers.
     // Healthy Boolean paths retain their existing allocations, polls and charges.
     if int32::requested(groups) {
         return int32::prepare(image, source, groups, budget, cancelled);

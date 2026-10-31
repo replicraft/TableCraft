@@ -74,6 +74,10 @@ nonindexed field outside calculation dependencies can change through existing
 typed/SQL/CLI consumers while attachments and stored caches remain byte-exact.
 Ten whole-image copies on two independently generated originals and ten fresh
 readonly Jackcess inventories now pass, including signed boundaries and no-ops.
+The preserved service also handles single-column Int32/NULL transitions while
+retaining inactive payloads and enforcing Required/validation on the final
+candidate. Authored-source native, shared-service and CLI comparisons pass;
+genuine nullable sources and native Access qualification remain separate.
 Broader targets, unsupported source properties, required macros and normal saves
 remain unfinished.
 

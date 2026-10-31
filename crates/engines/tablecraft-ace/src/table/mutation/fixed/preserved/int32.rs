@@ -1,4 +1,5 @@
-//! Non-NULL, nonindexed, calculation-independent fixed Int32 preservation.
+//! Nonindexed, calculation-independent fixed Int32 preservation.
+mod nullable;
 pub(super) mod proof;
 
 use super::{FixedColumnUpdates, name_work, source::Source, unique};
@@ -27,7 +28,7 @@ pub(super) fn requested(groups: &[FixedColumnUpdates<'_>]) -> bool {
     group
         .updates()
         .first()
-        .is_some_and(|update| matches!(update.expected(), Value::Int32(_)))
+        .is_some_and(|update| matches!(update.expected(), Value::Int32(_) | Value::Null))
 }
 
 /// Only metadata qualification may select the empty numeric path. This helper
@@ -106,14 +107,19 @@ pub(super) fn prepare(
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     rows::unique(group.updates(), budget, cancelled)?;
+    let mut has_null = false;
     for update in group.updates() {
         check(budget, cancelled)?;
-        if !matches!(
-            (update.expected(), update.value()),
-            (Value::Int32(_), Value::Int32(_))
-        ) {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
+        match (update.expected(), update.value()) {
+            (Value::Int32(_), Value::Int32(_)) => {}
+            (Value::Null, Value::Null | Value::Int32(_)) | (Value::Int32(_), Value::Null) => {
+                has_null = true;
+            }
+            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
         }
+    }
+    if has_null {
+        return nullable::prepare(image, schema, column, group, budget, cancelled);
     }
 
     budget

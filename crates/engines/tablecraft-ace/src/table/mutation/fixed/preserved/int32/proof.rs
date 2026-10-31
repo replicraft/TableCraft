@@ -131,9 +131,15 @@ pub(in crate::table::mutation::fixed::preserved) fn prove_original(
         {
             return Err(EditError::Conflict);
         }
-        let (Value::Int32(before), Value::Int32(value)) = (request.expected(), request.value())
-        else {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
+        let before = match request.expected() {
+            Value::Null => None,
+            Value::Int32(value) => Some(*value),
+            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+        };
+        let value = match request.value() {
+            Value::Null => None,
+            Value::Int32(value) => Some(*value),
+            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
         };
         let record = original
             .records
@@ -144,7 +150,8 @@ pub(in crate::table::mutation::fixed::preserved) fn prove_original(
             .data
             .get(layout.mask_start + number / MASK_BITS)
             .ok_or(InspectError::Malformed)?;
-        if mask & (1 << (number % MASK_BITS)) == 0 {
+        let bit = 1 << (number % MASK_BITS);
+        if (mask & bit != 0) != before.is_some() {
             return Err(EditError::Conflict);
         }
         let at = COLUMN_COUNT_BYTES
@@ -162,21 +169,40 @@ pub(in crate::table::mutation::fixed::preserved) fn prove_original(
             .ok_or(InspectError::Malformed)?
             .try_into()
             .map_err(|_| InspectError::Malformed)?;
-        if i32::from_le_bytes(actual) != *before {
+        if let Some(before) = before
+            && i32::from_le_bytes(actual) != before
+        {
             return Err(EditError::Conflict);
         }
         if before != value {
-            let start = record
-                .offset
-                .checked_add(at)
-                .ok_or(EditError::Preservation)?;
-            let end = start
-                .checked_add(PAYLOAD_BYTES)
-                .ok_or(EditError::Preservation)?;
-            expected
-                .get_mut(start..end)
-                .ok_or(EditError::Preservation)?
-                .copy_from_slice(&value.to_le_bytes());
+            if let Some(value) = value {
+                let start = record
+                    .offset
+                    .checked_add(at)
+                    .ok_or(EditError::Preservation)?;
+                let end = start
+                    .checked_add(PAYLOAD_BYTES)
+                    .ok_or(EditError::Preservation)?;
+                expected
+                    .get_mut(start..end)
+                    .ok_or(EditError::Preservation)?
+                    .copy_from_slice(&value.to_le_bytes());
+            }
+            if before.is_some() != value.is_some() {
+                let mask_offset = record
+                    .offset
+                    .checked_add(layout.mask_start)
+                    .and_then(|offset| offset.checked_add(number / MASK_BITS))
+                    .ok_or(EditError::Preservation)?;
+                let after_mask = expected
+                    .get_mut(mask_offset)
+                    .ok_or(EditError::Preservation)?;
+                *after_mask = if value.is_some() {
+                    mask | bit
+                } else {
+                    mask & !bit
+                };
+            }
             references.push(record.reference);
         }
     }

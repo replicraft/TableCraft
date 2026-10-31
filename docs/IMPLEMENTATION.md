@@ -52,7 +52,10 @@ field outside calculation dependencies in qualified mixed schemas. The
 [native and frontend contract](testing/ACE16_PRESERVED_INT32_UPDATES.md) retains
 attachments, stored caches, opaque values and every byte outside the exact
 four-byte field. Native, typed, SQL and CLI complete-image comparisons pass;
-unsupported profiles, NULL transitions and mixed-target batches still refuse.
+unsupported profiles and mixed-target batches still refuse. NULL transitions now
+preserve inactive payload bytes and change only the selected presence bit, with
+exact Int32 payload replacement when making a NULL value present. Required and
+qualified validation rules remain mandatory before a candidate returns.
 These are authored-source engineering results, not native Access save qualification.
 
 The same path also passes ten complete-image comparisons on two independently
