@@ -140,3 +140,6 @@ pub mod canonical_variable_capacity_creation;
 
 /// Independently authored multiple-table native creation originals.
 pub mod canonical_multiple_creation;
+
+/// Authored BeforeChange originals and independent literal candidate images.
+pub mod canonical_before_change;

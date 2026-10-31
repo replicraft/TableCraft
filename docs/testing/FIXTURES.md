@@ -10676,3 +10676,13 @@ repository-authored complete images, with no copied third-party database bytes.
 The linked result records hashes, native source admission and independent SDK
 read inventories. Ordinary CI reconstructs and anchors each complete image;
 local source files and compiled reader tooling remain ignored.
+
+## Authored BeforeChange original and modeled views
+
+The [BeforeChange source corpus](ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md) contains
+32 original views and 14 literal modeled after-images, authored under the
+repository license. Their complete hashes and original request metadata are
+frozen before normal-writer execution. Native structural reads and all 46
+independent SDK inventories pass; no event or write permission follows from
+those reads. Supplied-equal-assignment models remain outside initial normal
+admission. The linked result retains exact provenance and phase outcomes.
