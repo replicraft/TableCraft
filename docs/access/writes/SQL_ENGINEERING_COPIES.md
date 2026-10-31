@@ -28,6 +28,13 @@ These examples require schemas admitted by the selected native mutation profile.
 Text predicates require explicit `--collation ordinal`; no ambient locale or
 native Access collation equivalence is inferred.
 
+The separate [`query preview-before-change`](../../cli/BEFORE_CHANGE_COPY.md)
+command invokes an explicitly selected qualified BeforeChange property subset
+through the shared service before creating a fresh fitting engineering copy.
+Its caller-selected order does not certify native dispatch, required-program
+coverage or normal saves. Ordinary `preview-update` retains its active-content
+refusal.
+
 ## Selection and assignment
 
 The current profile permits one local table, an optional alias and one or more

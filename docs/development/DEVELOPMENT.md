@@ -74,8 +74,10 @@ profiles and core Serde stays optional.
 Workspace inheritance does not add every listed dependency to every package.
 Recheck standalone feature profiles when changing shared features, which are additive.
 The I/O journal feature enables optional SHA-256 integrity for the working image
-transaction protocol. Normal CLI/native-reader builds leave it disabled; verify
-the standalone all-feature I/O profile as well as the default workspace. See
+transaction protocol. Standalone native-reader defaults leave it disabled. The
+CLI explicitly enables journal and filesystem ownership features for its offline
+update, recovery and finalization commands. Verify the standalone all-feature I/O
+profile as well as the default workspace. See
 [journal scope and durability preconditions](../foundation/IMAGE_JOURNAL.md).
 
 Group existing root dependency declarations by purpose, keeping related registry

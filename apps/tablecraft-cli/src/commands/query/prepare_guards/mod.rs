@@ -6,13 +6,14 @@ mod tests;
 
 pub(crate) use args::Arguments;
 
+use super::guard_properties;
 use crate::{native, output::OutputError};
 use std::fmt;
 use tablecraft_access::{
     AccessInputError,
     engineering::guards::{self, GuardSqlError},
 };
-use tablecraft_ace::{BeforeEventGuardSelector, InspectError, NativeImage, inspect_header};
+use tablecraft_ace::{InspectError, NativeImage, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::QueryError;
 use tablecraft_sql::{ParseError, ParseLimits, parse_query};
@@ -53,7 +54,13 @@ impl fmt::Display for Error {
 pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Error> {
     let _span = tracing::debug_span!("cli.query.prepare_guards").entered();
     let mut budget = ResourceBudget::new(args.work_bytes, args.work_rows, args.work_steps);
-    let selectors = selectors(&args.guard_properties, &mut budget)?;
+    let selectors =
+        guard_properties::selectors(&args.guard_properties, &mut budget).map_err(|error| {
+            match error {
+                guard_properties::Error::Native(error) => Error::Native(error),
+                guard_properties::Error::Selection => Error::Selection,
+            }
+        })?;
     budget
         .charge_allocation(args.sql.len() as u64, 1)
         .map_err(InspectError::from)
@@ -89,39 +96,4 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
     // Returning this completed presentation never authorizes candidate publication.
     drop(source);
     Ok(text)
-}
-
-fn selectors<'a>(
-    values: &'a [String],
-    budget: &mut ResourceBudget,
-) -> Result<Vec<BeforeEventGuardSelector<'a>>, Error> {
-    if values.is_empty()
-        || !values.len().is_multiple_of(2)
-        || values.len() / 2 > NativeImage::MAX_BEFORE_GUARD_PROPERTIES
-    {
-        return Err(Error::Selection);
-    }
-    budget
-        .charge_allocation(
-            (values.len() / 2) as u64,
-            size_of::<BeforeEventGuardSelector<'_>>() as u64,
-        )
-        .map_err(InspectError::from)
-        .map_err(Error::Native)?;
-    let mut selected = Vec::new();
-    selected
-        .try_reserve_exact(values.len() / 2)
-        .map_err(|_| Error::Native(InspectError::Allocation))?;
-    for pair in values.as_chunks::<2>().0 {
-        budget
-            .charge(Resource::Steps, (pair[0].len() + pair[1].len()) as u64)
-            .map_err(InspectError::from)
-            .map_err(Error::Native)?;
-        let kind = pair[0].parse::<u16>().map_err(|_| Error::Selection)?;
-        if pair[1].is_empty() {
-            return Err(Error::Selection);
-        }
-        selected.push(BeforeEventGuardSelector::new(kind, &pair[1]));
-    }
-    Ok(selected)
 }

@@ -13,7 +13,7 @@ use tablecraft_ace::InspectError;
 use tablecraft_testkit::access::secondary_index as model;
 
 #[test]
-fn durable_flag_is_limited_to_the_two_explicit_publication_consumers() {
+fn durable_flag_is_scoped_to_explicit_publication_consumers() {
     for (command, sql) in [
         ("update", "UPDATE Items SET Score=27 WHERE Id=2"),
         (

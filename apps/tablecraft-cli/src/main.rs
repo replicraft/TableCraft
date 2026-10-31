@@ -83,6 +83,14 @@ fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
     match result {
         Ok(()) => (Ok(()), ExitCode::SUCCESS),
         Err(ExecutionError::Output(error)) => (Err(error), ExitCode::FAILURE),
+        Err(ExecutionError::EngineeringPublication(error)) => {
+            protected_failure(&error, ExitCode::FAILURE, &mut io::stderr().lock())
+        }
+        Err(ExecutionError::PublishedCopyOutput(error)) => protected_failure(
+            &format_args!("engineering copy was published; completion output failed: {error}"),
+            ExitCode::FAILURE,
+            &mut io::stderr().lock(),
+        ),
         Err(ExecutionError::Journal(error)) => {
             let status = if error.invalid_input() {
                 ExitCode::from(INVALID_INPUT_STATUS)
@@ -115,6 +123,7 @@ fn protected_failure(
 #[cfg(test)]
 mod journal_output_tests {
     use super::*;
+    use tablecraft_io::{IoError, publication::PublicationError};
 
     struct FailedDiagnostics;
 
@@ -135,5 +144,39 @@ mod journal_output_tests {
             protected_failure(&error, ExitCode::FAILURE, &mut FailedDiagnostics);
         assert!(diagnostic.is_ok());
         assert_eq!(status, ExitCode::FAILURE);
+    }
+
+    #[test]
+    fn publication_state_survives_diagnostic_broken_pipe() {
+        let cases = [
+            (
+                PublicationError::VisibilityUncertain {
+                    cause: IoError::Cancelled,
+                },
+                "visibility is uncertain",
+            ),
+            (
+                PublicationError::PublishedUnconfirmed {
+                    cause: IoError::Cancelled,
+                },
+                "published but namespace durability is unconfirmed",
+            ),
+            (
+                PublicationError::PublishedCleanupFailure {
+                    cause: IoError::Cancelled,
+                    namespace_synced: true,
+                    barrier: None,
+                },
+                "namespace synced: true",
+            ),
+        ];
+        for (state, expected) in cases {
+            let failure = native::publication::Error::Required(state);
+            assert!(failure.to_string().contains(expected));
+            let (diagnostic, status) =
+                protected_failure(&failure, ExitCode::FAILURE, &mut FailedDiagnostics);
+            assert!(diagnostic.is_ok());
+            assert_eq!(status, ExitCode::FAILURE);
+        }
     }
 }

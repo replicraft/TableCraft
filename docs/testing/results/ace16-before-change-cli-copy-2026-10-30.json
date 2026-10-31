@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "scope": "Explicit selected BeforeChange fresh engineering copies; no normal ACE save/journal or native-dispatch/required-program certification",
+  "status": "All focused, regression, strict, minimal, formatting, documentation and boundary checks pass",
+  "source_order": [
+    "Unchanged eight physical source/expected pairs qualified before new CLI APIs",
+    "Genuine Agile correct-password reader/check and stored/MSZIP exact extracted images qualify before new envelope command calls"
+  ],
+  "coverage": {
+    "physical_source_functions": 1,
+    "physical_source_pairs": 8,
+    "physical_source_views": 16,
+    "command_unit_functions": 5,
+    "main_protected_output_functions": 1,
+    "cli_api_functions": 3,
+    "primary_complete_copies": 12,
+    "empty_noop_complete_copies": 4,
+    "late_raise_no_output": 4,
+    "occupied_output_refusals": 12,
+    "missing_duplicate_selector_refusals": 4,
+    "old_profile_active_content_refusals": 2,
+    "envelope_source_functions": 1,
+    "envelope_api_functions": 1,
+    "encrypted_deployment_no_output_refusals": 8,
+    "full_cli_binary_unit_functions": 76,
+    "full_guard_integration_functions": 20,
+    "full_journal_integration_functions": 8,
+    "focused_tests_overlap_full_targets": true
+  },
+  "invariants": [
+    "Closed statement and selector preflight before source/output opens",
+    "One original image and shared SQL/native candidate service",
+    "Entire paid report before fallible source release and one common publication",
+    "Publication outcome retained through stdout write/flush and stderr BrokenPipe",
+    "No late allocation or boxing to preserve known publication states",
+    "Unknown selected content and RaiseError return no candidate; no failed-candidate retry"
+  ],
+  "limits": {
+    "bytes": 268435456,
+    "rows": 100000,
+    "steps": 100000000,
+    "report_maximum_bytes": 1048576,
+    "profile": "ordinary Int32/NULL single-assignment fitting rows",
+    "required_local_execution": "macOS",
+    "native_access_comparison": false,
+    "normal_ace_save": false,
+    "automatic_required_program_discovery": false
+  },
+  "checks": [
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/compile-first-root.log",
+      "sha256": "01ff01d1bf44808bca3acf58743185f4104dafad3e15c974b2eeb503359da5a8",
+      "outcome": "pass",
+      "passing_functions": null
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/source-first-root.log",
+      "sha256": "7d5dec4a78bd2ccc2d2e0c1035c9d256a8c269c4ee2ebfffef5c89302e26ce17",
+      "outcome": "pass",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/unit-first-root.log",
+      "sha256": "ee5ccd64bdb96032a0c3cd36c66b9c151b40a149efb9284d9ce30ab3c7aacebc",
+      "outcome": "pass",
+      "passing_functions": 5
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/main-first-root.log",
+      "sha256": "41101fd6da2165c570c51f2adaccbacef4a635f6201a6074afd28c3dbd0a7c51",
+      "outcome": "pass",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/api-first-root.log",
+      "sha256": "675749531f6043d7e9f408032b4c2ec7fabd0eb76ef88c5db3e1f8c83ef8ab43",
+      "outcome": "pass",
+      "passing_functions": 3
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/envelope-source-first-root.log",
+      "sha256": "91617f034e0993731382bc32ea32ce6a8ac45e0297421940d9307ab55c361e8c",
+      "outcome": "pass",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/envelope-api-first-root.log",
+      "sha256": "ba7d336ebb58b6a1b3b55572795e9d706ce89e031db26e7076fc0a9b117dd35b",
+      "outcome": "pass",
+      "passing_functions": 1,
+      "scope": "genuine encrypted/deployment refusal API"
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/host-regression-root.log",
+      "sha256": "ba7c326e6a4d91ffa24a64bdb81cdb53b6f28d188267135d1fe82cfb3077801a",
+      "outcome": "pass",
+      "passing_functions": 104,
+      "scope": "76 binary +20 guard +8 journal"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/strict-first-root.log",
+      "sha256": "de5135adc3ad7e6cfd48b3a8200136b7b480d14a49f9c092e404c8758ccc7c3b",
+      "outcome": "pass",
+      "passing_functions": null,
+      "scope": "ACE/Access/CLI all-target all-feature strict"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/fmt-final-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outcome": "pass",
+      "passing_functions": null,
+      "scope": "ACE/Access/CLI formatter"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/minimal-root.log",
+      "sha256": "1259b305ff1f61b95960663df0c9437409ecb5133fddd2224fe335a4ea12cd5d",
+      "outcome": "pass",
+      "passing_functions": null,
+      "scope": "ACE/Access no-default features"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/links-final-root.log",
+      "sha256": "f0d26a8d30805959b3cee2a8b11a8b4f7becfda9c31cb716e9832a9770d76d1f",
+      "outcome": "pass",
+      "passing_functions": null,
+      "scope": "6718 local documentation targets, none missing"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/boundaries-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "outcome": "pass",
+      "passing_functions": null,
+      "scope": "15 package boundaries"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/boundary-tests-root.log",
+      "sha256": "d14fea084e0de5b0c969f88ba78e4412a2d53c7f5c985f884a1dd11b182c4263",
+      "outcome": "pass",
+      "passing_functions": 12,
+      "scope": "12 policy tests"
+    }
+  ],
+  "code_pins": [
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/prepare_guards/mod.rs",
+      "sha256": "86ef67a9e223e0a8f751936183ada8d290c654b8028da327a9eb0e205bd610f6"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "sha256": "af1680d1fff9c5954a57fc0b6d30ff5a3eb2488c1a9fe896fe515ab9f01a1091"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "sha256": "6b45359f0f15f69066db816d533acbd98aacb2626e9af4629f355f04dbb61710"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/execution.rs",
+      "sha256": "4c350d5160f2e95a81e7ac40ea0ea69af697c3b2e23ccd2b2ec0f506eeeca06e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/main.rs",
+      "sha256": "800848b3da26ad77120b934d0743ee8af984e01fef2e7d7e9f39243151894978"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/prepare_guards/tests.rs",
+      "sha256": "e2751f538b035fef7750a1d5bf3582bbbeba769a7abc8400574258c60eca09e2"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_create_index/tests.rs",
+      "sha256": "e091a6877bc56ce1b1e451232ba65273b0ad56ca20d1ac55bc312f5501d04c57"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/guard_preparation/before_change_sources.rs",
+      "sha256": "09fc9d56e47345b2b3029a3b08161a7aafb279294f2ede95829b225e8bfb756f"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/guard_properties.rs",
+      "sha256": "47aa41b6459284eeff97851a960cc51cf0ebe3c7433d34b700c316bdfb0385e5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_before_change/mod.rs",
+      "sha256": "d1d285947904c283a224d498e85a3a3da5f997e9e1a921b4b7e268198b6768dd"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_before_change/args.rs",
+      "sha256": "281fb2639fd914dc333b8a35a6e7065195535d9a8831cbf92e13bb0a38374073"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_before_change/report.rs",
+      "sha256": "b45b56453327e3eca4d959dd40248949cbd11bf551c7acdb8c8862939bb2dd69"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/preview_before_change/tests.rs",
+      "sha256": "5a67e3f32acb3f21534eaed6149f9b97dfc8d4281d56992a7115d6ffd3e5f900"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/guard_preparation/before_change_sources/cli.rs",
+      "sha256": "8d4d27da58b4a010902c4f3b34da225741237002b153120219de778bc6d19810"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/guard_preparation/before_change_sources/cli_guards.rs",
+      "sha256": "ba0514b91cad0501e788cb10a21a7761bee981528706a7e64bb41f8f08ccf405"
+    }
+  ],
+  "pending_checks": [],
+  "retained_history": [
+    "Initial coherent production and source fixture freeze retained",
+    "Post-source import-only review moves new imports to module tops; no behavior or constructor changes",
+    "Envelope SOURCE registered and passed before command refusal API registration",
+    "Envelope command API passes after its genuine encrypted/deployment SOURCE gate; no production or fixture repair needed"
+  ],
+  "qualification_notes": [
+    "Only independently authored synthetic fixtures; no real donor acceptance",
+    "Report errors retain known published/uncertain states even if stderr is BrokenPipe",
+    "Other command output behavior unchanged",
+    "No Windows/Linux execution, native Access save or hardware power-loss qualification"
+  ],
+  "failed_product_attempts": []
+}
