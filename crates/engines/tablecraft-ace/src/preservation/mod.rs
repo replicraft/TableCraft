@@ -10,11 +10,11 @@ pub use image::{FixedUpdateImageLimits, NativeImage};
 pub use payload_data::{ObjectPayloadData, OpaquePayload};
 pub use payloads::{ObjectPayloads, PayloadPresence};
 pub use table_extra::{
-    DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, MacroProgramCoverage,
-    MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind, MacroProgramProfile,
-    MacroProgramText, MacroProgramTextKind, MacroPropertyInventory, MacroPropertyObservation,
-    TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty, TableMacroInventory,
-    XmlByteSpan,
+    DataMacroEnvelope, DataMacroProgram, DataMacroXml, DataMacroXmlNamespace, MacroCoverageChild,
+    MacroProgramCoverage, MacroProgramDiagnostic, MacroProgramNode, MacroProgramNodeKind,
+    MacroProgramProfile, MacroProgramText, MacroProgramTextKind, MacroPropertyInventory,
+    MacroPropertyObservation, TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty,
+    TableMacroCoverage, TableMacroInventory, XmlByteSpan,
 };
 
 pub(crate) const COPY_CHUNK_BYTES: usize = 64 * 1024;

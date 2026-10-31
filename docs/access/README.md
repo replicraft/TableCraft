@@ -63,6 +63,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 ## Schema
 
+- [Source-bound table macro coverage](schema/NATIVE_MACRO_COVERAGE.md)
 - [Explicit before-event guard preparation](schema/NATIVE_BEFORE_EVENT_GUARDS.md)
 - [Explicit BeforeChange field preparation](schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
 - [Explicit native record constraints](schema/NATIVE_CONSTRAINTS.md)

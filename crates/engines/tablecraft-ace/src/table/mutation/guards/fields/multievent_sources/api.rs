@@ -243,3 +243,58 @@ fn logical_insert_keeps_dormant_delete_old_separate_from_current_insert() {
         );
     }
 }
+
+#[test]
+fn coverage_collection_does_not_widen_legacy_selected_event_guard_compilation() {
+    for code in [5, 6] {
+        let case = model::source(code, model::Recipe::DormantDeleteRaise);
+        let selection = selectors(&case);
+        let image = capture(&case.images.before);
+        let coverage = image
+            .inspect_table_macro_coverage(
+                CatalogScope::new(7).object_id(10),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        let updates = updates();
+        let fields = coverage
+            .prepare_before_change_fields(
+                &selection,
+                BeforeEventIntents::FixedUpdate {
+                    column: "Score",
+                    updates: &updates,
+                },
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert!(fields.rejection().is_none());
+        assert_eq!(
+            fields.final_rows().unwrap()[0].values(),
+            [Value::Int32(301), Value::Int32(99), Value::Int32(301)]
+        );
+        assert_eq!(fields.programs().len(), 2);
+
+        // BeforeChange is dormant for this explicit Delete. The unchanged guard
+        // compiler refuses that context; complete property selection alone does
+        // not introduce CompleteFields semantic dispatch into the guard method.
+        let intent = BeforeEventIntents::DeleteOrdinals(&[]);
+        let direct = image
+            .prepare_ace16_before_event_guards("Items", &selection, intent, &mut budget(), &|| {
+                false
+            })
+            .err();
+        let bound = coverage
+            .prepare_before_event_guards(&selection, intent, &mut budget(), &|| false)
+            .err();
+        assert_eq!(
+            direct,
+            Some(BeforeEventGuardError::Unsupported(
+                crate::BeforeGuardUnsupported::Context
+            ))
+        );
+        assert_eq!(bound, direct);
+        assert_eq!(image.as_bytes(), case.images.before);
+    }
+}

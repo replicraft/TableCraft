@@ -54,6 +54,11 @@ XML, resolve named macro calls, execute actions or evaluate strings as SQL.
 
 ## Observed macro inventory
 
+For the enclosing table's body/module payloads and observed direct child objects,
+use the separate [source-bound coverage report](NATIVE_MACRO_COVERAGE.md). Its
+logical preparation consumer retains explicit selectors and unknown coverage;
+the Extra inventory alone remains scoped to the retained root payload.
+
 `TableExtra::inspect_macro_inventory` explicitly traverses retained parsed
 properties with the existing inert XML envelope reader. Its result borrows the
 original carrier, retaining identity, raw bytes and original framing coverage

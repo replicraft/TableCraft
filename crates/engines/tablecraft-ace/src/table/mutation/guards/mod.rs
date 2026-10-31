@@ -2,6 +2,7 @@
 mod authority;
 mod buffer;
 mod compile;
+mod coverage;
 mod error;
 mod evaluate;
 mod expression;

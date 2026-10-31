@@ -330,3 +330,49 @@ fn before_change_fields_exact_pools_and_terminal_cancellation_publish_nothing() 
     );
     assert_eq!(image.as_bytes(), bytes);
 }
+
+#[test]
+fn coverage_bound_fields_keep_the_original_image_borrow_after_report_drop() {
+    let case = &cases::CASES[0];
+    for code in [5, 6] {
+        let (bytes, _, _) = model::source(code, "BeforeChange", case.body);
+        let image = capture(&bytes);
+        let updates = [FixedScalarUpdate::new(
+            0,
+            Value::Int32(10),
+            Value::Int32(11),
+        )];
+        let prepared = {
+            let coverage = image
+                .inspect_table_macro_coverage(
+                    CatalogScope::new(7).object_id(10),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+            coverage
+                .prepare_before_change_fields(
+                    SELECTED,
+                    BeforeEventIntents::FixedUpdate {
+                        column: "Score",
+                        updates: &updates,
+                    },
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap()
+        };
+        assert_eq!(
+            prepared.table_object_id(),
+            CatalogScope::new(7).object_id(10)
+        );
+        assert_eq!(
+            prepared.final_rows().unwrap()[0].values(),
+            [Value::Int32(1), Value::Int32(12)]
+        );
+        assert_eq!(prepared.source_bytes(), image.as_bytes());
+        assert_eq!(prepared.assignments().len(), 1);
+        assert!(prepared.rejection().is_none());
+        assert_eq!(image.as_bytes(), bytes);
+    }
+}

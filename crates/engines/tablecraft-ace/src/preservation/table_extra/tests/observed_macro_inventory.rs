@@ -169,3 +169,5 @@ fn qualify_observed_macro_inventory_sources_before_inventory() {
     }
     assert_eq!((carriers, documents, envelopes), (20, 12, 14));
 }
+
+mod coverage_sources;
