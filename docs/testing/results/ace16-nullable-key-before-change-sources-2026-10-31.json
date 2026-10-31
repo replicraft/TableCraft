@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_untouched_nullable_key_before_change_sources",
+  "status": "native_sources_anchors_strict_and_96_independent_reads_passed",
+  "nullable_key_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "source_freeze_sha256": "d62e4f98f8cd626b2ebf2b0f583ad917d12337321e70f35919189a21a25ef53a",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "originals": 12,
+    "expected_images": 12,
+    "views": 24,
+    "total_image_bytes": 1146880,
+    "complete_scalar_row_observations": 72,
+    "selected_prefix_bytes": 0,
+    "original_request_digest": "891d8aac21e6d1f7a784675eb1ac73a014c54d0e73340036d33a36be9cd1e429",
+    "null_target_transitions": false,
+    "unique_all_null_pair": "authored physical/read hypothesis, not native Access behavior evidence"
+  },
+  "recipes": [
+    "scalar-ascending",
+    "scalar-descending",
+    "unique-null-pair",
+    "composite-partial-null",
+    "tree-null-first",
+    "tree-null-bound"
+  ],
+  "checks": {
+    "source_first": {
+      "passed": 1,
+      "seconds": 0.08,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/source-first-root.log",
+        "bytes": 652,
+        "sha256": "962035b5a0cde43f90270cccc36cbd4a93eba828bd36b3a80bb983f1b88bd98f"
+      }
+    },
+    "source_and_anchors": {
+      "passed": 2,
+      "ignored": 1,
+      "seconds": 0.06,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/source-anchors-first-root.log",
+        "bytes": 782,
+        "sha256": "42dd8fc5c46aad0560ca8ea6b0d13979dcd1a60105227fa77d6bb417091120a3"
+      }
+    },
+    "source_strict": {
+      "passed": true,
+      "seconds": 25.97,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-testkit"
+      ],
+      "all_targets": true,
+      "features": "journal only",
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/source-strict-first-root.log",
+        "bytes": 307,
+        "sha256": "caeedee48e26c74c6d66056bb868c153b02e52ba3fe2cba691fa7a86fd8116b2"
+      }
+    },
+    "observer_compile": {
+      "passed": true,
+      "database_calls": 0,
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/compile-receipt-first-root.json",
+        "bytes": 1043,
+        "sha256": "159fe0d51012cdbff301e56e11da09f7cf46538afc1218cc391425174f78abbe"
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "h5-scalar-ascending-original.accdb",
+      "bytes": 45056,
+      "sha256": "59a86ee4955f334cd0046c36971741127f1f810533451ca2b3dd2b229c65d711"
+    },
+    {
+      "path": "h5-scalar-ascending-expected.accdb",
+      "bytes": 45056,
+      "sha256": "1a7e4b2cf87cbbc61f002a133a4b03a8f6d0dfa73a798689437d61558869881d"
+    },
+    {
+      "path": "h5-scalar-descending-original.accdb",
+      "bytes": 45056,
+      "sha256": "abde8531cc09f980ec1a37c02c240f54aff095647f4bbb7a1f5d340e4a06619d"
+    },
+    {
+      "path": "h5-scalar-descending-expected.accdb",
+      "bytes": 45056,
+      "sha256": "db24f045052b5e791f10e81b5704a61f858744a24cb496e42bf1c37697ded592"
+    },
+    {
+      "path": "h5-unique-null-pair-original.accdb",
+      "bytes": 45056,
+      "sha256": "fe085e9b57f2ea8138d66c9fcd027259ffd16a8df2121d6ed3504ee66f7c0748"
+    },
+    {
+      "path": "h5-unique-null-pair-expected.accdb",
+      "bytes": 45056,
+      "sha256": "a0c15faa4cae387a1cf88bf5fee33f19a3839c0bbfb49b5ae74b0e3d966e268f"
+    },
+    {
+      "path": "h5-composite-partial-null-original.accdb",
+      "bytes": 45056,
+      "sha256": "98f3b39601bff4a4154da2bceb08f12d7ef2c52aa6412d76fed347f71909d9f4"
+    },
+    {
+      "path": "h5-composite-partial-null-expected.accdb",
+      "bytes": 45056,
+      "sha256": "09c1c81a6ab018114a3dc2da2af61b98c8d9b47782c25fe4055a5956512127eb"
+    },
+    {
+      "path": "h5-tree-null-first-original.accdb",
+      "bytes": 53248,
+      "sha256": "d73b44e18ae9c9bd69b6895539503f4ccd06481f2ed2cf872ae7ddf2f0ab7b13"
+    },
+    {
+      "path": "h5-tree-null-first-expected.accdb",
+      "bytes": 53248,
+      "sha256": "ea2d4039f050de40f95beb79ad41586fecc642b5d81088a51e71644295dee3ed"
+    },
+    {
+      "path": "h5-tree-null-bound-original.accdb",
+      "bytes": 53248,
+      "sha256": "432d9404d4400c6c839f0e02ee82b0f759ee3f5ca9d23098ca6799bd1e3d0375"
+    },
+    {
+      "path": "h5-tree-null-bound-expected.accdb",
+      "bytes": 53248,
+      "sha256": "d7737b51b72d02c3af6938d53707e512f3cef31ee0a1911aa42ed4dbc30dcc9b"
+    },
+    {
+      "path": "h6-scalar-ascending-original.accdb",
+      "bytes": 45056,
+      "sha256": "966072c531bc638b8c62b93e1ae6115c6d25162c7badf5ef653aca82ae22b5a8"
+    },
+    {
+      "path": "h6-scalar-ascending-expected.accdb",
+      "bytes": 45056,
+      "sha256": "80991d90afa0a18d18a86d9fc44bbb2dbcc42b741ef1fd26a19f25e51f27a169"
+    },
+    {
+      "path": "h6-scalar-descending-original.accdb",
+      "bytes": 45056,
+      "sha256": "4ddde0d10b634c7281bf20677626405255ce2938f1cca3c576d8e2b01732da23"
+    },
+    {
+      "path": "h6-scalar-descending-expected.accdb",
+      "bytes": 45056,
+      "sha256": "e6cac637b2f94d2c1f8adb65f15ffe02cc23cdfd738d64d37b9215dac40284f7"
+    },
+    {
+      "path": "h6-unique-null-pair-original.accdb",
+      "bytes": 45056,
+      "sha256": "3811219b165b0f7d4b7232ba9734638dea9831ea5cbcb0573fcb6b6f599c5752"
+    },
+    {
+      "path": "h6-unique-null-pair-expected.accdb",
+      "bytes": 45056,
+      "sha256": "32f0fc46cde7865654564d669e1d2925c9cefe22e6812757cf1126496f0e80a3"
+    },
+    {
+      "path": "h6-composite-partial-null-original.accdb",
+      "bytes": 45056,
+      "sha256": "23cb53039335df06879ffc4053b13abb18e531d6c418fa987e6430ae52a7fbbd"
+    },
+    {
+      "path": "h6-composite-partial-null-expected.accdb",
+      "bytes": 45056,
+      "sha256": "f4cf9296c954e70f060f2d342cf32e61c6d0e90395d128def568ed156fa167de"
+    },
+    {
+      "path": "h6-tree-null-first-original.accdb",
+      "bytes": 53248,
+      "sha256": "3f4a3904db6d94b1c9444fa9922b6634191e9a86e380d4ac87f2d4e8132fe086"
+    },
+    {
+      "path": "h6-tree-null-first-expected.accdb",
+      "bytes": 53248,
+      "sha256": "ab9ddc9a6a418554f601e40708c3c1e5d0b2f5dcf7a89c2851739d34207cc8ca"
+    },
+    {
+      "path": "h6-tree-null-bound-original.accdb",
+      "bytes": 53248,
+      "sha256": "2dfd0696e0ca6774a7ebb187082ca3659e8ba934dd61608fb0f871e074c186ae"
+    },
+    {
+      "path": "h6-tree-null-bound-expected.accdb",
+      "bytes": 53248,
+      "sha256": "46a8816f63d30db0f3cf9a24de800f25cef65c099cc800a65706616dda6d1963"
+    }
+  ],
+  "independent_sdk_reads": {
+    "inventories": 24,
+    "metadata": 24,
+    "ordered_cursors": 48,
+    "first_attempt_calls": 96,
+    "failed_calls": 0,
+    "saved_verifier_child_calls": 0,
+    "native_access_unique_null_qualification": false,
+    "artifacts": [
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/compile-precall-first-root.json",
+        "bytes": 1681,
+        "sha256": "34893875976768d6aa4ca7fe39f1ef598debc5ecd7316cb2c69389742158fa64"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/compile-receipt-first-root.json",
+        "bytes": 1043,
+        "sha256": "159fe0d51012cdbff301e56e11da09f7cf46538afc1218cc391425174f78abbe"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/input-authority.json",
+        "bytes": 89688,
+        "sha256": "33b4b3668bddc53ad800efd4cd42f56c4f9810bbe462853b3b8ea5e4d8b6255e"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/code-and-source-first-freeze.json",
+        "bytes": 10508,
+        "sha256": "8344d542ead9d1d314ce7d043cda342f15344ad180df4f8d3a4da066cd938269"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/expected-first-root.json",
+        "bytes": 94037,
+        "sha256": "b0b2f3a276888e10c48293feb4872cae64119690150b071d5ddea03f867ed41c"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/reader-precall-root.json",
+        "bytes": 769,
+        "sha256": "7e05684ab671d4d08219aa83afb25aae825e656b1968504ac6b0060224637acb"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/receipt-first-root.json",
+        "bytes": 103035,
+        "sha256": "b240dc3f6f10a7d9f267c1dc2269f5be69477a5a67718a63eb265e30e65b26f0"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/getter/saved-first-root.log",
+        "bytes": 367,
+        "sha256": "0c90abb9009886a20f581c904f4f5c29af3c49c8c7f16bbe97b6ad098eed105d"
+      }
+    ]
+  },
+  "limits": [
+    "No nullable-key producer executed during source qualification",
+    "All changed Score values originally/finally present Int32",
+    "NULL masks and inactive payload bytes retained",
+    "PrimaryId/maps/catalog/native programs retained",
+    "No NULL target transition/ignore-NULL/allocation/new intent version",
+    "No native Access macro execution/save/reopen evidence"
+  ]
+}
