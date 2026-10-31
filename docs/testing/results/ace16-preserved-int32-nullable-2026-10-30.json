@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "One ordinary nonindexed, calculation-independent nullable Int32 target in mixed-schema ACE engineering candidates",
+  "status": "Source, independent proof, native and frontend contracts, strict, format and minimal checks passed",
+  "observed": {
+    "source_integration": {
+      "functions_passed": 1,
+      "positive_pairs": 6,
+      "healthy_required_refusal_sources": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/source-integration-second-root.log",
+        "bytes": 551,
+        "sha256": "3f1c5ea5fc32794ceaa464b4c27d9f724ca9f0e9cd68ed9b511781b1586ecf17"
+      }
+    },
+    "actual_preservation_source_capture": {
+      "functions_passed": 1,
+      "originals": 7,
+      "independent_expected_images": 6,
+      "writer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/source-native-first-root.log",
+        "bytes": 543,
+        "sha256": "c2f7beb52d93609460b366bed8b85b5403dd7555afee1ccb1222e33163e5fae2"
+      }
+    },
+    "independent_proof": {
+      "functions_passed": 2,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/proof-first-root.log",
+        "bytes": 709,
+        "sha256": "966a82f44546bf411e965f6e73a6dd062ada5afb3332ebd392d42a8b90e7b895"
+      }
+    },
+    "native_contract": {
+      "functions_passed": 26,
+      "existing_ignored": 2,
+      "new_api_functions_passed": 5,
+      "new_positive_fixed_batch_image_comparisons": 12,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/native-contract-first-root.log",
+        "bytes": 3351,
+        "sha256": "2b2d24e35389a14678484ed7411a93fff7952474ba5277c70489434f3fdaf9b0"
+      }
+    },
+    "existing_frontend_targets": {
+      "access_functions_passed": 13,
+      "cli_functions_passed": 14,
+      "new_sql_typed_full_image_copies": 4,
+      "scope": "Existing preserved Boolean/Int32 targets; shared SOURCE owner also includes newly registered native API child",
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/frontends-first-root.log",
+        "bytes": 4344,
+        "sha256": "10ac84fb797f1fa6a1b6a43ef7e89ac234238b582f87a00bbe2da7d27c9dafb5"
+      }
+    },
+    "strict": {
+      "scope": "ACE, Access and CLI; all targets and all features; warnings denied",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/strict-first-root.log",
+        "bytes": 403,
+        "sha256": "755c32491663a4bfed5b653a4e84ee38da1cf28edded6cf3e13021ce64b8cb70"
+      }
+    },
+    "format": {
+      "scope": "ACE, Access and CLI",
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "minimal": {
+      "scope": "ACE and Access with no default features",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/minimal-first-root.log",
+        "bytes": 72,
+        "sha256": "7a7c5f339ce35cb7811e73ee64d146487d7e72eb2090f8175330980b4fb58593"
+      }
+    },
+    "documentation_links": {
+      "targets": 6727,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/links-final-root.log",
+        "bytes": 53,
+        "sha256": "c008a135e1be0966b6b7eba05e757131df89c43bfac93cd1030e3acff3daea61"
+      }
+    },
+    "preserved_unit_regression": {
+      "functions_passed": 15,
+      "existing_ignored": 1,
+      "scope": "Preserved fixed owner, independent authority and larger-image tests",
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/preserved-unit-final-root.log",
+        "bytes": 2884,
+        "sha256": "4c85013e1662493eb8c07830d1b5ad441fcb60d2e6ab9ea8f6f131437e7543c1"
+      }
+    }
+  },
+  "history": [
+    {
+      "phase": "First integration SOURCE compilation",
+      "result": "Failed before tests: already-array pair conversion and replacement integer-array inference",
+      "log": {
+        "path": ".cache/ace16-preserved-int32-nullable-next-20261030/source-integration-first-root.log",
+        "bytes": 2818,
+        "sha256": "2c18239e767e47b1037bd1fa4c75cb242dbf1d0d414193f42b5a50ae7bd942b5"
+      },
+      "correction": "Fixture typing only; literals and expectations unchanged"
+    },
+    {
+      "phase": "Unit model ownership",
+      "result": "Static duplicate-model finding corrected before proof run",
+      "correction": "Narrow test-only visibility and direct actual-owner import; no fixture body change"
+    }
+  ],
+  "contract": {
+    "null_to_null": "No bytes or changed row; retain inactive payload",
+    "int32_to_null": "Clear only target presence bit; retain four original payload bytes",
+    "null_to_int32": "Set target presence bit and replace exactly four payload bytes",
+    "int32_to_int32": "Existing exact four-byte behavior",
+    "required": "Mandatory final candidate source recapture validates Required and qualified rules before return",
+    "authority": "Original source and original typed requests independently reconstruct complete image and changed roots",
+    "normal_save_or_journal_permission": false
+  },
+  "pending": {
+    "native_microsoft_access": "Unrun; authored sources are not native Access qualification",
+    "genuine_nullable_sources": "Not qualified by the separate Required Score genuine corpus",
+    "normal_ace_saves": "No permission supplied; required macro and transaction gates remain"
+  }
+}

@@ -65,13 +65,12 @@ fn preserved_int32_actual_sql_and_typed_commands_match_complete_images_or_refuse
 }
 
 #[test]
-fn preserved_int32_stale_joint_null_and_output_failures_preserve_source() {
+fn preserved_int32_stale_joint_and_output_failures_preserve_source() {
     let case = model::source(6, 101);
     let directory = tempfile::tempdir().unwrap();
     let source = directory.path().join("source.accdb");
     fs::write(&source, &case.before).unwrap();
     for (ordinal, statement) in [
-        "UPDATE Items SET Large_Number=NULL WHERE ID=1",
         "UPDATE Items SET [Number]=12 WHERE ID=-1",
         "UPDATE Items SET Large_Number=101,Yes_Field=True WHERE ID=1",
         "UPDATE Items SET Large_Number=101,[Number]=12 WHERE ID=1",
@@ -121,5 +120,60 @@ fn preserved_int32_stale_joint_null_and_output_failures_preserve_source() {
         assert!(!result.status.success());
         assert!(fs::read(&source).unwrap() == case.before);
         assert_eq!(fs::read(&existing).unwrap(), b"existing destination");
+    }
+}
+
+#[test]
+fn preserved_int32_null_copy_preserves_inactive_payload_through_both_commands() {
+    let case = model::source(6, 101);
+    let mut expected = case.before.clone();
+    // Row 0 ends at the end of DATA page 12. Its two-byte NULL mask
+    // uses bit 4 for the ordinary Int32 target; the payload stays intact.
+    expected[13 * 4096 - 2] &= !16;
+    let directory = tempfile::tempdir().unwrap();
+    let source = directory.path().join("source.accdb");
+    fs::write(&source, &case.before).unwrap();
+
+    for typed in [false, true] {
+        let output = directory.path().join(if typed {
+            "typed-null.accdb"
+        } else {
+            "sql-null.accdb"
+        });
+        let mut command = Command::new(env!("CARGO_BIN_EXE_tablecraft"));
+        if typed {
+            command
+                .args(["write", "preview-update"])
+                .arg(&source)
+                .arg(&output)
+                .args([
+                    "--set",
+                    "Items",
+                    "Large_Number",
+                    "0",
+                    "int32",
+                    "1000",
+                    "null",
+                ]);
+        } else {
+            command
+                .args([
+                    "query",
+                    "preview-update",
+                    "UPDATE Items SET Large_Number=NULL WHERE ID=1",
+                    "--database",
+                ])
+                .arg(&source)
+                .arg("--output")
+                .arg(&output);
+        }
+        let result = command.output().unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(fs::read(&output).unwrap(), expected);
+        assert_eq!(fs::read(&source).unwrap(), case.before);
     }
 }

@@ -345,3 +345,6 @@ fn qualify_preserved_int32_rich_sources_and_four_byte_expected_before_producer()
     }
     assert_eq!(pairs, 8);
 }
+
+#[path = "int32_sources/nullable_sources.rs"]
+mod nullable_sources;
