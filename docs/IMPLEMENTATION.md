@@ -89,6 +89,17 @@ spans retain their fitting refusals. The [genuine-file record](testing/results/a
 keeps source, expected, build, candidate and reader evidence separate. Native
 Access save/reopen, required-macro discovery and normal ACE saves remain open.
 
+## Preserved Short Text DATA growth
+
+Explicit `--variable` now selects the [preserved Text growth service](testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+through the shared Access editor and typed/SQL CLI workflows. One ordinary,
+unindexed Short Text target with no calculated dependency can use stable-root
+forwarding to an original or alternate owned DATA page, or represented EOF
+allocation, while retaining rich companions. Default/Fitted remains within the
+original record capacity. INDEX/map-storage growth, larger-image modes, mixed
+preserved targets and normal ACE saves remain unqualified; required macros are
+never skipped.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal

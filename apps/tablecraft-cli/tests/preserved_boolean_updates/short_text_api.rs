@@ -94,7 +94,6 @@ fn projected_short_text_cli_preserves_explicit_modes_and_no_clobber() {
     let source = directory.path().join("source.accdb");
     fs::write(&source, &case.before).unwrap();
     for (position, flags) in [
-        vec!["--variable"],
         vec!["--variable", "--index-growth"],
         vec!["--long-value"],
         vec!["--index-growth"],

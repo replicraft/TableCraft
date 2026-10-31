@@ -92,9 +92,13 @@ whole-image authored comparisons pass. Two independently generated V2016/V2019
 originals now also pass 18 complete-image committed-CLI comparisons, four honest
 capacity refusals and 18 fresh readonly SDK inventories, with original hashes
 unchanged. The [genuine-file result](testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
-retains independent expectations and separate execution phases. Broader mixed
-targets, allocation, unsupported properties, required macro discovery/semantics,
-normal ACE saves and native Microsoft Access qualification remain open.
+retains independent expectations and separate execution phases. Explicit
+`--variable` now adds [preserved Short Text DATA growth](testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+for one ordinary, unindexed target independent of calculated fields, with stable
+logical references and represented owned/EOF placement. Default remains fitting.
+Broader mixed targets, INDEX/map-storage growth, unsupported properties, required
+macro discovery/semantics, normal ACE saves and native Microsoft Access
+qualification remain open.
 
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.

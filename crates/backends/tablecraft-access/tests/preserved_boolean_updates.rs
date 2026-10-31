@@ -36,3 +36,10 @@ mod short_text_api;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/model.rs"]
 mod short_text_model;
+
+#[path = "preserved_boolean_updates/growth_api.rs"]
+mod growth_api;
+// Source-only geometry helpers are exercised by the actual engine qualifiers.
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/growing_sources/model.rs"]
+mod growth_model;
