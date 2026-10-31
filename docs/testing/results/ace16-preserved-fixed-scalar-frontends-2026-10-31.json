@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "Existing typed and SQL engineering copy consumers of preserved Int64, Currency and legacy DateTime updates",
+  "native_implementation_commit": "7348d21d",
+  "observed": {
+    "adapter_full_preserved_target": {
+      "passed": 25,
+      "failed": 0
+    },
+    "cli_first_full_preserved_target": {
+      "passed": 22,
+      "failed": 1
+    },
+    "cli_corrected_full_preserved_target": {
+      "passed": 23,
+      "failed": 0
+    },
+    "adapter_principal_whole_image_comparisons": {
+      "typed": 70,
+      "sql": 8
+    },
+    "cli_principal_whole_image_comparisons": {
+      "typed": 35,
+      "sql": 4
+    },
+    "cli_header_and_required_refusals": 43,
+    "strict_adapter_cli_all_targets_all_features": "passed",
+    "adapter_minimal_build": "passed",
+    "cli_query_preview_regression_passed": 27,
+    "cli_typed_write_preview_regression_passed": 8,
+    "workspace_format": "passed",
+    "local_documentation_targets_checked": 6776,
+    "missing_documentation_targets": 0
+  },
+  "retained_failure": "First SQL CLI test used CDate, which is excluded from the existing mutation call profile. Corrected tests use an admitted date literal for the frozen Date Change and NULL for the frozen Time ValueToNull. No expected/model bytes or function admission changed.",
+  "boundaries": [
+    "Default/Fixed(Fitted) only for the new preserved scalar families",
+    "Variable rich-schema admission remains Short Text only",
+    "No normal save or journal permission",
+    "No new CLI flags or typed kinds",
+    "Genuine-file and Microsoft Access qualification remain pending"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/cli-first-root.log",
+      "bytes": 3534,
+      "sha256": "3f8fb11f06e000a7a3bcf71a9920e3d97b404b1c40e68ff766799dfecf9e08b9"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/cli-second-root.log",
+      "bytes": 2726,
+      "sha256": "48b4ce919dda7b859c482cff01b34a2f0f30fa78643453dd50d11abae8b54ebd"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/access-first-root.log",
+      "bytes": 3070,
+      "sha256": "ffc52d2b132037b582c25153dd7443cb5213004346bd113cbf9e353947383593"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/frontend-strict-first-root.log",
+      "bytes": 403,
+      "sha256": "ce29d26f942f43fcefe5e58fdb10246e82814dcfab53c2567f5e82b1b161401a"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/access-minimal-first-root.log",
+      "bytes": 301,
+      "sha256": "c8daf5d70ec26ae300b5aa52cd59454e23b36827ca91f01eda1f3552cc0f38f0"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/cli-regression-first-root.log",
+      "bytes": 3943,
+      "sha256": "2e539e37c572f40c8a5aed5da3d11f1a9c88d49fdbbae7f052a5dc718490c3d0"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/frontend-format-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/frontend-documentation-first-root.log",
+      "bytes": 53,
+      "sha256": "01a5e273d4769aecd9b7387d4ce15cc1dcf3d823907a3b55be527e404b5f7bc7"
+    }
+  ]
+}

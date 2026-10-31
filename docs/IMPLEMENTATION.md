@@ -23,6 +23,12 @@ independent proof tests pass. The full preserved contract passes 48 tests with
 two existing ignored helpers; the mutation-library batch passes 601 with seven
 existing ignored helpers. Strict and minimal ACE checks pass.
 
+The Access editor and typed/SQL CLI consumers now share this admission. The
+adapter passes 78 principal complete-image comparisons and the CLI passes 39;
+full preserved frontend targets pass 25 and 23 tests respectively. Variable
+mode remains Text-only for these rich projected schemas. No new CLI mode or
+request kind is introduced.
+
 These authored-source results do not establish genuine-file or Microsoft Access
 qualification, required-macro absence, journal permission or normal ACE saves.
 

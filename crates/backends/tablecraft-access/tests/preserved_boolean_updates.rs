@@ -43,3 +43,10 @@ mod growth_api;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/growing_sources/model.rs"]
 mod growth_model;
+
+#[path = "preserved_boolean_updates/scalar_api.rs"]
+mod scalar_api;
+// The actual shared fixture also owns SOURCE-only raw complement helpers.
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/fixed_scalar_sources/model.rs"]
+mod fixed_scalar_model;

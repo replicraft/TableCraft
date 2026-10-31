@@ -81,6 +81,14 @@ assignment coercions or the ordinary `ExistingInt32` carrier law.
 
 ## Native mode and publication
 
+Default and explicit fitted services admit one qualified preserved Int64,
+Currency or legacy DateTime target through the existing
+[fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md). The planner
+keeps its closed mutation expression set: admitted explicit numeric conversions,
+date literals and NULL assignments do not enable `CDate` or general retrieval
+functions. Exact native carriers and original row expectations remain mandatory.
+Variable/growth modes and mixed preserved scalar targets retain their refusals.
+
 The default resolves the complete target set from the original snapshot and
 selects one service before native planning. A qualified mixed-schema projection
 with one ordinary, unindexed Short Text target uses the

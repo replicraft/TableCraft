@@ -77,6 +77,13 @@ retaining the original physical record position and length. Sibling variable
 spans may move inside that record while their bytes remain exact. Multiple
 preserved targets and fixed/variable mixtures remain refused.
 
+One qualified preserved Int64, Currency or legacy DateTime target also uses the
+[fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md) in default
+mode. Existing `int64`, `currency-scaled` and hexadecimal `date-bits` request kinds
+retain exact expected/replacement carriers, NULL payloads and every unrelated
+byte. Indexed, dependent and mixed preserved targets remain refused;
+`--variable` does not admit these scalar targets.
+
 For that qualified mixed schema, explicit `--variable` selects the
 [preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)
 for one ordinary, unindexed field with no calculated dependency. It can retain

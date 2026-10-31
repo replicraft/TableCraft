@@ -1,4 +1,4 @@
-//! Source-only ordinary fixed carrier observations; no mutation entrypoint calls.
+//! Read-only source observations, with public API acceptance in a separate child.
 #[path = "fixed_scalar_sources/model.rs"]
 pub(crate) mod model;
 
