@@ -178,7 +178,7 @@ fn unique(
     Ok(references.len())
 }
 
-pub(super) fn projected(
+pub(in crate::table::mutation) fn projected(
     schema: &crate::TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

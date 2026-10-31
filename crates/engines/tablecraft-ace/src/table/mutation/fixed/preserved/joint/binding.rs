@@ -1,7 +1,7 @@
 //! Complete joint target and carrier preflight before any record visitor.
 use super::super::{FixedColumnUpdates, name_work, source::Source};
 use crate::{
-    EditError, InspectError, NativeImage, WriteBlocker,
+    EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::data_type::{
         BOOLEAN, BOOLEAN_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES, INT32,
         INT32_BYTES, INT64, INT64_BYTES,
@@ -15,10 +15,10 @@ use tablecraft_core::{
 };
 use tablecraft_schema::ScalarType;
 
-pub(super) struct Bound {
-    pub(super) column: usize,
-    pub(super) kind: ScalarType,
-    pub(super) width: usize,
+pub(in crate::table::mutation::fixed::preserved) struct Bound {
+    pub(in crate::table::mutation::fixed::preserved) column: usize,
+    pub(in crate::table::mutation::fixed::preserved) kind: ScalarType,
+    pub(in crate::table::mutation::fixed::preserved) width: usize,
 }
 
 fn carrier(kind: ScalarType, value: &Value) -> bool {
@@ -83,47 +83,65 @@ pub(super) fn all(
         if bound.iter().any(|prior: &Bound| prior.column == column) {
             return Err(EditError::Conflict);
         }
-        let field = &schema.columns()[column];
-        let (kind, width) = match (field.native_type(), field.scalar_type()) {
-            (BOOLEAN, Some(ScalarType::Boolean)) => (ScalarType::Boolean, BOOLEAN_BYTES),
-            (INT32, Some(ScalarType::Int32)) => (ScalarType::Int32, INT32_BYTES),
-            (INT64, Some(ScalarType::Int64)) => (ScalarType::Int64, INT64_BYTES),
-            (CURRENCY, Some(ScalarType::Currency)) => (ScalarType::Currency, CURRENCY_BYTES),
-            (DATE_TIME, Some(ScalarType::DateTime)) => (ScalarType::DateTime, DATE_TIME_BYTES),
-            _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-        };
-        field::fixed_column_at(schema, column, kind, width)?;
-
-        for dependency in &source.dependencies {
-            check(budget, cancelled)?;
-            if *dependency == column {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-            }
-        }
-        for index in source.indexes.indexes() {
-            for key in index.columns() {
-                check(budget, cancelled)?;
-                if key.number() == column {
-                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-                }
-            }
-        }
-        rows::unique(group.updates(), budget, cancelled)?;
-        for update in group.updates() {
-            check(budget, cancelled)?;
-            if !carrier(kind, update.expected()) || !carrier(kind, update.value()) {
-                return Err(EditError::Unsupported(WriteBlocker::Column));
-            }
-            if update.row() >= source.records.len() {
-                return Err(EditError::Conflict);
-            }
-        }
-        bound.push(Bound {
+        bound.push(qualify_selected(
+            source,
             column,
-            kind,
-            width,
-        });
+            group.updates(),
+            budget,
+            cancelled,
+        )?);
     }
     check(budget, cancelled)?;
     Ok((bound, assignments))
+}
+
+// Both callers resolve and reject duplicate targets before field qualification.
+pub(in crate::table::mutation::fixed::preserved) fn qualify_selected(
+    source: &Source,
+    column: usize,
+    updates: &[FixedScalarUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    let schema = source.table.schema();
+    let field = &schema.columns()[column];
+    let (kind, width) = match (field.native_type(), field.scalar_type()) {
+        (BOOLEAN, Some(ScalarType::Boolean)) => (ScalarType::Boolean, BOOLEAN_BYTES),
+        (INT32, Some(ScalarType::Int32)) => (ScalarType::Int32, INT32_BYTES),
+        (INT64, Some(ScalarType::Int64)) => (ScalarType::Int64, INT64_BYTES),
+        (CURRENCY, Some(ScalarType::Currency)) => (ScalarType::Currency, CURRENCY_BYTES),
+        (DATE_TIME, Some(ScalarType::DateTime)) => (ScalarType::DateTime, DATE_TIME_BYTES),
+        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+    };
+    field::fixed_column_at(schema, column, kind, width)?;
+
+    for dependency in &source.dependencies {
+        check(budget, cancelled)?;
+        if *dependency == column {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+    }
+    for index in source.indexes.indexes() {
+        for key in index.columns() {
+            check(budget, cancelled)?;
+            if key.number() == column {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+        }
+    }
+    rows::unique(updates, budget, cancelled)?;
+    for update in updates {
+        check(budget, cancelled)?;
+        if !carrier(kind, update.expected()) || !carrier(kind, update.value()) {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        if update.row() >= source.records.len() {
+            return Err(EditError::Conflict);
+        }
+    }
+    Ok(Bound {
+        column,
+        kind,
+        width,
+    })
 }

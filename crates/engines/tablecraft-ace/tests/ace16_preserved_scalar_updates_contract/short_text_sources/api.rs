@@ -161,7 +161,7 @@ fn preserved_short_text_stale_carriers_duplicates_and_invalid_rows_return_no_can
 }
 
 #[test]
-fn preserved_short_text_ineligible_targets_groups_and_capacity_return_no_candidate() {
+fn preserved_short_text_retains_target_capacity_refusals_and_joint_fitting_profile() {
     let case = model::source(6, model::Recipe::ShorterNarrow);
     for (column, expected) in [("ID", 1), ("Number", 1), ("Calculated", 2)] {
         let updates = [SlotScalarUpdate::new(
@@ -197,8 +197,10 @@ fn preserved_short_text_ineligible_targets_groups_and_capacity_return_no_candida
             Err(EditError::Unsupported(WriteBlocker::Column))
         ));
     }
-    // The additive one-column service does not broaden the existing mixed/fitted
-    // service. A rich Text+Boolean statement remains outside that old profile.
+    // Joint fitting now composes the independent Text golden with the literal
+    // Boolean value bit. Every other byte remains part of the comparison.
+    let mut joint_expected = case.expected.clone().unwrap();
+    joint_expected[13 * 4096 - 1] |= 0x04;
     let text_updates = [request(&case)];
     let fixed_updates = [FixedScalarUpdate::new(
         0,
@@ -219,11 +221,11 @@ fn preserved_short_text_ineligible_targets_groups_and_capacity_return_no_candida
         if reverse {
             groups.reverse();
         }
-        assert!(
-            capture(&case.before)
-                .preview_ace16_fitted_updates("Items", &groups, &mut budget(), &|| false)
-                .is_err()
-        );
+        let candidate = capture(&case.before)
+            .preview_ace16_fitted_updates("Items", &groups, &mut budget(), &|| false)
+            .unwrap();
+        assert!(candidate.candidate_bytes() == joint_expected);
+        assert_eq!(candidate.changed_rows(), 1);
     }
     let overflow = model::source(6, model::Recipe::Overflow);
     assert!(overflow.expected.is_none());
