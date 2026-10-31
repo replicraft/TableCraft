@@ -14,8 +14,11 @@ V2016/V2019 originals. The joint genuine corpus includes overlapping row groups,
 NULL/mask transitions and true empty SQL groups; its saved-only replay passes.
 Atomic [fitting Short Text plus fixed-field composition](testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
 now also passes authored-source native, Access and CLI whole-image checks.
-Generated-file qualification of that joint Text route is next, followed by
-broader required-event handling and safe-save integration.
+Fourteen Text/Boolean copies now also match independently constructed complete
+images on unchanged generated originals, followed by fourteen matching fresh
+SDK inventories and a passing saved-only replay. Broader required-event handling
+and safe-save integration remain next; other generated joint carrier profiles
+retain their separate qualification limits.
 
 Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
 now cover one ordinary unindexed Int64, Currency or legacy DateTime target through

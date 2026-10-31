@@ -1,0 +1,3060 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Fourteen native images, fourteen SDK inventories and first saved-only replay passed",
+  "scope": "One ordinary unindexed nondependent fitting Short Text and Boolean target in rich V2016/V2019 originals; engineering copies only",
+  "source_provenance": "Repository-authored Jackcess 5.0.4 originals; no native Microsoft Access save qualification",
+  "producer_revision": "510b4824d436e26c71c64c12306f198b2a6ef219",
+  "maintained_files": [
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/__init__.py",
+      "bytes": 78,
+      "sha256": "61328a9f35b4bb03181242d2e5f788a08a71ad3f5d54d532913a580067012067"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/model.py",
+      "bytes": 11881,
+      "sha256": "71277504c22f33b88e5f342f0edca7fe73018b2a08b6d96ab4bc7b54d1609d84"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/recipes.py",
+      "bytes": 2527,
+      "sha256": "3b36b2f7401ea26dcdfe25355e8484092011c5548451ade84083f5cd9a4ecaa0"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/verify.py",
+      "bytes": 27866,
+      "sha256": "c5497ae57f496538034420f78716ae39f7bee1483ac0f6059184177acd3e9a9f"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/__init__.py",
+      "bytes": 80,
+      "sha256": "349a8e6c45432bdc5a0992e9ca1f443ac2dfd9ecb4c1479b3729647bebd5c5c4"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/framing.py",
+      "bytes": 7985,
+      "sha256": "c23ab49e470b44cda4f9f1ef8761437decfa3f9f61469ee2262d761f8589ee89"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/__init__.py",
+      "bytes": 159,
+      "sha256": "a287a807f14734657180c09d25348ea71359f40f0eba1f59f7844922fa6c9acb"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/framing.py",
+      "bytes": 19571,
+      "sha256": "4fd4e65ccd9db12ec1789e68527c15de642a1852d2d037c8f3e37889e12150e2"
+    },
+    {
+      "path": "docs/testing/ace16_insert_candidates/model.py",
+      "bytes": 13121,
+      "sha256": "e25461040e1315054d2ce30771481262e0f59fa9b703b9cf5a8c294a942680be"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    }
+  ],
+  "evidence": {
+    "source_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source-plan.json",
+      "bytes": 9656,
+      "sha256": "55062cd76be8f08de19a67de5741efd67bf873970ffb52ca71e8e80dd5e1891b"
+    },
+    "source_execution_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/execution-plan.json",
+      "bytes": 8559,
+      "sha256": "70e649f3f34478f6240e6b099360fc06bfcec7c57c9179559d8dded976dabbee"
+    },
+    "source_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/source-receipt.json",
+      "bytes": 17168,
+      "sha256": "c6274c26e630569149bfaf2458a7343ec1e44e56b4bde1566e3d1311de002f48"
+    },
+    "native_source_log": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/original-source-first-root.log",
+      "bytes": 530,
+      "sha256": "af70ddf702966cc5b2252143da90fda94a8ba9c162aa2962eb7681a4ece29f33"
+    },
+    "requests": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/requests.json",
+      "bytes": 25079,
+      "sha256": "13ed068efd72c004e591ff326cd63558c62e66a96a693cb92204dbf49a1fe81c"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/report.json",
+      "bytes": 365,
+      "sha256": "b2743795704c7b889420ffeb58405806ff30d43c815ad7f68cb9b3df9f879445"
+    },
+    "expectations": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expectations.json",
+      "bytes": 48241,
+      "sha256": "0d2b72ac53836cb57d6967112015ad796b12ff96d6f7bd88f49e6453aec0e1f0"
+    },
+    "expected_source_log": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected-source-first-root.log",
+      "bytes": 263,
+      "sha256": "fbf1dd18f527791db8b1d4335ebb472c7806b8bdc48bcd04b37afb1c1b57dad9"
+    },
+    "export_receipt": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/export-receipt.json",
+      "bytes": 683,
+      "sha256": "b140ed019791a0212ed76d3e6731bb03e29a375336e72679070b917649172e53"
+    },
+    "build_receipt": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/build-receipt.json",
+      "bytes": 94580,
+      "sha256": "71d4acc7a341a54cc3ef3037ad5a956b89c0227f2e0335f24053b97c5f61aedc"
+    },
+    "native_plan": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/plan.json",
+      "bytes": 56117,
+      "sha256": "9d5eb5c80578e5ef9fe9502bf1e734f8596a709bff9971d1190308629033fd78"
+    },
+    "native_receipt": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/receipt.json",
+      "bytes": 28856,
+      "sha256": "438809bb5a9d28f30593ce961444dcf6f0979520d1ff7678eb41aee2ab4f7d44"
+    },
+    "sdk_plan": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/plan.json",
+      "bytes": 90411,
+      "sha256": "6aec3021216440be5c026719a52c7e359a4897e7ff3a87df39c543701b5084d3"
+    },
+    "sdk_receipt": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/receipt.json",
+      "bytes": 20527,
+      "sha256": "2cd3ca4bbfbbf9a8c66ccd631df9d37e2938b8e4de63309360397e237c2caaa8"
+    }
+  },
+  "phase_inputs": [
+    {
+      "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/precall-inputs/000-139-jackcess-5.0.4-sources.jar",
+      "bytes": 878581,
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-cli-build-next-20261030/candidates.py",
+      "bytes": 11910,
+      "sha256": "6753439429118ad7d2912f0a4152dca8a5d57cd2b16eb4557b300b38f3afcf4b"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/PLAN.md",
+      "bytes": 7769,
+      "sha256": "7ab8341b2a04334dba842c6379cf30db8b51a3f5720d6b8f0559d0707339f919"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/PreservedInt32Originals.java",
+      "bytes": 15398,
+      "sha256": "d0541e4d731500282acac58232112bf385652766adbf825ecfc03470ad8a5cc9"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/genuine_sources.rs",
+      "bytes": 6100,
+      "sha256": "0edccacae298eeb68e7fd5e7c3753567ab088e53b8095d8ce47435b901ddce6a"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/source-controller-freeze.json",
+      "bytes": 1609,
+      "sha256": "ab17c9b1f740148f6ba08a2ae3073f04a31986c0a5c91a78ddbb3f969306f009"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/source-final-input-freeze.json",
+      "bytes": 1592,
+      "sha256": "0349bfc50344270247f3f478fc24c61c8ed31e04ec1ebe0c3d99802ec8982159"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/source-plan.json",
+      "bytes": 5116,
+      "sha256": "22aad407e853da5b89629fb53d80e92932d304e98ac5e93d0b33ea7a45502579"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/source_controller.py",
+      "bytes": 8531,
+      "sha256": "0b3f75849bc476ea91d9e08bfbbe851b73f1b1e812a4ec358a610bdaab84a915"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/compile/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/compile/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/create-h5/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/create-h5/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/create-h6/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/create-h6/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/inspect-h5/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/inspect-h5/stdout.log",
+      "bytes": 3846,
+      "sha256": "0ca7ca5b60495137d354a8b1908edef5ba399b39d9b83e4c481d50d4544bdc9b"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/inspect-h6/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/calls/inspect-h6/stdout.log",
+      "bytes": 3859,
+      "sha256": "4d0a4833a2d55d61973a693cc0c46d1e6976177fd244f8258f48c93f1596f524"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/class-inventory.json",
+      "bytes": 443,
+      "sha256": "2b15db9469d3c1ebd226dc9ffb0a9f49c6b300d0599002db92732290407e052b"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/classes/PreservedInt32Originals.class",
+      "bytes": 18503,
+      "sha256": "61425000c04857c3b675c9cf71f6f65a5a1dfafe20923c2c6fa92b3795e15d6f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/execution-plan.json",
+      "bytes": 8996,
+      "sha256": "adb4695be09224cd010b1561ee0fc5a2d39e140641c5ca08b04baccdea03d8c0"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/source-receipt.json",
+      "bytes": 17521,
+      "sha256": "42bae2acc0583ae2b05fefcb8b7024c1b289abf6142f8225d401fee73bf37a8f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "4ab9b8da854961ed73e9f769bee76b748f8cba47487e174f214a3534f86d444f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "594ad7971f23d119db3e0c341dd7d62c53a89bcb238cc78b34e293d3c552492a"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/PreservedInt32Originals.java",
+      "bytes": 15406,
+      "sha256": "df508688eede7fd12330b8be69eec7f765de5418c06746897a76f0b4e2c64ea8"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/source-final-input-freeze.json",
+      "bytes": 1984,
+      "sha256": "e86f140b394fa65e886050c7f4059af98ad7044e19cbef17cecccde425378076"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/source-plan.json",
+      "bytes": 5529,
+      "sha256": "13949962125dc03e0b7d5d9f2300796a5e7006491141e7de8ed308377cd5e575"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/source_controller.py",
+      "bytes": 9269,
+      "sha256": "dabe7b25e8bf7cbc455e6efe63b735cacc7fb49d0e438c4e7381afeb168fe1a6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-all-noops/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-all-noops/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-all-noops/stdout.log",
+      "bytes": 96,
+      "sha256": "deb1da3fadc696b5143d8faf8877b7cbf4961f64857b1ef5db35901d6be53447"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-beta-flag/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "a24b1d7a90d5d82c882a8f5d534c47423988409ff6af43e89768a697e32df9cd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-beta-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-beta-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-disjoint-rows/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "c032668f2750320fa18ce797a1b879e9061458e990a7d56260f4b750dae44e2a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-disjoint-rows/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-disjoint-rows/stdout.log",
+      "bytes": 96,
+      "sha256": "f98efed460c7fa83089612680327fa198df9a94a68730215e3f0936c7152bb3d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-empty-null-flag/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "c7f2eae82e3808518e7d618ffb056fcd46614628a8294b460b2a35a6da513f9f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-empty-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-empty-null-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-null-flag/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "6b7cce6b8a6959924cca23ea61ca3bb3484ab8ce2d60f802a99bbcdfd2d201f5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-null-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-sql-empty/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-sql-empty/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-sql-empty/stdout.log",
+      "bytes": 111,
+      "sha256": "2b7dc88812a7b5d4b3fce17dbc9b619575446c2d35a75ea0cb89cf7494a4ecd1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-text-noop-flag/candidate.accdb",
+      "bytes": 458752,
+      "sha256": "a189038e3acc9504db08b10384ea58331c08b9b987865622b8f87681cbf8d043"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-text-noop-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h5-text-noop-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-all-noops/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-all-noops/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-all-noops/stdout.log",
+      "bytes": 96,
+      "sha256": "deb1da3fadc696b5143d8faf8877b7cbf4961f64857b1ef5db35901d6be53447"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-beta-flag/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "cc6bd0f005a8a43cf5a329f0cc305fced56ad0b454e29927c6e001e5e32bae0c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-beta-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-beta-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-disjoint-rows/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "7ce6e39a227967d67194be5d8a3843b7455d7341634702c8085d4384dde54233"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-disjoint-rows/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-disjoint-rows/stdout.log",
+      "bytes": 96,
+      "sha256": "f98efed460c7fa83089612680327fa198df9a94a68730215e3f0936c7152bb3d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-empty-null-flag/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "468abc30c6c1199c55db2acec16be69db12dd89dc3f6147ff1c837dc844246fe"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-empty-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-empty-null-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-null-flag/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "4e46471df318bd882750dc746e5783e5dac71ce1d0c16f6f4ebdf0af70c8159b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-null-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-sql-empty/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-sql-empty/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-sql-empty/stdout.log",
+      "bytes": 111,
+      "sha256": "2b7dc88812a7b5d4b3fce17dbc9b619575446c2d35a75ea0cb89cf7494a4ecd1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-text-noop-flag/candidate.accdb",
+      "bytes": 528384,
+      "sha256": "687a60c4ef93dfcc6849d220147c5097fc6a9aa644c0a5a5bf59dd688eab302f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-text-noop-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/h6-text-noop-flag/stdout.log",
+      "bytes": 96,
+      "sha256": "621006be1955a621c7733551bfae23da61d3071800b33af8d7db407a84c98b07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/plan.json",
+      "bytes": 56117,
+      "sha256": "9d5eb5c80578e5ef9fe9502bf1e734f8596a709bff9971d1190308629033fd78"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-candidates-first-20261031/receipt.json",
+      "bytes": 28856,
+      "sha256": "438809bb5a9d28f30593ce961444dcf6f0979520d1ff7678eb41aee2ab4f7d44"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/build-plan.json",
+      "bytes": 2539,
+      "sha256": "a16335950e0afce94ff027d3e574e78c4f828d2ebb507ffca3440e8669e099dc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/build-receipt.json",
+      "bytes": 94580,
+      "sha256": "71d4acc7a341a54cc3ef3037ad5a956b89c0227f2e0335f24053b97c5f61aedc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/build.stderr.log",
+      "bytes": 7627,
+      "sha256": "99fbbf6b35828432afb31a2b90a44d4c7efe7cc212adfbd0b50d4ec3a02faa2f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/build.stdout.jsonl",
+      "bytes": 195782,
+      "sha256": "4e68c651d8e392d650dba534a7c53389b9561379e47c87f575d07992c030f505"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/export-plan.json",
+      "bytes": 693,
+      "sha256": "12e2f6e06dd25219d3898c9842c80aaf09c852e13ef5602c05ef8b6403e5b2bb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/export-receipt.json",
+      "bytes": 683,
+      "sha256": "b140ed019791a0212ed76d3e6731bb03e29a375336e72679070b917649172e53"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/source-inventory.json",
+      "bytes": 1427127,
+      "sha256": "44cd1e21b42470390232db9c06d4ed7996341aeb0c76738559ac16866decc0d2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/source.tar",
+      "bytes": 99461120,
+      "sha256": "f0ee56e230b19272a7ec0474fb3bbe34ee0a6f0dee5679e5eab14916ef9fa241"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/crc32fast-e2f0a2161a7c4ce4/build-script-build",
+      "bytes": 514688,
+      "sha256": "427a415bcc42ec41f64950ef578f6bcaf5a8034073bdfe6b2d20bca25f399e04"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/encoding_rs-798debac69cf4026/build-script-build",
+      "bytes": 435680,
+      "sha256": "f530626dfdbf0d656ede40d8825ea00ec0af8f751eb8b1675616046b294ca928"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/fst-57eae44aa8be9554/build-script-build",
+      "bytes": 468656,
+      "sha256": "2d033929dd1d406c181bfea96cf03e0f8c400b7a95e60700aca737665b4f028a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/getrandom-4a4eab0739960dea/build-script-build",
+      "bytes": 462288,
+      "sha256": "339bd451421309144165b8b21e1f07b4db6baa6cd7fb5999b136539a837a26a1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/icu_casemap_data-6db655a91516b93a/build-script-build",
+      "bytes": 437776,
+      "sha256": "c0e11d9f12aa5dad4312c4a4f09afe6f240e7e7785aa00aa7e19dabe1f305e2f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/icu_collator_data-7f42f1308b52c799/build-script-build",
+      "bytes": 437776,
+      "sha256": "e92b0d9f3557c715ff0244cf9a0336e6ede15f9c18b8b4137a9c4f5efceb2e29"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/icu_locale_fallback_data-b5916af6b8e36460/build-script-build",
+      "bytes": 437776,
+      "sha256": "f40ef96813cc9d57b7462964741c668e805a44715228d9be1ee31b61a3ed237a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/icu_normalizer_data-4d12a1158d13c71c/build-script-build",
+      "bytes": 437776,
+      "sha256": "5ccf7e2a04ded9e9374bc31316aa2523425cf99f8c5925d9a7761e1b408b0aac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/icu_properties_data-2352b6f7ecbec281/build-script-build",
+      "bytes": 437776,
+      "sha256": "fc5eb5ff3be96b3e784ff8caf2ec14fbdbeeddc953e81381a322df607791b55d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/libc-033384ad685eb4cc/build-script-build",
+      "bytes": 617088,
+      "sha256": "3b0a172376636a08f6f644c589e354b60d3451c2a4fbacc671974f9c1a3983d9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/libsqlite3-sys-0638ab9f7004c8ca/build-script-build",
+      "bytes": 2531872,
+      "sha256": "b60e02487d81974e8015dc8475817db02f39142e088c0006ee6d09c4cfcad297"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/nix-163b02a1df1bc7a7/build-script-build",
+      "bytes": 556752,
+      "sha256": "a61abe4c253fa88db17d915b127456eca2ea1cd29baf33c7863d8b5bd646cdcd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/num-traits-e452bddbbf1b41ae/build-script-build",
+      "bytes": 736128,
+      "sha256": "db3e01ceca031d78165d1000f0f1b7209196b9be038e971665d0b5db1450145e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/proc-macro2-1aef24893e95fb5a/build-script-build",
+      "bytes": 583840,
+      "sha256": "45f159bf27604834f49b746327c96ea85ef32fefe96d0a41f34768afc42edb6c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/quote-64923770516197d4/build-script-build",
+      "bytes": 513296,
+      "sha256": "ac3ebb1d4d77c279d49ba35f862572e2ed43bd33785c0a155ceed0b0c55483d0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/rust_decimal-0becf51a1eab9d76/build-script-build",
+      "bytes": 513104,
+      "sha256": "5b2785e489f1c1bb786f3576852c112a626cf5a907b1921b0a1c7ae7e91f5e27"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/rustix-16d772ae7d962da8/build-script-build",
+      "bytes": 583456,
+      "sha256": "c9e3d16d65937fa49d753f339cdf564e4e40f9c6bea1db84cb32bd17e8e9cdb5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/rustversion-0a65ee616df1780e/build-script-build",
+      "bytes": 569488,
+      "sha256": "0368dcf3c20b95623d44046aa958bc18cb7873d5ffed2d154a7a1e19c93a36de"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/serde_core-49ca426f6f0ffef6/build-script-build",
+      "bytes": 557488,
+      "sha256": "ab5705bf80ae2c0d78d1af22b55f05352c66b76159985bb9f33b73fce60dcd24"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/thiserror-f734b51fc0ae8d56/build-script-build",
+      "bytes": 591328,
+      "sha256": "411dc605402fe6747d61530106487bae3b3210b1a20885cd42dda0d8a1ec2b32"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/build/zerocopy-b9895a5c6cf40122/build-script-build",
+      "bytes": 600496,
+      "sha256": "eea6cdab600bde4a3fc60305d768239939af7ee083dd177e509efc2eddb5a908"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libadler2-4d33772824b24d4f.rlib",
+      "bytes": 23432,
+      "sha256": "f4909886a443f7601f8d307a8b5d35792408627a71567f16796cf354e8ff0cde"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libadler2-4d33772824b24d4f.rmeta",
+      "bytes": 20308,
+      "sha256": "5237875c29fde4b8f012aaed7b008316b8920912ac33647c05ea47a44c38fc0e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libaes-e1acd218b6afc5cd.rlib",
+      "bytes": 1177296,
+      "sha256": "49d46c1c6fcf98f872a6b9c479ff7087aeb1c3289bbfee65c89a04f0fda66949"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libaes-e1acd218b6afc5cd.rmeta",
+      "bytes": 1162205,
+      "sha256": "4a426745fc2858ef9aebc1129bc74e5e08f16c3536ed942555a1c7e91d329d9e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libanstyle-ccb081ac37faa8c6.rlib",
+      "bytes": 244824,
+      "sha256": "246e502641d6a7db8b2ead13121dd984558d02e61535988f1df65568375347fc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libanstyle-ccb081ac37faa8c6.rmeta",
+      "bytes": 230731,
+      "sha256": "8671aa746b690570e37e4fa697605133ef6cf7f8cc04d4068fd5ff535abe7283"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libarrayvec-49b19c66f033fd84.rlib",
+      "bytes": 361192,
+      "sha256": "6dad48d5942820840e8acf7c1aa0248d4ff753f2d6a57ef68b63f7ad2c239b7f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libarrayvec-49b19c66f033fd84.rmeta",
+      "bytes": 359120,
+      "sha256": "c912ccf695ae3263620d21687ef6fb7a765069e7ebf333a7d1fb50e45ea4ed4c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libautocfg-9da806608bff25d5.rlib",
+      "bytes": 511528,
+      "sha256": "9bae209c791720373a95fdf45a794a5dea5847bfb8b341d691482a63c1b1f863"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libautocfg-9da806608bff25d5.rmeta",
+      "bytes": 82686,
+      "sha256": "9806a43d0df3372121c2f7b33a3a317a16567660b1b03f9c3b1aacc3ffd82489"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbase64-e06608e6d1646e08.rlib",
+      "bytes": 239096,
+      "sha256": "c72df7c22c6b4a427079cf7ce273cce3ccc0e5965e28141f11a4dfcdf6fc8bbf"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbase64-e06608e6d1646e08.rmeta",
+      "bytes": 217035,
+      "sha256": "a34d915276f9091c249ba6db2dc7dc8360b24222a738adcffff719c9b0d5473f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbitflags-ec45df35edc380b8.rlib",
+      "bytes": 263968,
+      "sha256": "a53e47faa8c1fe24475080d9daf2fdbd327d9b926455485d32f799c949c31e6f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbitflags-ec45df35edc380b8.rmeta",
+      "bytes": 251421,
+      "sha256": "f32a0d9e6e6cacaa7de9086dc9581db091eb70ca5f800bb9141926a5e7b03891"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libblock_buffer-8ba2a7ca62ff7777.rlib",
+      "bytes": 131160,
+      "sha256": "2ead9e2bb3ebdc4edb8166825c2d21b02fe5946ea5d5b572769ecbd913370c99"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libblock_buffer-8ba2a7ca62ff7777.rmeta",
+      "bytes": 129040,
+      "sha256": "f3ce6a3ba6b3440f04e0f9998860c095d5fed4d267678b78b46f4f0f0a5c116b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libblock_padding-63794857bab48357.rlib",
+      "bytes": 81000,
+      "sha256": "588010b452c5f7c3bb839cfdcb196c52bc4389c9654fe58e36dd80b605528bd7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libblock_padding-63794857bab48357.rmeta",
+      "bytes": 78872,
+      "sha256": "ad8d83560b5758014e50ff6558b484456a67f63a32c330a5d753f5020472e80e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbytemuck-f604682add75a212.rlib",
+      "bytes": 496568,
+      "sha256": "a424ba494b8c34eec90b64690f35a6bc5ce94a2a59ba39238e090ea2526d1443"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbytemuck-f604682add75a212.rmeta",
+      "bytes": 491771,
+      "sha256": "3b1bad199703f9016caefc4b97f1d1fc2ea8e06d558cb6ebba4feb969e15111e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbyteorder-ebc564f03aa018a3.rlib",
+      "bytes": 357480,
+      "sha256": "8b6c0d05d7a2e3473438e885dec67205546e7af0d8e307196aef433376768025"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libbyteorder-ebc564f03aa018a3.rmeta",
+      "bytes": 354397,
+      "sha256": "57904514c92ffe2c9eb1c9ce3fa032b5a3ff40bb955d6e70b2453f7e17c0295d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcab-fa248c344e00f21d.rlib",
+      "bytes": 448856,
+      "sha256": "6e37806dfd4dd3910e2368e08736ee1875a17da7e8aa27ddf7068060af9dd647"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcab-fa248c344e00f21d.rmeta",
+      "bytes": 416602,
+      "sha256": "4509bffdab0311a497c41f5069ae137bc8f37f40cac2b340c87bac290a5c2d2d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcbc-c32cb3fa05205cb9.rlib",
+      "bytes": 66864,
+      "sha256": "a2a37dbef86f691f93ba4ae4b4f4f65a3c2fa01ce3f05c06ce77d1a84c760a30"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcbc-c32cb3fa05205cb9.rmeta",
+      "bytes": 65446,
+      "sha256": "bcd94cd59b117c72589af29ddd86debf161db02cf513548c11d4513da547bc59"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcc-a2da7c909026f794.rlib",
+      "bytes": 3240064,
+      "sha256": "641352c9f4cb940c13fe048f62ef41f9b706a9b438b892e34ab80ed0599015ca"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcc-a2da7c909026f794.rmeta",
+      "bytes": 643940,
+      "sha256": "16e1fbe2c2eec6e92a7e43f2cb8731655b3aebe4ea36d94ed587fbd466e6c184"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcfg_aliases-76fbfc0acb0b8dd0.rlib",
+      "bytes": 19456,
+      "sha256": "959d2f22338f6a3222e35369a1ed8ac72a4e4c1cae0c6f4388b9043527ef5557"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcfg_aliases-76fbfc0acb0b8dd0.rmeta",
+      "bytes": 18001,
+      "sha256": "0bfb3fc016082b70e476cf0a4fa89b20868937593528a58a293167d0decca6ee"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcfg_if-fcf8beaf77148bd8.rlib",
+      "bytes": 7312,
+      "sha256": "5f069218e386db7f545e942deef58e62c284af64549c0cf24dc5d56c516e56a1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcfg_if-fcf8beaf77148bd8.rmeta",
+      "bytes": 5882,
+      "sha256": "6b6cc1abc0e1ca3770b79ddddbb93287c798ba09396643cf5ecd51a4e941bde0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcipher-fc8e456a795c756b.rlib",
+      "bytes": 389872,
+      "sha256": "90662b628e5a07a18492320bade051cab5fa08fdd6b84294061288863be9d75f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcipher-fc8e456a795c756b.rmeta",
+      "bytes": 387349,
+      "sha256": "9106919331a245cc1fba7fde16be8e2d066fcd090403704247cff41c5ef6694c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap-f1ccf89db86e0e72.rlib",
+      "bytes": 13720,
+      "sha256": "47d08aa7fb776948bd82fe2215e903b868d8d7dcd7f5d5d154742a7a36fb770d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap-f1ccf89db86e0e72.rmeta",
+      "bytes": 12294,
+      "sha256": "081914e913468380b2e315dc72ceadc14e321f86bed14bb6e66abed7574f9580"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap_builder-b7b4269d48a88efd.rlib",
+      "bytes": 3728448,
+      "sha256": "a36c0175d7a5f885af8963d3b91d2a91728cf41ab1049ef07968bee0db31994b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap_builder-b7b4269d48a88efd.rmeta",
+      "bytes": 2597658,
+      "sha256": "48bb54baab1cd65e4b96bf1e306360040648050a3cf8558c5df0db4a2e6471ff"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap_derive-4bf402778fdd7c71.dylib",
+      "bytes": 3585984,
+      "sha256": "2b129639d2c30050b10cde023327b7f8c0a0dd341d21592895cf9840427f585b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap_lex-13846e219789f1e9.rlib",
+      "bytes": 103448,
+      "sha256": "abbbf92153ae2766d1fe50a45b6e9b8687e23f6c5e647d5a69d12ea4b8ad7753"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libclap_lex-13846e219789f1e9.rmeta",
+      "bytes": 82946,
+      "sha256": "dd9eb24278a433de0fb62d28e0079df762add43bc0a470f2de63c2f91700c4c2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcomfy_table-4ca723b93e5bf7ba.rlib",
+      "bytes": 511176,
+      "sha256": "c723baafc6f09a3428740e51b6c877a6b1b4cfe5ac4b8f4c9ffe8725b45bdccb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcomfy_table-4ca723b93e5bf7ba.rmeta",
+      "bytes": 296336,
+      "sha256": "19231198fcd2c83bee983885a3c2ff7d175f0ad36cc4fbad1582e8046f781a74"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcpubits-0cebfb4d223f4282.rlib",
+      "bytes": 21808,
+      "sha256": "af3deeee706ac9d3557528d33ff54348ec278940a62a97cc2fa6f429d80361ef"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcpubits-0cebfb4d223f4282.rmeta",
+      "bytes": 20375,
+      "sha256": "49b49f73a2c4b55b3d9d86ce5d972c3947b58ec9d1e87967621af6c982eddbc5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcpufeatures-8399337008b2b5cd.rlib",
+      "bytes": 22672,
+      "sha256": "d7207275ef9bc09341601a78632e67ddd0c5764f64d90ce8b1687a2c4b2fcc5e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcpufeatures-8399337008b2b5cd.rmeta",
+      "bytes": 15390,
+      "sha256": "2e9f4e42e5ff267ebc9f4526b58635985c26376931a07ce49c59bb92c2047485"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcrc32fast-b1f334ac4b69ea94.rlib",
+      "bytes": 72280,
+      "sha256": "67885f8285722dc890a1d0fca241d103289d9f620cadbd42cb527e64e229a2b5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcrc32fast-b1f334ac4b69ea94.rmeta",
+      "bytes": 48830,
+      "sha256": "5a06c0fb1b4a61f4941bda836b20fe20b9c7fbe928dd7936af8d76a3a9c19a16"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcrypto_common-f50b750ed410cccf.rlib",
+      "bytes": 506432,
+      "sha256": "e2a7b2e86f4e951e553919c51c1d0c8302726a48b0bb37231e8ebb8f58241c30"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcrypto_common-f50b750ed410cccf.rmeta",
+      "bytes": 402425,
+      "sha256": "b63db42f2f2cfb5a9ff71a5bf71f55883790ff8f634fbde464661fb2234f33d9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcsv-3e2bcf668503d316.rlib",
+      "bytes": 1071408,
+      "sha256": "d82909776de3c2eaa68f4b6c582b8c42884eb71e863bbe9bda155bb48daa0ac0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcsv-3e2bcf668503d316.rmeta",
+      "bytes": 1003445,
+      "sha256": "47846f1e55c370fc73970da1dfa4f5b369c6fbaec7cdfb31791b03ca965c585c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcsv_core-975412f89e1db672.rlib",
+      "bytes": 185368,
+      "sha256": "fba8dd38b0d1704d9810dd2bc9d0c87dc7d3c49d631721e6cd5316f8a22ca394"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libcsv_core-975412f89e1db672.rmeta",
+      "bytes": 162057,
+      "sha256": "004ae2e7f772709e9237385f16a5f6dc3139041552ddfee316e193238019d831"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libderanged-ae18259c0ff2e8ca.rlib",
+      "bytes": 4602528,
+      "sha256": "dfb91ef2b4da512a0ba7ddc0c79cc215a7c64bed0de586f64633505e0bd6f07b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libderanged-ae18259c0ff2e8ca.rmeta",
+      "bytes": 4601088,
+      "sha256": "b224232eda4952a989af38c7e556e2653877523c2c22798c514ca29f90893d74"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libdigest-34da86b28734f2f3.rlib",
+      "bytes": 228312,
+      "sha256": "0ce59b562ec631cda5473df0b787d17a1e464177368c6dbde18160ac4d451755"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libdigest-34da86b28734f2f3.rmeta",
+      "bytes": 225836,
+      "sha256": "b1389792c75f4a3774b5742fce59c1dd767e0d06b3faed7f8b060a772fb9fb6c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libdisplaydoc-7b889126d39e120d.dylib",
+      "bytes": 3056432,
+      "sha256": "dfb06d52b4fcdc18e4c103f4dbd55aa81a099cf6604a15ac7fce13b41403af93"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libencoding_rs-758da493bb07e799.rlib",
+      "bytes": 1601032,
+      "sha256": "dddb6f6efcc74744a6737cfb9c95d5b80a30ede058951b4b1d11337a32ad6af2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libencoding_rs-758da493bb07e799.rmeta",
+      "bytes": 1090386,
+      "sha256": "9d6d8e18f29a1d2019ae101308bbb9389d7e25de038c63357d502b67e5150eef"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libequivalent-e9fa5ffd5a132e8e.rlib",
+      "bytes": 10080,
+      "sha256": "38545425a87b4d434f01350a6e692562dec4167db9e284d1e487c0a77568ca67"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libequivalent-e9fa5ffd5a132e8e.rmeta",
+      "bytes": 8635,
+      "sha256": "664e04cc6b8740f93aeb2b748a2356a51dbbc9c82ee0578e530a9a2568256936"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liberrno-5c7381b532869d08.rlib",
+      "bytes": 27224,
+      "sha256": "f0209751c13ccabf9989ce85e701785e4bd015da2baed6b3fdf92b997611fdc1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liberrno-5c7381b532869d08.rmeta",
+      "bytes": 17403,
+      "sha256": "441c4b2e201ca7004b6c5aa155955cacfeef4eee6222595bb1e0ef8d77d63a6a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfallible_iterator-91b521bfd94821c6.rlib",
+      "bytes": 529104,
+      "sha256": "b65aabf5fc39ff6f2ebb69f1e95b8ac9359a065c5ad82bc526691964c3d07922"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfallible_iterator-91b521bfd94821c6.rmeta",
+      "bytes": 527631,
+      "sha256": "fe4240134a58f9d517bff01b3e3f6a0cb510bb338a969873179697300da4f302"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfallible_streaming_iterator-1a80962e6fed03dd.rlib",
+      "bytes": 106432,
+      "sha256": "e42b170875311a8af7cf97a8e3a29691d90cc409fd95a451026b286e48882073"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfallible_streaming_iterator-1a80962e6fed03dd.rmeta",
+      "bytes": 104914,
+      "sha256": "99ef7f23b6de5248cc830249f0d0f7b1fb3c9bb5dbe42e9358c5c0a60b45c6b7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfastrand-12722d0d6511658b.rlib",
+      "bytes": 208736,
+      "sha256": "19acec1754d2386f11eb1f3aa4fa593e0a70226757086609981145a1973fcb52"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfastrand-12722d0d6511658b.rmeta",
+      "bytes": 202984,
+      "sha256": "59205775258a227805a1a5ead37f76f115c247a9e7ed64a24cafbd2695be4f87"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfind_msvc_tools-bc920bd6747a873a.rlib",
+      "bytes": 201792,
+      "sha256": "7dbe544be59e435a98200f3f80fe227a0d33970060c22e5d63b6eadf88f218a7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfind_msvc_tools-bc920bd6747a873a.rmeta",
+      "bytes": 52418,
+      "sha256": "9bb079b5b8e6ddab52f7efd0378663388ae9701715ac3c3c462dd5b76efd557b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libflate2-325875ee9801ec6c.rlib",
+      "bytes": 747312,
+      "sha256": "48b3bff6a1ec6ab079091d84dc7dd06f3b968234d35526781f25e7f87a2f281a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libflate2-325875ee9801ec6c.rmeta",
+      "bytes": 713810,
+      "sha256": "d4114bbf666ec6065d2cdbde3e6eda857a2226ae67bd5b843caba58d98ef3a55"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_bundle-b2453422d38cdcfc.rlib",
+      "bytes": 832456,
+      "sha256": "7201b84a2e750747346df71567c10b4eda1da45c6152943f2808d957b2461a88"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_bundle-b2453422d38cdcfc.rmeta",
+      "bytes": 579251,
+      "sha256": "4a93a6c8d15647f14283b52d5558d59eda51977bbc366b7242f3df32c27e62bd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_langneg-5814d32bee52757f.rlib",
+      "bytes": 66008,
+      "sha256": "9fea122ce97e38a25e3a1bedcd220283001c8683e4886e9f9e2e92fbb4b7936e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_langneg-5814d32bee52757f.rmeta",
+      "bytes": 48814,
+      "sha256": "a4302ff3be720fc7dd14d24a9bc4b03481526b9518e88911f69b558886931c35"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_syntax-a2378fc69c2dc383.rlib",
+      "bytes": 584528,
+      "sha256": "19cd3888db653a4434e0dc5890f13af84827f7c1a49187f9997bbf577d54fc73"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfluent_syntax-a2378fc69c2dc383.rmeta",
+      "bytes": 565514,
+      "sha256": "667efd674ed87818f5faffc2c1c30c336df4f4d0c08a0aa9d78d22050ddecd89"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfst-55fe1e2e8b502a3c.rlib",
+      "bytes": 1169264,
+      "sha256": "75a6db0e02047ff00f59cd15443decae36017d09fe456049e756999d1208da21"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libfst-55fe1e2e8b502a3c.rmeta",
+      "bytes": 1097934,
+      "sha256": "b949619dadde646a6891701038cf57bc88116a801a786eaedb7043bcc2904222"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libgetrandom-e8eb9a1ce7241f9e.rlib",
+      "bytes": 72128,
+      "sha256": "61767d5cd7918f179b5fe4c0383903968b142bfaae2983b021e66ce207f2c672"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libgetrandom-e8eb9a1ce7241f9e.rmeta",
+      "bytes": 65719,
+      "sha256": "572a9a3189df477570d982f5c84585c53062cac4990c383d418171598f88b6d6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libhashbrown-51b3ada42e5cc618.rlib",
+      "bytes": 1514632,
+      "sha256": "5bfe4059c3577e49e92717aa8d1ee4133712b9ffd0c20521971baa5e37618363"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libhashbrown-51b3ada42e5cc618.rmeta",
+      "bytes": 1507406,
+      "sha256": "6cd26309ba268dc02d8cb03bc60a0b4fc893cec726c659839e14eb95648d44ec"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libheck-e35a9d913173606a.rlib",
+      "bytes": 231016,
+      "sha256": "8462e13b15377d5e53c0565e2b8cd01649f30edd85ee0796e57c0bc55c1762ee"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libheck-e35a9d913173606a.rmeta",
+      "bytes": 79683,
+      "sha256": "2383a2e6e0a912999f7d44f411e1d16470adae526342e00f9a31ae7d3b9332d0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libhybrid_array-1caba212e98d7927.rlib",
+      "bytes": 1295480,
+      "sha256": "8fa8bb73c57a45c758c974ff714e683a8ffa9becee64e9decd189eea6d2fcb3c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libhybrid_array-1caba212e98d7927.rmeta",
+      "bytes": 1293264,
+      "sha256": "0c9f6bcd584a9d7b5e2f424b28fc49da8f1e5e8ebbc6b5fed479b68c233144d2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_casemap-92dd131350aaea58.rlib",
+      "bytes": 757816,
+      "sha256": "8bda4f927ebf585d1a1bfb3d5075127f75308beb5ca6a4479e502b342ee571ff"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_casemap-92dd131350aaea58.rmeta",
+      "bytes": 635318,
+      "sha256": "e358a383c485ecdd2986e565f9ad5d066fa2ca954ba1a4cfb7c823f2eb1663d7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_casemap_data-90c727f8358bd50e.rlib",
+      "bytes": 92840,
+      "sha256": "133b6f25723aeb79090babd618accb1b80a5eaae5d62267734b1ca7d2b022d52"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_casemap_data-90c727f8358bd50e.rmeta",
+      "bytes": 91368,
+      "sha256": "3a92d06365fd0fc2b94cd3556278c1f47957075e9a14c587bf0ef5739fcb3bd8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collator-af45975ca553f1ea.rlib",
+      "bytes": 3896144,
+      "sha256": "702fd7af43a182e4af26c9e098bf75245d2977858a9fe2220395c3940a490dca"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collator-af45975ca553f1ea.rmeta",
+      "bytes": 2126798,
+      "sha256": "f589c6e1b669970eb3eced7e611bfc5fd2889a6b2edef4ad2bdf07039047b922"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collator_data-f0073ef4c614a470.rlib",
+      "bytes": 3318536,
+      "sha256": "d7b44eaf3e9ab5d1acb3f9f16496ddd8ccfbfc689337b30122c5ef7e707c57f3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collator_data-f0073ef4c614a470.rmeta",
+      "bytes": 3317061,
+      "sha256": "f12a2aac32f306a3847b01326c4563e29a918b49a337187981e8f7dbafe985ce"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collections-b8b58e35c919f3b7.rlib",
+      "bytes": 726896,
+      "sha256": "bab87d7ad8e04cfc036e8e31f1786d5497ad9c4e1f0c174f4e365843f857d284"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_collections-b8b58e35c919f3b7.rmeta",
+      "bytes": 583573,
+      "sha256": "04756148a720317e3023ce744aeddd6d5577c37e0d414fd18c5eb8f3954ef671"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_core-345053ec0de35c47.rlib",
+      "bytes": 2592872,
+      "sha256": "3e8326e4de1df39cd020782403fee37de3724f903045c8cc203ea7597de1c101"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_core-345053ec0de35c47.rmeta",
+      "bytes": 2077353,
+      "sha256": "1ff9204efe316cb33613a80a1493368a06ed453f6a85408c7c0850335e8d7a6a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_fallback-e0be17594ce08907.rlib",
+      "bytes": 140800,
+      "sha256": "f7c169246a8f8a678abe3ea1129db01f2d97d14b25d3e5d7994a27bad46682e8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_fallback-e0be17594ce08907.rmeta",
+      "bytes": 124097,
+      "sha256": "3e3ce1fbbf07abc982e9852a5ec8d39bd0c2edd9675bd835970494a697502893"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_fallback_data-ba29f8153f571faf.rlib",
+      "bytes": 28928,
+      "sha256": "54cc26f91493fb3df209afe0c9f5e10f2325efc7aa6f846066b88d46733ea754"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_locale_fallback_data-ba29f8153f571faf.rmeta",
+      "bytes": 27418,
+      "sha256": "dbe454ca09810d7994c13532e74a23ba9973e026211eaa14f272f4f178123ff9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_normalizer-7d4e40377597f9ed.rlib",
+      "bytes": 1150736,
+      "sha256": "406b20c9d2188a87bb50c9fa4ffbade15a0417affc28f0d0e011ad1b4a44ec82"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_normalizer-7d4e40377597f9ed.rmeta",
+      "bytes": 842007,
+      "sha256": "3d23f387d4d6fb4269794855883604a09f6418bf8839ccdf1c1b81a22ca276aa"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_normalizer_data-56a2f7163df88cbf.rlib",
+      "bytes": 437952,
+      "sha256": "b561c7a38aca48a59f091fc0859a063966adb1b7fac8ea55058354deeee4a771"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_normalizer_data-56a2f7163df88cbf.rmeta",
+      "bytes": 436465,
+      "sha256": "01a64f39fc05f122fb4b483f8975e25aed2f1985d2649a80cb167793b242dad5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_properties-eba28672d717b2b7.rlib",
+      "bytes": 3301216,
+      "sha256": "597300294da367b39ff29bf44d81a1787ec9274e57cb60229eeaae69c0bb6a45"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_properties-eba28672d717b2b7.rmeta",
+      "bytes": 2833315,
+      "sha256": "c4be487e06d935f417e8b962876d11ffd092783391354a0806375a0f03f0b878"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_properties_data-8fb645958354c1f7.rlib",
+      "bytes": 1862832,
+      "sha256": "2cd29e93bfe16fa456c3626ff3886c614803faab87a017be5138f4959a1f733c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_properties_data-8fb645958354c1f7.rmeta",
+      "bytes": 1861346,
+      "sha256": "793dd43efd2a138929f7461d9a9f8cac7dff7748f362ffd7685930b6428ab9d2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_provider-e12664da26bfa1e1.rlib",
+      "bytes": 738048,
+      "sha256": "73889bc8ef2fa3bab7afd8a390b8523f6c4ed518fafd692fa892fc5827f917b4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libicu_provider-e12664da26bfa1e1.rmeta",
+      "bytes": 608536,
+      "sha256": "e31eef8bde89ce3d33aff6f915be859e4cef368d835f2ae54f720c06fd1db943"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libindexmap-dc45257e3d01bfc8.rlib",
+      "bytes": 1817712,
+      "sha256": "8bfc921d125f60f34a2e2d05d679dc624b93f6551e1e4eb34d6f05f1d145a0b6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libindexmap-dc45257e3d01bfc8.rmeta",
+      "bytes": 1814224,
+      "sha256": "b97368c318a38c48d65de4564f24441b1216cffa6deb95250ec2245c4563537b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libinout-821324d16f6afa98.rlib",
+      "bytes": 100448,
+      "sha256": "8f6e6e678c545c06a82b14eaa424f3faa1e53e6af1f1c9b3798d306a34963a5b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libinout-821324d16f6afa98.rmeta",
+      "bytes": 97143,
+      "sha256": "beead92b224c0ff1a7476c6f3de572f3f5af2d85604ccd5cfd44c16358c0720f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libintl_memoizer-3aad128574a11a47.rlib",
+      "bytes": 57928,
+      "sha256": "56f7febca64e9c4562287f7a98d339756aaf298f47817c4e999294af5e6d2988"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libintl_memoizer-3aad128574a11a47.rmeta",
+      "bytes": 46188,
+      "sha256": "41a324eb1352e971cc4bcff98a4c620ad09f48374e84a3f3e4479bbdbf334eab"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libintl_pluralrules-88392ba875d8537b.rlib",
+      "bytes": 507176,
+      "sha256": "e92b9218dbcb39ae09c69aa78feae6214d7ef0bcf8a7b6cfc15555c185a578ab"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libintl_pluralrules-88392ba875d8537b.rmeta",
+      "bytes": 457481,
+      "sha256": "eae9dc784290c6d835ceb11ec3cafd3ad2a878fb3db25060fce4e74ca6cb9ace"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libiri_string-9362edfed37f8f09.rlib",
+      "bytes": 4640888,
+      "sha256": "47482b57460eac5160d003960c2bf7e9fc7215db886fcb4b9a28005b54158d78"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libiri_string-9362edfed37f8f09.rmeta",
+      "bytes": 4503244,
+      "sha256": "f27eae711b34dbf4f85938ad8744f1f23be08db5880c66215be1039e97894be2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libitoa-f699d7dc0b013ee2.rlib",
+      "bytes": 85424,
+      "sha256": "3ad320d813125f0f005148aa9ae026d952801be672e603b53b161d690e6414ca"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libitoa-f699d7dc0b013ee2.rmeta",
+      "bytes": 79211,
+      "sha256": "5bbb4910921d498496732dfe2968c98ae46fab7eec3076d0c2c4f48cf4105c7d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libjiff-43689ae3e8ef088d.rlib",
+      "bytes": 7324968,
+      "sha256": "4765492f15f047e480bacdae57ca94003019d2bf14f741e18092a27ef36d07f2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libjiff-43689ae3e8ef088d.rmeta",
+      "bytes": 6177705,
+      "sha256": "ab37e4bef6c4d18baca347795dc5f1d8d13f2968258470148a719a09ffe353f4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libjiff_core-b71afe4d104d82ab.rlib",
+      "bytes": 2231064,
+      "sha256": "cbfe898e489845baaf3ea6443ea87a3083d06e18967e69bd244d2cb354170ab8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libjiff_core-b71afe4d104d82ab.rmeta",
+      "bytes": 2007593,
+      "sha256": "6999f1480d1aec71e77b66039f0da2ba2881af292dfc5e7b2a2bffa20504aef7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblazy_static-ac4620eb081c4bd1.rlib",
+      "bytes": 23400,
+      "sha256": "e6fe1485b4e3db27eb4b3a5567504df52a9bdf26307b7d7c5fa1cf1355ac6678"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblazy_static-ac4620eb081c4bd1.rmeta",
+      "bytes": 21951,
+      "sha256": "2991e48315a69141e02ffb41323e779994178f6eeb6f81515f5421ef32500ac9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblibc-fe96eacafe959751.rlib",
+      "bytes": 3845760,
+      "sha256": "3e4f0d7dea4aa56661e7bb17c3064759245c97a16ca476917e4eafeaf57df804"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblibc-fe96eacafe959751.rmeta",
+      "bytes": 3825884,
+      "sha256": "8e35329c915eb7fba47a6ebf87c09b0e9f8caab61556a04e492c901ffe021480"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblibsqlite3_sys-325157acaf6c396d.rlib",
+      "bytes": 2956184,
+      "sha256": "05fbac9be769d29e9d3055438863e533186fff4556c294d416a6f41f9cd25266"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblibsqlite3_sys-325157acaf6c396d.rmeta",
+      "bytes": 499072,
+      "sha256": "61a8225c4c2b2d124c41b0921d59528cfe69e703583d4b1106c1f89d7986b84f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblitemap-f87e4aa46ec79268.rlib",
+      "bytes": 364240,
+      "sha256": "b71e894ad5b9eb203cdf6b87347e85897e6ad81fd3686d45cd5c6d705a9eb1df"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblitemap-f87e4aa46ec79268.rmeta",
+      "bytes": 362803,
+      "sha256": "cbf3df6c4c32f24dabe083d00c6440fb992512475d5c917c4f1b97705cb251f3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblog-354bafac4778350b.rlib",
+      "bytes": 221096,
+      "sha256": "feba23f1363b02d8dba3223a596dfb16b313a63497d70002810e8bcbdb858dbd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblog-354bafac4778350b.rmeta",
+      "bytes": 210779,
+      "sha256": "33bcdf23b7377a46f9fdf041fb160945f2b718761fcf0665c17dcabaa66b3fef"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblzxd-22c9df629ec38e75.rlib",
+      "bytes": 132080,
+      "sha256": "35d4f8e0a94593e446c4e7bd19031e84297b679e36e349e1cf1a129d6e78c6c5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/liblzxd-22c9df629ec38e75.rmeta",
+      "bytes": 83340,
+      "sha256": "b1a1773c5c33e6107b08cc0c3964b04521873b2f119703d3fcf900daac121f9b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libmd5-b7fcc470aeeadcb3.rlib",
+      "bytes": 56288,
+      "sha256": "3d5586b34e939696db28635a7113773e3857272382c37de1d731f8b9d825a25a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libmd5-b7fcc470aeeadcb3.rmeta",
+      "bytes": 49919,
+      "sha256": "fc1aaa3f0a493c89764817d68537b3e305ee327fd4502867c5ed647c7fd52a30"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libmemchr-2068091682410da0.rlib",
+      "bytes": 1236648,
+      "sha256": "f5450bcd97ffc04fc99778160a889b633a6a13ac1fd4e7db65d158220e1fac2b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libmemchr-2068091682410da0.rmeta",
+      "bytes": 1213191,
+      "sha256": "ed1e24ec83c98d80cde1fe102783d917b9968add05299c79967b6867e70d622e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libminiz_oxide-2caee50ea72442bf.rlib",
+      "bytes": 502584,
+      "sha256": "6c6db55191a67043fa4927bd3cefbfdbdf03c13ce7c65c17b426521ddab7ad9b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libminiz_oxide-2caee50ea72442bf.rmeta",
+      "bytes": 421633,
+      "sha256": "6b52b39845bc62489cb503c3e20103d3ea321b5295fd23735c863798459972d9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libmultiversion_no_op-ec819dcce113ad4d.dylib",
+      "bytes": 439392,
+      "sha256": "eb7d09535c48303e489124659f892e31e1308d872fce7961577176e4d931dc7a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnix-0da1ad224b6a006e.rlib",
+      "bytes": 1978552,
+      "sha256": "9bdf9fc5acb7bebb167eb2877cefdb907e13ad982e668fcdfb221ec152bf5e31"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnix-0da1ad224b6a006e.rmeta",
+      "bytes": 1811735,
+      "sha256": "5b634feaf1dbcee0e4d82a8e6feb9e617fc5cd81d4898b906c6a831c86483238"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_bigint-2f95b0d8dc6d4a95.rlib",
+      "bytes": 3127184,
+      "sha256": "bf8e688e0ec53719d23edf35337386c9da7a4a38046ffda7fb4d8b4ae9a4c73e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_bigint-2f95b0d8dc6d4a95.rmeta",
+      "bytes": 2826187,
+      "sha256": "3d06e86710bd00e45aba1ca7863fafbad5abb9b8977ac87b903a81a8b7467ebe"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_conv-77a6361187420461.rlib",
+      "bytes": 206416,
+      "sha256": "3880dcfbd02c0aa019c6bd55f5da7c351f9eb6c36e8fd26be22317da5e16f887"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_conv-77a6361187420461.rmeta",
+      "bytes": 204969,
+      "sha256": "8ffeb8c4acc17bd961f1b0dbfad539f394aa2ce6d4079a982c2c87a393ea54eb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_integer-e93e21b38cb66c99.rlib",
+      "bytes": 363760,
+      "sha256": "23dd5008b6fa7a909c5f34b2f7f3f7d60a913c45a5ee761db2b2907efd15daa5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_integer-e93e21b38cb66c99.rmeta",
+      "bytes": 346783,
+      "sha256": "ca5df63cf2fac8f24f1d08e201b39d06769a25081c886cf8a2283c0d037e4ab6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_rational-a702784d22f5c5e6.rlib",
+      "bytes": 604840,
+      "sha256": "f5aa973a147a8f1ec3fd313fc7a2c443c64421a96f0d8e1e105e82e71475cae9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_rational-a702784d22f5c5e6.rmeta",
+      "bytes": 541041,
+      "sha256": "3cbb2433712741c483b74cd6c74e6732cf518e357a70a4fe688b4083410051cc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_traits-467842800e82f7bf.rlib",
+      "bytes": 1837840,
+      "sha256": "b649b61d4dc6f4f667518754da9dea3bab1066d2a2c24dca2683bf6179cf83ba"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libnum_traits-467842800e82f7bf.rmeta",
+      "bytes": 1827853,
+      "sha256": "9ded27c10f79cac5cd639ab5296099b8d26be9a9646950062ee1aaaa1e449b39"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libonce_cell-dc75b90755a31ac5.rlib",
+      "bytes": 245928,
+      "sha256": "830c3e41b9cc812559ff53c118f13f568cd7f47514f268ee4c296ad973a235eb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libonce_cell-dc75b90755a31ac5.rmeta",
+      "bytes": 241045,
+      "sha256": "61ec3dbd079bfe924aa2ba419c754015789d14ea2eaec06a53ff9e4b6c6aef7e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpin_project_lite-0347b5e366c58a20.rlib",
+      "bytes": 96760,
+      "sha256": "58a7e16181a4443c0014263379960ee43b9c4689927dac3906133353a923eb92"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpin_project_lite-0347b5e366c58a20.rmeta",
+      "bytes": 95286,
+      "sha256": "b85320a993d182712d567c456bec096ded1e4a104ae4b0e199c041e1fbc5ac11"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpkg_config-d9011e67a76bc32f.rlib",
+      "bytes": 711216,
+      "sha256": "304c1f1859ec10365d9034c837a0526a194a42a445b0839c8582c50ccd0713cc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpkg_config-d9011e67a76bc32f.rmeta",
+      "bytes": 72032,
+      "sha256": "cbac67327e59aa75907baa92088b0df19d00415e8df57590f02d059146c2766c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpotential_utf-4d5f36be6f0a0484.rlib",
+      "bytes": 90176,
+      "sha256": "293aee0c5d7e9e1a9ed9f07642d1058c4d9d8777e3d4b3ba2aabfe2a38f18bac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpotential_utf-4d5f36be6f0a0484.rmeta",
+      "bytes": 84035,
+      "sha256": "414ce6ab6004a2958cb82142c9fdb8978d85eec3692ab7219066ca60f5bb4ffd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpowerfmt-e7216fd87d842060.rlib",
+      "bytes": 204496,
+      "sha256": "505e0b05f6bd9df39e72919c922f7180cc31a2e3d7c8dfdcebb75d3ec5a0d20d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libpowerfmt-e7216fd87d842060.rmeta",
+      "bytes": 197486,
+      "sha256": "d9034f0b6aa3e8d652f3d8a61f2167af45cd6f059ac0cd33c392d16ae278b789"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libproc_macro2-d75e82cbe1cc36d8.rlib",
+      "bytes": 954296,
+      "sha256": "4f9927c8e38a35b0213ac05fea828c9ee38854046e2cfe46957540b5422d5316"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libproc_macro2-d75e82cbe1cc36d8.rmeta",
+      "bytes": 351242,
+      "sha256": "4e745f31df1891f48dede1708cf106916d01f9ad1c917bd6a045a63e14bc8a0a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libquick_xml-e5436bbd31138bb7.rlib",
+      "bytes": 1570832,
+      "sha256": "9e83725ef174dbca822f6eff09edd155e1d1497db018390dc4590420166efc3e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libquick_xml-e5436bbd31138bb7.rmeta",
+      "bytes": 1362841,
+      "sha256": "e0afbdadca96d95faba312ab267bc433ed4d582304d1a31742a07522d7a094b3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libquote-7fe462199c3b88d6.rlib",
+      "bytes": 442392,
+      "sha256": "a787f8b6d1b8a103a067b656b445a845f10931cfadc14f0debd21f873d25ec1b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libquote-7fe462199c3b88d6.rmeta",
+      "bytes": 275625,
+      "sha256": "e20b7b4a162d4f4b717fac022c09122d188b6cffbe5962fbb97e4b80e05fe2a2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librc4-f4ed5d91c2a6816e.rlib",
+      "bytes": 30256,
+      "sha256": "ea47de3dd996708a543165039959860348b16877e334beaa09e08eb57880bd71"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librc4-f4ed5d91c2a6816e.rmeta",
+      "bytes": 28473,
+      "sha256": "5de11d562ee4516db9230b8e66ebdf4712340f62f6ee55c2e23384e720c1ab2b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librpassword-8f313a8542689e1f.rlib",
+      "bytes": 154424,
+      "sha256": "0c27d8dedf5e51d62f0be0f3ee4aa06b387910b232a299a2c308c6d2208ea549"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librpassword-8f313a8542689e1f.rmeta",
+      "bytes": 94744,
+      "sha256": "7406d1ccb302bef7184e778efe66f2de1dc75bb608967fab55e6d5ae1716430e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librtoolbox-3c6e5b69d2bde332.rlib",
+      "bytes": 39744,
+      "sha256": "94963f73e45e66cf7682cdf412a7fb3c42ed790014641700507c84d90bb09209"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librtoolbox-3c6e5b69d2bde332.rmeta",
+      "bytes": 33497,
+      "sha256": "2997df939d8470b1197c8409d8fd6ecc20fb01ff17b2eec09deda6e651359a31"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librusqlite-ced7f9215bdb547a.rlib",
+      "bytes": 2424304,
+      "sha256": "5122e19eb1e6bebcea756a830cbae6198ade37351a656ef54c1cc85a346231ce"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librusqlite-ced7f9215bdb547a.rmeta",
+      "bytes": 2160419,
+      "sha256": "6228dcc7851da8195f6af1908e0df7c837a633139bf1bb1beee80c3f83eb6546"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librust_decimal-d44998e4fc22b74d.rlib",
+      "bytes": 737784,
+      "sha256": "397d3b30b3c783dfb5aa0b240ace45eee573990ee0863a79eb857f096bb2ab01"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librust_decimal-d44998e4fc22b74d.rmeta",
+      "bytes": 571455,
+      "sha256": "3d31ae4aad2e581efaf9da794d7ac4cefc1f0e73914031aff4ce4833ab5f9a6d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librustc_hash-9dcf309d446f1727.rlib",
+      "bytes": 41272,
+      "sha256": "7c7c86cd3cc4c45dd1361d59c36e65ac213f26e4f1e98a24b611de08506940c6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librustc_hash-9dcf309d446f1727.rmeta",
+      "bytes": 39830,
+      "sha256": "df6f95a3f7555306a272843eeb48da23bc23006f48cd83bdeacf944106034f86"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librustix-678e1934ae76fbdf.rlib",
+      "bytes": 3666640,
+      "sha256": "139720c66335378fe1d6eb32ffa24ac52f77764002cc56dbbd8a2b023a2bfb53"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librustix-678e1934ae76fbdf.rmeta",
+      "bytes": 3380767,
+      "sha256": "760aec0bd0dc338d842a2d9112d5bc491281a555b2477e46d854f09774aa343e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/librustversion-3ac76ab61904d045.dylib",
+      "bytes": 710160,
+      "sha256": "900aa60c3d486b3db20606227dad9094c6ccf3a7e9cfd7d1d1596a7d4b07ab89"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libryu-aff01794cf516f4d.rlib",
+      "bytes": 78640,
+      "sha256": "963d708387a932e713c3be63ceb60c709d94de3f03d64bdb50349ccb2a71ce13"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libryu-aff01794cf516f4d.rmeta",
+      "bytes": 58951,
+      "sha256": "166fb8f449313ec38e3b49c6154a954d02a542668d8ae9150c9251e8a73e2103"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libscopeguard-b0482979e6cc25ba.rlib",
+      "bytes": 28128,
+      "sha256": "7ae78d76544d864485a83c042e4823c1827d2592069a7db009fd09ad9dcdda07"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libscopeguard-b0482979e6cc25ba.rmeta",
+      "bytes": 26688,
+      "sha256": "e407ff4db7deee0379e823843f4d952efd82d8e40e67f15534d5eb4d6155601d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libself_cell-7fd39c9c0339bbfb.rlib",
+      "bytes": 81320,
+      "sha256": "0fb9cea7262204f5b6f420307863d5e90c3efc447a141190fcaa5c79411b3a55"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libself_cell-7fd39c9c0339bbfb.rmeta",
+      "bytes": 79300,
+      "sha256": "9a239da8f4e4c48cb42ef0fab24c8c894378392a46a1707a23b533cddbae5270"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libserde_core-0ec61b89a2ee10f2.rlib",
+      "bytes": 5520896,
+      "sha256": "be6b402b6d684758092d69f16fc4b63034b233274d969f914fc772fb4e72309f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libserde_core-0ec61b89a2ee10f2.rmeta",
+      "bytes": 5466399,
+      "sha256": "2b3986b8f939f8389e90622b95d9aa7c49154dc5fe29a71a411f45ab45720a89"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsha1-5449e5bd6039b56f.rlib",
+      "bytes": 77640,
+      "sha256": "5ceefed5c777ed86df060944a52fe68de708d7bb49432c09484b3f97ea4f323a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsha1-5449e5bd6039b56f.rmeta",
+      "bytes": 73403,
+      "sha256": "140aba50c0bc995be28ad07157964630c7b4169ab4ff5833f8cde8c64f6628b5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsha2-cca1f5003248a203.rlib",
+      "bytes": 858592,
+      "sha256": "52e29b014e97bbb11514cb57d3756d6e831244cf5221408013f26c06b29a5968"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsha2-cca1f5003248a203.rmeta",
+      "bytes": 847670,
+      "sha256": "6a1e21d5ec05bdac6023b46e0d877419ac33c5907c84f80ac3d634f8ecc14c5c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsharded_slab-770e007bac94a3c0.rlib",
+      "bytes": 919472,
+      "sha256": "dce2c86bdaa43c105889d97657159a88f75ddcd9ca1787d88a636eaf44fb99ad"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsharded_slab-770e007bac94a3c0.rmeta",
+      "bytes": 903621,
+      "sha256": "da48160c2fd1295f5b083bf5f3257f12df3f26cd8e63fd2f043596579e8010dd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libshlex-8f424670491f9be5.rlib",
+      "bytes": 101368,
+      "sha256": "a2a1c9e294322f6e0483136b52244575b37667be4e29458954eaf6e5a1bae6c6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libshlex-8f424670491f9be5.rmeta",
+      "bytes": 49743,
+      "sha256": "1d03a317d0e6384cb6e956a49b5fbff77e8e2dfe4145427d06066a26d16977ab"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsimd_adler32-824e117c455f0132.rlib",
+      "bytes": 588152,
+      "sha256": "82dcf7c7bf1bf73751073f2b7001716f2be8f1a0f32e7ce60c4bc648706e1357"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsimd_adler32-824e117c455f0132.rmeta",
+      "bytes": 476556,
+      "sha256": "be248f7fa405950ca69b6b09890e540b565a45344c82290719dac2bedec07883"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsimdutf8-ad3eed755a570738.rlib",
+      "bytes": 186200,
+      "sha256": "60f6a0dc99f8619c130d9228cd827a958b3b7dd4adb803f5dfbd67b735428035"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsimdutf8-ad3eed755a570738.rmeta",
+      "bytes": 175912,
+      "sha256": "3c63f097d4192879f492133d8d7a64cfc81d94c76465d084c09d957b7361fbf4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsmallvec-6b6f6769f6bab3c4.rlib",
+      "bytes": 290712,
+      "sha256": "e3587fb6e25c64bf7c6d5aa0c2c907f7c20de1e5f451ba17ae46f57b9c599037"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsmallvec-6b6f6769f6bab3c4.rmeta",
+      "bytes": 285334,
+      "sha256": "45b3f31e92f1662e5a8859c0cb2e63dbe88051f687f0f0893d4da2ca9f349d40"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsqlparser-cdcaadbd6856ce0e.rlib",
+      "bytes": 26657672,
+      "sha256": "d0cfa236c50457ae933b074cb4e67a83d35cc6521eb28b4b40e4578516036a51"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsqlparser-cdcaadbd6856ce0e.rmeta",
+      "bytes": 14800466,
+      "sha256": "3e952f1c162f6b52886b81b002ea931948bca43036b530b3417979bf7b11414d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libstable_deref_trait-643bf53d942bb7b5.rlib",
+      "bytes": 14992,
+      "sha256": "0ee53e331358aacb4c58236ceb941c7321ae9360744e6b7a5ca236da72027088"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libstable_deref_trait-643bf53d942bb7b5.rmeta",
+      "bytes": 13515,
+      "sha256": "83bbe717a06de0255e5455177fc1fc508119295685643c03920c0783bd1e12d6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libstrsim-d80e592e73176a4b.rlib",
+      "bytes": 124872,
+      "sha256": "51658fdc68c03604a38d5aaaa1a3bcc16b1a841e3936f5241c1e420cbcfd416a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libstrsim-d80e592e73176a4b.rmeta",
+      "bytes": 75481,
+      "sha256": "33b50c05eb8bc502c8ee64b7c2506df78e0c77efd7ac77c1a85311ec62a97eef"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsubtle-be503e9ae67b50ea.rlib",
+      "bytes": 132480,
+      "sha256": "4ab7186c4a7f94177f8bdfb04a1ef7d639131206b2575199818d03480cc9baf2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsubtle-be503e9ae67b50ea.rmeta",
+      "bytes": 131055,
+      "sha256": "c5b2f61b25c200ef2084668eef9f47ef40710de9dec48aa9590b0e857f5c407b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsyn-69b4b91d6b80514a.rlib",
+      "bytes": 10148640,
+      "sha256": "7a311f3d8a8da06e8dbd3332dde620e6af5d826e3d2f2938c5d9deff08fd8937"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsyn-69b4b91d6b80514a.rmeta",
+      "bytes": 4826391,
+      "sha256": "dd090cf6b1140dde5de8f2a5a4afaad24d79782e712d26d28891602333450377"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsyn-92f92f95c4481e81.rlib",
+      "bytes": 7283600,
+      "sha256": "567c29d704aa272c81ed82d6d4fe6cafcb84420c14b3c18a721d9b431a6f6f61"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsyn-92f92f95c4481e81.rmeta",
+      "bytes": 2804180,
+      "sha256": "61ea3362b82b8cc88faf7e2dab0f5b9efb87cfbb06b83554d9aa34bf117e423c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsynstructure-74ac7c578bb286eb.rlib",
+      "bytes": 1191144,
+      "sha256": "e4bc6bfa25d5a71fc4396ee9054b14561174ec2d4016e5edefb119aef1bf10a9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libsynstructure-74ac7c578bb286eb.rmeta",
+      "bytes": 240193,
+      "sha256": "276a3658bd67dff2053f7c4c1a98987b313547f52084590d3c6ef3d0e969c31f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_access-f937d8d3b5aacebb.rlib",
+      "bytes": 3421608,
+      "sha256": "ad6423f60fc65afea02ca8815d63c27e5feb2a5ee2f6bfd41b1a2cd538c1ffca"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_access-f937d8d3b5aacebb.rmeta",
+      "bytes": 2302850,
+      "sha256": "b1e110628c059d10fb88002e820a63e66191beef5514e5f7ae0c2d6054955c83"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_ace-92adf582bc187f09.rlib",
+      "bytes": 32084976,
+      "sha256": "caf57b22c6bbb559f5d9c00a7e0b3b904c477b6d38ea86dfa6aac53a92f61447"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_ace-92adf582bc187f09.rmeta",
+      "bytes": 21272294,
+      "sha256": "60233a6bc4cc0c391ce40312dabe61fdbf9ad667badac0b1287fc8858472b56e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_core-cd86f197e04327c4.rlib",
+      "bytes": 286800,
+      "sha256": "1a56d8fa275c70a7c15fc077f4ba410e945d96ffbea64dfaca96c20d59f5880e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_core-cd86f197e04327c4.rmeta",
+      "bytes": 261097,
+      "sha256": "441e4d185a131fb3c6cda8dfc4ab2ae10572e6bd4c166888d2b2131c2b69df72"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_crypto-c2809816e58617e8.rlib",
+      "bytes": 89872,
+      "sha256": "27f3617727e863cca5d5b8bf20f53c7ff6b6acf189beae3b7239fd0911e263ec"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_crypto-c2809816e58617e8.rmeta",
+      "bytes": 38413,
+      "sha256": "0f7b1d6803b90fd2c741e11669c5517b85d1f2849130be9f624ecb360f12aea2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_db-d27c42afaf040d7e.rlib",
+      "bytes": 97184,
+      "sha256": "1bb5ef5435fc0382315eb2a51b71eee26c592580af98ef8fedd472d7f97d3f15"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_db-d27c42afaf040d7e.rmeta",
+      "bytes": 88062,
+      "sha256": "08e810b580d9ecfc6ecd204a6782a2e2b343433ce684bbec3788375523d05600"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_expressions-c96057a3dc2c0c02.rlib",
+      "bytes": 5053680,
+      "sha256": "1ad66328aca76b19f7b06c6d7e502a5d785b7aab5eadf829ef33f6bff56938cc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_expressions-c96057a3dc2c0c02.rmeta",
+      "bytes": 3754778,
+      "sha256": "68b0b0b0faabe325fc0b4bf1d722352045a788e4c033cdc650df743d16eb02fd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_formats-3d165a20dcbf2a2e.rlib",
+      "bytes": 1221992,
+      "sha256": "5e9836e8859aabe3eda900ace71fba2ee95d6d7c47353627d66067ae702dd875"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_formats-3d165a20dcbf2a2e.rmeta",
+      "bytes": 658289,
+      "sha256": "a62b4f1e4bb1e3404f2cd5db3b50cd190cf8350da460c5076f04626a967e1bfd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_io-086fd6c10dfa2e30.rlib",
+      "bytes": 1004944,
+      "sha256": "37b06aec4094034840cf0059e6630d18c713ca02cfe04f1f9bf2cce1b3f66e61"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_io-086fd6c10dfa2e30.rmeta",
+      "bytes": 789403,
+      "sha256": "622fb6295da97d19c36f54ff389ed6554c6924ace4047780101b9be654441db8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_model-a328eaecb9e19b8b.rlib",
+      "bytes": 49480,
+      "sha256": "e855d4600042e69d6ca16c500188f677bbbcfd15e3b5cef42308f244a00ea05b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_model-a328eaecb9e19b8b.rmeta",
+      "bytes": 39153,
+      "sha256": "28dd0865fc656f699f06f7cb6df34331993b2891691511f2231a53cc1c30f29a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_query-95cc7db7257a67e3.rlib",
+      "bytes": 4442880,
+      "sha256": "dacf6a172143588724355c011bdb2bc57407afa498c5d4d7a4f555c51d59e126"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_query-95cc7db7257a67e3.rmeta",
+      "bytes": 2665781,
+      "sha256": "bae0f671848d2f75638c6299ad9c40ac3bba01c520f1c6b7d1a753a82d4449f5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_schema-d54ef06f20913469.rlib",
+      "bytes": 137016,
+      "sha256": "598fe220771050214f6e2ad32a5f73570b1a0e6e0ed8fb9615b52daef5176a95"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_schema-d54ef06f20913469.rmeta",
+      "bytes": 123709,
+      "sha256": "1ebf21491c3b5368caa79360f9c6e97e9d37ab41ae02672ab147ec68f1942a2c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_sql-e223a43c3c9e3eef.rlib",
+      "bytes": 1320960,
+      "sha256": "4365878a5a4e6f7bde7c7d6b0daea625dd1bcf024fe44e3bc6064cc9c6221a54"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_sql-e223a43c3c9e3eef.rmeta",
+      "bytes": 707897,
+      "sha256": "d6b445ec753ccd6349c4f1a0bd465439ac8fcf4e0da21dea55dd4a1d88fb3032"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_sqlite-9fe195f062d7aef2.rlib",
+      "bytes": 258680,
+      "sha256": "e0df5579542d7315dc7f0b77d1801f279a019b73e660ec1403280e904458caf3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtablecraft_sqlite-9fe195f062d7aef2.rmeta",
+      "bytes": 151041,
+      "sha256": "bbbfcbe50506b0ad1b087601b89b7776ec75bc088c734cadbdab6f6c4d84b8b6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtempfile-ade814220143ece9.rlib",
+      "bytes": 388392,
+      "sha256": "aa83ada1c395e07f2120c49e29aecd16b5f18ebed5af9ca14cf7a8438d474fcd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtempfile-ade814220143ece9.rmeta",
+      "bytes": 280281,
+      "sha256": "acb8f17ff8e8f0e7180b1cbf6693ac76fcf2da8f0c4db84cbc473f9f4265c55d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libthiserror-53a5e0b2cb45148d.rlib",
+      "bytes": 34600,
+      "sha256": "a9b59b6d00593f22480116578c37eee59b2a41fd3f1628cd84f534b3e2d3065c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libthiserror-53a5e0b2cb45148d.rmeta",
+      "bytes": 33155,
+      "sha256": "b7b2643f5536f638b750a8d859c2ec759455750aa776e7e169b176aa85f0899f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libthiserror_impl-6a3d3b0657d4eec3.dylib",
+      "bytes": 3386640,
+      "sha256": "d0e7207deff33b5e62babd1207093faa0bc7a0a7de75758d5b1398493b69dd6f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libthread_local-82781647bf83ce96.rlib",
+      "bytes": 148808,
+      "sha256": "52aa6947f433891055f5578890cf02e51bc47b8c8dffcd500a9bb22d38eae1cb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libthread_local-82781647bf83ce96.rmeta",
+      "bytes": 132850,
+      "sha256": "91dfa718e95473eac4bdc96a1742beaf68892a7e58050d0d980b66716a88fb13"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtime-88f7dfa007004081.rlib",
+      "bytes": 2339736,
+      "sha256": "e4d26016c15b34bd542b1a2f2e82e45c6223dd1d7f079c97170f900ef033d2d3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtime-88f7dfa007004081.rmeta",
+      "bytes": 2325349,
+      "sha256": "3500d43483f633f233004ddaee494a31600c99df24bf200568e9a6afe77c10f3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtime_core-2441553533fab5f8.rlib",
+      "bytes": 491728,
+      "sha256": "6df8c2aa25cac4bd99d533e6b9060fdd7e0c636fa0f2bd79511355c66acbf75a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtime_core-2441553533fab5f8.rmeta",
+      "bytes": 490288,
+      "sha256": "0a961f2bf9b617a8d9283ddf478d3173f5b05143ab2432703a76b28d3299d6c9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtinystr-e34774a315079b3f.rlib",
+      "bytes": 367600,
+      "sha256": "2b19cbf808d9462c0f93fa02901e97c5a9f1a2281b6db4bb09d9d2245086b2c5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtinystr-e34774a315079b3f.rmeta",
+      "bytes": 364512,
+      "sha256": "4db0a4e645fce866b99226472d929e2e19bdd4b77d42675ad0a442faea8ea131"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtinyvec-369e4bf223a1fa04.rlib",
+      "bytes": 952672,
+      "sha256": "aea44ebfed60ec8c9c8f85fe57fcca7e2a96980274012027d83da636b3f5594c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtinyvec-369e4bf223a1fa04.rmeta",
+      "bytes": 951235,
+      "sha256": "4458be630aba85fa0134f9f7a91f75f2ec0c6bf007db9ff6d1a13d3477e792c2"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing-2a437fa073ac83fe.rlib",
+      "bytes": 630064,
+      "sha256": "1611b1243246175fc6cb3333288f2617b0be75cf5cbfb2c26d3fc6b45bd2a132"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing-2a437fa073ac83fe.rmeta",
+      "bytes": 606279,
+      "sha256": "7f2ec4442b72369ae61d8382a52584ff13a030579ee7e309c4e9057b4167be77"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing_core-d48e801c0d8f23c5.rlib",
+      "bytes": 787032,
+      "sha256": "5044ef2d57cdf1b109c7aa2573d45a4e6583b32d1937062a1b8b6632aa2d0e43"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing_core-d48e801c0d8f23c5.rmeta",
+      "bytes": 633236,
+      "sha256": "e8b6048d57e2fa80619af4617e5f834908619407716763690d4d45b61ee5424e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing_subscriber-1279b00fca19428e.rlib",
+      "bytes": 2397192,
+      "sha256": "b88d218775cb65bc6a2498cc7c784108c47280c885c2f708e5feb17f781ee29a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtracing_subscriber-1279b00fca19428e.rmeta",
+      "bytes": 1980490,
+      "sha256": "ebc75712955e132c0dc4a50f8c7b93c5c616c411a25d3aeb9ad421bd8d045e66"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtype_map-ff0d3c6bb7c6b015.rlib",
+      "bytes": 134280,
+      "sha256": "4d3fe5486e8f7c14eea6e28a2531aff685bf12633696a17c0de105fda14a0ecf"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtype_map-ff0d3c6bb7c6b015.rmeta",
+      "bytes": 127455,
+      "sha256": "b514f4a9867d00f9765f806a729a636ca7afb31188ef0a15a8f0df02f2a1265f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtyped_path-4a843c5da6326b88.rlib",
+      "bytes": 2459032,
+      "sha256": "8129d44bd8a8b498d4bfa5420dc37f6ed21cfe775b4c9e73f1602ccaa5bb9557"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtyped_path-4a843c5da6326b88.rmeta",
+      "bytes": 2161358,
+      "sha256": "92454a22a085cbce890fa11e8394cccb4f43a741558b5e8a6682ca2d8b506c4d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtypenum-b4010831c3f1904a.rlib",
+      "bytes": 3768616,
+      "sha256": "6128492228ac849a7f938093a7da123c45ae69487c1263080d6b755797784b0b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libtypenum-b4010831c3f1904a.rmeta",
+      "bytes": 3765782,
+      "sha256": "d4c1c5ea9e4d050c9477d390f7170f83ea656b303cd24ac28c1f0e0996783e97"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunic_langid-8c36b97d075b3026.rlib",
+      "bytes": 9720,
+      "sha256": "39f272606b3a2c06f2b7b589fc6f4a38c48df2de023637a26030503f58b03625"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunic_langid-8c36b97d075b3026.rmeta",
+      "bytes": 8266,
+      "sha256": "36a7c0a13deb564cf80f8dc4cd6cd24519f14935e554dd00e75655055be42617"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunic_langid_impl-21f844899a0f2063.rlib",
+      "bytes": 237800,
+      "sha256": "100089fa78fae4c2668a173faa1de9b61debe7b63f1e203e6f5e7194d34eada0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunic_langid_impl-21f844899a0f2063.rmeta",
+      "bytes": 166362,
+      "sha256": "41eff3c9a6bc9eb070fc36f1ca7b411d16176261318d4e8bfa6319ece9c16ca5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_ident-704f270fb6658527.rlib",
+      "bytes": 50976,
+      "sha256": "2a78466545116e42d10f83a5d1b94df876044e175e3dafbba390d64cfb76f6ff"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_ident-704f270fb6658527.rmeta",
+      "bytes": 34660,
+      "sha256": "2dacd12a19791465fe844ffa9fd6de821ebc96135769c1b5cdadbce06f914ab6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_normalization-a099aa3795d1372c.rlib",
+      "bytes": 1928488,
+      "sha256": "f60619e003ccc903a03d6c093ef00084790ba5e50c1ebf1688e70197b733d14c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_normalization-a099aa3795d1372c.rmeta",
+      "bytes": 1765030,
+      "sha256": "35a21e60a5e4001f3c417dc2bf2cb3a42ca03124056cf9ff459156aff1b002d4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_segmentation-17e75a31268c78a0.rlib",
+      "bytes": 1281408,
+      "sha256": "39c485b6c8f7828b2c6d14e7f2d40f5fcb6bd1c442dbf1e4d5c2cc60b424364c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_segmentation-17e75a31268c78a0.rmeta",
+      "bytes": 1186643,
+      "sha256": "c878ad2ef67cb8a4dfa5f1563fd7a30b9a4aa1c5f50964beab9bf4dcdaf9d9ee"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_width-c17f41a7edbb8fa3.rlib",
+      "bytes": 888568,
+      "sha256": "b87c049e1a86cf7b6bfab1de66bff601fce55038ff7a56d92b3697b5d332b61e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libunicode_width-c17f41a7edbb8fa3.rmeta",
+      "bytes": 870307,
+      "sha256": "609d931f60592b76036c161deaac9eb3d0f58d03e43d9b886c663830331f6b41"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libutf16_iter-5126e5b03b9f1b26.rlib",
+      "bytes": 43408,
+      "sha256": "c22b0f334d46eb8e8e2d480c54482d28ed653cd95888ceddf4cd25efa4233d85"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libutf16_iter-5126e5b03b9f1b26.rmeta",
+      "bytes": 40097,
+      "sha256": "a0bf969201065aa1069b1f436ed40d6001c9844b28b9c3e3711ed7b2457fdc59"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libutf8_iter-66a742d1dfde6a33.rlib",
+      "bytes": 66648,
+      "sha256": "a1877af7158b09a6c6e4ca5f84c1a3d573181239fa561650dcd9b235c2c4b28c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libutf8_iter-66a742d1dfde6a33.rmeta",
+      "bytes": 62622,
+      "sha256": "ef0540ba0dd8c7025e83431a73ce716cea8d18f3d61f30b34769ae61e58228ee"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libuuid-9d7b95f57d2ee0b4.rlib",
+      "bytes": 519352,
+      "sha256": "5b4b03d657d0bba16a49a5cc71f29a014af691e229635e95a65913c1295fe536"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libuuid-9d7b95f57d2ee0b4.rmeta",
+      "bytes": 495069,
+      "sha256": "e8d1834e5d8342b3a3fbf6e925b48677bdd7773bfe88c67d944a0cc16e55ea4b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libvcpkg-81370573f3b3362e.rlib",
+      "bytes": 1014528,
+      "sha256": "5b6458d4c50a92ce4c6698d55b4cdf4554505e02b9fe2ccf553f8392e70e3257"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libvcpkg-81370573f3b3362e.rmeta",
+      "bytes": 94099,
+      "sha256": "c5a64aeb61f5acc8074f169b7da644affc208d11ba84bfef47101c743eeee253"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwide-0cedc61788fbe51a.rlib",
+      "bytes": 25301144,
+      "sha256": "ac804cce58e34d7faad564a59c82b983b76aa856a64f5c2c2d8c086026ddd7c5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwide-0cedc61788fbe51a.rmeta",
+      "bytes": 25026392,
+      "sha256": "4181534706b7c49c46e1d904f9556303b9bcb4cd746a8ce64ac1eb37775c3db9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwrite16-ee4ea55053ef4ad6.rlib",
+      "bytes": 10528,
+      "sha256": "f650559bd219119a9504da9032d1edc8f880691e427fcecbca5b0955602b8619"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwrite16-ee4ea55053ef4ad6.rmeta",
+      "bytes": 9090,
+      "sha256": "f1eea2598bcd1487ac9a9156c8710bcab031dbd59f47f861825c30399fb698f6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwriteable-440c792ea26869a7.rlib",
+      "bytes": 406584,
+      "sha256": "27e7338bf39b6c1a4778acd434071decfa8bdd3b76c7605819f2c546b363064f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libwriteable-440c792ea26869a7.rmeta",
+      "bytes": 389872,
+      "sha256": "fadbe6d31d2af586d9b5ce27e07a48d377243f2614c4fb4e06ed6c9455d0e321"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libyoke-f5493afd5740d335.rlib",
+      "bytes": 302616,
+      "sha256": "76ab159c9e2143be9a6e903e51b13d50b95c015622fc5506e45ff137717ddbcd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libyoke-f5493afd5740d335.rmeta",
+      "bytes": 300750,
+      "sha256": "22c5c7655e588c302070d3bb7b9f2e38f9ea64184daec613ba7bcd35497ecfc7"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libyoke_derive-52d73a01c1820a3a.dylib",
+      "bytes": 3683840,
+      "sha256": "e31d738ad600fc7be1a68fa11da1e1bcb05f7cc6667df44647792e694b02f473"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerocopy-6d9584292f359a31.rlib",
+      "bytes": 15915248,
+      "sha256": "511cdcaafcccd2b44c1fc536f928fb5366c7b5eca8d6c1e9c9d1b88242bb9774"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerocopy-6d9584292f359a31.rmeta",
+      "bytes": 15913805,
+      "sha256": "cb117c6833006a76b1a5dd3af3b887b11defa0cf59d654503672090cf5996aff"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerocopy_derive-9398c333e71d9978.dylib",
+      "bytes": 3898688,
+      "sha256": "a967b7a5fd97132d82807f28af7ccb1f94ef0c464377a513b04d8d26597d50d0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerofrom-091995b44b183c7d.rlib",
+      "bytes": 92408,
+      "sha256": "3e40192a6a8ce814b324c15b677456512d8811348fcd1a78440874c1d8c80156"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerofrom-091995b44b183c7d.rmeta",
+      "bytes": 90963,
+      "sha256": "b36c0f678c914cd7c516e129cb17b32917ccabdc45ab8a7753430ffd5d85f68a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerofrom_derive-329f2dd9b05c8b99.dylib",
+      "bytes": 4027040,
+      "sha256": "aff2308dae8f1b3674456341fa87a3264690fbb0443f786827b8b43cdef59d57"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzeroize-7b30b7fae798ef76.rlib",
+      "bytes": 528984,
+      "sha256": "ca238cad109d1d3fc99fc7ce3b5268efa356e1a3640492bce2442b55110e7755"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzeroize-7b30b7fae798ef76.rmeta",
+      "bytes": 526666,
+      "sha256": "1893b2579ca6d34d513f88864c87750d2ba9eccddaa50c6471d0bcaf16a6afae"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerotrie-26fc8138001bbbe5.rlib",
+      "bytes": 841136,
+      "sha256": "50eab4e8d1a52115b5136f4f4c96243e0e5972805c5f8ee88ca8194a2c72712b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerotrie-26fc8138001bbbe5.rmeta",
+      "bytes": 698992,
+      "sha256": "0b61a01b57006ecd5236ad67a4f277a538dcbd76e732db5f62a3e5234a86f08a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerovec-23fa99e501ac9ed7.rlib",
+      "bytes": 2234352,
+      "sha256": "0252abcad6f488ab58eb4e0b21bdb98a1a4b713c52ebc153ff5660f54ce5dd11"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerovec-23fa99e501ac9ed7.rmeta",
+      "bytes": 2229069,
+      "sha256": "05f9e91a61656a7419453400a7164bbfab61b66d0f742a5c32516acf052ab7dc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzerovec_derive-78b492e5ca29cc6b.dylib",
+      "bytes": 3299184,
+      "sha256": "c4f0ceebe6c15f43e17c840a494e0f2b888ff581c649e275b5f3dd3f5dd19a67"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzip-b7a281ae16a7042c.rlib",
+      "bytes": 2550624,
+      "sha256": "955e9bd7f3c5da59f951b7ef01c31506100e4b2e58e3be8adb7add9e5c79d7f3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/deps/libzip-b7a281ae16a7042c.rmeta",
+      "bytes": 2314097,
+      "sha256": "3b3ed914cf5f07bb0a980e9ff4c8ccabf9e3145591d157ebf9d3643ce611eb76"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-first-20261031/target/release/tablecraft",
+      "bytes": 19001328,
+      "sha256": "a1cec112ccae261559e019610c8e48644bb03dbe350cafd30dad4e547ed9f53d"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-cli-build-next-20261031/workflow.py",
+      "bytes": 9982,
+      "sha256": "a52a2a9d8cfb337cbf04ba9f4afa3e895ebb627ce87044b86c51db706ddb83e8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expectations.json",
+      "bytes": 48241,
+      "sha256": "0d2b72ac53836cb57d6967112015ad796b12ff96d6f7bd88f49e6453aec0e1f0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-all-noops.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-beta-flag.accdb",
+      "bytes": 458752,
+      "sha256": "a24b1d7a90d5d82c882a8f5d534c47423988409ff6af43e89768a697e32df9cd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-disjoint-rows.accdb",
+      "bytes": 458752,
+      "sha256": "c032668f2750320fa18ce797a1b879e9061458e990a7d56260f4b750dae44e2a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-empty-null-flag.accdb",
+      "bytes": 458752,
+      "sha256": "c7f2eae82e3808518e7d618ffb056fcd46614628a8294b460b2a35a6da513f9f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-null-flag.accdb",
+      "bytes": 458752,
+      "sha256": "6b7cce6b8a6959924cca23ea61ca3bb3484ab8ce2d60f802a99bbcdfd2d201f5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-sql-empty.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h5-text-noop-flag.accdb",
+      "bytes": 458752,
+      "sha256": "a189038e3acc9504db08b10384ea58331c08b9b987865622b8f87681cbf8d043"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-all-noops.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-beta-flag.accdb",
+      "bytes": 528384,
+      "sha256": "cc6bd0f005a8a43cf5a329f0cc305fced56ad0b454e29927c6e001e5e32bae0c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-disjoint-rows.accdb",
+      "bytes": 528384,
+      "sha256": "7ce6e39a227967d67194be5d8a3843b7455d7341634702c8085d4384dde54233"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-empty-null-flag.accdb",
+      "bytes": 528384,
+      "sha256": "468abc30c6c1199c55db2acec16be69db12dd89dc3f6147ff1c837dc844246fe"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-null-flag.accdb",
+      "bytes": 528384,
+      "sha256": "4e46471df318bd882750dc746e5783e5dac71ce1d0c16f6f4ebdf0af70c8159b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-sql-empty.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expected/h6-text-noop-flag.accdb",
+      "bytes": 528384,
+      "sha256": "687a60c4ef93dfcc6849d220147c5097fc6a9aa644c0a5a5bf59dd688eab302f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-all-noops.json",
+      "bytes": 5709,
+      "sha256": "7070357dd032d2f4f2284a3872f73957233d5e7f0925854dedcfea6032ae57df"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-beta-flag.json",
+      "bytes": 4922,
+      "sha256": "b702435e9b0585ef951a8182fbf92606956f8a57b9ab9ba2c8ea8e05b19aff64"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-disjoint-rows.json",
+      "bytes": 4937,
+      "sha256": "fb59380fb411a85f0131e839b94bf849e7ad1a8a5c93af34e37623aa36475bc1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-empty-null-flag.json",
+      "bytes": 4875,
+      "sha256": "e921e323b94079afbaea0057bab3bd962db6e6973e4e990871d6e1e5ed57e8dd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-null-flag.json",
+      "bytes": 4882,
+      "sha256": "179f53c3827aab9e94488d16cf3ba97b53e62140b6a6e0b470f9ddb666dc2680"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-sql-empty.json",
+      "bytes": 4011,
+      "sha256": "fa3e9bc43c063b097cc52e4140913dca92389e39ba5c6385ca72dead876a85e1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h5-text-noop-flag.json",
+      "bytes": 4928,
+      "sha256": "5e1d83456fb942c2485dc84c4145f67671a8902c6f09fac6a2159ce49154bffc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-all-noops.json",
+      "bytes": 5710,
+      "sha256": "b2ce4c07fa515713afa2bff29f8a8ccd6947fb5c162a45d1143ec24dfbe47850"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-beta-flag.json",
+      "bytes": 4923,
+      "sha256": "9fcad4e4b2ff419f487c3b3b7c9479397d189ae004d1c38c677c463890d5d545"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-disjoint-rows.json",
+      "bytes": 4938,
+      "sha256": "165350adef20b3dfc0f49ce808b9c44453a94af4bf2aaa8842465d8a9783a229"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-empty-null-flag.json",
+      "bytes": 4876,
+      "sha256": "086d62a381e67e9edfe4c3e1abc189ebc6a77241a06c6ed04d65b1b0d9d21572"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-null-flag.json",
+      "bytes": 4883,
+      "sha256": "b76c121e3ce566ac468c6a6fa9096d31eeea891c8796acbc6ea3c3f4ba41f84b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-sql-empty.json",
+      "bytes": 4012,
+      "sha256": "a67f21da94a50e6a0850a90a4d74c3bdab0defaf5aabbd2a040da81254da27b9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/proof/h6-text-noop-flag.json",
+      "bytes": 4929,
+      "sha256": "c57465571b9442389b9a3efc043be82da7fc07efa3625f9b5f1a15bca91eb0d4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-all-noops.tsv",
+      "bytes": 3909,
+      "sha256": "e3af567f91905d2208ea8c87c25860cfd6740bd37ccae96a214b5b37e19370ac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-beta-flag.tsv",
+      "bytes": 3909,
+      "sha256": "6a943583c531a964e1bf930c1ccb814b1941f660f3056daf90652c2aa7eab090"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-disjoint-rows.tsv",
+      "bytes": 3909,
+      "sha256": "d0fbb7fbf49d0ef81f099687285d7d323cc04fe66fd8ad6a91536cc98a3e0ccf"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-empty-null-flag.tsv",
+      "bytes": 3910,
+      "sha256": "0979bd43640a306063659dad702f24f757e49119fe208ba3b962184646e8291e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-null-flag.tsv",
+      "bytes": 3900,
+      "sha256": "7d9591f8f5d0273f2d4f2cded1be1c562787cf32633a8dae95c0711f42c02c46"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-sql-empty.tsv",
+      "bytes": 3909,
+      "sha256": "e3af567f91905d2208ea8c87c25860cfd6740bd37ccae96a214b5b37e19370ac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h5-text-noop-flag.tsv",
+      "bytes": 3909,
+      "sha256": "56d35f78b8a34020768fdd125a3332edb78359269207125e2c47a6ebd3bcbceb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-all-noops.tsv",
+      "bytes": 3922,
+      "sha256": "6f12818017469f93af4eae324870797affd84bbd89dfc791130dee8c3d68dab0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-beta-flag.tsv",
+      "bytes": 3922,
+      "sha256": "fab3a7f48fd8fbfcbce5ce2309b0b38bc32671c04c64f3811b170cbd3acf86dd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-disjoint-rows.tsv",
+      "bytes": 3922,
+      "sha256": "c1bee2253c11ebac8bd958a13d21bcc96d56ddd78a1c36a20a941c3f82c6ccbc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-empty-null-flag.tsv",
+      "bytes": 3923,
+      "sha256": "fc0b23e9a76aad6976eab7db8d13eb0956cf03546f767245489ecf44b165d6b8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-null-flag.tsv",
+      "bytes": 3913,
+      "sha256": "274e44222b20477f1ac5382077ae8cd26716971a7d4c37d2d441d4332a91ee70"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-sql-empty.tsv",
+      "bytes": 3922,
+      "sha256": "6f12818017469f93af4eae324870797affd84bbd89dfc791130dee8c3d68dab0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/reader/h6-text-noop-flag.tsv",
+      "bytes": 3922,
+      "sha256": "72180d4a28439152104df9d3d3bf0309e97d32fc8de5981a19f20a2ccef8dbc9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/report.json",
+      "bytes": 365,
+      "sha256": "b2743795704c7b889420ffeb58405806ff30d43c815ad7f68cb9b3df9f879445"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/bind_final_record.py",
+      "bytes": 12249,
+      "sha256": "777de28091960a7221646a0add92c4e271d3e25eb9ba9bbf7b3353b723bbdaa9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/candidate-manifest.json",
+      "bytes": 39101,
+      "sha256": "02697d99c74496247dc1a5bf0637355a1a4223fca4ecc3127971da8df22572a0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/common.py",
+      "bytes": 7835,
+      "sha256": "127deb946e0525b13987502efe79bd9e3981fa2b272a1faf9dcb65c3c20ef177"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/expected-manifest.json",
+      "bytes": 12824,
+      "sha256": "f1a31f24bbee2903094d8b64d6d87978c5256a1f63ef867e55e1e939b1e77925"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/prepare_expected.py",
+      "bytes": 8817,
+      "sha256": "30006b9f46b530d9909ab5fcaac064d46a72f130d6fc19d182b7f3f2be1c30e8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/readback-manifest.json",
+      "bytes": 1479,
+      "sha256": "75b1c2cbf4612a09b4e5013c581d0d2d82831d29bb71a6ea0efa22be6db3bc12"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/readback.py",
+      "bytes": 13421,
+      "sha256": "b58382f26607e8a465a77420608b5d853afa24854f99126cbe3fe25c977c1b48"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/run_candidates.py",
+      "bytes": 8229,
+      "sha256": "a358cde2230ddac7052124db23bdface4e17a502d98b14576ddcf45f2e04691e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected-source-first-root.log",
+      "bytes": 263,
+      "sha256": "fbf1dd18f527791db8b1d4335ebb472c7806b8bdc48bcd04b37afb1c1b57dad9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/input-freeze.json",
+      "bytes": 10582,
+      "sha256": "3157a0cde47354f062396526493549c0221dcab1aa60acd0a7bb130706072704"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/model.py",
+      "bytes": 11881,
+      "sha256": "71277504c22f33b88e5f342f0edca7fe73018b2a08b6d96ab4bc7b54d1609d84"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/original-bindings.json",
+      "bytes": 2874,
+      "sha256": "cb905dac3c6b4cc50186fb9739c41c2ca4f2b0b5de6e829ff2c2fe2b8de4333c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/recipes.py",
+      "bytes": 2527,
+      "sha256": "3b36b2f7401ea26dcdfe25355e8484092011c5548451ade84083f5cd9a4ecaa0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/requests.json",
+      "bytes": 25079,
+      "sha256": "13ed068efd72c004e591ff326cd63558c62e66a96a693cb92204dbf49a1fe81c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/original-source-first-root.log",
+      "bytes": 530,
+      "sha256": "af70ddf702966cc5b2252143da90fda94a8ba9c162aa2962eb7681a4ece29f33"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/public-promotion-freeze.json",
+      "bytes": 666,
+      "sha256": "fc8e6ac49e2e1f6b5867b36aa09076ce9cd25ac424a04dd849658c618b360a31"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/retained-source-test/tablecraft-ace-source-tests",
+      "bytes": 68280544,
+      "sha256": "dfea74b04379286336ee8f8a8bd9b23aad524418ad3cf9be695b17d4b8c425e3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/source-test-artifact.json",
+      "bytes": 839,
+      "sha256": "200fd3a03e5eaf83eab5be92f75b1ecee0512960547ee7b1b87cdc0ef34ae1e6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-all-noops/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-all-noops/stdout.log",
+      "bytes": 3909,
+      "sha256": "e3af567f91905d2208ea8c87c25860cfd6740bd37ccae96a214b5b37e19370ac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-beta-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-beta-flag/stdout.log",
+      "bytes": 3909,
+      "sha256": "6a943583c531a964e1bf930c1ccb814b1941f660f3056daf90652c2aa7eab090"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-disjoint-rows/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-disjoint-rows/stdout.log",
+      "bytes": 3909,
+      "sha256": "d0fbb7fbf49d0ef81f099687285d7d323cc04fe66fd8ad6a91536cc98a3e0ccf"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-empty-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-empty-null-flag/stdout.log",
+      "bytes": 3910,
+      "sha256": "0979bd43640a306063659dad702f24f757e49119fe208ba3b962184646e8291e"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-null-flag/stdout.log",
+      "bytes": 3900,
+      "sha256": "7d9591f8f5d0273f2d4f2cded1be1c562787cf32633a8dae95c0711f42c02c46"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-sql-empty/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-sql-empty/stdout.log",
+      "bytes": 3909,
+      "sha256": "e3af567f91905d2208ea8c87c25860cfd6740bd37ccae96a214b5b37e19370ac"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-text-noop-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h5-text-noop-flag/stdout.log",
+      "bytes": 3909,
+      "sha256": "56d35f78b8a34020768fdd125a3332edb78359269207125e2c47a6ebd3bcbceb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-all-noops/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-all-noops/stdout.log",
+      "bytes": 3922,
+      "sha256": "6f12818017469f93af4eae324870797affd84bbd89dfc791130dee8c3d68dab0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-beta-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-beta-flag/stdout.log",
+      "bytes": 3922,
+      "sha256": "fab3a7f48fd8fbfcbce5ce2309b0b38bc32671c04c64f3811b170cbd3acf86dd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-disjoint-rows/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-disjoint-rows/stdout.log",
+      "bytes": 3922,
+      "sha256": "c1bee2253c11ebac8bd958a13d21bcc96d56ddd78a1c36a20a941c3f82c6ccbc"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-empty-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-empty-null-flag/stdout.log",
+      "bytes": 3923,
+      "sha256": "fc0b23e9a76aad6976eab7db8d13eb0956cf03546f767245489ecf44b165d6b8"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-null-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-null-flag/stdout.log",
+      "bytes": 3913,
+      "sha256": "274e44222b20477f1ac5382077ae8cd26716971a7d4c37d2d441d4332a91ee70"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-sql-empty/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-sql-empty/stdout.log",
+      "bytes": 3922,
+      "sha256": "6f12818017469f93af4eae324870797affd84bbd89dfc791130dee8c3d68dab0"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-text-noop-flag/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/h6-text-noop-flag/stdout.log",
+      "bytes": 3922,
+      "sha256": "72180d4a28439152104df9d3d3bf0309e97d32fc8de5981a19f20a2ccef8dbc9"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/plan.json",
+      "bytes": 90411,
+      "sha256": "6aec3021216440be5c026719a52c7e359a4897e7ff3a87df39c543701b5084d3"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-readback-first-20261031/receipt.json",
+      "bytes": 20527,
+      "sha256": "2cd3ca4bbfbbf9a8c66ccd631df9d37e2938b8e4de63309360397e237c2caaa8"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/compile/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/compile/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/create-h5/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/create-h5/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/create-h6/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/create-h6/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/inspect-h5/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/inspect-h5/stdout.log",
+      "bytes": 3909,
+      "sha256": "e3af567f91905d2208ea8c87c25860cfd6740bd37ccae96a214b5b37e19370ac"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/inspect-h6/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/calls/inspect-h6/stdout.log",
+      "bytes": 3922,
+      "sha256": "6f12818017469f93af4eae324870797affd84bbd89dfc791130dee8c3d68dab0"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/capacity-first-root.json",
+      "bytes": 10977,
+      "sha256": "2161ade99b3565a9d38443770904c86bd73e7ad2ce3b59dc0aa421c16daa1098"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/class-inventory.json",
+      "bytes": 233,
+      "sha256": "d522eef8c862d16d4483c939871fb938fdadea8a7a3bb529d15f9ae1581592d9"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/classes/PreservedShortTextOriginals.class",
+      "bytes": 8488,
+      "sha256": "f79c221e0af88ec15e65d81744f620bbd025e1241b8a1d44d7413208881ce41b"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/execution-plan.json",
+      "bytes": 8559,
+      "sha256": "70e649f3f34478f6240e6b099360fc06bfcec7c57c9179559d8dded976dabbee"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-first-root.log",
+      "bytes": 1363,
+      "sha256": "648164eb65174ba802ef0560f26b09d35ad18b76b924b4d7ce8e60923b50ef30"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-second-root.log",
+      "bytes": 418,
+      "sha256": "e4c3b34a23533e5adbc1108ad6820444b591ae9dec62888ebd2429d275ffe0f8"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/source-receipt.json",
+      "bytes": 17168,
+      "sha256": "c6274c26e630569149bfaf2458a7343ec1e44e56b4bde1566e3d1311de002f48"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/PreservedShortTextOriginals.java",
+      "bytes": 5812,
+      "sha256": "86333c401b8be6f246d5503c43dd154fe1bb751e8292dc07bca5c6cd1d9b9462"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source-first-private-freeze.json",
+      "bytes": 4054,
+      "sha256": "d775fc5cc4596ca1e6803f3453ba99e8049df2b17efe3371f95fbb43bca67879"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source-plan.json",
+      "bytes": 9656,
+      "sha256": "55062cd76be8f08de19a67de5741efd67bf873970ffb52ca71e8e80dd5e1891b"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source_controller.py",
+      "bytes": 12177,
+      "sha256": "6f677aa91d4114bb8d4b67bc34533f064c05833e885ad8549c575461966fd47f"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-next-20261030/GENUINE_SOURCE_PLAN.md",
+      "bytes": 4754,
+      "sha256": "c69a86c399e4de170bd64547aae315269898090df84325a92d698bff3c03d3b1"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/int32/genuine_sources.rs",
+      "bytes": 6100,
+      "sha256": "0edccacae298eeb68e7fd5e7c3753567ab088e53b8095d8ce47435b901ddce6a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/genuine_sources.rs",
+      "bytes": 11502,
+      "sha256": "7be17058c4cec21cdfece205e508e128f9be08c0913280f268bdde7d542fd5c4"
+    },
+    {
+      "path": "docs/development/DEVELOPMENT.md",
+      "bytes": 37220,
+      "sha256": "f90d5b9eb63771eeb0a51598108b29911972cd6ef13ce7ce868938e42a067013"
+    },
+    {
+      "path": "docs/testing/ace16_insert_candidates/model.py",
+      "bytes": 13121,
+      "sha256": "e25461040e1315054d2ce30771481262e0f59fa9b703b9cf5a8c294a942680be"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/__init__.py",
+      "bytes": 159,
+      "sha256": "a287a807f14734657180c09d25348ea71359f40f0eba1f59f7844922fa6c9acb"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/framing.py",
+      "bytes": 19571,
+      "sha256": "4fd4e65ccd9db12ec1789e68527c15de642a1852d2d037c8f3e37889e12150e2"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/__init__.py",
+      "bytes": 78,
+      "sha256": "61328a9f35b4bb03181242d2e5f788a08a71ad3f5d54d532913a580067012067"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/model.py",
+      "bytes": 11881,
+      "sha256": "71277504c22f33b88e5f342f0edca7fe73018b2a08b6d96ab4bc7b54d1609d84"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/recipes.py",
+      "bytes": 2527,
+      "sha256": "3b36b2f7401ea26dcdfe25355e8484092011c5548451ade84083f5cd9a4ecaa0"
+    },
+    {
+      "path": "docs/testing/preserved_joint_text_fixed_genuine/verify.py",
+      "bytes": 27866,
+      "sha256": "c5497ae57f496538034420f78716ae39f7bee1483ac0f6059184177acd3e9a9f"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/__init__.py",
+      "bytes": 80,
+      "sha256": "349a8e6c45432bdc5a0992e9ca1f443ac2dfd9ecb4c1479b3729647bebd5c5c4"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/framing.py",
+      "bytes": 7985,
+      "sha256": "c23ab49e470b44cda4f9f1ef8761437decfa3f9f61469ee2262d761f8589ee89"
+    },
+    {
+      "path": "docs/testing/results/ace16-preserved-joint-text-fixed-genuine-expectations-2026-10-31.json",
+      "bytes": 4397,
+      "sha256": "d3922fca45970abf7b74e04e87449da2b484219585064f933b8e2a42df787854"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    }
+  ],
+  "historical_tool_observations": [
+    {
+      "command": "javac",
+      "bytes": 135632,
+      "sha256": "a6cf58f871e755070449498531c347b6d9af9ddae6a1cdbbdb3ed49fe08a70b1"
+    },
+    {
+      "command": "java",
+      "bytes": 135632,
+      "sha256": "a6cf58f871e755070449498531c347b6d9af9ddae6a1cdbbdb3ed49fe08a70b1"
+    }
+  ],
+  "observed": {
+    "source_compilation_calls": 1,
+    "source_creation_calls": 2,
+    "original_readonly_getters": 2,
+    "expected_images": 14,
+    "candidate_calls": 14,
+    "complete_image_matches": 14,
+    "typed_calls": 12,
+    "sql_calls": 2,
+    "changed_images": 10,
+    "changed_roots_across_images": 12,
+    "exact_noops": 4,
+    "candidate_readonly_getters": 14,
+    "whole_inventory_matches": 14
+  },
+  "saved_verification": {
+    "command": [
+      "python3",
+      "docs/testing/preserved_joint_text_fixed_genuine/verify.py",
+      "--root",
+      "."
+    ],
+    "exit_code": 0,
+    "log": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/saved-verifier-first-root.log",
+      "bytes": 193,
+      "sha256": "ef2c467d9e8ff10d6818311fe5dcc883e9def56183976ba77991468363b77257"
+    },
+    "summary": {
+      "changed_images": 10,
+      "changed_roots": 12,
+      "child_processes": 0,
+      "images": 14,
+      "noops": 4,
+      "originals": 2,
+      "pins": 566,
+      "saved_only": true,
+      "sdk_reads": 14,
+      "sql_calls": 2,
+      "typed_calls": 12
+    }
+  },
+  "limitations": [
+    "Jackcess comparisons do not establish native Access save or macro compatibility.",
+    "No normal-save, journal, data-macro execution or general Text/fixed permission is granted.",
+    "Independent literal full-image expectations preserve all other bytes and EOF."
+  ],
+  "expectation_commit_before_candidate_calls": "b2f9bf62",
+  "retained_initial_diagnostics": [
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/first-retention-failure.json",
+      "bytes": 901,
+      "sha256": "5945ec4b048ab70a7de3b0082d1ba0d38157e92a58921845d2c5b20a411389bb"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/readback-preflight-first-failure.json",
+      "bytes": 626,
+      "sha256": "03d0b26eb70c1338296c5fc64e4d9651c8820239fc92da136a7eb12c1946807b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/readback-first-root.log",
+      "bytes": 2067,
+      "sha256": "98b83ee45c256d05eaa1ffc39116224921b7e00f673bf67c109293c67d01af4a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/controllers/readback-before-arity-review.py",
+      "bytes": 13421,
+      "sha256": "2247dd1ef402cc2e5819901e1f0e5fdf4250630a55e17985885880edd314e634"
+    }
+  ],
+  "notes": [
+    "Initial reader-wrapper preflight expected fourteen COLUMN tokens from a different getter version. The unchanged original getter has twelve. Correcting only that exact arity check changed no source, request, expected, candidate or getter bytes. No SDK process started before that failure; all fourteen first actual SDK calls passed.",
+    "A first source-test executable retention copy failed with ENOSPC after successful source gates/build. Its incomplete bytes and diagnostic remain separate. After clearing only derived main incremental caches, the second retained copy exactly matches the executed artifact. No database bytes changed."
+  ],
+  "checks": {
+    "strict_all_target_all_feature_ace": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/strict-helper-first-root.log",
+        "bytes": 4307,
+        "sha256": "b366755efeb1c89d78f01b6df2f6a16f5919e02cf0929878007708d958706733"
+      }
+    }
+  }
+}

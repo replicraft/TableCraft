@@ -117,3 +117,23 @@ These engineering candidates grant no normal ACE save or journal permission,
 no data-macro absence or execution authority, and no Microsoft Access save/reopen
 qualification. Genuine-file, independent-reader and platform evidence remains
 separate from this authored corpus.
+
+## Generated-file qualification
+
+The [generated Text/Boolean corpus](preserved_joint_text_fixed_genuine/README.md)
+reuses two unchanged Short Text originals and their unchanged read-only getter.
+All fourteen original/request-only expectations pass complete native Source
+admission before producer calls; their source tranche was committed as
+`b2f9bf62`. A fresh isolated build of committed CLI `510b4824` matches all fourteen
+complete files, followed by fourteen matching fresh SDK inventories. Twelve typed
+batches and two true empty-group SQL calls yield ten changed images and four
+exact no-ops. Shared mask bits, a zero-capacity present-empty Text transition,
+disjoint original rows, caches and attachment companions remain qualified within
+this profile. The first saved-only replay passes without child processes.
+
+The [result](results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+retains the initial reader-wrapper arity preflight failure and executable-retention
+disk failure separately from the passing actual calls. No SDK process started
+before the preflight correction. These generated files qualify Text plus Boolean;
+other joint fixed families retain their separate authored evidence. Normal saves,
+required native event coverage and Microsoft Access qualification remain open.
