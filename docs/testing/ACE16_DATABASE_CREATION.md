@@ -117,3 +117,11 @@ historical evidence.
 
 The [version-two record](results/ace16-canonical-creation-source-v2-2026-10-31.json)
 pins the six sources, independent Rust fixtures and observed read checks.
+
+### Fixed-scalar source continuation
+
+Five [fixed-scalar sources](ACE16_FIXED_CREATION_SOURCES.md) now have independent
+complete-image and SDK read qualification for ten field families, NULL masks,
+signed zero, GUID byte order and physical page fit. Their frozen originals and
+CI hash anchor precede execution of a generic fixed-scalar creator. The current
+production constructor and CLI remain restricted to Int32.

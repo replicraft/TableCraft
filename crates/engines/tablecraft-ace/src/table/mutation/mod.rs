@@ -83,3 +83,6 @@ mod creation_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_v2_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_fixed_sources;
