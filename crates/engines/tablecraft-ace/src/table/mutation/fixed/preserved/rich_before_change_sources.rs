@@ -243,3 +243,6 @@ fn qualify_rich_before_change_catalog_roles_and_originals_before_batch_writer() 
 
 #[path = "rich_before_change_sources/required.rs"]
 pub(crate) mod required;
+
+#[path = "rich_before_change_sources/expectations.rs"]
+pub(crate) mod expectations;
