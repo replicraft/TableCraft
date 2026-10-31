@@ -1,9 +1,9 @@
 //! Atomic fixed-field batch preview composition.
 mod plan;
-mod request;
+
 mod split;
 
-pub use request::FixedColumnUpdates;
+pub use crate::table::mutation::requests::FixedColumnUpdates;
 
 #[cfg(test)]
 pub(in crate::table) mod multitable_tests;

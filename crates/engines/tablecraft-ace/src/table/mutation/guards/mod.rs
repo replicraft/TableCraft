@@ -8,7 +8,7 @@ mod evaluate;
 mod expression;
 pub(super) mod fields;
 mod model;
-mod native_events;
+pub(in crate::table::mutation) mod native_events;
 mod resolver;
 mod selection;
 mod source;

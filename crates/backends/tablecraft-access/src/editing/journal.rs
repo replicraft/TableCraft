@@ -26,15 +26,16 @@ pub struct NativeJournalEditor {
 }
 
 impl NativeJournalEditor {
-    /// Capture the same scalar snapshot and issue the same local row handles as
-    /// the ordinary editor. This does not open a file or prepare a journal.
+    /// Capture actual readable scalar cells and issue snapshot-local row handles.
+    /// Complex and cached declarations are excluded rather than fabricated as
+    /// NULL. This does not open a file or prepare a journal.
     pub fn new(
         image: NativeImage,
         table: &str,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
-        let editor = NativeEditor::new(image, table, budget, cancelled)?;
+        let editor = NativeEditor::new_journal(image, table, budget, cancelled)?;
         let profile = editor.journal_profile(budget, cancelled)?;
         Ok(Self { editor, profile })
     }

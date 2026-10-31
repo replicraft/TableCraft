@@ -1,5 +1,5 @@
 //! Checked logical-root ownership of physical final records.
-use super::super::{
+use super::{
     EditError, WriteBlocker,
     rows::{Directory, RowAssignment},
 };
@@ -20,9 +20,30 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(in crate::table::mutation) struct Root<'u, U> {
     pub reference: u32,
+    #[cfg_attr(
+        not(feature = "ace16-write-preview"),
+        allow(
+            dead_code,
+            reason = "Readonly root capture does not rewrite the logical root slot."
+        )
+    )]
     pub word: u16,
+    #[cfg_attr(
+        not(feature = "ace16-write-preview"),
+        allow(
+            dead_code,
+            reason = "Readonly root capture does not rewrite the logical root slot."
+        )
+    )]
     pub range: Range<usize>,
     pub final_record: PhysicalRow,
+    #[cfg_attr(
+        not(feature = "ace16-write-preview"),
+        allow(
+            dead_code,
+            reason = "Readonly root capture does not rewrite the logical root slot."
+        )
+    )]
     pub update: &'u U,
 }
 

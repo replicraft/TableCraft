@@ -92,7 +92,7 @@ impl<'source> Int32Projection<'source> {
             for index in indexes.indexes() {
                 for key in index.columns() {
                     check(budget, cancelled)?;
-                    if key.number() == native && write_blocker.is_none() {
+                    if key.number() == field.number() && write_blocker.is_none() {
                         write_blocker = Some(WriteBlocker::IndexedColumn);
                     }
                 }

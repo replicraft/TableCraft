@@ -3,7 +3,7 @@ use super::super::{ImageProof, reserve};
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
     format::{page::PAGE_BYTES, reader::Reader, row::reference},
-    table::mutation::{insert::Staged, long_value::ownership::InitializationSources},
+    table::mutation::{insert::Staged, lval_ownership::InitializationSources},
 };
 use std::io::Cursor;
 

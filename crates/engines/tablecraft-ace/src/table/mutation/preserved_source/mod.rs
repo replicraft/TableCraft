@@ -1,12 +1,16 @@
 //! Projected source certification without manufacturing a full TableCheck.
-use super::{dependencies, properties};
+mod dependencies;
+mod footprint;
+mod namemap;
+mod properties;
+pub(in crate::table::mutation) mod validation;
+
 use crate::{
     EditError, IndexInspection, InspectError, NativeImage, TableSnapshot, WriteBlocker,
     format::{
         allocation,
         data_type::{COMPLEX, INT32},
         layout::CALCULATED_EXT_MASK,
-        page::PAGE_BYTES,
         reader::Reader,
     },
     header::check,
@@ -14,12 +18,11 @@ use crate::{
     read_table_projection,
     table::{
         indexes::preserved,
-        mutation::{
-            gates, page_update::roots, rows::RowAssignment, variable_split::metadata::Metadata,
-        },
+        mutation::{gates, record_roots as roots, rows::RowAssignment},
         record_layout,
     },
 };
+use footprint::Footprint;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -29,13 +32,13 @@ use crate::table::mutation::guards::fields::batch::SelectedPrograms;
 
 const CATALOG_HAS_COMPLEX: u32 = 0x0004_0000;
 
-pub(super) struct Record {
+pub(in crate::table::mutation) struct Record {
     pub reference: u32,
     pub offset: usize,
     pub data: Vec<u8>,
 }
 
-pub(super) struct Source {
+pub(in crate::table::mutation) struct Source {
     pub table: TableSnapshot,
     pub indexes: IndexInspection,
     pub records: Vec<Record>,
@@ -55,7 +58,8 @@ struct ComplexKeys {
     keys: Vec<Option<i32>>,
 }
 
-pub(super) fn capture(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn capture(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
@@ -65,7 +69,8 @@ pub(super) fn capture(
 }
 
 /// Exact selected Extra admission; all other Source checks are shared unchanged.
-pub(super) fn capture_before_change(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn capture_before_change(
     image: &NativeImage,
     table: &str,
     selected: &SelectedPrograms<'_>,
@@ -82,8 +87,12 @@ pub(super) fn capture_before_change(
 }
 
 enum PayloadAdmission<'admission, 'image> {
+    #[cfg(feature = "ace16-write-preview")]
     Inert,
+    #[cfg(feature = "ace16-write-preview")]
     Selected(&'admission SelectedPrograms<'image>),
+    #[cfg(feature = "journal")]
+    NativeSelected(&'admission SelectedPrograms<'image>),
 }
 
 fn capture_with_payload(
@@ -114,7 +123,7 @@ fn capture_with_payload(
     for (position, field) in schema.columns().iter().enumerate() {
         for prior in &schema.columns()[..position] {
             check(budget, cancelled)?;
-            super::name_work(field.name(), prior.name(), budget)?;
+            name_work(field.name(), prior.name(), budget)?;
             if field.name().eq_ignore_ascii_case(prior.name()) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
@@ -174,7 +183,7 @@ fn capture_with_payload(
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
     }
-    if !unavailable {
+    if !unavailable && !payload.allows_scalar() {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     let projected = read_table_projection(
@@ -203,9 +212,15 @@ fn capture_with_payload(
         budget,
         cancelled,
     )?;
-    match payload {
+    match &payload {
+        #[cfg(feature = "ace16-write-preview")]
         PayloadAdmission::Inert => gates::inert_payloads(image, schema, budget, cancelled)?,
+        #[cfg(feature = "ace16-write-preview")]
         PayloadAdmission::Selected(selected) => {
+            selected.require_source(image, schema, budget, cancelled)?
+        }
+        #[cfg(feature = "journal")]
+        PayloadAdmission::NativeSelected(selected) => {
             selected.require_source(image, schema, budget, cancelled)?
         }
     }
@@ -268,16 +283,16 @@ fn capture_with_payload(
         )?
     };
     allocated(image, &global, &roots.owned, budget, cancelled)?;
-    let metadata = Metadata::capture_for_preserved_boolean(
+    let metadata = Footprint::capture(
         image,
         schema,
         indexes.indexes(),
+        &payload,
         budget,
         cancelled,
     )?;
-    metadata.require_source(image, schema.definition_page())?;
     let long_values =
-        super::super::super::long_value::ownership::Inventory::capture(image, budget, cancelled)?;
+        crate::table::mutation::lval_ownership::Inventory::capture(image, budget, cancelled)?;
     long_values.require_no_long_value_data_overlap(&roots.owned, budget, cancelled)?;
     budget
         .charge_allocation(roots.selected.len() as u64, size_of::<Record>() as u64)
@@ -288,8 +303,11 @@ fn capture_with_payload(
         .map_err(|_| InspectError::Allocation)?;
     for root in roots.selected {
         check(budget, cancelled)?;
-        metadata.require_data_page(
-            (root.final_record.offset / PAGE_BYTES) as u32,
+        metadata.require_record(
+            image,
+            schema,
+            root.final_record.offset,
+            root.final_record.data.len(),
             budget,
             cancelled,
         )?;
@@ -367,7 +385,7 @@ fn capture_with_payload(
             && column.scalar_type() == Some(tablecraft_schema::ScalarType::Int32)
         {
             for field in projected.columns() {
-                super::name_work(field.name(), column.name(), budget)?;
+                name_work(field.name(), column.name(), budget)?;
             }
             let dense = projected
                 .columns()
@@ -451,5 +469,40 @@ fn allocated(
         reader.tick()?;
         global.require_allocated(&mut reader, page)?;
     }
+    Ok(())
+}
+
+impl PayloadAdmission<'_, '_> {
+    fn allows_scalar(&self) -> bool {
+        match self {
+            #[cfg(feature = "journal")]
+            Self::NativeSelected(_) => true,
+            #[cfg(feature = "ace16-write-preview")]
+            Self::Inert | Self::Selected(_) => false,
+        }
+    }
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_native_before_change(
+    image: &NativeImage,
+    table: &str,
+    selected: &SelectedPrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(
+        image,
+        table,
+        PayloadAdmission::NativeSelected(selected),
+        budget,
+        cancelled,
+    )
+}
+
+fn name_work(left: &str, right: &str, budget: &mut ResourceBudget) -> Result<(), EditError> {
+    budget
+        .charge(Resource::Steps, left.len().max(right.len()) as u64)
+        .map_err(InspectError::from)?;
     Ok(())
 }

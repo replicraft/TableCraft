@@ -8,10 +8,7 @@ use crate::{
         reader::Reader,
         row::{MAX_SLOTS, OFFSET_MASK, ROW_COUNT_OFFSET, SLOT_BYTES, reference, slot_offset},
     },
-    table::mutation::{
-        append::State,
-        long_value::{ownership::Inventory, placement::geometry},
-    },
+    table::mutation::{append::State, long_value::placement::geometry, lval_ownership::Inventory},
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::Resource;

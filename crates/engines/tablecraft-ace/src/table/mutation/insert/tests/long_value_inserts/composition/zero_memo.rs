@@ -8,8 +8,7 @@ use crate::{
     format::{allocation, reader::Reader},
     read_table,
     table::{
-        long_value::check_table_long_values_for_initialization,
-        mutation::long_value::ownership::Inventory,
+        long_value::check_table_long_values_for_initialization, mutation::lval_ownership::Inventory,
     },
 };
 use std::io::Cursor;

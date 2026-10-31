@@ -10,7 +10,7 @@ use crate::{
     table::mutation::{
         append::State,
         insert::tests::global_map_growth::model::{self, Phase},
-        long_value::ownership::Inventory,
+        lval_ownership::Inventory,
     },
 };
 use std::{cell::Cell, io::Cursor};

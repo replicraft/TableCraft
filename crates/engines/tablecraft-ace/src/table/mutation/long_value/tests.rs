@@ -319,3 +319,6 @@ fn mixed_map_finalizer_rejects_unrequested_orphan_ownership_and_global_future_bi
         );
     }
 }
+
+#[path = "tests/ownership.rs"]
+mod ownership;

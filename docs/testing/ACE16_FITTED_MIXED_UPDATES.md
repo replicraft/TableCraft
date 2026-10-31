@@ -45,7 +45,7 @@ and the separate [variable-record allocation service](ACE16_VARIABLE_UPDATES.md)
 The [mixed stage](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs)
 resolves selected columns and affected key siblings from the original schema.
 It captures original logical roots through the existing owned/exclusive
-[record resolver](../../crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs).
+[record resolver](../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs).
 Row identity remains the logical root even when the final payload resides in an
 existing hidden forwarded record. Wrong ownership, shared final targets and
 invalid forwarding retain their checks.

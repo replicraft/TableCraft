@@ -1,6 +1,7 @@
 //! Normal positive-program ACE UPDATE, independent of engineering packaging.
+mod mixed;
 mod proof;
-mod protection;
+pub(in crate::table::mutation) mod protection;
 mod stage;
 
 use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker, ace_profile, gates, rows};
@@ -17,6 +18,44 @@ use tablecraft_core::{
 use tablecraft_schema::ScalarType;
 
 impl NativeImage {
+    /// Check native positive-BeforeChange compilation for normal Int32 editing.
+    ///
+    /// This reads the captured original only. It neither proves macro absence
+    /// nor returns persistence authority; a complete original-intent plan and
+    /// independent proof are required for every later commit and recovery.
+    pub fn check_native_before_change_int32_table(
+        &self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let _span = tracing::debug_span!("native.before_change.normal.table").entered();
+        ace_profile::qualify(self)?;
+        let schema = inspect_table_schema(
+            &mut self.reader(),
+            self.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        if mixed::selected(&schema, budget, cancelled)? {
+            return mixed::preflight(self, table, budget, cancelled);
+        }
+        let column = schema
+            .columns()
+            .first()
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        prepare(
+            self,
+            schema.object_id(),
+            column.name(),
+            &[],
+            budget,
+            cancelled,
+        )?;
+        Ok(())
+    }
+
     pub(crate) fn plan_before_change_int32_updates(
         self,
         table: &str,
@@ -115,6 +154,18 @@ fn qualify(
     ace_profile::qualify(image)?;
     let scope = image.catalog().catalog().scope();
     let schema = inspect_table_schema(&mut image.reader(), scope, table, budget, cancelled)?;
+    qualify_schema(image, table, column, &schema, budget, cancelled)
+}
+
+fn qualify_schema(
+    image: &NativeImage,
+    table: &str,
+    column: &str,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    let scope = image.catalog().catalog().scope();
     let witness = Witness {
         address: image.as_bytes().as_ptr() as usize,
         length: image.as_bytes().len(),
@@ -192,7 +243,18 @@ pub(crate) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.before_change.normal.plan").entered();
-    let checked = qualify(&image, table, column, budget, cancelled)?;
+    ace_profile::qualify(&image)?;
+    let schema = inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    if mixed::selected(&schema, budget, cancelled)? {
+        return mixed::plan(image, table, column, updates, budget, cancelled);
+    }
+    let checked = qualify_schema(&image, table, column, &schema, budget, cancelled)?;
     let scope = image.catalog().catalog().scope();
     let snapshot = read_table(&mut image.reader(), scope, table, budget, cancelled)?;
     validate_intents(&snapshot, column, updates, budget, cancelled)?;

@@ -1,32 +1,42 @@
 //! Owned guarded-batch preparation, without exposing preserved Source.
-use super::super::super::{
-    BeforeEventGuardError, BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardTrace,
-    buffer,
-};
-use super::super::{BeforeChangeAssignment, evaluate};
+use super::super::super::{BeforeEventGuardError, BeforeGuardRejection};
+#[cfg(feature = "ace16-write-preview")]
+use super::super::super::{BeforeGuardProgramRevision, BeforeGuardTrace, buffer};
+#[cfg(feature = "ace16-write-preview")]
+use super::super::BeforeChangeAssignment;
+use super::super::evaluate;
+#[cfg(feature = "ace16-write-preview")]
+use super::frames::ProjectedRow;
 use super::{
     admission::SelectedPrograms,
     bound::{BoundPrograms, SourceFacts},
     derive::{self, FinalGroup},
-    frames::{self, ProjectedRow},
-    requests, targets,
+    frames, requests, targets,
 };
-use crate::{FixedColumnUpdates, InspectError, NativeImage, TableSchema, header::check};
+#[cfg(feature = "ace16-write-preview")]
+use crate::InspectError;
+use crate::table::mutation::requests::FixedColumnUpdates;
+use crate::{EditError, NativeImage, TableSchema, header::check};
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 pub(in crate::table::mutation) struct Prepared<'image> {
     selected: SelectedPrograms<'image>,
     object: ObjectId,
     definition: u32,
+    #[cfg(feature = "ace16-write-preview")]
     programs: Vec<BeforeGuardProgramRevision>,
+    #[cfg(feature = "ace16-write-preview")]
     trace: Vec<BeforeGuardTrace>,
+    #[cfg(feature = "ace16-write-preview")]
     assignments: Vec<BeforeChangeAssignment>,
+    #[cfg(feature = "ace16-write-preview")]
     rows: Option<Vec<ProjectedRow>>,
     rejection: Option<BeforeGuardRejection>,
     groups: Option<Vec<FinalGroup>>,
 }
 
 /// Only physical/report facts escape the preparation's source borrow.
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) struct Report {
     pub programs: Vec<BeforeGuardProgramRevision>,
     pub trace: Vec<BeforeGuardTrace>,
@@ -56,14 +66,20 @@ pub(in crate::table::mutation) fn prepare<'image>(
     };
     derive::native_assignment_positions(&bound, &mut execution.assignments, budget, cancelled)?;
     let programs = bound.into_programs();
+    #[cfg(not(feature = "ace16-write-preview"))]
+    drop(programs);
     check(budget, cancelled)?;
     Ok(Prepared {
         selected,
         object: source.table.schema().object_id(),
         definition: source.table.schema().definition_page(),
+        #[cfg(feature = "ace16-write-preview")]
         programs,
+        #[cfg(feature = "ace16-write-preview")]
         trace: execution.trace,
+        #[cfg(feature = "ace16-write-preview")]
         assignments: execution.assignments,
+        #[cfg(feature = "ace16-write-preview")]
         rows: execution.rows,
         rejection: execution.rejection,
         groups,
@@ -71,22 +87,41 @@ pub(in crate::table::mutation) fn prepare<'image>(
 }
 
 impl Prepared<'_> {
+    pub(in crate::table::mutation) fn require_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.object != schema.object_id() || self.definition != schema.definition_page() {
+            return Err(EditError::Preservation);
+        }
+        self.selected
+            .require_source(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn admission(&self) -> &SelectedPrograms<'_> {
         &self.selected
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn programs(&self) -> &[BeforeGuardProgramRevision] {
         &self.programs
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn trace(&self) -> &[BeforeGuardTrace] {
         &self.trace
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn assignments(&self) -> &[BeforeChangeAssignment] {
         &self.assignments
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn rows(&self) -> Option<&[ProjectedRow]> {
         self.rows.as_deref()
     }
@@ -99,6 +134,7 @@ impl Prepared<'_> {
         self.groups.as_deref()
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn groups<'view>(
         &'view self,
         schema: &'view TableSchema,
@@ -134,6 +170,7 @@ impl Prepared<'_> {
 
     /// Drops all projected values/admission before the original image is moved
     /// into its engineering result. Call only after independent audit succeeds.
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn into_report(self) -> Report {
         Report {
             programs: self.programs,

@@ -12,8 +12,7 @@ use crate::{
         row::{MAX_SLOTS, OFFSET_MASK, ROW_COUNT_OFFSET, SLOT_BYTES, reference, slot_offset},
     },
     table::mutation::{
-        insert::long_values::Plan,
-        long_value::{maps::Scope, ownership::Inventory},
+        insert::long_values::Plan, long_value::maps::Scope, lval_ownership::Inventory,
     },
 };
 use std::ops::Range;

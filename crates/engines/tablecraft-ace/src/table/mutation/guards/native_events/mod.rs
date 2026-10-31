@@ -42,38 +42,76 @@ impl NativeImage {
                 BeforeGuardUnsupported::Context,
             ));
         }
-        let bound = binding::capture(self, table, budget, cancelled)?;
-        if bound.unresolved {
-            return Err(unresolved());
-        }
-        let mut has_change = false;
-        for reference in &bound.references {
-            check(budget, cancelled)?;
-            match reference.event {
-                binding::Event::BeforeChange => has_change = true,
-                binding::Event::BeforeDelete => {}
-                _ => return Err(unsupported_event()),
-            }
-        }
-        if !has_change {
-            return Err(unresolved());
-        }
-        let extra = bound.coverage.table_extra();
-        let mut selectors = buffer::vector(bound.references.len(), budget, cancelled)?;
-        for reference in &bound.references {
-            check(budget, cancelled)?;
-            let group = extra.groups().get(reference.group).ok_or_else(unresolved)?;
-            let property = group
-                .properties()
-                .and_then(|properties| properties.get(reference.property))
-                .ok_or_else(unresolved)?;
-            selectors.push(BeforeEventGuardSelector::new(group.kind(), property.name()));
-        }
-        // The existing source-bound convenience checks exact scoped/name
-        // identity, complete selectors, and compiles dormant definitions before
-        // evaluation. The returned lifetime belongs to self, not local metadata.
-        bound
-            .coverage
-            .prepare_before_change_fields(&selectors, original, budget, cancelled)
+        with_selection(
+            self,
+            table,
+            budget,
+            cancelled,
+            |coverage, selectors, budget| {
+                coverage.prepare_before_change_fields(selectors, original, budget, cancelled)
+            },
+        )
     }
+}
+
+fn with_selection<'image, T>(
+    image: &'image NativeImage,
+    table: ObjectId,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    finish: impl FnOnce(
+        &crate::TableMacroCoverage<'image>,
+        &[BeforeEventGuardSelector<'_>],
+        &mut ResourceBudget,
+    ) -> Result<T, BeforeEventGuardError>,
+) -> Result<T, BeforeEventGuardError> {
+    let bound = binding::capture(image, table, budget, cancelled)?;
+    if bound.unresolved {
+        return Err(unresolved());
+    }
+    let mut has_change = false;
+    for reference in &bound.references {
+        check(budget, cancelled)?;
+        match reference.event {
+            binding::Event::BeforeChange => has_change = true,
+            binding::Event::BeforeDelete => {}
+            _ => return Err(unsupported_event()),
+        }
+    }
+    if !has_change {
+        return Err(unresolved());
+    }
+    let extra = bound.coverage.table_extra();
+    let mut selectors = buffer::vector(bound.references.len(), budget, cancelled)?;
+    for reference in &bound.references {
+        check(budget, cancelled)?;
+        let group = extra.groups().get(reference.group).ok_or_else(unresolved)?;
+        let property = group
+            .properties()
+            .and_then(|properties| properties.get(reference.property))
+            .ok_or_else(unresolved)?;
+        selectors.push(BeforeEventGuardSelector::new(group.kind(), property.name()));
+    }
+    finish(&bound.coverage, &selectors, budget)
+}
+
+/// Resolve every observed native reference before constructing private
+/// projected compiler admission. No caller-selected list enters this route.
+pub(in crate::table::mutation) fn programs<'image>(
+    image: &'image NativeImage,
+    schema: &crate::TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<super::fields::batch::SelectedPrograms<'image>, BeforeEventGuardError> {
+    with_selection(
+        image,
+        schema.object_id(),
+        budget,
+        cancelled,
+        |_, selectors, budget| {
+            super::fields::batch::SelectedPrograms::capture(
+                image, schema, selectors, budget, cancelled,
+            )
+        },
+    )
 }

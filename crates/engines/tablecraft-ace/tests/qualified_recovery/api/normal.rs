@@ -621,3 +621,6 @@ mod indexed;
 
 #[path = "normal/tree.rs"]
 mod tree;
+
+#[path = "normal/mixed.rs"]
+mod mixed;

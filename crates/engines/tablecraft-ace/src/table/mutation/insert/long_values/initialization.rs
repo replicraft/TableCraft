@@ -12,7 +12,7 @@ use crate::{
         long_value::maps::DefinitionTail,
         mutation::{
             append::State,
-            long_value::ownership::{MissingDeclaration, ZeroPair},
+            lval_ownership::{MissingDeclaration, ZeroPair},
         },
     },
 };

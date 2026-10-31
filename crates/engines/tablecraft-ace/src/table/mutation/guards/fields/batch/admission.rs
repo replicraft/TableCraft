@@ -6,12 +6,12 @@ use crate::{
     EditError, InspectError, MacroProgramNodeKind, NativeImage, PayloadPresence,
     TableExtraCoverage, TableMacroCoverage, TableSchema, header::check,
 };
-use tablecraft_core::{
-    ids::ObjectId,
-    limits::{Resource, ResourceBudget},
-};
+#[cfg(feature = "ace16-write-preview")]
+use tablecraft_core::limits::Resource;
+use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 const BEFORE_CHANGE_FLAGS: u8 = 0x01;
+#[cfg(feature = "ace16-write-preview")]
 const COMPARE_CHUNK: usize = 4096;
 
 struct Selector {
@@ -140,6 +140,7 @@ impl<'image> SelectedPrograms<'image> {
 
     /// Fresh candidate-bound admission; never retarget an original pointer token.
     /// Full candidate Source certification and independent replay are still needed.
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn rebind_candidate<'candidate>(
         &self,
         candidate: &'candidate NativeImage,
@@ -175,6 +176,7 @@ fn unsupported() -> BeforeEventGuardError {
     BeforeEventGuardError::Unsupported(BeforeGuardUnsupported::Structure)
 }
 
+#[cfg(feature = "ace16-write-preview")]
 fn same_bytes(
     before: &[u8],
     after: &[u8],

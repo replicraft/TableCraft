@@ -9,7 +9,7 @@ use crate::{
     header::check,
     table::{
         mutation::{
-            page_update::roots,
+            record_roots as roots,
             slot::storage,
             variable_update::{map_audit::record::RecordImage, record_proof},
         },

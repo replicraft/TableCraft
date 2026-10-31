@@ -142,5 +142,5 @@ pub(in crate::table) use mutation::{
     split_slot_patches as index_split_slot_patches, splitting_patches as index_split_patches,
 };
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod preserved;

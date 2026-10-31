@@ -4,10 +4,10 @@ use super::{
     Operation,
     admission::{self, Prepared},
     maps::{Family, Maps},
-    ownership::Inventory,
     stage::Staged,
     value,
 };
+use crate::table::mutation::lval_ownership::Inventory;
 use crate::{
     InspectError, NativeImage, format::reader::Reader, header::check, limits::MAX_LIVE_ROWS,
     table::record,

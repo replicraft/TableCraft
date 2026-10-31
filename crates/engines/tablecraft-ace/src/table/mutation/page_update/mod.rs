@@ -2,7 +2,7 @@
 pub(super) mod audit;
 mod forward;
 pub(super) mod record;
-pub(super) mod roots;
+pub(super) use super::record_roots as roots;
 pub(super) mod space;
 pub(super) mod stage;
 #[cfg(test)]
