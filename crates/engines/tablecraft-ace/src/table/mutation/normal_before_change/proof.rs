@@ -10,7 +10,7 @@ use crate::{
     header::check,
     preservation::COPY_CHUNK_BYTES,
     read_table,
-    table::indexes::mutation::normal_leaf_audit,
+    table::indexes::mutation::normal_index_audit,
 };
 use std::io::Cursor;
 use tablecraft_core::{
@@ -148,7 +148,7 @@ pub(super) fn prove(
         Ok(())
     })?;
     if !checked.indexes().is_empty() {
-        normal_leaf_audit::reconstruct(
+        normal_index_audit::reconstruct(
             &image,
             table,
             &prepared,

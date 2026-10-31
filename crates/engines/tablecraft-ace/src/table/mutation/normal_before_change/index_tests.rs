@@ -3,7 +3,7 @@ use super::proof;
 use crate::{
     EditError, IndexCheckStatus, IndexConstraintViolation, InspectError, Int32Update,
     NativeEditPlan, NativeImage, WriteBlocker, check_table,
-    table::indexes::mutation::normal_leaf_audit::Ownership,
+    table::indexes::mutation::normal_index_audit::Ownership,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;

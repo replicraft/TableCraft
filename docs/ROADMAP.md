@@ -6,9 +6,10 @@ The normal journal route now admits a narrow [ACE BeforeChange Int32 profile](ac
 through the retained offline session. It derives required programs from native
 references, preserves original user intent and reconstructs both complete images
 for recovery. This is the first positive-program ACE save route, not general
-UPDATE/INSERT/DELETE support. Qualified prefix-zero Int32 root-leaf indexes now
-compose with this normal route, including aliases, composites and atomic unique
-swaps. Broader carriers, indexed topologies, relationships, macro
+UPDATE/INSERT/DELETE support. Qualified Int32 indexes now compose with this
+normal route, including aliases, composites, compressed prefixes, retained
+interior nodes and atomic unique swaps. Fitting retains original page topology
+and leaf entry counts; broader carriers, allocation/splits, relationships, macro
 coverage and native Access qualification remain next.
 
 [Native-owned event selection](access/schema/NATIVE_MACRO_COVERAGE.md#native-owned-event-selection)

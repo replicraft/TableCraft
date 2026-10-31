@@ -8,7 +8,7 @@ use crate::{
     WriteBlocker,
     format::reader::Reader,
     header::check,
-    table::indexes::{IndexDataPatch, IndexKeyUpdate, MutationKey, index_patches},
+    table::indexes::{IndexDataPatch, IndexKeyUpdate, MutationKey, mutation::normal_fitting},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -144,7 +144,7 @@ pub(super) fn derive(
     } else {
         // Apply all original-to-final field changes together. In particular,
         // unique swaps never pass through a partially changed key population.
-        index_patches(image, schema, indexes, &keys, budget, cancelled)?
+        normal_fitting::patches(image, checked, &keys, budget, cancelled)?
     };
     Ok(Staged {
         patches,
