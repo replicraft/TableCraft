@@ -39,6 +39,14 @@ functions, two authority controls and the 21-function guard regression pass.
 Public structural inspection and guard-only preparation retain their existing
 contracts. Required native event discovery and normal saves remain unfinished.
 
+The [source-bound coverage collector](access/schema/NATIVE_MACRO_COVERAGE.md) now
+retains table body/module/Extra and direct-child payload facts on one exact
+captured image. Explicit logical preparation methods refuse unknown carriers,
+require complete property selection and revalidate table identity before using
+the existing guard/field services. Ten focused functions pass after source-only
+qualification of 30 positive observations and two malformed controls. This does
+not certify native required-event discovery, absence or ordinary save permission.
+
 [`query preview-before-change`](cli/BEFORE_CHANGE_COPY.md) now exposes the shared
 service through explicit property selectors and fresh output, with optional
 directory durability barriers. Complete-copy comparisons and encrypted/deployment

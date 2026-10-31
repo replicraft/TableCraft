@@ -68,6 +68,12 @@ definitions before rows execute. Inactive definitions do not run during a change
 unsupported content still refuses empty operations. Native required-program
 discovery and normal save admission remain open.
 
+[Source-bound macro coverage](access/schema/NATIVE_MACRO_COVERAGE.md) now connects
+the exact captured table, body/module/Extra and direct-child observations to
+explicit logical event preparation. Missing and opaque carriers remain unresolved;
+complete observed-property selection does not establish native required coverage.
+Native storage mapping, required-event discovery and normal saves remain open.
+
 Qualified [mixed-schema Int32 copies](testing/ACE16_PRESERVED_INT32_UPDATES.md)
 now extend the preserved fixed service beyond Boolean masks. One ordinary,
 nonindexed field outside calculation dependencies can change through existing

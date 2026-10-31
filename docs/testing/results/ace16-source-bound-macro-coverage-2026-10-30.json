@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Explicit inert source-bound table/direct-child macro carrier coverage, with logical preparation consumers; no native locator or normal-save authority",
+  "status": "Source, API, CLI, focused regressions, strict, format, minimal and documentation checks passed",
+  "contract": {
+    "source_binding": "Exact borrowed captured NativeImage; no independently supplied replacement image",
+    "scope": "Selected local table and semantic direct catalog children, checked against nonzero native ParentId",
+    "retained": "Exact native identities, opaque Lv/LvModule/LvExtra bytes, missing/NULL/empty distinctions; root Extra uses existing bounded MR2/XML observations",
+    "children": "Unknown kinds and opaque child payloads remain retained; unrelated dangling parents are outside this selected scope",
+    "consumer": "Explicit selectors on the bound report; stricter complete selection and carrier refusal before existing logical preparation; legacy profiles unchanged",
+    "not_authority": [
+      "Required-event discovery",
+      "Qualified macro absence",
+      "Normal ACE saves",
+      "Native Microsoft Access compatibility"
+    ]
+  },
+  "observed": {
+    "source": {
+      "functions_passed": 1,
+      "positive_views": 30,
+      "malformed_refusal_controls": 2,
+      "headers": [
+        5,
+        6
+      ],
+      "collector_calls": 0,
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/source-third-root.log",
+        "bytes": 550,
+        "sha256": "cde6a8563047e93ce08de96898937477b04b361e69b98cc51b291fbaa6d3022c"
+      }
+    },
+    "corrected_api": {
+      "functions_passed": 10,
+      "collector_functions": 3,
+      "preparation_lifetime_functions": 6,
+      "source_qualifier_functions": 1,
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/api-second-root.log",
+        "bytes": 2062,
+        "sha256": "fb1c99de9a1cbb43905a0a0c095fb430ca3c9d23768d021af2bb06e773172b66"
+      }
+    },
+    "cli": {
+      "functions_passed": 6,
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/cli-second-root.log",
+        "bytes": 966,
+        "sha256": "0890033bf8b09c8e7122108440557781eb206541405b8d17da3dc5901836e32e"
+      }
+    },
+    "regressions": {
+      "native_extra": {
+        "functions_passed": 55,
+        "log": {
+          "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/extra-regression-first-root.log",
+          "bytes": 7934,
+          "sha256": "02ba806d24b1364182a0aee726c7ed3b180a5c33f770b52a0f55d9d7b594b2dd"
+        }
+      },
+      "native_guards": {
+        "functions_passed": 22,
+        "log": {
+          "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/guards-regression-first-root.log",
+          "bytes": 3337,
+          "sha256": "31cff258ae42e2bcabe354ba59ec9a363b0b8895a4d2a59aa9e11720cfbdc44d"
+        }
+      },
+      "existing_guard_cli": {
+        "functions_passed": 20,
+        "log": {
+          "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/guard-cli-regression-first-root.log",
+          "bytes": 2469,
+          "sha256": "5de988dd722a9eae95a9a493370638d147a1967a87eec01bef4995050dd418e8"
+        }
+      }
+    },
+    "strict": {
+      "exit_code": 0,
+      "scope": "ACE, Access and CLI; all targets and features; warnings denied",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/strict-first-root.log",
+        "bytes": 6163,
+        "sha256": "468ca05f22aafd83b2e020924879d6d3af5ab86ce0ff0c74788a099b9cf2a96f"
+      }
+    },
+    "minimal": {
+      "exit_code": 0,
+      "scope": "ACE and Access; no default features",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/minimal-first-root.log",
+        "bytes": 2366,
+        "sha256": "bc507f41b154e2afe1295854d9b5cb198927496ebaede70ce2ac55ab7bb87ba4"
+      }
+    },
+    "format": {
+      "exit_code": 0,
+      "scope": "ACE, Access and CLI",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "targets": 6734,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/links-first-root.log",
+        "bytes": 53,
+        "sha256": "57c8288c80ef07d70c0fa58c78811febf12ce858f4bbf661942051e22528931b"
+      }
+    }
+  },
+  "history": [
+    {
+      "phase": "First SOURCE compilation",
+      "result": "ENOSPC before tests; no source classifications executed",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/source-first-root.log",
+        "bytes": 4693,
+        "sha256": "4f78a3a008929bac949d8df8521bb3439c18c5c11cef8bcb4ad07325cf60eca7"
+      }
+    },
+    {
+      "phase": "Second SOURCE execution",
+      "result": "Assertion incorrectly expected parsed duplicate group-kind inventory; existing decoder returned Malformed",
+      "completed_positive_views": 15,
+      "completed_headers": [],
+      "header_6": "Unrun",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/source-second-root.log",
+        "bytes": 5529,
+        "sha256": "4cf41255f59dca44361fc0d22f82ee608437e2d387de57078b48ebb386e8e86a"
+      },
+      "correction": "Assertion/count classification only: unchanged literal duplicate-kind bytes retained as two Malformed controls; no decoder weakening or fixture retuning",
+      "active_header": 5,
+      "header_5": "15 positive views completed; malformed-carrier assertion failed before the header completed"
+    },
+    {
+      "phase": "First API compilation",
+      "result": "Stopped before tests: seven new public getters missing required documentation",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/api-first-root.log",
+        "bytes": 2067,
+        "sha256": "392c45c13fe9fcdf1a01486087a78b548c28658edb9ed60a75856a30587224c6"
+      },
+      "correction": "Precise getter doc comments only; no semantic, literal-source or expected changes"
+    },
+    {
+      "phase": "First CLI target execution",
+      "functions_passed": 5,
+      "functions_failed": 1,
+      "result": "Conflict/exhaustion control accepted --macro-inventory with --macro-coverage; exact diagnostic preserved separately",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/cli-first-root.log",
+        "bytes": 5559,
+        "sha256": "e200aa954a3b612be63e58bb01857428c3772e4f144776aba6b51c33cf35f7fe"
+      }
+    },
+    {
+      "phase": "CLI conflict diagnostic",
+      "result": "Isolated accepted --macro-inventory combination",
+      "log": {
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/cli-conflict-diagnostic-root.log",
+        "bytes": 1151,
+        "sha256": "d043e51783351f02f411ac336103dd2f780a2e68b2b92bea92b2fd7ce8b9e8f0"
+      },
+      "correction": "Explicit conflicts with macro_xml, macro_program and macro_inventory; retained existing refusals and added XML conflict control"
+    }
+  ],
+  "pending": {
+    "native_macro_storage_mapping": "Required-event discovery and absence are not established",
+    "normal_ace_saves": "No normal-save or journal permission supplied"
+  },
+  "native_access": "Unrun; authored source facts and engineering consumers do not establish native Access required-event semantics"
+}
