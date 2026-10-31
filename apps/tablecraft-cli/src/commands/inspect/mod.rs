@@ -9,6 +9,7 @@ mod constraints;
 mod extra;
 mod features;
 mod history;
+mod macro_coverage;
 mod properties;
 mod relationships;
 mod saved_query;
@@ -33,6 +34,7 @@ pub(crate) enum Mode<'a> {
     Extra(&'a str, bool),
     MacroProgram(&'a str),
     MacroInventory(&'a str),
+    MacroCoverage(&'a str),
     Features(&'a str),
     Complex(&'a str),
     StoredCalculation(&'a str, &'a str),
@@ -99,6 +101,9 @@ pub(crate) fn run(
         }
         Mode::MacroInventory(name) => {
             extra::run_inventory(&mut source, name, &mut output, budget)?;
+        }
+        Mode::MacroCoverage(name) => {
+            macro_coverage::run(&mut source, name, &mut output, budget)?;
         }
         Mode::MacroProgram(name) => {
             extra::run_program(&mut source, name, &mut output, budget)?;

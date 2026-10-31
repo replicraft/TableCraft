@@ -4,7 +4,7 @@ use crate::output::TableOutput;
 use tablecraft_ace::{InspectError, MacroPropertyObservation, TableExtra};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) fn write(
+pub(in crate::commands::inspect) fn write(
     extra: &TableExtra,
     output: &mut TableOutput,
     budget: &mut ResourceBudget,

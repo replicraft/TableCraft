@@ -1,4 +1,4 @@
-mod inventory;
+pub(super) mod inventory;
 mod program;
 
 use super::{Error, line};

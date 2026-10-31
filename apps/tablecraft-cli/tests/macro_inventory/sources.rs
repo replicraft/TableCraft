@@ -4,6 +4,9 @@ use tablecraft_ace::{InspectError, TableExtraCoverage};
 #[path = "sources/api.rs"]
 mod api;
 
+#[path = "sources/coverage.rs"]
+mod coverage;
+
 #[path = "../../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/observed_macro_inventory/model.rs"]
 mod model;
 
