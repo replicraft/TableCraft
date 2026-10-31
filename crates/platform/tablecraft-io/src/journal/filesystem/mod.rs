@@ -14,7 +14,7 @@ mod storage;
 mod target;
 
 pub use binding::BindingError;
-pub use pair::{OfflineJournalPair, PairError, PairSetupFailure, PairState};
+pub use pair::{OfflineJournalPair, PairError, PairSetupFailure, PairState, TargetTransferFailure};
 pub use retirement::{FinalizationError, FinalizationPhase};
 pub use storage::PairedStorage;
 pub use target::{OfflineTarget, TargetLockState};

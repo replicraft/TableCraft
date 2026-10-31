@@ -116,3 +116,28 @@ Partial garbage or missing-child resolution, automatic discovery, Windows suppor
 broader filesystem/platform execution, hardware power-loss qualification and
 normal ACE save admission remain separate work. Current filesystem execution is
 macOS; Linux implementation support is not Linux runtime qualification.
+
+## Retain the target after clean completion
+
+`OfflineJournalPair::into_target_after_clean` consumes a pair only after
+`RetiredClean`, a separately known outcome and a still-held target lease. It
+acknowledges journal unlock and moves out the same `OfflineTarget`; the target
+is never unlocked, reopened or cloned. The captured directory/name and actual
+descriptor remain with that owner. Existing `release` keeps its original behavior.
+
+`TargetTransferFailure` retains the cause and complete pair inline. An invalid
+state is unchanged. Journal unlock failure leaves `ReleaseUncertain`, retains
+`RetiredClean` as the namespace fact and preserves the known outcome. No target
+or automatic retry is offered on failure. The two narrow large-error lint
+allowances deliberately avoid allocating a boxed owner after completion.
+
+Four local filesystem functions pass, covering committed and rolled-back
+completion, uninterrupted target exclusion, path retargeting without reopening,
+unsettled/unclean refusals and journal-unlock errors before and after their
+possible effect. The earlier invocation failed at Cargo dependency selection
+before compilation or tests; it supplies no protocol evidence. All-target,
+all-feature strict checks pass, along with the complete IO regression: 85 unit
+functions, 16 integration functions and two doctests (103 total). This transfer adds no native write eligibility,
+Access locking, journal discovery or normal ACE save permission.
+
+See the [target-transfer record](../testing/results/offline-journal-target-transfer-2026-10-31.json).
