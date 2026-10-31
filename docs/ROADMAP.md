@@ -720,9 +720,9 @@ regression pass. This closes a concrete host-composition gap without broadening
 normal ACE admission or claiming native shared-file coordination.
 
 The standalone [fresh database constructor](testing/ACE16_DATABASE_CREATION.md)
-now serializes one ordinary Int32 table into a complete nine-page ACE 16 image.
-Its six complete independent source comparisons and five focused controls pass;
-the shared Access service and CLI now publish those images through required
+now serializes one ordinary table of ten fixed scalar families into a complete
+nine-page ACE 16 image. Eleven controls and 28 complete-image comparisons pass;
+the shared Access service and CLI currently publish Int32 inputs through required
 fresh-file durability. Broader schemas and native Access qualification remain
 unfinished. This does not admit normal saves of existing ACE files.
 

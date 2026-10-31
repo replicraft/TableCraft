@@ -1,9 +1,11 @@
 //! Explicit bounded roles and native system declarations; no imported template.
 use crate::format::data_type::{
-    BOOLEAN, BOOLEAN_BYTES, DATE_TIME, DATE_TIME_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES,
-    OLE, SHORT_BINARY, SHORT_TEXT,
+    BOOLEAN, BOOLEAN_BYTES, BYTE, BYTE_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES,
+    DOUBLE, DOUBLE_BYTES, GUID, GUID_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES, INT64,
+    INT64_BYTES, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE, SINGLE_BYTES,
 };
 use crate::format::{allocation::INLINE_BITMAP_OFFSET, page::PAGE_BYTES};
+use tablecraft_schema::ScalarType;
 
 pub(super) const PAGE_COUNT: usize = 9;
 pub(super) const IMAGE_BYTES: usize = PAGE_COUNT * PAGE_BYTES;
@@ -100,29 +102,19 @@ pub(super) const ACE_FIELDS: [Field<'static>; 4] = [
 ];
 
 #[derive(Clone, Copy)]
-pub(super) enum Fields<'a> {
-    Known(&'a [Field<'a>]),
-    User(&'a [&'a str]),
-}
+pub(super) struct Fields<'a>(&'a [Field<'a>]);
 
 impl<'a> Fields<'a> {
+    pub fn new(fields: &'a [Field<'a>]) -> Self {
+        Self(fields)
+    }
+
     pub fn count(self) -> usize {
-        match self {
-            Self::Known(fields) => fields.len(),
-            Self::User(names) => names.len(),
-        }
+        self.0.len()
     }
 
     pub fn get(self, index: usize) -> Field<'a> {
-        match self {
-            Self::Known(fields) => fields[index],
-            Self::User(names) => field(
-                names[index],
-                INT32,
-                Some(index * size_of::<i32>()),
-                size_of::<i32>(),
-            ),
-        }
+        self.0[index]
     }
 
     pub fn variable_count(self) -> usize {
@@ -158,4 +150,22 @@ pub(super) struct CatalogObject<'a> {
     pub parent: u32,
     pub name: &'a str,
     pub system: bool,
+}
+
+/// Closed native fixed-family selection; all variable and extended profiles
+/// require their own original SOURCE qualification before admission.
+pub(super) fn fixed_kind(scalar: ScalarType) -> Option<(u8, usize)> {
+    Some(match scalar {
+        ScalarType::Boolean => (BOOLEAN, BOOLEAN_BYTES),
+        ScalarType::Byte => (BYTE, BYTE_BYTES),
+        ScalarType::Int16 => (INT16, INT16_BYTES),
+        ScalarType::Int32 => (INT32, INT32_BYTES),
+        ScalarType::Int64 => (INT64, INT64_BYTES),
+        ScalarType::Currency => (CURRENCY, CURRENCY_BYTES),
+        ScalarType::Single => (SINGLE, SINGLE_BYTES),
+        ScalarType::Double => (DOUBLE, DOUBLE_BYTES),
+        ScalarType::DateTime => (DATE_TIME, DATE_TIME_BYTES),
+        ScalarType::Guid => (GUID, GUID_BYTES),
+        _ => return None,
+    })
 }

@@ -121,3 +121,6 @@ pub use indexes::{
     IndexProjection, IndexProjectionSelection, IndexReadRequest, read_table_index_in_table_order,
     read_table_index_projection, read_table_index_with_request,
 };
+
+#[cfg(any(feature = "ace16-write-preview", feature = "ace16-create"))]
+pub(crate) mod scalar_encoding;

@@ -2,7 +2,9 @@
 use super::{
     CreateDatabaseError,
     definition::{put16, put32},
+    input::Cell,
     profile,
+    request::Request,
 };
 use crate::{
     InspectError,
@@ -12,13 +14,22 @@ use crate::{
         row,
     },
     header::check,
+    table::scalar_encoding,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::{Guid, Value},
+};
+use tablecraft_schema::ScalarType;
 
 pub(super) const DATA_HEADER_BYTES: usize = row::slot_offset(0);
 const FREE_SPACE_OFFSET: usize = size_of::<u16>();
 const DIRECTORY_ENTRY_BYTES: usize = row::SLOT_BYTES;
 const FIXED_COLUMN_COUNT_BYTES: usize = row::COLUMN_COUNT_BYTES;
+const BYTE_WIDTH: usize = size_of::<u8>();
+const SHORT_WIDTH: usize = size_of::<i16>();
+const LONG_WIDTH: usize = size_of::<i32>();
+const WIDE_WIDTH: usize = size_of::<i64>();
 
 pub(super) struct DataPage<'a> {
     bytes: &'a mut [u8],
@@ -102,23 +113,80 @@ pub(super) fn inline_map(
     Ok(())
 }
 
-pub(super) fn user(record: &mut [u8], values: &[i32]) -> Result<(), CreateDatabaseError> {
-    let mask_bytes = values.len().div_ceil(u8::BITS as usize);
-    if record.len() != FIXED_COLUMN_COUNT_BYTES + size_of_val(values) + mask_bytes {
+pub(super) fn user(
+    record: &mut [u8],
+    request: &Request<'_>,
+    row: usize,
+) -> Result<(), CreateDatabaseError> {
+    if record.len() != request.row_bytes {
         return Err(CreateDatabaseError::Layout);
     }
-    put16(record, 0, values.len())?;
-    for (index, value) in values.iter().enumerate() {
-        let offset = FIXED_COLUMN_COUNT_BYTES + index * size_of::<i32>();
-        put32(record, offset, *value as u32)?;
-        let mask = record.len() - mask_bytes + index / u8::BITS as usize;
-        record[mask] |= 1 << (index % u8::BITS as usize);
+    let fields = request.fields();
+    let mask_start = record.len() - fields.count().div_ceil(u8::BITS as usize);
+    put16(record, 0, fields.count())?;
+    for column in 0..fields.count() {
+        let field = fields.get(column);
+        let offset = field.offset.ok_or(CreateDatabaseError::Layout)?;
+        let start = FIXED_COLUMN_COUNT_BYTES + offset;
+        let destination = record
+            .get_mut(start..start + field.width)
+            .ok_or(CreateDatabaseError::Layout)?;
+        let scalar = request.columns.scalar(column);
+        let present = match request.rows.cell(row, column) {
+            Cell::Int32(value) => {
+                if scalar != ScalarType::Int32 || destination.len() != size_of::<i32>() {
+                    return Err(CreateDatabaseError::Carrier);
+                }
+                destination.copy_from_slice(&value.to_le_bytes());
+                true
+            }
+            Cell::Value(Value::Null) if scalar != ScalarType::Boolean => false,
+            Cell::Value(Value::Boolean(value)) if scalar == ScalarType::Boolean => {
+                if !destination.is_empty() {
+                    return Err(CreateDatabaseError::Layout);
+                }
+                *value
+            }
+            Cell::Value(value) => {
+                write_fixed(scalar, value, destination)?;
+                true
+            }
+        };
+        if present {
+            record[mask_start + column / u8::BITS as usize] |= 1 << (column % u8::BITS as usize);
+        }
     }
     Ok(())
 }
 
+fn write_fixed(
+    scalar: ScalarType,
+    value: &Value,
+    destination: &mut [u8],
+) -> Result<(), CreateDatabaseError> {
+    match destination.len() {
+        BYTE_WIDTH => copy_fixed::<BYTE_WIDTH>(scalar, value, destination),
+        SHORT_WIDTH => copy_fixed::<SHORT_WIDTH>(scalar, value, destination),
+        LONG_WIDTH => copy_fixed::<LONG_WIDTH>(scalar, value, destination),
+        WIDE_WIDTH => copy_fixed::<WIDE_WIDTH>(scalar, value, destination),
+        Guid::BYTE_LEN => copy_fixed::<{ Guid::BYTE_LEN }>(scalar, value, destination),
+        _ => Err(CreateDatabaseError::Carrier),
+    }
+}
+
+fn copy_fixed<const WIDTH: usize>(
+    scalar: ScalarType,
+    value: &Value,
+    destination: &mut [u8],
+) -> Result<(), CreateDatabaseError> {
+    let bytes =
+        scalar_encoding::encode::<WIDTH>(scalar, value).ok_or(CreateDatabaseError::Carrier)?;
+    destination.copy_from_slice(&bytes);
+    Ok(())
+}
+
 pub(super) fn catalog_length(name: &str) -> usize {
-    let fields = profile::Fields::Known(&profile::CATALOG_FIELDS);
+    let fields = profile::Fields::new(&profile::CATALOG_FIELDS);
     fields.fixed_end()
         + name.encode_utf16().count() * size_of::<u16>()
         + (fields.variable_count() + 2) * size_of::<u16>()
@@ -140,7 +208,7 @@ pub(super) fn catalog(
     if record.len() != catalog_length(name) {
         return Err(CreateDatabaseError::Layout);
     }
-    let fields = profile::Fields::Known(&profile::CATALOG_FIELDS);
+    let fields = profile::Fields::new(&profile::CATALOG_FIELDS);
     let fixed_end = fields.fixed_end();
     put16(record, 0, fields.count())?;
     put32(record, catalog_fixed_offset(profile::CATALOG_ID)?, id)?;

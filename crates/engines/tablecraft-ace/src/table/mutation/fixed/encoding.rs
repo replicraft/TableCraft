@@ -1,4 +1,6 @@
+//! Retain legacy Decimal admission while sharing the other exact fixed codecs.
 use super::super::{EditError, WriteBlocker};
+use crate::table::scalar_encoding;
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
@@ -10,18 +12,9 @@ pub(in crate::table::mutation) fn encode<const WIDTH: usize>(
         (ScalarType::Decimal, Value::Decimal(value)) => {
             bytes(crate::table::decimal::encode(*value))
         }
-        (ScalarType::Byte, Value::Byte(value)) => bytes([*value]),
-        (ScalarType::Int16, Value::Int16(value)) => bytes(value.to_le_bytes()),
-        (ScalarType::Int32, Value::Int32(value)) => bytes(value.to_le_bytes()),
-        (ScalarType::Int64, Value::Int64(value)) => bytes(value.to_le_bytes()),
-        (ScalarType::Currency, Value::Currency(value)) => bytes(value.scaled().to_le_bytes()),
-        (ScalarType::Single, Value::Single(value)) => bytes(value.to_bits().to_le_bytes()),
-        (ScalarType::Double, Value::Double(value)) => bytes(value.to_bits().to_le_bytes()),
-        (ScalarType::DateTime, Value::DateTime(value)) => bytes(value.to_bits().to_le_bytes()),
-        (ScalarType::Guid, Value::Guid(value)) => {
-            bytes(uuid::Uuid::from_bytes(value.to_bytes()).to_bytes_le())
+        _ => {
+            scalar_encoding::encode(kind, value).ok_or(EditError::Unsupported(WriteBlocker::Column))
         }
-        _ => Err(EditError::Unsupported(WriteBlocker::Column)),
     }
 }
 

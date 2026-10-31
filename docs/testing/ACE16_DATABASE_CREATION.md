@@ -1,55 +1,52 @@
-# Fresh ACE 16 Int32 database creation
+# Fresh ACE 16 fixed-scalar construction
 
-The standalone `tablecraft-ace` feature `ace16-create` provides
-`create_ace16_int32_database`. It creates a fresh, complete header-5 database in
-memory from one table name, ordered column names and borrowed Int32 rows. It
-uses no existing database, SDK template, active content or filesystem operation.
-The returned `CreatedDatabase` exposes immutable bytes and row/column counts.
-The [Access creation service](../access/writes/FRESH_DATABASE_CREATION.md)
-provides separately tested fresh-file publication, consumed by the CLI.
+The optional standalone `ace16-create` feature constructs a complete header-5
+database in memory with one ordinary table. `create_ace16_database` accepts named
+`CreateColumn` declarations and borrowed `Value` rows. It supports Boolean, Byte,
+Int16, Int32, Int64, Currency, Single, Double, legacy DateTime and Guid.
+`create_ace16_int32_database` remains the convenience API for borrowed Int32 rows.
+The Access creation service and CLI creation command remain Int32-only.
 
-The current profile admits one table, 1–16 ordinary Int32 columns and 0–64 rows
-of present values. Rows must also fit one DATA page: 16-column rows use 68 bytes,
-so 58 fit while 59 refuse. Names preserve their spelling and must fit 64 UTF-16
-units, be nonempty and control-free, have no leading ASCII space or native
-prohibited punctuation, and avoid duplicate columns under ASCII folding. The
-three actual system table names cannot be used for the user table. Nullable
-values, additional tables, indexes and other user-field types are not admitted.
+The profile admits 1–16 columns and 0–64 rows, also requiring the complete records
+and row directory to fit one DATA page. Names retain their spelling under the
+existing native name checks. Declarations are validated even for empty tables or
+all-NULL input. Present values must have the exact declared carrier; there is no
+numeric conversion. Boolean uses its value bit without payload bytes and refuses
+NULL. Other admitted fields allow NULL with zeroed inactive payload bytes.
+Decimal, variable fields and extended DateTime declarations remain unsupported.
 
-```rust
-use tablecraft_ace::create_ace16_int32_database;
+Single and Double preserve their raw representations, including signed zero,
+subnormals, infinities and quiet/signalling NaN payloads. Legacy DATE preserves
+its raw bits without calendar conversion; Currency stores its scaled Int64 and
+Guid uses the native mixed-endian representation. These storage results do not
+qualify arithmetic or expression behavior.
 
-let rows: [&[i32]; 1] = [&[1, 10]];
-let created = create_ace16_int32_database(
-    "Items", &["Id", "Score"], &rows, budget, cancelled,
-)?;
-let bytes = created.as_bytes();
-```
+Construction validates borrowed inputs before reserving one complete 36,864-byte
+image. Bytes, Rows and Steps remain independent cumulative allowances, with
+initial and final cancellation checks. The returned `CreatedDatabase` exposes
+immutable bytes and counts. It performs no filesystem operation and supplies no
+existing-file edit, journal or normal-save authority.
 
-Input validation precedes one paid, fallible image allocation. The serializer
-writes all nine pages directly, including system catalog rows, complete column
-and LVAL declarations, masks, variable footers and represented allocation maps.
-Rows, bytes and steps have separate cumulative allowances. Initial or final
-cancellation returns no artifact. The API requires neither `ace16-write-preview`
-nor `journal`, and adds no dependency.
+The first standalone producer run passed all eleven tests and 28 complete-image
+comparisons: five fixed-family sources, five IEEE sources, six Int32 sources
+through both APIs, and the six retained convenience comparisons. The independent
+fixed and IEEE source records were committed before this producer execution
+(`fcadc73d` and `d8c7509c`). Their SDK observations establish reader results for
+the source goldens; no new SDK reads of generic producer output are claimed.
+Native Access and Windows creation/open/save comparisons remain unqualified.
+The authored nine-page system envelope and unresolved header choices retain
+their existing limits; these results do not establish general system/ACL,
+macro-absence or imported ACE save compatibility.
 
-The first producer execution matched all six complete independent source images:
-empty, one-row, signed extrema, 64 rows, Unicode names and the full 16-column
-58-row case. Five focused tests passed; exact and one-below allowances for each
-resource pool and pre/final cancellation also passed. Standalone compilation,
-minimal-library and minimal-all-target strict checks, all-feature strict checks,
-workspace formatting and the two affected preview-contract regressions passed.
-The SDK comparisons belong to the previously qualified independent sources;
-this phase did not publish or reopen new producer files with the SDK.
+The existing fixed mutation regressions passed 116 tests (seven ignored),
+record composition passed seventeen, and the preserved scalar contract passed
+54 (two ignored). Strict checks passed for minimal and all-feature targets;
+the dependency guard also passed.
 
-This is a bounded fresh-creation capability. It grants no existing-file update,
-macro-absence, journal, recovery or normal ACE save permission. Unresolved header
-bytes remain explicitly chosen zeros; reader acceptance does not establish native
-system/ACL sufficiency. Native Access creation/open/save/reopen and Windows
-behavior remain unqualified.
-
-The [constructor result](results/ace16-native-int32-creation-2026-10-31.json)
-records passing checks, retained diagnostics and qualification boundaries.
+The [generic constructor result](results/ace16-native-fixed-creation-2026-10-31.json)
+records the first execution and encoder regressions. The
+[Int32 constructor result](results/ace16-native-int32-creation-2026-10-31.json)
+retains the earlier implementation phase.
 
 ### Authored header-5 source qualification, version 1
 
@@ -124,4 +121,5 @@ Five [fixed-scalar sources](ACE16_FIXED_CREATION_SOURCES.md) now have independen
 complete-image and SDK read qualification for ten field families, NULL masks,
 signed zero, GUID byte order and physical page fit. Their frozen originals and
 CI hash anchor precede execution of a generic fixed-scalar creator. The current
-production constructor and CLI remain restricted to Int32.
+generic constructor consumes those qualified fixed-scalar declarations;
+the CLI remains restricted to Int32.
