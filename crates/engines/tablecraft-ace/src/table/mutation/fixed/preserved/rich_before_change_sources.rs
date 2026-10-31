@@ -240,3 +240,6 @@ fn qualify_rich_before_change_catalog_roles_and_originals_before_batch_writer() 
     }
     assert_eq!(sources, 36);
 }
+
+#[path = "rich_before_change_sources/required.rs"]
+pub(crate) mod required;

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Four healthy Required original sources passed reader/constraint qualification before expectations or new batch writers",
+  "scope": "Large_Number Int32 Required property on exact event-bearing rich sources",
+  "originals": 4,
+  "headers": [
+    5,
+    6
+  ],
+  "scenarios": [
+    "repair requested NULL through the selected SetField program",
+    "leave requested NULL unrepaired under the selected guard program"
+  ],
+  "source_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/required.rs",
+      "bytes": 8090,
+      "sha256": "9c7c95b5adff80a99812e5ef44b639583f405bef4a4df28b6a0cc31f6cb4119a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources.rs",
+      "bytes": 9357,
+      "sha256": "74359f79de0469c7e1c69dfe3c793760686674295a4dd4ae6fe853f3c0846dfa"
+    }
+  ],
+  "source_freeze": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/required-source-installed-freeze.json",
+    "bytes": 1631,
+    "sha256": "3203f3ed1e9bba122d93bdf29cac1af1b7f91b3d9f29420199615561f1f24db0"
+  },
+  "passing_log": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-draft/required-source-first-root.log",
+    "bytes": 542,
+    "sha256": "f22047249fc4a720eadb4f22e6f71ad3e6ae0374c9e9d351078f4fe77f411ff5"
+  },
+  "new_batch_writer_calls": 0,
+  "notes": [
+    "The existing scalar Source RequiredRefusal helper supplies only the exact relative Required property byte, verified against the complete actual LvProp bag and literal Boolean property entry.",
+    "Both event-bearing source and unchanged-value baseline receive the one-byte property update. All three original Large_Number values remain present Int32 values 1000/2000/3000 and pass native scalar constraints.",
+    "Stored Extra programs and all unrelated bytes remain unchanged. No interim NULL image, event evaluator or physical writer runs in this Source gate.",
+    "This qualifies healthy originals only; repair semantics and final Required refusal await independently prepared expected images and actual batch execution."
+  ]
+}
