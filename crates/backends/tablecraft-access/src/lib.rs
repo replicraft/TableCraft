@@ -3,6 +3,9 @@
 //! stable/offline source and work budget.
 #![deny(missing_docs)]
 mod collation;
+/// Fresh canonical ACE 16 construction with explicit durable publication.
+#[cfg(feature = "ace16-create")]
+pub mod creation;
 pub use collation::{FrenchLegacyCollation, GeneralCollation, NativeCollationResolver};
 mod input;
 pub use input::{AccessInput, AccessInputError};

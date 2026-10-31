@@ -1,8 +1,8 @@
 # CLI guide
 
-The `tablecraft` executable provides local database inspection, browsing and
-bounded query execution. This guide describes the 0.1.0 command surface; it does
-not imply complete Access compatibility. See [current support and planned tiers](../COMPATIBILITY.md).
+The `tablecraft` executable provides local database inspection, browsing, bounded
+query execution and fresh native construction. This guide describes the 0.1.0
+command surface; it does not imply complete Access compatibility. See [current support and planned tiers](../COMPATIBILITY.md).
 
 Use an explicit stable/offline database copy. Reading a file does not execute
 startup macros, VBA, lookup RowSource queries or embedded connection strings.
@@ -13,12 +13,26 @@ startup macros, VBA, lookup RowSource queries or embedded connection strings.
 tablecraft --help
 tablecraft --version
 tablecraft query run --help
+tablecraft create --help
 tablecraft rows --help
 ```
 
 For installation, see the [README](../../README.md#install). From the repository,
 `cargo run --locked -p tablecraft-cli -- <arguments>` runs the same CLI.
 [Development](../development/DEVELOPMENT.md) documents the pinned toolchain and verification.
+
+## Create a fresh database
+
+```sh
+tablecraft create new.accdb --table Items --column Id --column Score
+```
+
+`create` constructs a fresh unencrypted ACE 2016 database with one ordinary Int32
+table. Add `--data rows.tsv` for a bounded quoted TSV with an exact column header;
+omit it for an empty table. It never overwrites a destination and requires
+captured-directory durability. See [fresh native creation](NATIVE_CREATION.md)
+for the current schema, input and publication limits. Normal imported-ACE write
+eligibility remains unchanged.
 
 ## Inspect and browse
 

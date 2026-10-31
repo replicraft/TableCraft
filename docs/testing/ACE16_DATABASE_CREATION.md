@@ -5,7 +5,8 @@ The standalone `tablecraft-ace` feature `ace16-create` provides
 memory from one table name, ordered column names and borrowed Int32 rows. It
 uses no existing database, SDK template, active content or filesystem operation.
 The returned `CreatedDatabase` exposes immutable bytes and row/column counts.
-Filesystem publication is a separate host operation and is not qualified here.
+The [Access creation service](../access/writes/FRESH_DATABASE_CREATION.md)
+provides separately tested fresh-file publication, consumed by the CLI.
 
 The current profile admits one table, 1–16 ordinary Int32 columns and 0–64 rows
 of present values. Rows must also fit one DATA page: 16-column rows use 68 bytes,

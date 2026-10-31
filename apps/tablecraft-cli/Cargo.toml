@@ -31,9 +31,9 @@ tablecraft-core.workspace = true
 tablecraft-io = { workspace = true, features = ["fresh-publication", "filesystem-journal"] }
 tablecraft-expressions = { workspace = true, features = ["sql", "fluent-catalog", "icu-text"] }
 tablecraft-query.workspace = true
-tablecraft-ace = { workspace = true, features = ["ace16-write-preview", "journal"] }
+tablecraft-ace = { workspace = true, features = ["ace16-write-preview", "journal", "ace16-create"] }
 tablecraft-model.workspace = true
-tablecraft-access = { workspace = true, features = ["ace16-write-preview", "journal", "offline-write-session"] }
+tablecraft-access = { workspace = true, features = ["ace16-write-preview", "journal", "offline-write-session", "ace16-create"] }
 tablecraft-sqlite.workspace = true
 uuid.workspace = true
 

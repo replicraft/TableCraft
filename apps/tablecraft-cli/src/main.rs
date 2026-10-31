@@ -15,12 +15,13 @@ mod presentation;
 #[command(
     name = "tablecraft",
     version,
-    about = "TableCraft inspection, query and engineering-copy tools",
+    about = "TableCraft inspection, creation, query and engineering-copy tools",
     after_help = concat!(
         "Query parse prints syntax; query saved reconstructs a native saved SELECT without executing it; ",
         "query eval calculates source-free SELECT expressions; query run executes bounded retrieval; ",
         "query preview-calculation explicitly recomputes a restricted stored formula without saving. ",
         "Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. ",
+        "Create constructs a fresh unencrypted ACE 2016 database with ordinary Int32 columns. ",
         "Write preview-* commands create explicit experimental ACE copies, never qualified saves. ",
         "Inspect reports metadata or explicit checks without executing content. ",
         "Query journal-update/recover-update explicitly edit or recover offline Jet 4 files with retained journals. GUI hosts are not implemented."
@@ -83,6 +84,14 @@ fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
     match result {
         Ok(()) => (Ok(()), ExitCode::SUCCESS),
         Err(ExecutionError::Output(error)) => (Err(error), ExitCode::FAILURE),
+        Err(ExecutionError::Creation(error)) => {
+            let status = if error.invalid_input() {
+                ExitCode::from(INVALID_INPUT_STATUS)
+            } else {
+                ExitCode::FAILURE
+            };
+            protected_failure(&error, status, &mut io::stderr().lock())
+        }
         Err(ExecutionError::EngineeringPublication(error)) => {
             protected_failure(&error, ExitCode::FAILURE, &mut io::stderr().lock())
         }
@@ -178,5 +187,41 @@ mod journal_output_tests {
             assert!(diagnostic.is_ok());
             assert_eq!(status, ExitCode::FAILURE);
         }
+    }
+
+    #[test]
+    fn creation_uses_protected_failures_even_when_diagnostics_have_broken_pipe() {
+        let cli = Cli::try_parse_from([
+            "tablecraft",
+            "--password",
+            "unused",
+            "create",
+            "absent-parent/new.accdb",
+            "--table",
+            "Items",
+            "--column",
+            "Id",
+            "--column",
+            "Score",
+        ])
+        .unwrap();
+        let mut output = Vec::new();
+        let error = match cli.command.unwrap().execute(
+            presentation::Format::Auto,
+            cli.password.as_deref(),
+            &mut output,
+        ) {
+            Err(ExecutionError::Creation(error)) => error,
+            _ => panic!("creation must use its dedicated protected branch"),
+        };
+        assert!(error.invalid_input());
+        assert!(output.is_empty());
+        let (diagnostic, status) = protected_failure(
+            &error,
+            ExitCode::from(INVALID_INPUT_STATUS),
+            &mut FailedDiagnostics,
+        );
+        assert!(diagnostic.is_ok());
+        assert_eq!(status, ExitCode::from(INVALID_INPUT_STATUS));
     }
 }
