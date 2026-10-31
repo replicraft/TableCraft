@@ -96,6 +96,9 @@ retains independent expectations and separate execution phases. Explicit
 `--variable` now adds [preserved Short Text DATA growth](testing/ACE16_PRESERVED_TEXT_GROWTH.md)
 for one ordinary, unindexed target independent of calculated fields, with stable
 logical references and represented owned/EOF placement. Default remains fitting.
+Its separate genuine-original corpus now matches eight complete images from
+original/request-only expectations and eight fresh independent SDK inventories.
+That corpus qualifies same-page placement, not genuine-file EOF allocation.
 Broader mixed targets, INDEX/map-storage growth, unsupported properties, required
 macro discovery/semantics, normal ACE saves and native Microsoft Access
 qualification remain open.

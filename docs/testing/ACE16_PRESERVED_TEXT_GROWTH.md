@@ -95,3 +95,44 @@ logs and failure chronology. The genuine fitting corpus does not automatically
 qualify these growth paths.
 These authored-source checks do not establish native Access save/reopen or
 required-macro discovery.
+
+## Independently generated original files
+
+The unchanged [Short Text SDK originals](ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+also supply a separate growth corpus. Their actual parent DATA pages are 100
+(V2016) and 118 (V2019), each with three live roots, 3,816 free bytes, an admitted
+candidate hint and allocated GLOBAL membership. The original present Text span
+is seven bytes; the NULL span is zero. No source, map hint or old fitting
+expectation was changed to make growth fit.
+
+Eight independent complete images were constructed before producer calls:
+`alpha` to six snow characters, NULL to six snow characters, and the two-row
+batch (`alpha` to six snow characters, NULL to `beta`) in both typed request
+orders, on each original. Rebuilt records are 126, 78 and 72 bytes. Appended
+hidden slots and forwarding roots retain original logical references; both
+batch orders produce the same image in source row order. The proof preserves
+actual 27-byte calculated capsules, other rich payloads, every unrelated parent
+byte, all other pages, maps, indexes and EOF bytes.
+
+The pure constructor passes all eight cases without child or writer calls.
+A separate ignored native SOURCE function directly admits all eight expected
+images through the private complete preservation owner before any producer.
+A fresh build from committed producer `109670565260214c9b0c5b5a44e702e30ab45639`
+then matches all eight complete images on its first attempt: four SQL singles
+and four typed batch calls, matching 3,948,544 bytes. Eight fresh unchanged
+independent SDK getter calls pass on the first attempt, matching every expected
+tagged inventory with only the selected cells changed. Original hashes remain
+unchanged. This qualifies same-page placement on these two original profiles;
+genuine-file EOF allocation is not established by this corpus.
+The [genuine-image result](results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+keeps source, expected, build, producer and reader phases distinct. These
+engineering copies do not qualify native Microsoft Access saves, required-macro
+discovery or normal ACE writes.
+
+Saved-only verification passes with 494 artifact pins, two original files, eight
+images, four SQL singles, four typed batches and eight SDK reads, launching no
+child processes. Its first invocation stopped before data checks on a stale
+verifier-code pin; refreshing that metadata retained all model and database
+bytes. The expected-source helper passes ACE all-target/all-feature strict
+checks and workspace formatting. Final documentation checks are recorded in
+the result separately.
