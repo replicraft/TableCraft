@@ -167,3 +167,6 @@ fn qualify_preserved_short_text_originals_and_literal_fitting_images_before_writ
     }
     assert_eq!((expected_images, overflow_controls), (16, 2));
 }
+
+#[path = "short_text_sources/joint_fixed_sources.rs"]
+mod joint_fixed_sources;
