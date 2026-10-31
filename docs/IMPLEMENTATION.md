@@ -25,6 +25,14 @@ Ten focused native functions pass, including 60 complete-image comparisons;
 the mutation regression passes 629 functions with 11 ignored helpers. The
 [focused record](testing/results/ace16-before-change-rich-batch-copies-2026-10-31.json)
 retains source-first expectations, failures and qualification boundaries.
+The Access adapter now exposes this service through snapshot-bound typed batches
+and the shared SQL batch planner. All RHS expressions retain original-row
+semantics. The complete preserved-update adapter target passes 39 functions,
+including 44 new typed/SQL whole-image comparisons and resource/error controls.
+The [adapter record](testing/results/ace16-before-change-rich-batch-access-2026-10-31.json)
+retains the corrected AutoNumber blocker assertion separately from production.
+No CLI command or publication route was added.
+
 This remains an engineering candidate service: native required-event discovery,
 normal saves, physical INSERT macro handling and Access qualification remain open.
 

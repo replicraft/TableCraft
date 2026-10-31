@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "status": "implemented-full-adapter-target-pass",
+  "scope": "Access projected rich fixed BeforeChange batch typed and shared SQL engineering consumer",
+  "fixture_kind": "independently authored Source/complete-image corpus; no Microsoft Access run or save claim",
+  "api": {
+    "typed": "engineering::guards::before_change::BeforeChangeBatchEditor",
+    "sql": "engineering::guards::before_change::preview_batch_update",
+    "result": "Ace16BeforeChangePreview",
+    "cli_changes": false,
+    "normal_save_or_journal_authority": false
+  },
+  "history": [
+    {
+      "phase": "focused-first",
+      "exit_code": 101,
+      "passed": 4,
+      "failed": 1,
+      "main_whole_images_verified": 44,
+      "failure": "dormant ID target expected IndexedColumn; actual error diagnostic absent",
+      "completed_before_failure": "28 typed refusal calls; remaining SQL Required control not reached",
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-access-next-20261031/focused-first-root.log",
+        "bytes": 3368,
+        "sha256": "5e80a356d27aa26e3e9817de54118c53c98ee1ae950c3ddae637c1e3df3fe10c"
+      }
+    },
+    {
+      "phase": "diagnostic-only",
+      "exit_code": 101,
+      "passed": 0,
+      "failed": 1,
+      "actual_error": "Backend(Preview(Preparation(Intent(Unsupported(Column)))))",
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-access-next-20261031/diagnostic-root.log",
+        "bytes": 1277,
+        "sha256": "91f6589a9a63ea1f901207e67962e4b042ec8642644cd86aadf5ec883840aaaf"
+      }
+    },
+    {
+      "phase": "test-expectation-correction",
+      "change": "expect Column for actual AutoNumber ID metadata gate, before its separate index restriction; diagnostic retained",
+      "production_changed": false,
+      "source_or_expected_images_changed": false,
+      "freeze": {
+        "path": ".cache/ace16-before-change-rich-batch-access-next-20261031/expected-blocker-corrected-freeze.json",
+        "bytes": 962,
+        "sha256": "9d5cc97e13676210fd638f2925a60b89ce4fee4a5b19327f28180ebb71e4b1e2"
+      }
+    },
+    {
+      "phase": "full-corrected-target",
+      "exit_code": 0,
+      "passed": 39,
+      "failed": 0,
+      "new_functions": 5,
+      "existing_functions": 34,
+      "main_whole_images_verified": 44,
+      "extra_controls_completed": [
+        "28 typed refusal calls",
+        "zero-match dormant AutoNumber target metadata refusal",
+        "final SQL Required refusal",
+        "foreign handle",
+        "six generic non-consumer modes",
+        "15 header5 refusals",
+        "Bytes/Rows/Steps exact and one-low",
+        "final cancellation"
+      ],
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-access-next-20261031/full-corrected-root.log",
+        "bytes": 4448,
+        "sha256": "5f4441a66588b95e4c853ef892ca5cf9e013f76bbd0106b5e4d2d08d15392399"
+      }
+    }
+  ],
+  "checks": {
+    "post_shared_fixture_source_gates": {
+      "passed": 3,
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-next-20261031/source-after-extraction-root.log",
+        "bytes": 967,
+        "sha256": "5c5e78d509ff4b216147cae574dcff5e0cf08e0e419d0f408a40fa7dc4443b82"
+      }
+    },
+    "combined_strict": {
+      "status": "pass",
+      "scope": "root-reported combined four-package all-target/all-feature strict check before the final test-expectation-only correction",
+      "elapsed_seconds": 50.9,
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-next-20261031/strict-corrected-root.log",
+        "bytes": 4089,
+        "sha256": "8be0e43a7dc447781e0bf4098564234d4b9c0a0412c254a5c58a3edcf9743754"
+      }
+    },
+    "full_access_target": {
+      "status": "pass",
+      "passed": 39,
+      "failed": 0,
+      "ignored": 0,
+      "elapsed_seconds": 2.29,
+      "log": {
+        "path": ".cache/ace16-before-change-rich-batch-access-next-20261031/full-corrected-root.log",
+        "bytes": 4448,
+        "sha256": "5f4441a66588b95e4c853ef892ca5cf9e013f76bbd0106b5e4d2d08d15392399"
+      }
+    },
+    "final_format_links_boundaries": {
+      "status": "passed",
+      "format": "workspace",
+      "local_documentation_targets": 6835,
+      "missing": 0,
+      "dependency_changes": false,
+      "boundary_guard": "not rerun; no package dependency or policy change",
+      "diff_check": "passed"
+    },
+    "final_format": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/fmt-after-adapter-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final_documentation_links": {
+      "path": ".cache/ace16-before-change-rich-batch-next-20261031/docs-final-root.log",
+      "bytes": 53,
+      "sha256": "7ead39a7ae0c7918a7758f7c4f974dc5b07f8a9945ba247a76a9d8ffac2bd286"
+    }
+  },
+  "code_pins": [
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/guards.rs",
+      "bytes": 6418,
+      "sha256": "0a1d3c0ade05adc8af39b35bf24d1307aff87446139e9b67fdf841b636f63858"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/guards/before_change.rs",
+      "bytes": 6570,
+      "sha256": "e310c4114ae04c3697dac09367b094ff417672f798a3b0793e188e001e517193"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates.rs",
+      "bytes": 3328,
+      "sha256": "91a454fbd0bd33128993b51dca84eff5d7ab2af14b123b91392be7e176e4b3e2"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates/before_change_api.rs",
+      "bytes": 16432,
+      "sha256": "377ef09d0dd39cbf9fe571321233e7efab602222f0b21aa632203b992e236a31"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates/before_change_fixtures.rs",
+      "bytes": 922,
+      "sha256": "c1b0ba0701e7e511b2140a2c7745ed6dc4d03d6b0f5faf0e7d06ab133eb55de6"
+    }
+  ],
+  "unchanged_fixture_pins": {
+    "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/model.rs": "888e72abd4161cf8f6306ea944eef47f9f779714ce00d4e821398ff5516c839e",
+    "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/required/model.rs": "83e68650446ae4bca1195239f40ab32e34e0ea0f98c7714bd03f03e00c2d30ac",
+    "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/expectations/model.rs": "0baad0c1a963aad84056a008c045364189a399e78799d791bbcee1bb2259f805"
+  },
+  "retained_failure_archives": [
+    "failed-first-focused",
+    "diagnostic-failed"
+  ],
+  "notes": [
+    "Required/validation properties are not enforced on transient proposed values by the adapter",
+    "all original expected carriers come from validated snapshot-local handles via existing requests conversion",
+    "ordinary single-column bodies remain unchanged"
+  ],
+  "acceptance": {
+    "functions": 5,
+    "typed_main_whole_images": 30,
+    "sql_main_whole_images": 14,
+    "typed_refusal_calls": 28,
+    "header5_refusals": 15,
+    "generic_modes_refused": 6,
+    "foreign_handles": true,
+    "all_three_resource_pools_and_final_cancel": true
+  }
+}
