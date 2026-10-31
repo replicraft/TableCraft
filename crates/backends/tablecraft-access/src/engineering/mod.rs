@@ -1,5 +1,6 @@
 //! Explicit, non-journalable engineering copies; ordinary native saves stay gated.
 mod deleting;
+mod fitted;
 pub use deleting::AccessEngineeringDeleter;
 mod editor;
 pub use editor::{AccessEngineeringEditor, ScalarUpdateMode};
@@ -372,7 +373,7 @@ pub fn preview(
             }
         }),
         EngineeringRequest::FittedUpdate { table, groups } => {
-            Candidate::Rows(image.preview_ace16_fitted_updates(table, groups, budget, cancelled)?)
+            Candidate::Rows(fitted::preview(image, table, groups, budget, cancelled)?)
         }
         EngineeringRequest::MixedUpdate { table, groups } => {
             Candidate::Rows(image.preview_ace16_mixed_updates(table, groups, budget, cancelled)?)

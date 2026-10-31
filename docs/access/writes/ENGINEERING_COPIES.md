@@ -69,19 +69,28 @@ unchanged from the caller, not from a replacement snapshot expectation.
 `--long-value` remains single-table/single-column; mixed LVAL requests refuse
 rather than being applied sequentially.
 
-The default uses fitting fixed/batch maintenance. Explicit `--index-growth`
-permits the engine's qualified Int32 single/tuple growth profile. `--variable`
-selects Short Text/Binary replacement, including qualified DATA forwarding.
-With multiple variable targets or fixed siblings it uses one joint DATA-placement preview: the original page,
-another owned DATA page, or qualified represented EOF allocation. INDEX owners
-must fit unless `--index-growth` is also selected. Together, `--variable
---index-growth` selects one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
+Default mode uses fitting fixed/batch maintenance for fixed kinds. Text-kind
+requests use shared fitted-record planning with the caller's original expected
+values and ordinals. A qualified mixed-schema source with one ordinary Short
+Text target selects the [preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
+retaining the original physical record position and length. Sibling variable
+spans may move inside that record while their bytes remain exact. Multiple
+preserved targets and fixed/variable mixtures remain refused.
+
+For ordinary fixed targets, `--index-growth` selects the engine's qualified Int32
+single/tuple growth profile. `--variable` selects Short Text/Binary replacement,
+including qualified DATA forwarding. Multiple variable targets or fixed siblings
+use one joint DATA-placement preview: the original page, another owned DATA page,
+or qualified represented EOF allocation. INDEX owners must fit unless
+`--index-growth` is also selected. Together, `--variable --index-growth` selects
+one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
 for multiple Short Text/Binary targets and optional fixed siblings. One captured
-original image supplies both the DATA placement and INDEX allocation ledger;
-there is no intermediate candidate or fallback. The one-variable combination
-retains its existing General/Binary index-growth service. `--long-value` selects ordinary Memo/OLE replacement through
-existing LVAL ownership checks. Those carriers use `text` and `binary` respectively.
-Unknown indexes, collations, maps or record profiles remain typed refusals.
+original image supplies the DATA placement and INDEX allocation ledger; there
+is no intermediate candidate or fallback. The one-variable combination retains
+its existing General/Binary index-growth service. `--long-value` selects ordinary
+Memo/OLE replacement through existing LVAL ownership checks, using `text` and
+`binary` kinds respectively. Unknown indexes, collations, maps and record
+profiles remain typed refusals.
 
 `--cascade-updates` explicitly expands the engine's qualified declared update
 actions and conflicts with growth, variable and long-value modes. No failed mode

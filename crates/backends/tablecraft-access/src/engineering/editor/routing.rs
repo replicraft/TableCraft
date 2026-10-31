@@ -1,4 +1,5 @@
 //! Choose one existing native service from the complete resolved target set.
+use super::super::Candidate;
 use super::{
     AccessEngineeringEditor, EngineeringCopy, EngineeringRequest, FixedScalarUpdate, InspectError,
     NativeEditError, ResourceBudget, ScalarType, ScalarUpdateMode, SlotScalarUpdate, UpdateMode,
@@ -34,6 +35,37 @@ impl AccessEngineeringEditor {
         let variable_count = self.variable_count(&positions, budget, cancelled)?;
         if variable_count == 0 {
             return self.fixed_columns(columns, positions, UpdateMode::Fitted, budget, cancelled);
+        }
+
+        // Projected rich-schema Text has already passed native Short Text
+        // declaration checks. Its one selected service must preserve the whole
+        // existing record; no allocating variable/LVAL attempt precedes it.
+        if self.projected_schema {
+            let ([column], [position]) = (columns, positions.as_slice()) else {
+                return Err(NativeEditError::Unsupported);
+            };
+            let rows = self.requests(
+                *position,
+                column.updates,
+                SlotScalarUpdate::new,
+                budget,
+                cancelled,
+            )?;
+
+            let candidate = self
+                .image
+                .preview_ace16_preserved_text_updates(
+                    self.snapshot.name(),
+                    column.column,
+                    &rows,
+                    budget,
+                    cancelled,
+                )
+                .map_err(NativeEditError::Edit)?;
+
+            return Ok(EngineeringCopy {
+                candidate: Candidate::Rows(candidate),
+            });
         }
 
         // Text/Binary is routing metadata, not native Short Text/Binary authority.

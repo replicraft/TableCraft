@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Additive fitting ordinary Short Text engineering candidates in preservation-qualified mixed schemas",
+  "status": "All recorded source, proof, native/frontend, regression, strict, minimal, format and documentation checks passed",
+  "contract": {
+    "api": "NativeImage::preview_ace16_preserved_text_updates with existing SlotScalarUpdate",
+    "profile": "One ordinary nonindexed, calculation-independent Short Text field; exact original row expectations",
+    "placement": "Changed records retain their original absolute position and length; sibling variable spans may move within that same record while preserving their exact bytes; no page allocation, physical record relocation or forwarding",
+    "serialization": "Existing declared-compression encoder and record composer; raw UTF16 fallback when only its smaller representation fits",
+    "noops": "Equal Text and NULL preserve original representation, inactive bytes, offsets and complete image",
+    "authority": "Independent original/request record reconstruction, complete image and changed-root checks; actual field/table rules checked on independently reconstructed expected image and final candidate",
+    "normal_save_or_journal_permission": false
+  },
+  "observed": {
+    "integration_source": {
+      "functions_passed": 1,
+      "headers": [
+        5,
+        6
+      ],
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/source-integration-first-root.log",
+        "bytes": 549,
+        "sha256": "b13ca5354e44b8fed2e43b2200400b1ede7229df53c959c9460e7adf6a7975b6"
+      }
+    },
+    "actual_preserved_source_capture": {
+      "functions_passed": 1,
+      "header_6_admissions": 17,
+      "header_5_typed_profile_refusals": 17,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/source-native-first-root.log",
+        "bytes": 526,
+        "sha256": "eb7cbf802ea9e9dcf2d7b7a99e28389d6f1abf59d2596a69cef44c711cbfc99f"
+      }
+    },
+    "healthy_zero_length_prohibition_source": {
+      "functions_passed": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/source-zero-length-first-root.log",
+        "bytes": 525,
+        "sha256": "5225ec93c8dc7e0e32d3df4b8d51309d93ab00df6ebca1a17a37dedb5d406717"
+      }
+    },
+    "independent_proof_first": {
+      "functions_passed": 3,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/proof-first-root.log",
+        "bytes": 813,
+        "sha256": "23f580bc6c9f1bfee61d46611f3773d142d6c5ea6be74824a1ae3f6ce62dd26e"
+      }
+    },
+    "independent_proof_strengthened": {
+      "functions_passed": 4,
+      "includes": "Constraint validation on independently reconstructed expected image",
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/proof-second-root.log",
+        "bytes": 945,
+        "sha256": "549d4583955281a7c752e5860488b5c642a8c0932b96b66145f51fea623f8fe3"
+      }
+    },
+    "native_contract_corrected": {
+      "functions_passed": 33,
+      "existing_ignored": 2,
+      "new_full_image_comparisons": 8,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/native-contract-second-root.log",
+        "bytes": 4139,
+        "sha256": "b743e834af571dcc46b847768f48d0ca9038022dff1ad82756ffa346e9f87f99"
+      }
+    },
+    "frontends": {
+      "access_functions_passed": 17,
+      "cli_functions_passed": 16,
+      "new_frontend_functions": 6,
+      "principal_full_image_comparisons": 12,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/frontend-first-root.log",
+        "bytes": 5102,
+        "sha256": "e7d5be243c58e94d1401c05d728a26640661f0c2507d2d043883f9096a35b24d"
+      }
+    },
+    "typed_parity_second_frontend_run": {
+      "access_functions_passed": 18,
+      "cli_functions_passed": 16,
+      "cli_functions_failed": 1,
+      "scope": "New shared FittedUpdate acceptance passed; typed CLI setup failure retained separately in history",
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/frontend-second-root.log",
+        "bytes": 5322,
+        "sha256": "e950a4c3fed62f6bfd85747d64d77cc504d7171bb93fbfadc50f453ba21dec79"
+      }
+    },
+    "frontends_corrected": {
+      "access_functions_passed": 18,
+      "cli_functions_passed": 17,
+      "principal_full_image_comparisons": 28,
+      "comparison_breakdown": {
+        "initial_adapter_typed_sql_and_sql_cli": 12,
+        "shared_fitted_dispatch": 8,
+        "direct_typed_cli": 8
+      },
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/frontend-third-root.log",
+        "bytes": 4288,
+        "sha256": "263933361e312ccd764452eb674a00aa1093e8f4f70880634581bfd355837e05"
+      }
+    },
+    "final_checks": {
+      "strict": {
+        "exit_code": 0,
+        "scope": "ACE/Access/CLI all targets, all features",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/strict-second-root.log",
+          "bytes": 403,
+          "sha256": "51c8dbd71b26c0809cd9acd7012d02f5ac273536131065e5b54a2032f7d7ab7e"
+        }
+      },
+      "minimal": {
+        "exit_code": 0,
+        "scope": "ACE/Access no default features",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/minimal-final-root.log",
+          "bytes": 301,
+          "sha256": "e448afda7c7e90464b3b874ed4244c066cde65314509d441c26ee57125caf2de"
+        }
+      },
+      "formatter": {
+        "exit_code": 0,
+        "scope": "Workspace",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/fmt-final-root.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "proof_final": {
+        "functions_passed": 4,
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/proof-final-root.log",
+          "bytes": 945,
+          "sha256": "d70d9f67fb16c6717c86ea9cedcbc5893b7a7c29dbbfa08688a0730c3e2f085d"
+        }
+      },
+      "typed_regressions": {
+        "write_previews_passed": 8,
+        "write_update_files_passed": 5,
+        "new_ordinary_default_text_full_image_comparisons": 4,
+        "includes": "argv and TSV literal null text carriers",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/typed-regressions-root.log",
+          "bytes": 1902,
+          "sha256": "00255548b0e491323c03bad95b4c3d30473d6ea80ee1a82b7987744d260991d7"
+        }
+      },
+      "documentation_links": {
+        "targets": 6741,
+        "missing": 0,
+        "evidence": "Observed after final usage-guide cleanup"
+      },
+      "diff_check": {
+        "exit_code": 0,
+        "evidence": "Root observed"
+      },
+      "native_contract": {
+        "functions_passed": 33,
+        "existing_ignored": 2,
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/native-contract-final-root.log",
+          "bytes": 4139,
+          "sha256": "f79e9514c935c33db28da96550f3200089bfcaa8471f8dcd33864cd1a999b502"
+        }
+      },
+      "adapter_metadata_regressions": {
+        "functions_passed": 17,
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-next-20261030/metadata-regressions-root.log",
+          "bytes": 3367,
+          "sha256": "085d219a28f95c5b0079ba6e9590de2e53145141fecd3dbff281fc76407c4203"
+        }
+      }
+    }
+  },
+  "history": [
+    {
+      "phase": "Static original framing review before SOURCE execution",
+      "finding": "Model initially used logical count TD+47 for descriptor base; actual physical count is TD+51",
+      "correction": "Separately assert logical and physical counts; derive descriptor base from physical count; no literal source or expected-byte choice changed"
+    },
+    {
+      "phase": "First native API execution",
+      "functions_passed": 3,
+      "functions_failed": 3,
+      "result": "Whole rebuilt variable record exceeded fixed-span MAX_FIXED_BYTES transport, returning Preservation before positive output",
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/native-api-first-root.log",
+        "bytes": 3015,
+        "sha256": "762996133272919e0e8036ccade082c2a270df30a7db69869662f1c46a07ca7c"
+      },
+      "correction": "Only new Text transport changed to paid full-record owners with checked disjoint original spans; fixed-span limits, source constructors and expected bytes unchanged"
+    },
+    {
+      "phase": "First strict checks",
+      "result": "Stopped on constant chunks_exact(2) in zero-length SOURCE fixture helper",
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/strict-first-root.log",
+        "bytes": 2557,
+        "sha256": "5d4e48933c7fc45e0a6aec66b64bddaf485ec9a30d58f632cb154d80317f4b5e"
+      },
+      "correction": "Equivalent typed-array as_chunks syntax; source/expected bytes and runtime policies unchanged; subsequent strict checks passed"
+    },
+    {
+      "phase": "Additional explicit typed CLI parity acceptance",
+      "result": "New direct typed route required dedicated shared FittedUpdate dispatch preserving original caller expectations; first new CLI test stopped on incorrect --database/--output flag spelling for positional SOURCE/OUTPUT",
+      "functions_passed_in_cli_target": 16,
+      "functions_failed_in_cli_target": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-next-20261030/frontend-second-root.log",
+        "bytes": 5322,
+        "sha256": "e950a4c3fed62f6bfd85747d64d77cc504d7171bb93fbfadc50f453ba21dec79"
+      },
+      "correction": "Test invocation uses existing positional SOURCE/OUTPUT; subsequent eight-image typed CLI parity and shared fitted dispatch checks passed"
+    }
+  ],
+  "qualification_limits": [
+    "Authored rich header-6 sources only; header-5 retained Extended Date metadata refuses",
+    "No native Microsoft Access save/reopen or data-macro absence qualification",
+    "No normal ACE save or journal admission"
+  ]
+}

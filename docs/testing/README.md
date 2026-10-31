@@ -9,6 +9,7 @@
 - [Explicit BeforeChange field-update candidates](ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
 - [Complete selected before-event collections](ACE16_BEFORE_EVENT_COLLECTIONS.md)
 - [Preserved mixed-schema Int32 updates](ACE16_PRESERVED_INT32_UPDATES.md)
+- [Fitting Short Text updates in mixed schemas](ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 - [Verification records](results/)
 
 This directory also owns focused test contracts, reference runners and inert

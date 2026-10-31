@@ -425,3 +425,73 @@ fn explicit_incrementing_uses_the_captured_counter_and_matches_exact_policy_outp
     assert!(!unchanged.exists());
     assert_eq!(fs::read(input).unwrap(), before);
 }
+
+#[test]
+fn ordinary_default_text_argv_and_file_use_fitted_bytes_and_literal_null() {
+    let before = model::variable(false);
+    for (ordinal, original, replacement, literal, changed) in [
+        (0, "Alice", "雪雪雪雪雪", "雪雪雪雪雪", true),
+        (2, "value:null", "value:null", "null", false),
+    ] {
+        let mut expected = before.clone();
+        if changed {
+            // Source row zero is the first packed row, 23 bytes at page end.
+            // Its fixed Id prefix is six bytes; five raw UTF-16 units occupy
+            // exactly the original ten-byte Alice payload. Framing is identical.
+            let payload = 12 * 4096 + 4096 - 23 + 6;
+            assert_eq!(
+                &expected[payload..payload + 10],
+                &[65, 0, 108, 0, 105, 0, 99, 0, 101, 0]
+            );
+            expected[payload..payload + 10]
+                .copy_from_slice(&[234, 150, 234, 150, 234, 150, 234, 150, 234, 150]);
+        }
+        let mut expected_rows = rows(&before);
+        expected_rows[ordinal][1] = Value::Text(literal.into());
+        assert_eq!(rows(&expected), expected_rows);
+
+        for file_transport in [false, true] {
+            let directory = tempfile::tempdir().unwrap();
+            let input = source(directory.path(), &before);
+            let output = directory.path().join("default.accdb");
+            let requests = directory.path().join("requests.tsv");
+            let ordinal_text = ordinal.to_string();
+            let result = if file_transport {
+                fs::write(
+                    &requests,
+                    format!("Items\tScore\t{ordinal}\ttext\t{original}\t{replacement}\n"),
+                )
+                .unwrap();
+                invoke(&[
+                    "write",
+                    "preview-update",
+                    input.to_str().unwrap(),
+                    output.to_str().unwrap(),
+                    "--set-file",
+                    requests.to_str().unwrap(),
+                ])
+            } else {
+                invoke(&[
+                    "write",
+                    "preview-update",
+                    input.to_str().unwrap(),
+                    output.to_str().unwrap(),
+                    "--set",
+                    "Items",
+                    "Score",
+                    &ordinal_text,
+                    "text",
+                    original,
+                    replacement,
+                ])
+            };
+            success(result);
+            let actual = fs::read(&output).unwrap();
+            assert!(
+                actual == expected,
+                "independent same-width raw Text/noop image"
+            );
+            assert_eq!(fs::read(&input).unwrap(), before);
+        }
+    }
+}

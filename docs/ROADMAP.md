@@ -84,6 +84,12 @@ The preserved service also handles single-column Int32/NULL transitions while
 retaining inactive payloads and enforcing Required/validation on the final
 candidate. Authored-source native, shared-service and CLI comparisons pass;
 genuine nullable sources and native Access qualification remain separate.
+
+One qualified [Short Text target](testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+now also fits its existing mixed-schema record through a separate preservation
+service, retaining rich siblings, raw no-ops and final field/table rules. Eight
+whole-image native comparisons pass. Broader mixed targets, allocation and
+genuine/native Access qualification remain open.
 Broader targets, unsupported source properties, required macros and normal saves
 remain unfinished.
 

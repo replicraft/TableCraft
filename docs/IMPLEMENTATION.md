@@ -74,6 +74,16 @@ production; the [genuine-file result](testing/results/ace16-preserved-int32-genu
 retains the source-framing correction and separate execution phases. Native Access
 save qualification remains pending.
 
+## Preserved fitting Short Text copies
+
+The separate [fitting Short Text service](testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+now handles one qualified unindexed target in a preserved mixed schema without
+moving the record or allocating pages. It retains opaque rich payloads and raw
+Text/NULL no-ops, independently reconstructs the complete image and checks final
+rules on both the proof's expected projection and the candidate. Eight literal
+whole-image comparisons and four proof functions pass. Native Access save and
+genuine-file qualification remain separate.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal
