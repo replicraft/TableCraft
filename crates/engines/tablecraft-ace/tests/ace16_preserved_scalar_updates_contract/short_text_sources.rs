@@ -4,7 +4,7 @@ mod api;
 #[path = "short_text_sources/model.rs"]
 mod model;
 #[path = "short_text_sources/zero_length_source.rs"]
-mod zero_length_source;
+pub(super) mod zero_length_source;
 
 use super::{SCOPE, budget, model as rich};
 use std::io::Cursor;

@@ -173,3 +173,6 @@ mod larger_capture_tests;
 
 #[cfg(test)]
 mod short_text_sources;
+
+#[cfg(test)]
+mod growth_sources;
