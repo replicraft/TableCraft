@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_variable_scalar_creation_sources",
+  "status": "source_read_qualification_passed",
+  "envelope_source_record": "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+  "envelope_fixture_commit": "6111e6d2",
+  "retained_fixed_source_commits": [
+    "fcadc73d",
+    "d8c7509c"
+  ],
+  "source_fixture": {
+    "draft": ".cache/ace16-native-variable-creation-sources-next-20261031/canonical_variable_creation.rs",
+    "sha256": "e8b518eed414024b6a0b6fb09ff5e59c986469120fa29929a5b5c6ba30449962",
+    "imports_production_creator_or_codec": false,
+    "changed_envelope_pages": [
+      7,
+      8
+    ],
+    "unchanged_envelope_pages": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  },
+  "profile": {
+    "header": 5,
+    "pages": 9,
+    "bytes_per_file": 36864,
+    "table": "Items",
+    "fields": [
+      {
+        "name": "Id",
+        "native_type": 4,
+        "fixed_offset": 0,
+        "width": 4,
+        "variable_index": 0
+      },
+      {
+        "name": "TextValue",
+        "native_type": 10,
+        "width": 16,
+        "max_utf16_units": 8,
+        "variable_index": 0
+      },
+      {
+        "name": "BinaryValue",
+        "native_type": 9,
+        "width": 16,
+        "variable_index": 1
+      },
+      {
+        "name": "DecimalValue",
+        "native_type": 16,
+        "width": 17,
+        "precision": 28,
+        "scale": 4,
+        "variable_index": 2
+      },
+      {
+        "name": "Flag",
+        "native_type": 1,
+        "fixed_offset": 0,
+        "width": 0,
+        "variable_index": 3
+      }
+    ],
+    "fixed_prefix_bytes": 6,
+    "variable_slots": 3,
+    "footer_and_mask_bytes": 11,
+    "largest_declared_escaped_row_plus_slot_bytes": 71,
+    "required_and_allow_zero_length": "not declared"
+  },
+  "cases": [
+    {
+      "id": "empty",
+      "rows": 0
+    },
+    {
+      "id": "null-empty",
+      "rows": 4
+    },
+    {
+      "id": "unicode",
+      "rows": 3
+    },
+    {
+      "id": "decimal-signs",
+      "rows": 3
+    },
+    {
+      "id": "escaped-bom",
+      "rows": 2
+    }
+  ],
+  "positive_rows": 12,
+  "reader_alias_control": {
+    "rows": 1,
+    "raw_text_hex": "fffe",
+    "expected_text": "",
+    "positive_creation_expectation": false
+  },
+  "independent_static_review": {
+    "status": "passed",
+    "checked": [
+      "NUMERIC sign/word order/precision/scale",
+      "variable descriptor indices and footer",
+      "NULL/empty mask separation",
+      "UTF16 unit versus encoded-byte width",
+      "nineteen-byte BOM escape",
+      "owned/candidate membership and untouched envelope",
+      "no producer authority"
+    ]
+  },
+  "qualification": {
+    "native_source_gates": {
+      "status": "passed",
+      "tests": 2,
+      "total_rows": 13,
+      "seconds": 0.02,
+      "log": ".cache/ace16-native-variable-creation-sources-next-20261031/native-second-root.log",
+      "sha256": "e05170e9e51112e83382ea3adee885f837c566d74905fa324cf9000988ffa7f0"
+    },
+    "source_export_and_hashes": {
+      "status": "passed",
+      "files": 6,
+      "freeze": ".cache/ace16-native-variable-creation-sources-next-20261031/originals-first-freeze-root.json",
+      "sha256": "599cd7751f22e9150102998d420e8046c3e2e794dd52e17c3c531abc5eae86b6"
+    },
+    "independent_sdk_reads": {
+      "status": "passed_after_helper_footer_correction",
+      "files": 6,
+      "positive_sources": 5,
+      "reader_controls": 1,
+      "observations": ".cache/ace16-native-variable-creation-sources-next-20261031/getter/observations-footer-v2"
+    },
+    "saved_evidence_verifier": {
+      "status": "passed",
+      "complete_images": 6,
+      "whole_sdk_observations": 6,
+      "child_calls": 0,
+      "writer_calls": 0,
+      "log": ".cache/ace16-native-variable-creation-sources-next-20261031/getter/saved-footer-v2-first-root.log",
+      "sha256": "94237dcbc9d2723d5fb27b1b05fb305901570d117a7af3f09e16a616a5fb0b68"
+    },
+    "ordinary_ci_hash_anchor": {
+      "status": "passed",
+      "tests": 1,
+      "positive_sources": 5,
+      "separately_labeled_reader_controls": 1,
+      "log": ".cache/ace16-native-variable-creation-sources-next-20261031/hash-first-root.log",
+      "sha256": "6a09e1533cf5bd85b4cbdf92fc99955232897a12ef2a0822382ce849f8f8feae"
+    },
+    "strict_and_format": {
+      "status": "passed"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "phase": "first native gate",
+      "exit": 101,
+      "tests_executed": 0,
+      "cause": "missing Cursor import",
+      "log": ".cache/ace16-native-variable-creation-sources-next-20261031/native-first-root.log",
+      "sha256": "726f785052a507d62f938eeb7aaac296006c943c8646e063259b95596e406905"
+    },
+    {
+      "phase": "SDK helper v1",
+      "empty_exit": 0,
+      "null_empty_exit": 1,
+      "remaining_calls_unrun": 4,
+      "cause": "helper raw variable-footer index validation",
+      "observations": ".cache/ace16-native-variable-creation-sources-next-20261031/getter/observations-first",
+      "source_bytes_changed": false
+    }
+  ],
+  "limitations": [
+    "No variable production constructor executed",
+    "No native Access or Windows qualification",
+    "No normal imported ACE save, rule or macro permission",
+    "Unresolved canonical header choices retain their existing limits"
+  ],
+  "final_checks": {
+    "status": "passed",
+    "strict": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-strict-second-root.log",
+      "bytes": 184,
+      "sha256": "df547c2acc8646509c5fdf39d65e19a7c6fedfe9dbef2577871e3e64fb07bf03"
+    },
+    "strict_seconds": 15.71,
+    "format": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-fmt-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hash_anchors": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-hashes-first-root.log",
+      "bytes": 920,
+      "sha256": "df5e747f5fdd5ba28fb5c032476e914a00c52b73880ebe1d3576c1241bcfcd3a"
+    },
+    "retained_strict_failure": {
+      "outcome": "ENOSPC before complete all-target checking; terminal failure confirmed; only ordinary incremental cache removed; -j 2 retry passed",
+      "log": {
+        "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-strict-root.log",
+        "bytes": 3490,
+        "sha256": "dc556ebe790c01282e8d8ed1f4305762df28b35f53b589aca45ea9a095771ff2"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6884,
+      "missing": 0,
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-links-root.log",
+      "sha256": "3bfcee6720bb40ba257ae06e00eeab61e3f88570e0218dea820446f935df44c4"
+    }
+  }
+}
