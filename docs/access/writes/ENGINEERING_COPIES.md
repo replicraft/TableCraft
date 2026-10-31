@@ -77,6 +77,15 @@ retaining the original physical record position and length. Sibling variable
 spans may move inside that record while their bytes remain exact. Multiple
 preserved targets and fixed/variable mixtures remain refused.
 
+For that qualified mixed schema, explicit `--variable` selects the
+[preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+for one ordinary, unindexed field with no calculated dependency. It can retain
+the original logical row reference while placing a hidden record on the original
+or another owned DATA page, or allocating a represented EOF DATA page. Default
+remains fitting. INDEX growth, map-storage initialization, larger-image modes,
+Memo/OLE targets and joint preserved targets remain refused. This engineering
+copy does not authorize normal saves or skip required data macros.
+
 For ordinary fixed targets, `--index-growth` selects the engine's qualified Int32
 single/tuple growth profile. `--variable` selects Short Text/Binary replacement,
 including qualified DATA forwarding. Multiple variable targets or fixed siblings

@@ -1,0 +1,264 @@
+{
+  "schema": 1,
+  "feature": "Preserved mixed-schema Short Text DATA growth engineering copies",
+  "date": "2026-10-30",
+  "scope": {
+    "native_api": "NativeImage::preview_ace16_preserved_text_growth",
+    "one_ordinary_short_text_target": true,
+    "nonindexed_and_calculation_independent": true,
+    "source_local_exact_expected_values": true,
+    "encoding": "existing minimum-size policy; exact raw noops",
+    "placement": [
+      "existing owned DATA",
+      "represented contiguous EOF DATA"
+    ],
+    "index_growth": false,
+    "map_storage_growth": false,
+    "normal_save_or_journal_authority": false,
+    "native_access_qualification": false,
+    "windows_execution_claimed": false,
+    "default_fitting_unchanged": true,
+    "genuine_sdk_original_growth_qualified": false
+  },
+  "phases": {
+    "source_compile_first": {
+      "exit_code": 101,
+      "tests_executed": 0,
+      "producer_calls": 0,
+      "cause": "E0277 test map-offset closure inferred i32 row instead of usize",
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/source-integration-first-root.log",
+        "bytes": 1090,
+        "sha256": "2b2d3d6d16bd5a518114a440734a9abc7fa79606c8d5ceda67aca35054205ba6"
+      }
+    },
+    "source_preflight_second": {
+      "exit_code": 101,
+      "passed": 1,
+      "failed": 2,
+      "producer_calls": 0,
+      "cause": "Unchanged rich row lengths are 219/211/265; the preflight incorrectly expected 365 for row 2. That literal did not control source or expected byte construction.",
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/source-integration-second-root.log",
+        "bytes": 1968,
+        "sha256": "05d0f5de6186ff0b250461f004fa805af69294e297fb7842d1540996f171d969"
+      }
+    },
+    "source_corrected_third": {
+      "exit_code": 0,
+      "functions_passed": 3,
+      "independent_pairs": 8,
+      "header6_reader_views": 16,
+      "header5_schema_views": 16,
+      "corrections": "Preflight third row length 265 and free space 3381; added exact raw sibling, noop and abandoned-terminal assertions before implementing the producer",
+      "literal_expected_bytes_not_retuned_from_writer": true,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/source-integration-third-root.log",
+        "bytes": 732,
+        "sha256": "8e74cb5c9a0f3c32460e020ba28b5b5e4a8e0b2b2e85fd8041393597af9893f3"
+      }
+    },
+    "strongest_source_first": {
+      "exit_code": 0,
+      "functions_passed": 2,
+      "header6_full_admissions": 16,
+      "header5_unsupported_column_refusals": 16,
+      "contradiction_sources_refused": 3,
+      "contradictions_are_healthy_mutation_sources": false,
+      "producer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/source-native-first-root.log",
+        "bytes": 649,
+        "sha256": "71023cc7c7cec9eba644106dd4fbd4c60658db79c852d422b27b40984810ec35"
+      }
+    },
+    "native_api_first": {
+      "exit_code": 0,
+      "functions_passed": 4,
+      "full_images_equal": 8,
+      "first_writer_attempt": true,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/native-api-first-root.log",
+        "bytes": 861,
+        "sha256": "c4f6da45242b122caa2761311ff45edcf08cab609781ace2bb7dea5d9ae8880a"
+      }
+    },
+    "native_contract_first": {
+      "exit_code": 0,
+      "functions_passed": 41,
+      "existing_helpers_ignored": 2,
+      "includes": "whole-image matrix, source/refusal controls, empty/raw noops, exact pools/final cancellation, ALZfalse later-row final constraint failure in both caller orders",
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/native-contract-first-root.log",
+        "bytes": 4970,
+        "sha256": "0b206d16968064b3ab891c3a45c2a7d994678842df13df7dd6ddd6bef25065b3"
+      }
+    },
+    "ordinary_variable_regression_first": {
+      "exit_code": 0,
+      "functions_passed": 11,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/ordinary-variable-regression-first-root.log",
+        "bytes": 1836,
+        "sha256": "c04124b4fafe7e8199921d28ca3fcb22f823adac118298d7c85cee9c5850a676"
+      }
+    },
+    "frontend": {
+      "status": "passed",
+      "exit_code": 0,
+      "access_full_target_functions_passed": 21,
+      "cli_full_target_functions_passed": 19,
+      "new_principal_full_images_equal": 32,
+      "first_attempt": true,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/frontend-first-root.log",
+        "bytes": 4989,
+        "sha256": "2a5dcbbc38ffebb84a650e1110798c5e16eb3defffadf02d29ec99a7ab1523fe"
+      }
+    },
+    "causal_proof": {
+      "status": "passed",
+      "exit_code": 0,
+      "functions_passed": 5,
+      "literal_success_controls": 8,
+      "refusals": [
+        "wrong changed counts",
+        "correlated alternative same-width request",
+        "stored cache and unrelated page changes",
+        "root pointers and hidden slot words",
+        "GLOBAL/owned/candidate ledger forgeries"
+      ],
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/causal-first-root.log",
+        "bytes": 1094,
+        "sha256": "9b63a3e421366424a94b0c967f768b322c1752bd846673d50171db2bf0c9cacf"
+      }
+    },
+    "strict": {
+      "status": "passed",
+      "exit_code": 0,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/strict-first-root.log",
+        "bytes": 403,
+        "sha256": "8209898d86e2939117ab740d5dcb1af8a37174459a6dec30f7def23ae22bbbaf"
+      }
+    },
+    "minimal": {
+      "status": "passed",
+      "exit_code": 0,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access"
+      ],
+      "no_default_features": true,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/minimal-final-root.log",
+        "bytes": 72,
+        "sha256": "f591e097f22f91dd5c31fbbf7e587d80c0a4e0ed594f9c9012a544f38c52d926"
+      }
+    },
+    "format_links_boundaries": {
+      "status": "passed",
+      "workspace_format": {
+        "exit_code": 0,
+        "log": {
+          "path": ".cache/ace16-preserved-text-growth-design-next-20261030/fmt-final-root.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "documentation_links": {
+        "exit_code": 0,
+        "targets": 6760,
+        "missing": 0,
+        "dedicated_log": null
+      },
+      "diff_check": {
+        "exit_code": 0,
+        "dedicated_log": null
+      }
+    },
+    "ordinary_contract_regression": {
+      "status": "passed",
+      "exit_code": 0,
+      "ordinary_variable_functions_passed": 4,
+      "placement_contract_functions_passed": 7,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/ordinary-contract-regression-root.log",
+        "bytes": 1614,
+        "sha256": "f4ac644a0a1be771d7f01058fbed8f9572d7edd7c2e6aa34a1010e6395582d17"
+      }
+    },
+    "cli_regression": {
+      "query_preview_updates_passed": 27,
+      "write_previews_passed": 8,
+      "write_update_files_passed": 5,
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/cli-regressions-first-root.log",
+        "bytes": 4789,
+        "sha256": "5b97c6ff27c11c66b736cf8f18c6d5aaa4f87844d4f3e8c02057c086553e80b9"
+      }
+    }
+  },
+  "source_chronology": {
+    "qualification_before_producer": true,
+    "old_rich_owner_unchanged": true,
+    "actual_rows": [
+      219,
+      211,
+      265
+    ],
+    "original_page_free": 3381,
+    "corrected_source_freeze": {
+      "path": ".cache/ace16-preserved-text-growth-design-next-20261030/source-original-geometry-correction-freeze.json",
+      "bytes": 1428,
+      "sha256": "694e100fe6d5448bdd11ba06f692345c3e051afa0c000a7527d489844503f257"
+    },
+    "first_source_freeze": {
+      "path": ".cache/ace16-preserved-text-growth-design-next-20261030/installed-source-first-freeze.json",
+      "bytes": 1686,
+      "sha256": "a541554348b0aa90bf408e9b585dad06fbc17fd3f52596f0de82f138cfc9e820"
+    },
+    "private_request_order_correction": {
+      "path": ".cache/ace16-preserved-text-growth-design-next-20261030/extraction/source-order-correction-freeze.json",
+      "bytes": 828,
+      "sha256": "519635e762d61e3a6dc38a70b8ae85cc592406aec01a4dff44f05aa89e79f9c0"
+    },
+    "source_constructor": {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/growing_sources/model.rs",
+      "bytes": 15234,
+      "sha256": "06d1d99a0a53c24c73b496a063881c47b8e891055ecea7fa463c9eb5a4161642"
+    },
+    "source_constructor_before_import_cleanup": {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/growing_sources/model.rs",
+      "bytes": 15220,
+      "sha256": "935fd21ce83c3c48aa04b856147e864dd1a25756453c7783fde5341b701bf229"
+    },
+    "import_cleanup": {
+      "change": "BTreeSet imported at top instead of inline full path; no logic or source/expected byte choices changed",
+      "inverse_source_exact": true,
+      "preserved_predecessor": {
+        "path": ".cache/ace16-preserved-text-growth-design-next-20261030/before-set-import-cleanup.rs",
+        "bytes": 15220,
+        "sha256": "935fd21ce83c3c48aa04b856147e864dd1a25756453c7783fde5341b701bf229"
+      }
+    }
+  },
+  "independent_records_proof": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/growing/proof.rs",
+    "bytes": 7564,
+    "sha256": "9b0d12348aa1d4eb58aa0b9fc57ef21e2ace85a3035e2e9416a63882555723b6"
+  },
+  "guide": {
+    "path": "docs/testing/ACE16_PRESERVED_TEXT_GROWTH.md",
+    "bytes": 6097,
+    "sha256": "50f7da62e303f643a1663ef098bce8d298aab5b584d10cfb29982a45e9fe78e8"
+  }
+}

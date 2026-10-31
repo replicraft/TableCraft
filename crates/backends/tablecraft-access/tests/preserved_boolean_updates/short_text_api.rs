@@ -168,9 +168,6 @@ fn projected_short_text_keeps_explicit_profiles_and_foreign_handles_closed() {
         ScalarUpdateMode::Fixed(UpdateMode::Fitted),
         ScalarUpdateMode::Fixed(UpdateMode::IndexGrowth),
         ScalarUpdateMode::Fixed(UpdateMode::Cascading),
-        ScalarUpdateMode::Variable {
-            index_growth: false,
-        },
         ScalarUpdateMode::Variable { index_growth: true },
         ScalarUpdateMode::LongValue,
     ] {

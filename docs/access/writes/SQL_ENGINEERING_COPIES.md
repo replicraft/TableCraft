@@ -86,8 +86,15 @@ selects one service before native planning. A qualified mixed-schema projection
 with one ordinary, unindexed Short Text target uses the
 [preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 under Default mode, retaining opaque companions and original record capacity.
-Other explicit modes and mixed-target requests keep their existing refusals for
-that preservation profile. All-fixed targets use existing fitting
+Explicit `--variable` selects the separate
+[preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+for one ordinary, unindexed target with no calculated dependency. It preserves
+the original logical row reference while placing the replacement on the original
+or another owned DATA page, or allocating a represented EOF DATA page. Default
+remains fitting; neither mode retries a failed candidate. INDEX growth,
+map-storage initialization, larger-image modes, Memo/OLE targets and mixed-target
+requests remain refused for this rich-schema Text profile. It grants no normal
+save or required-macro bypass. All-fixed targets use existing fitting
 fixed/batch maintenance and retain its history policy. For one Text/Binary target,
 the retained native declaration selects the existing ordinary Memo/OLE service
 when it matches that engine storage shape. Otherwise it uses the existing variable
@@ -100,8 +107,9 @@ Shared Text/Binary metadata alone does not establish native storage kind. The
 single-column Memo/OLE selection uses the engine's ordinary LVAL declaration
 predicate; ownership, properties, constraints and payloads still require the
 selected engine service's checks. Multiple-column LVAL changes remain unsupported,
-including when WHERE selects no rows. Projected rich schemas retain their existing
-unindexed Boolean-only mutation restriction. This routing `Default` is unrelated to
+including when WHERE selects no rows. Projected rich schemas keep their separate
+qualified Boolean, nullable Int32 and single Short Text preservation profiles;
+these do not admit arbitrary rich-schema fields. This routing `Default` is unrelated to
 omitted INSERT fields or native `DefaultValue` evaluation.
 
 `--index-growth` explicitly selects existing Int32 fixed INDEX allocation.

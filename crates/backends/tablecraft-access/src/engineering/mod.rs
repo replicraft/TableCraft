@@ -1,6 +1,7 @@
 //! Explicit, non-journalable engineering copies; ordinary native saves stay gated.
 mod deleting;
 mod fitted;
+mod variable;
 pub use deleting::AccessEngineeringDeleter;
 mod editor;
 pub use editor::{AccessEngineeringEditor, ScalarUpdateMode};
@@ -386,11 +387,15 @@ pub fn preview(
             column,
             rows,
             index_growth,
-        } => Candidate::Rows(if index_growth {
-            image.preview_ace16_variable_split_updates(table, column, rows, budget, cancelled)?
-        } else {
-            image.preview_ace16_variable_updates(table, column, rows, budget, cancelled)?
-        }),
+        } => Candidate::Rows(variable::preview(
+            image,
+            table,
+            column,
+            rows,
+            index_growth,
+            budget,
+            cancelled,
+        )?),
         EngineeringRequest::LongValueUpdate {
             table,
             column,

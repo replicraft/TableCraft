@@ -17,7 +17,11 @@ impl AccessEngineeringEditor {
         let schema = &self.native_schema;
         if !matches!(
             self.mode,
-            ScalarUpdateMode::Default | ScalarUpdateMode::Fixed(UpdateMode::Fitted)
+            ScalarUpdateMode::Default
+                | ScalarUpdateMode::Fixed(UpdateMode::Fitted)
+                | ScalarUpdateMode::Variable {
+                    index_growth: false
+                }
         ) {
             return Err(NativeEditError::Unsupported);
         }
@@ -27,8 +31,18 @@ impl AccessEngineeringEditor {
             .get(position)
             .ok_or(NativeEditError::Unsupported)?;
         let short_text = target.data_type() == ScalarType::Text;
+        if matches!(self.mode, ScalarUpdateMode::Variable { .. }) && !short_text {
+            return Err(NativeEditError::Unsupported);
+        }
         if !matches!(target.data_type(), ScalarType::Boolean | ScalarType::Int32)
-            && !(short_text && self.mode == ScalarUpdateMode::Default)
+            && !(short_text
+                && matches!(
+                    self.mode,
+                    ScalarUpdateMode::Default
+                        | ScalarUpdateMode::Variable {
+                            index_growth: false
+                        }
+                ))
         {
             return Err(NativeEditError::Unsupported);
         }
