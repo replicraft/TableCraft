@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_variable_creation_capacity_sources",
+  "status": "independent_source_read_and_ci_hash_qualification_passed",
+  "predecessor_source_record": "docs/testing/results/ace16-variable-creation-source-2026-10-31.json",
+  "source_fixture": {
+    "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/canonical_variable_capacity_creation.rs",
+    "bytes": 3989,
+    "sha256": "4233b33f4effde9be1e97ef9e45a91d33b9c26042dfa45141570c70544f52628"
+  },
+  "source_first_freeze": {
+    "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/private-freeze.json",
+    "bytes": 1613,
+    "sha256": "d9928fe11328f208787552b9e27f5999171c8b1c58c30fe4ac44d8faa7c40dcc"
+  },
+  "sdk_expectation_freeze": {
+    "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/code-first-freeze.json",
+    "bytes": 2184,
+    "sha256": "8fef9bf9931f06c53ec578f4bd4f4d14ce4e4c256573ee5f72542c6ae6099eae"
+  },
+  "profile": {
+    "header": 5,
+    "pages": 9,
+    "bytes_per_file": 36864,
+    "same_five_field_variable_schema": true,
+    "nullable_id": true,
+    "minimum_record_bytes": 17,
+    "directory_slot_bytes": 2,
+    "full_record_bytes": 69,
+    "required_metadata": "not declared"
+  },
+  "cases": [
+    {
+      "id": "maximum-rows",
+      "rows": 57,
+      "data_free_bytes": 35,
+      "owned_pages": [
+        8
+      ],
+      "candidate_pages": [
+        8
+      ]
+    },
+    {
+      "id": "null-tail",
+      "rows": 58,
+      "data_free_bytes": 16,
+      "owned_pages": [
+        8
+      ],
+      "candidate_pages": []
+    }
+  ],
+  "total_user_row_observations": 115,
+  "qualification": {
+    "native_source_gate": {
+      "status": "passed_first_executed_attempt_after_ENOSPC_compile_failure",
+      "tests": 1,
+      "originals": 2,
+      "user_row_observations": 115,
+      "seconds": 0.01,
+      "compile_seconds": 32.95,
+      "log": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/native-second-root.log",
+        "bytes": 514,
+        "sha256": "68864e92a0d1c896290b79c1e95fc11c2721b28770e0a8dbac33bb429945e3a5"
+      }
+    },
+    "explicit_source_export": {
+      "status": "passed",
+      "files": 2,
+      "inventory": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/originals-first-freeze-root.json",
+        "bytes": 642,
+        "sha256": "9535aa9d0f68c64c2f074e74541a7cfb75160d7ed7d758f2cc3e64d5fa379219"
+      }
+    },
+    "independent_sdk_reads": {
+      "status": "passed_first_attempt",
+      "calls": 2,
+      "user_row_observations": 115,
+      "unchanged_getter": "CanonicalVariableAceGetter footer-v2",
+      "precall_closure": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/reader-precall-root.json",
+        "bytes": 1011,
+        "sha256": "17699542ca79ef628bb2f10527e7a2d144d7d840ca38d7e3c176f830d6cc9694"
+      },
+      "observations": [
+        {
+          "case": "maximum-rows",
+          "rows": 57,
+          "result": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-maximum-rows-first-result.json",
+            "bytes": 602,
+            "sha256": "a530050392a7a88760b622659e30bb89257e65d0143ad621f81452e9b7171087"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-maximum-rows-first.stdout",
+            "bytes": 21047,
+            "sha256": "21d026bb7194c65ce4fc1de99f71f922088e4510c4a78ca5a18e49316ba9bc2f"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-maximum-rows-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "null-tail",
+          "rows": 58,
+          "result": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-null-tail-first-result.json",
+            "bytes": 599,
+            "sha256": "b663702bd8de0e1ef48e302bfeed9190bfa8529265d1518b48e791b6d570d87f"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-null-tail-first.stdout",
+            "bytes": 21130,
+            "sha256": "a1879797091f642fe84ed3e9bd33c88e44ace2c1454ba27459e19925c434e2bc"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/observations-first/sdk-null-tail-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "source_and_class_closure_unchanged": true
+    },
+    "saved_comparison": {
+      "status": "passed_first_attempt",
+      "complete_images": 2,
+      "whole_sdk_inventories": 2,
+      "user_row_observations": 115,
+      "child_calls": 0,
+      "writer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/saved-first-root.log",
+        "bytes": 339,
+        "sha256": "3bc8b796b91ae43752a264d0c8553d7d396327c2545a5ca760949e6c68a80a4f"
+      }
+    },
+    "ordinary_ci_hash_anchor": {
+      "status": "bound_to_actual_exports_pending_execution",
+      "bound_freeze": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/additions/hash-bound-freeze.json",
+        "bytes": 1084,
+        "sha256": "bedeebe7cfffce9596dc8192aca5160aaebab2ec7a10433769d5e9428afdd1cd"
+      }
+    },
+    "final_checks": {
+      "status": "pending"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "phase": "first native SOURCE compile",
+      "exit_code": 101,
+      "tests_executed": 0,
+      "cause": "ENOSPC",
+      "log": {
+        "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/native-first-root.log",
+        "bytes": 4694,
+        "sha256": "2b2d3e0f987de944841a94771b13994e7c9de3bcd5f0e3727e9833da2e128acc"
+      }
+    }
+  ],
+  "limitations": [
+    "No variable production constructor qualification",
+    "No physical page growth qualification",
+    "No native Access or Windows qualification",
+    "No imported-file normal save, rule or macro permission"
+  ],
+  "author_executions": 0,
+  "sdk_bound_freeze": {
+    "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/getter/bound-first-freeze.json",
+    "bytes": 2436,
+    "sha256": "397c78553786baa389eaa666acda069775f14f6f9159d3a25b6719de351cdb7e"
+  },
+  "ordinary_hash_anchor": {
+    "status": "passed",
+    "tests": 2,
+    "ignored": 1,
+    "log": ".cache/ace16-native-variable-capacity-sources-next-20261031/hash-first-root.log",
+    "sha256": "967f9ed12c8a9e332afc5a4738bb63b66924ac15fc5fdaad9f5f886385b5572c"
+  },
+  "final_checks": {
+    "strict-first-root.log": {
+      "status": "passed",
+      "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/strict-first-root.log",
+      "sha256": "05207a28ba5bb73847c011eeb67e1d0507ae7c72f636beb4c65883ca8be42b97"
+    },
+    "fmt-first-root.log": {
+      "status": "passed",
+      "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/fmt-first-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "links-first-root.log": {
+      "status": "passed",
+      "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/links-first-root.log",
+      "sha256": "d941fc9675d4ea348cd42c5bb02ecc44d48d0c75e5250a997325f6ff654f1726"
+    },
+    "dependencies-first-root.log": {
+      "status": "passed",
+      "path": ".cache/ace16-native-variable-capacity-sources-next-20261031/dependencies-first-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    }
+  }
+}

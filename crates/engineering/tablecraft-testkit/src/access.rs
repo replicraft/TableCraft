@@ -134,3 +134,6 @@ pub mod canonical_variable_creation;
 
 /// Independent catalog-name encoding sources and raw column-name control.
 pub mod canonical_catalog_names;
+
+/// Independent near-full variable records and candidate-map boundary originals.
+pub mod canonical_variable_capacity_creation;
