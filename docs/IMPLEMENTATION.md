@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Shared offline write sessions
+
+The Access adapter now owns the [offline write-session lifecycle](access/writes/OFFLINE_WRITE_SESSIONS.md)
+for the existing normal Jet 4 profile. One exclusive target survives successive
+plans, saves and explicit recovery without reopening or unlocking it between edits.
+Staged plans expose report counts before effects; failures retain resources and
+separate current known facts from the previous completed receipt. Retired
+confirmation reports the currently verified image without claiming history.
+The CLI journal commands consume this shared service.
+
+Eleven direct filesystem session tests and the real-protocol confirmation-error
+regression pass. The [focused record](testing/results/offline-write-sessions-2026-10-31.json)
+retains source-first complete images and validation boundaries. This does not
+enable normal ACE saves, resolve required data macros, implement native Access
+shared-file locking or complete the application cursor/session roadmap.
+
 ## Rich-schema BeforeChange batches
 
 The explicit native [BeforeChange batch service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md#rich-schema-original-fixed-batches)

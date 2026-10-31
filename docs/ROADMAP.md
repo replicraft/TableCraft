@@ -711,6 +711,13 @@ and 16 owned bitmap pages retain source references and all old/Padding bytes.
 Genuine next-block missing pointers and declaration initialization retain separate
 qualification gates.
 
+The shared [offline write-session service](access/writes/OFFLINE_WRITE_SESSIONS.md)
+now retains one exclusive target across successive normal Jet 4 saves and explicit
+recovery/confirmation. Staged counts precede effects; known completion survives
+cleanup/read failures. Eleven direct session tests and a real confirmation-error
+regression pass. This closes a concrete host-composition gap without broadening
+normal ACE admission or claiming native shared-file coordination.
+
 Major gates still open before the full backend is complete:
 
 - [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full

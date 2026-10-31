@@ -1399,3 +1399,7 @@ Filesystem integration tests now inherit the existing workspace `tempfile`
 dev-dependency. The lockfile adds only that member dependency edge; no registry
 package version, root dependency or default feature changes. Shared native
 contracts still import neither the concrete adapter nor the application host.
+
+The CLI member explicitly enables this shared session feature for its existing
+apply, recovery and retired-confirmation commands; it owns report formatting
+and protected output failure handling.
