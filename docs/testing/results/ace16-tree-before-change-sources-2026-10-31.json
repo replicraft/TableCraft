@@ -1,0 +1,1262 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_retained_tree_before_change_sources",
+  "status": "native_sources_anchors_independent_readers_and_strict_passed",
+  "expanded_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "originals": 18,
+    "expected_images": 18,
+    "views": 36,
+    "total_image_bytes": 1703936,
+    "rows_each": 3,
+    "fields": [
+      "Id",
+      "Score"
+    ],
+    "leaf_file_bytes": 40960,
+    "node_file_bytes": 49152,
+    "definition": 7,
+    "data": 8,
+    "root": 9,
+    "node_leaves": [
+      10,
+      11
+    ],
+    "owned_map": [
+      3,
+      16
+    ],
+    "physical_indexes_each": 1
+  },
+  "positive_models": [
+    "leaf-prefix",
+    "node-ascending",
+    "node-descending-prefix",
+    "node-composite-macro",
+    "node-unique-swap",
+    "leaf-prefix-loss",
+    "node-prefix-loss",
+    "node-zero-tail",
+    "node-retained-upper"
+  ],
+  "native_source": {
+    "status": "passed_first_execution",
+    "tests": 1,
+    "views": 36,
+    "seconds": 0.42,
+    "program_rows": 0,
+    "normal_plans": 0
+  },
+  "export": {
+    "status": "passed_first_execution",
+    "images": 36,
+    "manifests": 2,
+    "create_new": true
+  },
+  "ordinary_anchors": {
+    "status": "passed_first_execution",
+    "passed_tests": 2,
+    "ignored_exporter": 1
+  },
+  "strict": {
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-testkit"
+    ],
+    "all_targets": true,
+    "all_features": true,
+    "status": "passed"
+  },
+  "independent_sdk": {
+    "status": "passed_all_first_calls",
+    "observations": 108,
+    "whole_inventories": 36,
+    "index_metadata": 36,
+    "named_index_cursors": 36,
+    "observer_classes_reused_unchanged": 3,
+    "new_javac_calls": 0,
+    "writer_calls": 0,
+    "program_rows": 0,
+    "all_expected_stdout_frozen_before_first_sdk": 108,
+    "source_inputs_and_class_inventories_unchanged": true,
+    "normal_save_authority": false,
+    "code_and_source_freeze": {
+      "path": ".cache/ace16-native-before-change-tree-next-20261031/getter/code-and-source-first-freeze.json",
+      "bytes": 26663,
+      "sha256": "104ad8f657a7f082ce8b8d74ecec473018a7ff4b7d6586c1976976c09b6ed2d0"
+    },
+    "authority": {
+      "path": ".cache/ace16-native-before-change-tree-next-20261031/getter/input-authority.json",
+      "bytes": 103244,
+      "sha256": "45d99428fdcccdaa3e75cadcf5ad1d62fabc894868e036de3f62e0ba9cffa708"
+    },
+    "receipt": {
+      "path": ".cache/ace16-native-before-change-tree-next-20261031/getter/receipt-first-root.json",
+      "bytes": 110369,
+      "sha256": "211e9ed5a562bad6a84b50d13ad1c98394872a43e6e4e0f9e7999dc3db7e807d"
+    },
+    "saved_verifier": {
+      "completed": true,
+      "source_views": 36,
+      "originals": 18,
+      "modeled_after_images": 18,
+      "observed_sdk_calls": 108,
+      "verified": {
+        "inventory": 36,
+        "index-metadata": 36,
+        "index-cursor": 36
+      },
+      "child_calls": 0,
+      "writer_calls": 0,
+      "program_calls": 0,
+      "normal_save_authority": false
+    }
+  },
+  "sources": [
+    {
+      "path": "h5-leaf-prefix-original.accdb",
+      "bytes": 40960,
+      "sha256": "c1220648698b434f19fb9256b312e6d281a22fcffd5a085604955fbcbb585181"
+    },
+    {
+      "path": "h5-leaf-prefix-expected.accdb",
+      "bytes": 40960,
+      "sha256": "35181db597d4f2fac8165fe73cce60ba37bfd9a3b7d1bf91c699bce6ae5eceb0"
+    },
+    {
+      "path": "h5-node-ascending-original.accdb",
+      "bytes": 49152,
+      "sha256": "e1209bb55ebaa0d30f13d2be19cb33bdbff25780ad96dd6399c3f61b703fdf91"
+    },
+    {
+      "path": "h5-node-ascending-expected.accdb",
+      "bytes": 49152,
+      "sha256": "ea6697c38519b32462200b62282afdf6342df7abc0b45db98c6d80e210377ffc"
+    },
+    {
+      "path": "h5-node-descending-prefix-original.accdb",
+      "bytes": 49152,
+      "sha256": "4ddfe584c49c1cb5af399fd696eae2c70bb11f15009a8248cff2ef3b7a8e86a1"
+    },
+    {
+      "path": "h5-node-descending-prefix-expected.accdb",
+      "bytes": 49152,
+      "sha256": "ac4384ae2a2172510eccdf4dd6f9c3b8d3bc6fbbeb37b2e33ecbcf16f3ebba08"
+    },
+    {
+      "path": "h5-node-composite-macro-original.accdb",
+      "bytes": 49152,
+      "sha256": "fab825710f0eccaaea186ca854af77513ec340986bb9a031479f263f0f061945"
+    },
+    {
+      "path": "h5-node-composite-macro-expected.accdb",
+      "bytes": 49152,
+      "sha256": "781d8a959b19419be6ae75451329a4075273c0dc7fb746db9ef2b8cd1802eec7"
+    },
+    {
+      "path": "h5-node-unique-swap-original.accdb",
+      "bytes": 49152,
+      "sha256": "365024741c0345143e5dff9291d44aa9982d1650946f7fdca5d8f0d40769cb8a"
+    },
+    {
+      "path": "h5-node-unique-swap-expected.accdb",
+      "bytes": 49152,
+      "sha256": "2abed5a9585bd772643d95d2b9ebc64493d7188eaad99071db79c6a1bc339705"
+    },
+    {
+      "path": "h5-leaf-prefix-loss-original.accdb",
+      "bytes": 40960,
+      "sha256": "c1220648698b434f19fb9256b312e6d281a22fcffd5a085604955fbcbb585181"
+    },
+    {
+      "path": "h5-leaf-prefix-loss-expected.accdb",
+      "bytes": 40960,
+      "sha256": "5bc06142b92ca5456c3fa470b341bc9528ed0b1a43566df9abdc0e1a29f4ef53"
+    },
+    {
+      "path": "h5-node-prefix-loss-original.accdb",
+      "bytes": 49152,
+      "sha256": "8ca86ef463e0f8cf78d2ffcb1b994f8e7a8480e0224ef1b426de78b894da361d"
+    },
+    {
+      "path": "h5-node-prefix-loss-expected.accdb",
+      "bytes": 49152,
+      "sha256": "7dd7d2a2d1d2fbe3bc10ee5cfd9753168e24d1b2bc44c1387d9b600aec456832"
+    },
+    {
+      "path": "h5-node-zero-tail-original.accdb",
+      "bytes": 49152,
+      "sha256": "7d0032d940d9dd6d1477380e25773dffc38988ee440e7e71eca730d88d015b73"
+    },
+    {
+      "path": "h5-node-zero-tail-expected.accdb",
+      "bytes": 49152,
+      "sha256": "fe79650c58ef14bf4934d1e34218b1a5782035464307fac55cb6efadd5470019"
+    },
+    {
+      "path": "h5-node-retained-upper-original.accdb",
+      "bytes": 49152,
+      "sha256": "367f85f4e13699e7dc7c55ce0888f532aed21701b088f43c75ca81cc380e87dd"
+    },
+    {
+      "path": "h5-node-retained-upper-expected.accdb",
+      "bytes": 49152,
+      "sha256": "367f85f4e13699e7dc7c55ce0888f532aed21701b088f43c75ca81cc380e87dd"
+    },
+    {
+      "path": "h6-leaf-prefix-original.accdb",
+      "bytes": 40960,
+      "sha256": "8a653d7b6376266c23e609565474d62502eb28a0d64856b408465afffe580563"
+    },
+    {
+      "path": "h6-leaf-prefix-expected.accdb",
+      "bytes": 40960,
+      "sha256": "7433324d8ad06789bd4fc9cf63fde9eb9e656ea9a0e923cb85221d0b5873a957"
+    },
+    {
+      "path": "h6-node-ascending-original.accdb",
+      "bytes": 49152,
+      "sha256": "d3e8b099fccac1dccf4e614cb26542b58c8a2a1a36b62792cb4a7cf91f36e4b9"
+    },
+    {
+      "path": "h6-node-ascending-expected.accdb",
+      "bytes": 49152,
+      "sha256": "fc71e86c7939671b9ee31fe9ad09ed8b04f6b7d9a7ca6e0ae339699b50cf36f5"
+    },
+    {
+      "path": "h6-node-descending-prefix-original.accdb",
+      "bytes": 49152,
+      "sha256": "66ca796e685b79f2c5d191ee5077cc57c369104e7338b1592a8c0e15884aae34"
+    },
+    {
+      "path": "h6-node-descending-prefix-expected.accdb",
+      "bytes": 49152,
+      "sha256": "ca775ab1ce3bbe62efa2212503558235facc4c4812ddb7aeadccd5c9e85491e3"
+    },
+    {
+      "path": "h6-node-composite-macro-original.accdb",
+      "bytes": 49152,
+      "sha256": "0d9a63d22ef2ddb981b81bc3d227a6045aa6b1d73855f50ce9e9d5986881691d"
+    },
+    {
+      "path": "h6-node-composite-macro-expected.accdb",
+      "bytes": 49152,
+      "sha256": "9db697a71a45a1ba9bf35839820a42ba8f9e5164568234559190ff660599840d"
+    },
+    {
+      "path": "h6-node-unique-swap-original.accdb",
+      "bytes": 49152,
+      "sha256": "60bf44737c7d1875d8d04df4247714a9336c4e3ba0e9ca502d5f3d9f68c4a865"
+    },
+    {
+      "path": "h6-node-unique-swap-expected.accdb",
+      "bytes": 49152,
+      "sha256": "924afab21e55177f82fac4b21d0de6a00f97aa4fe44d8f7663b23fb2deceb55b"
+    },
+    {
+      "path": "h6-leaf-prefix-loss-original.accdb",
+      "bytes": 40960,
+      "sha256": "8a653d7b6376266c23e609565474d62502eb28a0d64856b408465afffe580563"
+    },
+    {
+      "path": "h6-leaf-prefix-loss-expected.accdb",
+      "bytes": 40960,
+      "sha256": "ed5ebf759d73ac904da1fab44deffac068b5b05540b123b40a4e7196671466d6"
+    },
+    {
+      "path": "h6-node-prefix-loss-original.accdb",
+      "bytes": 49152,
+      "sha256": "8007a898d860e742138c61247d993f8ca9f07ce7579f494522077bcd3c7c1999"
+    },
+    {
+      "path": "h6-node-prefix-loss-expected.accdb",
+      "bytes": 49152,
+      "sha256": "113617535dcc1074916272b7e1835cb03ffa4eecc1283d50feaa13a703616843"
+    },
+    {
+      "path": "h6-node-zero-tail-original.accdb",
+      "bytes": 49152,
+      "sha256": "9b2bc16a25a453377312787c5970814422730e53f541b203761164c29b13c392"
+    },
+    {
+      "path": "h6-node-zero-tail-expected.accdb",
+      "bytes": 49152,
+      "sha256": "3e2ca906e504f2a05bac5eb4119b8e39c062b8ef14d1cf27d2676396bb9ff7a1"
+    },
+    {
+      "path": "h6-node-retained-upper-original.accdb",
+      "bytes": 49152,
+      "sha256": "05e6ae91df7103393ade36b4b09f25643f882f65f2d6428f8a107b6863fd46a5"
+    },
+    {
+      "path": "h6-node-retained-upper-expected.accdb",
+      "bytes": 49152,
+      "sha256": "05e6ae91df7103393ade36b4b09f25643f882f65f2d6428f8a107b6863fd46a5"
+    }
+  ],
+  "original_requests": [
+    {
+      "id": "h5-leaf-prefix",
+      "header": 5,
+      "original": "h5-leaf-prefix-original.accdb",
+      "expected": "h5-leaf-prefix-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": false,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-ascending",
+      "header": 5,
+      "original": "h5-node-ascending-original.accdb",
+      "expected": "h5-node-ascending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-descending-prefix",
+      "header": 5,
+      "original": "h5-node-descending-prefix-original.accdb",
+      "expected": "h5-node-descending-prefix-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": true
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-composite-macro",
+      "header": 5,
+      "original": "h5-node-composite-macro-original.accdb",
+      "expected": "h5-node-composite-macro-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          },
+          {
+            "column": 0,
+            "descending": true
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          11,
+          17
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-unique-swap",
+      "header": 5,
+      "original": "h5-node-unique-swap-original.accdb",
+      "expected": "h5-node-unique-swap-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 1,
+            "expected": 20,
+            "replacement": 9
+          },
+          {
+            "ordinal": 2,
+            "expected": 30,
+            "replacement": -11
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 2
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": true,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          30
+        ],
+        [
+          3,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "h5-leaf-prefix-loss",
+      "header": 5,
+      "original": "h5-leaf-prefix-loss-original.accdb",
+      "expected": "h5-leaf-prefix-loss-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 2147483636
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": false,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          2147483647
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-prefix-loss",
+      "header": 5,
+      "original": "h5-node-prefix-loss-original.accdb",
+      "expected": "h5-node-prefix-loss-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 2,
+            "expected": 30,
+            "replacement": -51
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          -20
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-zero-tail",
+      "header": 5,
+      "original": "h5-node-zero-tail-original.accdb",
+      "expected": "h5-node-zero-tail-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": true,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h5-node-retained-upper",
+      "header": 5,
+      "original": "h5-node-retained-upper-original.accdb",
+      "expected": "h5-node-retained-upper-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": true,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-leaf-prefix",
+      "header": 6,
+      "original": "h6-leaf-prefix-original.accdb",
+      "expected": "h6-leaf-prefix-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": false,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-ascending",
+      "header": 6,
+      "original": "h6-node-ascending-original.accdb",
+      "expected": "h6-node-ascending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-descending-prefix",
+      "header": 6,
+      "original": "h6-node-descending-prefix-original.accdb",
+      "expected": "h6-node-descending-prefix-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": true
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-composite-macro",
+      "header": 6,
+      "original": "h6-node-composite-macro-original.accdb",
+      "expected": "h6-node-composite-macro-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          },
+          {
+            "column": 0,
+            "descending": true
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          11,
+          17
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-unique-swap",
+      "header": 6,
+      "original": "h6-node-unique-swap-original.accdb",
+      "expected": "h6-node-unique-swap-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 1,
+            "expected": 20,
+            "replacement": 9
+          },
+          {
+            "ordinal": 2,
+            "expected": 30,
+            "replacement": -11
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 2
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": true,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          30
+        ],
+        [
+          3,
+          20
+        ]
+      ]
+    },
+    {
+      "id": "h6-leaf-prefix-loss",
+      "header": 6,
+      "original": "h6-leaf-prefix-loss-original.accdb",
+      "expected": "h6-leaf-prefix-loss-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 2147483636
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": false,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          2147483647
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-prefix-loss",
+      "header": 6,
+      "original": "h6-node-prefix-loss-original.accdb",
+      "expected": "h6-node-prefix-loss-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 2,
+            "expected": 30,
+            "replacement": -51
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          -20
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-zero-tail",
+      "header": 6,
+      "original": "h6-node-zero-tail-original.accdb",
+      "expected": "h6-node-zero-tail-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": true,
+        "retained_upper": false,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          28
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    },
+    {
+      "id": "h6-node-retained-upper",
+      "header": 6,
+      "original": "h6-node-retained-upper-original.accdb",
+      "expected": "h6-node-retained-upper-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      },
+      "profile": {
+        "node": true,
+        "zero_tail": false,
+        "retained_upper": true,
+        "unique": false,
+        "components": [
+          {
+            "column": 1,
+            "descending": false
+          }
+        ],
+        "owned": [
+          9,
+          10,
+          11
+        ]
+      },
+      "final_rows": [
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          20
+        ],
+        [
+          3,
+          30
+        ]
+      ]
+    }
+  ],
+  "provenance": {
+    "license": "repository Apache-2.0",
+    "copied_third_party_database_bytes": false,
+    "owner": "crates/engineering/tablecraft-testkit/src/access/canonical_tree_before_change.rs",
+    "before_only_owners": [
+      "canonical_indexed_before_change",
+      "canonical_before_change"
+    ],
+    "production_writer_or_serializer_used": false
+  },
+  "evidence_namespace": ".cache/ace16-native-before-change-tree-next-20261031"
+}
