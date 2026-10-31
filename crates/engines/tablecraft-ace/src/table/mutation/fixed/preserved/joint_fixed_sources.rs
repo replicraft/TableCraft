@@ -84,3 +84,5 @@ fn qualify_joint_fixed_source_roles_before_producer_installation() {
     }
     assert_eq!((admitted, refused), (46, 46));
 }
+
+mod native_expected;

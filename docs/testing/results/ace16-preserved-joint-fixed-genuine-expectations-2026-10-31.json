@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "Original/request-only twelve-case genuine joint fixed expectations before producer calls",
+  "producer_revision": "74b6b112a7ed86440d0e2d5f6029292f15c48128",
+  "observed": {
+    "originals_reused_unchanged": 2,
+    "current_complete_original_source_admissions": 2,
+    "expected_images_constructed": 12,
+    "complete_expected_source_admissions": 12,
+    "expected_constructor_child_calls": 0,
+    "expected_constructor_writer_calls": 0,
+    "joint_producer_calls": 0,
+    "changed_images": 8,
+    "exact_noops": 4,
+    "changed_root_counts": [
+      1,
+      1,
+      1,
+      3,
+      0,
+      0,
+      1,
+      1,
+      1,
+      3,
+      0,
+      0
+    ]
+  },
+  "expectations": {
+    "path": ".cache/ace16-preserved-joint-fixed-genuine-expected-first-20261031/expectations.json",
+    "bytes": 54364,
+    "sha256": "b2f23499d05bb42f27e5b3b66988181d4807c2b3ae2c364bf143d605857b83e1"
+  },
+  "expected_report": {
+    "path": ".cache/ace16-preserved-joint-fixed-genuine-expected-first-20261031/report.json",
+    "bytes": 360,
+    "sha256": "71699d8ed0e1d727ee1a75875e2e550962f0ea86cbe202d7462eb1ec94fd6f41"
+  },
+  "requests": {
+    "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/expected/requests.json",
+    "bytes": 38162,
+    "sha256": "49e777f85e14bee249c4e374e0969afea5265de10df1891598018ed1e737acdb"
+  },
+  "authority_manifest": {
+    "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/controllers/expected-manifest.json",
+    "bytes": 10407,
+    "sha256": "6f7fee249b52d44f6844a7b2ffeb699bb34437f7d72b189a7d9aecd3c28161b7"
+  },
+  "public_pure_owners": [
+    {
+      "path": "docs/testing/preserved_joint_fixed_genuine/model.py",
+      "bytes": 13081,
+      "sha256": "3c2f9b41d5dcbfd585eaca17fc559a36eb614255a7d9eeb099aed6dda518c8a1"
+    },
+    {
+      "path": "docs/testing/preserved_joint_fixed_genuine/recipes.py",
+      "bytes": 4514,
+      "sha256": "8d5fd31db55f7b4a08032d069edc1514af92f5a30a7c34f9fa9c1422ddc988b6"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/original-source-first-root.log",
+      "bytes": 539,
+      "sha256": "cc172025ffc0852853d2f2a968a89f7abc984083d976f2348efecfe2cec7243f"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/expected-first-root.log",
+      "bytes": 360,
+      "sha256": "71699d8ed0e1d727ee1a75875e2e550962f0ea86cbe202d7462eb1ec94fd6f41"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/expected-source-first-root.log",
+      "bytes": 537,
+      "sha256": "273066fba12e444417beabb3e0793d3db1ab88153de97ae35d370a9a9bac4efe"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-genuine-next-20261031/expected-helper-strict-first-root.log",
+      "bytes": 184,
+      "sha256": "baafa4eecb16760e4d91e27506ecc6ec39b4c37c440bd77e22c447c1b8fd3105"
+    }
+  ],
+  "limits": [
+    "Expected-source qualification only; actual joint candidates and SDK readbacks still pending",
+    "No native Access save/reopen or macro-absence evidence",
+    "No normal-save or journal permission"
+  ]
+}
