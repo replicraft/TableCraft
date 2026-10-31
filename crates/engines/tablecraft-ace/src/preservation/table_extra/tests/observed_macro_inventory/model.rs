@@ -1,4 +1,5 @@
-use super::super::{fixture, guard_sources::model as original, inspect::payload_fixture};
+use super::super::{guard_sources::model as original, inspect::payload_fixture};
+use tablecraft_testkit::access::wide_properties as fixture;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) enum Case {

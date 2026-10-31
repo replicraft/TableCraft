@@ -1,6 +1,6 @@
 //! Test-only registry carrier using the actual literal MR2/payload builders.
-use super::{fixture, inspect::payload_fixture};
-use tablecraft_testkit::access as raw;
+use super::inspect::payload_fixture;
+use tablecraft_testkit::access::{self as raw, wide_properties};
 
 pub(crate) struct Carrier {
     pub record: Vec<u8>,
@@ -8,13 +8,7 @@ pub(crate) struct Carrier {
 }
 
 pub(crate) fn carrier(code: u8, properties: &[(&str, &str)]) -> Carrier {
-    let names = properties.iter().map(|(name, _)| *name).collect::<Vec<_>>();
-    let values = properties
-        .iter()
-        .enumerate()
-        .map(|(index, (_, xml))| fixture::property(index as u16, 1, 12, &fixture::text(xml)))
-        .collect::<Vec<_>>();
-    let extra = fixture::bag(&[fixture::names(&names), fixture::group(3, &values)]);
+    let extra = wide_properties::event_properties(properties);
     let bytes =
         payload_fixture::database(code, &[None, None, Some(payload_fixture::inline(&extra))]);
 

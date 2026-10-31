@@ -116,3 +116,6 @@ pub mod multiple_indexes;
 pub mod mutation_fixture;
 /// Complete independently authored secondary-index creation images.
 pub mod secondary_index;
+
+/// Independent Wide-MR2 declarations shared by native and adapter fixtures.
+pub mod wide_properties;

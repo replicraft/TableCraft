@@ -21,6 +21,20 @@ the current verifier is a later implementation, not a replacement execution.
 Two helper tests and both saved twelve-case proof replays pass. The candidate
 verifier retains its explicit optional Git-object check.
 
+## Shared native fixture builders
+
+The independent Wide-MR2 fixture encoders now have one shared owner in
+`tablecraft-testkit::access::wide_properties`, including the original unchanged
+golden and the event-property assembly used by both native carriers and rich
+source fixtures. The Required source constructor also has one pure owner;
+native and adapter consumers use it directly. Inverse checks preserve the
+encoder, golden, source choices and Required constructor bodies. After the
+extraction, all three source gates, 36 public Extra tests and the three CLI
+fixture targets (20, 6 and 13 tests) passed, together with strict checks for the
+four affected packages and formatting. These fixture moves grant no additional
+write or event-coverage permission.
+See the [extraction record](../testing/results/ace16-before-change-shared-fixtures-2026-10-31.json).
+
 ## Toolchain and commands
 
 Install Rust through rustup. The repository selects Rust 1.99.0, edition 2024,
