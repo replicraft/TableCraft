@@ -10466,3 +10466,25 @@ canonical image authority. Its page packing and recycled inactive NULL payloads
 differ and are recorded explicitly. These are V2016/V2019 stored-profile
 engineering results; native Microsoft Access save/reopen, required data-macro
 semantics and normal ACE saves remain unqualified.
+
+
+## Preserved Int32 genuine SDK originals (2026-10-30)
+
+The [repository-authored recipe](preserved_int32_originals/PreservedInt32Originals.java)
+creates two fresh V2016/V2019 originals through pinned Jackcess 5.0.4 public
+builders. It reuses `parent_index_split_originals/BoundedFileChannel.java` directly.
+All row values, stale calculated caches, attachment contents and requests are
+repository-authored synthetic inputs; no third-party fixture or implementation
+is copied. SDK binaries, generated databases and classes remain private.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016 (header 5) | 458752 | `4ab9b8da854961ed73e9f769bee76b748f8cba47487e174f214a3534f86d444f` |
+| V2019 (header 6) | 528384 | `594ad7971f23d119db3e0c341dd7d62c53a89bcb238cc78b34e293d3c552492a` |
+
+Five bounded source processes and the ignored native source-capture function
+pass. This establishes source admission before expected/candidate construction;
+no writer or native Microsoft Access save/reopen has been run for these files.
+System-generated timestamps/GUIDs prevent a byte-identical regeneration claim.
+The initial Java compile failure and the separate zero-child controller preflight
+failure are preserved in the [source record](results/ace16-preserved-int32-genuine-sources-2026-10-30.json).
