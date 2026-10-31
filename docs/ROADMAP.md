@@ -72,6 +72,8 @@ Qualified [mixed-schema Int32 copies](testing/ACE16_PRESERVED_INT32_UPDATES.md)
 now extend the preserved fixed service beyond Boolean masks. One ordinary,
 nonindexed field outside calculation dependencies can change through existing
 typed/SQL/CLI consumers while attachments and stored caches remain byte-exact.
+Ten whole-image copies on two independently generated originals and ten fresh
+readonly Jackcess inventories now pass, including signed boundaries and no-ops.
 Broader targets, unsupported source properties, required macros and normal saves
 remain unfinished.
 
