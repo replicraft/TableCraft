@@ -1,0 +1,633 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_indexed_before_change_sources",
+  "status": "native_source_hashes_and_strict_passed_independent_sdk_pending",
+  "normal_indexed_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "originals": 18,
+    "expected_images": 16,
+    "bytes_each": 40960,
+    "rows_each": 3,
+    "columns": [
+      "Id",
+      "Score"
+    ],
+    "physical_indexes_each": 1,
+    "root": 9,
+    "definition": 7,
+    "owned_map": [
+      3,
+      16
+    ],
+    "prefix": 0
+  },
+  "native_source": {
+    "first_tests": 1,
+    "first_views": 34,
+    "seconds": 0.4,
+    "status": "passed",
+    "event_rows_evaluated": 0,
+    "normal_plans": 0
+  },
+  "export": {
+    "tests": 1,
+    "images": 34,
+    "manifests": 2,
+    "create_new": true,
+    "status": "passed"
+  },
+  "ordinary_anchors_and_source": {
+    "passed": 2,
+    "ignored_exporter": 1,
+    "status": "passed"
+  },
+  "strict": {
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-testkit"
+    ],
+    "all_targets": true,
+    "all_features": true,
+    "status": "passed"
+  },
+  "sources": [
+    {
+      "path": "h5-ascending-original.accdb",
+      "bytes": 40960,
+      "sha256": "dbc9cc582b09c100b8de6d08bfe3b976adb3cdba22870dd15084a116d684170c"
+    },
+    {
+      "path": "h5-ascending-expected.accdb",
+      "bytes": 40960,
+      "sha256": "aa8056782d70fe9be66e36a601b946aeefbd1866998aacfb51e6a85ff758bd97"
+    },
+    {
+      "path": "h5-descending-original.accdb",
+      "bytes": 40960,
+      "sha256": "d88df7ef5c2a82e7ad910d76c33c541ad412097a38fd31cd01a62416a19c585f"
+    },
+    {
+      "path": "h5-descending-expected.accdb",
+      "bytes": 40960,
+      "sha256": "36aed0f4f1aadc12f8ba9523dcb985de96f04834833c86dd9b36d1725158d0c2"
+    },
+    {
+      "path": "h5-composite-original.accdb",
+      "bytes": 40960,
+      "sha256": "c474f45071d48cd6779c5f168e810f0cbba7c258107bdc227da1c3807bfb7b40"
+    },
+    {
+      "path": "h5-composite-expected.accdb",
+      "bytes": 40960,
+      "sha256": "b84de884b2474ea54409ede648ba3dd778037ae1218917d4d7dce4b6af0f4120"
+    },
+    {
+      "path": "h5-alias-original.accdb",
+      "bytes": 40960,
+      "sha256": "30c32cae812adc1d285c2f0c9fc81c98cb3973f11112421a8ee8f4859f64811d"
+    },
+    {
+      "path": "h5-alias-expected.accdb",
+      "bytes": 40960,
+      "sha256": "9beca7e1b4bb0d6f1a4606d9e76f29d8645321c2d673be7aca50fea215adbd19"
+    },
+    {
+      "path": "h5-unique-swap-original.accdb",
+      "bytes": 40960,
+      "sha256": "9b8a46c4d0983d8f6deed5689cf6aa305ab81bf4eebcd7f793ed178c3f32703c"
+    },
+    {
+      "path": "h5-unique-swap-expected.accdb",
+      "bytes": 40960,
+      "sha256": "4e948e170b20306d09ccb009c0e81faa82ff7c72f85239dea2c8bddcc9a7fad0"
+    },
+    {
+      "path": "h5-macro-only-id-original.accdb",
+      "bytes": 40960,
+      "sha256": "ea0af73e9fc7ba1a6b374c3443c1b1a5d58fd54a3411af23880b4ca9a67efc6f"
+    },
+    {
+      "path": "h5-macro-only-id-expected.accdb",
+      "bytes": 40960,
+      "sha256": "57660b6255fe595c09157720f9cd8398696fd88293286b158fd830260a69e8c8"
+    },
+    {
+      "path": "h5-restore-original-original.accdb",
+      "bytes": 40960,
+      "sha256": "8a6e8b042cdf1277876506558fb7fbef3d563e1468fb9074cd3b34671ee1d24b"
+    },
+    {
+      "path": "h5-restore-original-expected.accdb",
+      "bytes": 40960,
+      "sha256": "8a6e8b042cdf1277876506558fb7fbef3d563e1468fb9074cd3b34671ee1d24b"
+    },
+    {
+      "path": "h5-empty-original.accdb",
+      "bytes": 40960,
+      "sha256": "c965032cf68ea07c1bbf0e6252e7c77458519497d11eb330f432e341c67fc007"
+    },
+    {
+      "path": "h5-empty-expected.accdb",
+      "bytes": 40960,
+      "sha256": "c965032cf68ea07c1bbf0e6252e7c77458519497d11eb330f432e341c67fc007"
+    },
+    {
+      "path": "h5-unique-conflict-original.accdb",
+      "bytes": 40960,
+      "sha256": "9b8a46c4d0983d8f6deed5689cf6aa305ab81bf4eebcd7f793ed178c3f32703c"
+    },
+    {
+      "path": "h6-ascending-original.accdb",
+      "bytes": 40960,
+      "sha256": "c66b6bd0572080cffa505c87e4279b3a53328ed148aed67383e81e8d50b1e6d5"
+    },
+    {
+      "path": "h6-ascending-expected.accdb",
+      "bytes": 40960,
+      "sha256": "4631fc2163cc7d9b4c921b3f0f8d06e60feec88b9c2cd35c7fdec6386d680c53"
+    },
+    {
+      "path": "h6-descending-original.accdb",
+      "bytes": 40960,
+      "sha256": "da547f24145992e48f91dcf845d49a9c57b2ecd171e0ed5e07c92f4f9f9d2353"
+    },
+    {
+      "path": "h6-descending-expected.accdb",
+      "bytes": 40960,
+      "sha256": "1ddc8467ba2bf37c70450b13cf30ff9b0ec929235e2b29649d9c6b48184d07d9"
+    },
+    {
+      "path": "h6-composite-original.accdb",
+      "bytes": 40960,
+      "sha256": "0c5f10d5f037dfaa602d783fffe0a1bab0bf41b0a2cf6f995bffe1dfcfe0734e"
+    },
+    {
+      "path": "h6-composite-expected.accdb",
+      "bytes": 40960,
+      "sha256": "aafe1ba7f4aee04faf099a0610bdcfd600508a3f15a7ef37c9475537d1d9bc59"
+    },
+    {
+      "path": "h6-alias-original.accdb",
+      "bytes": 40960,
+      "sha256": "a9f4d21d32a2d8e1bcba6674f2bdd467906ab01eee621362215ee275f73dc915"
+    },
+    {
+      "path": "h6-alias-expected.accdb",
+      "bytes": 40960,
+      "sha256": "94ee6123cd5c7efdb1778b4db1f61e6bcfcb81921c3e4cfca2b3e9f5695c7d25"
+    },
+    {
+      "path": "h6-unique-swap-original.accdb",
+      "bytes": 40960,
+      "sha256": "194f7d9b2a5441e41277ff55e339dcbfa97a7f86f79006bb43553df8133f6b50"
+    },
+    {
+      "path": "h6-unique-swap-expected.accdb",
+      "bytes": 40960,
+      "sha256": "40488192fa91441de7758ff7b7419eb886c5cd9c90bb1e84de91e044b90eb91f"
+    },
+    {
+      "path": "h6-macro-only-id-original.accdb",
+      "bytes": 40960,
+      "sha256": "b543db3dc662840f049245f64d2fdcdb99f5c9e8a03bb6762a165eb4daad4643"
+    },
+    {
+      "path": "h6-macro-only-id-expected.accdb",
+      "bytes": 40960,
+      "sha256": "d5d4990fa3a05e14058529c1df918207622f1b73b0a2275d462a94a3cfc87d23"
+    },
+    {
+      "path": "h6-restore-original-original.accdb",
+      "bytes": 40960,
+      "sha256": "33007f1a25d6f42e95251da674f666a9c7eeb5a72cbbb8bb509d6fe44ad8a7fd"
+    },
+    {
+      "path": "h6-restore-original-expected.accdb",
+      "bytes": 40960,
+      "sha256": "33007f1a25d6f42e95251da674f666a9c7eeb5a72cbbb8bb509d6fe44ad8a7fd"
+    },
+    {
+      "path": "h6-empty-original.accdb",
+      "bytes": 40960,
+      "sha256": "e32986c7b38ecd835e258c9cb600f4bc634675d65659e7064b5754ece4f75397"
+    },
+    {
+      "path": "h6-empty-expected.accdb",
+      "bytes": 40960,
+      "sha256": "e32986c7b38ecd835e258c9cb600f4bc634675d65659e7064b5754ece4f75397"
+    },
+    {
+      "path": "h6-unique-conflict-original.accdb",
+      "bytes": 40960,
+      "sha256": "194f7d9b2a5441e41277ff55e339dcbfa97a7f86f79006bb43553df8133f6b50"
+    }
+  ],
+  "original_requests": [
+    {
+      "id": "h5-ascending",
+      "header": 5,
+      "original": "h5-ascending-original.accdb",
+      "expected": "h5-ascending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-descending",
+      "header": 5,
+      "original": "h5-descending-original.accdb",
+      "expected": "h5-descending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-composite",
+      "header": 5,
+      "original": "h5-composite-original.accdb",
+      "expected": "h5-composite-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-alias",
+      "header": 5,
+      "original": "h5-alias-original.accdb",
+      "expected": "h5-alias-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-unique-swap",
+      "header": 5,
+      "original": "h5-unique-swap-original.accdb",
+      "expected": "h5-unique-swap-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 9
+          },
+          {
+            "ordinal": 1,
+            "expected": 20,
+            "replacement": -11
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 2
+      }
+    },
+    {
+      "id": "h5-macro-only-id",
+      "header": 5,
+      "original": "h5-macro-only-id-original.accdb",
+      "expected": "h5-macro-only-id-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-restore-original",
+      "header": 5,
+      "original": "h5-restore-original-original.accdb",
+      "expected": "h5-restore-original-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h5-empty",
+      "header": 5,
+      "original": "h5-empty-original.accdb",
+      "expected": "h5-empty-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": []
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h5-unique-conflict",
+      "header": 5,
+      "original": "h5-unique-conflict-original.accdb",
+      "expected": null,
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 9
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "refusal",
+        "reason": "unique-final-key-conflict"
+      }
+    },
+    {
+      "id": "h6-ascending",
+      "header": 6,
+      "original": "h6-ascending-original.accdb",
+      "expected": "h6-ascending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-descending",
+      "header": 6,
+      "original": "h6-descending-original.accdb",
+      "expected": "h6-descending-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-composite",
+      "header": 6,
+      "original": "h6-composite-original.accdb",
+      "expected": "h6-composite-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-alias",
+      "header": 6,
+      "original": "h6-alias-original.accdb",
+      "expected": "h6-alias-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-unique-swap",
+      "header": 6,
+      "original": "h6-unique-swap-original.accdb",
+      "expected": "h6-unique-swap-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 9
+          },
+          {
+            "ordinal": 1,
+            "expected": 20,
+            "replacement": -11
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 2
+      }
+    },
+    {
+      "id": "h6-macro-only-id",
+      "header": 6,
+      "original": "h6-macro-only-id-original.accdb",
+      "expected": "h6-macro-only-id-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-restore-original",
+      "header": 6,
+      "original": "h6-restore-original-original.accdb",
+      "expected": "h6-restore-original-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 17
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h6-empty",
+      "header": 6,
+      "original": "h6-empty-original.accdb",
+      "expected": "h6-empty-expected.accdb",
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": []
+      },
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h6-unique-conflict",
+      "header": 6,
+      "original": "h6-unique-conflict-original.accdb",
+      "expected": null,
+      "native_request": {
+        "table": "Items",
+        "column": "Score",
+        "updates": [
+          {
+            "ordinal": 0,
+            "expected": 10,
+            "replacement": 9
+          }
+        ]
+      },
+      "expected_outcome": {
+        "kind": "refusal",
+        "reason": "unique-final-key-conflict"
+      }
+    }
+  ],
+  "provenance": {
+    "license": "repository Apache-2.0",
+    "copied_third_party_database_bytes": false,
+    "owner": "crates/engineering/tablecraft-testkit/src/access/canonical_indexed_before_change.rs",
+    "reused_original_only": "canonical_before_change",
+    "independent_wire_references": [
+      "secondary_index/index.rs",
+      "multiple_indexes.rs"
+    ],
+    "production_writer_or_serializer_used": false
+  },
+  "evidence_namespace": ".cache/ace16-native-before-change-indexed-next-20261031",
+  "format_and_boundaries": {
+    "formatter": "passed",
+    "documentation_targets": 6920,
+    "documentation_missing": 0,
+    "dependency_packages": 15,
+    "status": "passed"
+  },
+  "independent_sdk": {
+    "status": "pending",
+    "observations": 0,
+    "writes": 0
+  }
+}

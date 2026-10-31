@@ -143,3 +143,6 @@ pub mod canonical_multiple_creation;
 
 /// Authored BeforeChange originals and independent literal candidate images.
 pub mod canonical_before_change;
+
+/// Independent indexed BeforeChange originals and literal complete outcomes.
+pub mod canonical_indexed_before_change;

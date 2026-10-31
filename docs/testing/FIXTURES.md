@@ -10686,3 +10686,13 @@ frozen before normal-writer execution. Native structural reads and all 46
 independent SDK inventories pass; no event or write permission follows from
 those reads. Supplied-equal-assignment models remain outside initial normal
 admission. The linked result retains exact provenance and phase outcomes.
+
+## Authored indexed BeforeChange originals
+
+The [indexed source corpus](ACE16_INDEXED_BEFORE_CHANGE_SOURCES.md) contains
+eighteen originals and sixteen complete modeled outcomes under the repository
+license. One owned leaf adds ascending, descending, composite, alias and unique
+key profiles to the existing original-only event envelope. No third-party
+database bytes or production writer outputs supply these sources. The linked
+result and ordinary hash anchors retain the source/request freeze separately
+from future indexed normal-write and native Access qualification.
