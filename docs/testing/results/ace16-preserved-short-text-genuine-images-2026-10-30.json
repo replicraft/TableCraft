@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "All recorded source, expected, committed-producer, independent SDK, saved-only verification and documentation checks passed",
+  "scope": "One fitting ordinary Short_Text target on two independently generated V2016/V2019 mixed-schema originals; engineering copies only",
+  "producer_revision": "b101c78fb5b32451d61b875de3426d0d36cee194",
+  "maintained_files": [
+    {
+      "path": "docs/testing/preserved_short_text_genuine/__init__.py",
+      "bytes": 80,
+      "sha256": "349a8e6c45432bdc5a0992e9ca1f443ac2dfd9ecb4c1479b3729647bebd5c5c4"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/framing.py",
+      "bytes": 7985,
+      "sha256": "c23ab49e470b44cda4f9f1ef8761437decfa3f9f61469ee2262d761f8589ee89"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/model.py",
+      "bytes": 9594,
+      "sha256": "52ca707f906fd2ae4412109f9ddb178106b050b521a3f7db10bfc6c4b7a8a5f9"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/prepare.py",
+      "bytes": 1245,
+      "sha256": "54c0db74f1e0112952346d5bd3bd05c69eb3c52a475c54b7ca59537f9da7e165"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/verify.py",
+      "bytes": 10715,
+      "sha256": "af694847586160262aea21a8d07dcf13dbced2c2496a390811554f511de42ace"
+    },
+    {
+      "path": "docs/testing/preserved_short_text_genuine/README.md",
+      "bytes": 2564,
+      "sha256": "ee07092256ba90ec4c52e4d98e59d466ebe540c6cdeaa1712e6cd0e5fdafe685"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/framing.py",
+      "bytes": 19571,
+      "sha256": "4fd4e65ccd9db12ec1789e68527c15de642a1852d2d037c8f3e37889e12150e2"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/__init__.py",
+      "bytes": 159,
+      "sha256": "a287a807f14734657180c09d25348ea71359f40f0eba1f59f7844922fa6c9acb"
+    },
+    {
+      "path": "docs/testing/ace16_insert_candidates/model.py",
+      "bytes": 13121,
+      "sha256": "e25461040e1315054d2ce30771481262e0f59fa9b703b9cf5a8c294a942680be"
+    }
+  ],
+  "evidence": {
+    "expectations": {
+      "path": ".cache/ace16-preserved-short-text-genuine-expected-first-20261030/expectations.json",
+      "bytes": 43816,
+      "sha256": "7c4344f2244e84dccaa5c146d771725d0d4e36b9ed03980757d0f463a9c922fa"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-preserved-short-text-genuine-expected-first-20261030/report.json",
+      "bytes": 870,
+      "sha256": "93c2283b50ce24562db11ad2939f58346f1e717bc0f0bc9831ce77e3926dd960"
+    },
+    "requests": {
+      "path": ".cache/ace16-preserved-short-text-genuine-expected-next-20261030/requests.json",
+      "bytes": 23866,
+      "sha256": "f0fb72e55e339ecd444cc50238c5f2a0bf16c06e3eb7052777d6cfd4858f090a"
+    },
+    "source_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/execution-plan.json",
+      "bytes": 8559,
+      "sha256": "70e649f3f34478f6240e6b099360fc06bfcec7c57c9179559d8dded976dabbee"
+    },
+    "source_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/source-receipt.json",
+      "bytes": 17168,
+      "sha256": "c6274c26e630569149bfaf2458a7343ec1e44e56b4bde1566e3d1311de002f48"
+    },
+    "native_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-candidates-first-20261030/plan.json",
+      "bytes": 57028,
+      "sha256": "4c22da1b3b074019d3dfc5433884dc6acc21d6c5617fac80375a254f9de665f3"
+    },
+    "native_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-candidates-first-20261030/receipt.json",
+      "bytes": 39314,
+      "sha256": "98d47ae9f9df8fb09b7488fb51cab6f396bcbd6bad1d391e712ce54b32002ff6"
+    },
+    "sdk_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-readbacks-first-20261030/plan.json",
+      "bytes": 130265,
+      "sha256": "1ed484e115fddac7d268869bd92c068cb0bb0539aa2ce57ae0f1a4b11e7a69e8"
+    },
+    "sdk_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-readbacks-first-20261030/receipt.json",
+      "bytes": 25707,
+      "sha256": "018a8713b9662e9461111da1d2042ebf4af36b3e8ed223857b67243027466ea8"
+    },
+    "export_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-cli-build-first-20261030/export-receipt.json",
+      "bytes": 671,
+      "sha256": "6cd365a49816cf2f602ad50f82e80894b904a8a6b99abce3c81a13fd4be8ebdc"
+    },
+    "build_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-cli-build-first-20261030/build-receipt.json",
+      "bytes": 92450,
+      "sha256": "2f526ec53459f0d2a2d8b84760043b3ec7eede7344fdb00334b125945cf329b7"
+    },
+    "source_admission": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-second-root.log",
+      "bytes": 418,
+      "sha256": "e4c3b34a23533e5adbc1108ad6820444b591ae9dec62888ebd2429d275ffe0f8"
+    },
+    "source_admission_first_path_failure": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-first-root.log",
+      "bytes": 1363,
+      "sha256": "648164eb65174ba802ef0560f26b09d35ad18b76b924b4d7ce8e60923b50ef30"
+    },
+    "capacity": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/capacity-first-root.json",
+      "bytes": 10977,
+      "sha256": "2161ade99b3565a9d38443770904c86bd73e7ad2ce3b59dc0aa421c16daa1098"
+    },
+    "saved_verifier": {
+      "path": ".cache/ace16-preserved-short-text-genuine-readbacks-first-20261030/saved-verifier-first-root.log",
+      "bytes": 180,
+      "sha256": "3f5660df49f67669ada16f1edf30b1cfd77c1547c3018015ab94b19abf38cc06"
+    }
+  },
+  "observed": {
+    "source_children": 5,
+    "native_source_functions_passed": 1,
+    "originals_admitted": 2,
+    "pure_expected_cases": 22,
+    "independent_complete_images": 18,
+    "capacity_refusal_controls": 4,
+    "expected_child_calls": 0,
+    "expected_writer_calls": 0,
+    "native_commands": 22,
+    "native_complete_images": 18,
+    "native_expected_bytes_compared": 8884224,
+    "native_capacity_refusals": 4,
+    "changed_cases": 14,
+    "complete_noops": 4,
+    "fresh_readonly_sdk_calls": 18,
+    "full_tagged_inventories_equal": 18,
+    "first_attempts": "Fresh committed build, pure constructor, candidate22 and SDK18 all passed on first execution",
+    "saved_verifier": {
+      "first_execution_exit_code": 0,
+      "checked_pins": 257,
+      "originals": 2,
+      "native_calls": 22,
+      "images": 18,
+      "capacity_refusals": 4,
+      "changed_cases": 14,
+      "noops": 4,
+      "sdk_reads": 18,
+      "child_processes": 0
+    },
+    "documentation_checks": {
+      "local_targets": 6751,
+      "missing": 0,
+      "diff_check_exit_code": 0
+    }
+  },
+  "physical_profile": {
+    "present_text_capacity_bytes": 7,
+    "null_target_capacity_bytes": 0,
+    "preserved": "Original record positions/lengths, all sibling bytes through internal offset moves, stale caches, LVALs/attachments, catalog properties, indexes/maps/counters and EOF",
+    "null_to_nonempty": "Typed RowLayout refusal at zero capacity",
+    "null_to_empty": "Present raw zero-length Text fits zero capacity and remains distinct from NULL",
+    "noop": "Original compact Text bytes and inactive NULL representation remain exact"
+  },
+  "history": [
+    {
+      "phase": "Native source path setup",
+      "result": "First relative environment directory failed at file open from crate test cwd; absolute environment invocation passed without helper/source changes",
+      "evidence": "source_admission_first_path_failure"
+    },
+    {
+      "phase": "Staged whitespace review",
+      "result": "Removed one blank line at EOF from the promoted raw inspector; executable function body, requests and all expected/candidate bytes unchanged"
+    }
+  ],
+  "pending": [],
+  "qualification_limits": [
+    "SDK-generated sources and Jackcess comparisons do not establish Microsoft Access creation, event semantics or save/reopen compatibility",
+    "No required-macro absence, native storage discovery, normal ACE save or journal permission",
+    "No fitting overflow fallback, page allocation or physical record relocation",
+    "Original source/private execution programs/classes/expected/candidate bytes remain unchanged"
+  ]
+}

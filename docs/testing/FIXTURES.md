@@ -10510,8 +10510,14 @@ All five bounded source children and one strongest native SOURCE function pass;
 the latter admits both originals without a writer/no-op preview. A first relative
 environment path failed before file admission and is retained separately from the
 unchanged helper's passing absolute-path invocation. No original was patched.
-Expected images and candidate/readback qualification remain pending; these are
-SDK-created sources, not native Access save evidence. The
-[source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json)
-pins actual generation and inspection artifacts, distinct from recipe
-repeatability and system-generated timestamps/GUIDs.
+Eighteen original/request-only full images and four overflow controls were
+frozen before candidates. The fresh committed CLI matches all 18 images
+(8,884,224 bytes) and refuses the four overflow requests without artifacts;
+18 fresh unchanged readonly SDK getter calls match the complete expected
+inventories. Original hashes remain stable. The actual source capacities are
+seven bytes for present Text and zero for NULL; no original was retuned to
+manufacture a positive fit. The [source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json)
+and [genuine-image record](results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+keep generation, independent expectations, committed build, candidate and reader
+phases separate. SDK-created sources are not native Access save evidence;
+required macros, native Access comparisons and normal ACE saves remain open.
