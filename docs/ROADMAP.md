@@ -12,8 +12,10 @@ Twelve complete-image comparisons through a fresh committed CLI and twelve
 fresh read-only SDK inventories now also pass on the unchanged generated
 V2016/V2019 originals. The joint genuine corpus includes overlapping row groups,
 NULL/mask transitions and true empty SQL groups; its saved-only replay passes.
-Atomic fitting Short Text plus fixed-field composition is the next physical
-mutation task, followed by broader safe-save integration.
+Atomic [fitting Short Text plus fixed-field composition](testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
+now also passes authored-source native, Access and CLI whole-image checks.
+Generated-file qualification of that joint Text route is next, followed by
+broader required-event handling and safe-save integration.
 
 Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
 now cover one ordinary unindexed Int64, Currency or legacy DateTime target through

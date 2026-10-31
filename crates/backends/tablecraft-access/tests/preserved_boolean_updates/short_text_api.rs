@@ -214,7 +214,6 @@ fn projected_short_text_keeps_explicit_profiles_and_foreign_handles_closed() {
         "UPDATE Items SET [OLE_Object_Field]=NULL WHERE [ID]=1",
         "UPDATE Items SET [Calculated]='beta' WHERE [ID]=1",
         "UPDATE Items SET [Short_Text]=11 WHERE [ID]=1",
-        "UPDATE Items SET [Short_Text]='beta',[Yes_Field]=True WHERE [ID]=1",
     ] {
         let query = parse_query(statement, ParseLimits::default()).unwrap();
         let mut allowance = budget();

@@ -16,8 +16,10 @@ pub mod modern_attachment;
 pub mod old_attachment;
 
 use int32_sources::model as int32_model;
+use joint_model as fixed_model;
 use model as rich;
 use scalar_model as fixed_scalar_model;
+use short_text_model as text_model;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -59,3 +61,12 @@ mod joint_api;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/joint_fixed_sources/model.rs"]
 mod joint_model;
+
+#[path = "preserved_boolean_updates/joint_text_api.rs"]
+mod joint_text_api;
+// Pure framing/protection members are exercised by the native SOURCE gate.
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/joint_fixed_sources/model.rs"]
+mod joint_text_model;
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/zero_length_source.rs"]
+mod zero_length_source;
