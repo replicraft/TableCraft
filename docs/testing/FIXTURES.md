@@ -10706,3 +10706,13 @@ encodes compressed leaves, retained nodes, cross-leaf swaps and prefix loss.
 No third-party database bytes or production writer outputs supply the images.
 Ordinary hash anchors and the linked execution record distinguish source/read
 qualification from normal writer and native Access outcomes.
+
+## Authored mixed-schema BeforeChange sources
+
+The [mixed source corpus](ACE16_MIXED_BEFORE_CHANGE_SOURCES.md) contains twenty-eight
+originals and eighteen literal expected images, authored under the repository
+license. It reuses owned fixed/variable and rich envelopes; no third-party database
+bytes or production writer outputs are copied. Actual source read checks retain
+counter permissions, scalar representations and rich sibling refusals. The linked
+record separates native source evidence from independent-reader and normal-writer
+qualification. Generated databases and observer tooling remain ignored.

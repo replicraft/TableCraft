@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Mixed-schema normal-write source corpus
+
+Twenty-eight independently authored original files and eighteen literal expected
+images now have native source checks and complete-image hash anchors. Ordinary
+profiles retain fixed/variable scalar siblings and readonly AutoNumber operands;
+rich profiles use actual projected source reads, keeping header-5 native-20
+refusals explicit. Four focused source/anchor tests pass; no proposed mixed normal
+writer has run against these sources. Independent reader and normal-save phases
+remain pending. See the [source contract](testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
+and [record](testing/results/ace16-mixed-before-change-sources-2026-10-31.json).
+
 ## Retained-tree journaled ACE updates
 
 Normal BeforeChange updates now retain existing index trees and compressed

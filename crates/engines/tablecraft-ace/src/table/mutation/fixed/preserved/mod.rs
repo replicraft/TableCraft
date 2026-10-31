@@ -213,3 +213,6 @@ mod joint_fixed_sources;
 
 #[cfg(test)]
 mod rich_before_change_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod mixed_normal_sources;
