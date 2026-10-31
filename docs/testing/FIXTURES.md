@@ -10609,3 +10609,13 @@ indexed/calculated Int32 siblings remain ineligible. The
 retains separate source, expected, build, producer, reader, replay and initial
 preflight/disk diagnostics. Native Microsoft Access and normal-save qualification
 remain separate.
+
+### Authored complete-file creation sources
+
+Three original nine-page header-5 files now have frozen whole-file and role
+ledgers for empty, one-row and signed-endpoint Int32 tables. No SDK template or
+third-party database bytes were copied. Outputs remain private; no database binary
+is added to the repository. The existing reviewed Jackcess artifact is used only
+as a read-only reference tool. The [creation-source qualification](ACE16_DATABASE_CREATION.md)
+records exact SDK and native read observations, known constructive omissions and
+unqualified native Access/save behavior. These sources are not a normal-write permit.

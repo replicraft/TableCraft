@@ -77,3 +77,6 @@ pub use guards::{
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_sources;
