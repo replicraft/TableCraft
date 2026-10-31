@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "scope": "Original and successive complete Jet4 images for shared offline write-session qualification",
+  "status": "source-only preflight passed before session execution",
+  "producer_executed": false,
+  "source": "Existing original mutation_fixture::database; literal first-row Score wire only",
+  "images": [
+    {
+      "score": 10,
+      "role": "original"
+    },
+    {
+      "score": 12,
+      "role": "first replacement"
+    },
+    {
+      "score": 17,
+      "role": "second replacement"
+    }
+  ],
+  "observed": {
+    "test_functions": 1,
+    "passed": 1,
+    "failed": 0,
+    "checks": [
+      "Jet4 header",
+      "complete table consistency and three row carriers",
+      "no physical indexes",
+      "all bytes outside literal first Score unchanged",
+      "constant EOF"
+    ]
+  },
+  "pins": [
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/model.rs",
+      "bytes": 615,
+      "sha256": "ce317fee2d4e24fd56ff0399dd79caa7d157b7bdef9ff565897932884b86ea3e"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions_sources.rs",
+      "bytes": 1922,
+      "sha256": "21f3b1417664239d2ab17fe2b5bb5833a7d96ce5ef635818f24a2aae871724dc"
+    },
+    {
+      "path": ".cache/offline-write-session-next-20261031/source-first-root.log",
+      "bytes": 607,
+      "sha256": "ca63fe53b73bedfdaf355a906e7dbbb2477fe36024e06a1722eb103847ab9d6e"
+    }
+  ],
+  "limits": [
+    "No session, plan, journal or filesystem mutation executed by this preflight.",
+    "Authored source evidence, not native Access or mixed-client qualification."
+  ]
+}
