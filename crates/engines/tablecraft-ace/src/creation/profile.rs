@@ -32,6 +32,7 @@ pub(super) const ACES_MAP_SLOT: usize = 2;
 pub(super) const USER_MAP_SLOT: usize = 3;
 pub(super) const TABLE_COUNT: usize = 4;
 pub(super) const CATALOG_OBJECT_COUNT: usize = 8;
+pub(super) const SYSTEM_OBJECT_COUNT: usize = CATALOG_OBJECT_COUNT - 1;
 pub(super) const LONG_VALUE_COLUMNS: [usize; 4] = [5, 6, 7, 8];
 pub(super) const FIRST_LONG_VALUE_MAP_SLOT: usize = 2 * TABLE_COUNT;
 pub(super) const MAP_ROWS: usize = 2 * (TABLE_COUNT + LONG_VALUE_COLUMNS.len());

@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Multiple-table native creation
+
+The engine now accepts 1–16 borrowed `CreateTable` specifications, constructing
+one image with shared system metadata and separate table owners/maps. The Access
+`prepare_tables` service publishes the same complete artifact through the existing
+required publisher. Table counts and aggregate row/column totals are available
+before publication. Twenty-four engine tests and nine creation-service tests
+pass, including all four independently qualified multiple-table images and
+retained single-table regressions. The [creation contract](testing/ACE16_DATABASE_CREATION.md#multiple-user-tables)
+retains per-table limits and separate native Access/save qualification. CLI
+creation remains single-table.
+
 ## Typed CLI database creation
 
 `create --field NAME DECLARATION` now accepts explicit fixed, Text, Binary and

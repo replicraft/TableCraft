@@ -24,8 +24,8 @@ mod constraints;
 mod creation;
 #[cfg(feature = "ace16-create")]
 pub use creation::{
-    CreateColumn, CreateDatabaseError, CreatedDatabase, create_ace16_database,
-    create_ace16_int32_database,
+    CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, create_ace16_database,
+    create_ace16_database_tables, create_ace16_int32_database,
 };
 mod encryption;
 mod error;

@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "native_multiple_table_database_creation",
+  "status": "engine_shared_publication_and_local_checks_passed",
+  "source_first_commit": "c66a9dde",
+  "source_record": {
+    "path": "docs/testing/results/ace16-multiple-table-creation-source-2026-10-31.json",
+    "bytes": 9329,
+    "sha256": "4675cd4e69118d10047270ef0b861bba96f9d3bf4147784fba0170ab763ef880"
+  },
+  "private_producer_freeze": {
+    "path": ".cache/ace16-native-multi-table-creation-next-20261031/private-first-coherent-freeze.json",
+    "bytes": 8820,
+    "sha256": "50d40ee70fe93eddeb1b8513087054050ff5fad7fee0936abef6380da459630a"
+  },
+  "profile": {
+    "feature": "ace16-create",
+    "header": 5,
+    "user_tables": "1..16",
+    "columns_per_table": "1..16",
+    "rows_per_table_maximum": 64,
+    "per_table_physical_fit_required": true,
+    "image_pages": "7 + 2 * user_tables",
+    "image_pages_maximum": 39,
+    "map_records_maximum": 46,
+    "table_names": "explicit native names; ASCII-folded uniqueness across tables",
+    "same_column_names_across_distinct_tables_allowed": true,
+    "counts": "table_count=user count; row_count and column_count=checked aggregate totals",
+    "existing_single_table_apis": "unchanged fast path, bytes, resource charges and counts; table_count=1",
+    "cli": "unchanged single-table --column or typed --field"
+  },
+  "working_api": [
+    "CreateTable::new",
+    "create_ace16_database_tables",
+    "CreatedDatabase::table_count",
+    "CreationDestination::prepare_tables",
+    "PreparedCreation::table_count",
+    "CreationReceipt::table_count"
+  ],
+  "format": {
+    "shared_pages": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "user_td_data": "7/8,9/10,...,37/38",
+    "initial_map_roles": "original16 preserved, including catalog LVAL pairs8..15",
+    "appended_pairs": "16/17,...,44/45",
+    "catalog_rows": "7 + user_tables",
+    "all_table_data_catalog_map_references_explicit": true,
+    "candidate_bits": "each table own actual free/minimum row fit",
+    "one_complete_image_allocation": true,
+    "no_template_or_producer_output_in_source_expectations": true
+  },
+  "publication": "Same RequiredOutput and PreparedCreation protocol; aggregate counts are available before report allocation/publish; existing known-publication failure facts retained",
+  "errors": {
+    "TableLimit": "zero or more than16 user tables",
+    "DuplicateTable": "ASCII-folded table name collision",
+    "late_table": "existing input/physical/resource errors return no artifact or staged output"
+  },
+  "acceptance": {
+    "engine": {
+      "status": "passed_first_producer_execution",
+      "functions_passed": 24,
+      "failed": 0,
+      "ignored": 0,
+      "retained_functions": 19,
+      "new_functions": 5,
+      "duration_seconds": 0.01,
+      "independent_multiple_images": 4,
+      "one_table_parity_images": 11,
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/engine-first-root.log",
+        "bytes": 2892,
+        "sha256": "35046e0d4f906bb83cca5fdf3a4243420cab70787d299d032133478a682ce415"
+      }
+    },
+    "shared_access": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/access-first-root.log",
+        "bytes": 1434,
+        "sha256": "60db7753c52baf788b4b6443d915c1cee364ee251117206862d37401e6795e1e"
+      },
+      "functions_passed": 9,
+      "failed": 0,
+      "new_functions": 2,
+      "independent_published_images": 4,
+      "duration_seconds": 0.46
+    },
+    "single_table_regressions": {
+      "status": "passed_in_engine_and_shared_service_suites",
+      "engine_retained_functions": 19,
+      "access_retained_functions": 7,
+      "old_entrypoints": "retain their original request/build fast path"
+    },
+    "strict": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/strict-first-root.log",
+        "bytes": 580,
+        "sha256": "8ee4cc273786ff5cd2d615ecf7e5e82b2754c59a14090c83039340f6c015f8c4"
+      }
+    },
+    "formatting": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/links-first-root.log",
+        "bytes": 53,
+        "sha256": "1067e4f0f72c286389f73a6c2ee5986ce2fabe93c49d5309a4fe44ffdddd7882"
+      }
+    },
+    "dependency_guard": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/dependencies-first-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    },
+    "minimal_create": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/minimal-first-root.log",
+        "bytes": 301,
+        "sha256": "50ed119d9e21c22e080067ece4ad9bebf306b6ad075cb420b4f03a31efe753b8"
+      }
+    }
+  },
+  "static_review": {
+    "header_global_original_prefix_inverse": "passed static source comparison; no runtime implication",
+    "definition_column_name_tail_suffix": "exact source suffix unchanged",
+    "original_system_and_single_table_role_order": "retained",
+    "named_append_pair_width_shared_between_layout_and_selection": true
+  },
+  "limits": [
+    "Fresh unencrypted creation only; no imported-image construction or normal ACE mutation/journal/absence permit",
+    "No keys/relationships/generated fields/new Required or ALZ declarations",
+    "No new producer-output SDK read claimed; pending whole-image equality uses prequalified independent SOURCEs",
+    "Native Access and Windows creation/open/save remain unrun",
+    "No new registry dependency or feature changes"
+  ],
+  "evidence": {
+    "logs": [
+      {
+        "path": ".cache/ace16-native-multi-table-creation-next-20261031/engine-first-root.log",
+        "bytes": 2892,
+        "sha256": "35046e0d4f906bb83cca5fdf3a4243420cab70787d299d032133478a682ce415"
+      }
+    ],
+    "static_equivalence": {
+      "path": ".cache/ace16-native-multi-table-creation-next-20261031/static-equivalence.json",
+      "bytes": 999,
+      "sha256": "cc35e749e7b48bf97657a80898fcc928b5902efc1df5e1486b8418856a8af741"
+    }
+  }
+}

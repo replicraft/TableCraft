@@ -85,3 +85,25 @@ The variable creation acceptance adds five exact publications through the same
 service. All seven creation-service tests pass, retaining the ten fixed/IEEE
 and six Int32 images, cancellation, namespace retargeting and refusal controls.
 See the [variable result](../../testing/results/ace16-native-variable-creation-2026-10-31.json).
+
+## Multiple-table preparation
+
+`CreationDestination::prepare_tables(tables, budget, cancelled)` consumes borrowed
+engine `CreateTable` specifications and prepares one complete fresh image. Native
+metadata, per-table row fit, distinct table names and aggregate layout qualify
+before staging. It returns the same `PreparedCreation` as the single-table
+methods; no publisher, retry or receipt family is added.
+
+`PreparedCreation` and the acknowledged `CreationReceipt` expose `table_count()`.
+Their `row_count()` and `column_count()` are aggregate user-table totals for this
+operation. Existing single-table methods retain their counts and report one user
+table. Hosts can allocate their full aggregate completion report before calling
+`publish`, which retains the existing required file/captured-directory barriers,
+no-clobber behavior and known-publication failure facts.
+
+The engine admits 1–16 user tables, each with 1–16 explicit columns and at most
+64 rows plus its own DATA-page fit check. One cumulative budget covers all tables
+and publication. A malformed late table produces no staging or final entry.
+The CLI remains a single-table consumer: `--column` and exclusive typed `--field`
+continue to call their existing preparation methods. This API grants no normal
+editing, journal or macro-absence permission for imported ACE files.
