@@ -10592,3 +10592,20 @@ execution: 90 public read views, 45 complete header-6 Source admissions and
 Required/AllowZeroLength controls use healthy original properties. No new
 third-party fixture is copied. Authored-source checks remain separate from
 generated-file, Microsoft Access and normal-save qualification.
+
+## Joint fitting Text/Boolean SDK qualification (2026-10-31)
+
+The [generated joint Text corpus](preserved_joint_text_fixed_genuine/README.md)
+reuses the exact two Short Text SDK originals, original creation recipe, runtime
+JAR and compiled getter classes already recorded above. No third-party fixture
+is copied and no original is recreated or patched. Fourteen original/request-only
+expectations pass native Source admission before a fresh committed CLI matches
+all fourteen whole images. Fourteen fresh read-only SDK getters then match the
+complete expected inventories. Twelve typed batches and two SQL calls include
+shared Text/Boolean masks, zero-capacity present-empty Text, disjoint rows and
+four exact no-ops. This corpus qualifies the actual unindexed Boolean sibling;
+indexed/calculated Int32 siblings remain ineligible. The
+[result record](results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+retains separate source, expected, build, producer, reader, replay and initial
+preflight/disk diagnostics. Native Microsoft Access and normal-save qualification
+remain separate.

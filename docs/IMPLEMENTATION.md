@@ -34,6 +34,16 @@ be represented as typed CLI assignments and remain covered by native/shared
 services and explicit false-selection SQL. Generated-file and native Access
 qualification remain separate from these authored-source results.
 
+Fourteen generated-file joint Text/Boolean copies now also match independently
+constructed complete images through a fresh committed CLI, followed by fourteen
+matching fresh SDK inventories. The existing originals/getter remain unchanged;
+source admission and committed expectations precede all producer calls. Ten
+files change and four are exact no-ops, including genuine empty SQL groups.
+The [genuine result](testing/results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+separates the initial reader-wrapper preflight and artifact-retention disk
+diagnostics from passing actual calls and saved replay. It grants no normal-save
+or required-event authority.
+
 ## Joint preserved fixed-field updates
 
 The existing native batch API now composes ordinary Boolean, Int32, Int64,
