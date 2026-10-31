@@ -66,7 +66,7 @@ impl fmt::Display for Error {
                 "verified target image {image}; completion output failed; do not rerun SQL: {error}"
             ),
             Self::Credentials => formatter.write_str(
-                "journal editing accepts only unencoded Jet4 files; --password is unsupported",
+                "journal editing requires an unencoded admitted Jet4 or ACE BeforeChange profile; --password is unsupported",
             ),
             Self::Parse(error) => error.fmt(formatter),
             Self::Shape(error) => error.fmt(formatter),

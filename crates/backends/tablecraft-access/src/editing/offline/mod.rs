@@ -1,6 +1,6 @@
 //! Explicit offline normal edits over one retained exclusive target descriptor.
 //! Hosts must exclude noncooperating writers and unresolved external journals.
-//! This is not native multiuser coordination or ACE write permission.
+//! Native planners retain their own admission; shared-file coordination is separate.
 mod error;
 mod recovery;
 mod table;

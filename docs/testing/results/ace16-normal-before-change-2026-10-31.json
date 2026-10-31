@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_ace_before_change_journaled_updates",
+  "status": "bounded_normal_planning_sessions_recovery_cli_and_checks_passed",
+  "profile": {
+    "header_selectors": [
+      5,
+      6
+    ],
+    "subversion": 0,
+    "encoding": "unencoded",
+    "fields": "ordinary non-NULL fixed Int32",
+    "required_programs": "positive complete source-derived pure BeforeChange; dormant BeforeDelete preflight",
+    "indexes": false,
+    "relationships": false,
+    "supplied_equal_assignments": "EventTiming refusal, including mixed request lists",
+    "zero_requests": "complete native discovery and compilation, no row execution",
+    "restore_original": "original unequal user request retained; zero changed roots allowed",
+    "journal_record": "TCNI0002/profile2; original requests and complete BEFORE digest",
+    "legacy_record": "TCNI0001/profile1 unchanged"
+  },
+  "sources": {
+    "record": "ace16-normal-before-change-sources-2026-10-31.json",
+    "ordering": "originals, modeled outcomes, hash anchors and independent SDK reads precede normal producer execution",
+    "immutable_fixture_owner": "crates/engineering/tablecraft-testkit/src/access/canonical_before_change.rs",
+    "ordinary_admitted_images": 10,
+    "independent_reader_role": "source/after-image inventory only, no event execution"
+  },
+  "verification": {
+    "native_first_runtime": {
+      "intent_tests": 1,
+      "qualified_recovery_tests": 17,
+      "status": "passed"
+    },
+    "offline_sql_sessions": {
+      "tests": 3,
+      "literal_committed_images": 10,
+      "status": "passed"
+    },
+    "direct_proof_retry": {
+      "tests": 2,
+      "status": "passed"
+    },
+    "legacy_jet4_intent_retry": {
+      "tests": 3,
+      "status": "passed"
+    },
+    "legacy_access_journal_and_sessions_retry": {
+      "tests": [
+        2,
+        15,
+        1
+      ],
+      "status": "passed"
+    },
+    "preview_guard_regression": {
+      "passed": 22,
+      "ignored": 1,
+      "status": "passed"
+    },
+    "initial_all_feature_strict": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "status": "passed"
+    },
+    "native_final_runtime": {
+      "intent_tests": 1,
+      "qualified_recovery_tests": 19,
+      "status": "passed",
+      "extra_complete_images": 6,
+      "scope": "multirow both input orders and alternate user target"
+    },
+    "normal_proof_and_evaluation": {
+      "tests": 3,
+      "status": "passed",
+      "scope": "independent complete-image tampering and typed division failure"
+    },
+    "native_macro_regression": {
+      "tests": 60,
+      "status": "passed"
+    },
+    "journal_only_strict": {
+      "package": "tablecraft-ace",
+      "all_targets": true,
+      "status": "passed"
+    },
+    "final_all_feature_strict": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "status": "passed"
+    },
+    "cli_journal_units": {
+      "tests": 7,
+      "status": "passed"
+    },
+    "cli_fresh_binary": {
+      "build": "passed",
+      "complete_commit_images": 10,
+      "unchanged_noop_refusals": 2,
+      "readback_invocations": 10,
+      "original_hashes_unchanged": true,
+      "status": "passed"
+    },
+    "format_and_boundaries": {
+      "formatter": "passed",
+      "dependency_packages": 15,
+      "documentation_missing": 0
+    },
+    "evidence_namespace": ".cache/ace16-native-before-change-normal-next-20261031",
+    "logs": [
+      "native-first-root.log",
+      "session-first-root.log",
+      "native-final-root.log",
+      "normal-proof-final-root.log",
+      "legacy-intent-second-root.log",
+      "legacy-sessions-second-root.log",
+      "all-feature-guards-first-root.log",
+      "native-macro-final-root.log",
+      "journal-strict-final-root.log",
+      "normal-strict-final-root.log",
+      "cli-journal-final-root.log",
+      "cli-build-final-root.log",
+      "cli-smoke-first-root.log",
+      "default-disabled-final-root.log"
+    ],
+    "default_disabled": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access"
+      ],
+      "status": "passed"
+    }
+  },
+  "preserved_initial_failures": [
+    "Journal-only check exposed preview-gated map storage protection, a missing GLOBAL argument and an unused initialization re-export; corrected before runtime.",
+    "Journal-only libtest compilation exposed preview-owned authority tests whose fixtures remain preview-only; retained those tests under their original preview feature.",
+    "Legacy ACE refusal expectations named Format; the new route still refuses unqualified inputs with ActiveContent. Only those expected predicates changed.",
+    "First documentation link check preceded creation of this result record and reported its two incoming links missing."
+  ],
+  "not_qualified": [
+    "Native Microsoft Access event execution, UPDATE timing and save/reopen",
+    "General ACE UPDATE/INSERT/DELETE or macro absence certification",
+    "Windows filesystem journal integration",
+    "Physical power loss or network filesystem durability",
+    "Native Access shared-file coordination",
+    "Encrypted editing"
+  ]
+}

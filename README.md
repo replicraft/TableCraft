@@ -14,7 +14,7 @@ sets the target for Access workflows, defaults, restrictions and documented quir
 
 | Format | Current support | Planned tier |
 | --- | --- | --- |
-| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries | **Tier 1 — primary:** full native compatibility |
+| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries; restricted journaled Int32 updates | **Tier 1 — primary:** full native compatibility |
 | Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; qualified offline Int32 updates | **Tier 2 — secondary:** maintain and expand qualified support |
 | ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 2 |
 | ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 2 |
@@ -64,7 +64,8 @@ streaming and resource controls.
 
 Explicit [experimental write-copy commands](docs/access/writes/ENGINEERING_COPIES.md)
 provide ACE 16 UPDATE, INSERT and DELETE previews on fresh files. General native
-saves remain in development.
+saves remain in development; a separate [journaled BeforeChange profile](docs/access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
+supports restricted Int32 updates.
 
 ## Documentation
 

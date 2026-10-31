@@ -230,7 +230,7 @@ fn original_format_property_and_request_refusals_stay_native_owned() {
                 &|| false
             ),
             Err(RecoverableEditError::Edit(EditError::Unsupported(
-                WriteBlocker::Format
+                WriteBlocker::ActiveContent
             )))
         ));
     }

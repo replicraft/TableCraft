@@ -5,7 +5,9 @@ use super::super::{
     evaluate::{self as scalar, MAX_TRACE, RowBindings},
     source::Frame,
 };
-use super::{BeforeChangeAssignment, BeforeChangeFinalRow, batch::frames::ProjectedRow};
+#[cfg(feature = "ace16-write-preview")]
+use super::batch::frames::ProjectedRow;
+use super::{BeforeChangeAssignment, BeforeChangeFinalRow};
 use crate::{InspectError, header::check};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
@@ -31,6 +33,7 @@ fn assignment(value: Value) -> Result<Value, BeforeEventGuardError> {
 }
 
 pub(super) type Execution = Completed<BeforeChangeFinalRow>;
+#[cfg(feature = "ace16-write-preview")]
 pub(super) type ProjectedExecution = Completed<ProjectedRow>;
 
 pub(super) fn run(
@@ -50,6 +53,7 @@ pub(super) fn run(
     )
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn run_projected(
     compiled: &Compiled,
     frames: &[Frame],

@@ -7,8 +7,8 @@ use tablecraft_db::{CellUpdate, EditableTable, Snapshot, UpdateProfile};
 
 /// A real snapshot and normal journal editor, retaining the session's exclusive
 /// target while callers read rows and build snapshot-local typed replacements.
-/// No source path is reopened, no engineering image is converted, and ACE's
-/// existing normal write profile remains unavailable. Hosts must not wait for
+/// No source path is reopened and no engineering image is converted. Native
+/// program and physical admission remain in the planner. Hosts must not wait for
 /// an external approval while holding this offline lease.
 pub struct OfflineTableEditor {
     session: OfflineWriteSession,

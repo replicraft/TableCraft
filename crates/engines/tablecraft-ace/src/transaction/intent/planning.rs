@@ -1,4 +1,4 @@
-use super::{NativeInt32EditIntent, NativeIntentError};
+use super::{NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile};
 use crate::{EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError};
@@ -19,12 +19,13 @@ pub enum RecoverableEditError {
 /// No public constructor from parts or decoded request grants this authority.
 pub struct RecoverableNativeEditPlan {
     plan: NativeEditPlan,
-    intent: NativeInt32EditIntent,
+    intent: NativeUpdateIntent,
 }
 
 impl NativeImage {
-    /// Plan the unchanged normal Jet4 Int32 profile, then bind moved original
-    /// requests to its exact before image. Old planning APIs/costs are unchanged.
+    /// Plan the normal Jet4 or positive-program ACE16 Int32 route, then bind
+    /// moved ORIGINAL user requests to its exact before image. The Jet4 path
+    /// and TCNI0001 bytes retain their existing checks and resource charges.
     /// Intent failure occurs before any journal/target write and returns no plan.
     pub fn plan_recoverable_int32_updates(
         self,
@@ -35,7 +36,15 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         let _span = tracing::debug_span!("native.edit.plan_recoverable").entered();
-        let plan = self.plan_int32_updates(table, column, &updates, budget, cancelled)?;
+        let ace = matches!(
+            self.catalog().header().format(),
+            crate::FileFormat::Ace2016 | crate::FileFormat::Ace2019
+        );
+        let plan = if ace {
+            self.plan_before_change_int32_updates(table, column, &updates, budget, cancelled)?
+        } else {
+            self.plan_int32_updates(table, column, &updates, budget, cancelled)?
+        };
         let intent = NativeInt32EditIntent::new(
             table,
             column,
@@ -44,13 +53,19 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
+        let profile = if ace {
+            NativeUpdateProfile::Ace16BeforeChangeInt32
+        } else {
+            NativeUpdateProfile::Jet4Int32
+        };
+        let intent = NativeUpdateIntent::from_original(profile, intent);
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
 }
 
 impl RecoverableNativeEditPlan {
     /// Original immutable resolved requests and source binding.
-    pub fn intent(&self) -> &NativeInt32EditIntent {
+    pub fn intent(&self) -> &NativeUpdateIntent {
         &self.intent
     }
 

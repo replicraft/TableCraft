@@ -1,6 +1,6 @@
-# Offline Jet4 journal editing
+# Offline native journal editing
 
-`query journal-update` applies one qualified normal Jet4 Int32 UPDATE to the
+`query journal-update` applies one qualified normal Int32 UPDATE to the
 selected file itself. `query recover-update` explicitly resolves its paired
 journal without replaying SQL. `query finalize-update` confirms an intact retired
 bundle before completing namespace cleanup. These are separate from the unchanged
@@ -35,10 +35,25 @@ target. The CLI supplies explicit paths, comparison selection, resources and
 preformatted reporting. The same backend service supports successive edits
 without releasing the target between operations.
 
-Only clear Jet4 is admitted. `--password` refuses before opening files and never
-prompts. There is no decrypt/re-encrypt route, engineering-candidate conversion,
-ACE save permission or required-macro bypass. Explicit `--collation ordinal` can
-serve qualified Text predicates; no ambient comparison policy is selected.
+Jet4 retains its existing fixed Int32 admission. The separate
+[normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
+requires an unencoded ACE 2016/2019 layout with subversion zero and a positive,
+complete source-owned pure BeforeChange program. The selected ordinary Int32
+table must have no indexes or relationships. Unknown/opaque/unrepresented event
+content, body/module payloads, unsupported required effects and final NULL values
+refuse; an empty macro inventory is not an absence certificate.
+
+Native programs are discovered and fully preflighted even for zero matched rows.
+A supplied equal expected/replacement assignment refuses with `EventTiming`,
+including one inside a mixed list; native equal-assignment event timing is
+unqualified. A real user change that a program restores to Old may succeed with
+zero effective changed rows. The original user intent is retained in either case.
+
+`--password` refuses before opening files and never prompts. There is no
+decrypt/re-encrypt route or engineering-candidate conversion. This bounded route
+does not enable general ACE saves or bypass required programs. Explicit
+`--collation ordinal` can serve qualified Text predicates; no ambient comparison
+policy is selected. Ordinary fresh-copy `query update` remains Jet4-only.
 
 The database must be an existing regular file; final symlinks are refused. Apply
 requires a fresh journal-directory name beneath an existing parent. It never
@@ -66,10 +81,15 @@ by completed API barriers.
 
 Recovery accepts no SQL, output-copy option or password. It checks actual object
 association, bounded persisted intent and the checked V1 record, then rebuilds the
-normal Jet4 plan and compares both complete images before a recovery write. A
-different target object with identical bytes does not satisfy association. Keep
-the selected namespace stable while an operation runs. No stored expression,
-clock, default or callback is reevaluated.
+record-selected native plan and compares both complete images before a recovery
+write. A different target object with identical bytes does not satisfy
+association. Keep the selected namespace stable while an operation runs.
+
+SQL and its original filtering/SET expressions are never replayed. For ACE,
+qualification rediscovers and evaluates the admitted bounded pure stored programs
+against the recorded BEFORE image and original typed requests. No external
+callback or effect is replayed. Closed intent version/profile dispatch refuses
+unknown records without trying another validator.
 
 Successful apply reports:
 
@@ -135,12 +155,12 @@ does not perform another rename.
 An acknowledgement, cleanup, unlock or output failure retains the verified image
 fact and returns failure, including BrokenPipe. Missing records or partly deleted
 garbage refuse the intact-bundle profile and remain for diagnosis. This addition
-does not widen normal native admission, enable ACE saves or add automatic recovery.
+does not widen either normal native profile or add automatic recovery.
 
-## Local checks
+## Initial Jet4 checks
 
-An independent original/complete expected Jet4 pair was read and checked before
-command tests. The first host run passes four journal units, one protected-output
+The initial Jet4 phase read and checked an independent original/complete expected
+pair before command tests. The first host run passes four journal units, one protected-output
 unit and five black-box functions, including that source check. The four black-box
 API functions cover complete-image apply, real pending/committed recovery and
 retirement, occupied/missing resources and unsupported SQL/source refusals.

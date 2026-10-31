@@ -1,4 +1,4 @@
-//! Explicit offline normal Jet4 editing with retained journal pairing.
+//! Explicit offline qualified native editing with retained journal pairing.
 mod args;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod confirmation;

@@ -1,7 +1,7 @@
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) fn vector<T>(
+pub(in crate::table::mutation) fn vector<T>(
     count: usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

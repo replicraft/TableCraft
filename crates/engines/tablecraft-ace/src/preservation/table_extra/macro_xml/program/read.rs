@@ -13,7 +13,7 @@ const MAX_ACTION_CHILDREN: usize = 64;
 #[derive(Clone, Copy)]
 enum EnvelopePolicy {
     SelectedProfile,
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     CompleteBeforeEvents,
 }
 
@@ -32,7 +32,7 @@ pub(super) fn inspect<'a>(
     )
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) fn inspect_complete_before_events<'a>(
     property: &'a TableExtraProperty,
     budget: &mut ResourceBudget,
@@ -63,7 +63,7 @@ fn inspect_for<'a>(
             check(budget, cancelled)?;
             let supported = match policy {
                 EnvelopePolicy::SelectedProfile => definition.event() == Some("BeforeChange"),
-                #[cfg(feature = "ace16-write-preview")]
+                #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
                 EnvelopePolicy::CompleteBeforeEvents => {
                     matches!(definition.event(), Some("BeforeChange" | "BeforeDelete"))
                 }

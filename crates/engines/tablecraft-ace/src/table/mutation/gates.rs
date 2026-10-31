@@ -28,10 +28,13 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 // property flag bits remain unqualified for native mutation.
 const SUPPORTED_PROPERTY_FLAG_MASK: u8 = 0x01;
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 enum PayloadAdmission<'a> {
     Inert,
+    #[cfg(feature = "ace16-write-preview")]
     BeforeChange(&'a SourceWitness),
+    #[cfg(feature = "journal")]
+    NativeBeforeChange(&'a super::normal_before_change::Witness<'a>),
 }
 
 pub(super) fn before(
@@ -44,7 +47,7 @@ pub(super) fn before(
         image,
         table,
         Admission::Update,
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadAdmission::Inert,
         budget,
         cancelled,
@@ -62,7 +65,7 @@ pub(super) fn before_delete(
         image,
         table,
         Admission::Delete,
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadAdmission::Inert,
         budget,
         cancelled,
@@ -80,7 +83,7 @@ pub(super) fn before_slot(
         image,
         table,
         Admission::SlotUpdate,
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadAdmission::Inert,
         budget,
         cancelled,
@@ -98,7 +101,7 @@ pub(super) fn before_fixed_update(
         image,
         table,
         Admission::FixedUpdate,
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadAdmission::Inert,
         budget,
         cancelled,
@@ -116,7 +119,7 @@ pub(super) fn before_insert(
         image,
         table,
         Admission::Insert,
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadAdmission::Inert,
         budget,
         cancelled,
@@ -184,11 +187,29 @@ enum Admission {
     IncrementingInsert,
 }
 
+#[cfg(feature = "journal")]
+pub(super) fn before_native_fields(
+    image: &NativeImage,
+    table: &str,
+    witness: &super::normal_before_change::Witness<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    before_with(
+        image,
+        table,
+        Admission::Update,
+        PayloadAdmission::NativeBeforeChange(witness),
+        budget,
+        cancelled,
+    )
+}
+
 fn before_with(
     image: &NativeImage,
     table: &str,
     admission: Admission,
-    #[cfg(feature = "ace16-write-preview")] payload: PayloadAdmission<'_>,
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))] payload: PayloadAdmission<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
@@ -271,8 +292,8 @@ fn before_with(
         }
     }
     source_origin(image, schema, 0, budget, cancelled)?;
-    // ACE families reach this helper only through engineering-preview entry
-    // points. A completed foreign check includes reciprocal/catalog agreement;
+    // ACE entry points retain their separate payload/operation admission.
+    // A completed foreign check includes reciprocal/catalog agreement;
     // final relationship membership must still pass after the complete edit.
     // Keep the ordinary Jet 4 writer's foreign-index blocker unchanged.
     let foreign_preview = matches!(
@@ -302,14 +323,19 @@ fn before_with(
         // edge whose native foreign declarations were removed or disguised.
         inspect_foreign_index_links(&mut image.reader(), scope, table, budget, cancelled)?;
     }
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     match payload {
         PayloadAdmission::Inert => inert_payloads(image, schema, budget, cancelled)?,
+        #[cfg(feature = "ace16-write-preview")]
         PayloadAdmission::BeforeChange(witness) => {
             witness.require(image, schema, budget, cancelled)?
         }
+        #[cfg(feature = "journal")]
+        PayloadAdmission::NativeBeforeChange(witness) => {
+            witness.require(image, schema, budget, cancelled)?
+        }
     }
-    #[cfg(not(feature = "ace16-write-preview"))]
+    #[cfg(not(any(feature = "ace16-write-preview", feature = "journal")))]
     inert_payloads(image, schema, budget, cancelled)?;
     let properties =
         inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;

@@ -82,5 +82,5 @@ pub(super) fn prove(
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;

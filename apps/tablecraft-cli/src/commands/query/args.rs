@@ -13,11 +13,11 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 pub(crate) enum Command {
     /// Apply explicitly selected BeforeChange programs to one fresh engineering copy.
     PreviewBeforeChange(Box<super::preview_before_change::Arguments>),
-    /// Confirm an intact retired Jet4 bundle without replaying its edit.
+    /// Confirm an intact retired native bundle without replaying its edit.
     FinalizeUpdate(Box<super::journal::FinalizeArguments>),
-    /// Apply one normal Jet4 UPDATE in place with an explicit retained journal.
+    /// Apply one qualified normal Int32 UPDATE in place with a retained journal.
     JournalUpdate(Box<super::journal::UpdateArguments>),
-    /// Recover one explicitly paired normal Jet4 edit without replaying SQL.
+    /// Recover one paired native edit without replaying SQL.
     RecoverUpdate(Box<super::journal::RecoveryArguments>),
     /// Explicitly prepare caller-selected before-event guards without creating a write candidate.
     PrepareGuards(Box<super::prepare_guards::Arguments>),

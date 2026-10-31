@@ -1,7 +1,10 @@
 use super::{NativeEditError, snapshot};
-use tablecraft_ace::{FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage};
 #[cfg(feature = "journal")]
-use tablecraft_ace::{RecoverableEditError, RecoverableNativeEditPlan};
+use tablecraft_ace::{
+    BeforeEventGuardError, BeforeEventIntents, RecoverableEditError, RecoverableNativeEditPlan,
+    inspect_table_schema,
+};
+use tablecraft_ace::{FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -15,6 +18,64 @@ pub struct NativeEditor {
     snapshot: Snapshot,
 }
 impl NativeEditor {
+    #[cfg(feature = "journal")]
+    pub(super) fn journal_profile(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<UpdateProfile, NativeEditError> {
+        let profile = self.update_profile();
+        if profile != UpdateProfile::Unavailable {
+            return Ok(profile);
+        }
+        if !matches!(
+            self.image.catalog().header().format(),
+            FileFormat::Ace2016 | FileFormat::Ace2019
+        ) {
+            return Ok(UpdateProfile::Unavailable);
+        }
+        let schema = inspect_table_schema(
+            &mut self.image.reader(),
+            self.image.catalog().catalog().scope(),
+            self.snapshot.name(),
+            budget,
+            cancelled,
+        )?;
+        // No rows run here. A positive native BeforeChange definition and
+        // complete dormant preflight are required even for an empty edit.
+        let Some(column) = schema.columns().first() else {
+            return Ok(UpdateProfile::Unavailable);
+        };
+        match self.image.prepare_native_before_change_fields(
+            schema.object_id(),
+            BeforeEventIntents::FixedUpdate {
+                column: column.name(),
+                updates: &[],
+            },
+            budget,
+            cancelled,
+        ) {
+            Ok(_) => Ok(UpdateProfile::ExistingInt32),
+            Err(BeforeEventGuardError::Inspect(error)) => Err(error.into()),
+            Err(BeforeEventGuardError::Intent(error)) => Err(error.into()),
+            Err(BeforeEventGuardError::Preservation) => {
+                Err(tablecraft_ace::EditError::Preservation.into())
+            }
+            Err(
+                BeforeEventGuardError::Selection(_)
+                | BeforeEventGuardError::Unsupported(_)
+                | BeforeEventGuardError::Expression,
+            ) => Ok(UpdateProfile::Unavailable),
+            // Evaluation cannot occur with zero rows. Treat an impossible
+            // evaluator result as a failed invariant, never unavailable data.
+            Err(
+                BeforeEventGuardError::Evaluation(_)
+                | BeforeEventGuardError::ConditionType
+                | BeforeEventGuardError::ArgumentType,
+            ) => Err(tablecraft_ace::EditError::Preservation.into()),
+        }
+    }
+
     /// Read one table from the exact captured image and issue snapshot-local row
     /// handles. ACE reads remain available but its write profile is Unavailable.
     pub fn new(

@@ -15,7 +15,7 @@ const COLUMN_COUNT_OFFSET: usize = 45;
 pub(crate) const INDEX_COUNT_OFFSET: usize = 51;
 pub(crate) const LOGICAL_INDEX_COUNT_OFFSET: usize = 47;
 const OWNED_MAP_OFFSET: usize = 55;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(crate) const TABLE_FREE_MAP_OFFSET: usize = OWNED_MAP_OFFSET + size_of::<u32>();
 pub(crate) const COLUMN_BLOCK_OFFSET: usize = 63;
 pub(crate) const INDEX_ENTRY_BYTES: usize = 12;

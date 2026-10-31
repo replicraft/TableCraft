@@ -12,6 +12,20 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Journaled ACE BeforeChange updates
+
+The normal journal planner and retained Access offline session now support a
+positive native BeforeChange profile on unencoded subversion-zero ACE 2016/2019
+tables. It accepts supported non-NULL fixed Int32 updates without indexes or
+relationships, rederives complete native program coverage and retains the
+original requests in a closed versioned recovery record. Equal supplied
+assignments refuse pending native event-timing qualification. Empty operations
+still preflight programs; programs that restore the original can report zero
+changed rows. Complete-image proof and recovery rebuild from BEFORE and original
+intent, without trusting staged final rows. See the [contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
+and [execution record](testing/results/ace16-normal-before-change-2026-10-31.json).
+General ACE saves and native Access execution/save/reopen remain unfinished.
+
 ## Multiple-table native creation
 
 The engine now accepts 1–16 borrowed `CreateTable` specifications, constructing

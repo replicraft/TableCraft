@@ -1,3 +1,5 @@
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod ace_profile;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod append;
 mod apply;
@@ -13,7 +15,7 @@ pub(in crate::table) mod fitted;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod fixed;
 mod gates;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod guards;
 #[cfg(feature = "ace16-write-preview")]
 mod index_append;
@@ -25,8 +27,10 @@ pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 mod insert;
 #[cfg(feature = "ace16-write-preview")]
 mod long_value;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod map_authority;
+#[cfg(feature = "journal")]
+pub(crate) mod normal_before_change;
 #[cfg(feature = "ace16-write-preview")]
 mod page_update;
 mod patch;
@@ -35,6 +39,8 @@ mod plan;
 mod preservation;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod requests;
 mod rows;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
@@ -65,18 +71,21 @@ pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use fitted::FittedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
-pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};
+pub use fixed::FixedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
+pub use guards::{Ace16BeforeChangePreview, BeforeChangePreviewError};
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use guards::{
-    Ace16BeforeChangePreview, BeforeChangeAssignment, BeforeChangeFieldPreparation,
-    BeforeChangeFinalRow, BeforeChangePreviewError, BeforeEvent, BeforeEventGuardError,
-    BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
-    BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardSelectionError, BeforeGuardTrace,
-    BeforeGuardTraceKind, BeforeGuardUnsupported,
+    BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
+    BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
+    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
 };
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub use requests::FixedScalarUpdate;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_sources;
@@ -97,10 +106,10 @@ mod creation_variable_sources;
 mod creation_catalog_name_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
+mod normal_before_change_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_variable_capacity_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_multiple_sources;
-
-#[cfg(all(test, feature = "ace16-write-preview"))]
-mod normal_before_change_sources;

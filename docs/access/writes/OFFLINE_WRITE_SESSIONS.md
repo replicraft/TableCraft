@@ -3,9 +3,12 @@
 The optional `tablecraft-access` feature `offline-write-session` supplies
 `editing::offline::OfflineWriteSession`. It composes normal native planning,
 journal recovery and filesystem finalization over one retained exclusive target.
-The normal mutation profile remains the qualified Jet 4 fixed Int32 profile in
-[NATIVE_WRITES.md](NATIVE_WRITES.md). ACE engineering candidates remain separate;
-this service grants no normal ACE write or data-macro absence permission.
+The normal mutation routes are the existing Jet4 fixed Int32 profile and the
+separate [positive native ACE BeforeChange profile](NORMAL_ACE_BEFORE_CHANGE.md).
+The latter requires unencoded ACE 2016/2019 subversion zero, complete source-owned
+pure program binding and an admitted ordinary Int32 table without indexes or
+relationships. It grants no general ACE save or data-macro absence permission;
+ACE engineering candidates remain separate.
 
 The host must provide an explicitly offline target, exclude noncooperating
 writers and resolve any other journals before editing. This is not native
@@ -67,9 +70,12 @@ journal.
 
 `recover_update(bundle, budget, cancelled)` opens one explicitly selected active
 bundle. `recover_pending(budget, cancelled)` works on the same retained active
-pair, refuses an already known completion and invokes the existing qualified
-Jet 4 recovery protocol. There is no automatic recovery, SQL replay or fallback
-to a different journal or target.
+pair, refuses an already known completion and invokes the closed record-selected
+native recovery validator. Both routes requalify the recorded BEFORE and compare
+both complete images. ACE rederives/evaluates its admitted pure required programs
+from the original typed intents; SQL filtering and user expressions are not
+replayed. There is no automatic recovery or fallback to another validator,
+journal or target.
 
 `confirm_retired(bundle, budget, cancelled)` opens an intact reserved retired
 bundle and uses write-denied storage views to confirm its complete current image.
@@ -93,8 +99,12 @@ snapshot's row handles. This is a backend capability; no GUI is introduced.
 `editor.plan_updates(column, updates, budget, cancelled)` consumes the editor and
 returns the existing `StagedUpdate`. Handle identity, duplicate ordinals, original
 expected values and native eligibility remain in the normal editor/planner.
-`matched_rows()` includes supplied no-ops; `changed_rows()` comes from the normal
-native plan. Hosts can prepare their report before the existing journaled `apply`.
+`matched_rows()` counts validated supplied requests; `changed_rows()` comes from
+the final normal native plan. Jet4 retains its qualified no-op behavior. ACE
+rejects any supplied equal assignment with `EventTiming`, after required-program
+discovery/preflight, while a real change restored by the program may report zero
+effective changed rows. Hosts can prepare their report before the existing
+journaled `apply`.
 There is no public constructor accepting raw images or invented change counts.
 
 Both `editor.into_session()` and `staged.into_session()` explicitly abandon an
@@ -106,21 +116,25 @@ unlock, retry, reset blocked state or discard a pending journal.
 
 Typed and SQL edits share the same staged persistence capability. Existing SQL
 planning, resource/cancellation checks and error precedence are unchanged. The
-normal write profile remains qualified non-NULL fixed Int32 on Jet 4; ACE can be
-read only within its existing reader profile and still advertises normal updates
-as unavailable. No engineering candidate conversion, new DB contract, CLI mode,
-macro-absence certificate or normal ACE write permission is added. Hosts must
-not await an external approval while holding this offline lease.
+normal write profile remains fixed non-NULL Int32. The journal editor advertises
+ACE eligibility only after positive native BeforeChange discovery and complete
+program preflight; the normal planner still checks the actual requested update.
+Tables without that evidence remain unavailable. No engineering candidate
+conversion, new DB contract, macro-absence certificate or general ACE save
+permission is added. Hosts must not await an external approval while holding
+this offline lease.
 
 ### Typed acceptance
 
-The first focused run passes three functions. It exercises snapshot reads under
-the actual held lease, typed 10→12→17 whole-image saves, stale/foreign/duplicate
-handles, previous-receipt retention, snapshot/plan abandonment and exact no-op
-bytes using the unchanged source-qualified images from `7a604fa7`. The fourth typed control confirms that a readable ACE snapshot still advertises
-normal writes as unavailable and refuses a valid typed request at the format
-gate. The complete session target passes 15 functions; all eight CLI journal
-regressions, strict checks, default-disabled compilation and formatting pass.
+The initial typed phase passed three focused functions. It exercised snapshot
+reads under the actual held lease, typed 10→12→17 whole-image saves,
+stale/foreign/duplicate handles, previous-receipt retention, snapshot/plan
+abandonment and exact no-op bytes using the unchanged source-qualified images
+from `7a604fa7`. That phase's fourth typed control retained readable-ACE refusal
+before the separate positive-program route was added; its historical record is
+unchanged. At that phase, the complete session target passed 15 functions;
+all eight CLI journal regressions, strict checks, default-disabled compilation
+and formatting passed.
 See the [typed result](../../testing/results/offline-typed-write-sessions-2026-10-31.json).
 
 ## Evidence

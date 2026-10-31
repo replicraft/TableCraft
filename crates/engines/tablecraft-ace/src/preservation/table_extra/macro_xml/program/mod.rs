@@ -16,7 +16,7 @@ impl TableExtraProperty {
     /// Internal complete before-event structural inspection. This grants no
     /// execution or write permission; the complete-field compiler separately
     /// validates each declared event's actions, bindings and exact source.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn inspect_complete_before_events(
         &self,
         budget: &mut ResourceBudget,

@@ -13,7 +13,7 @@ mod represented;
 pub(crate) use cursor::{PageCursor, PageMembership};
 #[cfg(feature = "ace16-write-preview")]
 pub(crate) use qualified_inline::QualifiedInlineRecord;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(crate) use represented::MapStorage;
 pub(crate) use represented::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap};
 #[cfg(all(test, feature = "ace16-write-preview"))]

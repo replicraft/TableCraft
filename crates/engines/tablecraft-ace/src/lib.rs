@@ -73,17 +73,11 @@ pub use preservation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber,
-    InsertFieldValue, OmittedRowInsert, RowInsert, SlotScalarUpdate,
+    FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, InsertFieldValue,
+    OmittedRowInsert, RowInsert, SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
-pub use table::{
-    Ace16BeforeChangePreview, BeforeChangeAssignment, BeforeChangeFieldPreparation,
-    BeforeChangeFinalRow, BeforeChangePreviewError, BeforeEvent, BeforeEventGuardError,
-    BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
-    BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardSelectionError, BeforeGuardTrace,
-    BeforeGuardTraceKind, BeforeGuardUnsupported,
-};
+pub use table::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 #[cfg(feature = "ace16-write-preview")]
@@ -101,6 +95,14 @@ pub use table::{
     AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
     inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
     inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
+};
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub use table::{
+    BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
+    BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
+    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
+    FixedScalarUpdate,
 };
 pub use table::{
     BinaryIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, TextIndexSelection,
@@ -152,13 +154,15 @@ pub use table::{
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
 pub use transaction::{
-    NativeInt32EditIntent, NativeIntentError, RecoverableEditError, RecoverableNativeEditPlan,
+    NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
+    RecoverableEditError, RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
 #[cfg(feature = "journal")]
 pub use transaction::{
-    NativeRecoveryQualificationError, QualifiedJet4Recovery, qualify_jet4_int32_recovery,
+    NativeRecoveryQualificationError, QualifiedJet4Recovery, QualifiedNativeRecovery,
+    qualify_jet4_int32_recovery, qualify_native_update_recovery,
 };
 
 pub use properties::{

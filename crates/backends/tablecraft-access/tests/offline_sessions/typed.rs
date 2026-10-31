@@ -220,7 +220,7 @@ fn duplicate_and_foreign_typed_handles_refuse_before_creating_any_bundle() {
 }
 
 #[test]
-fn readable_ace_snapshot_does_not_grant_normal_typed_write_permission() {
+fn readable_ace_without_event_qualification_does_not_grant_typed_writes() {
     let root = tempfile::tempdir().unwrap();
     let case = tablecraft_testkit::access::secondary_index::source(
         6,
@@ -257,12 +257,12 @@ fn readable_ace_snapshot_does_not_grant_normal_typed_write_permission() {
             &|| false,
         )
         .err()
-        .expect("readable ACE rows do not authorize the normal Jet4 writer");
+        .expect("readable ACE rows do not qualify native event behavior");
     assert_eq!(failure.phase(), Phase::Planning);
     assert!(matches!(
         failure.cause(),
         Cause::Editing(journal::Error::Plan(RecoverableEditError::Edit(
-            EditError::Unsupported(WriteBlocker::Format)
+            EditError::Unsupported(WriteBlocker::ActiveContent)
         )))
     ));
     assert_eq!(failure.state(), SessionState::Ready);
