@@ -719,6 +719,12 @@ service with fresh handle identities; 15 session tests and the real confirmation
 regression pass. This closes a concrete host-composition gap without broadening
 normal ACE admission or claiming native shared-file coordination.
 
+The standalone [fresh database constructor](testing/ACE16_DATABASE_CREATION.md)
+now serializes one ordinary Int32 table into a complete nine-page ACE 16 image.
+Its six complete independent source comparisons and five focused controls pass;
+filesystem publication, broader schemas and native Access qualification remain
+separate work. This does not admit normal saves of existing ACE files.
+
 Major gates still open before the full backend is complete:
 
 - [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full

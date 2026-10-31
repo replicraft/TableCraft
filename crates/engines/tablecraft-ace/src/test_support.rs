@@ -1,5 +1,6 @@
 //! Independent raw fixtures shared by private unit-test modules.
 // Path-included fixture modules receive their private raw-builder namespace here.
+#[cfg(feature = "ace16-write-preview")]
 use tablecraft_testkit::access as support;
 
 pub(crate) mod tuples;

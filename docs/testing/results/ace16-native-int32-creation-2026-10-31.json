@@ -1,0 +1,344 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "standalone_ace16_fresh_int32_creator",
+  "status": "native_engine_acceptance_passed_documentation_links_pending",
+  "feature": "ace16-create",
+  "requires_write_preview_or_journal": false,
+  "dependencies_added": false,
+  "api": "create_ace16_int32_database(table, columns, rows, budget, cancelled) -> Result<CreatedDatabase, CreateDatabaseError>",
+  "artifact": {
+    "ownership": "private immutable complete Vec bytes",
+    "read_methods": [
+      "as_bytes",
+      "row_count",
+      "column_count"
+    ],
+    "public_from_parts": false,
+    "existing_file_mutation_or_journal_conversion": false
+  },
+  "profile": {
+    "header": 5,
+    "sdk_source_format": "V2016",
+    "pages": 9,
+    "bytes": 36864,
+    "user_tables": 1,
+    "columns": {
+      "minimum": 1,
+      "maximum": 16,
+      "kind": "ordinary fixed present Int32"
+    },
+    "rows": {
+      "minimum": 0,
+      "maximum": 64,
+      "physical_single_page_fit_also_required": true
+    },
+    "names": {
+      "maximum_utf16_units": 64,
+      "preserve_spelling": true,
+      "normalization": false,
+      "column_uniqueness": "ASCII folding",
+      "prohibitions": [
+        "empty",
+        "control characters",
+        "leading ASCII space",
+        ".",
+        "!",
+        "`",
+        "[",
+        "]"
+      ],
+      "system_table_collisions": [
+        "MSysObjects",
+        "MSysRelationships",
+        "MSysACEs"
+      ]
+    },
+    "wide_geometry": {
+      "columns": 16,
+      "record_bytes": 68,
+      "maximum_fitting_rows": 58,
+      "remaining_bytes": 22,
+      "row_59": "PageCapacity refusal"
+    }
+  },
+  "implementation": {
+    "production_files": 7,
+    "image_allocations": 1,
+    "fallible_allocation_paid_before_reserve": true,
+    "validates_borrowed_inputs_before_image_allocation": true,
+    "no_template_or_source_database": true,
+    "filesystem_effects": false,
+    "resource_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "separate_initial_and_final_cancellation": true,
+    "system_catalog": {
+      "objects": 8,
+      "system_schemas": [
+        15,
+        8,
+        4
+      ],
+      "map_records": 16,
+      "catalog_lval_pairs": 4,
+      "complete_definition_terminators": true
+    }
+  },
+  "source_before_producer": {
+    "source_commit": "6111e6d2",
+    "source_qualification": {
+      "path": "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+      "bytes": 28569,
+      "sha256": "a25f18159ce39421ea71ef9cac4006aa39c5856f99925fd3d36606a20f6da592"
+    },
+    "independent_testkit_source": {
+      "path": "crates/engineering/tablecraft-testkit/src/access/canonical_creation.rs",
+      "bytes": 11604,
+      "sha256": "d92ba1bc66cf92fe07dcb3db35058d11638254cee4a6963a27cd4f82873aeed9"
+    },
+    "six_full_image_sha_anchors_and_ignored_source_gate_passed_before_creator_execution": true,
+    "private_producer_freeze": {
+      "path": ".cache/ace16-native-creator-next-20261031/private-freeze.json",
+      "bytes": 3340,
+      "sha256": "8922763fa38c64bf3fc85b4a8629b07e9928292bfd00d4ef90d3039e4cd3573a"
+    }
+  },
+  "first_execution": {
+    "status": "passed",
+    "feature_configuration": "only ace16-create; no default features",
+    "tests": 5,
+    "failed": 0,
+    "filtered": 229,
+    "compile_seconds": 6.86,
+    "test_seconds": 0.0,
+    "full_independent_image_comparisons": 6,
+    "cases": [
+      "empty",
+      "one",
+      "extrema",
+      "boundary",
+      "named",
+      "wide"
+    ],
+    "log": {
+      "path": ".cache/ace16-native-creator-next-20261031/creator-first-root.log",
+      "bytes": 1278,
+      "sha256": "5fd7fe9dd75fa7114133724064e35d53afed87bf41717e199e4c19ba9c715c62"
+    },
+    "warning": "Existing test_support import was unused in standalone feature configuration; subsequently gated to its actual write-preview consumer"
+  },
+  "validation": {
+    "standalone_check": {
+      "status": "passed",
+      "seconds": 3.01,
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/minimal-first-root.log",
+        "bytes": 331,
+        "sha256": "3f3fde219509485f0bdc486ce7427c4a1e25541a18d4cd83a6e99c85d6afed93"
+      }
+    },
+    "exact_and_one_below_pools": {
+      "status": "passed",
+      "tests_repeated": 5,
+      "exact_pool_remaining": 0,
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-exact-budget-root.log",
+        "bytes": 846,
+        "sha256": "71422ab577498af95e79037250bf28e8ef6af5b43454f40808295ad8ec0d9036"
+      }
+    },
+    "initial_and_final_cancellation": "passed in focused five-test suite",
+    "final_all_target_all_feature_strict": {
+      "status": "passed",
+      "seconds": 5.55,
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-final-strict-root.log",
+        "bytes": 183,
+        "sha256": "156ddf58ff08b11487f1f89378d3758e10b631d50a2f7fccc35986dbf18464a2"
+      }
+    },
+    "minimal_library_strict": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-minimal-lib-strict-root.log",
+        "bytes": 999,
+        "sha256": "1522e860836c85cd69f209f8958db140c89fd84c33fb28fb184b0e839cccf346"
+      }
+    },
+    "minimal_all_target_strict": {
+      "status": "passed_after_two_test_target_feature_gates",
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-minimal-strict-third-root.log",
+        "bytes": 183,
+        "sha256": "a5be11a5395c7986c62bb955abecdfec6cf3a9acac13e8eea9d7b784433f6aa9"
+      }
+    },
+    "workspace_format": {
+      "status": "passed",
+      "logs": [
+        {
+          "path": ".cache/ace16-native-creator-next-20261031/creator-final-fmt-root.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".cache/ace16-native-creator-next-20261031/creator-final-fmt-second-root.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "preview_regressions": {
+      "status": "passed",
+      "targets": [
+        {
+          "name": "ace16_preserved_scalar_updates_contract",
+          "passed": 54,
+          "ignored": 2,
+          "seconds": 1.44
+        },
+        {
+          "name": "ace16_preserved_ui_carriers_contract",
+          "passed": 5,
+          "ignored": 1,
+          "seconds": 0.1
+        }
+      ],
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/preview-feature-regression-root.log",
+        "bytes": 7191,
+        "sha256": "c5955ba2f2867fa1cd6d8b97de5f1dbdfd34da5914da4b7601b34ebc6809b5bc"
+      }
+    },
+    "dependency_boundaries": {
+      "status": "passed",
+      "workspace_packages": 15,
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-boundaries-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    },
+    "documentation_links": {
+      "status": "pending"
+    }
+  },
+  "preserved_diagnostics": [
+    {
+      "phase": "first strict",
+      "status": "failed",
+      "cause": "manual_slice_size_calculation in record.rs",
+      "correction": "Use size_of_val(values), preserving all output byte choices",
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-strict-root.log",
+        "bytes": 977,
+        "sha256": "eb0dd1a6b868c9ec8efe65001ece5364f90e7bbb1cf5528edf66b2986378e437"
+      },
+      "corrected_log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-strict-second-root.log",
+        "bytes": 184,
+        "sha256": "d1d7a2cd243f2a2bfa36917be6ee59453bf936f90f574c859fbe868efc93db0e"
+      }
+    },
+    {
+      "phase": "first minimal all-target strict",
+      "status": "failed",
+      "cause": "Existing scalar preview contract lacked a crate-level ace16-write-preview gate",
+      "correction": "Add the same feature cfg used by peer preview contracts",
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-minimal-strict-root.log",
+        "bytes": 28556,
+        "sha256": "9680704e42cd5ec06f8b44fce6c8c3b1cbc28537783d57519a78a78fc2601fc5"
+      }
+    },
+    {
+      "phase": "second minimal all-target strict",
+      "status": "failed",
+      "cause": "Existing UI-carrier preview contract had the same missing feature gate",
+      "correction": "Add the peer feature cfg; both targets still execute under all features",
+      "log": {
+        "path": ".cache/ace16-native-creator-next-20261031/creator-minimal-strict-second-root.log",
+        "bytes": 3791,
+        "sha256": "80ef1cee0841011e7dd50fc515b9edc70f1977f074fff763830d8f6b0eafd806"
+      }
+    }
+  ],
+  "scope_boundaries": [
+    "No filesystem publication or host creation command qualified in this engine phase",
+    "SDK observations qualify the independent source goldens; no new producer-file SDK calls are claimed",
+    "No native Access creation/open/save/reopen or Windows evidence",
+    "Unresolved header bytes remain explicit zero choices rather than proven reserved ranges",
+    "No general native system/ACL sufficiency, macro-absence, normal imported ACE save/recovery or multiuser permission"
+  ],
+  "next_implementation_slice": "Independently freeze and qualify a represented two-DATA-page wide59/wide64 source; preserve current six goldens, owned/candidate membership and whole-image proof without adding a template or unrelated type expansion",
+  "installed_paths": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/mod.rs",
+      "bytes": 288,
+      "sha256": "683aacc900e8a3afe1241c3d6f3a69c16ffcb69c1dec3c7574baab0af9c38308"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/database.rs",
+      "bytes": 2425,
+      "sha256": "6450ce14970816a40633f47435071fe4722b9bb0c1e93fe937dd85a54b5b2a72"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/request.rs",
+      "bytes": 5699,
+      "sha256": "f4542f950cf8eb73371e11c52def7eeacc0f281a931846cb53cb2b17ea57ccf0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/profile.rs",
+      "bytes": 5751,
+      "sha256": "66e9695eb7c6957ae120bc5deb7a77c96eda4fd74a3dfdcb9420831f167b150b"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/definition.rs",
+      "bytes": 7024,
+      "sha256": "fc21aee44e7ec7addf05de46a55205c75b0b6a192e6519145475a647d8a0e87d"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/record.rs",
+      "bytes": 6912,
+      "sha256": "5395c057a404deb1d63b75f1f53cf43fe84206d3e5b0ec7a66f1705d449e121c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/build.rs",
+      "bytes": 6587,
+      "sha256": "cb10670a424993c26223304dbb56f8d80fd26e01d93bf30ce010c1b65e0822c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/tests.rs",
+      "bytes": 7925,
+      "sha256": "57cadf9d43e60e83032bc7aac0b948b4dacd428fdf603df447736dd2bcdec8e8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/Cargo.toml",
+      "bytes": 2873,
+      "sha256": "7cb3bd18156f607b012545e5f3ff3198699ed4737e4a5b49ab16d1bfa4b16197"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 8238,
+      "sha256": "81fd53dbfbd5eae6d012074bb5ccf7c5d362fffe0596ca884ce094be71936291"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/test_support.rs",
+      "bytes": 1151,
+      "sha256": "eeb626f70c70e1af30c65db58cef1270da43f885930fe82ba94f418d2f8b0b87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract.rs",
+      "bytes": 13095,
+      "sha256": "92fd3271a6abb6b39f98d4381b4e1eb09becd82f256fe3b299b8233630eb40e9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_ui_carriers_contract.rs",
+      "bytes": 1034,
+      "sha256": "4c67f46022567bef3b680eaacde50c50ea073b75095e2f60ed4a3a33ac0f7795"
+    }
+  ]
+}

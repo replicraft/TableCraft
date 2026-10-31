@@ -12,6 +12,7 @@ description = "Bounded Jet/ACE inspection and offline native edits"
 default = []
 journal = ["tablecraft-io/journal", "dep:sha2"]
 ace16-write-preview = []
+ace16-create = []
 
 [lints]
 workspace = true

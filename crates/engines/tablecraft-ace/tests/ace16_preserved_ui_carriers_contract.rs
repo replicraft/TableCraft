@@ -1,3 +1,4 @@
+#![cfg(feature = "ace16-write-preview")]
 //! Source-first passive UI carriers and exact Boolean engineering consumers.
 #[path = "ace16_preserved_ui_carriers_contract/api.rs"]
 mod api;

@@ -20,6 +20,10 @@ pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
 };
 mod constraints;
+#[cfg(feature = "ace16-create")]
+mod creation;
+#[cfg(feature = "ace16-create")]
+pub use creation::{CreateDatabaseError, CreatedDatabase, create_ace16_int32_database};
 mod encryption;
 mod error;
 mod format;

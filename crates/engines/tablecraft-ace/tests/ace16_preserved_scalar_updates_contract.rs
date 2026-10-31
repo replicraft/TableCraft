@@ -1,3 +1,4 @@
+#![cfg(feature = "ace16-write-preview")]
 //! Source-first qualification for a donor-shaped preservation-only Boolean edit.
 #[path = "ace16_preserved_scalar_updates_contract/api.rs"]
 mod api;
