@@ -126,7 +126,7 @@ fn empty_requests_resolve_actual_metadata_and_preserve_the_image() {
 }
 
 #[test]
-fn reversed_requests_retain_logical_rows_and_mixed_groups_refuse() {
+fn reversed_requests_and_joint_boolean_retain_complete_images() {
     for target in model::TARGETS {
         let case = model::source(6, target, model::Recipe::MixedRows);
         let mut updates = requests(&case);
@@ -142,6 +142,11 @@ fn reversed_requests_retain_logical_rows_and_mixed_groups_refuse() {
             Value::Boolean(false),
             Value::Boolean(true),
         )];
+        let yes_mask = 13 * 4096 - 1;
+        let yes_bit = 1_u8 << 2;
+        assert_eq!(case.before[yes_mask] & yes_bit, 0);
+        let mut joint_expected = case.expected.as_ref().unwrap().clone();
+        joint_expected[yes_mask] |= yes_bit;
         for reverse in [false, true] {
             let mut groups = [
                 FixedColumnUpdates::new("Items", target.name(), &updates),
@@ -158,10 +163,12 @@ fn reversed_requests_retain_logical_rows_and_mixed_groups_refuse() {
                 &|| false,
             )
             .unwrap();
-            assert!(matches!(
-                image.preview_ace16_batch_updates(&groups, &mut allowance, &|| false),
-                Err(EditError::Unsupported(WriteBlocker::Column))
-            ));
+            let result = image
+                .preview_ace16_batch_updates(&groups, &mut allowance, &|| false)
+                .unwrap();
+            assert_image(result.before_bytes(), &case.before);
+            assert_image(result.candidate_bytes(), &joint_expected);
+            assert_eq!(result.changed_rows(), case.changed);
         }
     }
 }

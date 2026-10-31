@@ -1,5 +1,5 @@
 //! Full-image authority independently reconstructed from original requests.
-use super::{FixedColumnUpdates, copy, int32, name_work, scalar, source, unique};
+use super::{FixedColumnUpdates, copy, int32, joint, name_work, scalar, source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -21,9 +21,13 @@ pub(super) fn prove(
     groups: &[FixedColumnUpdates<'_>],
     after: &[u8],
     returned_count: usize,
+    joint_fixed: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if joint_fixed {
+        return joint::proof::prove(image, groups, after, returned_count, budget, cancelled);
+    }
     if let [group] = groups
         && group
             .updates()
@@ -112,6 +116,36 @@ pub(super) fn prove(
             }
         }
         let selected = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        if groups.len() > 1
+            && group.updates().is_empty()
+            && matches!(
+                selected.scalar_type(),
+                Some(
+                    ScalarType::Int32
+                        | ScalarType::Int64
+                        | ScalarType::Currency
+                        | ScalarType::DateTime
+                )
+            )
+        {
+            // This accumulator is owned by the independent auditor. Earlier
+            // Boolean contributions came only from the same original requests;
+            // reapplying their individual bits is idempotent.
+            return joint::proof::prove_original(
+                joint::proof::Original {
+                    image,
+                    source: &original,
+                },
+                expected,
+                groups,
+                joint::proof::Observed {
+                    bytes: after,
+                    changed_rows: returned_count,
+                },
+                budget,
+                cancelled,
+            );
+        }
         if selected.scalar_type() == Some(ScalarType::Int32)
             && groups.len() == 1
             && group.updates().is_empty()

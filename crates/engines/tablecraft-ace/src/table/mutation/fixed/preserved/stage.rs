@@ -1,9 +1,9 @@
-//! Exact original Boolean expectations become disjoint mask patches.
-use super::{FixedColumnUpdates, int32, name_work, scalar, source::Source, unique};
+//! Fixed-profile dispatch retaining the established Boolean staging path.
+use super::{FixedColumnUpdates, int32, joint, name_work, scalar, source::Source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
-        data_type::{CURRENCY, DATE_TIME, INT64},
+        data_type::{CURRENCY, DATE_TIME, INT32, INT64},
         row::MASK_BITS,
     },
     header::check,
@@ -47,9 +47,13 @@ pub(super) fn prepare(
     image: &NativeImage,
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
+    joint_fixed: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    if joint_fixed {
+        return joint::stage::prepare(image, source, groups, budget, cancelled);
+    }
     // Original typed intent chooses this extra closed profile; the numeric
     // stage independently checks the actual native declaration and carriers.
     // Healthy Boolean paths retain their existing allocations, polls and charges.
@@ -105,8 +109,16 @@ pub(super) fn prepare(
             }
         }
         let mut empty_scalar = None;
+        let mut empty_joint = false;
         for (column, field) in schema.columns().iter().enumerate() {
             name_work(field.name(), group.column(), budget)?;
+            if groups.len() > 1
+                && group.updates().is_empty()
+                && matches!(field.native_type(), INT32 | INT64 | CURRENCY | DATE_TIME)
+                && field.name().eq_ignore_ascii_case(group.column())
+            {
+                empty_joint = true;
+            }
             if groups.len() == 1
                 && group.updates().is_empty()
                 && matches!(field.native_type(), INT64 | CURRENCY | DATE_TIME)
@@ -114,6 +126,12 @@ pub(super) fn prepare(
             {
                 empty_scalar = Some((column, scalar::binding::native_kind(field)?));
             }
+        }
+        if empty_joint {
+            // Metadata selects this newly admitted profile before Boolean
+            // qualification. Discard any paid prefix; no error is retried and
+            // the joint owner plans every group against the original Source.
+            return joint::stage::prepare(image, source, groups, budget, cancelled);
         }
         if let Some((column, kind)) = empty_scalar {
             field::fixed_column_at(schema, column, kind, size_of::<i64>())?;

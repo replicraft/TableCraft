@@ -15,9 +15,10 @@ GLOBAL/map allocation. Participating relationships remain refused. Required and
 validation checks still apply. `PublishToWeb=1` remains unqualified/refused; this
 feature does not establish donated-file editing support.
 
-Only one Int32 column group is admitted. Boolean/numeric mixtures,
-indexed/generated/calculated/dependent targets and other field representations
-remain outside this new path. Original field metadata and original requests select
+This single-target path admits one Int32 group. The batch API additionally admits
+[joint fixed-field groups](ACE16_PRESERVED_JOINT_FIXED.md), including qualified
+Boolean/numeric mixtures. Indexed/generated/calculated/dependent targets and
+other field representations remain outside these profiles. Original field metadata and original requests select
 and validate the numeric profile. An empty numeric request may enter only after
 exact metadata qualification of an ordinary fixed Int32; no staging, resource,
 conflict or cancellation failure triggers an alternate writer.
@@ -89,8 +90,9 @@ existing preserved Boolean target under Default or explicit fitting fixed mode.
 The existing `query preview-update` and typed `write preview-update` commands use
 that same native service; no new flag, retry, normal-save or journal permission is
 introduced. Native admission requires one ordinary, nonindexed,
-calculation-independent Int32 target. Mixed Boolean/numeric groups, multiple
-numeric groups, unavailable operands and other update modes remain refused.
+calculation-independent Int32 target. Qualified Boolean/numeric and multiple
+numeric groups now use the joint fixed profile. Unavailable operands and
+unsupported update modes remain refused.
 The existing Boolean lookup and charged scans stay unchanged.
 
 Both frontend targets reuse the actual public integration SOURCE owner and its

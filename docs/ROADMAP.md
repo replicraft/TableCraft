@@ -2,6 +2,13 @@
 
 ## Current product priority
 
+[Joint preserved fixed updates](testing/ACE16_PRESERVED_JOINT_FIXED.md) now compose
+qualified Boolean, Int32, Int64, Currency and legacy DateTime groups over one
+original image. Shared mask bits merge, changed rows count once and final
+constraints validate the complete result. Native authored-image, causal proof
+and mutation checks pass. This advances mixed-schema physical mutation while
+normal ACE save and required-macro authority remain unfinished.
+
 Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
 now cover one ordinary unindexed Int64, Currency or legacy DateTime target through
 the existing native fixed/batch engineering APIs. Exact payload/NULL preservation

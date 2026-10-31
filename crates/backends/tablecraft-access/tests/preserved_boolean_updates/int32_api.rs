@@ -104,14 +104,13 @@ fn preserved_int32_typed_and_sql_copies_follow_native_header_admission() {
 }
 
 #[test]
-fn preserved_int32_refuses_dependent_indexed_and_joint_targets() {
+fn preserved_int32_refuses_ineligible_and_accepts_joint_boolean_targets() {
     let case = model::source(6, 101);
     for statement in [
         "UPDATE Items SET [Number]=12 WHERE ID=1",
         "UPDATE Items SET [Number]=12 WHERE ID=-1",
         "UPDATE Items SET ID=12 WHERE ID=1",
         "UPDATE Items SET Calculated=12 WHERE ID=1",
-        "UPDATE Items SET Large_Number=101,Yes_Field=True WHERE ID=1",
         "UPDATE Items SET Large_Number=101,[Number]=12 WHERE ID=1",
         "UPDATE Items SET Large_Number=Calculated WHERE ID=1",
         "UPDATE Items SET Large_Number=101 WHERE Attachment_Field IS NULL",
@@ -130,6 +129,29 @@ fn preserved_int32_refuses_dependent_indexed_and_joint_targets() {
             "{statement}"
         );
     }
+    let yes_mask = 13 * 4096 - 1;
+    let yes_bit = 1_u8 << 2;
+    assert_eq!(case.before[yes_mask] & yes_bit, 0);
+    let mut expected = case.expected.clone();
+    expected[yes_mask] |= yes_bit;
+    let query = parse_query(
+        "UPDATE Items SET Large_Number=101,Yes_Field=True WHERE ID=1",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let plan = sql::preview_batch_update(
+        image(&case.before),
+        query.query(),
+        ScalarUpdateMode::Default,
+        &mut budget(),
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(plan.matched_rows(), 1);
+    let copy = plan.into_backend();
+    assert_eq!(copy.affected_rows(), 1);
+    assert_eq!(copy.candidate_bytes(), expected);
 }
 
 #[test]

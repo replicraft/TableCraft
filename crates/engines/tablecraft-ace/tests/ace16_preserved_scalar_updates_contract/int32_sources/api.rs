@@ -108,7 +108,7 @@ fn preserved_int32_empty_and_equal_operations_retain_original_bytes() {
 }
 
 #[test]
-fn preserved_int32_stale_null_wrong_carriers_and_mixed_groups_refuse() {
+fn preserved_int32_refusals_and_joint_boolean_complete_images() {
     let case = model::source(6, -101);
     for (expected, value) in [
         (Value::Int32(999), Value::Int32(-101)),
@@ -161,6 +161,11 @@ fn preserved_int32_stale_null_wrong_carriers_and_mixed_groups_refuse() {
         Value::Boolean(false),
         Value::Boolean(true),
     )];
+    let yes_mask = 13 * 4096 - 1;
+    let yes_bit = 1_u8 << 2;
+    assert_eq!(case.before[yes_mask] & yes_bit, 0);
+    let mut joint_expected = case.expected.clone();
+    joint_expected[yes_mask] |= yes_bit;
     for reverse in [false, true] {
         let mut groups = [
             FixedColumnUpdates::new("Items", "Large_Number", &numeric),
@@ -169,11 +174,12 @@ fn preserved_int32_stale_null_wrong_carriers_and_mixed_groups_refuse() {
         if reverse {
             groups.reverse();
         }
-        assert!(
-            capture(&case.before)
-                .preview_ace16_batch_updates(&groups, &mut budget(), &|| false)
-                .is_err()
-        );
+        let result = capture(&case.before)
+            .preview_ace16_batch_updates(&groups, &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(result.before_bytes(), case.before);
+        assert_eq!(result.candidate_bytes(), joint_expected);
+        assert_eq!(result.changed_rows(), 1);
     }
     for name in ["Number", "ID", "Calculated"] {
         assert!(

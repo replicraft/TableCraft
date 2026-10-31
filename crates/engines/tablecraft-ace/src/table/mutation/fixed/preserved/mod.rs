@@ -1,6 +1,7 @@
 //! Source-certified mixed-schema copies for fixed scalars and fitting Short Text.
 mod dependencies;
 mod int32;
+mod joint;
 mod namemap;
 mod proof;
 mod properties;
@@ -15,7 +16,10 @@ use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, WriteBlocker, header::check,
     inspect_table_schema, preservation::COPY_CHUNK_BYTES, table::mutation::patch::BytePatch,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 pub(super) fn selected(
     image: &NativeImage,
@@ -62,6 +66,7 @@ pub(super) fn preview(
     check(budget, cancelled)?;
     let first = groups.first().ok_or(EditError::Preservation)?;
     let mut assignments = 0_usize;
+    let mut joint_fixed = false;
     for group in groups {
         check(budget, cancelled)?;
         name_work(first.table(), group.table(), budget)?;
@@ -72,9 +77,21 @@ pub(super) fn preview(
             .checked_add(group.updates().len())
             .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
             .ok_or(InspectError::StructureLimit)?;
+        joint_fixed |= groups.len() > 1
+            && group.updates().first().is_some_and(|update| {
+                matches!(
+                    update.expected(),
+                    Value::Null
+                        | Value::Int32(_)
+                        | Value::Int64(_)
+                        | Value::Currency(_)
+                        | Value::DateTime(_)
+                )
+            });
     }
     let qualified = source::capture(&image, first.table(), budget, cancelled)?;
-    let (patches, changed) = stage::prepare(&image, &qualified, groups, budget, cancelled)?;
+    let (patches, changed) =
+        stage::prepare(&image, &qualified, groups, joint_fixed, budget, cancelled)?;
     let mut after = copy(image.as_bytes(), budget, cancelled)?;
     for patch in patches {
         check(budget, cancelled)?;
@@ -93,7 +110,15 @@ pub(super) fn preview(
 
     // The proof receives original requests, never staged patches or normalized
     // values. It recomputes all permitted bits and compares the complete image.
-    proof::prove(&image, groups, &after, changed, budget, cancelled)?;
+    proof::prove(
+        &image,
+        groups,
+        &after,
+        changed,
+        joint_fixed,
+        budget,
+        cancelled,
+    )?;
     let candidate = image.recapture_fixed_candidate(&after, budget, cancelled)?;
     source::capture(&candidate, first.table(), budget, cancelled)?;
     check(budget, cancelled)?;
