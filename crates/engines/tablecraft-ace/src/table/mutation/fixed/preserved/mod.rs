@@ -4,9 +4,11 @@ mod int32;
 mod namemap;
 mod proof;
 mod properties;
+mod scalar;
 mod source;
 mod stage;
 mod text;
+mod validation;
 
 use super::FixedColumnUpdates;
 use crate::{

@@ -1,5 +1,5 @@
 //! Full-image authority independently reconstructed from original requests.
-use super::{FixedColumnUpdates, copy, int32, name_work, source, unique};
+use super::{FixedColumnUpdates, copy, int32, name_work, scalar, source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -24,6 +24,51 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if let [group] = groups
+        && group
+            .updates()
+            .first()
+            .is_some_and(|request| matches!(request.expected(), Value::Null))
+    {
+        let original = source::capture(image, group.table(), budget, cancelled)?;
+        let expected = copy(image.as_bytes(), budget, cancelled)?;
+        let selected = int32::proof::select_original(&original, group, budget, cancelled)?;
+        return match selected.scalar_type() {
+            Some(ScalarType::Int32) => int32::proof::prove_bound(
+                &original,
+                expected,
+                groups,
+                selected,
+                int32::proof::Observed {
+                    bytes: after,
+                    changed_rows: returned_count,
+                },
+                budget,
+                cancelled,
+            ),
+            Some(ScalarType::Int64 | ScalarType::Currency | ScalarType::DateTime) => {
+                scalar::proof::prove_bound(
+                    scalar::proof::Original {
+                        image,
+                        source: &original,
+                    },
+                    expected,
+                    groups,
+                    selected,
+                    scalar::proof::Observed {
+                        bytes: after,
+                        changed_rows: returned_count,
+                    },
+                    budget,
+                    cancelled,
+                )
+            }
+            _ => Err(EditError::Unsupported(WriteBlocker::Column)),
+        };
+    }
+    if scalar::requested_non_null(groups) {
+        return scalar::proof::prove(image, groups, after, returned_count, budget, cancelled);
+    }
     if int32::requested(groups) {
         return int32::proof::prove(image, groups, after, returned_count, budget, cancelled);
     }
@@ -79,6 +124,29 @@ pub(super) fn prove(
                 groups,
                 after,
                 returned_count,
+                budget,
+                cancelled,
+            );
+        }
+        if groups.len() == 1
+            && group.updates().is_empty()
+            && matches!(
+                selected.scalar_type(),
+                Some(ScalarType::Int64 | ScalarType::Currency | ScalarType::DateTime)
+            )
+        {
+            return scalar::proof::prove_bound(
+                scalar::proof::Original {
+                    image,
+                    source: &original,
+                },
+                expected,
+                groups,
+                selected,
+                scalar::proof::Observed {
+                    bytes: after,
+                    changed_rows: returned_count,
+                },
                 budget,
                 cancelled,
             );

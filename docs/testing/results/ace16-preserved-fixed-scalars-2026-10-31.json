@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "One ordinary unindexed Int64, Currency or legacy DateTime target in a preserved mixed schema through existing native fixed and batch engineering services",
+  "source_commit": "70a1f0c4",
+  "source": {
+    "original_views": 78,
+    "expected_views": 70,
+    "complete_header_6_admissions": 74,
+    "complete_header_5_column_refusals": 74
+  },
+  "observed": {
+    "first_api_functions_passed": 6,
+    "principal_complete_image_comparisons": 70,
+    "additional_reversed_order_comparisons": 8,
+    "preserved_contract": {
+      "passed": 48,
+      "failed": 0,
+      "existing_ignored": 2
+    },
+    "mutation_library": {
+      "passed": 601,
+      "failed": 0,
+      "existing_ignored": 7,
+      "filtered": 323
+    },
+    "independent_proof_functions_passed": 5,
+    "strict_all_targets_all_features": "passed before and after causal test registration",
+    "minimal_build": "passed",
+    "workspace_format": "passed"
+  },
+  "retained_failure": "Source-first strict run found two needless_range_loop lints; iterator-only correction retained frozen byte choices and passed the second strict run. No writer expectations were changed.",
+  "limits": [
+    "Authored sources only for this new family",
+    "No normal ACE save or journal permission",
+    "No required-macro absence evidence",
+    "Frontend acceptance pending",
+    "Genuine-file and Microsoft Access qualification pending",
+    "Indexed, dependent and mixed preserved targets remain refused"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/source-integration-first-root.log",
+      "bytes": 540,
+      "sha256": "b5351c9bba11ef01b143ae41a1a43649ec63dcabb2d3acd43ef1eeede17bf2fb"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/source-native-first-root.log",
+      "bytes": 525,
+      "sha256": "0c98824c186d1fcecef01a71bc7efb1da25648b30b0aad89170161af110eb23b"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/source-strict-first-root.log",
+      "bytes": 3012,
+      "sha256": "287b00614b1b7f57cce14a770017b5c3ef4db6abe322912c91bf50007fb842e3"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/source-strict-second-root.log",
+      "bytes": 184,
+      "sha256": "d2e7367a0be196e4ce36686877f0a8c4e3ee0b13a7b2644a11a0b75e5554ee21"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/api-first-root.log",
+      "bytes": 1038,
+      "sha256": "7cdc72d4402788042d3542715ef1f61cd0c491b91070acf7a7505f0b6d391dce"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/contract-first-root.log",
+      "bytes": 5672,
+      "sha256": "b3798b9daa9bf1b9ea02f2d07fc5655b8ed8089a6716e073eb727bf7804fecfa"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/mutation-first-root.log",
+      "bytes": 83245,
+      "sha256": "646bb82122ccde5df356655dcdfb873aaf7db3274309bcbdec7dc7ba0e68d1dc"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/implementation-strict-first-root.log",
+      "bytes": 183,
+      "sha256": "24c44583763fdc95f50c7e834d85760108239ee9280bedb30e253b5e8ecaabca"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/implementation-strict-second-root.log",
+      "bytes": 183,
+      "sha256": "72ed9368de1ddfa5660e2c048045596442c8036402dc0e0ed6f8326d3c31a168"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/minimal-first-root.log",
+      "bytes": 331,
+      "sha256": "4df127b779b056d761342e684515750886d91d1bdfa3b18cd5b04dfd5149dc42"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-design-next-20261030/implementation-format-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

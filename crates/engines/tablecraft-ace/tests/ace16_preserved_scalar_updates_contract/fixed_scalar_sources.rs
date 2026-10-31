@@ -2,6 +2,9 @@
 #[path = "fixed_scalar_sources/model.rs"]
 pub(crate) mod model;
 
+#[path = "fixed_scalar_sources/api.rs"]
+mod api;
+
 use super::{SCOPE, budget, model as rich};
 use std::io::Cursor;
 use tablecraft_ace::{

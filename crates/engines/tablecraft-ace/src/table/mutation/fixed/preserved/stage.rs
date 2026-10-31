@@ -1,8 +1,11 @@
 //! Exact original Boolean expectations become disjoint mask patches.
-use super::{FixedColumnUpdates, int32, name_work, source::Source, unique};
+use super::{FixedColumnUpdates, int32, name_work, scalar, source::Source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
-    format::row::MASK_BITS,
+    format::{
+        data_type::{CURRENCY, DATE_TIME, INT64},
+        row::MASK_BITS,
+    },
     header::check,
     table::mutation::{
         field,
@@ -50,6 +53,24 @@ pub(super) fn prepare(
     // Original typed intent chooses this extra closed profile; the numeric
     // stage independently checks the actual native declaration and carriers.
     // Healthy Boolean paths retain their existing allocations, polls and charges.
+    if let [group] = groups
+        && group
+            .updates()
+            .first()
+            .is_some_and(|update| matches!(update.expected(), Value::Null))
+    {
+        return match scalar::bind_null_target(source.table.schema(), group, budget)? {
+            scalar::Target::Int32(column) => {
+                int32::prepare_bound(image, source, group, column, budget, cancelled)
+            }
+            scalar::Target::Scalar { column, kind } => {
+                scalar::prepare_bound(image, source, group, column, kind, budget, cancelled)
+            }
+        };
+    }
+    if scalar::requested_non_null(groups) {
+        return scalar::prepare(image, source, groups, budget, cancelled);
+    }
     if int32::requested(groups) {
         return int32::prepare(image, source, groups, budget, cancelled);
     }
@@ -83,8 +104,20 @@ pub(super) fn prepare(
                 return Err(EditError::Conflict);
             }
         }
-        for field in schema.columns() {
+        let mut empty_scalar = None;
+        for (column, field) in schema.columns().iter().enumerate() {
             name_work(field.name(), group.column(), budget)?;
+            if groups.len() == 1
+                && group.updates().is_empty()
+                && matches!(field.native_type(), INT64 | CURRENCY | DATE_TIME)
+                && field.name().eq_ignore_ascii_case(group.column())
+            {
+                empty_scalar = Some((column, scalar::binding::native_kind(field)?));
+            }
+        }
+        if let Some((column, kind)) = empty_scalar {
+            field::fixed_column_at(schema, column, kind, size_of::<i64>())?;
+            return scalar::prepare_bound(image, source, group, column, kind, budget, cancelled);
         }
         let column = match field::fixed_column(schema, group.column(), ScalarType::Boolean, 0) {
             Ok(column) => column,

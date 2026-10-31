@@ -85,6 +85,18 @@ pub(super) fn prepare(
         name_work(field.name(), group.column(), budget)?;
     }
     let column = field::fixed_column(schema, group.column(), ScalarType::Int32, PAYLOAD_BYTES)?;
+    prepare_bound(image, source, group, column, budget, cancelled)
+}
+
+pub(super) fn prepare_bound(
+    image: &NativeImage,
+    source: &Source,
+    group: &FixedColumnUpdates<'_>,
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let schema = source.table.schema();
     budget
         .charge(
             Resource::Steps,

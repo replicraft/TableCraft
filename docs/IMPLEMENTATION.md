@@ -12,6 +12,20 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Preserved eight-byte scalar updates
+
+The existing native fixed and batch engineering services now admit one qualified
+unindexed Int64, Currency or legacy DateTime target in a preserved mixed schema.
+[Exact scalar preservation](testing/ACE16_PRESERVED_FIXED_SCALARS.md) includes
+bitwise DATE changes, NULL mask-only transitions and inactive payload retention.
+Seventy principal complete-image comparisons, reversed request orders and five
+independent proof tests pass. The full preserved contract passes 48 tests with
+two existing ignored helpers; the mutation-library batch passes 601 with seven
+existing ignored helpers. Strict and minimal ACE checks pass.
+
+These authored-source results do not establish genuine-file or Microsoft Access
+qualification, required-macro absence, journal permission or normal ACE saves.
+
 ## Explicit BeforeChange field-update candidates
 
 The native [BeforeChange update service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
