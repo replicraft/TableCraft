@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_normal_ace_before_change_sources",
+  "status": "source_native_independent_read_hash_and_final_checks_passed",
+  "scope": "Source-only evidence before normal producer; no normal admission or save authority",
+  "profile": {
+    "header_selectors": [
+      5,
+      6
+    ],
+    "originals": 32,
+    "modeled_after_images": 14,
+    "views": 46,
+    "file_bytes_each": 36864,
+    "fixture_owner": "crates/engineering/tablecraft-testkit/src/access/canonical_before_change.rs",
+    "user_table": "Items",
+    "columns": [
+      "Id",
+      "Score"
+    ],
+    "carriers": "present manual unindexed ordinary Int32",
+    "original_rows": [
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        20
+      ],
+      [
+        3,
+        30
+      ]
+    ],
+    "catalog_origin": {
+      "native_id": 7,
+      "page": 4,
+      "slot": 7
+    },
+    "source_recipe_count_per_header": 16,
+    "complete_modeled_outcomes_per_header": 7,
+    "refusal_recipes_per_header": 9
+  },
+  "modeled_outcomes": {
+    "Sequential": "seed17 then Current+Old+1 => Score28",
+    "MacroOnlyTarget": "Id11/Score17",
+    "UserNoopMacroChanges": "supplied10->10 plus increment models Score11; initial normal scope refuses",
+    "RestoreOriginal": "supplied10->17 then Old10; zero effective changed roots",
+    "Empty": "zero supplied requests; unchanged, no invented row",
+    "AllNoop": "supplied10->10 and empty body; unchanged model but initial normal scope refuses",
+    "DormantDelete": "active increment models Score18; dormant Delete guard is not run"
+  },
+  "initial_normal_scope": {
+    "supplied_equal_assignments_refused_including_mixed_lists": true,
+    "modeled_after_images_not_admission_guarantees": true,
+    "no_op_model_refusal_contexts": [
+      "UserNoopMacroChanges",
+      "AllNoop"
+    ],
+    "retained_modeled_after_views_for_those_contexts": 4,
+    "zero_requests_distinct": true,
+    "restore_old_keeps_original_user_intent": true,
+    "every_other_context_requires_independent_normal_admission": true
+  },
+  "observed": {
+    "native_source_gate": {
+      "passed_functions": 1,
+      "original_views": 32,
+      "modeled_after_views": 14,
+      "failures": 0,
+      "seconds": 0.15,
+      "scope": "read/schema/constraints/coverage/GLOBAL/full maps only"
+    },
+    "explicit_export": {
+      "status": "passed_first_execution",
+      "images": 46,
+      "files": 48,
+      "manifests": [
+        "inventory.tsv",
+        "requests.tsv"
+      ],
+      "seconds": 0.13,
+      "create_new_only": true
+    },
+    "ordinary_hash_gate": {
+      "passed_functions": 2,
+      "ignored_exporter": 1,
+      "failures": 0,
+      "seconds": 0.16,
+      "binds_images": 46,
+      "binds_original_request_manifest": true
+    },
+    "sdk": {
+      "status": "all46_reads_passed_first_attempt",
+      "planned_children": 46,
+      "started_children": 46,
+      "completed_children": 46,
+      "failure": null,
+      "return_codes_all_zero": true,
+      "stderr_all_empty": true,
+      "unchanged_getter_class": "CanonicalAceV2Getter",
+      "metadata_apis": 4,
+      "format_labels": {
+        "5": "V2016",
+        "6": "V2019"
+      },
+      "all_system_and_user_schema_rows_observed": true,
+      "raw_catalog_extra_and_body_observed": true,
+      "expression_evaluation_disabled": true,
+      "links_denied": true,
+      "source_input_class_hashes_unchanged": true,
+      "per_child_limits": {
+        "seconds": 30,
+        "stdout_bytes": 262144,
+        "stderr_bytes": 65536
+      }
+    },
+    "saved_comparison": {
+      "status": "passed_first_execution",
+      "whole_ordered_inventories_equal": 46,
+      "verifier_children": 0,
+      "verifier_writer_calls": 0
+    },
+    "strict": {
+      "status": "passed_all_targets_all_features_ace_and_testkit",
+      "seconds": 23.81
+    },
+    "normal_planner_calls": 0,
+    "macro_program_execution_calls": 0,
+    "native_mutation_writer_calls": 0,
+    "journal_calls": 0,
+    "formatting": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/source-fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/source-links-first-root.log",
+        "bytes": 53,
+        "sha256": "05b4c69b332d2da3f0511124b11e9cc8597d2b186037de71ef6a38e9b56367e7"
+      },
+      "targets": 6906,
+      "missing": 0
+    }
+  },
+  "evidence": {
+    "source_owner": {
+      "path": "crates/engineering/tablecraft-testkit/src/access/canonical_before_change.rs",
+      "bytes": 14349,
+      "sha256": "f61bf723ca293e8fd43978ab3bd6f873501997c183a093fbada48cac3d1647e5"
+    },
+    "initial_source_freeze": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/source-first-private-freeze.sha256",
+      "bytes": 708,
+      "sha256": "f3941cf2f56eefea98c50ee066c24c0a72273ac9ebba6d0c99e9b528e30e468b"
+    },
+    "scope_contract": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/ADMISSION_SCOPE.md",
+      "bytes": 2203,
+      "sha256": "ec9db86c2da646968f593791b711193d95f6a7b49b4168506bc6aa225efd180f"
+    },
+    "actual_export_inventory": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/originals-first-freeze-root.json",
+      "bytes": 25209,
+      "sha256": "8d2ecb226261a4f9671b4b3f9a5496c182f0a63ac33f6d52bb1e1584e4b2154f"
+    },
+    "inventory": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/originals-first/inventory.tsv",
+      "bytes": 8678,
+      "sha256": "49a9ce82a21db5d78419c17ae1a32afff063afccc994dcadb0ee93da55c8ac4c"
+    },
+    "original_requests": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/originals-first/requests.tsv",
+      "bytes": 962,
+      "sha256": "9df70b9fe37e589ddce930d08aa222adad3039cd68ff84695a50c7548a800899"
+    },
+    "sdk_code_input_freeze": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/getter/code-and-input-first-freeze.json",
+      "bytes": 2354,
+      "sha256": "50a9e14b4d0edcbc6c088f6492beede7d2b1e3dea5099bf7610755b853229052"
+    },
+    "sdk_authority": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/getter/input-authority.json",
+      "bytes": 22985,
+      "sha256": "296f9c107eb669c691b72286f04bd3a2069e46cfbcfc7d8894cc364edb4c808c"
+    },
+    "sdk_receipt": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/getter/receipt-first-root.json",
+      "bytes": 48655,
+      "sha256": "539f6dd078e28d1b22bc04c578a83a38015a61a42c69ca81c3c7896d87113a56"
+    },
+    "saved_report": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/getter/saved-first-root.log",
+      "bytes": 10309,
+      "sha256": "0b43f80fd27b6f408e3dfcbde9620ad7fca2ed549a589f9a6d03c07f389f8560"
+    },
+    "bound_hash_template": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/evidence-bound-root/binding.json",
+      "bytes": 687,
+      "sha256": "21267bf49704305b448e0ce548258fcaf686ed0f9494935a1d6a904348626e1a"
+    },
+    "logs": [
+      {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/source-first-root.log",
+        "bytes": 645,
+        "sha256": "9efcf06f3c7c8bf24b3cc0fbda0449c9c08be39a1fb7b8561981f5dde9505554"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/export-first-root.log",
+        "bytes": 529,
+        "sha256": "2037f5963255964d97d0d828cc7172c1bb48ff113121af5ef0983347b0484903"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/hash-first-root.log",
+        "bytes": 892,
+        "sha256": "372dfc540e402a75daf44c63fd31aaf34ce7f0441a113cb6e49c9c9968a204fc"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/source-strict-first-root.log",
+        "bytes": 307,
+        "sha256": "f609bd2bdded99aa9785e2868803afd1e0f65475963e8d061b1d4605857eced4"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-normal-next-20261031/getter/runner-first-root.log",
+        "bytes": 92,
+        "sha256": "9fd0a514e4eee3011a9c06bf216748c43abcc86a4c7d07c571ba141abf995365"
+      }
+    ]
+  },
+  "preexecution_correction": {
+    "reason": "Direct LowerHex formatting of sha2 digest Array was unsupported; corrected to a shared byte-wise hex helper before installation/export",
+    "first_helper_draft_preserved": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/evidence-draft/before-hex-fix/private-freeze.json",
+      "bytes": 2111,
+      "sha256": "123cc89e8330ec68d7feb6b705059a2000655e6b42fe24c59d1403c36f9cdacf"
+    },
+    "corrected_helper_freeze": {
+      "path": ".cache/ace16-native-before-change-normal-next-20261031/evidence-draft/private-freeze.json",
+      "bytes": 2606,
+      "sha256": "62e8f3dcf959bc67f26b51a16d149f2e31d8164e96aee0daed28291a4b93eddd"
+    },
+    "failed_export_calls": 0
+  },
+  "limits": [
+    "Readable/modeled sources only; no required-event absence or ordinary-save permission",
+    "Stored macro bodies are observed inert data; source gate and SDK do not execute their semantics",
+    "Supplied equal-assignment event timing remains unqualified; its modeled outputs are retained as refusal contexts",
+    "No native Access runtime, event timing, Windows integration or save/reopen comparison",
+    "No producer image was used as a SOURCE or SDK-output oracle"
+  ]
+}
