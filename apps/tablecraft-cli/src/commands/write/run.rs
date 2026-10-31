@@ -14,8 +14,8 @@ use tablecraft_access::engineering::{
     self, DeleteMode, EngineeringCopy, EngineeringRequest, NamedInsertMode, UpdateMode,
 };
 use tablecraft_ace::{
-    AutoNumberRowInsert, FixedColumnUpdates, FixedScalarUpdate, IncrementingAutoNumber,
-    InspectError, NativeImage, RowInsert, SlotScalarUpdate, inspect_header,
+    AutoNumberRowInsert, FittedColumnUpdates, FixedColumnUpdates, FixedScalarUpdate,
+    IncrementingAutoNumber, InspectError, NativeImage, RowInsert, SlotScalarUpdate, inspect_header,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::functions::dates::clock::Clock;
@@ -103,6 +103,59 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
             }
         };
         return publish(&args.paths, request, password, &mut budget);
+    }
+
+    // Declared KIND chooses the typed transport; native metadata selects storage.
+    // Fixed-only commands retain their existing parser and resource path.
+    let (assignments, remainder) = cells.as_chunks::<{ updates::SET_FIELDS }>();
+    if !args.index_growth
+        && !args.cascade_updates
+        && remainder.is_empty()
+        && assignments
+            .first()
+            .is_some_and(|fields| fields[3] == "text")
+    {
+        let mut all_text = true;
+        for fields in assignments {
+            tick(&mut budget, &|| false)?;
+            budget
+                .charge(Resource::Steps, fields[3].len() as u64)
+                .map_err(InspectError::from)?;
+            all_text &= fields[3] == "text";
+        }
+        if all_text {
+            let owned = updates::parse(
+                cells,
+                args.value_bytes,
+                SlotScalarUpdate::new,
+                &mut budget,
+                &|| false,
+            )?;
+            let table = owned
+                .first()
+                .ok_or_else(|| invalid("Expected text updates"))?
+                .table;
+            let mut groups = Vec::new();
+            input::reserve(&mut groups, owned.len(), &mut budget)?;
+            for group in &owned {
+                if !updates::same_name(table, group.table, &mut budget, &|| false)? {
+                    return Err(invalid("Fitted text updates require one table"));
+                }
+                groups.push(FittedColumnUpdates::Variable {
+                    column: group.column,
+                    updates: &group.rows,
+                });
+            }
+            return publish(
+                &args.paths,
+                EngineeringRequest::FittedUpdate {
+                    table,
+                    groups: &groups,
+                },
+                password,
+                &mut budget,
+            );
+        }
     }
 
     let owned = updates::parse(

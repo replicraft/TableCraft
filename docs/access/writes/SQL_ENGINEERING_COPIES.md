@@ -82,7 +82,12 @@ assignment coercions or the ordinary `ExistingInt32` carrier law.
 ## Native mode and publication
 
 The default resolves the complete target set from the original snapshot and
-selects one service before native planning. All-fixed targets use existing fitting
+selects one service before native planning. A qualified mixed-schema projection
+with one ordinary, unindexed Short Text target uses the
+[preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+under Default mode, retaining opaque companions and original record capacity.
+Other explicit modes and mixed-target requests keep their existing refusals for
+that preservation profile. All-fixed targets use existing fitting
 fixed/batch maintenance and retain its history policy. For one Text/Binary target,
 the retained native declaration selects the existing ordinary Memo/OLE service
 when it matches that engine storage shape. Otherwise it uses the existing variable

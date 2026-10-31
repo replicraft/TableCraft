@@ -13,6 +13,7 @@ pub mod modern_attachment;
 #[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
 pub mod old_attachment;
 
+use model as rich;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -28,3 +29,10 @@ fn budget() -> ResourceBudget {
 mod int32_api;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources.rs"]
 mod int32_sources;
+
+// Reuse the actual SOURCE model; framing-only members belong to its native qualifiers.
+#[path = "preserved_boolean_updates/short_text_api.rs"]
+mod short_text_api;
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/model.rs"]
+mod short_text_model;
