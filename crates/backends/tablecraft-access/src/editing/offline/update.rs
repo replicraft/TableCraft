@@ -49,23 +49,33 @@ impl OfflineWriteSession {
                 .map_err(Cause::Planning)?;
             let matched = plan.matched_rows();
             let plan = plan.into_backend();
-            let changed = plan.changed_rows();
-            Ok((plan, matched, changed))
+            Ok((plan, matched))
         })();
 
         match result {
-            Ok((plan, matched, changed)) => Ok(StagedUpdate {
-                session: self,
-                plan,
-                matched,
-                changed,
-            }),
+            Ok((plan, matched)) => Ok(StagedUpdate::from_plan(self, plan, matched)),
             Err(cause) => Err(self.fail(Phase::Planning, cause)),
         }
     }
 }
 
 impl StagedUpdate {
+    /// Shared internal constructor; callers cannot supply image bytes or invent
+    /// changed counts. Both SQL and typed sources retain the normal native plan.
+    pub(super) fn from_plan(
+        session: OfflineWriteSession,
+        plan: RecoverableNativeEditPlan,
+        matched: usize,
+    ) -> Self {
+        let changed = plan.changed_rows();
+        Self {
+            session,
+            plan,
+            matched,
+            changed,
+        }
+    }
+
     /// Original matched-row count available before mutation/report allocation.
     pub const fn matched_rows(&self) -> usize {
         self.matched

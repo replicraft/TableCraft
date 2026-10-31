@@ -714,7 +714,8 @@ qualification gates.
 The shared [offline write-session service](access/writes/OFFLINE_WRITE_SESSIONS.md)
 now retains one exclusive target across successive normal Jet 4 saves and explicit
 recovery/confirmation. Staged counts precede effects; known completion survives
-cleanup/read failures. Eleven direct session tests and a real confirmation-error
+cleanup/read failures. Typed table snapshots now stage edits through that same
+service with fresh handle identities; 15 session tests and the real confirmation-error
 regression pass. This closes a concrete host-composition gap without broadening
 normal ACE admission or claiming native shared-file coordination.
 

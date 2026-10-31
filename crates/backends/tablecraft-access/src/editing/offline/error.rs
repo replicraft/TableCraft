@@ -1,5 +1,5 @@
 use super::{KnownOutcome, OfflineWriteSession, Receipt, SessionState};
-use crate::editing::sql;
+use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 use tablecraft_ace::{InspectError, NativeIntentError, NativeRecoveryQualificationError};
 use tablecraft_io::{
@@ -56,6 +56,12 @@ pub enum Cause {
     /// Native capture, allocation, cancellation or resource failure.
     #[error(transparent)]
     Native(InspectError),
+    /// Capturing the typed table snapshot or validating its declaration failed.
+    #[error(transparent)]
+    Editor(NativeEditError),
+    /// Snapshot-local typed handle conversion or normal native planning refused.
+    #[error(transparent)]
+    Editing(journal::Error),
     /// Closed shared SQL or normal native planning refused the request.
     #[error(transparent)]
     Planning(sql::RecoverableError),

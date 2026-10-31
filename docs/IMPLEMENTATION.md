@@ -20,10 +20,15 @@ plans, saves and explicit recovery without reopening or unlocking it between edi
 Staged plans expose report counts before effects; failures retain resources and
 separate current known facts from the previous completed receipt. Retired
 confirmation reports the currently verified image without claiming history.
-The CLI journal commands consume this shared service.
+The CLI journal commands consume this shared service. A typed table editor now
+exposes the actual snapshot under the same lease and stages existing `CellUpdate`
+requests through the same durable path. Fresh editors reject stale/foreign row
+handles while preserving the previous receipt; normal ACE updates remain unavailable.
 
-Eleven direct filesystem session tests and the real-protocol confirmation-error
-regression pass. The [focused record](testing/results/offline-write-sessions-2026-10-31.json)
+The complete session target passes 15 functions, including four typed cases;
+the real-protocol confirmation-error regression also passes. The
+[typed result](testing/results/offline-typed-write-sessions-2026-10-31.json) extends
+the original session acceptance. The [focused record](testing/results/offline-write-sessions-2026-10-31.json)
 retains source-first complete images and validation boundaries. This does not
 enable normal ACE saves, resolve required data macros, implement native Access
 shared-file locking or complete the application cursor/session roadmap.

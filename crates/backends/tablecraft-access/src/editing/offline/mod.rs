@@ -3,12 +3,14 @@
 //! This is not native multiuser coordination or ACE write permission.
 mod error;
 mod recovery;
+mod table;
 mod update;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
 mod tests;
 
 pub use error::{Cause, Failure, OpenError, Phase};
+pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;
 
 use std::path::Path;
