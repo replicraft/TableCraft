@@ -1386,3 +1386,16 @@ host validation is recorded separately. Standalone IO/ACE/Access default feature
 and default read/fresh-copy behavior remain unchanged. Unsupported hosts gain no
 save capability from enabling a feature, and restart resolution of retired bundles
 remains an explicit [lifecycle gap](../foundation/FILESYSTEM_JOURNALS.md).
+
+## Shared offline write-session consumer (31 October 2026)
+
+The opt-in `tablecraft-access/offline-write-session` feature composes its existing
+`journal` feature with `tablecraft-io/filesystem-journal`. The Access adapter now
+owns the normal offline plan/apply/recovery lifecycle. Default Access builds
+retain no filesystem-session API. The Unix-only service preserves the IO platform limits
+and grants no normal ACE mutation eligibility.
+
+Filesystem integration tests now inherit the existing workspace `tempfile`
+dev-dependency. The lockfile adds only that member dependency edge; no registry
+package version, root dependency or default feature changes. Shared native
+contracts still import neither the concrete adapter nor the application host.
