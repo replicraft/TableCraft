@@ -25,14 +25,23 @@ Source-first qualification covers 19 positive pairs and eight healthy refusal
 originals per header. Seventy-six order-varied complete images, seven causal
 proof functions, 53 preserved-contract functions and 609 mutation-library tests
 pass. Existing unrelated refusals remain. This adds no normal save, journal or
-required-macro permission; genuine joint and native Access qualification remain
-separate.
+required-macro permission; native Access qualification remains separate.
 
 Existing Access and CLI consumers require no production routing changes. Their
 [joint acceptance](testing/results/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
 passes 100 principal adapter complete-image comparisons and 36 CLI comparisons;
 full preserved targets pass 30 and 27 tests. SQL SET operands retain original-row
 semantics, and false selection still qualifies every empty target group.
+
+The same joint service now matches twelve independently prepared complete
+images on the unchanged SDK-generated V2016/V2019 originals. Ten typed batches
+and two genuine empty-selection SQL calls cover shared masks, overlapping rows,
+NULL transitions and exact DATE bits. Eight images change and four are exact
+no-ops; changed roots count once per image. All twelve fresh read-only SDK
+inventories and the first saved-only replay pass. The
+[genuine-file record](testing/results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+retains source, expectation admission, committed producer and reader phases.
+These observations grant no normal-save, journal or required-macro authority.
 
 ## Preserved eight-byte scalar updates
 

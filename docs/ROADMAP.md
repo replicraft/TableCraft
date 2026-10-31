@@ -8,6 +8,12 @@ original image. Shared mask bits merge, changed rows count once and final
 constraints validate the complete result. Native authored-image, causal proof
 and mutation checks pass. This advances mixed-schema physical mutation while
 normal ACE save and required-macro authority remain unfinished.
+Twelve complete-image comparisons through a fresh committed CLI and twelve
+fresh read-only SDK inventories now also pass on the unchanged generated
+V2016/V2019 originals. The joint genuine corpus includes overlapping row groups,
+NULL/mask transitions and true empty SQL groups; its saved-only replay passes.
+Atomic fitting Short Text plus fixed-field composition is the next physical
+mutation task, followed by broader safe-save integration.
 
 Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
 now cover one ordinary unindexed Int64, Currency or legacy DateTime target through
