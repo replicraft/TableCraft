@@ -359,8 +359,11 @@ composites, consistent aliases and complete final uniqueness checks. Fitting
 serialization is selected before preparation, without retrying a failed encoder.
 Original page identities, child topology and per-leaf entry counts remain fixed.
 A separate metadata-selected mixed-schema route preserves admitted scalar/rich
-siblings and checked unchanged indexes while modifying unindexed ordinary Int32
-fields. Readonly AutoNumber values can be operands but never assigned. Its targets
+siblings while modifying ordinary Int32 fields. Complete ordinary scalar tables
+can maintain checked non-NULL I32 indexes; rich/unavailable siblings retain
+unindexed admission. Readonly Int32 AutoNumber may supply operands/keys but never
+be assigned. Original nullable-key facts preserve the prior unindexed route
+before new tree decoding; indexed NULL mutation remains refused. Its targets
 remain non-NULL and outside calculation/collection dependencies. Int32 tree
 rewriting still refuses ignore-NULL membership; splits and map/storage growth
 remain outside both profiles. This
@@ -462,7 +465,7 @@ prefix/header/height rejection and CLI output atomicity. A separate
 replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This index-maintenance path remains an offline Jet4 profile. The separate normal
-ACE BeforeChange route has bounded Int32 retained-tree and unindexed mixed-schema profiles; see
+ACE BeforeChange route has bounded Int32 retained-tree and mixed-schema profiles; see
 [its contract](NORMAL_ACE_BEFORE_CHANGE.md).
 
 Complete Boolean/numeric/GUID composite index reads/checks now work, but an update touching
@@ -482,7 +485,7 @@ index checks do not qualify native Access non-finite write acceptance.
 Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
 Jet4 Int32 edits; DateTime target/key mutation remains outside this writer. The
 separate ACE BeforeChange route admits qualified Int32 targets with retained-tree
-or unindexed mixed-schema preservation; DateTime key updates remain unsupported.
+or mixed-schema preservation; DateTime key updates remain unsupported.
 ACE 16-family single/composite Decimal index reads/checks do not qualify normal
 Decimal target/key mutation or expand either normal route. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and

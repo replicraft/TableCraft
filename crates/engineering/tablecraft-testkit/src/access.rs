@@ -155,3 +155,6 @@ pub mod canonical_mixed_before_change;
 
 /// Independent indexed mixed-schema BeforeChange originals and literal outcomes.
 pub mod canonical_indexed_mixed_before_change;
+
+/// Ordinary nullable indexes retained through unrelated BeforeChange updates.
+pub mod canonical_nullable_index_before_change;

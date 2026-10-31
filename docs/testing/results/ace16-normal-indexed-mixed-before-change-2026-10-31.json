@@ -1,0 +1,296 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_journaled_ace_indexed_mixed_before_change_updates",
+  "status": "native_proof_sessions_nullable_compatibility_cli_and_regressions_passed",
+  "source_commit": "f5a56e88",
+  "baseline_commit": "b47db342",
+  "native_access_qualification": "unrun",
+  "frozen26source_images_changed": false,
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "indexed_expected_images": 12,
+    "typed_and_sql_indexed_saves": 24,
+    "nullable_index_compatibility_saves": 4,
+    "key_population": "checked fixed Int32 components, all present for indexed mutation",
+    "nullable_populations": "original-mask classification selects prior unindexed qualifier before new tree parsing",
+    "readonly_counter": "key/operand readable; field writes refused",
+    "mutation": "ordinary present Int32 targets; fitting existing DATA/INDEX pages",
+    "intent": "unchanged TCNI0002/profile2"
+  },
+  "checks": {
+    "journal_first_compile": {
+      "passed": true,
+      "seconds": 4.28,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/journal-check-first-root.log",
+        "bytes": 183,
+        "sha256": "0554c37425963773fd47d67c82089b23d73677fce8a003225c5cfb3aeecfa294"
+      }
+    },
+    "native_first": {
+      "passed": 6,
+      "seconds": 1.73,
+      "principal_literal_images": 12,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/native-first-root.log",
+        "bytes": 1112,
+        "sha256": "141435914a063169339252656370de4fe861a4af6e9ef37f4afcd0d974824139"
+      }
+    },
+    "direct_proof_first": {
+      "passed": 4,
+      "seconds": 1.0,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/proof-first-root.log",
+        "bytes": 1014,
+        "sha256": "ecd7420e52193613a2163e38448a3c0bd6e91d70eb07e28ed59a23a826796544"
+      }
+    },
+    "indexed_sessions_first": {
+      "passed": 3,
+      "seconds": 1.81,
+      "whole_image_saves": 24,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/session-first-root.log",
+        "bytes": 821,
+        "sha256": "98d01a381de29c1f80995bb8aa60e1180bd96c86148c3efc5abb29cd56601fcf"
+      }
+    },
+    "native_regression_after_nullable_fix": {
+      "recovery_tests": 44,
+      "intent_tests": 1,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/native-correction-regression-root.log",
+        "bytes": 5225,
+        "sha256": "be08c4027c1b1ca1bc10b2751ca0af0fcb176786227855e9617dc424c64363bc"
+      }
+    },
+    "indexed_and_nullable_unit": {
+      "passed": 8,
+      "seconds": 1.02,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/indexed-unit-correction-root.log",
+        "bytes": 1617,
+        "sha256": "910153cc3439830bc516189991f86b051f222d30e1d794d1b607753bcd77de84"
+      }
+    },
+    "mixed_session_regression": {
+      "passed": 7,
+      "ignored": 1,
+      "seconds": 3.0,
+      "principal_whole_image_saves": 56,
+      "matrix": "28 retained mixed +24 indexed mixed +4 nullable compatibility",
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/session-typed-cause-root.log",
+        "bytes": 1255,
+        "sha256": "377dac477a751dc84cc230c39758aec06cef0b2c561caa618c228f60e5cd47e4"
+      }
+    },
+    "nullable_original_intent_recovery": {
+      "passed": 1,
+      "seconds": 0.12,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/nullable-compatibility/native-recovery-first-root.log",
+        "bytes": 519,
+        "sha256": "b3b4e7466f0369a3d409d40d2d81e7a39de9d3bb5d581b7e403142f3a0337087"
+      }
+    },
+    "journal_only_strict": {
+      "passed": true,
+      "seconds": 43.17,
+      "all_targets": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/strict-journal-borrow-root.log",
+        "bytes": 425,
+        "sha256": "42a10292cf60bdc09a15d2e68b7acf3f879a4127519973642e425124030a4fc6"
+      }
+    },
+    "all_feature_strict": {
+      "passed": true,
+      "seconds": 70,
+      "all_targets": true,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/strict-all-first-root.log",
+        "bytes": 526,
+        "sha256": "dba7acd4d402bde7f18088f7e205ab415095a7632341888abd6655aa853afc1c"
+      }
+    },
+    "ace_unit_batch": {
+      "passed": 1019,
+      "ignored": 25,
+      "seconds": 114.09,
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/ace-unit-regression-first-root.log",
+        "bytes": 138208,
+        "sha256": "973d5ec4bcd26ae86f1bbdccc7ae88f48795bec6d3750f26f99a2d361bc59f96"
+      }
+    },
+    "saved_source_evidence_after_writes": {
+      "passed": true,
+      "child_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/getter/saved-after-writes-root.log",
+        "bytes": 353,
+        "sha256": "88ab724371018a5bd42fbcc0a04dbf187b7de2676211f590aeb36c76bcbfb777"
+      }
+    },
+    "cli_build": {
+      "passed": true,
+      "seconds": 25.53,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-build-first-root.log",
+        "bytes": 403,
+        "sha256": "7c2c5a5e71931bcb876c8c7b42ef4e23ae7638b574d92e37f70d01329e47a15d"
+      }
+    },
+    "cli_whole_image_and_tsv": {
+      "passed": true,
+      "whole_image_saves": 12,
+      "exact_tsv_reads": 12,
+      "children": 24,
+      "sources_unchanged": 26,
+      "authority": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-smoke-authority-root.json",
+        "bytes": 626,
+        "sha256": "5de3a821b5f876bcff6121367ad7c764234fe9b6e57c9500f2a6d01f014c85d9"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-smoke-first/receipt.json",
+        "bytes": 31990,
+        "sha256": "8a23e9e13d7c5aa52a0615232ede57efe33b58c98a9abdcd3ecec3b5eedc8ef6"
+      },
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-smoke-first-root.log",
+        "bytes": 105,
+        "sha256": "e60e634c5363d72a4a0053c14af84602f433011a1c94b2f8a69fa0b21125d3de"
+      }
+    },
+    "default_strict": {
+      "passed": true,
+      "seconds": 29.41,
+      "all_targets": true,
+      "features_disabled": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/strict-default-first-root.log",
+        "bytes": 302,
+        "sha256": "dca3ee05af8d568e89545a846d02590c465dd0db5b731d734eae8c0f55a010c4"
+      }
+    },
+    "access_regressions": {
+      "passed": 68,
+      "ignored": 1,
+      "counts": [
+        3,
+        2,
+        7,
+        2,
+        15,
+        39
+      ],
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/access-regression-first-root.log",
+        "bytes": 8337,
+        "sha256": "7acfba3801b53d5910bba5efbb22008e9da0144e2401f31cedb50e68681edce1"
+      }
+    },
+    "explicit_rich_regression": {
+      "passed": 1,
+      "literal_plans": 2,
+      "seconds": 0.09,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/rich-regression-root.log",
+        "bytes": 394,
+        "sha256": "a5678f99c4702387868cc495d4308df19408ddd6f25f2bbc2e96498fa50f5a16"
+      }
+    },
+    "cli_unit": {
+      "passed": 4,
+      "seconds": 0.01,
+      "scoped_bin": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-unit-regression-root.log",
+        "bytes": 907,
+        "sha256": "2e6f7390bbe50822df2a1afc5b690e1df7d78da2f41f13c1cc465c749260681c"
+      }
+    },
+    "cli_journal_integration": {
+      "passed": 8,
+      "seconds": 1.22,
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/cli-journal-regression-root.log",
+        "bytes": 1055,
+        "sha256": "63001059e7ed70bdb15bfd514fe6ddef7cb8e2866803c16c12b913d542b7e2d9"
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6946,
+      "missing_documentation_targets": 0,
+      "dependency_packages": 15,
+      "dependency_guard": true,
+      "diff_check": true
+    }
+  },
+  "retained_failures": [
+    {
+      "phase": "nullable compatibility route regression",
+      "reason": "new indexed route returned Preservation for previously admitted unindexed edit beside nullable ordinary Id index",
+      "source_control": "four native read views and original unindexed proof passed before reproducing regression",
+      "correction": "read actual metadata/root masks before new indexed admission; direct legacy selection, no failed-planner retry",
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/nullable-compatibility/route-regression-first-root.log",
+        "bytes": 1069,
+        "sha256": "cf15136541f574e3fb460eb74848641e5ae54a87b126306370fc14082c74c7cf"
+      }
+    },
+    {
+      "phase": "nullable adapter refusal test",
+      "reason": "test Error::source traversal skipped transparent EditError wrapper",
+      "correction": "match exact retained typed Cause/Editing/Planning variants; production refusal unchanged",
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/session-correction-regression-root.log",
+        "bytes": 2045,
+        "sha256": "55988cc7dd563672ac8ee383af77ce5dc227bb5c90e1e5981d111a99922d5b87"
+      }
+    },
+    {
+      "phase": "journal-only lint",
+      "reason": "needless borrow in extracted shared proof overlay call",
+      "correction": "pass existing Source reference directly",
+      "log": {
+        "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/strict-journal-first-root.log",
+        "bytes": 1063,
+        "sha256": "ecb323fd381077e83b83001f0cd867c44eb9f31a9a4cb46e186ee51c017d107c"
+      }
+    }
+  ],
+  "private_checkpoint": {
+    "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/production-first-private-checkpoint.json",
+    "bytes": 10949,
+    "sha256": "af7de74d5a68237331bff6092bbc605ccd4411f54b307ad1b51d4617cef978eb"
+  },
+  "nullable_control_freeze": {
+    "path": ".cache/ace16-native-before-change-indexed-mixed-next-20261031/nullable-compatibility/private-freeze.json",
+    "bytes": 858,
+    "sha256": "ce85e30bacdafb1b77b3c11031f2e0a5f51fd954bb126886b61a077eefed1f47"
+  },
+  "limits": [
+    "No native Access execution/save/reopen evidence",
+    "No NULL target transitions or indexed NULL mutation",
+    "Rich/unavailable fields remain unindexed only",
+    "No non-I32 key mutation, ignore-NULL, allocation, splits or schema editing",
+    "No macro absence certificate",
+    "No native shared-file locking or physical power-loss/network-filesystem qualification"
+  ]
+}

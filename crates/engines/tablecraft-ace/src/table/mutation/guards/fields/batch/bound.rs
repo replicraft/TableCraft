@@ -30,16 +30,42 @@ impl<'selected, 'image, 'source> BoundPrograms<'selected, 'image, 'source> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, BeforeEventGuardError> {
+        Self::bind_with_indexes(image, selected, source, None, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn bind_with_indexes(
+        image: &NativeImage,
+        selected: &'selected SelectedPrograms<'image>,
+        source: SourceFacts<'source>,
+        indexed: Option<&super::CheckedTargets<'_>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, BeforeEventGuardError> {
+        if let Some(indexed) = indexed {
+            indexed
+                .require_source(image, source.table.schema(), budget, cancelled)
+                .map_err(error::intent)?;
+        }
         selected
             .require_source(image, source.table.schema(), budget, cancelled)
             .map_err(error::intent)?;
-        let projection = Int32Projection::capture(
-            source.table,
-            source.indexes,
-            source.dependencies,
-            budget,
-            cancelled,
-        )?;
+        let projection = match indexed {
+            Some(indexed) => Int32Projection::capture_with_indexes(
+                source.table,
+                source.indexes,
+                source.dependencies,
+                Some(indexed),
+                budget,
+                cancelled,
+            )?,
+            None => Int32Projection::capture(
+                source.table,
+                source.indexes,
+                source.dependencies,
+                budget,
+                cancelled,
+            )?,
+        };
         let selectors = selected.selectors(budget, cancelled)?;
         let compiled =
             compile::derive_projected(image, &projection, &selectors, budget, cancelled)?;

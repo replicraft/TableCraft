@@ -381,3 +381,9 @@ impl Node {
         Ok(())
     }
 }
+
+impl Tree {
+    pub(in crate::table) fn pages(&self) -> &[u32] {
+        &self.pages
+    }
+}

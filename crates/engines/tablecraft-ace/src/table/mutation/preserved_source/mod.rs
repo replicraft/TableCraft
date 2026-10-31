@@ -93,6 +93,11 @@ enum PayloadAdmission<'admission, 'image> {
     Selected(&'admission SelectedPrograms<'image>),
     #[cfg(feature = "journal")]
     NativeSelected(&'admission SelectedPrograms<'image>),
+    #[cfg(feature = "journal")]
+    NativeChecked(
+        &'admission SelectedPrograms<'image>,
+        &'admission crate::TableCheck,
+    ),
 }
 
 fn capture_with_payload(
@@ -220,7 +225,8 @@ fn capture_with_payload(
             selected.require_source(image, schema, budget, cancelled)?
         }
         #[cfg(feature = "journal")]
-        PayloadAdmission::NativeSelected(selected) => {
+        PayloadAdmission::NativeSelected(selected)
+        | PayloadAdmission::NativeChecked(selected, _) => {
             selected.require_source(image, schema, budget, cancelled)?
         }
     }
@@ -323,6 +329,33 @@ fn capture_with_payload(
     }
     if records.len() != projected.rows().len() {
         return Err(EditError::Preservation);
+    }
+
+    #[cfg(feature = "journal")]
+    if let PayloadAdmission::NativeChecked(_, checked) = &payload {
+        if checked.schema().object_id() != schema.object_id()
+            || checked.schema().definition_page() != schema.definition_page()
+            || checked.rows() != projected.rows().len()
+            || projected.columns().len() != schema.columns().len()
+            || checked
+                .indexes()
+                .iter()
+                .any(|index| index.status() != crate::IndexCheckStatus::Checked)
+        {
+            return Err(EditError::Preservation);
+        }
+        for field in schema.columns() {
+            check(budget, cancelled)?;
+            if field.scalar_type().is_none() || field.extended_flags() & CALCULATED_EXT_MASK != 0 {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+        }
+        return Ok(Source {
+            table: projected,
+            indexes,
+            records,
+            dependencies,
+        });
     }
 
     let mut physical: Vec<usize> = Vec::new();
@@ -476,7 +509,7 @@ impl PayloadAdmission<'_, '_> {
     fn allows_scalar(&self) -> bool {
         match self {
             #[cfg(feature = "journal")]
-            Self::NativeSelected(_) => true,
+            Self::NativeSelected(_) | Self::NativeChecked(_, _) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -505,4 +538,22 @@ fn name_work(left: &str, right: &str, budget: &mut ResourceBudget) -> Result<(),
         .charge(Resource::Steps, left.len().max(right.len()) as u64)
         .map_err(InspectError::from)?;
     Ok(())
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_checked_before_change(
+    image: &NativeImage,
+    table: &str,
+    selected: &SelectedPrograms<'_>,
+    checked: &crate::TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(
+        image,
+        table,
+        PayloadAdmission::NativeChecked(selected, checked),
+        budget,
+        cancelled,
+    )
 }

@@ -27,9 +27,9 @@ impl Footprint {
     ) -> Result<Self, EditError> {
         match payload {
             #[cfg(feature = "journal")]
-            PayloadAdmission::NativeSelected(_) => Ok(Self::Normal(Protection::capture(
-                image, schema, budget, cancelled,
-            )?)),
+            PayloadAdmission::NativeSelected(_) | PayloadAdmission::NativeChecked(_, _) => Ok(
+                Self::Normal(Protection::capture(image, schema, budget, cancelled)?),
+            ),
             #[cfg(feature = "ace16-write-preview")]
             PayloadAdmission::Inert | PayloadAdmission::Selected(_) => {
                 let metadata = Metadata::capture_for_preserved_boolean(

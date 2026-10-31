@@ -2,12 +2,13 @@
 use super::super::super::{
     EditError, WriteBlocker, field, guards::buffer, preserved_source::Source,
 };
+use crate::table::mutation::guards::fields::batch::{CheckedTargets, Prepared};
 use crate::{
     InspectError, NativeImage,
     format::row::{COLUMN_COUNT_BYTES, MASK_BITS},
     header::check,
     preservation::COPY_CHUNK_BYTES,
-    table::{mutation::guards::fields::batch::Prepared, record_layout},
+    table::record_layout,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -23,6 +24,16 @@ pub(super) struct Staged {
 pub(super) fn target(
     source: &Source,
     position: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    target_with_indexes(source, position, None, budget, cancelled)
+}
+
+pub(super) fn target_with_indexes(
+    source: &Source,
+    position: usize,
+    indexed: Option<&CheckedTargets<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -46,7 +57,11 @@ pub(super) fn target(
         for key in index.columns() {
             check(budget, cancelled)?;
             if key.number() == field.number() {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                if let Some(indexed) = indexed {
+                    indexed.require_target(schema, position, budget, cancelled)?;
+                } else {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
             }
         }
     }
@@ -57,6 +72,17 @@ pub(super) fn derive(
     image: &NativeImage,
     source: &Source,
     prepared: &Prepared<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
+    derive_with_indexes(image, source, prepared, None, budget, cancelled)
+}
+
+pub(super) fn derive_with_indexes(
+    image: &NativeImage,
+    source: &Source,
+    prepared: &Prepared<'_>,
+    indexed: Option<&CheckedTargets<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -71,7 +97,7 @@ pub(super) fn derive(
         bytes.extend_from_slice(chunk);
     }
     for group in groups {
-        target(source, group.column(), budget, cancelled)?;
+        target_with_indexes(source, group.column(), indexed, budget, cancelled)?;
     }
     let mut changed_rows = 0_usize;
     for (ordinal, record) in source.records.iter().enumerate() {

@@ -9,9 +9,10 @@ for recovery. This is the first positive-program ACE save route, not general
 UPDATE/INSERT/DELETE support. Qualified Int32 indexes now compose with this
 normal route, including aliases, composites, compressed prefixes, retained
 interior nodes and atomic unique swaps. Fitting retains original page topology
-and leaf entry counts. Normal unindexed Int32 updates now also preserve admitted
-mixed scalar/rich siblings and readonly AutoNumber operands through real projected
-snapshots and independent whole-image proof. Broader target carriers, allocation/
+and leaf entry counts. Normal Int32 updates now also preserve admitted mixed scalar/rich siblings and
+readonly AutoNumber operands through real projected snapshots and independent
+whole-image proof. Complete ordinary scalar tables can maintain checked non-NULL
+I32 indexes; rich and nullable-key preservation retains the unindexed route. Broader target carriers, allocation/
 splits, relationships, macro coverage and native Access qualification remain next.
 
 [Native-owned event selection](access/schema/NATIVE_MACRO_COVERAGE.md#native-owned-event-selection)

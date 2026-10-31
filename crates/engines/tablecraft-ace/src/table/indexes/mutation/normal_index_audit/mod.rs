@@ -1,6 +1,7 @@
 //! Original-only fitting INDEX tree reconstruction for normal BeforeChange.
 mod ownership;
 mod population;
+mod projected;
 mod tree;
 mod wire;
 
@@ -92,6 +93,7 @@ pub(in crate::table) fn reconstruct(
                 checked: &checked,
                 index,
                 population: &population,
+                columns: wire::Columns::Complete,
                 tree,
             },
             expected,
@@ -102,3 +104,5 @@ pub(in crate::table) fn reconstruct(
     check(budget, cancelled)?;
     Ok(())
 }
+
+pub(in crate::table) use projected::reconstruct as reconstruct_projected;

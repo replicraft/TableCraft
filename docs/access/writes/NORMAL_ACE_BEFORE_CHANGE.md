@@ -28,20 +28,28 @@ so an atomic key swap need not satisfy an intermediate assignment order.
 For the all-ordinary-Int32 index-rewrite route, every field of every original
 row must be ordinary non-NULL Int32, including unselected rows and non-key fields.
 
-A metadata-selected mixed-schema route now preserves supported scalar and rich
-siblings while changing ordinary unindexed Int32 payloads. It uses a real scalar
-projection, retaining unavailable declarations without inventing NULL cells.
-Readonly Int32 AutoNumber and indexed Int32 fields may supply program operands; user
-assignments and dormant SetField targets cannot write generated fields. Non-Int32
-field operands refuse. Changed fields must remain outside admitted indexes and
-calculation/collection dependencies. Native field numbers must currently match
-the complete schema order. Targets must have present original and final Int32
-values; unchanged NULL and present-empty sibling values retain their bytes.
+Mixed schemas use real scalar projections, retaining unavailable declarations
+without inventing NULL cells. Ordinary complete scalar tables can now maintain
+checked indexes whose components are present fixed Int32 values. Readonly Int32
+AutoNumber keys may participate, while user assignments and dormant SetField
+targets still cannot write generated fields. Final user and macro changes compose
+into one fitting key update, including descending composites, unique swaps and
+retained compressed trees. Every affected INDEX page is excluded from declared
+and live long-value claims before staging.
 
-The all-Int32 index-rewrite route retains its non-NULL and no-ignore-NULL limits.
-Mixed tables retain checked unchanged index pages; they do not acquire mixed-key
-mutation, record resizing or index allocation. Unsupported native siblings remain
-refusals; in particular the rich header-5 native-20 source remains unsupported.
+The unindexed route continues to preserve admitted scalar and rich siblings.
+Original key-presence facts select the route before new INDEX ownership parsing
+or event-row evaluation. An unchanged ordinary nullable I32 index selects the
+previous unindexed qualifier and default compiler policy; it grants no indexed
+NULL mutation permission. Neither route catches a failed planner or encoder and
+retries another implementation. Rich/calculated/unavailable siblings retain
+unindexed admission only; header-5 native-20 siblings remain unsupported.
+
+Non-Int32 field operands refuse. Changed fields must remain outside calculation/
+collection dependencies and have present original/final Int32 values. Native
+field numbers must currently match the complete schema order. Unchanged NULL and
+present-empty sibling values retain their bytes. Ignore-NULL key rewriting,
+non-I32 indexed targets, record resizing and index allocation remain unsupported.
 
 Relationships, splits, allocation/map changes, unknown properties, opaque or incomplete
 macro carriers, unrepresented event names, body/module content, unsupported
@@ -174,3 +182,21 @@ qualification remain open.
 The [mixed execution record](../../testing/results/ace16-normal-mixed-before-change-2026-10-31.json)
 retains feature-boundary compilation corrections separately from first passing
 native/session outcomes and exact CLI/save/readback qualification.
+
+### Indexed mixed-schema continuation
+
+The [indexed mixed sources](../../testing/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md)
+freeze twelve complete outcomes before producer execution. Six native/journal
+and four independent proof tests pass; real typed/SQL sessions match all twenty-
+four saves. Twelve complete CLI saves and twelve exact TSV readbacks also pass.
+An independently derived nullable-index control demonstrates prior
+unindexed proof admission, reproduces the initial routing regression and passes
+after original-key classification. Four real nullable-index saves preserve the
+NULL row, inactive payload and complete old index; indexed Id updates refuse.
+The existing TCNI0002 recovery route rederives the same selection from BEFORE.
+Native Access comparisons remain unrun.
+
+The [indexed mixed execution record](../../testing/results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+separates source qualification, initial positive saves, the reproduced nullable
+routing regression and its retained compatibility controls from native Access
+qualification.

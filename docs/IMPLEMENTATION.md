@@ -12,6 +12,27 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Journaled indexed mixed-schema Int32 updates
+
+Complete ordinary scalar tables now maintain checked non-NULL fixed-I32 indexes
+while retaining non-key scalar payloads and readonly counter components. Native
+programs and a real complete table check seal indexed permissions to the actual
+image. Original raw key-only population and existing fitting/tree proof certify
+DATA plus INDEX; live long-value claims exclude mutable tree pages. Six native,
+four direct proof and 24 typed/SQL save checks pass. Original-mask classification
+preserves the previous unindexed path beside unchanged nullable indexes: a
+separate source/old-proof control reproduced the routing regression, then passed
+four real saves, indexed-target refusals and original-intent recovery after the
+fix. No failed planner is retried. The
+[result](testing/results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+retains that regression and the test/lint corrections. The full ACE unit batch
+passes 1,019 tests (25 ignored). Twelve complete CLI saves and twelve exact TSV
+readbacks also pass. The adapter batch passes 68 tests, two explicit rich plans
+retain their earlier behavior, and CLI journal unit/integration checks pass twelve.
+Default, journal-only and full-feature strict checks pass. Rich indexed fields,
+NULL target transitions, other key carriers, allocation and native Access
+qualification remain unfinished.
+
 ## Indexed mixed-schema source qualification
 
 Fourteen independently authored originals and twelve complete literal expected
@@ -19,7 +40,7 @@ images now qualify mixed scalar fields with a mutable Score index and preserved
 readonly AutoNumber/PrimaryId. Two native source/anchor tests and one hundred
 exact independent SDK observations pass, including unique swaps, descending
 composites, prefix loss and retained loose bounds. The saved verifier starts no
-children. Indexed mixed normal writer execution has not begun; see the
+children. Source qualification preceded the writer checks above; see the
 [source contract](testing/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) and
 [record](testing/results/ace16-indexed-mixed-before-change-sources-2026-10-31.json).
 

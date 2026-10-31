@@ -68,7 +68,7 @@ impl NativeImage {
     }
 }
 
-fn event_error(error: BeforeEventGuardError) -> EditError {
+pub(in crate::table::mutation) fn event_error(error: BeforeEventGuardError) -> EditError {
     match error {
         BeforeEventGuardError::Inspect(error) => error.into(),
         BeforeEventGuardError::Intent(error) => error,

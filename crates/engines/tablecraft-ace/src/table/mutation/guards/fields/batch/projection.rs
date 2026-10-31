@@ -1,5 +1,5 @@
 //! Actual Int32 frame cells over an already certified scalar projection.
-use super::super::super::{BeforeEventGuardError, BeforeGuardUnsupported, buffer};
+use super::super::super::{BeforeEventGuardError, BeforeGuardUnsupported, buffer, error};
 use crate::{
     EditError, IndexInspection, InspectError, TableSnapshot, WriteBlocker,
     format::data_type::INT32, header::check, table::mutation::field,
@@ -29,6 +29,17 @@ impl<'source> Int32Projection<'source> {
         table: &'source TableSnapshot,
         indexes: &IndexInspection,
         dependencies: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, BeforeEventGuardError> {
+        Self::capture_with_indexes(table, indexes, dependencies, None, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn capture_with_indexes(
+        table: &'source TableSnapshot,
+        indexes: &IndexInspection,
+        dependencies: &[usize],
+        indexed: Option<&super::CheckedTargets<'_>>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, BeforeEventGuardError> {
@@ -93,7 +104,13 @@ impl<'source> Int32Projection<'source> {
                 for key in index.columns() {
                     check(budget, cancelled)?;
                     if key.number() == field.number() && write_blocker.is_none() {
-                        write_blocker = Some(WriteBlocker::IndexedColumn);
+                        if let Some(indexed) = indexed {
+                            indexed
+                                .require_target(table.schema(), native, budget, cancelled)
+                                .map_err(error::intent)?;
+                        } else {
+                            write_blocker = Some(WriteBlocker::IndexedColumn);
+                        }
                     }
                 }
             }
