@@ -129,5 +129,27 @@ requests. Those shapes remain covered by native/shared services; CLI counts do
 not substitute fabricated no-ops. A false SQL selection exercises true empty
 groups through the existing SQL host.
 
-Genuine multi-target files and native
-Microsoft Access save/reopen remain separate qualification work.
+## Generated-file joint qualification
+
+The [genuine corpus](preserved_joint_fixed_genuine/README.md) reuses the exact
+unchanged repository-authored V2016/V2019 originals and read-only getter from
+the eight-byte scalar qualification. Original-only requests and expectations
+were frozen separately; all twelve expected images passed complete native
+Source admission before any producer call. The expectation tranche was committed
+as `2f436c5a`.
+
+A fresh isolated build of committed producer `74b6b112` matches all twelve whole
+images. Ten typed batches and two SQL calls cover joint same-row changes,
+NULL promotion/clearing, overlapping rows, exact no-ops and true empty groups.
+Eight images change and four remain byte-identical to their originals. The
+changed-root union is twelve across the corpus; each overlapping case counts
+three roots rather than the number of changed cells.
+
+All twelve fresh unchanged read-only SDK getter processes match the complete
+expected inventories, including calculated caches, Memo/OLE, attachments and
+Sentinel. The first saved-only verifier replay passes without child processes.
+The [genuine result](results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+retains the actual compilation, source, independent expectation, producer,
+reader and replay evidence separately. These are generated-file engineering
+observations; Microsoft Access save/reopen, required-macro coverage and normal
+ACE save permission remain unqualified.

@@ -10563,3 +10563,18 @@ Time_Field remains a preserved sibling. The
 [genuine-image](results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
 records keep the phases distinct. Native Access save/reopen, required macros and
 normal ACE saves remain unqualified.
+
+## Joint preserved fixed SDK qualification (2026-10-31)
+
+The [joint fixed corpus](preserved_joint_fixed_genuine/README.md) reuses the exact
+two originals, repository-authored Java creation/getter tools, pinned SDK and
+compiled classes documented immediately above. No new database generation or
+third-party fixture copying occurs. Twelve original/request-only expectations
+pass complete native Source admission before a fresh committed CLI matches all
+twelve images. Twelve fresh unchanged read-only SDK getter calls then match
+whole logical inventories; the saved-only replay passes. Ten typed batches and
+two genuine empty-selection SQL calls yield eight changed images and four exact
+no-ops. Original hashes remain unchanged. The
+[joint result](results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+keeps these observations separate from Microsoft Access save/reopen,
+required-macro coverage and normal-save qualification.
