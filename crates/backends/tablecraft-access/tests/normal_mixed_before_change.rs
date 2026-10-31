@@ -143,3 +143,9 @@ fn mixed_scalar_typed_and_sql_sessions_preserve_siblings_and_counter_indexes() {
 
 #[path = "normal_mixed_before_change/edges.rs"]
 mod edges;
+
+#[path = "normal_mixed_before_change/indexed.rs"]
+mod indexed;
+
+#[path = "normal_mixed_before_change/nullable_index.rs"]
+mod nullable_index;

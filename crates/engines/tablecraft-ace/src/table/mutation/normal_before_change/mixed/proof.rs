@@ -5,6 +5,7 @@ use super::super::super::{
     preserved_source::{Source, validation},
 };
 use super::{capture, prepare, validate};
+use crate::table::mutation::guards::fields::batch::{CheckedTargets, Prepared};
 use crate::{
     FixedScalarUpdate, InspectError, NativeColumn, NativeImage,
     format::{
@@ -26,7 +27,7 @@ use tablecraft_schema::ScalarType;
 
 /// Bind every readable Int32 operand, including counters and indexed fields,
 /// to its original physical row. Opaque siblings never acquire frame values.
-fn original_frames(
+pub(super) fn original_frames(
     source: &Source,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -105,9 +106,10 @@ fn original_frames(
     Ok(())
 }
 
-fn target<'source>(
+fn target_with_indexes<'source>(
     source: &'source Source,
     position: usize,
+    indexed: Option<&CheckedTargets<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'source NativeColumn, EditError> {
@@ -136,7 +138,11 @@ fn target<'source>(
         for key in index.columns() {
             check(budget, cancelled)?;
             if key.number() == field.number() {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                if let Some(indexed) = indexed {
+                    indexed.require_target(schema, position, budget, cancelled)?;
+                } else {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
             }
         }
     }
@@ -270,37 +276,8 @@ pub(super) fn prove(
     if prepared.rejection().is_some() {
         return Err(EditError::Preservation);
     }
-    let groups = prepared.final_groups().ok_or(EditError::Preservation)?;
-
-    let mut expected = buffer::vector(image.as_bytes().len(), budget, cancelled)?;
-    for chunk in image.as_bytes().chunks(COPY_CHUNK_BYTES) {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, chunk.len() as u64)
-            .map_err(InspectError::from)?;
-        expected.extend_from_slice(chunk);
-    }
-
-    // These are fresh execution results from original requests, never stage
-    // groups, patches, frames, masks or a caller-provided selected-field list.
-    for group in groups {
-        let field = target(&source, group.column(), budget, cancelled)?;
-        for (position, update) in group.updates().iter().enumerate() {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, position as u64)
-                .map_err(InspectError::from)?;
-            if group.updates()[..position]
-                .iter()
-                .any(|prior| prior.row() == update.row())
-            {
-                return Err(EditError::Conflict);
-            }
-            overlay(&source, field, update, &mut expected, budget, cancelled)?;
-        }
-    }
-
-    let changed = changed_rows(&source, &expected, budget, cancelled)?;
+    let (expected, changed) =
+        reconstruct_source(&image, &source, &prepared, None, budget, cancelled)?;
     validation::expected(&image, table, &source.table, &expected, budget, cancelled)?;
     if expected.len() != plan.after_bytes().len() || changed != plan.changed_rows() {
         return Err(EditError::Preservation);
@@ -319,4 +296,47 @@ pub(super) fn prove(
     }
     check(budget, cancelled)?;
     Ok(())
+}
+
+pub(super) fn reconstruct_source(
+    image: &NativeImage,
+    source: &Source,
+    prepared: &Prepared<'_>,
+    indexed: Option<&CheckedTargets<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    prepared.require_source(image, source.table.schema(), budget, cancelled)?;
+    let groups = prepared.final_groups().ok_or(EditError::Preservation)?;
+
+    let mut expected = buffer::vector(image.as_bytes().len(), budget, cancelled)?;
+    for chunk in image.as_bytes().chunks(COPY_CHUNK_BYTES) {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, chunk.len() as u64)
+            .map_err(InspectError::from)?;
+        expected.extend_from_slice(chunk);
+    }
+
+    // These are fresh execution results from original requests, never stage
+    // groups, patches, frames, masks or a caller-provided selected-field list.
+    for group in groups {
+        let field = target_with_indexes(source, group.column(), indexed, budget, cancelled)?;
+        for (position, update) in group.updates().iter().enumerate() {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, position as u64)
+                .map_err(InspectError::from)?;
+            if group.updates()[..position]
+                .iter()
+                .any(|prior| prior.row() == update.row())
+            {
+                return Err(EditError::Conflict);
+            }
+            overlay(source, field, update, &mut expected, budget, cancelled)?;
+        }
+    }
+
+    let changed = changed_rows(source, &expected, budget, cancelled)?;
+    Ok((expected, changed))
 }

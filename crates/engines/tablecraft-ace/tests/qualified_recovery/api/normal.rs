@@ -624,3 +624,9 @@ mod tree;
 
 #[path = "normal/mixed.rs"]
 mod mixed;
+
+#[path = "normal/indexed_mixed.rs"]
+mod indexed_mixed;
+
+#[path = "normal/nullable_index.rs"]
+mod nullable_index;

@@ -10726,3 +10726,15 @@ indexes while preserving original counter and PrimaryId bytes. Native/hash check
 and all one hundred independent SDK observations pass before producer execution.
 The linked record retains exact pins and source/read limitations. No third-party
 database bytes or production writer outputs supply these fixtures.
+
+## Authored nullable-index compatibility control
+
+`canonical_nullable_index_before_change` separately derives an ordinary nullable
+Id index from the owned mixed original. Its four native read views and original
+unindexed proof pass before the new routing regression is reproduced. Only a
+present Score payload changes in the literal expectation; the NULL Id, inactive
+stored value and complete old index remain exact. This is a native regression
+control, separate from the twenty-six independently read indexed mixed views.
+The [writer record](results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+retains its failure/correction and actual session/recovery checks. No third-party
+fixture bytes are copied or native Access compatibility inferred.

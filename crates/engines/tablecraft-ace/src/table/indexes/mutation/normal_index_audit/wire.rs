@@ -26,11 +26,18 @@ const MASK_BYTES: usize = ENTRY_START - MASK_START;
 const COMPONENT_BYTES: usize = size_of::<u8>() + size_of::<i32>();
 const REFERENCE_BYTES: usize = size_of::<u32>();
 
+#[derive(Clone, Copy)]
+pub(super) enum Columns<'a> {
+    Complete,
+    Keys(&'a [usize]),
+}
+
 pub(super) struct Operation<'a> {
     pub image: &'a NativeImage,
     pub checked: &'a TableCheck,
     pub index: &'a NativeIndex,
     pub population: &'a [Row],
+    pub columns: Columns<'a>,
     pub tree: &'a Tree,
 }
 
@@ -301,7 +308,19 @@ pub(super) fn reconstruct(
             .iter()
             .position(|column| column.number() == key.number())
             .ok_or(InspectError::Malformed)?;
-        columns.push((position, key.descending()));
+        let dense = match operation.columns {
+            Columns::Complete => position,
+            Columns::Keys(positions) => {
+                budget
+                    .charge(Resource::Steps, positions.len() as u64)
+                    .map_err(InspectError::from)?;
+                positions
+                    .iter()
+                    .position(|native| *native == position)
+                    .ok_or(EditError::Preservation)?
+            }
+        };
+        columns.push((dense, key.descending()));
     }
     let original = keys(operation.population, &columns, false, budget, cancelled)?;
     let final_keys = keys(operation.population, &columns, true, budget, cancelled)?;

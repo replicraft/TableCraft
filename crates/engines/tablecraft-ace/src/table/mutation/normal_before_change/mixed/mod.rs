@@ -1,4 +1,5 @@
 //! Normal positive-native-program writes over an actual preserved projection.
+mod indexed;
 mod proof;
 mod stage;
 
@@ -52,6 +53,18 @@ pub(super) fn prepare<'image>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<batch::Prepared<'image>, EditError> {
+    prepare_with_indexes(image, source, column, updates, None, budget, cancelled)
+}
+
+pub(super) fn prepare_with_indexes<'image>(
+    image: &'image NativeImage,
+    source: &preserved_source::Source,
+    column: &str,
+    updates: &[Int32Update],
+    indexed: Option<&batch::CheckedTargets<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<batch::Prepared<'image>, EditError> {
     let selected = native_events::programs(image, source.table.schema(), budget, cancelled)
         .map_err(event_error)?;
     let mut original = buffer::vector(updates.len(), budget, cancelled)?;
@@ -63,22 +76,22 @@ pub(super) fn prepare<'image>(
             Value::Int32(update.value()),
         ));
     }
-    batch::prepare(
-        image,
-        batch::SourceFacts {
-            table: &source.table,
-            indexes: &source.indexes,
-            dependencies: &source.dependencies,
-        },
-        selected,
-        &[FixedColumnUpdates::new(
-            source.table.schema().name(),
-            column,
-            &original,
-        )],
-        budget,
-        cancelled,
-    )
+    let facts = batch::SourceFacts {
+        table: &source.table,
+        indexes: &source.indexes,
+        dependencies: &source.dependencies,
+    };
+    let groups = [FixedColumnUpdates::new(
+        source.table.schema().name(),
+        column,
+        &original,
+    )];
+    match indexed {
+        Some(indexed) => {
+            batch::prepare_indexed(image, facts, selected, &groups, indexed, budget, cancelled)
+        }
+        None => batch::prepare(image, facts, selected, &groups, budget, cancelled),
+    }
     .map_err(event_error)
 }
 
@@ -108,6 +121,17 @@ pub(super) fn validate(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    validate_with_indexes(source, column, updates, None, budget, cancelled)
+}
+
+pub(super) fn validate_with_indexes(
+    source: &preserved_source::Source,
+    column: &str,
+    updates: &[Int32Update],
+    indexed: Option<&batch::CheckedTargets<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     rows::unique(updates, budget, cancelled)?;
     let native = field::fixed_column(
         source.table.schema(),
@@ -115,7 +139,7 @@ pub(super) fn validate(
         ScalarType::Int32,
         size_of::<i32>(),
     )?;
-    stage::target(source, native, budget, cancelled)?;
+    stage::target_with_indexes(source, native, indexed, budget, cancelled)?;
     let position = source
         .table
         .columns()
@@ -154,6 +178,27 @@ pub(super) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.before_change.normal.mixed.plan").entered();
+    let schema = inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    if indexed::selected(&schema, budget, cancelled)? {
+        return indexed::plan(image, table, column, updates, budget, cancelled);
+    }
+    plan_unindexed(image, table, column, updates, budget, cancelled)
+}
+
+pub(super) fn plan_unindexed(
+    image: NativeImage,
+    table: &str,
+    column: &str,
+    updates: &[Int32Update],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeEditPlan, EditError> {
     let source = capture(&image, table, budget, cancelled)?;
     // Compile before intent/timing refusal. No row executes for this preflight.
     prepare(&image, &source, column, &[], budget, cancelled)?;
@@ -186,6 +231,25 @@ pub(super) fn plan(
 /// Actual Source admission plus complete dormant compilation, without executing event rows.
 /// Pick a qualified writable target; the first field may be a readonly counter.
 pub(super) fn preflight(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let schema = inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    if indexed::selected(&schema, budget, cancelled)? {
+        return indexed::preflight(image, table, budget, cancelled);
+    }
+    preflight_unindexed(image, table, budget, cancelled)
+}
+
+pub(super) fn preflight_unindexed(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,

@@ -41,6 +41,17 @@ pub(super) fn bind<'request>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Batch<'request>, BeforeEventGuardError> {
+    bind_with_indexes(source, projection, groups, None, budget, cancelled)
+}
+
+pub(super) fn bind_with_indexes<'request>(
+    source: SourceFacts<'_>,
+    projection: &Int32Projection<'_>,
+    groups: &[FixedColumnUpdates<'request>],
+    indexed: Option<&super::CheckedTargets<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Batch<'request>, BeforeEventGuardError> {
     projection.require_table(source.table)?;
     if groups.is_empty() || groups.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
         return Err(unsupported_column());
@@ -104,14 +115,20 @@ pub(super) fn bind<'request>(
         for dependency in source.dependencies {
             check(budget, cancelled)?;
             if *dependency == native {
-                return Err(indexed());
+                return Err(indexed_column());
             }
         }
         for index in source.indexes.indexes() {
             for key in index.columns() {
                 check(budget, cancelled)?;
-                if key.number() == native {
-                    return Err(indexed());
+                if key.number() == field.number() {
+                    if let Some(admission) = indexed {
+                        admission
+                            .require_target(source.table.schema(), native, budget, cancelled)
+                            .map_err(error::intent)?;
+                    } else {
+                        return Err(indexed_column());
+                    }
                 }
             }
         }
@@ -209,7 +226,7 @@ fn unsupported_column() -> BeforeEventGuardError {
     BeforeEventGuardError::Intent(EditError::Unsupported(WriteBlocker::Column))
 }
 
-fn indexed() -> BeforeEventGuardError {
+fn indexed_column() -> BeforeEventGuardError {
     BeforeEventGuardError::Intent(EditError::Unsupported(WriteBlocker::IndexedColumn))
 }
 

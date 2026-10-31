@@ -1,0 +1,127 @@
+//! Native-derived full scalar/index facts for the normal projected compiler.
+use crate::{
+    EditError, NativeImage, TableCheck, TableSchema, WriteBlocker, format::data_type::INT32,
+    header::check,
+};
+#[cfg(feature = "journal")]
+use crate::{
+    IndexCheckStatus, check_table,
+    format::layout::CALCULATED_EXT_MASK,
+    table::mutation::{guards::native_events, normal_before_change::event_error},
+};
+#[cfg(feature = "journal")]
+use tablecraft_core::limits::Resource;
+use tablecraft_core::limits::ResourceBudget;
+use tablecraft_schema::ScalarType;
+
+/// Read/target qualification only. A normal plan, independent full-image proof
+/// and checked journal resources are still required for any durable write.
+pub(in crate::table::mutation) struct CheckedTargets<'image> {
+    image: &'image NativeImage,
+    checked: TableCheck,
+}
+
+impl<'image> CheckedTargets<'image> {
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn capture_native(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let checked = check_table(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let schema = checked.schema();
+        for field in schema.columns() {
+            check(budget, cancelled)?;
+            if field.scalar_type().is_none() || field.extended_flags() & CALCULATED_EXT_MASK != 0 {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+        }
+        if checked.indexes().is_empty() {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        for index in checked.indexes() {
+            check(budget, cancelled)?;
+            if index.status() != IndexCheckStatus::Checked {
+                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+            }
+            for key in index.index().columns() {
+                check(budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, schema.columns().len() as u64)
+                    .map_err(crate::InspectError::from)?;
+                let field = schema
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+                    .ok_or(EditError::Preservation)?;
+                if field.native_type() != INT32
+                    || field.scalar_type() != Some(ScalarType::Int32)
+                    || !field.fixed()
+                    || field.storage_length() != size_of::<i32>()
+                    || field.extended_flags() != 0
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
+            }
+        }
+        // There is no caller selector list or absence boolean in this entry.
+        let programs =
+            native_events::programs(image, schema, budget, cancelled).map_err(event_error)?;
+        programs.require_source(image, schema, budget, cancelled)?;
+        Ok(Self { image, checked })
+    }
+
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn checked(&self) -> &TableCheck {
+        &self.checked
+    }
+
+    pub(in crate::table::mutation) fn require_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        if !std::ptr::eq(image, self.image)
+            || schema.object_id() != self.checked.schema().object_id()
+            || schema.definition_page() != self.checked.schema().definition_page()
+        {
+            return Err(EditError::Preservation);
+        }
+        Ok(())
+    }
+
+    pub(in crate::table::mutation) fn require_target(
+        &self,
+        schema: &TableSchema,
+        position: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.require_source(self.image, schema, budget, cancelled)?;
+        let field = schema
+            .columns()
+            .get(position)
+            .ok_or(EditError::Preservation)?;
+        if field.native_type() != INT32
+            || field.scalar_type() != Some(ScalarType::Int32)
+            || !field.fixed()
+            || field.storage_length() != size_of::<i32>()
+            || field.extended_flags() != 0
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        // The ordinary field writer separately checks writable/generated flags
+        // and span overlap. This token never converts a counter into a target.
+        Ok(())
+    }
+}

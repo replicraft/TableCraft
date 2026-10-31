@@ -51,8 +51,61 @@ pub(in crate::table::mutation) fn prepare<'image>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared<'image>, BeforeEventGuardError> {
-    let bound = BoundPrograms::bind(image, &selected, source, budget, cancelled)?;
-    let requests = requests::bind(source, bound.projection(), original, budget, cancelled)?;
+    prepare_with_indexes(image, source, selected, original, None, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_indexed<'image>(
+    image: &'image NativeImage,
+    source: SourceFacts<'_>,
+    selected: SelectedPrograms<'image>,
+    original: &[FixedColumnUpdates<'_>],
+    indexed: &super::CheckedTargets<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared<'image>, BeforeEventGuardError> {
+    prepare_with_indexes(
+        image,
+        source,
+        selected,
+        original,
+        Some(indexed),
+        budget,
+        cancelled,
+    )
+}
+
+fn prepare_with_indexes<'image>(
+    image: &'image NativeImage,
+    source: SourceFacts<'_>,
+    selected: SelectedPrograms<'image>,
+    original: &[FixedColumnUpdates<'_>],
+    indexed: Option<&super::CheckedTargets<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared<'image>, BeforeEventGuardError> {
+    let bound = match indexed {
+        Some(indexed) => BoundPrograms::bind_with_indexes(
+            image,
+            &selected,
+            source,
+            Some(indexed),
+            budget,
+            cancelled,
+        )?,
+        None => BoundPrograms::bind(image, &selected, source, budget, cancelled)?,
+    };
+    let requests = match indexed {
+        Some(indexed) => requests::bind_with_indexes(
+            source,
+            bound.projection(),
+            original,
+            Some(indexed),
+            budget,
+            cancelled,
+        )?,
+        None => requests::bind(source, bound.projection(), original, budget, cancelled)?,
+    };
     let targets = targets::bind(source, &bound, &requests, budget, cancelled)?;
     let frames = frames::setup(&bound, &requests, budget, cancelled)?;
     bound.require_source(image, source, budget, cancelled)?;
