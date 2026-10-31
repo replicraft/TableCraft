@@ -28,6 +28,12 @@ pass. Existing unrelated refusals remain. This adds no normal save, journal or
 required-macro permission; genuine joint and native Access qualification remain
 separate.
 
+Existing Access and CLI consumers require no production routing changes. Their
+[joint acceptance](testing/results/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
+passes 100 principal adapter complete-image comparisons and 36 CLI comparisons;
+full preserved targets pass 30 and 27 tests. SQL SET operands retain original-row
+semantics, and false selection still qualifies every empty target group.
+
 ## Preserved eight-byte scalar updates
 
 The existing native fixed and batch engineering services now admit one qualified

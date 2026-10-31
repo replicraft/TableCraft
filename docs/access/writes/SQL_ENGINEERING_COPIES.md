@@ -87,7 +87,11 @@ Currency or legacy DateTime target through the existing
 keeps its closed mutation expression set: admitted explicit numeric conversions,
 date literals and NULL assignments do not enable `CDate` or general retrieval
 functions. Exact native carriers and original row expectations remain mandatory.
-Variable/growth modes and mixed preserved scalar targets retain their refusals.
+Qualified preserved Boolean, Int32, Int64, Currency and legacy DateTime targets
+can combine through the [joint fixed service](../../testing/ACE16_PRESERVED_JOINT_FIXED.md).
+Every SET expression reads the original snapshot and one finish validates the
+complete result. Variable/growth modes and unsupported selected targets retain
+their refusals.
 
 The default resolves the complete target set from the original snapshot and
 selects one service before native planning. A qualified mixed-schema projection

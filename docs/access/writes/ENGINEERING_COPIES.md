@@ -75,14 +75,17 @@ values and ordinals. A qualified mixed-schema source with one ordinary Short
 Text target selects the [preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
 retaining the original physical record position and length. Sibling variable
 spans may move inside that record while their bytes remain exact. Multiple
-preserved targets and fixed/variable mixtures remain refused.
+preserved Text targets and Text/fixed mixtures remain refused.
 
 One qualified preserved Int64, Currency or legacy DateTime target also uses the
 [fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md) in default
 mode. Existing `int64`, `currency-scaled` and hexadecimal `date-bits` request kinds
 retain exact expected/replacement carriers, NULL payloads and every unrelated
-byte. Indexed, dependent and mixed preserved targets remain refused;
-`--variable` does not admit these scalar targets.
+byte. Qualified Boolean, Int32, Int64, Currency and legacy DateTime groups can
+also combine through the [joint fixed service](../../testing/ACE16_PRESERVED_JOINT_FIXED.md)
+in one original-image batch. Shared mask bits merge and several changed fields
+on one row count once. Indexed/dependent targets remain refused; `--variable`
+does not admit these preserved scalar groups.
 
 For that qualified mixed schema, explicit `--variable` selects the
 [preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "Existing shared and CLI consumers of same-source preserved joint fixed batches; no production frontend changes",
+  "native_implementation_commit": "6c1dec80",
+  "observed": {
+    "adapter_before_migration": {
+      "passed": 23,
+      "failed_obsolete_refusals": 2
+    },
+    "cli_before_migration": {
+      "passed": 22,
+      "failed_obsolete_refusals": 1
+    },
+    "adapter_complete_preserved_target": {
+      "passed": 30,
+      "failed": 0
+    },
+    "cli_complete_preserved_target": {
+      "passed": 27,
+      "failed": 0
+    },
+    "adapter_principal_complete_images": {
+      "typed": 76,
+      "sql": 24
+    },
+    "cli_principal_complete_images": {
+      "typed": 32,
+      "sql": 4
+    },
+    "cli_typed_refusals": 12,
+    "cli_sql_required_refusals": 1,
+    "cli_output_conflicts": 2,
+    "strict_all_targets_all_features": "passed",
+    "minimal_engine_adapter_builds": "passed",
+    "workspace_format": "passed",
+    "documentation_links_checked": 6797,
+    "missing_documentation_links": 0
+  },
+  "transport_boundaries": [
+    "Typed CLI requires at least one assignment and merges same-name groups",
+    "Three positive native cases with empty groups are not represented as typed CLI requests",
+    "Native duplicate-group and empty-ineligible-group refusals are not represented as CLI requests",
+    "True SQL empty groups qualify through an explicit false selection"
+  ],
+  "retained_failures": [
+    "Existing Access and CLI assertions that all mixed preserved targets must refuse stopped their first runs. These now compare independent complete positive images; indexed/dependent, stale, wrong-mode, source, Required and output refusals remain."
+  ],
+  "limits": [
+    "Authored-source qualification, not genuine multi-target or Microsoft Access evidence",
+    "No normal save, journal or required-macro permission",
+    "No new CLI flags, DTOs, dependencies or frontend business logic"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/access-before-migration-first-root.log",
+      "bytes": 4308,
+      "sha256": "2312ce8fac575e37d6f07843aaa5a40495e8b492448513bb33e26a80ca649b66"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/cli-before-migration-first-root.log",
+      "bytes": 3555,
+      "sha256": "7efaf9b5491b219776dbb1fc20be893311fdd5e4e64dfaa171b06433c2a4b4f4"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/access-joint-first-root.log",
+      "bytes": 3427,
+      "sha256": "b1c9922826de53226df90f3fa6f9b586a25a1cce39f5e0facd207e139e05546c"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/cli-joint-first-root.log",
+      "bytes": 3072,
+      "sha256": "0224331f38638e453a38bdaf6091e63489cfc42265fa8e1cb53da879cb9fd466"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/documentation-first-root.log",
+      "bytes": 53,
+      "sha256": "7dbb5c0bf5c7ba461747a1cb681b61ced4a70a98b1702ef01edafc5460b26f18"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-frontends-next-20261031/format-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
