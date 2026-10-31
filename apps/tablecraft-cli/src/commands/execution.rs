@@ -7,6 +7,7 @@ use std::io::{self, Write};
 pub(crate) enum ExecutionError {
     Operation(String),
     Output(io::Error),
+    Journal(query::journal::Error),
 }
 
 impl From<query::Error> for ExecutionError {
@@ -22,6 +23,12 @@ impl Command {
         writer: &mut dyn Write,
     ) -> Result<(), ExecutionError> {
         match self {
+            Self::Query {
+                command: query::Command::JournalUpdate(args),
+            } => query::journal::update(*args, password, writer).map_err(ExecutionError::Journal),
+            Self::Query {
+                command: query::Command::RecoverUpdate(args),
+            } => query::journal::recover(*args, password, writer).map_err(ExecutionError::Journal),
             Self::Rows(args) if args.stream => args.stream_rows(format, password, writer),
             Self::Query {
                 command: query::Command::Run(args),

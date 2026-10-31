@@ -28,12 +28,12 @@ clap.workspace = true
 jiff = { workspace = true, features = ["tz-system", "tzdb-zoneinfo", "tzdb-bundle-platform"] }
 tablecraft-sql.workspace = true
 tablecraft-core.workspace = true
-tablecraft-io = { workspace = true, features = ["fresh-publication"] }
+tablecraft-io = { workspace = true, features = ["fresh-publication", "filesystem-journal"] }
 tablecraft-expressions = { workspace = true, features = ["sql", "fluent-catalog", "icu-text"] }
 tablecraft-query.workspace = true
-tablecraft-ace = { workspace = true, features = ["ace16-write-preview"] }
+tablecraft-ace = { workspace = true, features = ["ace16-write-preview", "journal"] }
 tablecraft-model.workspace = true
-tablecraft-access = { workspace = true, features = ["ace16-write-preview"] }
+tablecraft-access = { workspace = true, features = ["ace16-write-preview", "journal"] }
 tablecraft-sqlite.workspace = true
 uuid.workspace = true
 

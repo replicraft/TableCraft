@@ -15,7 +15,7 @@ sets the target for Access workflows, defaults, restrictions and documented quir
 | Format | Current support | Planned tier |
 | --- | --- | --- |
 | ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries | **Tier 1 — primary:** full native compatibility |
-| Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; limited offline copy edits | **Tier 2 — secondary:** maintain and expand qualified support |
+| Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; qualified offline Int32 updates | **Tier 2 — secondary:** maintain and expand qualified support |
 | ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 2 |
 | ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 2 |
 | ACE 15 `.accdb` · Access 2013 | Not separately qualified; support follows the actual stored profile | Tier 2 |

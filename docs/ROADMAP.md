@@ -13,10 +13,12 @@ consumers. Read-only journal inspection now retains exact images and the same
 journal for policy checks before recovery writes. The native qualifier now binds
 original typed intent and proves both complete images by rebuilding the normal
 Jet 4 plan; seven focused checks pass. Normal and explicit recoverable SQL
-planning are shared in the Access adapter. Existing filesystem bundle association
-now retains and checks actual locked objects. Durable creation/retirement and CLI
-save/recover commands are next; general ACE saves, required macros and broader
-index profiles remain open.
+planning are shared in the Access adapter. Retained filesystem pairing now supplies
+durable creation, recovery and retirement through explicit
+[Jet 4 CLI commands](cli/JOURNAL_EDITING.md), with complete-image and known-outcome
+checks passing. Restart finalization/partial-garbage resolution and automatic
+journal discovery remain open; general ACE saves, required macros and broader
+index profiles also remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
