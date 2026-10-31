@@ -1,3 +1,7 @@
+#[path = "transfer.rs"]
+mod transfer;
+pub use transfer::TargetTransferFailure;
+
 use super::storage::PairedStorage;
 use super::{
     BindingError, OfflineTarget,

@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "status": "focused_full_io_regression_and_strict_passed",
+  "api": "OfflineJournalPair::into_target_after_clean(self) -> Result<OfflineTarget, TargetTransferFailure>",
+  "contract": {
+    "preconditions": [
+      "RetiredClean",
+      "Known completion outcome",
+      "TargetLockState::Held"
+    ],
+    "terminal_action": "Acknowledge journal unlock, then move the same target owner",
+    "target_unlock_reopen_clone": false,
+    "terminal_heap_allocation": false,
+    "invalid_state": "Cause InvalidState; complete pair and known outcome retained unchanged",
+    "journal_unlock_error": "ReleaseUncertain; namespace RetiredClean and known outcome retained; no transfer retry",
+    "failure_accessors": [
+      "cause",
+      "pair",
+      "into_parts"
+    ],
+    "existing_release_behavior_changed": false
+  },
+  "retained_error_design": {
+    "owner": "Full pair retained inline",
+    "scoped_large_error_allowances": 2,
+    "rationale": "A boxed error owner would allocate after completion; the existing pair must survive without losing lease/outcome facts",
+    "scope": "Only consuming transfer and its actual fault-injection helper"
+  },
+  "source_inverse": {
+    "existing_pair_logic_inverse_tokens_exact": true,
+    "installed_freeze": {
+      "path": ".cache/backend-normal-save-audit-20261031/io-transfer/installed-freeze.json",
+      "bytes": 2088,
+      "sha256": "6dd01e2e0526583e45261a72aea9b3ad0290d4a440855cad08985781695310d4"
+    },
+    "diff": {
+      "path": ".cache/backend-normal-save-audit-20261031/io-transfer/changes.patch",
+      "bytes": 12273,
+      "sha256": "a7a83541778eec4a7536c8cd53cd377d4ffde256b2e42e98a6d9c220a447092a"
+    },
+    "before_pair": {
+      "path": ".cache/backend-normal-save-audit-20261031/io-transfer/before-pair.rs",
+      "bytes": 17203,
+      "sha256": "93a250816ea16d2493f276c2ce1bd4572ab16ba6c27970e24ef5fb7e384ed513"
+    },
+    "before_exports": {
+      "path": ".cache/backend-normal-save-audit-20261031/io-transfer/before-mod.rs",
+      "bytes": 1290,
+      "sha256": "6a2fed4fd9e0fa91e458e9e8bc1b16837e4afec4e6596c50e20938e6b8cf27a2"
+    }
+  },
+  "validation": {
+    "first_invocation": {
+      "phase": "Cargo dependency selection",
+      "status": "failed_before_compile_or_tests",
+      "exit_code": 101,
+      "reason": "The workspace CLI selected an Access feature before that feature declaration existed",
+      "io_source_correction": false,
+      "runtime_functions": 0,
+      "log": {
+        "path": ".cache/offline-write-session-next-20261031/io-transfer-first-root.log",
+        "bytes": 534,
+        "sha256": "d34fee5434537c396b68ad7237a459e0a176990e7f1183787e0342d58c8ec053"
+      }
+    },
+    "first_runtime": {
+      "status": "passed",
+      "exit_code": 0,
+      "functions": 4,
+      "failed": 0,
+      "filtered_unit_functions": 81,
+      "integration_functions_executed": 0,
+      "integration_note": "All integration targets were filtered by this focused selector",
+      "seconds": 0.43,
+      "log": {
+        "path": ".cache/offline-write-session-next-20261031/io-transfer-resolved-root.log",
+        "bytes": 2310,
+        "sha256": "2dedb92d2aa929078d8c44f17f115c9f6262a41822e718871756f561ddf8a804"
+      },
+      "coverage": [
+        "Actual V1 commit and rollback with clean retirement preserve the same held target",
+        "Changing a path after cleanup never makes transfer reopen another object",
+        "Actual ready, recovery-required, outcome-recorded and retired-unclean states refuse without unlock",
+        "Journal unlock errors before or after effect preserve outcome and prevent a second callback"
+      ]
+    },
+    "strict": {
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/offline-write-session-next-20261031/io-strict-root.log",
+        "bytes": 746,
+        "sha256": "10ae628342769a3fd3b015f1bd39439c99058009a8333a27024e7613125766a0"
+      }
+    },
+    "format": {
+      "status": "scoped_rustfmt_completed_before_runtime"
+    },
+    "full_regression": {
+      "status": "passed",
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/offline-write-session-next-20261031/io-regression-root.log",
+        "bytes": 11984,
+        "sha256": "b627abbdfe8b62e3c2eb12e5a54b0bdeaaba928bca16e68a3d42578a854ad98b"
+      },
+      "functions": 103,
+      "unit": 85,
+      "integration": 16,
+      "documentation": 2,
+      "failed": 0
+    }
+  },
+  "paths": [
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/pair.rs",
+      "bytes": 17283,
+      "sha256": "74eb2ab1adb03940949ab9605234bf60f476d464bb3dfd908aeefb0b201e66df"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/mod.rs",
+      "bytes": 1313,
+      "sha256": "1628b56bba91665cb835321537c08aa36ac654b9a4ff43f904f77609332f348d"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/transfer.rs",
+      "bytes": 4010,
+      "sha256": "46505777eae9a98e108e32dc5808d3588ddf0521471cb50fa6a353b831f028b1"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/transfer/tests.rs",
+      "bytes": 6922,
+      "sha256": "325d48f50c754dcc48951c730007eb477915d955a1bb885b9ad6942873029baa"
+    }
+  ],
+  "boundaries": [
+    "Generic retained-object transfer, not native plan/recovery permission",
+    "Offline and stable-namespace preconditions remain; OS leases are not Access ldb/laccdb coordination",
+    "No preview conversion, ACE normal-save widening or automatic recovery"
+  ]
+}
