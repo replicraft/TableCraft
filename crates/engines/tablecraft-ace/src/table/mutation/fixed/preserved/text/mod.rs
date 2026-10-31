@@ -1,4 +1,5 @@
 //! One fitting Short Text replacement profile with retained advanced payloads.
+mod growing;
 pub(super) mod proof;
 mod stage;
 

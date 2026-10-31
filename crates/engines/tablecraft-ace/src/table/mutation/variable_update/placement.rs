@@ -161,6 +161,21 @@ impl Plan {
         Ok(plan)
     }
 
+    /// Protect complete original roles while permitting represented cells only.
+    /// This does not enable hint growth or owned-map record initialization.
+    pub(in crate::table::mutation) fn capture_protected_represented(
+        image: &NativeImage,
+        schema: &TableSchema,
+        metadata: Metadata,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        metadata.require_source(image, schema.definition_page())?;
+        let mut plan = Self::capture(image, schema, budget, cancelled)?;
+        plan.metadata = Some(metadata);
+        Ok(plan)
+    }
+
     fn page(
         &mut self,
         image: &NativeImage,

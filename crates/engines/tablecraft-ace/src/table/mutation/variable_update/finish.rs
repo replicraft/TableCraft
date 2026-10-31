@@ -61,10 +61,48 @@ pub(in crate::table::mutation) fn compose(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16WritePreview, EditError> {
-    check(budget, cancelled)?;
-    qualify(&image, plan)?;
-
+    let after = assemble(&image, plan, indexes, budget, cancelled)?;
     let scope = image.catalog().catalog().scope();
+    // Reparse the catalog/header from actual grown bytes; old page_count must
+    // never constrain or authorize reads of the newly appended pages.
+    inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
+    let checked = check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?;
+    if checked
+        .indexes()
+        .iter()
+        .any(|index| index.status() != IndexCheckStatus::Checked)
+    {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
+    gates::qualified(&check_table_constraints(
+        &mut Cursor::new(&after),
+        scope,
+        table,
+        budget,
+        cancelled,
+    )?)?;
+    plan.maps
+        .audit_membership(&after, checked.schema(), budget, cancelled)?;
+    check(budget, cancelled)?;
+    Ok(Ace16WritePreview::from_candidate(
+        image.bytes,
+        after,
+        changed,
+    ))
+}
+
+/// Exact byte composition; each caller performs its own final table admission.
+/// Existing ordinary finish and preserved Text finish are the only consumers.
+pub(in crate::table::mutation) fn assemble(
+    image: &NativeImage,
+    plan: &Plan,
+    indexes: &[IndexDataPatch],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    check(budget, cancelled)?;
+    qualify(image, plan)?;
+
     budget
         .charge_allocation(plan.append.length as u64, 1)
         .map_err(InspectError::from)?;
@@ -169,32 +207,7 @@ pub(in crate::table::mutation) fn compose(
         budget,
         cancelled,
     )?;
-    // Reparse the catalog/header from actual grown bytes; old page_count must
-    // never constrain or authorize reads of the newly appended pages.
-    inspect_catalog(&mut Cursor::new(&after), scope, budget, cancelled)?;
-    let checked = check_table(&mut Cursor::new(&after), scope, table, budget, cancelled)?;
-    if checked
-        .indexes()
-        .iter()
-        .any(|index| index.status() != IndexCheckStatus::Checked)
-    {
-        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-    }
-    gates::qualified(&check_table_constraints(
-        &mut Cursor::new(&after),
-        scope,
-        table,
-        budget,
-        cancelled,
-    )?)?;
-    plan.maps
-        .audit_membership(&after, checked.schema(), budget, cancelled)?;
-    check(budget, cancelled)?;
-    Ok(Ace16WritePreview::from_candidate(
-        image.bytes,
-        after,
-        changed,
-    ))
+    Ok(after)
 }
 
 fn qualify(image: &NativeImage, plan: &Plan) -> Result<(), EditError> {
