@@ -1,0 +1,345 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "typed_cli_fresh_database_creation",
+  "status": "typed_cli_creation_locally_validated",
+  "engine_shared_variable_commit": "360761e9",
+  "profile": {
+    "feature": "ace16-create",
+    "user_tables": 1,
+    "columns": "1..16",
+    "rows_maximum": 64,
+    "physical_fit_required": true,
+    "input_bytes_maximum": 65536,
+    "legacy_mode": "--column NAME; present strict decimal Int32; unchanged",
+    "typed_mode": "--field NAME DECLARATION; exclusive from --column",
+    "typed_declarations": [
+      "boolean",
+      "byte",
+      "int16",
+      "int32",
+      "int64",
+      "currency-scaled",
+      "single-bits",
+      "double-bits",
+      "date-bits",
+      "guid",
+      "text:UTF16_UNITS",
+      "binary:BYTES",
+      "decimal:PRECISION:SCALE"
+    ],
+    "text_binary_dimensions": "explicit 1..255 native UTF-16 units/bytes",
+    "decimal": "precision 1..28, scale 0..precision, exact retained scale, no rescaling",
+    "transport": "quoted TSV with exact ordered header, lowercase null/value: escapes, no omission/defaults"
+  },
+  "preserved": {
+    "shared_access_api": "CreationDestination::prepare_typed",
+    "publisher": "existing RequiredOutput/PreparedCreation/report receipt protocol",
+    "prepaid_report": true,
+    "known_publication_output_failures_retained": true,
+    "password_refusal_first": true,
+    "no_engineering_error_leak": true,
+    "shared_parser_function_bodies_static_byte_identical": true
+  },
+  "acceptance": {
+    "commands_first": {
+      "status": "passed_first_execution",
+      "functions_passed": 70,
+      "failed": 0,
+      "ignored": 0,
+      "create_functions_passed": 14,
+      "new_typed_functions": 6,
+      "typed_complete_images": 15,
+      "image_families": {
+        "fixed": 5,
+        "ieee": 5,
+        "variable": 5
+      },
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/cli-first-root.log",
+        "bytes": 8537,
+        "sha256": "29b704e5fe28a31ec152aa86c2abecc87f0f1d67a30542753019824a95aab6f1"
+      }
+    },
+    "normal_build_first": {
+      "status": "failed_compile",
+      "error_code": "E0432",
+      "reason": "tablecraft-schema was a CLI dev-dependency but new production schema parser imports it",
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/build-first-root.log",
+        "bytes": 707,
+        "sha256": "38ae12974106ba5fcb1d6efdd5344b664e772b5c52e3086460989d8af6a37d21"
+      }
+    },
+    "strict_first": {
+      "status": "failed_compile",
+      "error_code": "E0432",
+      "same_missing_normal_dependency": true,
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/strict-first-root.log",
+        "bytes": 1610,
+        "sha256": "d33a5852a90af1c1d6689bba3545e4c42f1f6b811bee1e0b8dbde3a9cec4a75b"
+      }
+    },
+    "packaging_correction": {
+      "by": "root",
+      "change": "promote tablecraft-schema.workspace=true from dev to normal dependencies",
+      "new_registry_dependencies": 0,
+      "version_feature_changes": false,
+      "lock_change": false,
+      "manifest": {
+        "path": "apps/tablecraft-cli/Cargo.toml",
+        "bytes": 1534,
+        "sha256": "a8d61f8d19d04ea931e17afad43ddf37dc552ed908adef756c7f1207d4418a59"
+      }
+    },
+    "normal_build_retry": {
+      "status": "passed",
+      "duration_seconds": 11.37,
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/build-second-root.log",
+        "bytes": 228,
+        "sha256": "323d7b60cebc843e4ae0f04acfa798acaff69a1bd17acf8f552b4eb574330f5d"
+      }
+    },
+    "strict_retry": {
+      "status": "passed_all_target_all_feature",
+      "duration_seconds": 6.35,
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/strict-second-root.log",
+        "bytes": 173,
+        "sha256": "3b4de10ed505784e1d363f6471bf6b1182bb10eb49c284abd05537fde2ac710a"
+      }
+    },
+    "formatting": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/fmt-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/links-first-root.log",
+        "bytes": 53,
+        "sha256": "e0c7e5b4a6116579f14b020263a1bfcabd8a84f6d48516d740fd8503f99cef98"
+      },
+      "targets": 6899,
+      "missing": 0
+    },
+    "local_working_tree_process": {
+      "status": "passed_first_execution",
+      "calls": 4,
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "operations": [
+        "typed create",
+        "rows --format tsv",
+        "inspect --table --check",
+        "create --help"
+      ],
+      "working_tree_build": true,
+      "not_a_fresh_committed_archive_build": true,
+      "exact_saved_tsv_records_match": true,
+      "observed": "Int32/Text/Decimal; literal null versus stored NULL; present empty Text; retained four-place Decimal zero and 1.2345",
+      "precall": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/precall.json",
+        "bytes": 1862,
+        "sha256": "94e99041b4fea4e91c25157f4ae30c569848427a5b7254a8e855839fc48d1383"
+      },
+      "result": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/result.json",
+        "bytes": 3406,
+        "sha256": "d4400064c773faa1a7326ba98f08962da9aff12bfbb39936ec0d6551f91b1df8"
+      },
+      "binary": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/tablecraft-observed",
+        "bytes": 66200296,
+        "sha256": "cfbc528cfd05f515e349b9b12de8a6a393c2afe1faa25afafd197f7c8e5c55b8"
+      },
+      "input": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/input.tsv",
+        "bytes": 60,
+        "sha256": "cfb08e00349d06608d0a9aae3c20a33e81f2d91b9ec775789200120210a6ddee"
+      },
+      "image": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/people.accdb",
+        "bytes": 36864,
+        "sha256": "a1cf7b9339ff9276c2984307631db01af00fe332ade3c7bbe50e4edb7e45706f"
+      },
+      "calls_detail": [
+        {
+          "argv": [
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/tablecraft-observed",
+            "create",
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/people.accdb",
+            "--table",
+            "People",
+            "--field",
+            "Id",
+            "int32",
+            "--field",
+            "Name",
+            "text:32",
+            "--field",
+            "Amount",
+            "decimal:12:4",
+            "--data",
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/input.tsv"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/0.stdout",
+            "bytes": 105,
+            "sha256": "27c4b629b89d8cec626c6b0c880607aa8803555075abfd37efe740c654209ff1"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/0.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/tablecraft-observed",
+            "rows",
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/people.accdb",
+            "People",
+            "--format",
+            "tsv"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/1.stdout",
+            "bytes": 68,
+            "sha256": "dbffd770c7e22ca128d7e30305b27a00a54a5822d0586eaea9f7f0bd1d769247"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/1.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/tablecraft-observed",
+            "inspect",
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/people.accdb",
+            "--table",
+            "People",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/2.stdout",
+            "bytes": 99,
+            "sha256": "18ffc0b8d3c763a072481ed557bc0fa01099c335d39b8386339c525c10d09006"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/2.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "argv": [
+            ".cache/ace16-native-typed-create-cli-next-20261031/process-first/tablecraft-observed",
+            "create",
+            "--help"
+          ],
+          "exit": 0,
+          "stdout": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/3.stdout",
+            "bytes": 2656,
+            "sha256": "1d3ddc86561dd6bffb25deae1153165d00526c6c2d82842565e003adad6d159b"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-typed-create-cli-next-20261031/process-first/3.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ]
+    },
+    "dependency_boundaries": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-typed-create-cli-next-20261031/dependencies-first-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    }
+  },
+  "evidence": {
+    "private_original_implementation": {
+      "path": ".cache/ace16-native-typed-create-cli-next-20261031/private-freeze.json",
+      "bytes": 5984,
+      "sha256": "96a1f76db65845f4e75a11d30af96ccde65d30f63d05ad48fecd9062c3061aed"
+    },
+    "installed_code": [
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/args.rs",
+        "bytes": 2631,
+        "sha256": "3c57cf5cb61b3c5cfa983b5ac7690e315a060c4115d18dc96cf79deca180eaef"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/error.rs",
+        "bytes": 2646,
+        "sha256": "3d47ef81caffb5ba93d7b7e79f3ac7759069ab32bd33a6bc71223f217f64dbb9"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/input.rs",
+        "bytes": 6656,
+        "sha256": "e31325cb7f2a71d3df54ddda57d8d35eb0fa29501575c8c756f542bff157086e"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/mod.rs",
+        "bytes": 3270,
+        "sha256": "cfabfaaa7e9602c9c890f2985ff87ab45461d3cd8d08d7daaa1660625e38af53"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/schema.rs",
+        "bytes": 3910,
+        "sha256": "97ced0fe02d0979793bd20a4273d33eb37540e05512e79486da75a5c5273b99d"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/tests/typed.rs",
+        "bytes": 13381,
+        "sha256": "054a15ef2fcc1fd8680ada01bc1cb704e55788568e15a696b4f94587b1220095"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/create/tests.rs",
+        "bytes": 10283,
+        "sha256": "932ca3d641c7b465d7456a66a12d0404f4ab3116d6f1c421c27eab3a91e74595"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/mod.rs",
+        "bytes": 5625,
+        "sha256": "407572aa723ce09b86da88bd45aa8e2d541efee2f9bb4051a274380d6c745395"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/typed_values.rs",
+        "bytes": 6557,
+        "sha256": "b1899d887f132c2de82c9b66928a8ae00738c1bff0f8e2f7ba8ce71ca718966a"
+      },
+      {
+        "path": "apps/tablecraft-cli/src/commands/write/values.rs",
+        "bytes": 1016,
+        "sha256": "cd31b3e39841f4304e3d6ad1a86706dc13759f64733e2b6acdea264da1987a8f"
+      }
+    ],
+    "root_readability_derivative": "clap ArgGroup attribute expanded only; semantic expression unchanged"
+  },
+  "limits": [
+    "Fresh unencrypted creation only; no normal imported ACE mutation or required-event absence authority",
+    "No additional SDK reads of CLI producer outputs in this phase; full output bytes equal independently qualified originals",
+    "Native Access creation/open/save and Windows runtime remain unrun",
+    "No new registry dependency/version/features; existing workspace schema dependency now has a normal CLI consumer"
+  ]
+}

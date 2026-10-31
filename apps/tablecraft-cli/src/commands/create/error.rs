@@ -1,3 +1,4 @@
+use crate::commands::typed_values;
 use std::{fmt, io};
 use tablecraft_access::creation::{CreationError, CreationReceipt};
 use tablecraft_ace::{CreateDatabaseError, InspectError};
@@ -30,6 +31,10 @@ impl Error {
                         | CreateDatabaseError::RowWidth
                         | CreateDatabaseError::PageCapacity
                         | CreateDatabaseError::TextEncoding
+                        | CreateDatabaseError::Declaration
+                        | CreateDatabaseError::DeclaredValue
+                        | CreateDatabaseError::Carrier
+                        | CreateDatabaseError::UnsupportedType
                 ))
         )
     }
@@ -57,5 +62,14 @@ impl fmt::Display for Error {
 impl From<InspectError> for Error {
     fn from(error: InspectError) -> Self {
         Self::Native(error)
+    }
+}
+
+impl From<typed_values::Error> for Error {
+    fn from(cause: typed_values::Error) -> Self {
+        match cause {
+            typed_values::Error::Input(message) => Self::Input(message),
+            typed_values::Error::Native(cause) => Self::Native(cause),
+        }
     }
 }

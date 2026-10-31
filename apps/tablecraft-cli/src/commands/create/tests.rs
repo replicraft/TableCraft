@@ -297,3 +297,5 @@ fn escaped_catalog_names_and_raw_definition_names_match_independent_sources() {
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
     }
 }
+
+mod typed;

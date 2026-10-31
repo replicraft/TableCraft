@@ -6,7 +6,7 @@ database in memory with one ordinary table. `create_ace16_database` accepts name
 Int16, Int32, Int64, Currency, Single, Double, legacy DateTime and Guid.
 `create_ace16_int32_database` remains the convenience API for borrowed Int32 rows.
 The Access creation service accepts these typed declarations through
-`prepare_typed`; the CLI creation command remains Int32-only.
+`prepare_typed`; the CLI accepts explicit typed declarations with `--field`.
 
 The profile admits 1–16 columns and 0–64 rows, also requiring the complete records
 and row directory to fit one DATA page. Names retain their spelling under the

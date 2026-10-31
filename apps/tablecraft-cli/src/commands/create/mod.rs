@@ -3,6 +3,7 @@ mod args;
 mod error;
 mod input;
 mod report;
+mod schema;
 
 #[cfg(all(test, unix))]
 mod tests;
@@ -26,29 +27,58 @@ pub(crate) fn execute(
     }
     let mut budget = arguments.budget();
     let cancelled = || false;
+    let typed = if arguments.fields.is_empty() {
+        None
+    } else {
+        Some(schema::parse(&arguments.fields, &mut budget, &cancelled)?)
+    };
     let destination = CreationDestination::capture(&arguments.path, &mut budget, &cancelled)
         .map_err(Error::Creation)?;
-    let rows = if let Some(path) = &arguments.data {
-        let bytes = input::capture(path, &mut budget, &cancelled)?;
-        input::rows(&bytes, &arguments.columns, &mut budget, &cancelled)?
+    let prepared = if let Some(fields) = typed {
+        let rows = if let Some(path) = &arguments.data {
+            let bytes = input::capture(path, &mut budget, &cancelled)?;
+            input::typed_rows(&bytes, &fields, &mut budget, &cancelled)?
+        } else {
+            Vec::new()
+        };
+        let mut columns = Vec::new();
+        input::reserve(&mut columns, fields.len(), &mut budget)?;
+        columns.extend(fields.iter().map(|field| field.column));
+        let mut borrowed_rows = Vec::new();
+        input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
+        borrowed_rows.extend(rows.iter().map(Vec::as_slice));
+        destination
+            .prepare_typed(
+                &arguments.table,
+                &columns,
+                &borrowed_rows,
+                &mut budget,
+                &cancelled,
+            )
+            .map_err(Error::Creation)?
     } else {
-        Vec::new()
+        let rows = if let Some(path) = &arguments.data {
+            let bytes = input::capture(path, &mut budget, &cancelled)?;
+            input::rows(&bytes, &arguments.columns, &mut budget, &cancelled)?
+        } else {
+            Vec::new()
+        };
+        let mut columns = Vec::new();
+        input::reserve(&mut columns, arguments.columns.len(), &mut budget)?;
+        columns.extend(arguments.columns.iter().map(String::as_str));
+        let mut borrowed_rows = Vec::new();
+        input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
+        borrowed_rows.extend(rows.iter().map(Vec::as_slice));
+        destination
+            .prepare(
+                &arguments.table,
+                &columns,
+                &borrowed_rows,
+                &mut budget,
+                &cancelled,
+            )
+            .map_err(Error::Creation)?
     };
-    let mut columns = Vec::new();
-    input::reserve(&mut columns, arguments.columns.len(), &mut budget)?;
-    columns.extend(arguments.columns.iter().map(String::as_str));
-    let mut borrowed_rows = Vec::new();
-    input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
-    borrowed_rows.extend(rows.iter().map(Vec::as_slice));
-    let prepared = destination
-        .prepare(
-            &arguments.table,
-            &columns,
-            &borrowed_rows,
-            &mut budget,
-            &cancelled,
-        )
-        .map_err(Error::Creation)?;
     let report = report::Report::prepare(&prepared, &mut budget)?;
     let receipt = prepared
         .publish(&mut budget, &cancelled)

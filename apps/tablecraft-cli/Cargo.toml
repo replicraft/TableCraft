@@ -28,6 +28,7 @@ clap.workspace = true
 jiff = { workspace = true, features = ["tz-system", "tzdb-zoneinfo", "tzdb-bundle-platform"] }
 tablecraft-sql.workspace = true
 tablecraft-core.workspace = true
+tablecraft-schema.workspace = true
 tablecraft-io = { workspace = true, features = ["fresh-publication", "filesystem-journal"] }
 tablecraft-expressions = { workspace = true, features = ["sql", "fluent-catalog", "icu-text"] }
 tablecraft-query.workspace = true
@@ -38,7 +39,6 @@ tablecraft-sqlite.workspace = true
 uuid.workspace = true
 
 [dev-dependencies]
-tablecraft-schema.workspace = true
 tablecraft-testkit.workspace = true
 flate2.workspace = true
 rc4.workspace = true

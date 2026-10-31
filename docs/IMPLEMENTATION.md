@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Typed CLI database creation
+
+`create --field NAME DECLARATION` now accepts explicit fixed, Text, Binary and
+Decimal columns with exact typed TSV values. The existing `--column` mode stays
+available for present Int32 cells. Both use the same required durable publisher.
+Seventy command tests pass, including fifteen complete typed source images and
+existing write-input regressions. A fresh normal executable also passes creation,
+row retrieval, table checks and help; the [CLI guide](cli/NATIVE_CREATION.md) and
+[result](testing/results/typed-cli-native-creation-2026-10-31.json) retain syntax,
+limits and the corrected production schema dependency.
+
 ## Fresh variable-field creation
 
 Fresh ACE 16 creation now accepts explicitly bounded Short Text/Binary and exact

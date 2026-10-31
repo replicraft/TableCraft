@@ -62,10 +62,10 @@ an independent one-DATA-page fit check. NULL input does not author a Required,
 AllowZeroLength or other native constraint property. Native eligibility and exact
 encoding remain in the engine; no additional permission is implied by the host.
 
-The CLI `create` command continues to use the Int32 convenience method. Its
-`--column` arguments are names, and its TSV cells remain present decimal Int32
-values. It gains no typed-schema syntax, NULL token or additional scalar parsing
-from this library entry point.
+The CLI `create` command keeps `--column` as the present-Int32 convenience path.
+Its exclusive `--field NAME DECLARATION` mode forwards explicit native metadata
+and exact typed TSV values to `prepare_typed`, retaining the same required
+publication and receipt handling. See the [CLI syntax and NULL/empty rules](../../cli/NATIVE_CREATION.md#explicit-typed-schema).
 
 Two typed service tests publish all ten independent fixed/IEEE images exactly
 and reject invalid declarations/carriers before staging. The complete six-test

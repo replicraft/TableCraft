@@ -3,6 +3,7 @@ mod clock;
 mod create;
 mod execution;
 mod tsv;
+mod typed_values;
 pub(crate) use execution::ExecutionError;
 mod encryption;
 mod error;
@@ -17,7 +18,7 @@ use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
-    /// Construct one fresh unencrypted ACE 2016 database with ordinary Int32 columns.
+    /// Construct one fresh unencrypted ACE 2016 database from explicit scalar columns.
     Create(create::Arguments),
     /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables(tables::Args),
