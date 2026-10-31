@@ -49,6 +49,25 @@ report's allocated metadata does not invalidate them. Neither preparation is a
 physical edit or a required-event certificate. Existing image-based APIs and
 physical write consumers keep their original admission and proof rules.
 
+## CLI inspection
+
+```sh
+tablecraft inspect example.accdb --table Orders --macro-coverage
+```
+
+The command uses one bounded standard image capture and buffers metadata before
+stdout. It displays native identity, direct children, carrier presence and byte
+counts, followed by the existing root Extra inventory. Raw body/module/child
+payloads and program text are not printed. `--native-bytes` and `--native-steps`
+keep their existing cumulative controls. Other detailed inspection flags conflict
+explicitly, including the macro XML/program/inventory flags.
+
+Six CLI functions pass across the existing inventory and new coverage command,
+including 28 successful coverage reports, duplicate table-name refusals,
+missing/NULL/empty distinctions, argument conflicts and exhausted budgets without
+partial stdout. The first CLI trial exposed a missing explicit flag conflict;
+the retained diagnostic and correction are recorded separately.
+
 ## Compatibility boundary and evidence
 
 These observations do not establish a complete native macro locator, required

@@ -49,7 +49,9 @@
         "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/cli-second-root.log",
         "bytes": 966,
         "sha256": "0890033bf8b09c8e7122108440557781eb206541405b8d17da3dc5901836e32e"
-      }
+      },
+      "successful_coverage_reports": 28,
+      "duplicate_table_name_refusals": 2
     },
     "regressions": {
       "native_extra": {
@@ -105,12 +107,12 @@
       }
     },
     "documentation_links": {
-      "targets": 6734,
+      "targets": 6735,
       "missing": 0,
       "log": {
-        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/links-first-root.log",
+        "path": ".cache/ace16-source-bound-macro-coverage-tests-next-20261030/links-final-root.log",
         "bytes": 53,
-        "sha256": "57c8288c80ef07d70c0fa58c78811febf12ce858f4bbf661942051e22528931b"
+        "sha256": "a1d25d33b8b851de8894c666058675ecd593759254be4bd360e997bd1b2f87cc"
       }
     }
   },

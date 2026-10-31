@@ -47,6 +47,18 @@ Add `--macro-xml` to explicitly inspect supported
 [data-macro XML envelopes](../access/schema/NATIVE_DATA_MACRO_XML.md). Event and
 Name metadata stays separate from action execution and absence qualification.
 
+```sh
+tablecraft inspect example.accdb --table Orders --macro-coverage
+```
+
+This [source-bound report](../access/schema/NATIVE_MACRO_COVERAGE.md) includes the
+table's body/module/Extra carriers and direct catalog children. It distinguishes
+missing columns, NULL, present-empty and opaque bytes, and reports observed root
+Extra event/name metadata. Stored program and child payload bodies stay private.
+The flag requires `--table` and is exclusive with the other detailed inspection
+modes, including `--extra`. Native required-event coverage and macro absence
+remain uncertified; the report grants no write permission.
+
 When the database has exactly one user table, `rows PATH` selects it automatically;
 system tables do not count. With zero or multiple user tables, supply a table
 name or use `--all`. Buffered rows include qualified stored calculations and

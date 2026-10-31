@@ -54,6 +54,16 @@ pub(crate) struct Args {
     /// Inventory observed table-owned XML envelopes and unresolved Extra metadata; never executes.
     #[arg(long, requires = "extra", conflicts_with_all = ["macro_xml", "macro_program"])]
     macro_inventory: bool,
+    /// Inspect table payloads and direct child coverage; never certifies macro absence.
+    #[arg(
+        long,
+        requires = "table",
+        conflicts_with_all = ["catalog", "query", "relationships", "indexes", "properties",
+            "extra", "macro_xml", "macro_program", "macro_inventory", "features", "complex",
+            "stored_calculation", "complex_links", "attachments",
+            "version_history", "check", "constraints"]
+    )]
+    macro_coverage: bool,
     /// Inspect inert calculated, complex and presentation field declarations.
     #[arg(long, requires = "table", conflicts_with_all = ["indexes", "properties", "check", "constraints", "relationships"])]
     features: bool,
@@ -101,6 +111,7 @@ impl Args {
             macro_xml,
             macro_program,
             macro_inventory,
+            macro_coverage,
             features,
             complex,
             stored_calculation,
@@ -115,7 +126,9 @@ impl Args {
         } else if relationships {
             Mode::Relationships
         } else if let Some(name) = table.as_deref() {
-            if extra && macro_inventory {
+            if macro_coverage {
+                Mode::MacroCoverage(name)
+            } else if extra && macro_inventory {
                 Mode::MacroInventory(name)
             } else if extra && macro_program {
                 Mode::MacroProgram(name)
