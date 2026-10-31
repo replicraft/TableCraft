@@ -15,7 +15,9 @@ pub mod modern_attachment;
 #[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
 pub mod old_attachment;
 
+use int32_sources::model as int32_model;
 use model as rich;
+use scalar_model as fixed_scalar_model;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -50,3 +52,10 @@ mod growth_model;
 mod scalar_api;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/fixed_scalar_sources/model.rs"]
 mod scalar_model;
+
+// Reader-only Value conversions remain exercised by the native SOURCE owner.
+#[path = "preserved_boolean_updates/joint_api.rs"]
+mod joint_api;
+#[allow(dead_code)]
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/joint_fixed_sources/model.rs"]
+mod joint_model;

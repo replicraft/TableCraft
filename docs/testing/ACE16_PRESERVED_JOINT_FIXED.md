@@ -116,5 +116,18 @@ existing ignored helpers. Strict checks across ACE, Access and CLI targets and
 features, minimal ACE/Access builds and formatting pass. The
 [native result](results/ace16-preserved-joint-fixed-2026-10-31.json) retains the
 initial compilation and obsolete-refusal failures separately from passing runs.
-Frontend acceptance has its own record. Genuine multi-target files and native
+The [frontend record](results/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
+separates 76 typed and 24 SQL complete-image adapter comparisons from 32 typed
+and four SQL CLI comparisons. Full preserved frontend targets pass 30 adapter
+and 27 CLI functions. SQL controls prove original-row RHS evaluation and genuine
+empty multi-target selection. Late Required, wrong modes, stale handles,
+budgets, cancellation and output conflicts retain their refusals.
+
+Typed CLI transport requires assignments and merges repeated same-name groups.
+It cannot literally represent native empty groups or duplicate column-group
+requests. Those shapes remain covered by native/shared services; CLI counts do
+not substitute fabricated no-ops. A false SQL selection exercises true empty
+groups through the existing SQL host.
+
+Genuine multi-target files and native
 Microsoft Access save/reopen remain separate qualification work.

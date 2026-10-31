@@ -13,6 +13,7 @@ pub mod modern_attachment;
 #[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
 pub mod old_attachment;
 
+use int32_sources::model as int32_model;
 use model as rich;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
@@ -50,3 +51,10 @@ mod scalar_api;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/fixed_scalar_sources/model.rs"]
 mod fixed_scalar_model;
+
+// Reader-only fixture members remain exercised by the native SOURCE owner.
+#[path = "preserved_boolean_updates/joint_api.rs"]
+mod joint_api;
+#[allow(dead_code)]
+#[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/joint_fixed_sources/model.rs"]
+mod joint_fixed_model;
