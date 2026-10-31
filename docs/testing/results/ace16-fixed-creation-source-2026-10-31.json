@@ -1,0 +1,496 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_fixed_scalar_creation_sources",
+  "status": "complete_source_qualification_passed",
+  "envelope_source_record": {
+    "path": "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+    "bytes": 28569,
+    "sha256": "a25f18159ce39421ea71ef9cac4006aa39c5856f99925fd3d36606a20f6da592"
+  },
+  "envelope_fixture_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_creation.rs",
+    "bytes": 11604,
+    "sha256": "d92ba1bc66cf92fe07dcb3db35058d11638254cee4a6963a27cd4f82873aeed9"
+  },
+  "source_fixture_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_fixed_creation.rs",
+    "bytes": 13098,
+    "sha256": "6035f464746d74397b2a3d6b110a211f833bd03dcee9e78a0dbeeeef45e8f6a4"
+  },
+  "source_before_generic_producer": true,
+  "imports_production_creator_or_codec": false,
+  "profile": {
+    "header": 5,
+    "pages": 9,
+    "bytes_per_file": 36864,
+    "table": "Items",
+    "fields": [
+      {
+        "name": "Flag",
+        "native": 1,
+        "offset": 0,
+        "width": 0
+      },
+      {
+        "name": "ByteValue",
+        "native": 2,
+        "offset": 0,
+        "width": 1
+      },
+      {
+        "name": "Int16Value",
+        "native": 3,
+        "offset": 1,
+        "width": 2
+      },
+      {
+        "name": "Int32Value",
+        "native": 4,
+        "offset": 3,
+        "width": 4
+      },
+      {
+        "name": "Int64Value",
+        "native": 19,
+        "offset": 7,
+        "width": 8
+      },
+      {
+        "name": "Money",
+        "native": 5,
+        "offset": 15,
+        "width": 8
+      },
+      {
+        "name": "SingleValue",
+        "native": 6,
+        "offset": 23,
+        "width": 4
+      },
+      {
+        "name": "DoubleValue",
+        "native": 7,
+        "offset": 27,
+        "width": 8
+      },
+      {
+        "name": "DateValue",
+        "native": 8,
+        "offset": 35,
+        "width": 8
+      },
+      {
+        "name": "GuidValue",
+        "native": 15,
+        "offset": 43,
+        "width": 16
+      }
+    ],
+    "record_bytes": 63,
+    "fixed_end": 61,
+    "mask_bytes": 2,
+    "variable_slots": 0,
+    "cases": [
+      {
+        "id": "empty",
+        "rows": 0
+      },
+      {
+        "id": "endpoints",
+        "rows": 3
+      },
+      {
+        "id": "nullable",
+        "rows": 3
+      },
+      {
+        "id": "signed-zero",
+        "rows": 2
+      },
+      {
+        "id": "boundary",
+        "rows": 62
+      }
+    ],
+    "total_rows": 70,
+    "boundary_free_bytes": 52,
+    "boundary_owned_pages": [
+      8
+    ],
+    "boundary_candidate_pages": [],
+    "boolean": "mask bit only; NULL is not a Boolean carrier",
+    "nonboolean_nulls": "presence bits clear; inactive fixed payload bytes zero",
+    "mixed_nullable_mask_hex": "aa02",
+    "representation_controls": [
+      "exact scaled Currency signed endpoints",
+      "finite Single and Double extrema",
+      "Single/Double/DATE positive and negative zero bits",
+      "whole legacy DATE calendar endpoints and negative quarter alias",
+      "asymmetric native GUID word-order permutation"
+    ]
+  },
+  "validation": {
+    "static_review": {
+      "status": "passed_no_concrete_defect",
+      "note": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/STATIC_REVIEW.md",
+        "bytes": 2530,
+        "sha256": "312e00962b2e3b06421bc5e76ba7acdd4550ecdb44dea4d9ec36f3d4c304a91f"
+      },
+      "fixture_or_model_execution_by_reviewer": 0
+    },
+    "native_source_gate": {
+      "status": "first_attempt_passed",
+      "tests": 1,
+      "files": 5,
+      "rows": 70,
+      "compile_seconds": 28.69,
+      "test_seconds": 0.03,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/native-source-first-root.log",
+        "bytes": 737,
+        "sha256": "08de461dcf1bb7bbfe497025d9d71dcdabfc6794c3cc6b83f9a050d2c6aecce5"
+      },
+      "scope": [
+        "complete scalar observations and exact representational Values",
+        "literal ScalarTypes, fixed offsets, lengths and flags",
+        "check_table",
+        "ordinary source structural gates",
+        "Metadata capture and source identity",
+        "unchanged envelope pages and complete map comparison"
+      ]
+    },
+    "original_export": {
+      "status": "first_attempt_passed",
+      "tests": 1,
+      "files": 5,
+      "test_seconds": 0.01,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-export-first-root.log",
+        "bytes": 505,
+        "sha256": "e9be019575a52f36a9f1a693f4d492dc38a727eeedb759c18fc23a2b90c1f3a8"
+      },
+      "originals_freeze": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first-freeze-root.json",
+        "bytes": 1392,
+        "sha256": "dd9adb8048c93074e03df183111538ac5768c3f30421504656e3bc9363f7a903"
+      },
+      "fresh_directory_and_create_new_files": true
+    },
+    "nonignored_ci_hash_anchor": {
+      "status": "first_attempt_passed",
+      "draft_freeze": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/hash-anchor-draft/private-freeze.json",
+        "bytes": 1305,
+        "sha256": "c5875dd1efbe36cdde2dd5fe96ca70178329025fa98660962e5d51ee77bef3ae"
+      },
+      "test": "fixed_creation_sources_remain_bound_to_exported_original_hashes",
+      "registration": "Unconditional child inside existing preview-only test module; SHA256 is already an unconditional dev dependency, so journal feature is unnecessary",
+      "installed_test": {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/creation_fixed_sources/hash_anchor.rs",
+        "bytes": 1519,
+        "sha256": "6c1f225b961dc074f315d267a6b3c61bbe21f1995a8d58c20f7d15033d857aaa"
+      },
+      "tests": 1,
+      "hashes": 5,
+      "compile_seconds": 28.47,
+      "test_seconds": 0.0,
+      "feature_configuration": "ace16-write-preview only; journal not required",
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/hash-anchor-first-root.log",
+        "bytes": 625,
+        "sha256": "21996d4b72d883978265f7d9b1012ec4b89f40946f46c15ec4eb93f6091dc77d"
+      }
+    },
+    "independent_sdk_observation": {
+      "status": "all_five_first_attempts_passed",
+      "sdk": "Jackcess 5.0.4",
+      "format": "V2016",
+      "read_only": true,
+      "expressions_disabled": true,
+      "linked_resolution_denied": true,
+      "calls": 5,
+      "user_rows": 70,
+      "metadata_calls": 20,
+      "metadata_scopes": [
+        "getFileFormat",
+        "getDatabaseProperties",
+        "getSummaryProperties",
+        "getUserDefinedProperties"
+      ],
+      "property_counts_per_file": {
+        "database": 0,
+        "summary": 0,
+        "user_defined": 0
+      },
+      "column_observations": 185,
+      "catalog_row_observations": 40,
+      "raw_source_bits_separate_from_calendar": [
+        "Single",
+        "Double",
+        "legacy DATE"
+      ],
+      "currency": "Exact scale-4 signed scaled-i64 range; no rounding",
+      "guid": "Actual SDK braced-uppercase String compared with independent literal expectation",
+      "source_and_closed_inputs_unchanged": true,
+      "writer_calls": 0,
+      "reader_class_closure": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/reader-precall-freeze-root.json",
+        "bytes": 6391,
+        "sha256": "3283c61422106bddcf9ea57bd9db44d76298298261fe93055c2beb812e471448"
+      },
+      "input_freeze": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/input-freeze.json",
+        "bytes": 5432,
+        "sha256": "69a00f6518433ba26201e09e4559347acd8d5ede023779173632ed84089372a7"
+      },
+      "getter_first_freeze": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/getter-first-freeze.json",
+        "bytes": 1342,
+        "sha256": "374207c4e4d599f107eff6c9d4c350ccfccdbf706ef4f82f893a1177bb7f5935"
+      },
+      "javac_result": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/javac-first-result.json",
+        "bytes": 42,
+        "sha256": "edc3cb69e517697181aa326cf4dfeb28ddf0a9dd223acb6b917cb52f287b93d4"
+      },
+      "javac_preflight": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/javac-precall-root.json",
+        "bytes": 567,
+        "sha256": "50e0511ae1360195b51e7d93d4bb0d882f43739fbf3540b10452777b3cd8ebe4"
+      },
+      "javac_stdout": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/javac-first.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "javac_stderr": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/javac-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observations": [
+        {
+          "case": "empty",
+          "result": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-empty-first-result.json",
+            "bytes": 568,
+            "sha256": "037632b08afabd7dba469b3eeef6cb98b4921dae36cd99acf25ae4e20848290d"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-empty-first.stdout",
+            "bytes": 4070,
+            "sha256": "2dc6c2b9fb30768947a5616e2cd8ee5d6c0d65f53b3436651b382637fe6773a8"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-empty-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "endpoints",
+          "result": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-endpoints-first-result.json",
+            "bytes": 572,
+            "sha256": "5c89fcd2095dd52463e4fbd8ac7ac8c0ad5b9c30bb690c915c57b96fce039fea"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-endpoints-first.stdout",
+            "bytes": 4891,
+            "sha256": "ae7eed935bb92dda3b4116468e4cf0d06c992cbe8158c5d13767d2534fc9007f"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-endpoints-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "nullable",
+          "result": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-nullable-first-result.json",
+            "bytes": 571,
+            "sha256": "9258ee31be8d4fad0b9ed7852624667d0e60019295f684f7ea20c4e63bdce0b3"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-nullable-first.stdout",
+            "bytes": 4601,
+            "sha256": "51784ca3d6418584003940782f842d8c1ab282bc274d8d58344ed4b4b289f52c"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-nullable-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "signed-zero",
+          "result": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-signed-zero-first-result.json",
+            "bytes": 573,
+            "sha256": "6bf87a3a762dd9d049a7320a0265911d69f7cad72d9661937bd6e63dd21a9f39"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-signed-zero-first.stdout",
+            "bytes": 4524,
+            "sha256": "1832381314a570d38bf048b7275c1d7d78154af832c816f8110e05b5769be2fd"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-signed-zero-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "boundary",
+          "result": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-boundary-first-result.json",
+            "bytes": 570,
+            "sha256": "589f7a25cf89dc5f3dc0d7e290267b79352f20b1d9ce73587aa012df41ee0c38"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-boundary-first.stdout",
+            "bytes": 19105,
+            "sha256": "de5a1b4733c2f1321a3d38ef11e59ceade4f2b2aebc3a33c86e85f5e6731962d"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/observations-first/sdk-boundary-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ]
+    },
+    "source_strict": {
+      "status": "passed",
+      "scope": "ACE and testkit all targets/all features",
+      "seconds": 17.64,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-strict-first-root.log",
+        "bytes": 417,
+        "sha256": "5aaa14824747f4e0db351015f20117bbec0a78755ddb86e62d5283a56fff806c"
+      }
+    },
+    "source_format": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "current_test_parent": {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/creation_fixed_sources.rs",
+      "bytes": 5419,
+      "sha256": "324251bce70f514801d0cf6f923f3f709751f94ed303e2587f0de08643281f87"
+    },
+    "saved_independent_comparison": {
+      "status": "first_attempt_passed",
+      "images": 5,
+      "sdk_whole_stdout": 5,
+      "scope": "All original bytes independently reconstructed from frozen envelope and literal fixed-field choices; full SDK metadata/schema/rows/raw bits/NULL padding/masks/directories/free/maps compared",
+      "child_calls": 0,
+      "writer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/saved-first-root.log",
+        "bytes": 730,
+        "sha256": "d50487ead81dc78b8ee2cd588293d1fb4aa44e04da2a042c55cab054794e6dc6"
+      },
+      "expectations": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/expectations.py",
+        "bytes": 5475,
+        "sha256": "6ebb0714a4fbe468668d71e684f3b9198745eeb6e65d665df1243a9b7961facd"
+      },
+      "verifier": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/verify_saved.py",
+        "bytes": 7954,
+        "sha256": "ebc3df529bfc18846894de9118ec359682840e62e709ab77669c1cec954099c9"
+      }
+    },
+    "final_strict": {
+      "status": "passed",
+      "scope": "ACE and testkit all targets/all features",
+      "seconds": 5.68,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-final-strict-root.log",
+        "bytes": 183,
+        "sha256": "39e1ce1bcb76a1d147e52b7c58be3057e252815fec175f217637491869d28d5c"
+      }
+    },
+    "final_format": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-final-fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6872,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/source-links-root.log",
+        "bytes": 53,
+        "sha256": "4ac9e7d60b9c140a5acaf0615a0c4a4a443b5e52e949f75d68b4468d00ab1eed"
+      }
+    },
+    "independent_observation_review": {
+      "status": "passed_no_concrete_discrepancy",
+      "note": {
+        "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/getter/OBSERVATION_REVIEW.md",
+        "bytes": 3223,
+        "sha256": "7dd184618a6ea509832d54471316c6d35be5255cd9506e8089fd47009fc66fe8"
+      },
+      "reviewer_runtime_calls": 0
+    }
+  },
+  "originals": [
+    {
+      "case": "empty",
+      "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first/fixed-empty.accdb",
+      "bytes": 36864,
+      "sha256": "101e5ca7b573e75bf788ddacd222a4d204773757105cb7c57887f97067809d24"
+    },
+    {
+      "case": "endpoints",
+      "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first/fixed-endpoints.accdb",
+      "bytes": 36864,
+      "sha256": "2ec4a35526a1d573643731d5b7708496281a7fae3aad53b0abf5aacf5d8d6458"
+    },
+    {
+      "case": "nullable",
+      "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first/fixed-nullable.accdb",
+      "bytes": 36864,
+      "sha256": "d102fb5bd3202439bf2c36c424e5ad15aa96a27484bab0349f6374650e845c03"
+    },
+    {
+      "case": "signed-zero",
+      "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first/fixed-signed-zero.accdb",
+      "bytes": 36864,
+      "sha256": "2d595e2fea39b4b0cc513dd0bbc1066e7d24399299fd3f616d8dd6e98f3e4fc4"
+    },
+    {
+      "case": "boundary",
+      "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/originals-first/fixed-boundary.accdb",
+      "bytes": 36864,
+      "sha256": "c0c49db3cb8b1bbe2fc62fa14ff41247e93ef1c616a59d6defc259464a14727b"
+    }
+  ],
+  "initial_source_freeze": {
+    "path": ".cache/ace16-native-fixed-creation-sources-next-20261031/private-freeze.json",
+    "bytes": 1391,
+    "sha256": "680be6f231ef749436c9c38b349ce9bc6eb5ec15b3fa15f7aae43b01227828cc"
+  },
+  "generic_fixed_creator_execution": false,
+  "boundaries": [
+    "No production scalar creator or publisher output supplies expected bytes",
+    "No native Access or Windows creation/open/save/reopen evidence",
+    "No normal imported ACE edit/recovery or native required-event absence permission",
+    "No Decimal, text, binary/OLE, extended DATE or Boolean NULL source qualification",
+    "Inherited chosen-zero header regions and system/ACL sufficiency remain unresolved",
+    "Nonfinite float patterns and header 6 are outside these five frozen cases"
+  ]
+}

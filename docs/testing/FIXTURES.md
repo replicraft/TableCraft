@@ -10632,3 +10632,13 @@ The reviewed Jackcess runtime is a read-only reference. Private generated files
 remain ignored. The [source qualification](ACE16_DATABASE_CREATION.md) and
 [version-two record](results/ace16-canonical-creation-source-v2-2026-10-31.json)
 keep read observations separate from creation, native Access and normal saves.
+
+### Fixed-scalar fresh-creation sources (2026-10-31)
+
+Five originally authored files reuse the unchanged qualified canonical envelope
+and independently encode ten fixed field kinds and 70 user rows. No production
+creator, native codec, SDK template or third-party fixture is copied. The SDK
+remains a read-only reference. Generated originals, classes and observations stay
+private; a pure Rust fixture and five complete hashes run in ordinary CI.
+[Source qualification](ACE16_FIXED_CREATION_SOURCES.md) separates exact native/SDK
+read observations from generic construction and Microsoft Access qualification.
