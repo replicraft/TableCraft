@@ -106,24 +106,33 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
     }
 
     // Declared KIND chooses the typed transport; native metadata selects storage.
-    // Fixed-only commands retain their existing parser and resource path.
+    // Mixed fitting requests share the existing borrowed grouping protocol.
     let (assignments, remainder) = cells.as_chunks::<{ updates::SET_FIELDS }>();
-    if !args.index_growth
-        && !args.cascade_updates
-        && remainder.is_empty()
-        && assignments
-            .first()
-            .is_some_and(|fields| fields[3] == "text")
-    {
+    if !args.index_growth && !args.cascade_updates && remainder.is_empty() {
+        let mut has_text = false;
         let mut all_text = true;
         for fields in assignments {
             tick(&mut budget, &|| false)?;
             budget
                 .charge(Resource::Steps, fields[3].len() as u64)
                 .map_err(InspectError::from)?;
+            has_text |= fields[3] == "text";
             all_text &= fields[3] == "text";
         }
-        if all_text {
+        if has_text && !all_text {
+            let owned = updates::mixed::prepare(cells, args.value_bytes, &mut budget, &|| false)?;
+            let groups = owned.groups(&mut budget, &|| false)?;
+            return publish(
+                &args.paths,
+                EngineeringRequest::FittedUpdate {
+                    table: owned.table,
+                    groups: &groups,
+                },
+                password,
+                &mut budget,
+            );
+        }
+        if has_text {
             let owned = updates::parse(
                 cells,
                 args.value_bytes,

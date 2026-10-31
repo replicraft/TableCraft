@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Authored-source Access and CLI joint fitting consumers passed",
+  "source_commit": "a356f1d5",
+  "native_record": {
+    "path": "docs/testing/results/ace16-preserved-joint-text-fixed-2026-10-31.json",
+    "bytes": 6807,
+    "sha256": "817b086615688c556a3273dc3b2d186a02f3ed7be66c438404566d8ef0dfaee6"
+  },
+  "adapter_principal_complete_images": {
+    "typed": 36,
+    "sql": 4
+  },
+  "cli_principal_complete_images": {
+    "typed": 30,
+    "sql": 4,
+    "unrepresentable_positive_empty_group_cases": 3
+  },
+  "checks": [
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/access-contract-corrected-sql-root.log",
+        "bytes": 3796,
+        "sha256": "659829f0dd4fb59ec7ec167023e93a6da41cf508286ecac6401942939cf5af85"
+      },
+      "exit_code": 0,
+      "passed": 34,
+      "ignored": 0
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/cli-contract-corrected-routing-root.log",
+        "bytes": 3481,
+        "sha256": "bb0060d7f731affab76e485b1f5dd4a460ed6e22b937f03d2947a6f70f098738"
+      },
+      "exit_code": 0,
+      "passed": 31,
+      "ignored": 0
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/cli-write-unit-first-root.log",
+        "bytes": 2449,
+        "sha256": "3050f6dc77824ca7ac1e04e69da291169f9350da022bb706d55060c31edac608"
+      },
+      "exit_code": 0,
+      "passed": 19,
+      "ignored": 0
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/strict-batch-corrected-root.log",
+        "bytes": 403,
+        "sha256": "2a238807a352d4a90ed00f9378079c20f77de883bc2cbad9bf4ee13a9ca24e7e"
+      },
+      "exit_code": 0,
+      "passed": null,
+      "ignored": null
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/minimal-batch-first-root.log",
+        "bytes": 72,
+        "sha256": "1f5852af1ed7025b5728e842e3c3c2f5d2f720d25557d84c38f1ffda99719c59"
+      },
+      "exit_code": 0,
+      "passed": null,
+      "ignored": null
+    }
+  ],
+  "retained_initial_failures": [
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/access-contract-first-root.log",
+        "bytes": 4561,
+        "sha256": "9b90abc013f662fec6c0eee6b49e07390b901db38b4d67cb16c96babc5242a6d"
+      },
+      "exit_code": 101,
+      "passed": null,
+      "ignored": null
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/cli-contract-first-root.log",
+        "bytes": 4374,
+        "sha256": "62885a590d83448f0d8bbe158015b6d3894eff44864dd09ee8da5c908b9feb91"
+      },
+      "exit_code": 101,
+      "passed": null,
+      "ignored": null
+    }
+  ],
+  "notes": [
+    "First Access target: 33 pass, one test used StrComp outside the documented mutation call set. The corrected test uses Len(original Text)=5, preserving the same expected image and original-RHS witness.",
+    "First CLI target: 30 pass, one failure exposed default typed mixed Text/fixed requests using fixed-only routing. The correction transports existing mixed groups to the fitted native service; it adds no native policy to CLI.",
+    "True empty groups remain represented by native/shared requests and false-selection SQL, never fabricated typed assignments.",
+    "Explicit growth/variable and normal-save boundaries remain closed for these joint preserved requests. Source/output conflicts and refusal cases publish no copy."
+  ]
+}

@@ -12,6 +12,28 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Joint preserved fitting Text and fixed updates
+
+The existing fitted engineering API now composes one ordinary Short Text target
+with unindexed Boolean, Int32, Int64, Currency or legacy DateTime siblings over
+one preserved mixed-schema original. [Joint fitting](testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
+rebuilds Text first and applies fixed payloads/mask bits afterward, preserving
+opaque siblings, inactive NULL payloads, raw no-ops and Int32 padding. Its
+independent proof rebinds original intent, validates final rules and compares
+the whole image. Changed logical roots count once. Standard capture and
+existing capacity limits remain; no growth or normal-save permission is added.
+
+The source-first tranche `a356f1d5` qualified 90 views before candidate execution.
+All six focused native functions pass, including 72 order-varied whole images
+and causal proof controls. The mutation batch passes 616 functions with ten
+existing ignored helpers; the public preserved contract passes 54 with two
+ignored helpers. Default Access and typed/SQL CLI consumers now use this route.
+Their full preserved targets pass 34 and 31 tests, including 40 adapter and 34
+CLI principal whole-image comparisons. Three genuine empty-group cases cannot
+be represented as typed CLI assignments and remain covered by native/shared
+services and explicit false-selection SQL. Generated-file and native Access
+qualification remain separate from these authored-source results.
+
 ## Joint preserved fixed-field updates
 
 The existing native batch API now composes ordinary Boolean, Int32, Int64,

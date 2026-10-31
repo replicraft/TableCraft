@@ -37,10 +37,19 @@ impl AccessEngineeringEditor {
             return self.fixed_columns(columns, positions, UpdateMode::Fitted, budget, cancelled);
         }
 
-        // Projected rich-schema Text has already passed native Short Text
-        // declaration checks. Its one selected service must preserve the whole
-        // existing record; no allocating variable/LVAL attempt precedes it.
+        // Projected rich-schema Text has passed native declaration checks.
+        // Joint requests use one fitted record service; a single Text target
+        // retains its existing service. Neither tries allocating/LVAL writes.
         if self.projected_schema {
+            if columns.len() > 1 {
+                return self.joint_columns(
+                    columns,
+                    positions,
+                    Placement::Fitted,
+                    budget,
+                    cancelled,
+                );
+            }
             let ([column], [position]) = (columns, positions.as_slice()) else {
                 return Err(NativeEditError::Unsupported);
             };

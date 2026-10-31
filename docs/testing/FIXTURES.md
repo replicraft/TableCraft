@@ -10578,3 +10578,17 @@ no-ops. Original hashes remain unchanged. The
 [joint result](results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
 keeps these observations separate from Microsoft Access save/reopen,
 required-macro coverage and normal-save qualification.
+
+## Joint preserved fitting Text/fixed authored corpus (2026-10-31)
+
+The [joint fitting corpus](ACE16_PRESERVED_JOINT_TEXT_FIXED.md) reuses the actual
+rich, Short Text, Int32 and fixed-scalar source owners. Its new independent
+raw-record serializer applies literal Text payloads/footer changes before fixed
+payload and selected-mask overlays; it consumes no producer output. The
+[source-first record](results/ace16-preserved-joint-text-fixed-sources-2026-10-31.json)
+qualifies 27 originals and 18 complete expectations per header before candidate
+execution: 90 public read views, 45 complete header-6 Source admissions and
+45 expected header-5 Column refusals from retained Extended Date siblings.
+Required/AllowZeroLength controls use healthy original properties. No new
+third-party fixture is copied. Authored-source checks remain separate from
+generated-file, Microsoft Access and normal-save qualification.

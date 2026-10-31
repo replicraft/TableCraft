@@ -5,8 +5,8 @@ preservation-qualified mixed schemas to one original-image record composer. It
 accepts exactly one ordinary Short Text `FittedColumnUpdates::Variable` group
 alongside ordinary Boolean, Int32, Int64, Currency or legacy DateTime `Fixed`
 groups. All selected fields must be unindexed and outside calculated
-field dependencies. This route reuses the existing borrowed fitted request
-shape without a new setter or request type.
+field dependencies. The existing projected Access editor and shared fitted
+request service consume this route without a new setter, request type or flag.
 
 Selection uses original native metadata before ordinary full-row admission;
 there is no retry after a failed staging or preservation check. A single rich
@@ -96,9 +96,22 @@ Strict all-target/all-feature ACE, Access and CLI checks and minimal ACE/Access
 builds pass. The initial strict run found an assertion-only range loop; its
 iterator rewrite changes no original or expected construction bytes.
 
-The [native result](results/ace16-preserved-joint-text-fixed-2026-10-31.json)
-records focused checks, broader regression and the initial strict diagnostic.
-Frontend consumer qualification is recorded separately.
+Default Access and typed/SQL CLI consumers now use the same fitted service.
+The adapter passes 36 principal typed whole-image comparisons and four SQL
+comparisons; its full preserved target passes 34 functions. The CLI passes
+30 principal typed comparisons and four SQL comparisons; its full preserved
+target passes 31 functions. Typed transport cannot represent three true
+empty-group cases and does not fabricate assignments for them. False-selection
+SQL covers actual empty groups; SQL Len of the original Text detects erroneous
+sequential SET evaluation. Initial adapter SQL testing used StrComp outside the
+closed mutation function set; changing that test expression to admitted Len
+retained every expected image. The initial typed CLI run exposed missing mixed
+transport routing; its correction reuses existing mixed grouping and the fitted
+engine service without adding storage rules to the host. Both initial failures
+remain in the [frontend result](results/ace16-preserved-joint-text-fixed-frontends-2026-10-31.json)
+alongside corrected passing runs. The
+[native result](results/ace16-preserved-joint-text-fixed-2026-10-31.json)
+separately records engine and proof checks.
 
 These engineering candidates grant no normal ACE save or journal permission,
 no data-macro absence or execution authority, and no Microsoft Access save/reopen

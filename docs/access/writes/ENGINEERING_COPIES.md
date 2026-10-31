@@ -74,8 +74,13 @@ requests use shared fitted-record planning with the caller's original expected
 values and ordinals. A qualified mixed-schema source with one ordinary Short
 Text target selects the [preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
 retaining the original physical record position and length. Sibling variable
-spans may move inside that record while their bytes remain exact. Multiple
-preserved Text targets and Text/fixed mixtures remain refused.
+spans may move inside that record while their bytes remain exact. Default
+mode also combines that one Text target with qualified unindexed Boolean,
+Int32, Int64, Currency and legacy DateTime siblings through the
+[joint fitting service](../../testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
+Typed Text/fixed groups use the existing fitted request transport in either
+caller order. Multiple preserved Text targets remain refused; explicit
+variable/growth modes do not admit these joint preserved requests.
 
 One qualified preserved Int64, Currency or legacy DateTime target also uses the
 [fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md) in default
