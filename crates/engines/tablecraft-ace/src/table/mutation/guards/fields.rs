@@ -2,15 +2,17 @@
 mod authority;
 mod evaluate;
 mod model;
+pub(in crate::table::mutation) mod physical;
 
 pub use model::{BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow};
+pub use physical::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 
 use super::{
     BeforeEvent, BeforeEventGuardError, BeforeEventGuardSelector, BeforeEventIntents,
     BeforeGuardUnsupported, compile, source,
 };
 use crate::{NativeImage, header::check};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 impl NativeImage {
     /// Prepare a complete explicitly selected BeforeChange Int32/NULL program
@@ -31,38 +33,65 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.before_change.fields.prepare").entered();
         check(budget, cancelled)?;
         self.require_standard_capture()?;
-        let event = original.event();
-        if event == BeforeEvent::Delete {
-            return Err(BeforeEventGuardError::Unsupported(
-                BeforeGuardUnsupported::Context,
-            ));
-        }
-        let table = source::table(self, table_name, budget, cancelled)?;
-        let frames = source::frames(self, &table, original, budget, cancelled)?;
-        let compiled = compile::derive_fields(self, &table, selectors, event, budget, cancelled)?;
-        let execution = evaluate::run(&compiled, &frames, event, budget, cancelled)?;
-        authority::prove(
-            self,
-            table_name,
-            selectors,
-            original,
-            authority::Observed {
-                compiled: &compiled,
-                execution: &execution,
-            },
-            budget,
-            cancelled,
-        )?;
+        let prepared = prepare(self, table_name, selectors, original, budget, cancelled)?;
+        let execution = prepared.execution;
 
         check(budget, cancelled)?;
         Ok(BeforeChangeFieldPreparation {
             source: self.as_bytes(),
-            object: table.schema().object_id(),
+            object: prepared.object,
             trace: execution.trace,
             assignments: execution.assignments,
             rejection: execution.rejection,
             rows: execution.rows,
-            programs: compiled.programs,
+            programs: prepared.compiled.programs,
         })
     }
+}
+
+#[cfg(test)]
+mod physical_sources;
+
+struct Prepared {
+    object: ObjectId,
+    compiled: compile::Compiled,
+    execution: evaluate::Execution,
+}
+
+fn prepare(
+    image: &NativeImage,
+    table_name: &str,
+    selectors: &[BeforeEventGuardSelector<'_>],
+    original: BeforeEventIntents<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared, BeforeEventGuardError> {
+    let event = original.event();
+    if event == BeforeEvent::Delete {
+        return Err(BeforeEventGuardError::Unsupported(
+            BeforeGuardUnsupported::Context,
+        ));
+    }
+    let table = source::table(image, table_name, budget, cancelled)?;
+    let frames = source::frames(image, &table, original, budget, cancelled)?;
+    let compiled = compile::derive_fields(image, &table, selectors, event, budget, cancelled)?;
+    let execution = evaluate::run(&compiled, &frames, event, budget, cancelled)?;
+    authority::prove(
+        image,
+        table_name,
+        selectors,
+        original,
+        authority::Observed {
+            compiled: &compiled,
+            execution: &execution,
+        },
+        budget,
+        cancelled,
+    )?;
+
+    Ok(Prepared {
+        object: table.schema().object_id(),
+        compiled,
+        execution,
+    })
 }

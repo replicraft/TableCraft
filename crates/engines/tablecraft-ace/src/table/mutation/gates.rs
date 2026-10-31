@@ -6,6 +6,8 @@ mod display;
 mod historical;
 
 use super::super::indexes::FOREIGN_INDEX;
+#[cfg(feature = "ace16-write-preview")]
+use super::guards::fields::physical::SourceWitness;
 use super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 use crate::format::{
@@ -26,13 +28,27 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 // property flag bits remain unqualified for native mutation.
 const SUPPORTED_PROPERTY_FLAG_MASK: u8 = 0x01;
 
+#[cfg(feature = "ace16-write-preview")]
+enum PayloadAdmission<'a> {
+    Inert,
+    BeforeChange(&'a SourceWitness),
+}
+
 pub(super) fn before(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
-    before_with(image, table, Admission::Update, budget, cancelled)
+    before_with(
+        image,
+        table,
+        Admission::Update,
+        #[cfg(feature = "ace16-write-preview")]
+        PayloadAdmission::Inert,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -42,7 +58,15 @@ pub(super) fn before_delete(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
-    before_with(image, table, Admission::Delete, budget, cancelled)
+    before_with(
+        image,
+        table,
+        Admission::Delete,
+        #[cfg(feature = "ace16-write-preview")]
+        PayloadAdmission::Inert,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -52,7 +76,15 @@ pub(super) fn before_slot(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
-    before_with(image, table, Admission::SlotUpdate, budget, cancelled)
+    before_with(
+        image,
+        table,
+        Admission::SlotUpdate,
+        #[cfg(feature = "ace16-write-preview")]
+        PayloadAdmission::Inert,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -62,7 +94,15 @@ pub(super) fn before_fixed_update(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
-    before_with(image, table, Admission::FixedUpdate, budget, cancelled)
+    before_with(
+        image,
+        table,
+        Admission::FixedUpdate,
+        #[cfg(feature = "ace16-write-preview")]
+        PayloadAdmission::Inert,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -72,7 +112,15 @@ pub(super) fn before_insert(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
-    before_with(image, table, Admission::Insert, budget, cancelled)
+    before_with(
+        image,
+        table,
+        Admission::Insert,
+        #[cfg(feature = "ace16-write-preview")]
+        PayloadAdmission::Inert,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -86,9 +134,40 @@ pub(super) fn before_incrementing_insert(
         image,
         table,
         Admission::IncrementingInsert,
+        PayloadAdmission::Inert,
         budget,
         cancelled,
     )
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(super) fn before_prepared_fields(
+    image: &NativeImage,
+    table: &str,
+    witness: &SourceWitness,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, EditError> {
+    let checked = before_with(
+        image,
+        table,
+        Admission::FixedUpdate,
+        PayloadAdmission::BeforeChange(witness),
+        budget,
+        cancelled,
+    )?;
+    super::fixed::extended::protect_source(
+        image,
+        &checked,
+        checked
+            .schema()
+            .columns()
+            .iter()
+            .map(|column| column.name()),
+        budget,
+        cancelled,
+    )?;
+    Ok(checked)
 }
 
 enum Admission {
@@ -109,6 +188,7 @@ fn before_with(
     image: &NativeImage,
     table: &str,
     admission: Admission,
+    #[cfg(feature = "ace16-write-preview")] payload: PayloadAdmission<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
@@ -222,6 +302,14 @@ fn before_with(
         // edge whose native foreign declarations were removed or disguised.
         inspect_foreign_index_links(&mut image.reader(), scope, table, budget, cancelled)?;
     }
+    #[cfg(feature = "ace16-write-preview")]
+    match payload {
+        PayloadAdmission::Inert => inert_payloads(image, schema, budget, cancelled)?,
+        PayloadAdmission::BeforeChange(witness) => {
+            witness.require(image, schema, budget, cancelled)?
+        }
+    }
+    #[cfg(not(feature = "ace16-write-preview"))]
     inert_payloads(image, schema, budget, cancelled)?;
     let properties =
         inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;

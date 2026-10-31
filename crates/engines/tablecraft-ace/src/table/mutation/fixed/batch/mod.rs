@@ -8,4 +8,4 @@ pub use request::FixedColumnUpdates;
 #[cfg(test)]
 pub(in crate::table) mod multitable_tests;
 #[cfg(test)]
-mod split_tests;
+pub(in crate::table) mod split_tests;

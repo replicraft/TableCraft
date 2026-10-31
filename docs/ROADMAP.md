@@ -50,6 +50,13 @@ now has a native service and SQL/CLI consumer. It reports only caller-selected
 programs; discovering required native programs and qualifying absence still gate
 general saves. It never grants a write permit.
 
+Explicit [BeforeChange field-update candidates](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+now compose selected SetField assignments into one fixed Int32/NULL update with
+original-request reconstruction, complete Extra preservation and existing index/
+constraint checks. Eight whole-image comparisons and the mutation regression pass.
+Physical INSERT handling, required-event discovery and normal ACE saves remain
+unfinished; the candidate type grants no journal or ordinary save permission.
+
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.
 Single-column Memo/OLE keeps its separate explicit mode; mixed LVAL operations

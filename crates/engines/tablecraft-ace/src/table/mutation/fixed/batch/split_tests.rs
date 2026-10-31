@@ -1,7 +1,7 @@
 //! Original nullable populations and independent allocation-image read gates.
 mod adversarial;
 mod adversarial_model;
-pub(in crate::table::mutation::fixed::batch) mod model;
+pub(in crate::table) mod model;
 pub(in crate::table::mutation::fixed::batch) mod orphans;
 mod preview;
 
