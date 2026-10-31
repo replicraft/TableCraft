@@ -118,8 +118,10 @@ pub(super) fn user(
     record: &mut [u8],
     request: &Request<'_>,
     row: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
-    if record.len() != request.row_bytes {
+    if record.len() != request.row_length(row) {
         return Err(CreateDatabaseError::Layout);
     }
     let fields = request.fields();
@@ -127,7 +129,9 @@ pub(super) fn user(
     put16(record, 0, fields.count())?;
     for column in 0..fields.count() {
         let field = fields.get(column);
-        let offset = field.offset.ok_or(CreateDatabaseError::Layout)?;
+        let Some(offset) = field.offset else {
+            continue;
+        };
         let start = FIXED_COLUMN_COUNT_BYTES + offset;
         let destination = record
             .get_mut(start..start + field.width)
@@ -155,6 +159,52 @@ pub(super) fn user(
         };
         if present {
             record[mask_start + column / u8::BITS as usize] |= 1 << (column % u8::BITS as usize);
+        }
+    }
+    if let Some(prepared) = &request.variable {
+        let mut starts = [0; profile::MAX_COLUMNS];
+        let mut position = fields.fixed_end();
+        let mut slot = 0;
+        for column in 0..fields.count() {
+            if fields.get(column).offset.is_some() {
+                continue;
+            }
+            check(budget, cancelled)?;
+            starts[slot] = position;
+            let payload = prepared.payload(row, slot)?;
+            let end = position
+                .checked_add(payload.byte_len())
+                .ok_or(CreateDatabaseError::Layout)?;
+            payload.write(
+                record
+                    .get_mut(position..end)
+                    .ok_or(CreateDatabaseError::Layout)?,
+                budget,
+                cancelled,
+            )?;
+            if payload.present() {
+                record[mask_start + column / u8::BITS as usize] |=
+                    1 << (column % u8::BITS as usize);
+            }
+            position = end;
+            slot += 1;
+        }
+
+        // All user variable declarations are ordinary (no LVAL), hence slots
+        // retain declaration order. Present empty and NULL share offsets but
+        // remain distinct in the independently accumulated presence mask.
+        let eod = position;
+        put16(record, position, eod)?;
+        position += size_of::<u16>();
+        for start in starts[..slot].iter().rev() {
+            check(budget, cancelled)?;
+            put16(record, position, *start)?;
+            position += size_of::<u16>();
+        }
+        put16(record, position, slot)?;
+        position += size_of::<u16>();
+        if position != mask_start {
+            return Err(CreateDatabaseError::Layout);
         }
     }
     Ok(())

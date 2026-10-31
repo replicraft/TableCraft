@@ -2,7 +2,7 @@
 
 The optional `tablecraft-access/ace16-create` feature composes the
 [native creator](../../testing/ACE16_DATABASE_CREATION.md) with required
-fresh-file publication. The Int32 convenience and typed fixed-scalar path accept
+fresh-file publication. The Int32 convenience and typed scalar path accept
 explicit user schemas and borrowed rows. Neither accepts a database template,
 imported image or engineering candidate.
 
@@ -39,7 +39,7 @@ publication. Report write/flush failure retains the successful receipt and
 returns failure; a failed diagnostic cannot invoke read-only BrokenPipe success
 handling. Libraries do not publish reports themselves.
 
-## Typed fixed-scalar preparation
+## Typed scalar preparation
 
 `CreationDestination::prepare_typed(table, columns, rows, budget, cancelled)`
 accepts borrowed engine `CreateColumn` declarations and exact shared `Value`
@@ -52,7 +52,10 @@ Currency, Single, Double, legacy DateTime and Guid. Declarations remain explicit
 for empty tables and all-NULL columns. NonBoolean fields may receive NULL;
 Boolean requires a Boolean value. Numerically equal values with another carrier
 are refused. There is no type inference, coercion, native flag input or copied
-Access declaration DTO. Variable/extended families remain outside this path.
+Access declaration DTO. Explicit Short Text, Short Binary and Decimal declarations now use the same
+preparation and required publication path. Their capacities, exact retained scale
+and NULL/empty rules follow the [engine contract](../../testing/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
+Extended and long-value families remain unsupported.
 
 Both preparation methods retain one user table, 1–16 columns, at most 64 rows and
 an independent one-DATA-page fit check. NULL input does not author a Required,
@@ -77,3 +80,8 @@ Existing [normal-write gates](NATIVE_WRITES.md) are unchanged.
 The [local acceptance record](../../testing/results/fresh-native-creation-host-2026-10-31.json)
 keeps complete-file checks, publication controls, process observations and
 unqualified native Access behavior separate.
+
+The variable creation acceptance adds five exact publications through the same
+service. All seven creation-service tests pass, retaining the ten fixed/IEEE
+and six Int32 images, cancellation, namespace retargeting and refusal controls.
+See the [variable result](../../testing/results/ace16-native-variable-creation-2026-10-31.json).

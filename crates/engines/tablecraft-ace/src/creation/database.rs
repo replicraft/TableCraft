@@ -7,7 +7,7 @@ use super::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
 
-/// An independently serialized fresh database image in the bounded fixed-scalar profile.
+/// An independently serialized fresh database image in the bounded declared-scalar profile.
 ///
 /// This artifact grants no existing-file mutation, macro-absence, journal or
 /// native Access save authority. Header fields outside the explicitly authored
@@ -29,7 +29,7 @@ impl CreatedDatabase {
         self.rows
     }
 
-    /// Number of ordinary fixed-scalar columns in the single user table.
+    /// Number of ordinary scalar columns in the single user table.
     pub const fn column_count(&self) -> usize {
         self.columns
     }
@@ -64,13 +64,16 @@ pub fn create_ace16_int32_database(
     )
 }
 
-/// Serialize a fresh ACE 16 database from explicit fixed-scalar declarations.
+/// Serialize a fresh ACE 16 database from explicit native declarations.
 ///
 /// The qualified families are Boolean, Byte, Int16, Int32, Int64, Currency,
 /// Single, Double, legacy DateTime and Guid. Each non-NULL cell must have its
 /// exact declared carrier; Boolean requires a Boolean value and has no NULL
-/// payload. Variable and extended scalar families refuse before allocation,
-/// including for empty or all-NULL input. No coercion, generated identity,
+/// payload. Short Text and Short Binary require explicit positive UTF-16-unit
+/// and byte capacities through their declaration factories. Decimal requires
+/// explicit precision and exact retained scale; values are never rescaled.
+/// Scalar-only variable declarations and extended families refuse even for
+/// empty or all-NULL input. No coercion, generated identity,
 /// Required declaration, existing-file edit or journal authority is inferred.
 /// The same name, count and physical-fit bounds as the Int32 convenience apply.
 pub fn create_ace16_database(

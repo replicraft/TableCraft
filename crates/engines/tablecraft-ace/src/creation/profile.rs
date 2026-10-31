@@ -1,11 +1,12 @@
 //! Explicit bounded roles and native system declarations; no imported template.
+use super::{CreateDatabaseError, column::Declaration};
 use crate::format::data_type::{
     BOOLEAN, BOOLEAN_BYTES, BYTE, BYTE_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES,
     DOUBLE, DOUBLE_BYTES, GUID, GUID_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES, INT64,
-    INT64_BYTES, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE, SINGLE_BYTES,
+    INT64_BYTES, NUMERIC, NUMERIC_BYTES, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE, SINGLE_BYTES,
 };
 use crate::format::{allocation::INLINE_BITMAP_OFFSET, page::PAGE_BYTES};
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 pub(super) const PAGE_COUNT: usize = 9;
 pub(super) const IMAGE_BYTES: usize = PAGE_COUNT * PAGE_BYTES;
@@ -54,6 +55,7 @@ pub(super) struct Field<'a> {
     pub kind: u8,
     pub offset: Option<usize>,
     pub width: usize,
+    pub decimal: Option<DecimalConstraints>,
 }
 
 const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Field<'_> {
@@ -62,6 +64,7 @@ const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Fie
         kind,
         offset,
         width,
+        decimal: None,
     }
 }
 
@@ -153,7 +156,7 @@ pub(super) struct CatalogObject<'a> {
 }
 
 /// Closed native fixed-family selection; all variable and extended profiles
-/// require their own original SOURCE qualification before admission.
+/// use separate explicit metadata binding after original SOURCE qualification.
 pub(super) fn fixed_kind(scalar: ScalarType) -> Option<(u8, usize)> {
     Some(match scalar {
         ScalarType::Boolean => (BOOLEAN, BOOLEAN_BYTES),
@@ -167,5 +170,42 @@ pub(super) fn fixed_kind(scalar: ScalarType) -> Option<(u8, usize)> {
         ScalarType::DateTime => (DATE_TIME, DATE_TIME_BYTES),
         ScalarType::Guid => (GUID, GUID_BYTES),
         _ => return None,
+    })
+}
+
+/// Bind actual native declaration metadata before any row or image allocation.
+pub(super) fn bind<'a>(
+    name: &'a str,
+    declaration: Declaration,
+    fixed_offset: usize,
+) -> Result<Field<'a>, CreateDatabaseError> {
+    declaration.validate()?;
+    let (kind, offset, width, decimal) = match declaration {
+        Declaration::Fixed(scalar) => {
+            let (kind, width) = fixed_kind(scalar).ok_or(CreateDatabaseError::UnsupportedType)?;
+            (
+                kind,
+                Some(if width == 0 { 0 } else { fixed_offset }),
+                width,
+                None,
+            )
+        }
+        Declaration::ShortText { units } => (
+            SHORT_TEXT,
+            None,
+            units
+                .checked_mul(size_of::<u16>())
+                .ok_or(CreateDatabaseError::Declaration)?,
+            None,
+        ),
+        Declaration::ShortBinary { bytes } => (SHORT_BINARY, None, bytes, None),
+        Declaration::Decimal(constraints) => (NUMERIC, None, NUMERIC_BYTES, Some(constraints)),
+    };
+    Ok(Field {
+        name,
+        kind,
+        offset,
+        width,
+        decimal,
     })
 }

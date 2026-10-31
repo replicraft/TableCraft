@@ -28,6 +28,8 @@ const COLUMN_NUMBER: usize = 5;
 const COLUMN_VARIABLE: usize = 7;
 const COLUMN_ID: usize = 9;
 const COLUMN_SORT: usize = 11;
+const COLUMN_PRECISION: usize = 11;
+const COLUMN_SCALE: usize = COLUMN_PRECISION + size_of::<u8>();
 const COLUMN_FLAGS: usize = 15;
 const COLUMN_OFFSET: usize = 21;
 const COLUMN_WIDTH: usize = 23;
@@ -132,6 +134,9 @@ pub(super) fn write(
         if field.kind == SHORT_TEXT {
             page[start + COLUMN_SORT..start + COLUMN_SORT + profile::GENERAL_SORT.len()]
                 .copy_from_slice(&profile::GENERAL_SORT);
+        } else if let Some(constraints) = field.decimal {
+            page[start + COLUMN_PRECISION] = constraints.precision();
+            page[start + COLUMN_SCALE] = constraints.scale();
         }
         page[start + COLUMN_FLAGS] = layout::UPDATABLE_FLAG
             | if field.offset.is_some() {

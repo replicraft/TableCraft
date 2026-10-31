@@ -1,32 +1,122 @@
-//! Borrowed creation declarations; exact native qualification occurs per operation.
-use tablecraft_schema::ScalarType;
+//! Explicit native creation declarations, without row-driven type inference.
+use super::CreateDatabaseError;
+use tablecraft_schema::{DecimalConstraints, ScalarType};
 
-/// One named ordinary fixed-scalar declaration for fresh database creation.
+const SHORT_LIMIT: usize = 255;
+
+/// One borrowed native declaration for fresh database creation.
 ///
-/// The creation operation validates names and admits only qualified native
-/// families. A NULL value never infers this declaration. This request type
-/// neither supplies native flags/offsets nor declares Required or validation rules.
+/// Names and complete row/declaration compatibility are validated per operation.
+/// No Required property, native flags, offsets or mutation authority are supplied.
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
     name: &'a str,
-    scalar: ScalarType,
+    declaration: Declaration,
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum Declaration {
+    Fixed(ScalarType),
+    ShortText { units: usize },
+    ShortBinary { bytes: usize },
+    Decimal(DecimalConstraints),
+}
+
+impl Declaration {
+    pub const fn scalar(self) -> ScalarType {
+        match self {
+            Self::Fixed(scalar) => scalar,
+            Self::ShortText { .. } => ScalarType::Text,
+            Self::ShortBinary { .. } => ScalarType::Binary,
+            Self::Decimal(_) => ScalarType::Decimal,
+        }
+    }
+
+    pub fn validate(self) -> Result<(), CreateDatabaseError> {
+        match self {
+            Self::ShortText { units } if !(1..=SHORT_LIMIT).contains(&units) => {
+                Err(CreateDatabaseError::Declaration)
+            }
+            Self::ShortBinary { bytes } if !(1..=SHORT_LIMIT).contains(&bytes) => {
+                Err(CreateDatabaseError::Declaration)
+            }
+            _ => Ok(()),
+        }
+    }
 }
 
 impl<'a> CreateColumn<'a> {
-    /// Describe a field without allocating or converting names or scalar types.
-    /// Unsupported native families are rejected by the creation operation,
-    /// including for empty tables and all-NULL inputs.
+    /// Describe an ordinary fixed carrier; variable families require explicit
+    /// native parameters through the separate declaration factories below.
     pub const fn new(name: &'a str, scalar: ScalarType) -> Self {
-        Self { name, scalar }
+        Self {
+            name,
+            declaration: Declaration::Fixed(scalar),
+        }
     }
 
-    /// Original field spelling, without trimming or normalization.
+    /// Declare a positive native Text capacity of 1..=255 UTF-16 code units.
+    /// This is the current constructive profile, not a statement that zero is
+    /// impossible in every native format. Names are checked by the operation.
+    pub fn short_text(name: &'a str, max_utf16_units: usize) -> Result<Self, CreateDatabaseError> {
+        let declaration = Declaration::ShortText {
+            units: max_utf16_units,
+        };
+        declaration.validate()?;
+        Ok(Self { name, declaration })
+    }
+
+    /// Declare a positive Short Binary limit of 1..=255 bytes, independently of
+    /// value contents or the wider reader-only legacy/system declaration ceiling.
+    pub fn short_binary(name: &'a str, max_bytes: usize) -> Result<Self, CreateDatabaseError> {
+        let declaration = Declaration::ShortBinary { bytes: max_bytes };
+        declaration.validate()?;
+        Ok(Self { name, declaration })
+    }
+
+    /// Reuse validated native Decimal precision and exact retained scale.
+    pub const fn decimal(name: &'a str, constraints: DecimalConstraints) -> Self {
+        Self {
+            name,
+            declaration: Declaration::Decimal(constraints),
+        }
+    }
+
+    /// Original spelling without trimming, normalization or encoding conversion.
     pub const fn name(self) -> &'a str {
         self.name
     }
 
-    /// Declared carrier for present values; Boolean does not admit a NULL carrier.
+    /// Declared exact carrier; NULL never infers a type or native capacity.
     pub const fn scalar_type(self) -> ScalarType {
-        self.scalar
+        self.declaration.scalar()
+    }
+
+    /// Native Text capacity in UTF-16 units, not Unicode scalar characters.
+    pub const fn max_text_utf16_units(self) -> Option<usize> {
+        match self.declaration {
+            Declaration::ShortText { units } => Some(units),
+            _ => None,
+        }
+    }
+
+    /// Native Short Binary byte capacity, when explicitly declared.
+    pub const fn max_binary_bytes(self) -> Option<usize> {
+        match self.declaration {
+            Declaration::ShortBinary { bytes } => Some(bytes),
+            _ => None,
+        }
+    }
+
+    /// Native Decimal precision/scale, without implicit rescaling policy.
+    pub const fn decimal_constraints(self) -> Option<DecimalConstraints> {
+        match self.declaration {
+            Declaration::Decimal(constraints) => Some(constraints),
+            _ => None,
+        }
+    }
+
+    pub(super) const fn declaration(self) -> Declaration {
+        self.declaration
     }
 }

@@ -55,3 +55,5 @@ fn invalid_typed_rows_create_no_staging_or_final_entry() {
 
 mod edges;
 mod typed;
+
+mod variable;

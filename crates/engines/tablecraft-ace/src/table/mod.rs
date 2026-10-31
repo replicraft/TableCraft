@@ -78,7 +78,7 @@ mod row_reference;
 pub use row_reference::NativeRowReference;
 mod snapshot;
 pub use snapshot::{TableSnapshot, read_table};
-mod decimal;
+pub(crate) mod decimal;
 mod extended_datetime;
 mod indexes;
 pub use indexes::{

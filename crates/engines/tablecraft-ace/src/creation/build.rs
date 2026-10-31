@@ -76,7 +76,7 @@ pub(super) fn build(
                 }
                 profile::USER_MAP_SLOT => Some(profile::USER_DATA),
                 profile::USER_CANDIDATE_SLOT
-                    if request.free_bytes >= request.row_bytes + size_of::<u16>() =>
+                    if request.free_bytes >= request.minimum_row_bytes + size_of::<u16>() =>
                 {
                     Some(profile::USER_DATA)
                 }
@@ -203,9 +203,11 @@ pub(super) fn build(
         )?;
         for row in 0..request.rows.count() {
             record::user(
-                users.append(request.row_bytes, budget, cancelled)?,
+                users.append(request.row_length(row), budget, cancelled)?,
                 request,
                 row,
+                budget,
+                cancelled,
             )?;
         }
         users.finish()?;
