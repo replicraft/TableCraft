@@ -10,6 +10,7 @@ use crate::{
     header::check,
     preservation::COPY_CHUNK_BYTES,
     read_table,
+    table::indexes::mutation::normal_leaf_audit,
 };
 use std::io::Cursor;
 use tablecraft_core::{
@@ -146,6 +147,16 @@ pub(super) fn prove(
         }
         Ok(())
     })?;
+    if !checked.indexes().is_empty() {
+        normal_leaf_audit::reconstruct(
+            &image,
+            table,
+            &prepared,
+            &mut expected,
+            reader.budget,
+            cancelled,
+        )?;
+    }
     if visited != final_rows.len()
         || changed != plan.changed_rows()
         || expected.len() != plan.after_bytes().len()

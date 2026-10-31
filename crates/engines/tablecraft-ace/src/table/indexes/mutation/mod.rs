@@ -1,5 +1,7 @@
 #[cfg(feature = "ace16-write-preview")]
 mod combined;
+#[cfg(feature = "journal")]
+pub(in crate::table) mod normal_leaf_audit;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use combined::index_delete_update_patches;
 mod composite;

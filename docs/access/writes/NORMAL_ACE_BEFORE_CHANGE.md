@@ -16,10 +16,20 @@ Native catalog/Extra references select the actual XML event, rather than a
 caller-selected property alias. Complete dormant BeforeDelete definitions are
 compiled but do not execute during UPDATE.
 
-This initial profile refuses indexes, relationships, final NULL fields, unknown
-properties, opaque or incomplete macro carriers, unrepresented event names,
-body/module content, unsupported actions and required after-effects. Tables
-without a qualified positive event are not admitted: successful creation or an
+The indexed extension admits checked ordinary Int32 indexes only when each
+physical index occupies one owned root leaf with prefix zero and complete
+non-NULL row membership. Ascending and descending components, composites,
+consistent logical aliases and final unique-key checks are supported. Aliases
+share one physical rewrite. Final uniqueness is checked over the complete result,
+so an atomic key swap need not satisfy an intermediate assignment order.
+For indexed tables, every field of every original row must be ordinary non-NULL
+Int32, including unselected rows and non-key fields.
+
+Relationships, ignore-NULL indexes, interior nodes, nonzero prefixes, splits,
+allocation/map changes, final NULL fields, unknown properties, opaque or incomplete
+macro carriers, unrepresented event names, body/module content, unsupported
+actions and required after-effects refuse. Tables without a qualified positive
+event are not admitted: successful creation or an
 empty macro inventory is not an absence certificate.
 
 All supplied expected values must match the original snapshot. Repeated or
@@ -38,12 +48,18 @@ RaiseError rejects the complete operation before journal creation. No program
 may invoke external effects. All resulting field patches compose into one plan;
 final constraints validate the complete result.
 
-A fresh catalog/map census excludes definition pages, other table DATA, index,
-long-value and allocation-map storage. Selected DATA pages must have qualified
-owned and GLOBAL allocation roles. The independent proof recaptures BEFORE,
-rediscovers and evaluates the original requests, overlays only permitted Int32
-payload bytes and compares the entire AFTER image and changed-row count.
-Staged patch lists are not proof inputs.
+A fresh catalog/map census protects definition pages, other table DATA,
+long-value and allocation-map storage. Selected DATA and admitted INDEX leaves
+must have distinct qualified owned and GLOBAL allocation roles. Staging derives
+full key changes from final field values, including macro-only targets, and
+rewrites each physical index once.
+
+The independent proof recaptures BEFORE, rediscovers and evaluates the original
+requests, reconstructs permitted Int32 payloads and leaf keys, and compares the
+entire AFTER image and changed-row count. It independently checks original and
+final complete row membership, key directions, aliases and final uniqueness.
+Headers, topology, map/counter storage and unused leaf bytes remain protected.
+Staged patch lists and staged key deltas are not proof inputs.
 
 `NativeUpdateIntent` uses closed version/profile dispatch: existing Jet 4 records
 retain byte-identical `TCNI0001`/profile 1; this ACE route uses `TCNI0002`/profile 2.
@@ -73,3 +89,11 @@ These are bounded engineering results. Read-only independent SDK inventories do
 not execute the programs or establish Access event timing. Native Access
 execution/save/reopen, power-loss behavior, encrypted editing and broader normal
 ACE UPDATE/INSERT/DELETE remain unqualified or unfinished.
+
+The [indexed execution record](../../testing/results/ace16-normal-indexed-before-change-2026-10-31.json)
+adds eighteen in-memory journal commits, four independently qualified tie images,
+32 typed/SQL offline saves and sixteen complete CLI saves. Direct proof checks
+cover index-only forgery, original ownership contradictions and final alias
+constraints. A generated signed-tuple ordering law independently checks the key
+wire across numeric directions. Existing unindexed and Jet 4 regressions pass;
+the retained final lint failure was disk exhaustion, followed by a passing retry.

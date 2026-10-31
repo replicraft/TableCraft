@@ -12,7 +12,20 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
-## Journaled ACE BeforeChange updates
+## Journaled indexed ACE BeforeChange updates
+
+Normal journaled updates now maintain qualified existing Int32 root-leaf indexes,
+including descending/composite keys and consistent logical aliases. One shared
+rewrite uses all final user/macro field changes, allowing atomic unique swaps.
+Independent ownership and complete-image reconstruction include INDEX pages;
+recovery retains the original TCNI0002 requests. Six native integration and three
+direct proof/ownership tests pass. Typed and SQL offline sessions pass 32 complete
+image comparisons plus four conflict refusals. This first indexed profile requires
+all-row non-NULL Int32 fields and prefix-zero leaves; interior nodes, broader
+carriers and general saves remain unfinished. See the [contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
+and [result](testing/results/ace16-normal-indexed-before-change-2026-10-31.json).
+
+## Initial journaled ACE BeforeChange updates
 
 The normal journal planner and retained Access offline session now support a
 positive native BeforeChange profile on unencoded subversion-zero ACE 2016/2019
