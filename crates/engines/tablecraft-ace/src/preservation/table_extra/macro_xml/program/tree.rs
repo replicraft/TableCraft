@@ -34,6 +34,8 @@ pub(super) enum Name {
     SetField,
     Number,
     Description,
+    Field,
+    Value,
     Other,
 }
 
@@ -236,6 +238,8 @@ fn attributes(
                     "SetField" => Name::SetField,
                     "Number" => Name::Number,
                     "Description" => Name::Description,
+                    "Field" => Name::Field,
+                    "Value" => Name::Value,
                     _ => Name::Other,
                 });
             }

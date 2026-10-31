@@ -68,7 +68,8 @@ pub use fitted::FittedColumnUpdates;
 pub use fixed::{FixedColumnUpdates, FixedScalarUpdate};
 #[cfg(feature = "ace16-write-preview")]
 pub use guards::{
-    BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
+    BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
     BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
     BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
 };

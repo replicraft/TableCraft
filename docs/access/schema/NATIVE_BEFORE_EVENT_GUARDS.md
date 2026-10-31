@@ -6,6 +6,10 @@ DELETE intents. It returns a completed pass/rejection report, never a writable
 candidate or normal-save permit. Inspection/opening remains inert. Native macro
 storage discovery, required-macro coverage and absence are not established.
 
+The separate [BeforeChange field preparation](NATIVE_BEFORE_CHANGE_FIELDS.md)
+adds an explicit logical SetField profile with complete parsed Extra coverage.
+The guard-only contract below remains unchanged.
+
 ## Working consumer
 
 ```sh

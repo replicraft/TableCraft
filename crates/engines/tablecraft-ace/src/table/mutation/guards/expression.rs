@@ -1,4 +1,4 @@
-use super::{BeforeEvent, BeforeEventGuardError, BeforeGuardUnsupported};
+use super::{BeforeEvent, BeforeEventGuardError, BeforeGuardUnsupported, PreparationProfile};
 use crate::{InspectError, TableSnapshot, header::check};
 use std::fmt::Write;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -20,6 +20,7 @@ pub(super) fn compile(
     text: &str,
     event: BeforeEvent,
     table: &TableSnapshot,
+    profile: PreparationProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Expression, BeforeEventGuardError> {
@@ -43,7 +44,7 @@ pub(super) fn compile(
             BeforeEventGuardError::Expression
         }
     })?;
-    lower(&mut expression, event, table, budget, cancelled)?;
+    lower(&mut expression, event, table, profile, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(expression)
 }
@@ -102,6 +103,7 @@ fn lower(
     expression: &mut Expression,
     event: BeforeEvent,
     table: &TableSnapshot,
+    profile: PreparationProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), BeforeEventGuardError> {
@@ -143,11 +145,11 @@ fn lower(
             *expression = binding(space, selected, budget)?;
         }
         Expression::Unary { expression, .. } | Expression::IsNull { expression, .. } => {
-            lower(expression, event, table, budget, cancelled)?;
+            lower(expression, event, table, profile, budget, cancelled)?;
         }
         Expression::Binary { left, right, .. } => {
-            lower(left, event, table, budget, cancelled)?;
-            lower(right, event, table, budget, cancelled)?;
+            lower(left, event, table, profile, budget, cancelled)?;
+            lower(right, event, table, profile, budget, cancelled)?;
         }
         Expression::Call {
             qualifier,
@@ -160,6 +162,11 @@ fn lower(
                 ));
             }
             if name.as_str().eq_ignore_ascii_case("Updated") {
+                if profile == PreparationProfile::BeforeChangeFields {
+                    return Err(BeforeEventGuardError::Unsupported(
+                        BeforeGuardUnsupported::Expression,
+                    ));
+                }
                 if event != BeforeEvent::Update {
                     return Err(BeforeEventGuardError::Unsupported(
                         BeforeGuardUnsupported::Context,
@@ -179,7 +186,7 @@ fn lower(
                         BeforeGuardUnsupported::Expression,
                     ));
                 };
-                lower(value, event, table, budget, cancelled)?;
+                lower(value, event, table, profile, budget, cancelled)?;
             } else {
                 return Err(BeforeEventGuardError::Unsupported(
                     BeforeGuardUnsupported::Expression,
@@ -195,4 +202,19 @@ fn lower(
         }
     }
     Ok(())
+}
+
+pub(super) fn target(
+    text: &str,
+    table: &TableSnapshot,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, BeforeEventGuardError> {
+    check(budget, cancelled)?;
+    if text.len() > MAX_BYTES {
+        return Err(InspectError::StructureLimit.into());
+    }
+    // Field is a static metadata-name string, not a SQL expression. Reserved
+    // SQL words and punctuation have no special meaning in this selector.
+    position(text, table, budget, cancelled)
 }

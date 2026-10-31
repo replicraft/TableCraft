@@ -93,6 +93,7 @@ fn documented_desktop_program_matches_all_frozen_structures_and_original_spans()
                     number,
                     description,
                 } => ("RaiseError", None, Some(number), description, None),
+                MacroProgramNodeKind::SetField { .. } => panic!("old profile exposed SetField"),
                 MacroProgramNodeKind::Opaque { diagnostic } => {
                     ("Opaque", None, None, None, Some(diagnostic))
                 }

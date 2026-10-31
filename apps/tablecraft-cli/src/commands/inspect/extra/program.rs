@@ -160,6 +160,11 @@ pub(super) fn report(
                     number,
                     description,
                 } => ("RaiseError", None, Some(number), description, String::new()),
+                // This inspector selects DocumentedDesktop, which still keeps
+                // SetField opaque. Other explicit profiles remain metadata only.
+                MacroProgramNodeKind::SetField { .. } => {
+                    ("SetField", None, None, None, String::new())
+                }
                 MacroProgramNodeKind::Opaque { diagnostic } => {
                     ("Opaque", None, None, None, format!("{diagnostic:?}"))
                 }

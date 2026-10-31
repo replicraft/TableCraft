@@ -13,12 +13,13 @@ use tablecraft_expressions::{
 };
 use tablecraft_sql::select::{Expression, FieldReference};
 
-const MAX_TRACE: usize = 65_536;
+pub(super) const MAX_TRACE: usize = 65_536;
 
-struct RowBindings<'a> {
-    frame: &'a Frame,
-    updated: Vec<Value>,
-    is_insert: Value,
+pub(super) struct RowBindings<'a> {
+    pub frame: &'a Frame,
+    pub updated: &'a [Value],
+    pub current: Option<&'a [Value]>,
+    pub is_insert: Value,
 }
 
 impl Bindings for RowBindings<'_> {
@@ -30,9 +31,8 @@ impl Bindings for RowBindings<'_> {
             .map_err(|_| EvalError::UnboundField)?;
         match reference.qualifier.as_ref().map(|name| name.as_str()) {
             Some(expression::CURRENT) => self
-                .frame
-                .proposed
-                .as_ref()
+                .current
+                .or(self.frame.proposed.as_deref())
                 .and_then(|row| row.get(position)),
             Some(expression::OLD) => self
                 .frame
@@ -47,7 +47,7 @@ impl Bindings for RowBindings<'_> {
     }
 }
 
-fn scalar(
+pub(super) fn scalar(
     expression: &Expression,
     bindings: &RowBindings<'_>,
     budget: &mut ResourceBudget,
@@ -59,7 +59,7 @@ fn scalar(
         .map_err(error::evaluation)
 }
 
-fn trace(
+pub(super) fn trace(
     output: &mut Vec<BeforeGuardTrace>,
     kind: BeforeGuardTraceKind,
     row: Option<usize>,
@@ -129,7 +129,8 @@ pub(super) fn run(
         }
         let bindings = RowBindings {
             frame,
-            updated,
+            updated: &updated,
+            current: None,
             is_insert: Value::Boolean(event == BeforeEvent::Insert),
         };
         trace(
@@ -144,6 +145,11 @@ pub(super) fn run(
         while let Some(instruction) = compiled.instructions.get(pc) {
             check(budget, cancelled)?;
             match &instruction.operation {
+                Operation::SetField { .. } => {
+                    return Err(BeforeEventGuardError::Unsupported(
+                        super::BeforeGuardUnsupported::Context,
+                    ));
+                }
                 Operation::If { expression, end } => {
                     let Value::Boolean(value) = scalar(expression, &bindings, budget, cancelled)?
                     else {
@@ -175,31 +181,9 @@ pub(super) fn run(
                     number,
                     description,
                 } => {
-                    let number = match scalar(number, &bindings, budget, cancelled)? {
-                        Value::Byte(value) => i32::from(value),
-                        Value::Int16(value) => i32::from(value),
-                        Value::Int32(value) => value,
-                        Value::Int64(value) => {
-                            i32::try_from(value).map_err(|_| BeforeEventGuardError::ArgumentType)?
-                        }
-                        _ => return Err(BeforeEventGuardError::ArgumentType),
-                    };
-                    let description = match description {
-                        None => None,
-                        Some(Description::Expression(expression)) => {
-                            let Value::Text(value) =
-                                scalar(expression, &bindings, budget, cancelled)?
-                            else {
-                                return Err(BeforeEventGuardError::ArgumentType);
-                            };
-                            Some(value)
-                        }
-                        Some(Description::Literal(value)) => {
-                            let mut bytes = buffer::vector(value.len(), budget, cancelled)?;
-                            bytes.extend_from_slice(value.as_bytes());
-                            Some(String::from_utf8(bytes).map_err(|_| InspectError::Malformed)?)
-                        }
-                    };
+                    let rejection =
+                        raise(number, description.as_ref(), &bindings, budget, cancelled)?;
+                    let number = rejection.number;
                     trace(
                         &mut output,
                         BeforeGuardTraceKind::Raised(number),
@@ -217,13 +201,7 @@ pub(super) fn run(
                         cancelled,
                     )?;
                     check(budget, cancelled)?;
-                    return Ok((
-                        output,
-                        Some(BeforeGuardRejection {
-                            number,
-                            description,
-                        }),
-                    ));
+                    return Ok((output, Some(rejection)));
                 }
             }
         }
@@ -246,4 +224,40 @@ pub(super) fn run(
     )?;
     check(budget, cancelled)?;
     Ok((output, None))
+}
+
+pub(super) fn raise(
+    number: &Expression,
+    description: Option<&Description>,
+    bindings: &RowBindings<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<BeforeGuardRejection, BeforeEventGuardError> {
+    let number = match scalar(number, bindings, budget, cancelled)? {
+        Value::Byte(value) => i32::from(value),
+        Value::Int16(value) => i32::from(value),
+        Value::Int32(value) => value,
+        Value::Int64(value) => {
+            i32::try_from(value).map_err(|_| BeforeEventGuardError::ArgumentType)?
+        }
+        _ => return Err(BeforeEventGuardError::ArgumentType),
+    };
+    let description = match description {
+        None => None,
+        Some(Description::Expression(expression)) => {
+            let Value::Text(value) = scalar(expression, bindings, budget, cancelled)? else {
+                return Err(BeforeEventGuardError::ArgumentType);
+            };
+            Some(value)
+        }
+        Some(Description::Literal(value)) => {
+            let mut bytes = buffer::vector(value.len(), budget, cancelled)?;
+            bytes.extend_from_slice(value.as_bytes());
+            Some(String::from_utf8(bytes).map_err(|_| InspectError::Malformed)?)
+        }
+    };
+    Ok(BeforeGuardRejection {
+        number,
+        description,
+    })
 }

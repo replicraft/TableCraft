@@ -5,11 +5,13 @@ mod compile;
 mod error;
 mod evaluate;
 mod expression;
+mod fields;
 mod model;
 mod selection;
 mod source;
 
 pub use error::{BeforeEventGuardError, BeforeGuardSelectionError, BeforeGuardUnsupported};
+pub use fields::{BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow};
 pub use model::{
     BeforeEvent, BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
     BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardTrace, BeforeGuardTraceKind,
@@ -17,6 +19,12 @@ pub use model::{
 
 use crate::{NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum PreparationProfile {
+    Guards,
+    BeforeChangeFields,
+}
 
 impl NativeImage {
     /// Hard ceiling for one explicit source-property selection list.
