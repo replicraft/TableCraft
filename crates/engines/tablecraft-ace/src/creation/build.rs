@@ -4,6 +4,7 @@ use super::{
     profile::{self, Fields},
     record::{self, DataPage},
     request::Request,
+    stored_text::Plan,
 };
 use crate::{
     InspectError,
@@ -131,37 +132,52 @@ pub(super) fn build(
             profile::CATALOG_DEFINITION,
         )?;
         for (id, parent, name, system) in [
-            (profile::ROOT_ID, 0, "DatabaseRoot", true),
-            (profile::TABLES_ID, profile::ROOT_ID, "Tables", true),
-            (profile::DATABASES_ID, profile::ROOT_ID, "Databases", true),
+            (
+                profile::ROOT_ID,
+                0,
+                Plan::ascii_literal("DatabaseRoot"),
+                true,
+            ),
+            (
+                profile::TABLES_ID,
+                profile::ROOT_ID,
+                Plan::ascii_literal("Tables"),
+                true,
+            ),
+            (
+                profile::DATABASES_ID,
+                profile::ROOT_ID,
+                Plan::ascii_literal("Databases"),
+                true,
+            ),
             (
                 profile::RELATIONSHIPS_ID,
                 profile::ROOT_ID,
-                "Relationships",
+                Plan::ascii_literal("Relationships"),
                 true,
             ),
             (
                 profile::CATALOG_DEFINITION as u32,
                 profile::TABLES_ID,
-                "MSysObjects",
+                Plan::ascii_literal("MSysObjects"),
                 true,
             ),
             (
                 profile::RELATIONSHIPS_DEFINITION as u32,
                 profile::TABLES_ID,
-                "MSysRelationships",
+                Plan::ascii_literal("MSysRelationships"),
                 true,
             ),
             (
                 profile::ACES_DEFINITION as u32,
                 profile::TABLES_ID,
-                "MSysACEs",
+                Plan::ascii_literal("MSysACEs"),
                 true,
             ),
             (
                 profile::USER_DEFINITION as u32,
                 profile::TABLES_ID,
-                request.table,
+                request.catalog_name,
                 false,
             ),
         ] {

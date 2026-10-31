@@ -7,6 +7,7 @@ mod input;
 mod profile;
 mod record;
 mod request;
+mod stored_text;
 
 pub use column::CreateColumn;
 pub use database::{CreatedDatabase, create_ace16_database, create_ace16_int32_database};
@@ -17,3 +18,6 @@ mod tests;
 
 #[cfg(test)]
 mod fixed_tests;
+
+#[cfg(test)]
+mod catalog_name_tests;

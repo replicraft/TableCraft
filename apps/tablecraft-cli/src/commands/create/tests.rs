@@ -3,8 +3,12 @@ use crate::{Cli, commands::Command};
 use clap::Parser;
 use std::{fs, io, path::Path};
 use tablecraft_access::creation::CreationError;
+use tablecraft_ace::CreateDatabaseError;
 use tablecraft_io::publication::PublicationError;
-use tablecraft_testkit::access::canonical_creation::{self, Case};
+use tablecraft_testkit::access::{
+    canonical_catalog_names,
+    canonical_creation::{self, Case},
+};
 
 fn arguments(path: &Path, table: &str, columns: &[String], data: Option<&Path>) -> Arguments {
     let mut words = vec![
@@ -247,5 +251,49 @@ fn report_allocation_refusal_precedes_publication_and_resources_are_not_bad_inpu
         CreateDatabaseError::Layout,
     ] {
         assert!(!Error::Creation(CreationError::Create(cause)).invalid_input());
+    }
+}
+
+#[test]
+fn unrepresentable_catalog_text_is_invalid_input_and_publishes_nothing() {
+    let root = tempfile::tempdir().unwrap();
+    let output = root.path().join("new.accdb");
+    let columns = vec!["Id".to_owned(), "Score".to_owned()];
+    let mut report = Vec::new();
+    let error = execute(
+        arguments(&output, "\u{feff}\u{0100}", &columns, None),
+        None,
+        &mut report,
+    )
+    .unwrap_err();
+    assert!(matches!(
+        error,
+        Error::Creation(CreationError::Create(CreateDatabaseError::TextEncoding))
+    ));
+    assert!(error.invalid_input());
+    assert!(report.is_empty());
+    assert!(!output.exists());
+    assert_eq!(fs::read_dir(root.path()).unwrap().count(), 0);
+}
+
+#[test]
+fn escaped_catalog_names_and_raw_definition_names_match_independent_sources() {
+    for case in canonical_catalog_names::CASES {
+        let source = canonical_catalog_names::source(case);
+        let root = tempfile::tempdir().unwrap();
+        let output = root.path().join("new.accdb");
+        let mut report = Vec::new();
+        execute(
+            arguments(&output, &source.table, &source.columns, None),
+            None,
+            &mut report,
+        )
+        .unwrap();
+        assert_eq!(fs::read(&output).unwrap(), source.bytes);
+        assert_eq!(
+            report,
+            b"Database\tCreated ACE 2016\nColumns\t2\nRows\t0\nDurable output\tFile and captured-directory barriers completed\n"
+        );
+        assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
     }
 }

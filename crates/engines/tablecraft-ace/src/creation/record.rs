@@ -5,6 +5,7 @@ use super::{
     input::Cell,
     profile,
     request::Request,
+    stored_text,
 };
 use crate::{
     InspectError,
@@ -185,10 +186,10 @@ fn copy_fixed<const WIDTH: usize>(
     Ok(())
 }
 
-pub(super) fn catalog_length(name: &str) -> usize {
+pub(super) fn catalog_length(name: stored_text::Plan<'_>) -> usize {
     let fields = profile::Fields::new(&profile::CATALOG_FIELDS);
     fields.fixed_end()
-        + name.encode_utf16().count() * size_of::<u16>()
+        + name.byte_len()
         + (fields.variable_count() + 2) * size_of::<u16>()
         + fields.count().div_ceil(u8::BITS as usize)
 }
@@ -230,11 +231,12 @@ pub(super) fn catalog(
     )?;
 
     let mut position = fixed_end;
-    for unit in name.encode_utf16() {
-        check(budget, cancelled)?;
-        put16(record, position, usize::from(unit))?;
-        position += size_of::<u16>();
-    }
+    name.write(
+        &mut record[position..position + name.byte_len()],
+        budget,
+        cancelled,
+    )?;
+    position += name.byte_len();
     let eod = position;
     // Name is the only present variable carrier; all other ordinary and LVAL
     // slots remain NULL at EOD. The actual SDK ordering puts LVAL slots last.

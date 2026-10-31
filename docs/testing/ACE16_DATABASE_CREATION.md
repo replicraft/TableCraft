@@ -16,6 +16,12 @@ numeric conversion. Boolean uses its value bit without payload bytes and refuses
 NULL. Other admitted fields allow NULL with zeroed inactive payload bytes.
 Decimal, variable fields and extended DateTime declarations remain unsupported.
 
+Catalog table names use a prevalidated stored-text encoding plan. Leading U+FEFF
+is escaped where the qualified representation is reversible; unsupported
+representations return `TextEncoding` before image allocation. Column-definition
+names retain raw UTF-16. The [catalog-name repair](ACE16_CATALOG_NAME_ENCODING.md)
+records the independent whole-image checks and actual CLI reproduction.
+
 Single and Double preserve their raw representations, including signed zero,
 subnormals, infinities and quiet/signalling NaN payloads. Legacy DATE preserves
 its raw bits without calendar conversion; Currency stores its scaled Int64 and

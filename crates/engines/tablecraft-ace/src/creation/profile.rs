@@ -148,7 +148,7 @@ impl<'a> Fields<'a> {
 pub(super) struct CatalogObject<'a> {
     pub id: u32,
     pub parent: u32,
-    pub name: &'a str,
+    pub name: super::stored_text::Plan<'a>,
     pub system: bool,
 }
 

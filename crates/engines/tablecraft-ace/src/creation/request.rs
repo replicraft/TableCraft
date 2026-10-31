@@ -2,6 +2,7 @@
 use super::{
     input::{Cell, Columns, Rows},
     profile::{self, Field, Fields},
+    stored_text,
 };
 use crate::{InspectError, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::{
@@ -44,13 +45,16 @@ pub enum CreateDatabaseError {
     /// A cell has the wrong exact carrier or supplies NULL for Boolean.
     #[error("creation cell does not match its declared native scalar type")]
     Carrier,
+    /// The name is valid but has no representation in the qualified stored-text profile.
+    #[error("creation text has no qualified reversible native encoding")]
+    TextEncoding,
     /// Cancellation, allocation or a shared resource limit rejected the operation.
     #[error(transparent)]
     Inspect(#[from] InspectError),
 }
 
 pub(super) struct Request<'a> {
-    pub table: &'a str,
+    pub catalog_name: stored_text::Plan<'a>,
     pub columns: Columns<'a>,
     pub rows: Rows<'a>,
     pub row_bytes: usize,
@@ -78,6 +82,20 @@ pub(super) fn validate<'a>(
         if table.eq_ignore_ascii_case(system) {
             return Err(CreateDatabaseError::SystemTableName);
         }
+    }
+    let catalog_name = stored_text::Plan::capture(table, budget, cancelled)?;
+    // Every authored ASCII system name is shorter than a maximum-size user
+    // name. Bound all eight rows by the larger row, including directory bytes.
+    let largest_name = stored_text::Plan::ascii_literal("MSysRelationships");
+    let largest_row = super::record::catalog_length(catalog_name)
+        .max(super::record::catalog_length(largest_name));
+    let catalog_used = largest_row
+        .checked_add(size_of::<u16>())
+        .and_then(|bytes| bytes.checked_mul(profile::CATALOG_OBJECT_COUNT))
+        .and_then(|bytes| bytes.checked_add(super::record::DATA_HEADER_BYTES))
+        .ok_or(CreateDatabaseError::PageCapacity)?;
+    if catalog_used > PAGE_BYTES {
+        return Err(CreateDatabaseError::PageCapacity);
     }
     if columns.count() == 0 || columns.count() > profile::MAX_COLUMNS {
         return Err(CreateDatabaseError::ColumnLimit);
@@ -161,7 +179,7 @@ pub(super) fn validate<'a>(
     check(budget, cancelled)?;
 
     Ok(Request {
-        table,
+        catalog_name,
         columns,
         rows,
         row_bytes,
