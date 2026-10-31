@@ -115,6 +115,25 @@ their refusals. The first CLI run retained a test that incorrectly used excluded
 `CDate`; its correction selects admitted date literals or NULL from the existing
 frozen corpus without changing expected bytes or function admission.
 
-Genuine-file qualification for this new profile remains separate. Native
-Microsoft Access save/reopen, required-macro discovery and normal ACE writes
-remain unqualified.
+## Independently generated file observations
+
+Two unchanged V2016/V2019 originals created with the
+[synthetic recipe and read-only getter](preserved_fixed_scalars_genuine/README.md)
+now pass 24 independent complete-image comparisons through a freshly compiled
+committed CLI. Three target families each cover present change, NULL-to-value,
+value-to-NULL and NULL no-op on both files. Int64 and Currency use signed endpoints;
+DATE uses exact negative-zero and quarter-day bits. Time_Field remains a preserved
+sibling in this generated-file tranche.
+
+All 24 expected images passed direct complete native source admission before the
+first producer call. All 24 fresh SDK processes then matched complete expected
+inventories, including unchanged indexes, stored caches, rich payloads,
+attachments and Sentinel. Eighteen requests change bytes; six reproduce the
+entire source. SDK calendar observations do not distinguish DATE signed zero:
+the independent raw-image proof supplies that evidence. The
+[genuine-file record](results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+keeps source creation, expected construction, build, candidate and reader phases
+separate. No original or expected payload was adjusted from producer output.
+
+Native Microsoft Access save/reopen, required-macro discovery and normal ACE
+writes remain unqualified.

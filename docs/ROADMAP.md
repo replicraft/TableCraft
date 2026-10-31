@@ -8,6 +8,10 @@ the existing native fixed/batch engineering APIs. Exact payload/NULL preservatio
 and independent whole-image proof pass authored-source checks. This broadens
 physical mutation admission without establishing normal ACE save permission,
 required-macro absence or native Access qualification.
+The same services now match 24 independent complete images on two generated
+V2016/V2019 originals, followed by 24 matching fresh read-only SDK inventories.
+Source and expected-image admission preceded every producer call; all non-target
+bytes remain unchanged.
 
 Explicit [physical secondary-index creation](testing/ACE16_SECONDARY_INDEX_CREATION.md)
 now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete

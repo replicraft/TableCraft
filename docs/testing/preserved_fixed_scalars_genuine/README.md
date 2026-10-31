@@ -112,6 +112,22 @@ two creation and two read-only inventory calls now pass, followed by direct
 complete native source admission of both originals. The
 [source result](../results/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json)
 pins the unchanged originals, classes and logs. No update candidate was involved
-in those checks; expected-image and producer qualification remain separate.
+in those checks.
+
+The subsequent [genuine-file qualification](../results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+freezes 24 original/request-only complete images before a fresh committed CLI
+produces any candidate. Every expected image passes complete native Source
+admission; all 24 actual copies match exactly and 24 fresh getter processes match
+the full expected inventories. Eighteen changes and six NULL no-ops cover Int64,
+Currency and Date_Field on both profiles. Time_Field is a preserved sibling.
+
+The maintained pure `model.py` and `recipes.py` are byte-identical promotions of
+the executed private constructor inputs. `verify.py` replays saved evidence and
+starts no Java, Cargo or CLI process:
+
+```sh
+python3 docs/testing/preserved_fixed_scalars_genuine/verify.py --root "$PWD"
+```
+
 Native Microsoft Access save/reopen, required-macro
 discovery and normal ACE saves remain separate qualification gaps.

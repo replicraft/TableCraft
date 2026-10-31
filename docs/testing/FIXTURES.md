@@ -10536,3 +10536,30 @@ SDK getter calls also match every expected tagged inventory on the first attempt
 These are same-page placement results; genuine-file EOF allocation is not
 qualified here. Generated binaries, JARs and classes remain private; these observations
 grant no normal ACE save or native Microsoft Access qualification.
+
+## Preserved eight-byte scalar SDK originals (2026-10-31)
+
+The [creation recipe and read-only getter](preserved_fixed_scalars_genuine/README.md)
+are repository-authored synthetic tooling using pinned Jackcess 5.0.4 public
+builders and the unchanged bounded channel. Eleven-field tables contain nullable
+Int64, Currency and legacy Date/Time targets beside indexed ID/Base fields, stale
+calculated caches, Boolean, Memo/OLE and attachments. Sentinel is separate.
+No third-party fixture or implementation is copied; generated databases, runtime
+JARs and classes remain private. System timestamps/GUIDs are pinned after creation,
+so byte-identical regeneration is not claimed.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016 (header 5) | 458752 | `997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4` |
+| V2019 (header 6) | 528384 | `84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d` |
+
+Both creation and both original getter calls pass, followed by complete native
+Source admission. Twenty-four original/request-only whole images pass separate
+Source admission before the fresh committed CLI matches all 24. Twenty-four
+fresh SDK getters then match the complete expected inventories. These cover
+signed integer/Currency endpoints, exact DATE negative zero and NULL transitions;
+Time_Field remains a preserved sibling. The
+[source](results/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json) and
+[genuine-image](results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+records keep the phases distinct. Native Access save/reopen, required macros and
+normal ACE saves remain unqualified.
