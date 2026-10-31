@@ -1,12 +1,12 @@
 # Create a fresh ACE database
 
 `tablecraft create` constructs a fresh unencrypted ACE 2016 database containing
-one table of ordinary Int32 columns. Existing files, directories and symlinks
-are never overwritten.
+one table of explicitly declared scalar columns. Existing files, directories
+and symlinks are never overwritten.
 
-The shared Access typed creation API is separate. This command continues to use
-the Int32 convenience path: `--column` supplies names, and TSV does not gain
-additional scalar kinds or a NULL token. See the [shared service](../access/writes/FRESH_DATABASE_CREATION.md#typed-scalar-preparation).
+Use `--column` for the original present-Int32 input, or the separate `--field`
+schema below for typed values. The modes are mutually exclusive; both use the
+same [shared creation service](../access/writes/FRESH_DATABASE_CREATION.md#typed-scalar-preparation).
 
 ```sh
 tablecraft create new.accdb --table Items --column Id --column Score
@@ -29,7 +29,7 @@ tablecraft rows populated.accdb Items
 
 The displayed TSV contains literal tabs. CSV-style quoting is supported, including
 doubled quotes inside quoted fields. Header spelling and case must match the
-column arguments. Every data cell is a present decimal Int32 from -2147483648
+column arguments. With `--column`, every data cell is a present decimal Int32 from -2147483648
 through 2147483647, with an optional minus sign. NULL, plus-prefixed numbers,
 expressions and surrounding whitespace are refused. A header-only file creates
 an empty table. The file must be at most 64 KiB.
@@ -38,7 +38,7 @@ The current profile supports one through sixteen columns and at most 64 rows,
 with an additional physical fit check. A wide schema can fit fewer rows; a
 request that does not fit is refused before publication. Names are validated by
 the native constructor and limited to 64 UTF-16 code units. Column order is the
-written `--column` order. All columns are manual Int32 values: a name such as
+written schema order. All values are supplied manually: a name such as
 `Id` does not create a primary key or AutoNumber.
 
 ```sh
@@ -46,6 +46,55 @@ tablecraft create people.accdb --table 'People Stats' \
   --column 'Person Id' --column 'Score Δ'
 tablecraft create --help
 ```
+
+## Explicit typed schema
+
+Repeat `--field NAME DECLARATION` instead of `--column`:
+
+```sh
+tablecraft create typed.accdb --table Items \
+  --field Id int32 --field TextValue text:8 \
+  --field BinaryValue binary:16 --field DecimalValue decimal:28:4 \
+  --field Flag boolean --data typed.tsv
+```
+
+The TSV header still matches every name exactly and in order. For example:
+
+```text
+Id	TextValue	BinaryValue	DecimalValue	Flag
+1	value:null	00ff	12345:4	true
+2	null	value:	null	false
+```
+
+The first Text is literal `null`; the second is stored NULL. The second Binary
+is present empty. Without `--data`, the explicitly declared table starts empty.
+The same input, row, column and physical-fit ceilings apply.
+
+| Declaration | Exact cell representation |
+| --- | --- |
+| `boolean` | `true` or `false`; NULL refuses |
+| `byte`, `int16`, `int32`, `int64` | Exact integer carrier |
+| `currency-scaled` | Signed integer in units of 1/10000 |
+| `single-bits`, `double-bits`, `date-bits` | Hexadecimal bits without `0x`; DATE bits must be valid |
+| `guid` | UUID spelling |
+| `text:N` | Text limited to N UTF-16 code units |
+| `binary:N` | Complete hexadecimal byte pairs, limited to N decoded bytes |
+| `decimal:P:S` | `COEFFICIENT:SCALE`, matching declared precision and exact retained scale |
+
+Text and Binary dimensions are explicitly 1 through 255 in the current creation
+profile. Decimal precision is 1 through 28 and scale is zero through precision.
+There is no inferred capacity, numeric coercion, truncation or Decimal rescaling,
+even for empty or all-NULL input. UTF-16 code units differ from Unicode scalar
+characters and encoded payload bytes. See the [native declaration and encoding
+rules](../testing/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
+
+In typed mode, exactly lowercase `null` means stored NULL. Prefix a literal with
+`value:` to bypass that keyword; `value:null` is literal Text `null`, and
+`value:value:null` is literal Text `value:null`. Empty Text/Binary cells or
+`value:` supply present-empty values. Decimal zero retains its supplied scale.
+There is no omission/default marker or expression evaluation. The typed schema
+uses the existing exact write value spellings; it does not enable engineering
+editing or expand existing-file write admission.
 
 Creation rejects `--password`; it does not generate an encrypted file. Required
 captured-directory durability must be supported by the platform and filesystem.

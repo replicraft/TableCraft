@@ -1,5 +1,18 @@
 # Adopted dependency and licensing baseline
 
+## Typed CLI creation (31 October 2026)
+
+Typed creation now consumes `ScalarType` and validated `DecimalConstraints` from
+`tablecraft-schema` in production. Its existing workspace dependency moves from
+CLI development dependencies to normal dependencies; registry versions, features
+and the lockfile are unchanged. Creation and engineering write commands also
+share the existing exact-value parser in a CLI-private module. No new parser,
+registry library or backend dependency is introduced.
+
+The first unit checks passed because Cargo included development dependencies;
+the first normal build exposed the missing production edge. The corrected normal
+build and strict checks pass. The earlier test-only edge below is historical.
+
 ## CLI preserved-field source qualification (30 October 2026)
 
 The CLI directly inherits `tablecraft-schema` as a development dependency. Its

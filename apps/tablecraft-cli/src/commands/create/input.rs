@@ -1,9 +1,12 @@
-use super::{Error, tick};
-use crate::commands::tsv;
+use super::{Error, schema, tick};
+use crate::commands::{tsv, typed_values};
 use csv::{ByteRecord, ReaderBuilder};
 use std::path::Path;
 use tablecraft_ace::InspectError;
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 const MAX_INPUT_BYTES: u64 = 64 * 1024;
 const MAX_ROWS: usize = 64;
@@ -50,6 +53,44 @@ pub(super) fn rows(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<i32>>, Error> {
+    rows_with(
+        bytes,
+        columns.len(),
+        |position| columns[position].as_str(),
+        |_, cell, _| int32(cell),
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn typed_rows(
+    bytes: &[u8],
+    fields: &[schema::Field<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<Value>>, Error> {
+    rows_with(
+        bytes,
+        fields.len(),
+        |position| fields[position].column.name(),
+        |position, cell, budget| {
+            let text = std::str::from_utf8(cell)
+                .map_err(|_| Error::Input("Typed creation cell is not UTF-8"))?;
+            typed_values::update(fields[position].kind, text, budget).map_err(Error::from)
+        },
+        budget,
+        cancelled,
+    )
+}
+
+fn rows_with<'a, T>(
+    bytes: &[u8],
+    count: usize,
+    name: impl Fn(usize) -> &'a str,
+    parse: impl Fn(usize, &[u8], &mut ResourceBudget) -> Result<T, Error>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<T>>, Error> {
     if bytes.is_empty() || bytes.len() as u64 > MAX_INPUT_BYTES {
         return Err(Error::Input(
             "Expected a nonempty bounded TSV with a column header",
@@ -87,13 +128,14 @@ pub(super) fn rows(
     if !reader
         .read_byte_record(&mut record)
         .map_err(|_| Error::Input("Malformed creation TSV header"))?
-        || record.len() != columns.len()
+        || record.len() != count
     {
         return Err(Error::Input(
             "TSV header must match the supplied columns exactly",
         ));
     }
-    for (actual, expected) in record.iter().zip(columns) {
+    for (position, actual) in record.iter().enumerate() {
+        let expected = name(position);
         tick(budget, cancelled)?;
         budget
             .charge(Resource::Steps, expected.len() as u64)
@@ -113,7 +155,7 @@ pub(super) fn rows(
         if rows.len() == MAX_ROWS {
             return Err(Error::Input("Creation accepts at most 64 TSV rows"));
         }
-        if record.len() != columns.len() {
+        if record.len() != count {
             return Err(Error::Input(
                 "Creation TSV rows must match the column count",
             ));
@@ -122,30 +164,31 @@ pub(super) fn rows(
             .charge(Resource::Rows, 1)
             .map_err(InspectError::from)?;
         let mut row = Vec::new();
-        reserve(&mut row, columns.len(), budget)?;
-        for cell in &record {
+        reserve(&mut row, count, budget)?;
+        for (position, cell) in record.iter().enumerate() {
             tick(budget, cancelled)?;
             budget
                 .charge(Resource::Steps, cell.len() as u64)
                 .map_err(InspectError::from)?;
-            let digits = cell.strip_prefix(b"-").unwrap_or(cell);
-            if digits.is_empty() || !digits.iter().all(u8::is_ascii_digit) {
-                return Err(Error::Input(
-                    "Expected a present decimal Int32 with optional minus sign",
-                ));
-            }
-            let text =
-                std::str::from_utf8(cell).map_err(|_| Error::Input("Int32 cell is not ASCII"))?;
-            row.push(
-                text.parse::<i32>()
-                    .map_err(|_| Error::Input("Creation Int32 cell is outside its signed range"))?,
-            );
+            row.push(parse(position, cell, budget)?);
         }
         reserve(&mut rows, 1, budget)?;
         rows.push(row);
     }
     tick(budget, cancelled)?;
     Ok(rows)
+}
+
+fn int32(cell: &[u8]) -> Result<i32, Error> {
+    let digits = cell.strip_prefix(b"-").unwrap_or(cell);
+    if digits.is_empty() || !digits.iter().all(u8::is_ascii_digit) {
+        return Err(Error::Input(
+            "Expected a present decimal Int32 with optional minus sign",
+        ));
+    }
+    let text = std::str::from_utf8(cell).map_err(|_| Error::Input("Int32 cell is not ASCII"))?;
+    text.parse::<i32>()
+        .map_err(|_| Error::Input("Creation Int32 cell is outside its signed range"))
 }
 
 pub(super) fn reserve<T>(
