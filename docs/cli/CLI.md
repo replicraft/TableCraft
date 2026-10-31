@@ -215,13 +215,17 @@ and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using th
 tablecraft query journal-update 'UPDATE Items SET Score=12 WHERE Id=1' \
   --database offline.mdb --journal fresh-edit-journal
 tablecraft query recover-update --database offline.mdb --journal fresh-edit-journal
+tablecraft query finalize-update --database offline.mdb --journal ACTUAL_RETIRED_DIRECTORY
 ```
 
 Keep other applications and ordinary readers closed through completion or
 recovery. These commands reject passwords, preserve one exclusive target
 descriptor and never replay SQL during recovery. A commit error requires
 explicit recovery; cleanup/output errors retain any known completed outcome.
-They do not use `--output` or `--durable-output`. Read the
+`finalize-update` selects an intact actual retired directory, verifies current
+Original/Replacement bytes without recovery writes, then completes namespace
+cleanup. Its report does not claim historical transaction events. These commands
+do not use `--output` or `--durable-output`. Read the
 [journal lifecycle and limits](JOURNAL_EDITING.md) before using them.
 
 ## Experimental ACE 16 write copies

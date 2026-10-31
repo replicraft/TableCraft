@@ -2,7 +2,8 @@
 
 `query journal-update` applies one qualified normal Jet4 Int32 UPDATE to the
 selected file itself. `query recover-update` explicitly resolves its paired
-journal without replaying SQL. These are separate from the unchanged
+journal without replaying SQL. `query finalize-update` confirms an intact retired
+bundle before completing namespace cleanup. These are separate from the unchanged
 [fresh-copy UPDATE](../access/writes/QUERY_EDITING.md) command.
 
 ```sh
@@ -11,6 +12,9 @@ tablecraft query journal-update 'UPDATE Items SET Score=12 WHERE Id=1' \
 
 tablecraft query recover-update \
   --database offline.mdb --journal fresh-edit-journal
+
+tablecraft query finalize-update \
+  --database offline.mdb --journal ACTUAL_RETIRED_DIRECTORY
 ```
 
 Use an offline file and retain a separate backup. Close other applications and
@@ -90,12 +94,45 @@ not mean rollback or authorize SQL replay. Earlier success-text bytes may have
 reached stdout before a later output failure. No automatic retry, error-path
 bundle deletion or fallback occurs.
 
-Incomplete setup and uncertain namespace retirement can require diagnosis.
-This CLI does not reconstruct terminal retirement state after restart, discover
-arbitrary sidecars or promise a complete crash lifecycle. The
+Incomplete setup, partial garbage and uncertain namespace state can require
+diagnosis. No command discovers arbitrary sidecars or promises a complete crash
+lifecycle. The
 [filesystem owner](../foundation/IMAGE_JOURNAL.md) and
 [native recovery contract](../access/writes/NATIVE_WRITES.md#optional-journaled-persistence)
 retain their separate guarantees and limits.
+
+## Confirm an intact retired bundle
+
+For `finalize-update`, select the actual surviving nonce-named retired directory;
+`ACTUAL_RETIRED_DIRECTORY` in the example is a placeholder. The command does not
+accept an active bundle, SQL or copy-output options. It associates the retained
+objects, requalifies the original native intent and both complete recorded images,
+then lends write-denied target/journal views to completed-image confirmation.
+
+A committed V1 record requires exact current replacement bytes. Pending state,
+including an admitted partial marker, requires exact current original bytes.
+Both storage barriers must complete. Opposite or mixed current images refuse
+without copying either image back, rolling forward, rolling back or falling back
+to `recover-update`.
+
+Success reports the verified current side:
+
+```text
+Verified image	Replacement
+Journal namespace	Retired and synchronized
+```
+
+`Original` is the other possible image label. These labels describe current
+verified bytes/barriers, not historical commit, rollback, callback execution or
+external effects. No-op before/after images can be identical. The command writes
+no target or journal payload bytes. After verification it acknowledges only the
+held-parent barrier, cleans the owned retired namespace and releases locks; it
+does not perform another rename.
+
+An acknowledgement, cleanup, unlock or output failure retains the verified image
+fact and returns failure, including BrokenPipe. Missing records or partly deleted
+garbage refuse the intact-bundle profile and remain for diagnosis. This addition
+does not widen normal native admission, enable ACE saves or add automatic recovery.
 
 ## Local checks
 
@@ -111,4 +148,20 @@ along with all 65 binary unit tests, six shared adapter integration tests and
 22 existing copy/inspection/guard integration functions. The focused counts
 overlap the full binary run; they are not additional distinct unit coverage.
 
+The finalization addition reuses the exact existing source/expected pair and
+reader gate. Its first run passes four new units and three black-box functions:
+two complete-image confirmations and six active/partial/opposite-image refusals.
+Presentation checks exclude historical outcome labels even from secondary errors.
+The first broader strict check found an oversized retained setup-error variant,
+not a source/expected mismatch. Finalization now pays and reserves one error-owner
+slot before opening the target; failed setup moves its complete cause and retained
+capabilities into that capacity without late allocation. Apply/recovery behavior
+is unchanged. A fifth unit checks exact/one-below reservation budgets and actual
+retained-error/lock ownership. Corrected all-target/all-feature CLI Clippy, all
+70 binary units and all eight journal integration functions pass. Focused checks
+overlap those complete target runs. Final CLI/Access formatting, documentation
+links and dependency-boundary checks/tests also pass.
+
 See the [local result](../testing/results/jet4-journal-cli-2026-10-30.json).
+The [finalization result](../testing/results/jet4-retired-journal-finalization-cli-2026-10-30.json)
+records the separate restart-confirmation consumer.
