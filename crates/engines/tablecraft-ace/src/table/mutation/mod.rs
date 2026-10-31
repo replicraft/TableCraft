@@ -80,3 +80,6 @@ pub use preview::Ace16WritePreview;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_v2_sources;
