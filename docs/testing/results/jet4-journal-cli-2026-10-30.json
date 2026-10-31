@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "scope": "Explicit offline normal Jet4 journal-update/recover-update CLI consumer; local macOS, no ACE save, Microsoft Access or physical power-loss qualification",
+  "source_order": [
+    "One independent original/complete expected Jet4 pair checked through public readers before command APIs",
+    "Then four journal units and one protected-diagnostic output unit",
+    "Then five black-box functions: one repeated SOURCE check and four API functions"
+  ],
+  "coverage": {
+    "source_functions": 1,
+    "source_pairs": 1,
+    "source_views": 2,
+    "journal_unit_functions": 4,
+    "protected_diagnostic_unit_functions": 1,
+    "blackbox_functions_total": 5,
+    "blackbox_source_functions": 1,
+    "blackbox_api_functions": 4,
+    "whole_target_images": 3,
+    "apply_whole_images": 1,
+    "recovery_whole_images": 2,
+    "known_outcome_write_flush_error_controls": 8,
+    "preopen_shape_password_controls": 4,
+    "full_cli_binary_unit_functions": 65,
+    "adapter_integration_functions": 6,
+    "existing_cli_integration_functions": 22,
+    "existing_cli_integration_by_target": {
+      "updates": 4,
+      "table_extra": 13,
+      "guard_preparation": 5
+    },
+    "focused_units_overlap_full_binary": true
+  },
+  "invariants": [
+    "Same retained exclusive target descriptor across capture/planning/prepare/commit; no shared-lock upgrade or path reopen",
+    "Shared Access recoverable SQL planner owns one original-snapshot evaluation; native admission unchanged",
+    "Recovery uses actual paired V1 and original resolved intent; complete normal native replan before writes, no SQL replay",
+    "Reports prepared before writes and success emitted after retirement, cleanup and fallible release",
+    "Known target outcome survives terminal/output failures; stderr BrokenPipe cannot convert journal failure to success",
+    "No fallback, automatic SQL retry, or error-path bundle deletion"
+  ],
+  "limits": {
+    "work_bytes_default": 268435456,
+    "work_rows_default": 100000,
+    "work_steps_default": 100000000,
+    "implemented_filesystem_targets": [
+      "macOS",
+      "Linux"
+    ],
+    "observed_execution_platform": "macOS",
+    "ace_engineering_conversion": false,
+    "automatic_pending_journal_discovery": false,
+    "complete_post_restart_namespace_finalization": false,
+    "hardware_power_loss_qualification": false
+  },
+  "source_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/mutation_fixture.rs",
+    "sha256": "16cca82c3c1410fcd38e03a87e755d98692d70359e249f3664bbf7d8d674e276",
+    "expected": "Independent literal four-byte first-row Score10\u219212 patch in the black-box source owner; every other byte unchanged"
+  },
+  "retained_attempts": [
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/check-first-root.log",
+      "sha256": "4624f3abb22fb870b74bfb4e407d0b799d6204c6c28ab210fd10534b3c0b4198",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/source-first-root.log",
+      "sha256": "8a8b3c7d7e775e4eafbf9429433fe4bbdd3c9d34c782c7789e0ed1091d1cb87c",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/unit-first-root.log",
+      "sha256": "dc7f3297fa345c9561bf8157954e2381fb15a45b4a51c4752d7a304d107394ad",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 4
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/output-first-root.log",
+      "sha256": "e756671beebb3db8f9f588a678ca48eb54c1476b826a1230bd07ce02da4f9357",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 1
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/blackbox-first-root.log",
+      "sha256": "5c4b537a56588f34c437320cddc67c297e93f0b024fae0a481f737ad080db996",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 5
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/strict-first-root.log",
+      "sha256": "7124420a039510f35256faaa61682f43803321fbecd5d78932710eab81230cbb",
+      "outcome": "pass",
+      "reported_by": "root"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/unit-all-root.log",
+      "sha256": "59e9e4aa8a7b269b0b0fb98f6c67755c24967bfffc8af6149997647d19a1083e",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 65
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/adapter-regression-root.log",
+      "sha256": "241b3dcbc7464f546932a21a5ce9cb6c52934640b316623c2317d1ce86cb799d",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 6
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/copy-inspection-regression-root.log",
+      "sha256": "ac5a299d584c52ac8a72ecc04944b64ee923000ecb7eafbf1b1bc17af6c4dc5c",
+      "outcome": "pass",
+      "reported_by": "root",
+      "passing_functions": 22
+    }
+  ],
+  "host_product_failures": [],
+  "shared_prerequisites": [
+    "docs/testing/results/native-int32-intent-recovery-2026-10-30.json",
+    "docs/testing/results/filesystem-journal-lifecycle-2026-10-30.json"
+  ],
+  "pending_checks": [],
+  "code_pins": [
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "sha256": "fd622302dc12703fa2d0227ae78c25fbfc4c652debf970acc3b6891813748980"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/args.rs",
+      "sha256": "3c267db8ec80572bf0d839c3e1176071523a1881ba7ef0ecd00018c3838116ef"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/mod.rs",
+      "sha256": "0a77753a4dc089fe6006012ec00ea8f994d89ee7e51688ea1dc8e50fe4e7882e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/execution.rs",
+      "sha256": "1a3149e25694b467395076acbb0996da780e0860b67863a6f36162d533e87d36"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/main.rs",
+      "sha256": "d3d4fe27abb4263c5c4cee7619c3e8768f69479f350ebd047295370a6205a9eb"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/args.rs",
+      "sha256": "26c2263d7f84c4e90e233295dfc13f196cf54c6f5a667d3684d9f486b0ecc928"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/error.rs",
+      "sha256": "58b602d3e7eefe66066e6e5eed85dd1693caa68bc45bdd53869e8c9b28dca67e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/mod.rs",
+      "sha256": "1c85ee26216b7c4b981a4178959fcebf544f5390cb757c5ceab5dbb8eadf00d5"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/preflight.rs",
+      "sha256": "28ffd9bc56418bd5958895cf71101380dcf15f2ca968c1c02fab66d5095e1004"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/report.rs",
+      "sha256": "2158d05c2bf2da2b7dda0c3ea00ca400f750cf8cd36f2b28e3a349081db51f8b"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/runner.rs",
+      "sha256": "083d1699c404dd0cd73f561e344f0f93c97361e156c5990ba4222f19d762c917"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/tests.rs",
+      "sha256": "6e5afae4f09e75bdd09751775618d0cd5dff543f4e24f94e0b0ca66ef85a3513"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/unsupported.rs",
+      "sha256": "d488bbb87404dd541b5d416f2d2efe5036fc661846cf10d34c6b3dbb7c677b7c"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/journal_editing.rs",
+      "sha256": "d7a66a8d36e9dbfe158e4ea83a398326f989b418e718791146e1fb9eaaeb4a9d"
+    }
+  ],
+  "final_repository_checks": {
+    "formatting": {
+      "exit_code": 0,
+      "path": ".cache/cli-journal-consumer-next-20261030/fmt-final-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "local_document_links": {
+      "exit_code": 0,
+      "path": ".cache/cli-journal-consumer-next-20261030/links-final-root.log",
+      "sha256": "6bdd8fa04f7207160720dd21892ea89bde55cb7e565004a921d9027b9123f374"
+    },
+    "dependency_boundaries": {
+      "exit_code": 0,
+      "path": ".cache/cli-journal-consumer-next-20261030/boundaries-final-root.log",
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    "dependency_policy_tests": {
+      "exit_code": 0,
+      "path": ".cache/cli-journal-consumer-next-20261030/boundary-tests-final-root.log",
+      "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+    }
+  }
+}

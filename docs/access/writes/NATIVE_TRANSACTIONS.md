@@ -63,8 +63,12 @@ An optional [generic image journal](../../foundation/IMAGE_JOURNAL.md) now suppl
 commit, rollback and recovery ordering over explicitly paired storage. Its format
 is independent of Access. Optional [native edit plans](NATIVE_WRITES.md#optional-journaled-persistence)
 now consume it with complete validated preimage binding. Host-controlled
-durable namespace setup/cleanup and identity are explicit preconditions. Default
-CLI/native-reader builds do not enable the journal feature or its hash dependency.
+durable namespace setup/cleanup and identity are explicit preconditions.
+Standalone engine, I/O and Access-adapter defaults remain unchanged. The CLI now
+explicitly enables the journal/filesystem features for its
+[offline Jet4 apply/recovery commands](../../cli/JOURNAL_EDITING.md); compiling
+those consumers does not activate journal discovery, execution or broader write
+permission during ordinary reads. Existing fresh-copy behavior is unchanged.
 
 Original tests verify independent shared handles, writer exclusion, contention
 and release across a child process, no file creation on failed open and sanitized

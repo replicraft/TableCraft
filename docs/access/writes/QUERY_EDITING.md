@@ -142,9 +142,9 @@ intent and establish exclusive, correctly paired durable resources before using
 the native preparation/commit API. Recovery uses the retained typed requests;
 it must never replay SQL, reevaluate clocks or infer permission from serialized
 metadata. ACE engineering previews remain a separate, non-journalable capability.
-The CLI does not yet expose this adapter capability. Two focused journal-adapter
-tests pass, including whole-image parity with ordinary planning, exact resolved
-intent, a committed in-memory journal, no-ops and refused late expression/native
+The [explicit journal CLI](../../cli/JOURNAL_EDITING.md) now exposes this adapter
+capability for qualified offline Jet 4 edits. Two focused journal-adapter tests
+pass, including whole-image parity with ordinary planning, exact resolved intent, a committed in-memory journal, no-ops and refused late expression/native
 validation failures. Four ordinary adapter tests, strict all-target/all-feature
 checks and the minimal adapter build also pass. These are local service checks,
 not durable filesystem or native Access qualification.

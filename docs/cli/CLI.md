@@ -205,9 +205,24 @@ tablecraft query update 'UPDATE Items SET Score=Score+7 WHERE Id=2' \
 Encryption rewrites and qualified Jet 4 fixed Int32 UPDATEs use fresh outputs;
 existing files are not overwritten. Encryption failure behavior is described in
 its owning guide. Jet 4 UPDATE uses a complete synced temporary and no-clobber
-publication. General native saves and in-place CLI editing remain unavailable.
+publication. General native saves remain unavailable. Separate explicit
+[offline Jet4 journal commands](JOURNAL_EDITING.md) apply or recover the qualified
+normal Int32 profile in place; they grant no ACE save permission.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
+
+```sh
+tablecraft query journal-update 'UPDATE Items SET Score=12 WHERE Id=1' \
+  --database offline.mdb --journal fresh-edit-journal
+tablecraft query recover-update --database offline.mdb --journal fresh-edit-journal
+```
+
+Keep other applications and ordinary readers closed through completion or
+recovery. These commands reject passwords, preserve one exclusive target
+descriptor and never replay SQL during recovery. A commit error requires
+explicit recovery; cleanup/output errors retain any known completed outcome.
+They do not use `--output` or `--durable-output`. Read the
+[journal lifecycle and limits](JOURNAL_EDITING.md) before using them.
 
 ## Experimental ACE 16 write copies
 
@@ -275,8 +290,8 @@ widening the structural profile. `--image-bytes` is unavailable for this command
 Encrypted/deployment rewrites and occupied output paths refuse. The dedicated
 guard checks first qualify a supported encrypted reader and stored/MSZIP package
 readers, then confirm four no-output refusals, including the correct-password
-case. There is no fallback, in-place editing, normal-save or required-macro
-authority.
+case. This engineering command adds no fallback, in-place editing, normal-save
+or required-macro authority.
 
 See [the exact SQL engineering contract](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
 and [native index creation](../testing/ACE16_SECONDARY_INDEX_CREATION.md).

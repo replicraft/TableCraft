@@ -23,7 +23,7 @@ mod presentation;
         "Query update creates a fresh offline Jet 4 copy for qualified Int32 edits. ",
         "Write preview-* commands create explicit experimental ACE copies, never qualified saves. ",
         "Inspect reports metadata or explicit checks without executing content. ",
-        "In-place CLI editing and GUI hosts are not implemented."
+        "Query journal-update/recover-update explicitly edit or recover offline Jet 4 files with retained journals. GUI hosts are not implemented."
     )
 )]
 struct Cli {
@@ -83,6 +83,14 @@ fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
     match result {
         Ok(()) => (Ok(()), ExitCode::SUCCESS),
         Err(ExecutionError::Output(error)) => (Err(error), ExitCode::FAILURE),
+        Err(ExecutionError::Journal(error)) => {
+            let status = if error.invalid_input() {
+                ExitCode::from(INVALID_INPUT_STATUS)
+            } else {
+                ExitCode::FAILURE
+            };
+            protected_failure(&error, status, &mut io::stderr().lock())
+        }
         Err(ExecutionError::Operation(error)) => {
             tracing::debug!(success = false, "operation failed");
             (
@@ -90,5 +98,42 @@ fn output(result: Result<(), ExecutionError>) -> (io::Result<()>, ExitCode) {
                 ExitCode::from(INVALID_INPUT_STATUS),
             )
         }
+    }
+}
+
+// A failed diagnostic is secondary to a journal-bearing/known-outcome failure.
+// Returning Ok here deliberately bypasses the old read-only BrokenPipe policy.
+fn protected_failure(
+    error: &dyn std::fmt::Display,
+    status: ExitCode,
+    diagnostics: &mut dyn Write,
+) -> (io::Result<()>, ExitCode) {
+    let _ = writeln!(diagnostics, "error: {error}");
+    (Ok(()), status)
+}
+
+#[cfg(test)]
+mod journal_output_tests {
+    use super::*;
+
+    struct FailedDiagnostics;
+
+    impl Write for FailedDiagnostics {
+        fn write(&mut self, _: &[u8]) -> io::Result<usize> {
+            Err(io::ErrorKind::BrokenPipe.into())
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Err(io::ErrorKind::BrokenPipe.into())
+        }
+    }
+
+    #[test]
+    fn journal_failure_cannot_become_success_when_stderr_has_broken_pipe() {
+        let error = io::Error::from(io::ErrorKind::BrokenPipe);
+        let (diagnostic, status) =
+            protected_failure(&error, ExitCode::FAILURE, &mut FailedDiagnostics);
+        assert!(diagnostic.is_ok());
+        assert_eq!(status, ExitCode::FAILURE);
     }
 }

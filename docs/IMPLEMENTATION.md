@@ -12,32 +12,29 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
-## Recovery inspection and shared update planning
+## Offline journaled updates and recovery
 
-The I/O journal now exposes a read-only `CheckedV1` session. It retains the exact
-verified images and journal borrow for later consuming recovery, so native policy
-checks can run before any target write. Independent literal controls ran first;
-the full I/O run passes 54 unit, nine integration and two compile-fail tests,
-with strict lint checks passing. The native journal path now retains bounded
-original typed intent and rebuilds the normal Jet 4 plan against the checked
-BEFORE image; both complete images must match before recovery writes are admitted.
-Seven qualified-recovery checks pass. The optional I/O
-[filesystem owner](foundation/FILESYSTEM_JOURNALS.md) now validates existing bundle
-identity and lends retained storage for explicit recovery; fifteen focused checks
-and the full I/O suite pass. Durable bundle creation/retirement and CLI
-save/recover commands remain unfinished. See [the journal contract](foundation/IMAGE_JOURNAL.md)
-and [native recovery](access/writes/NATIVE_WRITES.md#native-qualification-before-recovery-writes).
+`query journal-update` and `query recover-update` now expose the qualified normal
+Jet 4 Int32 path on macOS/Linux. The host retains one exclusive target descriptor,
+evaluates SQL once through the shared Access adapter, durably creates the paired
+bundle, and preserves known outcomes through retirement, release and stdout
+failures. Recovery rederives the original typed request and proves both complete
+images before target writes. No SQL is replayed. See the
+[CLI contract](cli/JOURNAL_EDITING.md) and [filesystem owner](foundation/FILESYSTEM_JOURNALS.md).
 
-Normal SQL UPDATE planning now lives in `tablecraft_access::editing::sql` and is
-used by the CLI. The adapter composes the existing snapshot/query/native checks;
-the host keeps file ownership and publication. External selectors are refused
-before file opens in both default and required copy modes. Four adapter and five
-CLI unit checks pass, including a complete-image expected UPDATE. See
-[query editing](access/writes/QUERY_EDITING.md). The optional adapter `journal`
-feature adds shared recoverable SQL planning with the same snapshot conversion;
-two focused tests pass. Native intent, namespace extraction and adapter checks
-pass strict and minimal builds; retained failures and limits are recorded
-[separately](testing/results/native-int32-intent-recovery-2026-10-30.json).
+Independent sources ran first. The journal CLI passes five black-box functions,
+65 CLI unit functions, six adapter integration checks and 22 existing copy/inspect/
+guard integration checks. Strict CLI checks pass. The full I/O run passes 81 unit,
+nine integration and two documentation tests, with strict/minimal checks passing.
+The [CLI result](testing/results/jet4-journal-cli-2026-10-30.json) and
+[filesystem result](testing/results/filesystem-journal-lifecycle-2026-10-30.json)
+retain actual evidence and failures separately.
+
+Automatic journal discovery, post-restart resolution of retired/incomplete garbage,
+Windows lifecycle support and normal ACE saves remain unfinished. The current
+commands require an explicit stable/offline namespace; ordinary readers stay
+closed while recovery is required. Existing fresh-copy edits remain available.
+Native Access and physical power-loss qualification remain separate.
 
 ## Required fresh-output publication
 

@@ -552,9 +552,9 @@ preserve every literal/model byte, and SOURCE/intent/adapter reruns pass.
 Strict all-target/all-feature IO/ACE/Access checks, minimal builds and seven
 existing native transaction tests pass. One strict attempt exhausted compiler
 cache space; only regenerable ordinary incremental artifacts were cleared before
-the passing retry. This addition supplies no journal filesystem lifecycle or
-end-user in-place command; current CLI copies retain
-their separate publication policy.
+the passing retry. The
+[explicit filesystem/CLI lifecycle](../../cli/JOURNAL_EDITING.md) now consumes this
+capability; fresh copies retain their separate publication policy.
 
 ### Native qualification before recovery writes
 
@@ -580,7 +580,9 @@ functions pass. Strict all-target/all-feature checks, minimal builds and seven
 existing native transaction checks also pass. The
 [local result record](../../testing/results/native-int32-intent-recovery-2026-10-30.json)
 keeps source qualification, API checks and retained failed attempts separate.
-Filesystem bundle integration and end-user journal commands remain unfinished.
+[Explicit CLI update/recovery](../../cli/JOURNAL_EDITING.md) now composes these
+checks with retained filesystem pairing. Restart-finalization resolution,
+automatic discovery, Windows lifecycle support and normal ACE saves remain open.
 
 Three additional recorded-plan integration tests pass, along with focused strict
 checks. They reuse the already qualified source model for eight complete images,
