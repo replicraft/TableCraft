@@ -1,5 +1,5 @@
 //! Exact original Boolean expectations become disjoint mask patches.
-use super::{FixedColumnUpdates, name_work, source::Source, unique};
+use super::{FixedColumnUpdates, int32, name_work, source::Source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::row::MASK_BITS,
@@ -47,6 +47,12 @@ pub(super) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    // Original typed intent chooses this extra closed profile; the numeric
+    // stage independently checks actual native declaration and non-NULL values.
+    // Healthy Boolean paths retain their existing allocations, polls and charges.
+    if int32::requested(groups) {
+        return int32::prepare(image, source, groups, budget, cancelled);
+    }
     let schema = source.table.schema();
     let count = groups
         .iter()
@@ -80,7 +86,20 @@ pub(super) fn prepare(
         for field in schema.columns() {
             name_work(field.name(), group.column(), budget)?;
         }
-        let column = field::fixed_column(schema, group.column(), ScalarType::Boolean, 0)?;
+        let column = match field::fixed_column(schema, group.column(), ScalarType::Boolean, 0) {
+            Ok(column) => column,
+            Err(error @ EditError::Unsupported(WriteBlocker::Column))
+                if groups.len() == 1 && group.updates().is_empty() =>
+            {
+                // Empty numeric requests have no typed value to select a profile.
+                // Existing zero-capacity Boolean buffers allocate no heap here.
+                if int32::empty_target(schema, group, budget, cancelled)? {
+                    return int32::prepare(image, source, groups, budget, cancelled);
+                }
+                return Err(error);
+            }
+            Err(error) => return Err(error),
+        };
         budget
             .charge(
                 Resource::Steps,

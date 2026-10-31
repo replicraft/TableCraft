@@ -18,7 +18,7 @@ mod modern_attachment;
 #[path = "../../../../../tests/attachments/fixture.rs"]
 mod old_attachment;
 #[path = "../../../../../tests/ace16_preserved_scalar_updates_contract/model.rs"]
-mod preserved_model;
+pub(super) mod preserved_model;
 
 use crate::{
     BeforeEventGuardError, BeforeEventIntents, EditError, FixedUpdateImageLimits,

@@ -87,3 +87,9 @@ that value. No donated-file retry was performed for this increment, and the
 previous real-file refusal still applies. The
 [UI-carrier result](results/ace16-preserved-ui-carriers-2026-10-30.json) records
 this narrower evidence.
+
+
+The separate [preserved Int32 continuation](ACE16_PRESERVED_INT32_UPDATES.md)
+now admits one ordinary, nonindexed, calculation-independent non-NULL Int32 target
+through these existing fixed/batch services. Its source profile, four-byte proof
+and evidence are separate; the Boolean behavior and history above remain unchanged.

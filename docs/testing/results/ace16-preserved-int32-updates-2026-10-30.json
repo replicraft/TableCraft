@@ -1,0 +1,168 @@
+{
+  "feature": "Mixed-schema preserved nonNULL Int32 engineering updates",
+  "date": "2026-10-30",
+  "scope": "Existing native fixed/batch candidate services; no normal save or journal authority",
+  "source": {
+    "pairs": 8,
+    "views": 16,
+    "supported_code6_pairs": 4,
+    "unsupported_code5_profile_pairs": 4,
+    "original_constructor_and_expected_bodies_unchanged": true,
+    "chronology": [
+      "Initial source gate passed selected reads/advanced payloads/roles",
+      "Before producer: static review identified code5 native20 scalar coverage gap",
+      "Stronger source gate explicitly asserts fields7/8 availability by profile and passes; no source-byte or golden retuning"
+    ]
+  },
+  "native_api": {
+    "status": "pass",
+    "functions": 4,
+    "supported_original_pairs": 4,
+    "fixed_whole_image_comparisons": 4,
+    "batch_whole_image_comparisons": 4,
+    "unsupported_profile_pairs": 4,
+    "empty_and_equal_whole_images": 2
+  },
+  "causal": {
+    "status": "pass",
+    "functions": 2,
+    "covers": [
+      "Healthy expected image first; valid alternative request/candidate rejected against original",
+      "Unrelated padding/opaque bytes and changed-row count rejected"
+    ]
+  },
+  "broader": {
+    "status": "pass",
+    "native_contract_passed": 20,
+    "native_contract_existing_ignored": 2,
+    "preserved_unit_passed": 12,
+    "strict_ace_access_cli_all_targets_all_features": "pass",
+    "final_formatter_ace_access_cli": "pass",
+    "minimal_ace_access_no_default": "pass",
+    "documentation_links": {
+      "targets": 6718,
+      "broken": 0
+    }
+  },
+  "limits": [
+    "One ordinary nonindexed calculation-independent nonNULL Int32 target",
+    "No mixed Boolean/numeric groups or NULL transitions",
+    "PublishToWeb1 and participating relationships remain refused",
+    "Authored corpus, not donated-file or native Access qualification",
+    "ACE normal save/required macros/journal admission unchanged"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/actual-source-first-freeze.json",
+      "bytes": 787,
+      "sha256": "6f8a26f77af17eb4bed6404087ce1597244e05de91fa436181ea933f4c7a5692"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/source-profile-correction.json",
+      "bytes": 696,
+      "sha256": "34325d4b52d5796041a8545c973b47e8e07e68ab2d5d87a3b1a72253a60d889c"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/producer-first-private-freeze.json",
+      "bytes": 4427,
+      "sha256": "88aa403230dfde061de30f345f2a94c41dfe34e4b3b7884ba5b865a9172d730e"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/actual-producer-first-freeze.json",
+      "bytes": 2572,
+      "sha256": "8b216b84b419763c3c861258ea3fc53f0f7d15ae927f00f3bf27aa3b3bba7825"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/boolean-and-model-body-identity.json",
+      "bytes": 574,
+      "sha256": "cbc1b9cacb66e8320d912d3e29d891c3d272d986b38d718c45c8c0039896479f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/compile-first-root.log",
+      "bytes": 1631,
+      "sha256": "be1f49a73987b4f2cdc2dea08fa83d30cd5b12281f26e3b8acca79c9b8fb1eba"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/source-first-root.log",
+      "bytes": 540,
+      "sha256": "fa82618cca38be0a98fb1413332876d8d509629a1f1f8fc210d538e1afd665bc"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/source-profile-correction-root.log",
+      "bytes": 539,
+      "sha256": "ac13c20a36a41a293f5d6e8d50db2c2cc08cf584bc347a83dda280abfabc22fb"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/borrow-correction.json",
+      "bytes": 527,
+      "sha256": "d60bc4031749a5789fea1b57595d1ac57fdadb5a05972704185222fec1e55800"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/api-first-root.log",
+      "bytes": 683,
+      "sha256": "7cd09f6e19d088d30b5577031762ee78923e8c754f4f7af596445c4db0c2b85a"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/causal-first-root.log",
+      "bytes": 652,
+      "sha256": "728ffa920023f80b8c48992447024dc9e4a2ce000ae3af04b3c831c17aa9fc04"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/compile-borrow-correction-root.log",
+      "bytes": 403,
+      "sha256": "cfb1f4ddc88ec8cce2fc56fdfd13f6458ca1dd83c8d256e1473d10c246bfe386"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/source-owner-seam-root.log",
+      "bytes": 540,
+      "sha256": "1bc5ae33c90056b0d060b814f8a9e744c72a82363bb5189b757b0c5ed1ec4394"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/style-correction.json",
+      "bytes": 553,
+      "sha256": "70e5dbd8171102a48b7cabf67934ed2a73e069c92d227bb6b3b2ff0736baae6f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/contract-all-root.log",
+      "bytes": 2652,
+      "sha256": "5c9acec12cfaa3cca0cba72c53cf61e636b7a10454e343868b43a7e2b52d9fb4"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/fmt-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/minimal-root.log",
+      "bytes": 301,
+      "sha256": "1259b305ff1f61b95960663df0c9437409ecb5133fddd2224fe335a4ea12cd5d"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/preserved-regression-root.log",
+      "bytes": 2279,
+      "sha256": "e09bde7bada49aa0bcb3f07fbbf477f5164deaed47324366bf4a6d5f79761711"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/strict-first-root.log",
+      "bytes": 403,
+      "sha256": "de5135adc3ad7e6cfd48b3a8200136b7b480d14a49f9c092e404c8758ccc7c3b"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/links-final-root.log",
+      "bytes": 53,
+      "sha256": "f0d26a8d30805959b3cee2a8b11a8b4f7becfda9c31cb716e9832a9770d76d1f"
+    }
+  ],
+  "producer_history": [
+    {
+      "phase": "compile-first-root",
+      "outcome": "compile failure before tests",
+      "cause": "E0500/E0501: row callback captured the visitor borrowed budget",
+      "correction": "Numeric-only bounded Payload vector is prepaid and fallibly reserved before visit; span construction follows completed visit",
+      "source_expected_and_boolean_paths_unchanged": true
+    }
+  ],
+  "normal_compile_after_borrow_correction": "pass",
+  "source_owner_seam_rerun": "pass",
+  "post_api_mechanical_change": "Readable equivalent single-group predicate and accurate module comment; no model/expected changes"
+}
