@@ -14,25 +14,23 @@ engineering previews and independent comparisons do not establish full parity.
 
 ## Fresh ACE 16 database construction
 
-The optional standalone `ace16-create` feature now constructs one complete
-header-5 database in memory with one table, 1–16 ordinary Int32 columns
-and up to 64 rows of present values subject to single-page fit. It directly
-authors all nine pages;
-no database template or existing image is accepted. The first execution matches
-all six independent whole-file goldens. Five focused tests, independent exact
-and insufficient resource allowances, cancellation, minimal/all-feature strict
-checks and 59 existing preview tests pass. The
-[creation contract](testing/ACE16_DATABASE_CREATION.md) separates this working
-constructor from filesystem publication, normal imported-file saves and native
-Access qualification. The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md)
-now composes that artifact with required fresh publication, and the CLI
-[`create` command](cli/NATIVE_CREATION.md) supplies bounded typed TSV inputs.
-Counts are available before publication for complete report preparation; typed
-publication and output failures retain their visibility/durability facts.
-Six complete-image publications pass through both the shared service and CLI;
-protected output failures and actual create/read/check/no-overwrite checks pass.
-Broader schemas, multiple tables and native Access creation/save qualification
-remain unfinished.
+The optional standalone `ace16-create` engine accepts typed declarations and
+exact Value rows for ten fixed scalar families, retaining its Int32 convenience
+API. One table with 1–16 columns and up to 64 rows must fit one DATA page. NULL
+is supported except for Boolean; no carrier conversion or Required declaration
+is inferred. The first eleven tests pass 28 independent complete-image
+comparisons, including raw IEEE payloads. Existing fixed/INSERT/preservation
+regressions pass 187 functions, alongside minimal/all-feature strict checks.
+The [creation contract](testing/ACE16_DATABASE_CREATION.md) separates source
+observations, construction and native Access qualification.
+
+The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md) and
+[`create` command](cli/NATIVE_CREATION.md) currently expose Int32 inputs. Counts
+precede publication for complete report preparation; typed publication/output
+failures retain known visibility and durability facts. Six complete images pass
+both services, with actual create/read/check/no-overwrite checks. Broader types
+in the host, multiple tables, variable fields and native Access create/save
+qualification remain unfinished. Normal imported ACE saves remain blocked.
 
 ## Shared offline write sessions
 

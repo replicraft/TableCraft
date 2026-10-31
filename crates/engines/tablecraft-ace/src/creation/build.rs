@@ -92,26 +92,26 @@ pub(super) fn build(
     for (number, fields, rows, slot) in [
         (
             profile::CATALOG_DEFINITION,
-            Fields::Known(&profile::CATALOG_FIELDS),
+            Fields::new(&profile::CATALOG_FIELDS),
             profile::CATALOG_OBJECT_COUNT,
             profile::CATALOG_MAP_SLOT,
         ),
         (
             profile::RELATIONSHIPS_DEFINITION,
-            Fields::Known(&profile::RELATIONSHIP_FIELDS),
+            Fields::new(&profile::RELATIONSHIP_FIELDS),
             0,
             profile::RELATIONSHIPS_MAP_SLOT,
         ),
         (
             profile::ACES_DEFINITION,
-            Fields::Known(&profile::ACE_FIELDS),
+            Fields::new(&profile::ACE_FIELDS),
             0,
             profile::ACES_MAP_SLOT,
         ),
         (
             profile::USER_DEFINITION,
-            Fields::User(request.columns),
-            request.rows.len(),
+            request.fields(),
+            request.rows.count(),
             profile::USER_MAP_SLOT,
         ),
     ] {
@@ -185,8 +185,12 @@ pub(super) fn build(
             page(&mut bytes, profile::USER_DATA)?,
             profile::USER_DEFINITION,
         )?;
-        for row in request.rows {
-            record::user(users.append(request.row_bytes, budget, cancelled)?, row)?;
+        for row in 0..request.rows.count() {
+            record::user(
+                users.append(request.row_bytes, budget, cancelled)?,
+                request,
+                row,
+            )?;
         }
         users.finish()?;
     }

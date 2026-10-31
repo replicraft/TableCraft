@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "standalone_ace16_fixed_scalar_creator",
+  "status": "local_generic_fixed_creation_and_regressions_passed",
+  "feature": "ace16-create",
+  "requires_write_preview_or_journal": false,
+  "registry_dependencies_added": false,
+  "api": {
+    "generic": "create_ace16_database(table, &[CreateColumn], &[&[Value]], budget, cancelled)",
+    "retained": "create_ace16_int32_database(table, &[&str], &[&[i32]], budget, cancelled)",
+    "artifact": "CreatedDatabase: immutable bytes, row_count, column_count",
+    "host_and_cli_creation_types": "Int32 only"
+  },
+  "profile": {
+    "header": 5,
+    "pages": 9,
+    "bytes": 36864,
+    "user_tables": 1,
+    "columns": [
+      1,
+      16
+    ],
+    "rows": [
+      0,
+      64
+    ],
+    "single_data_page_fit_required": true,
+    "families": [
+      "Boolean",
+      "Byte",
+      "Int16",
+      "Int32",
+      "Int64",
+      "Currency",
+      "Single",
+      "Double",
+      "DateTime",
+      "Guid"
+    ],
+    "exact_present_carriers": true,
+    "boolean_null": "Carrier refusal",
+    "other_nulls": "zero inactive payload and cleared presence bit",
+    "float_and_date_bits": "preserved without conversion or canonicalization",
+    "unsupported": [
+      "Decimal",
+      "Text",
+      "Binary",
+      "DateTimeExtended"
+    ]
+  },
+  "source_before_producer": {
+    "fixed_source_commit": "fcadc73d",
+    "ieee_source_commit": "d8c7509c",
+    "records": [
+      "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+      "docs/testing/results/ace16-fixed-creation-source-2026-10-31.json",
+      "docs/testing/results/ace16-fixed-ieee-creation-source-2026-10-31.json"
+    ],
+    "producer_freeze": {
+      "path": ".cache/ace16-native-fixed-creator-next-20261031/private-freeze.json",
+      "sha256": "a754651b6c16e8c794e09c4f243b0d6ab0a910e0d67414e0ede8ff12d7c29163"
+    }
+  },
+  "first_execution": {
+    "status": "passed",
+    "configuration": "no default features; only ace16-create",
+    "tests": 11,
+    "failed": 0,
+    "compile_seconds": 7.3,
+    "test_seconds": 0.01,
+    "whole_image_comparisons": 28,
+    "comparison_breakdown": {
+      "fixed": 5,
+      "ieee": 5,
+      "int32_both_apis": 12,
+      "retained_int32": 6
+    },
+    "log": {
+      "path": ".cache/ace16-native-fixed-creator-next-20261031/creator-first-root.log",
+      "sha256": "bbd00ca7e870d1d8b8834799d00d7afda954ada71b6f1c49bfbc12ec0c4dbf71"
+    }
+  },
+  "validation": {
+    "standalone_check": {
+      "status": "passed",
+      "seconds": 3.44,
+      "log": ".cache/ace16-native-fixed-creator-next-20261031/minimal-first-root.log"
+    },
+    "format": {
+      "status": "passed",
+      "log": ".cache/ace16-native-fixed-creator-next-20261031/fmt-first-root.log"
+    },
+    "strict": {
+      "status": "passed",
+      "configuration": "all targets and all features",
+      "seconds": 50.25,
+      "log": ".cache/ace16-native-fixed-creator-next-20261031/strict-first-root.log",
+      "sha256": "8017fb20104f2dfbaba7a10966feb6f057186f311835228b592270bdbcc4edbe"
+    },
+    "legacy_codec_regressions": {
+      "status": "passed",
+      "fixed": {
+        "passed": 116,
+        "ignored": 7,
+        "seconds": 110.96,
+        "log": ".cache/ace16-native-fixed-creator-next-20261031/fixed-regression-root.log",
+        "sha256": "e17da76fb5e7742c20ccd88c23c7b8ec560d0f1f23b44eeb2e12daa40e10e2c4"
+      },
+      "insert_record": {
+        "passed": 17,
+        "seconds": 0.05,
+        "log": ".cache/ace16-native-fixed-creator-next-20261031/insert-record-regression-root.log"
+      },
+      "preserved_scalar": {
+        "passed": 54,
+        "ignored": 2,
+        "seconds": 1.27,
+        "log": ".cache/ace16-native-fixed-creator-next-20261031/preserved-regression-root.log"
+      }
+    },
+    "dependency_guard": {
+      "status": "passed"
+    },
+    "minimal_all_target_strict": {
+      "status": "passed",
+      "seconds": 7.98,
+      "log": ".cache/ace16-native-fixed-creator-next-20261031/minimal-strict-root.log",
+      "sha256": "6b6f42410a12e700ca9524881753976c1d2cb8fdc47f303bf0ca3f11f73239d1"
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6874,
+      "missing": 0,
+      "log": ".cache/ace16-native-fixed-creator-next-20261031/links-root.log",
+      "sha256": "75334805b33c36c096895ec252e1ca6f5e8503ebc746d414f46bf7f432c36beb"
+    }
+  },
+  "implementation": {
+    "preallocation_validation": true,
+    "image_allocations": 1,
+    "resource_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "initial_and_final_cancellation": true,
+    "shared_fixed_codec": "Existing exact payload expressions extracted; old mutation adapter retains Decimal branch and typed Column failures",
+    "filesystem_effects": false,
+    "public_parts_or_edit_plan_conversion": false
+  },
+  "limits": [
+    "SDK reads qualify independent source goldens, not a new generic-producer SDK phase",
+    "No native Access or Windows creation/open/save qualification",
+    "No general system/ACL sufficiency or macro-absence authority",
+    "No imported ACE normal-save or recovery permission",
+    "Existing unresolved header choices remain unqualified"
+  ]
+}
