@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "regular_readonly_input_opening",
+  "status": "local_macos_tests_passed",
+  "behavior": [
+    "Unix RDONLY CLOEXEC NONBLOCK before actual descriptor regular-file check",
+    "regular symlinks preserve ordinary read-only open semantics",
+    "standard IO error kinds retained",
+    "no locking or stable-input capability"
+  ],
+  "working_consumer": "CLI write-file input capture",
+  "observed": {
+    "new_io_tests_passed": 3,
+    "incidental_existing_reopen_tests_passed": 8,
+    "io_all_target_all_feature_strict_passed": true,
+    "existing_cli_set_file_regression_passed": 1
+  },
+  "logs": [
+    {
+      "path": ".cache/ace16-native-create-host-next-20261031/io-open-first-root.log",
+      "bytes": 2374,
+      "sha256": "2a438a6231e9184b1c4b167eae910754f8eb9fbb8208b7454474e18ff78c52e8"
+    },
+    {
+      "path": ".cache/ace16-native-create-host-next-20261031/io-open-strict-root.log",
+      "bytes": 182,
+      "sha256": "70992502067bf4cbea66b449969631e7ef6eb4615a4335aaab4cc0a2c58fb15d"
+    },
+    {
+      "path": ".cache/ace16-native-create-host-next-20261031/write-input-open-regression-root.log",
+      "bytes": 1052,
+      "sha256": "a8d986f6f1903e407de98d1d01ed4a6fc3db30ed786e5302bd444956c9e31588"
+    }
+  ],
+  "limits": [
+    "Linux and Windows runtime not executed",
+    "Non-Unix standard open retains host callback blocking behavior",
+    "Fresh database creation host is a separate pending consumer"
+  ]
+}

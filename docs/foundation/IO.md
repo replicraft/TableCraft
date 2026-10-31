@@ -8,6 +8,14 @@ Default features are empty; optional journal enables the working
 
 ## Implemented operations
 
+- `open_regular_readonly` (optional `fresh-publication` feature): opens an
+  existing input read-only and checks the actual descriptor is a regular file.
+  Unix uses nonblocking open so a FIFO without a peer refuses immediately.
+  Regular symlinks retain ordinary open behavior. The helper provides no lock
+  or stable-snapshot guarantee; other platforms retain standard open behavior.
+  CLI write-file inputs consume it. Three focused tests and the existing TSV
+  write-file regression pass; see the
+  [input-opening record](../testing/results/regular-input-opening-2026-10-31.json).
 - `seek_absolute` / `seek_to_end`: bounded absolute and End(0) targets, including
   Interrupted retries, position checks where known and completion cancellation.
   Relative seeks are deliberately absent from this retry API.

@@ -7,7 +7,7 @@ use super::{
     tick, values,
 };
 use csv::{ByteRecord, ReaderBuilder};
-use std::{fs::File, path::Path};
+use std::path::Path;
 use tablecraft_ace::{InspectError, RowDelete};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -38,7 +38,8 @@ pub(super) fn capture(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, Error> {
     tick(budget, cancelled)?;
-    let mut file = File::open(path).map_err(|error| Error::File(error.kind()))?;
+    let mut file =
+        tablecraft_io::open_regular_readonly(path).map_err(|error| Error::File(error.kind()))?;
     let length =
         tablecraft_io::seek_to_end(&mut file, budget, cancelled).map_err(InspectError::from)?;
     if length > MAX_INPUT_BYTES {
