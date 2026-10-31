@@ -10642,3 +10642,9 @@ remains a read-only reference. Generated originals, classes and observations sta
 private; a pure Rust fixture and five complete hashes run in ordinary CI.
 [Source qualification](ACE16_FIXED_CREATION_SOURCES.md) separates exact native/SDK
 read observations from generic construction and Microsoft Access qualification.
+
+The [IEEE continuation](ACE16_FIXED_CREATION_SOURCES.md#ieee-payload-continuation)
+adds five two-row originals derived only by four literal Float/Double payload
+spans. Independent SDK reads retain subnormals, infinities and asymmetric quiet
+and signalling NaNs exactly on the recorded JVM. All other bytes remain equal
+to the qualified signed-zero source; the earlier five originals remain unchanged.

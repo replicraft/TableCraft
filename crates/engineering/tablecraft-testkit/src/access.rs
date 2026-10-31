@@ -125,3 +125,6 @@ pub mod canonical_creation;
 
 /// Independent complete fixed-scalar creation sources and exact carriers.
 pub mod canonical_fixed_creation;
+
+/// Independent special IEEE payload continuations of fixed creation sources.
+pub mod canonical_fixed_float_creation;

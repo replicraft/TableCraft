@@ -26,8 +26,7 @@ Jackcess 5.0.4 calls then passed, including all four metadata APIs, complete sys
 observations and
 original raw float/DATE bits alongside calendar values. A separate saved-only
 comparison reconstructed all five complete source images and matched every SDK
-stdout byte. Sources and closed input/class pins remained unchanged. The new
-scalar producer has not been executed. Final source strict and formatting checks
+stdout byte. Sources and closed input/class pins remained unchanged. No generic scalar producer was invoked during this source phase. Final source strict and formatting checks
 also passed.
 
 This is source qualification, not a normal ACE save permission or native Access
@@ -39,3 +38,33 @@ observations; the new scalar payloads now have their own separate observations.
 
 The [source result](results/ace16-fixed-creation-source-2026-10-31.json) records
 the exact original hashes, read observations, CI anchors and qualification limits.
+
+## IEEE payload continuation
+
+Five additional independently authored sources retain the complete committed
+fixed-scalar schema and two-row signed-zero envelope. They replace only the
+Single and Double payloads with minimum/maximum signed subnormals, signed
+infinities, quiet NaNs and signalling NaNs with asymmetric payloads. Four
+payload spans, 24 bytes per file, are the complete allowed difference; every
+other byte, including DATE signs, masks, GUIDs and allocation metadata, remains
+unchanged.
+
+The native source gate passed all five files and ten complete rows on its first
+attempt, using representational equality and fresh source-bound Metadata. A
+separate first export froze all five complete originals before generic producer
+execution. All five first read-only Jackcess comparisons passed using the
+unchanged fixed-scalar getter and classes. A separate saved verifier matched
+each complete source and every SDK stdout byte, with the four-span complement
+intact. All 37 closed pins and original hashes remained unchanged. The ordinary
+five-hash CI anchor, final strict checks and formatting passed. No generic fixed creator was invoked.
+
+The recorded JVM transport retained all literal subnormal, infinity and NaN
+bits, including signalling payloads and signs; no quieting, canonicalization or
+expectation retune occurred. This establishes the observed read transport,
+not numerical arithmetic behavior or portability to every JVM/platform.
+These are source/read observations, not native Access creation/save, normal ACE
+editing or required-event absence permission. The
+prior fixed-source record continues to own the unchanged envelope's provenance.
+
+The [IEEE result](results/ace16-fixed-ieee-creation-source-2026-10-31.json)
+pins exact originals and observations, including the unchanged complement.
