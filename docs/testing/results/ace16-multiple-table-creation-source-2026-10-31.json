@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_multi_table_creation_sources",
+  "status": "native_independent_read_hash_and_final_checks_passed",
+  "profile": {
+    "header": 5,
+    "cases": 4,
+    "selected_tables": 22,
+    "selected_rows": 63,
+    "bytes": 294912,
+    "map_layout": "Preserve original sixteen system/first-table/LVAL roles; append explicit owned/candidate pairs for additional users"
+  },
+  "sources": [
+    {
+      "case": "two-empty",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/originals-first/multiple-tables-h5-two-empty.accdb",
+      "bytes": 45056,
+      "sha256": "184608b6af3eb6fe1d699d092e50bc0a40ec400a462e6dd2336c72b54e3fbc0e"
+    },
+    {
+      "case": "populated",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/originals-first/multiple-tables-h5-populated.accdb",
+      "bytes": 45056,
+      "sha256": "e8e4daf3ef32b6d8dfbae4557f492b81296809ca253fe499cf5079b3a8e81aa8"
+    },
+    {
+      "case": "candidate-bits",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/originals-first/multiple-tables-h5-candidate-bits.accdb",
+      "bytes": 45056,
+      "sha256": "3310ac8fc951ee1364a23fdb789e7f377d2522a391b6a7669250f7e58b1f8d93"
+    },
+    {
+      "case": "sixteen",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/originals-first/multiple-tables-h5-sixteen.accdb",
+      "bytes": 159744,
+      "sha256": "5a2d6db36bce216f7cfc425f29218d168accdc9cfebb51bc55b74b389a721d3f"
+    }
+  ],
+  "source_freeze": {
+    "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/source-first-freeze.json",
+    "bytes": 1955,
+    "sha256": "0fba91e622c9971ee17fd58c776f5b9b92c167ee9fdb0c5445b1d2ac9798cce2"
+  },
+  "reader_freeze": {
+    "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/getter-first-freeze.json",
+    "bytes": 1481,
+    "sha256": "e3a15c8036096c1a1cc7436fbe5bbdfe5591894e09ca8edd5ac2b381256bf6e3"
+  },
+  "bound_reader_authority": {
+    "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/input-freeze.json",
+    "bytes": 10747,
+    "sha256": "405a827862e1342cd41c754dd080377e0d43a2dbc55cebb586f31beed9689144"
+  },
+  "reader_preflight": {
+    "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/reader-precall-root.json",
+    "bytes": 1582,
+    "sha256": "f11bcd2a79b6a969040c31acab55efd416665ed79791443ac1efb79bbeda1c37"
+  },
+  "native": {
+    "status": "passed_first_execution",
+    "tests": 1,
+    "seconds": 0.07,
+    "log": {
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/native-first-root.log",
+      "bytes": 632,
+      "sha256": "844801def3839fd8a3ce4c791ba198a61fb6aeaba8d6c1cab94e0600e3ffd192"
+    }
+  },
+  "export": {
+    "status": "passed_first_execution",
+    "log": {
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/export-first-root.log",
+      "bytes": 385,
+      "sha256": "3ee230e5e852b51db9e45c83d8fe2733c37f591a896eef041e73b377ce85677a"
+    }
+  },
+  "reader_compile": {
+    "argv": [
+      "javac",
+      "-cp",
+      ".cache/ace16-insert-long-value-map-growth-source-first-20261028/precall-inputs/012-jackcess-5.0.4.jar",
+      "-d",
+      ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/classes-first",
+      ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/CanonicalMultipleAceGetter.java"
+    ],
+    "exit_code": 0,
+    "seconds": 0.932461875025183,
+    "classes": [
+      {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/classes-first/CanonicalMultipleAceGetter$1.class",
+        "bytes": 841,
+        "sha256": "294c031dab628da4efc0209f93976e9937df2f07e87019ee25cbb3cb2b2239be"
+      },
+      {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/classes-first/CanonicalMultipleAceGetter.class",
+        "bytes": 17599,
+        "sha256": "72edd0df87ebfec208846328a401ea09a34420c15447ecfc3bf90a30dc9995f1"
+      }
+    ]
+  },
+  "sdk_reads": [
+    {
+      "case": "two-empty",
+      "result": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-two-empty-first-result.json",
+        "bytes": 600,
+        "sha256": "e5a4513999017ca9d26566c09066293a6e07257e89831c95dcf89b9ba726722c"
+      },
+      "stdout": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-two-empty-first.stdout",
+        "bytes": 4278,
+        "sha256": "29c45a4d03f7da6a571a6f934f2c03d0d66a71bd8aa7bff9be5c6d5c74241a9c"
+      },
+      "stderr": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-two-empty-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "case": "populated",
+      "result": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-populated-first-result.json",
+        "bytes": 599,
+        "sha256": "acfc8fe9119a00b00ef5d84cd6e68f05f0859fc0cea13f319555165b7bda24ba"
+      },
+      "stdout": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-populated-first.stdout",
+        "bytes": 5292,
+        "sha256": "5912757bec9ab3759c41c3ad182774e1fc99792805253ea5a4364eb9911b33a5"
+      },
+      "stderr": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-populated-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "case": "candidate-bits",
+      "result": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-candidate-bits-first-result.json",
+        "bytes": 605,
+        "sha256": "9a529a0ed4cb9b47c715d883e1be02b9c9dd190447b27d9a619346a37ea37f2d"
+      },
+      "stdout": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-candidate-bits-first.stdout",
+        "bytes": 24776,
+        "sha256": "a00d13d1a31aa205369b42def6caf2c91bd407e300c8045a2bfc848df32afcbc"
+      },
+      "stderr": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-candidate-bits-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "case": "sixteen",
+      "result": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-sixteen-first-result.json",
+        "bytes": 598,
+        "sha256": "6f2a327a04a76f6721614ad31cdd10bcffd0f2b82d0f3c4f4fb13fed306b1e4a"
+      },
+      "stdout": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-sixteen-first.stdout",
+        "bytes": 8367,
+        "sha256": "0ee61b03aac8f99280fd6b2bcec26d91084ba4d463cb312ee9dda770c93a5622"
+      },
+      "stderr": {
+        "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/observations-first/sdk-sixteen-first.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "saved_comparison": {
+    "status": "passed_first_execution",
+    "complete_images": 4,
+    "tables": 22,
+    "rows": 63,
+    "child_calls": 0,
+    "writer_calls": 0,
+    "log": {
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/getter/saved-first-root.log",
+      "bytes": 681,
+      "sha256": "de914e627a329778dcb1e5ca4d2a866da665aa52b051c5f798e0bd75d9b756b8"
+    }
+  },
+  "final_checks": {
+    "hash_anchor": {
+      "status": "passed",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/hash-first-root.log",
+      "bytes": 832,
+      "sha256": "5cd8dac39d9bea4e68f48e173d0dfd71a3481f7fe863c60dae4b8996d8ee3f68",
+      "tests_passed": 2,
+      "ignored": 1
+    },
+    "strict": {
+      "status": "passed",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/strict-first-root.log",
+      "bytes": 307,
+      "sha256": "42c49eebd8d6eba4354221baa87837518c5cd0c025b94b8737396312385d1c25"
+    },
+    "format": {
+      "status": "passed",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/fmt-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "documentation_links": {
+      "status": "passed",
+      "path": ".cache/ace16-native-multi-table-creation-sources-next-20261031/links-first-root.log",
+      "bytes": 53,
+      "sha256": "a13098a7d65b388644a205325da237cca1db160f120bf82907c29ebc5097c930",
+      "targets": 6903,
+      "missing": 0
+    }
+  },
+  "limits": [
+    "Source qualification only; no multi-table production creator has executed",
+    "Read-only SDK acceptance is not native Access open/save/reopen qualification",
+    "No imported-file write, macro-absence or journal permission"
+  ]
+}

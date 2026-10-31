@@ -137,3 +137,6 @@ pub mod canonical_catalog_names;
 
 /// Independent near-full variable records and candidate-map boundary originals.
 pub mod canonical_variable_capacity_creation;
+
+/// Independently authored multiple-table native creation originals.
+pub mod canonical_multiple_creation;

@@ -98,3 +98,6 @@ mod creation_catalog_name_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_variable_capacity_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_multiple_sources;
