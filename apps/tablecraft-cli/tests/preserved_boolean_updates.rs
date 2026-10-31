@@ -25,3 +25,8 @@ const SCOPE: CatalogScope = CatalogScope::new(1);
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
 }
+
+#[path = "preserved_boolean_updates/int32_api.rs"]
+mod int32_api;
+#[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources.rs"]
+mod int32_sources;

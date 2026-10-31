@@ -1,5 +1,19 @@
 # Adopted dependency and licensing baseline
 
+## CLI preserved-field source qualification (30 October 2026)
+
+The CLI directly inherits `tablecraft-schema` as a development dependency. Its
+existing preserved-field integration target now reuses the actual public native
+SOURCE gate, which compares `ScalarType` declarations explicitly: Extended Date
+coverage is available under header6 and remains unavailable under header5. The
+consumer imports that shared owning type directly rather than relying on an
+engine re-export or weakening the source assertions.
+
+This edge supports working source qualification tests only. CLI production
+features and library ownership are unchanged; no registry package, version,
+feature default or third-party license is added. The root-owned offline lockfile
+refresh and dependency guard validate the additional local development edge.
+
 ## Workspace ownership extraction (27 October 2026)
 
 Three working local packages now separate existing responsibilities:

@@ -1564,6 +1564,7 @@ dependencies = [
  "tablecraft-io",
  "tablecraft-model",
  "tablecraft-query",
+ "tablecraft-schema",
  "tablecraft-sql",
  "tablecraft-sqlite",
  "tablecraft-testkit",

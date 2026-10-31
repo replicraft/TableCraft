@@ -26,7 +26,7 @@ impl AccessEngineeringEditor {
             .columns()
             .get(position)
             .ok_or(NativeEditError::Unsupported)?;
-        if target.data_type() != ScalarType::Boolean {
+        if !matches!(target.data_type(), ScalarType::Boolean | ScalarType::Int32) {
             return Err(NativeEditError::Unsupported);
         }
         let mut native = None;
@@ -44,7 +44,7 @@ impl AccessEngineeringEditor {
                 return Err(NativeEditError::Unsupported);
             }
         }
-        if native.and_then(|field| field.scalar_type()) != Some(ScalarType::Boolean) {
+        if native.and_then(|field| field.scalar_type()) != Some(target.data_type()) {
             return Err(NativeEditError::Unsupported);
         }
         Ok(())

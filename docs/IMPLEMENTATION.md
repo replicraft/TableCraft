@@ -39,6 +39,22 @@ functions, two authority controls and the 21-function guard regression pass.
 Public structural inspection and guard-only preparation retain their existing
 contracts. Required native event discovery and normal saves remain unfinished.
 
+[`query preview-before-change`](cli/BEFORE_CHANGE_COPY.md) now exposes the shared
+service through explicit property selectors and fresh output, with optional
+directory durability barriers. Complete-copy comparisons and encrypted/deployment
+refusals pass. Source release precedes publication, and typed publication/output
+failures retain their known state through diagnostic errors.
+
+## Preserved mixed-schema Int32 copies
+
+The existing fixed engineering services now admit one ordinary, nonindexed Int32
+field outside calculation dependencies in qualified mixed schemas. The
+[native and frontend contract](testing/ACE16_PRESERVED_INT32_UPDATES.md) retains
+attachments, stored caches, opaque values and every byte outside the exact
+four-byte field. Native, typed, SQL and CLI complete-image comparisons pass;
+unsupported profiles, NULL transitions and mixed-target batches still refuse.
+These are authored-source engineering results, not native Access save qualification.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal
@@ -75,7 +91,8 @@ and physical power-loss qualification remain separate.
 
 ## Required fresh-output publication
 
-`query update` and `query preview-create-index` now accept `--durable-output`.
+`query update`, `query preview-create-index` and `query preview-before-change`
+accept `--durable-output`.
 The [publication contract](cli/DURABLE_OUTPUT.md) binds the actual output parent,
 syncs file contents, publishes without replacement and completes a directory
 barrier. Visible or uncertain failures retain their actual state; they never

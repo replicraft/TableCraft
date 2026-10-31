@@ -1,0 +1,234 @@
+{
+  "feature": "existing SQL and typed fresh-copy consumers of preserved ordinary Int32 updates",
+  "date": "2026-10-30",
+  "scope": {
+    "one_target": true,
+    "non_null_Int32_only": true,
+    "indexed_or_calculation_dependent": false,
+    "joint_Boolean_numeric_or_multiple_numeric_groups": false,
+    "old_Boolean_charged_work_unchanged": true,
+    "normal_save_or_journal_permission": false
+  },
+  "source_before_consumers": {
+    "pairs_per_target": 8,
+    "views_per_target": 16,
+    "header6_positive_pairs": 4,
+    "header5_refusal_pairs": 4,
+    "model_expected_unchanged": true,
+    "access_source_functions_passed": 1,
+    "cli_source_functions_passed_after_dependency_correction": 1,
+    "adapter_snapshot_source_functions_passed": 1
+  },
+  "retained_failures": [
+    {
+      "phase": "CLI SOURCE compilation",
+      "exit": 101,
+      "cause": "missing direct development dependency on tablecraft-schema::ScalarType",
+      "product_source_gate_assertions_unchanged": true,
+      "fix": "CLI dev-dependency inherited from workspace; root offline lock refresh adds only local edge"
+    },
+    {
+      "phase": "first adapter API",
+      "passed": 1,
+      "failed": 1,
+      "cause": "negative SQL test used reserved Number unbracketed; parser refused before backend",
+      "healthy_matrix_positive_fullimages": 12,
+      "healthy_matrix_code5_refusals": 12,
+      "fix": "test-only [Number] spelling in Access/CLI negatives",
+      "cli_api_not_yet_run_in_that_attempt": true
+    }
+  ],
+  "corrected_api_results": {
+    "adapter_functions_passed": 2,
+    "adapter_complete_positive_comparisons": 12,
+    "adapter_code5_refusals": 12,
+    "cli_functions_passed": 2,
+    "cli_complete_positive_copies": 8,
+    "cli_code5_no_output_refusals": 8
+  },
+  "broader_checks": {
+    "full_adapter_preserved_target_passed": 6,
+    "full_cli_preserved_target_passed": 7,
+    "combined_ace_access_cli_strict_exit": 0,
+    "dependency_boundary_packages": 15,
+    "dependency_checker_tests_passed": 12,
+    "shared_host_regressions": {
+      "cli_bin": 76,
+      "guards": 20,
+      "journal": 8
+    },
+    "formatter_ace_access_cli_exit": 0,
+    "minimal_ace_access_no_default_features_exit": 0,
+    "documentation_link_targets": 6718,
+    "documentation_missing_links": 0
+  },
+  "source_pins": [
+    {
+      "path": "apps/tablecraft-cli/tests/preserved_boolean_updates/int32_api.rs",
+      "bytes": 4664,
+      "sha256": "89681c6fd494eacb7d206e45fb89fd8cf2fae3da15665e61912b6e4c3d2777a4"
+    },
+    {
+      "path": "apps/tablecraft-cli/tests/preserved_boolean_updates.rs",
+      "bytes": 1394,
+      "sha256": "6f480dfbdd7516d4b7b2df64c859d984874ee2d8543456f7bb2d69f3bafb682f"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/engineering/editor/preserved.rs",
+      "bytes": 1883,
+      "sha256": "1c255daaf7d275a170c5f6142fd1ee9b77ab1cbb669d7db5adbf32804476aea2"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates/int32_api.rs",
+      "bytes": 4633,
+      "sha256": "fe64210369659d6942d5092f340b7a50ad69cc98bf18b4f63235f6cfa68ec7ed"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/preserved_boolean_updates.rs",
+      "bytes": 1293,
+      "sha256": "f9e4a93308fdddf80942793d15dc7150d7981e46437eca22a865c5534e05633a"
+    },
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1477,
+      "sha256": "c5a7e65b4c162a55496ff808bc39e023d51f42fc94821caf429d129633ebdb6e"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 54845,
+      "sha256": "b041c11c3d3459b741871930fd022d828bc54cde20e6ee0f87b6ad01faafe6c9"
+    }
+  ],
+  "dependency_rationale": {
+    "path": "docs/development/DEPENDENCIES.md",
+    "bytes": 89455,
+    "sha256": "3e3cefe0f50e562c710a9dba16c625b3ac171253436fd6d7bb743291513cde6f"
+  },
+  "native_source_inputs": [
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources.rs",
+      "bytes": 10012,
+      "sha256": "52f4c5986032709b6d6fb0eb3521b298cf1af38aef52baaeb953ad20f5843684"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources/model.rs",
+      "bytes": 2737,
+      "sha256": "1a310f92dfc6ba8c2aa8edb5f279786e27f6a85d25f054e61b2abc09c853747f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model.rs",
+      "bytes": 4736,
+      "sha256": "94639f57fa383e77c16de1a787705c286052609edceab8106f1464e947db765d"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/adapter-source-first-root.log",
+      "bytes": 629,
+      "sha256": "350b17192ec49d5a118ef7bb055d8155ab59586fc66db2db82cc713d2e4c90fc"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/cli-source-first-root.log",
+      "bytes": 745,
+      "sha256": "3c2c0a1267cc3299876475de45a2e462eb2f1e10cc02527558e5150c09530aed"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/dependency-offline-root.log",
+      "bytes": 403,
+      "sha256": "97d57080397f51ec012b80fed607bcf5b86a0ac2b670a7b51628497ecdd19e01"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/cli-source-corrected-root.log",
+      "bytes": 500,
+      "sha256": "3367fb72e16170e920d3507e135e72808545f9f23a56d35bda996486e67a30bf"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/compile-first-root.log",
+      "bytes": 402,
+      "sha256": "61efcb921a964566cd6f3103d95767280ee841e3ff1d8874f623efbe23f3eb7d"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/snapshot-source-first-root.log",
+      "bytes": 606,
+      "sha256": "c9afef1e46306dc05964c728f06bbe82ef4f8f5dad2b9adbfd70655f35e433f0"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/adapter-api-first-root.log",
+      "bytes": 1226,
+      "sha256": "d1efd5c7c44f834ba5b40a25c2f01426a056744cdf3bfed7b7ffef94753a5c39"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/adapter-api-bracketed-root.log",
+      "bytes": 594,
+      "sha256": "e83473764a3ec85d9f3685567f49797ee39516ace28a6b2dfb4d50801bd63e44"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/cli-api-first-root.log",
+      "bytes": 591,
+      "sha256": "1a7d63399fdf599536ffd2a1696530d8a1c52c88b4f24edf1fbb5723f57fdca9"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/adapter-all-root.log",
+      "bytes": 857,
+      "sha256": "9b6c96e3efb624473ab124e0808e40e0063356c72c16b042e304383cb6990d47"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/cli-all-root.log",
+      "bytes": 991,
+      "sha256": "9cfaadaea248185e8b3c33452f5e691db8557a3a258144bb62c8b3cd2bb282bd"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/boundaries-root.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/boundary-tests-root.log",
+      "bytes": 111,
+      "sha256": "d14fea084e0de5b0c969f88ba78e4412a2d53c7f5c985f884a1dd11b182c4263"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/strict-first-root.log",
+      "bytes": 403,
+      "sha256": "de5135adc3ad7e6cfd48b3a8200136b7b480d14a49f9c092e404c8758ccc7c3b"
+    },
+    {
+      "path": ".cache/cli-before-change-copy-next-20261030/host-regression-root.log",
+      "bytes": 11852,
+      "sha256": "ba7c326e6a4d91ffa24a64bdb81cdb53b6f28d188267135d1fe82cfb3077801a"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/fmt-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/minimal-root.log",
+      "bytes": 301,
+      "sha256": "1259b305ff1f61b95960663df0c9437409ecb5133fddd2224fe335a4ea12cd5d"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-update-next-20261030/links-final-root.log",
+      "bytes": 53,
+      "sha256": "f0d26a8d30805959b3cee2a8b11a8b4f7becfda9c31cb716e9832a9770d76d1f"
+    }
+  ],
+  "receipts": [
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/consumer-installed-first-freeze.json",
+      "bytes": 2273,
+      "sha256": "f1ab3d2c3f940399819d9dee69cb345fca87f35ecbc679e497f5e8f9f212f4ba"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/cli-schema-test-dependency-correction.json",
+      "bytes": 688,
+      "sha256": "6a972ca818372b64d396962d2ee941c23a4e0dfd1b7de2d3e17345870aafe7aa"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-frontend-next-20261030/bracketed-number-correction.json",
+      "bytes": 921,
+      "sha256": "a941b49f3e574014b17591623892d7c0ecc0090564ec9ff30052e851fe17d45d"
+    }
+  ],
+  "native_evidence": "ace16-preserved-int32-updates-2026-10-30.json"
+}
