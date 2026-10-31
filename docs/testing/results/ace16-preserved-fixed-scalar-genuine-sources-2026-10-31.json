@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "Independent public-builder originals for preserved Int64, Currency and legacy DATE updates; source admission only",
+  "fixture_tools_commit": "02cd1a9037c01650d33768d02d697e61b1e4bdc3",
+  "observed": {
+    "java_compile_exit": 0,
+    "creation_calls_passed": 2,
+    "readonly_inventory_calls_passed": 2,
+    "native_complete_source_admissions": 2,
+    "native_source_test_functions_passed": 1,
+    "native_or_cli_producer_calls": 0,
+    "strict_all_targets_all_features": "passed",
+    "workspace_format": "passed",
+    "local_documentation_links": "passed"
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+    }
+  ],
+  "classes": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/classes/PreservedFixedScalarGetter.class",
+      "bytes": 14011,
+      "sha256": "f1bd603f71d9ef1c794845baea8cd6656d480788425bfb7c8eb41c0c871c481f"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/classes/PreservedFixedScalarOriginals.class",
+      "bytes": 8828,
+      "sha256": "b57d0b1b9cb410dea1c918e11fe8ff0e09d68c0821fc788beb9ae2e9909826d3"
+    }
+  ],
+  "source_plan": {
+    "path": ".cache/ace16-preserved-fixed-scalars-source-next-20261031/source-plan.json",
+    "bytes": 10597,
+    "sha256": "a92089ff29d5291cafd2aaf336ea7c32cf992fb8f00bdc7c0c37f8324e3dfe67"
+  },
+  "source_execution_plan": {
+    "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/execution-plan.json",
+    "bytes": 7543,
+    "sha256": "058ca20d713ccc1c7a0cbf8342c629a0f9051ccef0667cd6836e3ba9df33e05b"
+  },
+  "source_receipt": {
+    "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/source-receipt.json",
+    "bytes": 15640,
+    "sha256": "824aff9b30bc729751e813923d17c15b549ea6255042bddf4b3582bea3490ed3"
+  },
+  "native_source_log": {
+    "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/native-source-first-root.log",
+    "bytes": 540,
+    "sha256": "ee827d58afa349bfc57711652fb4e34a142555997fb4ae7fd23b8711c3ed86bf"
+  },
+  "source_compile": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/precall.json",
+      "bytes": 2009,
+      "sha256": "c51870825e0f1948ca9280477ee7cd7cb9814957494d62ca14f29f7d3afa5505"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/result.json",
+      "bytes": 21,
+      "sha256": "81868a6e94ffc0178bf833deb1c9013d9fab4ee95ddb876a5e8ec4f1d26376d2"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limits": [
+    "Creation and original-only source admission, not update qualification",
+    "Expected-image gate is implemented but not yet executed",
+    "No normal save, journal permission or required-macro absence evidence",
+    "No Microsoft Access save/reopen or native comparison evidence"
+  ],
+  "verification": [
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/strict-source-first-root.log",
+      "bytes": 183,
+      "sha256": "147ca928dde8ce8cba6100bb32ab6593d48bb10124d9d64e3c47c01919e856e1"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/format-source-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/documentation-source-first-root.log",
+      "bytes": 53,
+      "sha256": "691b38fa6922b1575469de1c1a4eb6e68f38b7e15434ccd1fcaec79ba7f9622b"
+    }
+  ]
+}

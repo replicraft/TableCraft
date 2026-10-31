@@ -107,6 +107,11 @@ the exact compiler inputs and records exit 0. This was compilation only: it
 created no database and invoked no getter.
 
 Generation, original SDK inventories and direct complete native source admission
-must pass before independent expectations or candidates are produced. No such
-outcomes are claimed here. Native Microsoft Access save/reopen, required-macro
+must pass before independent expectations or candidates are produced. The first
+two creation and two read-only inventory calls now pass, followed by direct
+complete native source admission of both originals. The
+[source result](../results/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json)
+pins the unchanged originals, classes and logs. No update candidate was involved
+in those checks; expected-image and producer qualification remain separate.
+Native Microsoft Access save/reopen, required-macro
 discovery and normal ACE saves remain separate qualification gaps.
