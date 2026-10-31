@@ -1,8 +1,10 @@
+#[cfg(feature = "ace16-write-preview")]
+use super::fields::batch::projection::Int32Projection;
+use super::resolver::Fields;
 use super::{
     BeforeEvent, BeforeEventGuardError, BeforeEventGuardSelector, BeforeGuardProgramRevision,
     BeforeGuardUnsupported, PreparationProfile, buffer, expression, selection, source,
 };
-use super::{fields::batch::projection::Int32Projection, resolver::Fields};
 use crate::{
     InspectError, MacroProgramNodeKind, MacroProgramProfile, MacroProgramTextKind, NativeImage,
     PayloadPresence, TableExtraCoverage, TableSnapshot, XmlByteSpan, header::check,
@@ -101,6 +103,7 @@ pub(super) fn derive_fields(
 /// New rich path only: Source has already admitted the exact selected payloads.
 /// This still performs complete selection/action/field compilation, including
 /// dormant definitions, before any staging permission can be constructed.
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn derive_projected(
     image: &NativeImage,
     projection: &Int32Projection<'_>,

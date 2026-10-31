@@ -406,3 +406,6 @@ fn jet4_recovery_empty_intent_retains_source_gates_and_complete_image_binding() 
         ));
     }
 }
+
+#[path = "api/normal.rs"]
+mod normal;

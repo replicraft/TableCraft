@@ -1,9 +1,9 @@
 //! Explicit engineering candidates, separate from qualified native edit plans.
-use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
-use crate::{FileFormat, NativeImage, header::check};
+use super::{EditError, Int32Update, NativeEditPlan};
+use crate::{NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-const SUPPORTED_PREVIEW_SUBVERSION: u8 = 0;
+pub(super) use super::ace_profile::{qualify, qualify_fixed};
 
 /// An unqualified ACE 16 physical candidate for independent/native comparisons.
 ///
@@ -83,26 +83,4 @@ impl NativeImage {
         self.plan_int32_updates_inner(table, column, updates, budget, cancelled)
             .map(Ace16WritePreview::from_plan)
     }
-}
-
-pub(super) fn qualify(image: &NativeImage) -> Result<(), EditError> {
-    image.require_standard_capture()?;
-    qualify_format(image)
-}
-
-pub(super) fn qualify_fixed(image: &NativeImage) -> Result<(), EditError> {
-    image.require_fixed_update_capture()?;
-    qualify_format(image)
-}
-
-fn qualify_format(image: &NativeImage) -> Result<(), EditError> {
-    if !matches!(
-        image.catalog().header().format(),
-        FileFormat::Ace2016 | FileFormat::Ace2019
-    ) || image.catalog().header().subversion() != SUPPORTED_PREVIEW_SUBVERSION
-        || image.catalog().header().encoded_pages()
-    {
-        return Err(EditError::Unsupported(WriteBlocker::Format));
-    }
-    Ok(())
 }

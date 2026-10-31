@@ -66,6 +66,16 @@ impl NativeInt32EditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(MAGIC, PROFILE, budget, cancelled)
+    }
+
+    pub(super) fn encode_profile(
+        &self,
+        magic: &[u8; 8],
+        profile: u16,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
         let _span = tracing::debug_span!("native.intent.encode").entered();
         check(budget, cancelled)?;
         let total = length(self.table().len(), self.column().len(), self.updates.len())?;
@@ -79,9 +89,9 @@ impl NativeInt32EditIntent {
         output
             .try_reserve_exact(total)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(magic);
         output.extend_from_slice(&(total as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(&profile.to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -111,6 +121,16 @@ impl NativeInt32EditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(bytes, MAGIC, PROFILE, budget, cancelled)
+    }
+
+    pub(super) fn decode_profile(
+        bytes: &[u8],
+        magic: &[u8; 8],
+        expected_profile: u16,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.intent.decode").entered();
         check(budget, cancelled)?;
         if bytes.len() < HEADER_BYTES || bytes.len() > MAX_RECORD_BYTES {
@@ -119,7 +139,7 @@ impl NativeInt32EditIntent {
         budget
             .charge(Resource::Steps, HEADER_BYTES as u64)
             .map_err(InspectError::from)?;
-        if &bytes[..MAGIC.len()] != MAGIC {
+        if &bytes[..MAGIC.len()] != magic {
             return Err(if &bytes[..MAGIC_PREFIX.len()] == MAGIC_PREFIX {
                 NativeIntentError::UnsupportedVersion
             } else {
@@ -129,7 +149,7 @@ impl NativeInt32EditIntent {
         // The complete fixed header is present before these fixed-width reads.
         let u32_at = |at| u32::from_le_bytes(bytes[at..at + size_of::<u32>()].try_into().unwrap());
         let profile = u16::from_le_bytes(bytes[PROFILE_AT..FLAGS_AT].try_into().unwrap());
-        if profile != PROFILE {
+        if profile != expected_profile {
             return Err(NativeIntentError::UnsupportedProfile);
         }
         if bytes[FLAGS_AT..BEFORE_LENGTH_AT] != [0, 0] || u32_at(RESERVED_AT) != 0 {

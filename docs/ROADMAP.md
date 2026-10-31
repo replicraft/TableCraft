@@ -2,12 +2,19 @@
 
 ## Current product priority
 
+The normal journal route now admits a narrow [ACE BeforeChange Int32 profile](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
+through the retained offline session. It derives required programs from native
+references, preserves original user intent and reconstructs both complete images
+for recovery. This is the first positive-program ACE save route, not general
+UPDATE/INSERT/DELETE support. Broader carriers, indexes, relationships, macro
+coverage and native Access qualification remain next.
+
 [Native-owned event selection](access/schema/NATIVE_MACRO_COVERAGE.md#native-owned-event-selection)
 now derives UPDATE BeforeChange property selectors from the exact native table
 and XML declarations. Forty-one logical/coverage tests and a separate nine-
 declaration retained-file read pass. Required after-effects and incomplete
-coverage still refuse; normal ACE saves must next consume native bindings through
-qualified physical admission and recovery. This logical step grants no absence
+coverage still refuse; the narrow normal journal route now consumes those native
+bindings through physical admission and recovery. The logical step grants no absence
 certificate or general save permission.
 
 

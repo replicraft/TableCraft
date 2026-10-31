@@ -19,7 +19,7 @@ impl fmt::Display for Error {
                 "offline journal editing requires macOS or Linux; no file was opened"
             }
             Self::Credentials => {
-                "journal editing accepts only unencoded Jet4 files; --password is unsupported"
+                "journal editing requires an unencoded admitted Jet4 or ACE BeforeChange profile; --password is unsupported"
             }
         })
     }

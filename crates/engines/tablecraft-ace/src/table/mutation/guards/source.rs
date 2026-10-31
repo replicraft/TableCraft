@@ -7,7 +7,7 @@ use crate::{
     header::check,
     limits::MAX_LIVE_ROWS,
     read_table,
-    table::mutation::{field, preview, rows},
+    table::mutation::{ace_profile, field, rows},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -15,6 +15,7 @@ use tablecraft_core::{
 };
 use tablecraft_schema::ScalarType;
 
+#[cfg(feature = "ace16-write-preview")]
 mod ordinals;
 
 pub(super) struct Frame {
@@ -33,7 +34,7 @@ pub(super) fn table(
     budget
         .charge(Resource::Steps, name.len() as u64)
         .map_err(InspectError::from)?;
-    preview::qualify(image).map_err(error::intent)?;
+    ace_profile::qualify(image).map_err(error::intent)?;
     let scope = image.catalog().catalog().scope();
     let table = read_table(&mut image.reader(), scope, name, budget, cancelled)?;
     if table.columns().is_empty() {
@@ -123,9 +124,12 @@ pub(super) fn frames(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Frame>, BeforeEventGuardError> {
     let count = match intent {
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::Insert(rows) => rows.len(),
         BeforeEventIntents::FixedUpdate { updates, .. } => updates.len(),
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::Delete(rows) => rows.len(),
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::DeleteOrdinals(rows) => rows.len(),
     };
     if count > MAX_LIVE_ROWS {
@@ -143,6 +147,7 @@ pub(super) fn frames(
     };
 
     match intent {
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::Insert(rows) => {
             for (ordinal, row) in rows.iter().enumerate() {
                 check(reader.budget, cancelled)?;
@@ -184,6 +189,7 @@ pub(super) fn frames(
             })
             .map_err(error::intent)?;
         }
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::Delete(deletes) => {
             rows::unique(deletes, reader.budget, cancelled).map_err(error::intent)?;
             rows::visit_with_budget(
@@ -209,6 +215,7 @@ pub(super) fn frames(
             )
             .map_err(error::intent)?;
         }
+        #[cfg(feature = "ace16-write-preview")]
         BeforeEventIntents::DeleteOrdinals(ordinals) => {
             ordinals::append(&mut reader, table, ordinals, &mut output)?;
         }

@@ -71,7 +71,7 @@ impl<J: DurableStorage> QualifiedJet4Recovery<'_, J> {
     }
 }
 
-fn equal_image(
+pub(super) fn equal_image(
     actual: &[u8],
     original: &[u8],
     budget: &mut ResourceBudget,

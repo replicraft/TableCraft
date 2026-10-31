@@ -1,45 +1,5 @@
+pub use super::super::requests::FixedScalarUpdate;
 use super::super::{physical::FixedAssignment, rows::RowAssignment};
-use tablecraft_core::values::Value;
-
-/// An exact expected/replacement carrier for one snapshot-local live row.
-///
-/// The target native column determines eligibility. NULL transitions and Boolean
-/// masks retain their own checks; no SQL coercion or variable-length encoding is
-/// implied. Values are deliberately
-/// excluded from Debug/Display implementations.
-pub struct FixedScalarUpdate {
-    row: usize,
-    expected: Value,
-    value: Value,
-}
-impl FixedScalarUpdate {
-    /// Address a live row of the captured image with exact expected/replacement values.
-    pub fn new(row: usize, expected: Value, value: Value) -> Self {
-        Self {
-            row,
-            expected,
-            value,
-        }
-    }
-    /// Sequential live-row ordinal in this snapshot only.
-    pub const fn row(&self) -> usize {
-        self.row
-    }
-    /// Original carrier, compared without numeric or temporal normalization.
-    pub fn expected(&self) -> &Value {
-        &self.expected
-    }
-    /// Replacement carrier; it must exactly match the qualified field type.
-    pub fn value(&self) -> &Value {
-        &self.value
-    }
-}
-
-impl RowAssignment for FixedScalarUpdate {
-    fn row(&self) -> usize {
-        self.row()
-    }
-}
 
 pub(in crate::table::mutation) struct EncodedUpdate<const WIDTH: usize> {
     pub row: usize,

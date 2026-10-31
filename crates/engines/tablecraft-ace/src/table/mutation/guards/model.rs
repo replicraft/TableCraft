@@ -1,4 +1,6 @@
-use crate::{FixedScalarUpdate, RowDelete, RowInsert, XmlByteSpan};
+use crate::{FixedScalarUpdate, XmlByteSpan};
+#[cfg(feature = "ace16-write-preview")]
+use crate::{RowDelete, RowInsert};
 use tablecraft_core::ids::ObjectId;
 
 /// Explicit property selection in the captured table's original Extra metadata.
@@ -31,6 +33,7 @@ impl<'a> BeforeEventGuardSelector<'a> {
 #[derive(Clone, Copy)]
 pub enum BeforeEventIntents<'a> {
     /// All fields explicitly supplied, in native order; no generated columns.
+    #[cfg(feature = "ace16-write-preview")]
     Insert(&'a [RowInsert]),
     /// One ordinary Int32 field; original expectations remain authoritative.
     FixedUpdate {
@@ -40,9 +43,11 @@ pub enum BeforeEventIntents<'a> {
         updates: &'a [FixedScalarUpdate],
     },
     /// Exact original record payload expectations.
+    #[cfg(feature = "ace16-write-preview")]
     Delete(&'a [RowDelete]),
     /// Original live ordinals from this same captured image, without persistent
     /// identity or a raw-byte expectation claim. The engine resolves records.
+    #[cfg(feature = "ace16-write-preview")]
     DeleteOrdinals(&'a [usize]),
 }
 
@@ -60,8 +65,10 @@ pub enum BeforeEvent {
 impl BeforeEventIntents<'_> {
     pub(super) fn event(self) -> BeforeEvent {
         match self {
+            #[cfg(feature = "ace16-write-preview")]
             Self::Insert(_) => BeforeEvent::Insert,
             Self::FixedUpdate { .. } => BeforeEvent::Update,
+            #[cfg(feature = "ace16-write-preview")]
             Self::Delete(_) | Self::DeleteOrdinals(_) => BeforeEvent::Delete,
         }
     }
@@ -139,6 +146,16 @@ impl BeforeGuardRejection {
     /// Explicit Description value; absent differs from present-empty.
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
+    }
+}
+
+#[cfg(feature = "journal")]
+impl std::fmt::Debug for BeforeGuardRejection {
+    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        output
+            .debug_struct("BeforeGuardRejection")
+            .field("number", &self.number)
+            .finish()
     }
 }
 

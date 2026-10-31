@@ -1,11 +1,14 @@
 //! Explicit BeforeChange row transformations, separate from guard-only behavior.
 mod authority;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) mod batch;
 mod evaluate;
 mod model;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) mod physical;
 
 pub use model::{BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow};
+#[cfg(feature = "ace16-write-preview")]
 pub use physical::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 
 use super::{
@@ -50,9 +53,9 @@ impl NativeImage {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod multievent_sources;
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod physical_sources;
 
 struct Prepared {

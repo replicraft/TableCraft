@@ -3,7 +3,7 @@
 An opt-in [ACE 16 engineering preview](../../testing/ACE16_WRITE_PREVIEWS.md) now creates
 physical fixed scalar and qualified Text/Binary candidates for disposable-copy
 comparisons. It returns a separate,
-non-journalable type and does not enable the normal ACE save/commit path. Data-macro
+non-journalable type and does not enable the normal ACE save/commit path. Broader data-macro
 semantics and actual native Access qualification remain pending. The optional [declared update-cascade planner](../../testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches)
 expands bounded integral/Currency/GUID actions inside that engineering boundary. The qualified
 Jet 4 planner follows the bounded native contract below.
@@ -310,7 +310,7 @@ engineering preservation evidence, not native INSERT support or AutoNumber UPDAT
 permission; GUID/complex identity and native Access saves remain separate.
 
 `NativeImage::plan_int32_updates` produces complete before/after images without
-writing to its source. The current engineering profile is unencoded Jet 4 only:
+writing to its source. This existing entry point retains its unencoded Jet4 profile:
 existing non-NULL fixed Int32 fields in unflagged local tables, with the native
 updatable flag and no AutoNumber/extended flags. Assignments use sequential
 snapshot-local row ordinals plus expected original values. They are not persistent
@@ -337,15 +337,40 @@ A bounded independent comparison proves every byte outside these spans remains
 identical. Whole-image copying and comparisons charge shared allocation/work
 budgets and check cancellation between 64 KiB units. Failures publish no plan.
 
-All ACE writes remain blocked: header recognition does not establish absence of
-table data macros. Microsoft describes [data macros](https://support.microsoft.com/en-us/access/add-data-macros-in-a-desktop-database)
-and [cross-version read-only behavior](https://www.microsoft.com/en-us/copilot/blog/2010/01/13/cross-version-compatibility-between-access-2010-and-access-2007/).
-No unavailable macro semantics may be skipped. This Jet 4 profile does not qualify
-ACE application save/reopen or VBA preservation through actual Access edits.
-The [ACE 16 data-macro evidence plan](../../testing/DATA_MACROS.md) records the current
-negative observations, missing positive native fixtures and acceptance before
-absence detection can permit writes. XML/service documentation is not a native
-ACCDB storage map, and ordinary macro enumeration does not cover table events.
+This Jet4 entry point continues to refuse ACE. Header recognition and an empty
+observed macro inventory do not certify required-event absence. The separate
+[positive native BeforeChange journal route](NORMAL_ACE_BEFORE_CHANGE.md) admits
+only its explicitly qualified ACE profile; no unavailable required semantics may
+be skipped. Neither route qualifies native Access application save/reopen or VBA
+preservation through actual Access edits. The [data-macro evidence plan](../../testing/DATA_MACROS.md)
+retains broader native storage/absence and execution gaps.
+
+## Positive native BeforeChange journal updates
+
+The optional `journal` feature adds a separate normal route for unencoded ACE
+2016/2019 layouts with subversion zero. A positive source-owned BeforeChange
+binding and complete supported program preflight are required even for empty
+requests. Actual XML events determine dispatch, rather than caller-selected
+property aliases. All table fields must fit the supported fixed Int32 profile;
+indexes, relationships, opaque/incomplete event coverage and unsupported required
+effects refuse. No final NULL field, allocation, index mutation, general
+ACE save permission or macro-absence certificate is introduced.
+
+Original user requests retain exact row/expected/replacement values. Any supplied
+equal assignment refuses with `EventTiming`, including one within a mixed list,
+after native discovery and preflight. A truly empty request is distinct. A real
+change restored to Old by a program may produce zero effective changed rows.
+Pure Current/Old assignments and required rejection are replanned from the
+original image; unknown bodies or RaiseError do not yield a partial plan.
+
+`NativeImage::plan_recoverable_int32_updates` supplies this route to the
+[journal editor and offline session](OFFLINE_WRITE_SESSIONS.md). It composes final
+field changes into a normal plan with independent original-intent replay,
+complete-image comparison and full final constraints, never by converting an
+engineering candidate. Fresh metadata/map protection excludes non-DATA storage.
+The [owning contract](NORMAL_ACE_BEFORE_CHANGE.md) records the exact admitted
+program, source, proof and lifecycle boundaries. Ordinary fresh-copy
+`query update` remains Jet4-only.
 
 ## Verification and laboratory harness
 
@@ -422,7 +447,8 @@ prefix/header/height rejection and CLI output atomicity. A separate
 256-case fixed-seed tree model checks both directions, NULL, arbitrary Int32
 replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
-This is an offline Jet 4 engineering profile. All ACE writes remain blocked.
+This index-maintenance path remains an offline Jet4 profile. The separate normal
+ACE BeforeChange route refuses indexes.
 
 Complete Boolean/numeric/GUID composite index reads/checks now work, but an update touching
 any composite key remains blocked with IndexedColumn. A synthetic Jet 4 regression
@@ -431,7 +457,7 @@ entire composite index and every byte outside the exact field. Read coverage doe
 not supply composite key mutation, splits/recompression or ACE write permission.
 Single-GUID read/check coverage now also permits an otherwise qualified unrelated
 Jet 4 Int32 edit, with an exact unchanged-GUID-index/field proof. GUID targets
-remain outside the Int32 editor; all ACE writes remain blocked.
+remain outside the Int32 editor; this Jet4 index profile does not admit ACE.
 Boolean index reads/checks likewise permit otherwise qualified unrelated Jet 4
 Int32 edits, with every byte outside the field preserved. Boolean targets remain
 outside that editor. This supplies no Boolean key mutation or ACE write permission.
@@ -439,9 +465,10 @@ Single/Double read/check qualification has the same unrelated-Int32 byte proof;
 it enables no floating target edits, key mutation or ACE writes. Physical IEEE
 index checks do not qualify native Access non-finite write acceptance.
 Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
-Jet 4 Int32 edits; DateTime target/key mutation and every ACE write remain blocked.
-ACE 16-family single/composite Decimal index reads/checks do not enable any ACE edit or
-Decimal target/key mutation. Older numeric index variants remain unqualified.
+Jet4 Int32 edits; DateTime target/key mutation remains outside this writer. The
+separate ACE BeforeChange route admits no indexes.
+ACE 16-family single/composite Decimal index reads/checks do not qualify normal
+Decimal target/key mutation or expand either normal route. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and
 zero tail pointer read/check correctly. The Jet 4 key writer still rejects that
 topology with IndexedColumn. ACE 16 engineering previews now traverse only actual
@@ -511,11 +538,12 @@ and no-op multi-page images reopen/recover with the expected complete bytes.
 
 The journal feature also provides
 `NativeImage::plan_recoverable_int32_updates`. It accepts a moved
-`Vec<Int32Update>`, first runs the unchanged normal Jet 4 planner, then binds
-`NativeInt32EditIntent` to that plan's exact before image. Only this successful
-normal planning path constructs `RecoverableNativeEditPlan`; ACE engineering
-candidates have no conversion. Existing normal APIs and their costs stay
-unchanged. Intent failure returns no plan and causes no target/journal write.
+`Vec<Int32Update>`, selects the existing Jet4 or bounded native BeforeChange ACE
+planner from the actual source, then binds `NativeUpdateIntent` to the exact
+before image. Only successful normal planning constructs
+`RecoverableNativeEditPlan`; engineering candidates have no conversion. The
+existing single-route Jet4 APIs and their costs remain unchanged. Intent failure
+returns no plan and causes no target/journal write.
 
 The wrapper exposes immutable intent, complete before/after bytes and changed
 rows. Its consuming `prepare` delegates the existing expected-image preparation.
@@ -556,6 +584,24 @@ the passing retry. The
 [explicit filesystem/CLI lifecycle](../../cli/JOURNAL_EDITING.md) now consumes this
 capability; fresh copies retain their separate publication policy.
 
+### Closed normal-route intent dispatch
+
+`NativeUpdateIntent` retains original user requests and source binding, not final
+macro rows, cached selectors or absence permission. Existing Jet4 records remain
+byte-identical `TCNI0001`/profile 1; the ACE BeforeChange route uses
+`TCNI0002`/profile 2 with the same bounded original-request payload geometry.
+An exact version/profile pair selects one validator. Unknown pairs refuse;
+decode or qualification errors never trigger another route.
+
+`qualify_native_update_recovery` reconstructs the selected plan from recorded
+BEFORE and original requests, then compares both complete journal images before
+a target is accepted. ACE qualification rediscovers, compiles and evaluates only
+its admitted pure required programs. It does not replay SQL, original filtering
+or user expressions. `QualifiedNativeRecovery` retains the same checked session
+for active recovery or write-denied completed-image confirmation. The existing
+pairing, durable namespace, no-retry and known-outcome rules remain required.
+See [normal ACE BeforeChange](NORMAL_ACE_BEFORE_CHANGE.md).
+
 ### Native qualification before recovery writes
 
 `qualify_jet4_int32_recovery` consumes the original `NativeInt32EditIntent` and
@@ -590,7 +636,7 @@ fact, not proof of historical actions. The intact retired filesystem path can
 acknowledge its parent and clean up without renaming or replaying recovery.
 [Source/API and broader checks pass](../../testing/results/intact-retired-confirmation-2026-10-30.json);
 CLI finalization is a separate consumer qualification. Partial-garbage resolution,
-automatic discovery, Windows lifecycle support and normal ACE saves remain open.
+automatic discovery, Windows lifecycle support and broader normal ACE saves remain open.
 
 Three additional recorded-plan integration tests pass, along with focused strict
 checks. They reuse the already qualified source model for eight complete images,
@@ -635,7 +681,7 @@ candidates per family (including one exact no-op) against complete independent
 rows/index cursors, proves unchanged bytes outside original field/entry spans,
 checks every candidate, retains existing outputs and rejects unique/rule/stale/
 missing/NULL requests before file creation. Jet 4 CLI copies match engine output;
-ordinary ACE CLI editing remains blocked. [Recorded hashes](../../testing/FIXTURES.md#non-unique-index-update-inputs)
+fresh-copy `query update` remains Jet4-only. [Recorded hashes](../../testing/FIXTURES.md#non-unique-index-update-inputs)
 qualify these independent copies, not actual Access saves or broader mutations.
 
 ## Mask and foreign-index engineering boundaries

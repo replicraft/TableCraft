@@ -6,9 +6,9 @@ use super::{
 use crate::{NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod selector_tests;
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
 pub(super) struct Observed<'a> {

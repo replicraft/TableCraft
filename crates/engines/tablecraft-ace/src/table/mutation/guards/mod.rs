@@ -1,6 +1,6 @@
 //! Explicit side-effect-free before-event preparation over immutable native intents.
 mod authority;
-mod buffer;
+pub(in crate::table::mutation) mod buffer;
 mod compile;
 mod coverage;
 mod error;
@@ -14,10 +14,9 @@ mod selection;
 mod source;
 
 pub use error::{BeforeEventGuardError, BeforeGuardSelectionError, BeforeGuardUnsupported};
-pub use fields::{
-    Ace16BeforeChangePreview, BeforeChangeAssignment, BeforeChangeFieldPreparation,
-    BeforeChangeFinalRow, BeforeChangePreviewError,
-};
+#[cfg(feature = "ace16-write-preview")]
+pub use fields::{Ace16BeforeChangePreview, BeforeChangePreviewError};
+pub use fields::{BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow};
 pub use model::{
     BeforeEvent, BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
     BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardTrace, BeforeGuardTraceKind,

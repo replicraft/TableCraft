@@ -5,7 +5,7 @@ use thiserror::Error;
 /// A required write capability outside the implemented offline profile.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum WriteBlocker {
-    /// Only unencoded Jet 4 writes are qualified; ACE data macros are uninspected.
+    /// Format, subversion or encoding outside the selected writer profile.
     Format,
     /// System, hidden, replicated, flagged or aliased native table definition.
     Table,
@@ -21,6 +21,9 @@ pub enum WriteBlocker {
     ConstraintCoverage,
     /// Relocated records or historical column layouts need a separate writer.
     RowLayout,
+    /// Native timing for an explicitly supplied equal assignment remains unqualified.
+    #[cfg(feature = "journal")]
+    EventTiming,
 }
 
 /// Native edit errors omit names, paths and values.
@@ -35,6 +38,14 @@ pub enum EditError {
     /// An update ordinal is absent, repeated or has a different expected value.
     #[error("native update does not match its captured row")]
     Conflict,
+    /// A required pure BeforeChange program rejected the complete update.
+    #[cfg(feature = "journal")]
+    #[error("required BeforeChange rejected the update")]
+    BeforeChangeRejected(crate::BeforeGuardRejection),
+    /// A supported required BeforeChange expression failed during evaluation.
+    #[cfg(feature = "journal")]
+    #[error("required BeforeChange evaluation failed")]
+    BeforeChangeEvaluation(#[source] EvalError),
     /// A declared RESTRICT action forbids changing a referenced original key.
     #[error("native relationship action restricts this update")]
     ReferentialAction,

@@ -10,13 +10,13 @@ const WORK_STEPS: u64 = 100_000_000;
 
 #[derive(Args)]
 #[command(
-    after_help = "Explicit offline in-place Jet4 Int32 UPDATE. Keep other applications and ordinary readers closed until this command or explicit recovery finishes. The journal directory must be fresh. Planning precedes journal creation; every commit error requires explicit recovery, never automatic SQL retry. This grants no ACE write or macro bypass. Supported filesystem lifecycle: macOS and Linux."
+    after_help = "Explicit offline in-place Int32 UPDATE for Jet4 or the narrow positive-program ACE BeforeChange profile. Keep other applications and ordinary readers closed until this command or explicit recovery finishes. The journal directory must be fresh. Planning precedes journal creation; every commit error requires explicit recovery, never automatic SQL retry. ACE requires unencoded ACE2016/2019 subversion zero, complete source-bound pure BeforeChange coverage, ordinary fixed Int32 fields and no indexes or relationships. Supplied equal assignments refuse with EventTiming; unknown required content cannot be skipped. This does not enable general ACE saves or certify macro absence. Supported filesystem lifecycle: macOS and Linux."
 )]
 pub(crate) struct UpdateArguments {
     /// One local single-assignment UPDATE, evaluated once against the original image.
     #[arg(allow_hyphen_values = true)]
     pub(super) sql: String,
-    /// Existing offline Jet4 file, retained under one exclusive file lock.
+    /// Existing offline file in an admitted native profile, retained under one exclusive lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
     /// Fresh journal bundle directory; existing entries are never reused or replaced.
@@ -31,7 +31,7 @@ pub(crate) struct UpdateArguments {
 
 #[derive(Args)]
 #[command(
-    after_help = "Explicit offline recovery of the paired Jet4 journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS and Linux."
+    after_help = "Explicit offline recovery of a paired Jet4 or admitted ACE BeforeChange journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write; ACE recovery rederives its bounded pure required programs from BEFORE. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS and Linux."
 )]
 pub(crate) struct RecoveryArguments {
     /// Original target object, retained under one exclusive file lock.
@@ -46,7 +46,7 @@ pub(crate) struct RecoveryArguments {
 
 #[derive(Args)]
 #[command(
-    after_help = "Confirm the current original/replacement image of an intact retired Jet4 journal bundle, then acknowledge its captured-parent barrier and clean up. No SQL, rollback or recovery replay is performed. Missing records, partial garbage, active bundles and mismatched current images refuse without fallback. The image report does not establish historical commit/rollback events. Keep other applications and ordinary readers closed until completion. Supported filesystem lifecycle: macOS and Linux."
+    after_help = "Confirm the current original/replacement image of an intact retired native journal bundle, then acknowledge its captured-parent barrier and clean up. No SQL, rollback or recovery replay is performed. Missing records, partial garbage, active bundles and mismatched current images refuse without fallback. The image report does not establish historical commit/rollback events. Keep other applications and ordinary readers closed until completion. Supported filesystem lifecycle: macOS and Linux."
 )]
 pub(crate) struct FinalizeArguments {
     /// Original target object, retained under one exclusive file lock.

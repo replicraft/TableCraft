@@ -3,8 +3,12 @@ mod catalog;
 mod claims;
 
 use crate::format::allocation::MapRole;
-pub(in crate::table) use catalog::{capture_catalog, capture_catalog_for_initialization};
-pub(in crate::table) use claims::{Census, RecordIdentity};
+pub(in crate::table) use catalog::capture_catalog;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use catalog::capture_catalog_for_initialization;
+pub(in crate::table) use claims::Census;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table) use claims::RecordIdentity;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table) enum Owner {

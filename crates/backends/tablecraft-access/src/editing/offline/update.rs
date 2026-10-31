@@ -20,7 +20,7 @@ pub struct StagedUpdate {
 
 impl OfflineWriteSession {
     /// Capture from the SAME retained descriptor and use the existing normal
-    /// shared planner. No journal is created. ACE remains unavailable. Capture
+    /// shared planner. No journal is created; native admission still applies. Capture
     /// failure retains the target in RefreshRequired with previous receipts intact.
     pub fn plan_update(
         mut self,

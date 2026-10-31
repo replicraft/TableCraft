@@ -22,6 +22,7 @@ pub enum Error {
 /// type and costs. Hosts still own exclusivity, pairing and journal persistence.
 pub struct NativeJournalEditor {
     editor: NativeEditor,
+    profile: UpdateProfile,
 }
 
 impl NativeJournalEditor {
@@ -33,9 +34,9 @@ impl NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
-        Ok(Self {
-            editor: NativeEditor::new(image, table, budget, cancelled)?,
-        })
+        let editor = NativeEditor::new(image, table, budget, cancelled)?;
+        let profile = editor.journal_profile(budget, cancelled)?;
+        Ok(Self { editor, profile })
     }
 }
 
@@ -48,7 +49,7 @@ impl EditableTable for NativeJournalEditor {
     }
 
     fn update_profile(&self) -> UpdateProfile {
-        self.editor.update_profile()
+        self.profile
     }
 
     fn plan_updates(

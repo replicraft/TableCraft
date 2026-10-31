@@ -78,6 +78,11 @@ pub struct BeforeChangeFieldPreparation<'a> {
 }
 
 impl BeforeChangeFieldPreparation<'_> {
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn take_rejection(&mut self) -> Option<BeforeGuardRejection> {
+        self.rejection.take()
+    }
+
     /// Original immutable captured source, not an authorization token.
     pub fn source_bytes(&self) -> &[u8] {
         self.source

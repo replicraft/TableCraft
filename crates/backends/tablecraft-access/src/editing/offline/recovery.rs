@@ -3,7 +3,7 @@ use super::{
     SessionState, VerifiedImage,
 };
 use std::path::Path;
-use tablecraft_ace::{NativeInt32EditIntent, qualify_jet4_int32_recovery};
+use tablecraft_ace::{NativeUpdateIntent, qualify_native_update_recovery};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair, inspect_v1};
 
@@ -40,12 +40,12 @@ impl OfflineWriteSession {
             if pair.known_outcome().is_some() {
                 return Err(Cause::InvalidState);
             }
-            let intent = NativeInt32EditIntent::decode(pair.intent_bytes(), budget, cancelled)
+            let intent = NativeUpdateIntent::decode(pair.intent_bytes(), budget, cancelled)
                 .map_err(Cause::Intent)?;
             let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
             let checked = inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
             let qualified =
-                qualify_jet4_int32_recovery(checked, intent, slot.scope, budget, cancelled)
+                qualify_native_update_recovery(checked, intent, slot.scope, budget, cancelled)
                     .map_err(Cause::Qualification)?;
             qualified
                 .recover(&mut target, budget, cancelled)
@@ -83,12 +83,12 @@ impl OfflineWriteSession {
         let result = (|| {
             let slot = self.slot_mut()?;
             let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
-            let intent = NativeInt32EditIntent::decode(pair.intent_bytes(), budget, cancelled)
+            let intent = NativeUpdateIntent::decode(pair.intent_bytes(), budget, cancelled)
                 .map_err(Cause::Intent)?;
             let (mut target, mut journal) = pair.confirmation_storage().map_err(Cause::Pair)?;
             let checked = inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
             let qualified =
-                qualify_jet4_int32_recovery(checked, intent, slot.scope, budget, cancelled)
+                qualify_native_update_recovery(checked, intent, slot.scope, budget, cancelled)
                     .map_err(Cause::Qualification)?;
             qualified
                 .confirm_completed(&mut target, budget, cancelled)
@@ -127,7 +127,7 @@ impl OfflineWriteSession {
         let slot = self.slot_mut()?;
         slot.current = None;
         let target = slot.target.take().ok_or(Cause::InvalidState)?;
-        let limit = NativeInt32EditIntent::MAX_ENCODED_BYTES as u64;
+        let limit = NativeUpdateIntent::MAX_ENCODED_BYTES as u64;
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

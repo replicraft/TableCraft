@@ -12,7 +12,7 @@ use crate::{
         row::{OFFSET_MASK, reference, reference_page, reference_slot},
     },
 };
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use std::ops::Range;
 
 const GLOBAL_MAP_PAGE: u32 = 1;
@@ -25,7 +25,7 @@ pub(crate) enum MapRole {
     Owned,
     GlobalFree,
     // Candidate data pages, not a complete free-byte or ownership inventory.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     TableFreeSpace,
     // Column-specific candidate pages, selected through qualified LVAL metadata.
     LongValueCandidate,
@@ -37,7 +37,7 @@ pub(crate) struct MapCell {
     pub mask: u8,
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(crate) struct MapStorage {
     pub record: Range<usize>,
     // A fresh footprint always starts with its ordinary metadata container.
@@ -47,7 +47,7 @@ pub(crate) struct MapStorage {
 #[derive(Clone, Copy)]
 enum Provenance {
     QualifiedRole,
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     ReadOnlyStorage,
 }
 
@@ -64,7 +64,7 @@ impl RepresentedMap {
     }
 
     /// Retain physical metadata identities for an independent unchanged-page audit.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn protect_storage<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,
@@ -107,7 +107,7 @@ impl RepresentedMap {
     /// Capture only map-record and bitmap identities using the existing read
     /// grammar. This grants no membership or writable-cell authority. Global
     /// free metadata retains its distinct fixed-container qualification.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn read_storage<R: NativeReadSource>(
         reader: &mut Reader<'_, R>,
         reference: u32,
@@ -151,7 +151,7 @@ impl RepresentedMap {
         let owner = match provenance {
             Provenance::QualifiedRole => match role {
                 MapRole::Owned | MapRole::LongValueCandidate => OWNED_CONTAINER_OWNER,
-                #[cfg(feature = "ace16-write-preview")]
+                #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
                 MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
                 MapRole::GlobalFree => {
                     if reference != GLOBAL_FREE_REFERENCE {
@@ -160,7 +160,7 @@ impl RepresentedMap {
                     GLOBAL_MAP_PAGE
                 }
             },
-            #[cfg(feature = "ace16-write-preview")]
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
             Provenance::ReadOnlyStorage => u32_at(&page, OWNER_OFFSET)?,
         };
         if u32_at(&page, OWNER_OFFSET)? != owner {
@@ -175,7 +175,7 @@ impl RepresentedMap {
         };
         // Storage-only claims retain the existing read-owned malformed-prefix
         // classes. Qualified role admission below keeps its previous behavior.
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         if matches!(provenance, Provenance::ReadOnlyStorage) {
             match result.payload.first().copied() {
                 Some(INLINE_MAP) if result.payload.len() < INLINE_BITMAP_OFFSET => {
