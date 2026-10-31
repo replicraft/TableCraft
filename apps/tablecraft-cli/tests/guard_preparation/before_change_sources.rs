@@ -135,3 +135,6 @@ mod physical_roles;
 
 #[path = "before_change_sources/api.rs"]
 mod api;
+
+#[path = "before_change_sources/cli.rs"]
+mod cli;

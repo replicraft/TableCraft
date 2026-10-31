@@ -1,9 +1,11 @@
 # Required durable output
 
-Only normal Jet 4 `query update` and ACE engineering
-`query preview-create-index` accept `--durable-output` in this slice. Omission
-retains the existing content-sync/no-clobber publisher. No other write-preview
-command acquires a directory durability claim.
+Normal Jet 4 `query update` and ACE engineering `query preview-create-index`
+and [`query preview-before-change`](BEFORE_CHANGE_COPY.md) accept
+`--durable-output`. Omission retains the existing content-sync/no-clobber
+publisher. Other write-preview commands do not acquire a directory durability
+claim. The verification history below records the original two consumers; the
+BeforeChange guide records its separate qualification.
 
 ```sh
 tablecraft query update 'UPDATE Items SET Score=27 WHERE Id=2' \

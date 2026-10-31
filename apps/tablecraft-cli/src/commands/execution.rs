@@ -1,12 +1,14 @@
 //! Command publication distinguishes operation failures from stdout failures.
 use super::{Command, query};
-use crate::presentation::Format;
+use crate::{native::publication, presentation::Format};
 use std::io::{self, Write};
 
 #[derive(Debug)]
 pub(crate) enum ExecutionError {
     Operation(String),
     Output(io::Error),
+    EngineeringPublication(publication::Error),
+    PublishedCopyOutput(io::Error),
     Journal(query::journal::Error),
 }
 
@@ -23,6 +25,9 @@ impl Command {
         writer: &mut dyn Write,
     ) -> Result<(), ExecutionError> {
         match self {
+            Self::Query {
+                command: query::Command::PreviewBeforeChange(args),
+            } => query::preview_before_change::execute(*args, password, writer),
             Self::Query {
                 command: query::Command::FinalizeUpdate(args),
             } => query::journal::finalize(*args, password, writer).map_err(ExecutionError::Journal),

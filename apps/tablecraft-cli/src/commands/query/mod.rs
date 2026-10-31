@@ -9,12 +9,14 @@ mod eval;
 mod execution_context;
 mod execution_limits;
 mod external;
+mod guard_properties;
 pub(in crate::commands) mod journal;
 mod large_values;
 mod links;
 mod native_options;
 mod native_target;
 mod number;
+pub(in crate::commands) mod preview_before_change;
 use crate::output;
 mod args;
 mod parameters;
@@ -47,6 +49,7 @@ pub(super) enum Error {
     Parse(tablecraft_sql::ParseError),
     Unsupported,
     JournalDispatch,
+    BeforeChangeDispatch,
     Evaluation { column: usize, error: EvalError },
     Output(output::OutputError),
     Retrieval(tablecraft_query::QueryError),
@@ -96,12 +99,14 @@ impl fmt::Display for Error {
             Self::EngineeringIndex(error) => error.fmt(f),
             Self::GuardPreparation(error) => error.fmt(f),
             Self::Parameter => f.write_str("invalid query run parameter"),
+            Self::BeforeChangeDispatch => f.write_str("BeforeChange copies require publication-aware execution"),
             Self::JournalDispatch => f.write_str("journal commands require the explicit outcome-aware execution path"),
         }
     }
 }
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
+        Command::PreviewBeforeChange(_) => Err(Error::BeforeChangeDispatch),
         Command::JournalUpdate(_) | Command::RecoverUpdate(_) | Command::FinalizeUpdate(_) => {
             Err(Error::JournalDispatch)
         }

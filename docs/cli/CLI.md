@@ -302,7 +302,8 @@ and [native index creation](../testing/ACE16_SECONDARY_INDEX_CREATION.md).
 
 ## Required durable output
 
-Normal Jet 4 `query update` and engineering `query preview-create-index` accept
+Normal Jet 4 `query update`, engineering `query preview-create-index` and explicit
+[`query preview-before-change`](BEFORE_CHANGE_COPY.md) accept
 `--durable-output`. It selects supported file and captured-directory barriers
 before source I/O and never falls back to content-only publication. Omission
 retains the existing default publisher. Windows currently refuses Required before
@@ -313,3 +314,15 @@ The completed report acknowledges the captured directory, not continued
 resolution of the original textual path. Uncertain/visible errors may leave a
 copy and do not imply rollback. Native format/constraint/macro gates stay
 unchanged. See [the exact contract and examples](DURABLE_OUTPUT.md).
+
+## Explicit BeforeChange copies
+
+`query preview-before-change SQL --database INPUT --output NEW_COPY
+--guard-property KIND NAME` runs the bounded shared SQL/BeforeChange service and
+publishes one fresh engineering candidate. Repeat exact property selectors in
+the intended engineering order; `--trace` adds visited-node metadata. All selected
+programs, final rows and the report finish before source release and publication.
+Rejection produces no copy. Encrypted files and deployment packages refuse.
+Publication uncertainty and output failure retain failure status even when stderr
+is unavailable. Required native-program coverage and ordinary ACE saves remain
+unqualified. See the [command contract and examples](BEFORE_CHANGE_COPY.md).

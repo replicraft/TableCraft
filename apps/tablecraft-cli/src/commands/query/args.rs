@@ -11,6 +11,8 @@ use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Apply explicitly selected BeforeChange programs to one fresh engineering copy.
+    PreviewBeforeChange(Box<super::preview_before_change::Arguments>),
     /// Confirm an intact retired Jet4 bundle without replaying its edit.
     FinalizeUpdate(Box<super::journal::FinalizeArguments>),
     /// Apply one normal Jet4 UPDATE in place with an explicit retained journal.

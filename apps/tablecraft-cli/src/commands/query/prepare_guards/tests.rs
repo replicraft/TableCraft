@@ -77,8 +77,11 @@ fn guard_property_pairs_are_explicit_bounded_and_keep_caller_order() {
     ])
     .unwrap();
     let mut budget = ResourceBudget::new(1_000_000, 0, 1_000_000);
-    let selected = selectors(&parsed.args.guard_properties, &mut budget)
-        .unwrap_or_else(|_| panic!("valid selector pairs"));
+    let selected = crate::commands::query::guard_properties::selectors(
+        &parsed.args.guard_properties,
+        &mut budget,
+    )
+    .unwrap_or_else(|_| panic!("valid selector pairs"));
     assert_eq!(
         selected
             .iter()
