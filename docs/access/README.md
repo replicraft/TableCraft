@@ -63,6 +63,8 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 ## Schema
 
+- [Explicit before-event guard preparation](schema/NATIVE_BEFORE_EVENT_GUARDS.md)
+- [Explicit BeforeChange field preparation](schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
 - [Explicit native record constraints](schema/NATIVE_CONSTRAINTS.md)
 - [Inert native linked-table definitions](schema/NATIVE_LINKED_TABLES.md)
 - [Native property inspection](schema/NATIVE_PROPERTIES.md)

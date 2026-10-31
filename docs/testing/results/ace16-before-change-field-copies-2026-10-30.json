@@ -68,7 +68,10 @@
       "cause": "CLI result_large_err in journal error propagation; separate host owner correcting",
       "physical_producer_changed": false
     },
-    "remaining_host_strict": "pending root retry"
+    "remaining_host_strict": {
+      "status": "passed after separate retained-error-owner correction",
+      "log": ".cache/cli-finalize-journal-next-20261030/strict-retained-owner-root.log"
+    }
   },
   "source_pins": [
     {
@@ -229,6 +232,11 @@
       "path": ".cache/ace16-before-change-setfield-next-20261030/physical-host-strict-first-root.log",
       "bytes": 8742,
       "sha256": "955ea2a2943be374d2fa728459a46b7b19476c66569ad822bfaef357318251a3"
+    },
+    {
+      "path": ".cache/cli-finalize-journal-next-20261030/strict-retained-owner-root.log",
+      "bytes": 632,
+      "sha256": "1c3982e93a90c29e30d0b7fd2a83f99f978e1ed027ba6275988596d9fcfda075"
     }
   ],
   "retained_failed_source": {

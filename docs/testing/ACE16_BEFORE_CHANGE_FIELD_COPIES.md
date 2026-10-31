@@ -77,5 +77,47 @@ remain bound to the actual original request, and source/program witnesses reject
 substituted images or altered program bytes. The full mutation regression passes
 568 functions with four ignored helpers. Library strict checks pass for IO, ACE,
 formats and Access. The combined host strict attempt retained a separate CLI
-journal-error size diagnostic; its retry remains pending. Exact logs and phase
+journal-error size diagnostic; the corrective CLI strict round passes after its
+separate retained-error-owner correction. Exact logs and phase
 boundaries are in the [focused record](results/ace16-before-change-field-copies-2026-10-30.json).
+
+
+## Shared SQL-selected preparation
+
+The Access service `engineering::guards::before_change::preview_update` plans one
+local single-column SQL UPDATE through the existing shared query planner over one
+captured original snapshot. Its specialized `EditableTable` reuses the existing
+validated CellUpdate-to-FixedScalarUpdate converter, then finishes once through
+the native physical consumer. SQL expressions see original rows; SetField receives
+proposed Current and frozen Old values. Selectors remain original borrowed caller
+inputs; their order is explicit engineering policy, not discovered native dispatch.
+
+The result is `UpdatePlan<Ace16BeforeChangePreview>`, retaining exact images,
+changed rows, program revisions, trace and assignment locations. Typed backend
+errors distinguish snapshot conversion and native preview failures. RaiseError or
+any error exposes no candidate. This service publishes no files and grants no
+normal-save, journal, default/generation or cascading permission.
+
+The shared source gate initially qualified eight ordinary read pairs/sixteen views.
+The first API compile stopped before execution on three test-only ParsedQuery
+boundaries. After those accessor corrections, five controls passed and three
+physical positive/empty/resource controls refused: the reused read-only fixture
+had no GLOBAL map, legacy owned-container headers and incomplete declaration tails.
+This was a fixture admission gap, not a reason to weaken the physical gate.
+
+An additive derivative retains the original source/helper and failed run. It adds
+the literal page1/slot0 GLOBAL map (self-owner1), owned-container owner0 headers,
+and independently derived FFFF declaration terminators. A stronger source gate
+passes eight derivative pairs/sixteen views, checking exact map roles/memberships,
+allocated pages, complete tails and unchanged original properties before service
+execution. The eight API functions then pass: complete candidates/noops, empty
+selection preflight, late rejection, original selectors, unchanged old admission,
+closed SQL shape, late SQL error, exact/one-below pools and final cancellation.
+No production gate or literal value outcome changed for these corrections.
+
+Strict Access/CLI all-target/all-feature checks, the full 15-function guard target,
+69 Access unit functions, minimal Access, scoped formatting and documentation
+links (6,697 targets, no broken links) pass. CLI adoption is a separate consumer.
+The [shared-service record](results/ace16-before-change-sql-service-2026-10-30.json)
+keeps original read pairs, physically qualified derivatives and failed attempts
+separate. Required discovery, native timing and normal ACE saves remain open.

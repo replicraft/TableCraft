@@ -1,0 +1,146 @@
+{
+  "feature": "Shared SQL-selected BeforeChange engineering candidate",
+  "date": "2026-10-30",
+  "scope": "Access shared service only; CLI consumer separate",
+  "source": {
+    "original_read_gate": {
+      "functions": 1,
+      "pairs": 8,
+      "views": 16,
+      "scope": "Read/check/MR2 qualification only; physically incomplete legacy source"
+    },
+    "physical_role_derivative_gate": {
+      "functions": 1,
+      "pairs": 8,
+      "views": 16,
+      "scope": "Independent literal GLOBAL/owned-map/definition-tail role checks before corrected API calls"
+    }
+  },
+  "focused_api": {
+    "functions": 8,
+    "outcome": "pass",
+    "complete_results": {
+      "positive_and_noop_images": 6,
+      "late_rejected_no_candidate": 2
+    }
+  },
+  "history": [
+    {
+      "phase": "api-first-root",
+      "outcome": "compile failure before tests",
+      "cause": "Three test-only ParsedQuery versus Query boundaries; corrected accessor only"
+    },
+    {
+      "phase": "api-parsed-query-root",
+      "passed": 5,
+      "failed": 3,
+      "cause": "Legacy read fixture lacks GLOBAL role map and complete physical map/declaration framing; producer gates retained"
+    },
+    {
+      "phase": "physical-role-source-first-root",
+      "outcome": "pass before corrected calls",
+      "cause": "Additive independent source/expected derivative; original inputs/expectations archived unchanged"
+    },
+    {
+      "phase": "api-physical-roles-root",
+      "outcome": "pass",
+      "functions": 8,
+      "production_changed_after_failure": false
+    }
+  ],
+  "broader": {
+    "status": "pass",
+    "strict_access_cli_all_targets_all_features": "pass",
+    "full_guard_integration_functions": 15,
+    "access_unit_functions": 69,
+    "minimal_access": "pass",
+    "formatter_access_cli": "pass",
+    "documentation_links": {
+      "targets": 6697,
+      "broken": 0
+    }
+  },
+  "limits": [
+    "Explicit borrowed complete selectors only; no event discovery or native dispatch claim",
+    "No normal ACE save or journal authority",
+    "No defaults/generated fields/cascades or external effects",
+    "No Microsoft Access save/reopen qualification"
+  ],
+  "pins": [
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/api-first-root.log",
+      "bytes": 2433,
+      "sha256": "ed2bac9c71d53c2e1f19e8fd5d13dbdc2cdd4e862afa9b9d01ab5973b0ef08cf"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/api-parsed-query-root.log",
+      "bytes": 3003,
+      "sha256": "74da3352cf5239332df6c096e0f6988bfdb99bec71a418726708cb30225ed7c5"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/api-physical-roles-root.log",
+      "bytes": 1255,
+      "sha256": "d4a509ba546972de315975581e088c2413f5957f94ba34211f85395ce8a2abe2"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/physical-role-source-first-root.log",
+      "bytes": 497,
+      "sha256": "4436c6891a5c948026133f960f8f549c878018ed2148944366670b83fcbc25c5"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/source-first-root.log",
+      "bytes": 715,
+      "sha256": "1b062dcdf9a292e06d7845c242523ca83d7894fe39400b96aa2ec57614e3693e"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/strict-first-root.log",
+      "bytes": 559,
+      "sha256": "be2c851893e9074b9028936925ccc864c8598b02cb61629d8a750fcf5e05f414"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/actual-source-first-freeze.json",
+      "bytes": 468,
+      "sha256": "3b334d591590b205e1aedfd50ba52cba75c9db69c82c76a9b70cd8f6d4712af0"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/actual-service-api-first-freeze.json",
+      "bytes": 1261,
+      "sha256": "0d3196763979be003e595b8109b950911141d3207b2ff8d4970ddbf1907be90f"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/physical-role-source-first-freeze.json",
+      "bytes": 693,
+      "sha256": "51a34a9d552954b4405cf8887f5c2c76b42821577b84787b34d57ce760525a8c"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/physical-role-api-conversion.json",
+      "bytes": 544,
+      "sha256": "0e9c3b208b35e20fd5fc7de3447bb5f95eff7e506b18594c5dbd2a683e89ba80"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/adapter-unit-root.log",
+      "bytes": 8993,
+      "sha256": "4424e0e0097941d08aa67d21cdce604e1547172460d4c18c3bfdb17f11c673f9"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/fmt-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/guard-all-root.log",
+      "bytes": 1780,
+      "sha256": "76046c41061c0445bcec1239a135aeda29d5dc762f20cb63adb1fafa18f447d2"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/links-final-root.log",
+      "bytes": 53,
+      "sha256": "cd14af7459ef3e35a78b9e82c769f7026c0e1b4fdc65fc974b2287371d1860d0"
+    },
+    {
+      "path": ".cache/ace16-before-change-sql-service-next-20261030/minimal-root.log",
+      "bytes": 420,
+      "sha256": "909dea0aa0ede143c991e1d382df8c64b753e39a85f48e74524f86bad3e3a8a2"
+    }
+  ]
+}
