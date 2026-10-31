@@ -1,0 +1,341 @@
+{
+  "kind": "offline-write-session-qualification",
+  "status": "local_source_session_cli_strict_and_minimal_checks_passed",
+  "source_commit": "7a604fa7",
+  "io_transfer_commit": "236a380e",
+  "scope": {
+    "feature": "tablecraft-access/offline-write-session",
+    "platform": "Unix module; Linux/macOS filesystem implementation; other Unix early refusal",
+    "normal_mutation": "existing qualified Jet 4 fixed Int32 only",
+    "ace_normal_write_permission": false,
+    "native_access_comparison": false
+  },
+  "observed": {
+    "source": {
+      "passed": 1
+    },
+    "io": {
+      "focused_transfer_passed": 4,
+      "full_suite_passed": 103,
+      "full_unit_passed": 85,
+      "full_integration_passed": 16,
+      "full_doc_passed": 2,
+      "strict": "passed"
+    },
+    "combined_corrected_check": {
+      "status": "passed",
+      "seconds": 8.48
+    },
+    "cli_journal_first": {
+      "passed": 8,
+      "seconds": 1.03
+    },
+    "access_session_first_execution": {
+      "passed": 9,
+      "seconds": 0.42
+    },
+    "access_session_final": {
+      "passed": 11,
+      "seconds": 0.95
+    },
+    "confirmed_cleanup_diagnostic": {
+      "passed": 1,
+      "complete_images": 2,
+      "seconds": 0.19
+    },
+    "cli_unit_shared_final": {
+      "passed": 7,
+      "failed": 0,
+      "filtered": 67
+    },
+    "access_session_shared_final": {
+      "passed": 11,
+      "failed": 0,
+      "seconds": 0.4
+    },
+    "cli_journal_shared_final": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 1.01
+    }
+  },
+  "retained_history": [
+    {
+      "phase": "combined_check_first",
+      "status": "compile_failed_before_tests",
+      "detail": "69 missing public documentation diagnostics; documentation correction only."
+    },
+    {
+      "phase": "access_session_first_command",
+      "status": "metadata_failed_before_tests",
+      "detail": "--locked refused the new dependency edge; parent updated Cargo.lock offline before first actual nine-test execution."
+    },
+    {
+      "phase": "before_final_session_execution",
+      "status": "review_corrections",
+      "detail": "Added payload-free operation spans and refined Failure classification. The retired-original fixture now performs an actual rollback before retirement instead of retiring a merely pending journal; source and expected images unchanged."
+    },
+    {
+      "phase": "confirmation_diagnostic_review",
+      "status": "corrected_before_new_regression",
+      "detail": "Verified-image failure formatting now omits internal IO cleanup outcomes in both Display and Debug. A real qualified confirmation followed by foreign-entry cleanup failure tests both complete images."
+    },
+    {
+      "phase": "cli_unit_lib_selection",
+      "status": "target_selection_failed_before_compile_or_tests",
+      "detail": "CLI is a binary package; rerun selected --bin tablecraft."
+    },
+    {
+      "phase": "cli_unit_binary_first",
+      "status": "compiler_failed_before_tests",
+      "detail": "LLVM exhausted local disk. Only ordinary target/debug/incremental cache was removed; producers, source fixtures and saved evidence were retained. Incremental compilation remains enabled."
+    }
+  ],
+  "evidence": {
+    "source-first-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/source-first-root.log",
+      "bytes": 607,
+      "sha256": "ca63fe53b73bedfdaf355a906e7dbbb2477fe36024e06a1722eb103847ab9d6e"
+    },
+    "io-transfer-resolved-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/io-transfer-resolved-root.log",
+      "bytes": 2310,
+      "sha256": "2dedb92d2aa929078d8c44f17f115c9f6262a41822e718871756f561ddf8a804"
+    },
+    "io-regression-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/io-regression-root.log",
+      "bytes": 11984,
+      "sha256": "b627abbdfe8b62e3c2eb12e5a54b0bdeaaba928bca16e68a3d42578a854ad98b"
+    },
+    "io-strict-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/io-strict-root.log",
+      "bytes": 746,
+      "sha256": "10ae628342769a3fd3b015f1bd39439c99058009a8333a27024e7613125766a0"
+    },
+    "combined-first-check-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/combined-first-check-root.log",
+      "bytes": 16120,
+      "sha256": "eb9e26d1176364a0c1be262f2f22ee52ba2dad56a5f914391ff88f4dcd4104e3"
+    },
+    "combined-docs-corrected-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/combined-docs-corrected-root.log",
+      "bytes": 291,
+      "sha256": "466baf9d294948f5ea37215961ec9fe01f49662096ba2902cc52a89a2ad22975"
+    },
+    "cli-journal-first-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-first-root.log",
+      "bytes": 1513,
+      "sha256": "d6afd9e1b8bd7dcfecb39eb31bdb6c79620da7dd70abc0c50da4ad6307642c68"
+    },
+    "access-session-first-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/access-session-first-root.log",
+      "bytes": 249,
+      "sha256": "361609dfe6c8f3a433427f4310ab2babdfcdb2fd6f4e6b2e294a6fb9f146a7e1"
+    },
+    "access-session-lock-corrected-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/access-session-lock-corrected-root.log",
+      "bytes": 1607,
+      "sha256": "93eca6bac1238c04cdaffb19e07a5af97843089724d86ed070f581096bac819c"
+    },
+    "access-session-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/access-session-final-root.log",
+      "bytes": 1376,
+      "sha256": "98c01ceac8feb88033ba3de5b10dce43a94b131a2b1e1f8bff38e1b5898dccf1"
+    },
+    "confirmed-diagnostic-first-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/confirmed-diagnostic-first-root.log",
+      "bytes": 615,
+      "sha256": "1a35ea903d3df24f9c50c551741dcf11fa15c593400dce142129c4029dd9c5d1"
+    },
+    "cli-journal-unit-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-unit-final-root.log",
+      "bytes": 60,
+      "sha256": "a7c2703f6f1a0fbdea401f73bf414f9beb89ad573dbca258b794924632da0cad"
+    },
+    "cli-journal-unit-bin-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-unit-bin-root.log",
+      "bytes": 4991,
+      "sha256": "dec3fd9d853688991f37ad1fd9a53336331e765a36d3367afc4fad59aba11eec"
+    },
+    "cli-journal-unit-after-cache-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-unit-after-cache-root.log",
+      "bytes": 1163,
+      "sha256": "1140ba570068656ef656a5a3779762039249406ec7076abe76740366c2c9e01e"
+    },
+    "cli-journal-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-final-root.log",
+      "bytes": 1173,
+      "sha256": "611953dada7cb28ff2987cb0568daafb57ac0bd40a0524d675bee0782eb9b931"
+    },
+    "combined-strict-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/combined-strict-root.log",
+      "bytes": 632,
+      "sha256": "5a0c42cb0c81455e546cb126c3f5805090559729da1f84f41ba6ea7490e14745"
+    },
+    "boundary-tests-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/boundary-tests-root.log",
+      "bytes": 111,
+      "sha256": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9"
+    },
+    "boundaries-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/boundaries-final-root.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    "cli-journal-shared-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/cli-journal-shared-final-root.log",
+      "bytes": 1055,
+      "sha256": "f8071e6ccf40253c963e0e600b26b1fa12f6be84177fd91785f9fd8ed32a90a0"
+    },
+    "access-session-shared-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/access-session-shared-final-root.log",
+      "bytes": 1376,
+      "sha256": "9ddd0bb74c5c788c0ca2f99e378dd9d16b084edddb7648d895f6c3064bf58f99"
+    },
+    "strict-shared-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/strict-shared-final-root.log",
+      "bytes": 291,
+      "sha256": "90712d082be366866c2e10b78cb3a4c58cbc674d49ab540ed5dfec28dbde911c"
+    },
+    "fmt-shared-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/fmt-shared-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs-shared-final-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/docs-shared-final-root.log",
+      "bytes": 53,
+      "sha256": "3612f27d83be1a8db4c6f587136c5239c9c97c7849b99eb5a997f9a737afe399"
+    },
+    "minimal-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/minimal-root.log",
+      "bytes": 190,
+      "sha256": "e57945beee10d670f5abff97749601e8308cc135b28fee327dfffd50e2c8d5f7"
+    },
+    "journal-only-root.log": {
+      "path": ".cache/offline-write-session-next-20261031/journal-only-root.log",
+      "bytes": 530,
+      "sha256": "ad9c9b4f6098916a17b41f9fc82544c767a62039244c7fa7c69e141763769d8c"
+    }
+  },
+  "date": "2026-10-31",
+  "final_checks": {
+    "strict": {
+      "status": "passed",
+      "packages": [
+        "tablecraft-io",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "all_features": true
+    },
+    "format": "workspace passed",
+    "minimal_features": {
+      "default_disabled": "passed",
+      "journal_only": "passed"
+    },
+    "dependency_boundaries": {
+      "packages": 15,
+      "status": "passed"
+    },
+    "boundary_guard_unit_tests": "passed",
+    "documentation_links": {
+      "targets": 6844,
+      "missing": 0
+    },
+    "diff_check": "passed"
+  },
+  "validated_source_pins": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 54858,
+      "sha256": "2a2b1a27f92f4d673c855d81d382e20b10376f0ee51b366b43edd77f2eeb6783"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/Cargo.toml",
+      "bytes": 1183,
+      "sha256": "750a02e2b7f705b14a0a5bf7bad6d131f6426b34f5c4a3d785ff8699def4196d"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/mod.rs",
+      "bytes": 304,
+      "sha256": "ed8eb54a6ffd45d67a215bd9179211152afb0d57ac7345dbd608291a1d8d6867"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/error.rs",
+      "bytes": 10116,
+      "sha256": "e9c33c1ae39d96f7bbfd0a17a81c73410957abf49ede68535d86220f2165c336"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/mod.rs",
+      "bytes": 11883,
+      "sha256": "03d7bdcd384149030ba718725dc7e7cb8fdf98d4b7a3fd68871cc1d116074954"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/recovery.rs",
+      "bytes": 6103,
+      "sha256": "94bd8cb2b72ae4f025e21db2df259f2faad5102d6b61f5c9b177a1db7b79e93a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/tests.rs",
+      "bytes": 6558,
+      "sha256": "307f6b8dd545988900f3b0f7d7deb95343b8429ea47cb6e0b907c9648463a1a5"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/update.rs",
+      "bytes": 5698,
+      "sha256": "52643654b96fa3d801601d60358aeee35a3d3e78639e18e9556672817105da50"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions.rs",
+      "bytes": 934,
+      "sha256": "839af029c340149c104e5778200e712fcf62ff5500a740dcf837f2dc8753ac14"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/faults.rs",
+      "bytes": 9273,
+      "sha256": "b9a0137cf794432085c54cfea0b7eb2d2d3b836f81913ca336f01ef73f8240e2"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/lifecycle.rs",
+      "bytes": 11846,
+      "sha256": "ee974cf40bece0f9028045ddcdd7febef014a6b5f165468f48b3f9d9c56d5cd8"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/model.rs",
+      "bytes": 615,
+      "sha256": "ce317fee2d4e24fd56ff0399dd79caa7d157b7bdef9ff565897932884b86ea3e"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/tests/offline_sessions/refresh.rs",
+      "bytes": 4950,
+      "sha256": "e3a1dc40d1e090b6084004dee836836d94d6b08eb96ff08381681935698c1a57"
+    },
+    {
+      "path": "apps/tablecraft-cli/Cargo.toml",
+      "bytes": 1502,
+      "sha256": "7af39074e648ac522ec7cadf78da4c99a83a58f722506cf79bfc70d48e5b95cd"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/runner.rs",
+      "bytes": 2470,
+      "sha256": "374a77f10632cba23c82672934b58b56f0445277777a6a76b819818f5fd5fce7"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/error.rs",
+      "bytes": 3365,
+      "sha256": "c2e0816039fe43d4a8b0b7d050f3086e69f75b2986be1ade6f0853751cddba4e"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/confirmation.rs",
+      "bytes": 3276,
+      "sha256": "07789dcf08b69e4d1519f2488875f6a400ca144df4f6d00a1ed0b602a87ca650"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/query/journal/confirmation/tests.rs",
+      "bytes": 3066,
+      "sha256": "c445f016fd6640df31e8decef73d3c1352e4a187b54de948bc5decb3f3d853ee"
+    }
+  ]
+}

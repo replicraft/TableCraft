@@ -1498,6 +1498,7 @@ dependencies = [
  "tablecraft-schema",
  "tablecraft-sql",
  "tablecraft-testkit",
+ "tempfile",
  "thiserror",
  "tracing",
  "uuid",
