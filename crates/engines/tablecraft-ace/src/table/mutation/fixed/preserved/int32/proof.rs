@@ -5,7 +5,7 @@ use super::super::{
     unique,
 };
 use crate::{
-    EditError, InspectError, NativeImage, WriteBlocker,
+    EditError, InspectError, NativeColumn, NativeImage, WriteBlocker,
     format::{
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
@@ -40,7 +40,7 @@ pub(in crate::table::mutation::fixed::preserved) fn prove(
 
 pub(in crate::table::mutation::fixed::preserved) fn prove_original(
     original: &Source,
-    mut expected: Vec<u8>,
+    expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     after: &[u8],
     count: usize,
@@ -50,6 +50,27 @@ pub(in crate::table::mutation::fixed::preserved) fn prove_original(
     let [group] = groups else {
         return Err(EditError::Preservation);
     };
+    let selected = select_original(original, group, budget, cancelled)?;
+    prove_bound(
+        original,
+        expected,
+        groups,
+        selected,
+        Observed {
+            bytes: after,
+            changed_rows: count,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table::mutation::fixed::preserved) fn select_original<'a>(
+    original: &'a Source,
+    group: &FixedColumnUpdates<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<&'a NativeColumn, EditError> {
     let schema = original.table.schema();
     name_work(schema.name(), group.table(), budget)?;
     if !schema.name().eq_ignore_ascii_case(group.table()) {
@@ -64,6 +85,31 @@ pub(in crate::table::mutation::fixed::preserved) fn prove_original(
         }
     }
     let selected = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    Ok(selected)
+}
+
+pub(in crate::table::mutation::fixed::preserved) struct Observed<'a> {
+    pub bytes: &'a [u8],
+    pub changed_rows: usize,
+}
+
+pub(in crate::table::mutation::fixed::preserved) fn prove_bound(
+    original: &Source,
+    mut expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    selected: &NativeColumn,
+    observed: Observed<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let [group] = groups else {
+        return Err(EditError::Preservation);
+    };
+    let schema = original.table.schema();
+    let Observed {
+        bytes: after,
+        changed_rows: count,
+    } = observed;
     if selected.scalar_type() != Some(ScalarType::Int32)
         || !selected.fixed()
         || selected.storage_length() != PAYLOAD_BYTES

@@ -16,7 +16,19 @@ pub(super) fn fixed_column(
         .iter()
         .position(|c| c.name().eq_ignore_ascii_case(name))
         .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-    let selected = &schema.columns[position];
+    fixed_column_at(schema, position, kind, width)
+}
+
+pub(super) fn fixed_column_at(
+    schema: &TableSchema,
+    position: usize,
+    kind: ScalarType,
+    width: usize,
+) -> Result<usize, EditError> {
+    let selected = schema
+        .columns
+        .get(position)
+        .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
     if selected.scalar_type() != Some(kind)
         || selected.field.length != width
         || selected.field.flags != (FIXED_FLAG | UPDATABLE_FLAG)

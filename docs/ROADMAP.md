@@ -2,6 +2,13 @@
 
 ## Current product priority
 
+Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
+now cover one ordinary unindexed Int64, Currency or legacy DateTime target through
+the existing native fixed/batch engineering APIs. Exact payload/NULL preservation
+and independent whole-image proof pass authored-source checks. This broadens
+physical mutation admission without establishing normal ACE save permission,
+required-macro absence or native Access qualification.
+
 Explicit [physical secondary-index creation](testing/ACE16_SECONDARY_INDEX_CREATION.md)
 now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete
 images match through each consumer, including NULL/duplicate keys and root-leaf

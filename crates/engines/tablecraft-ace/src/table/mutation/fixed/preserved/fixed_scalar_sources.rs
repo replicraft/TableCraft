@@ -1,7 +1,7 @@
 //! Strong read-only admission; no scalar mutation producer is called.
 use super::{larger_capture_tests::preserved_model as rich, source};
 #[path = "../../../../../tests/ace16_preserved_scalar_updates_contract/fixed_scalar_sources/model.rs"]
-mod model;
+pub(super) mod model;
 
 use crate::{EditError, NativeImage, WriteBlocker};
 use std::io::Cursor;
