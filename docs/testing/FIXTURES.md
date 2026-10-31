@@ -10659,3 +10659,12 @@ canonical envelope; no SDK template or production encoder supplies their bytes.
 Complete native/SDK observations and saved whole-file comparisons pass for all
 ten originals. Generated files and reader artifacts remain private. These are
 source/read results, not producer or Microsoft Access save qualification.
+
+## Authored variable creation capacity boundaries
+
+The [two capacity originals](ACE16_VARIABLE_CAPACITY_SOURCES.md) are authored by
+TableCraft under the repository license, with no copied third-party database
+bytes. Their exact hashes, native reads and independent SDK observations are
+recorded in the linked result. They retain the prior variable-source envelope
+and add the 57/58-row minimum-record candidate-map boundary. Original bytes stay
+in ignored local evidence; ordinary CI reconstructs them and checks both hashes.
