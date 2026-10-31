@@ -115,3 +115,40 @@ existing Boolean coverage. Combined native/Access/CLI strict checks and dependen
 boundaries (15 packages and 12 checker tests) pass. Format checks for ACE/Access/CLI, no-default-feature checks for ACE/Access, and
 6,718 documentation link targets with no missing links also pass. Exact logs and
 retained first failures are in the [frontend record](results/ace16-preserved-int32-frontends-2026-10-30.json).
+
+
+## Independently generated source admission
+
+Two fresh Jackcess 5.0.4 public-builder originals, V2016 and V2019, now pass
+source-only admission through the existing preserved `source::capture`. The
+[repository-authored recipe](preserved_int32_originals/PreservedInt32Originals.java)
+reuses the maintained [bounded channel](parent_index_split_originals/BoundedFileChannel.java).
+It creates manual ID and ordinary nonindexed Required Int32 Score fields alongside
+indexed Base, stored calculated Cached (`[Base]*2`), Boolean, Memo, OLE and
+attachment fields, plus a separate Sentinel table. Stored caches remain
+999 / -333 / 0, and attachment counts remain 2 / 1 / 0. PublishToWeb BYTE 0 is
+supplied during original creation; the existing BYTE 1 refusal remains unchanged.
+
+Five bounded source processes passed: compilation, two original
+creations and two fresh readonly SDK inventories. Original hashes remained stable.
+The ignored native SOURCE function then passed for both originals, using actual
+preservation metadata and ownership checks without a writer or no-op preview.
+It requires explicit `TABLECRAFT_PRESERVED_INT32_SOURCE_DIR` and the selector
+`qualify_genuine_preserved_int32_originals_before_expected_or_producer`.
+
+The first compilation stopped on a conflicting Java local before originals were
+created; only that local and its reference were renamed in a fresh input attempt.
+A separate successor controller schema preflight stopped before any child; its
+schema traversal was corrected without changing the Java recipe. Both failures
+and their immutable inputs remain retained separately from successful execution.
+
+These are independently generated SDK sources, not Microsoft Access-created
+files. The row recipe is repeatable; system timestamps, generated GUIDs and
+physical allocation are measured source facts. Candidate writers and native
+Access save/reopen checks remain unrun for this corpus. Exact source pins,
+provenance and observed outcomes are in the
+[source record](results/ace16-preserved-int32-genuine-sources-2026-10-30.json).
+
+The source helper formatting and ACE library/test all-feature strict checks pass.
+Documentation validation passes 6,723 link targets with no missing links. These
+checks do not run a candidate writer or establish native Access compatibility.

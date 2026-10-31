@@ -1,0 +1,127 @@
+{
+  "scope": "SOURCE only; no candidate/native Access save qualification",
+  "recipe_ownership": "Repository-authored public Jackcess builder calls; maintained bounded channel reused directly; no third-party fixture copied",
+  "source_children": {
+    "planned": 5,
+    "completed": 5,
+    "all_exit_zero": true,
+    "receipt": {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/source-receipt.json",
+      "bytes": 17521,
+      "sha256": "42bae2acc0583ae2b05fefcb8b7024c1b289abf6142f8225d401fee73bf37a8f"
+    }
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "4ab9b8da854961ed73e9f769bee76b748f8cba47487e174f214a3534f86d444f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "594ad7971f23d119db3e0c341dd7d62c53a89bcb238cc78b34e293d3c552492a"
+    }
+  ],
+  "recipe": {
+    "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/PreservedInt32Originals.java",
+    "bytes": 15406,
+    "sha256": "df508688eede7fd12330b8be69eec7f765de5418c06746897a76f0b4e2c64ea8"
+  },
+  "bounded_channel": {
+    "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+    "bytes": 3952,
+    "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+  },
+  "native_source": {
+    "functions_passed": 1,
+    "writer_calls": 0,
+    "log": {
+      "path": ".cache/ace16-preserved-int32-genuine-source-next-20261030/native-source-first-root.log",
+      "bytes": 526,
+      "sha256": "e9ab7b70a1f47f9f157425e4a566a4901adc73ef53a9d031125b6972883e12ec"
+    },
+    "helper": {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/int32/genuine_sources.rs",
+      "bytes": 6100,
+      "sha256": "0edccacae298eeb68e7fd5e7c3753567ab088e53b8095d8ce47435b901ddce6a"
+    }
+  },
+  "retained_history": {
+    "first_javac": "Conflicting attachment local raw vs FileChannel raw; stopped before originals/getters/native calls",
+    "successor_preflight": {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/preflight-schema-first-failure.json",
+      "bytes": 980,
+      "sha256": "1c3a44badc35a0d3111f0d3d6aa81f1bdc77f0c5cc72b30a24f4fec7a94427a9"
+    },
+    "controller_correction": {
+      "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/source-controller-schema-corrected-freeze.json",
+      "bytes": 2020,
+      "sha256": "a43ea9ade9057568a969192d1f16c7682d740192548a9e1de974c5985e1048c5"
+    },
+    "first_javac_receipt": {
+      "path": ".cache/ace16-preserved-int32-genuine-source-first-20261030/source-receipt.json",
+      "bytes": 6759,
+      "sha256": "8c2530ae34d8a9c57557e8151b689099f950a7af90fe7bdcab71af00fc4e719e"
+    }
+  },
+  "next": "Independent expected authoring only; producer/native Access outcomes unqualified",
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "source-only passed; writer and native Access checks unrun",
+  "maintained_recipe": {
+    "path": "docs/testing/preserved_int32_originals/PreservedInt32Originals.java",
+    "bytes": 15406,
+    "sha256": "df508688eede7fd12330b8be69eec7f765de5418c06746897a76f0b4e2c64ea8"
+  },
+  "historical_compiled_recipe": {
+    "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/PreservedInt32Originals.java",
+    "bytes": 15406,
+    "sha256": "df508688eede7fd12330b8be69eec7f765de5418c06746897a76f0b4e2c64ea8"
+  },
+  "limits": {
+    "source_bytes": 2097152,
+    "child_seconds": 30,
+    "stdout_bytes": 262144,
+    "stderr_bytes": 65536,
+    "heap_mib": 512
+  },
+  "sdk_runtime": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "sdk_reviewed_sources": {
+    "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/precall-inputs/000-139-jackcess-5.0.4-sources.jar",
+    "bytes": 878581,
+    "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428"
+  },
+  "promotion_checks": {
+    "formatter": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "strict": {
+      "exit_code": 0,
+      "scope": "tablecraft-ace lib/tests all features",
+      "log": {
+        "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/strict-source-root.log",
+        "bytes": 184,
+        "sha256": "fddd52e4afa615c59b6fdea0495793277d5bd4d722a1bf30023ad773c7b69ecb"
+      }
+    },
+    "documentation_links": {
+      "targets": 6723,
+      "missing": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-int32-genuine-source-successor-next-20261030/links-root.log",
+        "bytes": 53,
+        "sha256": "7a8eb5fe082c0b7b166e54bfa1c557d687b99d5c0d91308460a48e202030d116"
+      }
+    }
+  }
+}
