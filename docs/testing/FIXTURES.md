@@ -10716,3 +10716,13 @@ bytes or production writer outputs are copied. Actual source read checks retain
 counter permissions, scalar representations and rich sibling refusals. The linked
 record separates native source evidence from independent-reader and normal-writer
 qualification. Generated databases and observer tooling remain ignored.
+
+## Authored indexed mixed-schema BeforeChange sources
+
+The [indexed mixed corpus](ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) contains
+fourteen originals and twelve literal expected images under the repository
+license. It reuses only owned mixed BEFORE envelopes, independently adding Score
+indexes while preserving original counter and PrimaryId bytes. Native/hash checks
+and all one hundred independent SDK observations pass before producer execution.
+The linked record retains exact pins and source/read limitations. No third-party
+database bytes or production writer outputs supply these fixtures.
