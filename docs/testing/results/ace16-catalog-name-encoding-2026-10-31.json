@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "fresh_creation_catalog_name_encoding_repair",
+  "status": "local_engine_cli_process_and_strict_checks_passed",
+  "pre_fix_reproduction": {
+    "record": {
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/reproduction-first/result.json",
+      "sha256": "c03c84242809a5d86c168065434c3e14c1f1dcd245349f360e7a2e4d665ff1b4"
+    },
+    "precall": {
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/reproduction-first/precall.json",
+      "sha256": "5808ff33014edba889e306ea0af486a53393f907ce2319658bac9a815cc2bbe7"
+    },
+    "artifact_scope": "retained pre-fix working-tree CLI build; not a fresh current-source build",
+    "create_exit": 0,
+    "inspect_exit": 2,
+    "inspect_diagnostic": "invalid schema name",
+    "preserved_file": {
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/reproduction-first/leading-bom.accdb",
+      "bytes": 36864,
+      "sha256": "467f2f4751f649b2694bc59f879f4e245956e3d233361cec6e492175f80cc6fe"
+    }
+  },
+  "cause": "Raw UTF16 leading FEFF aliases the FF FE stored-Text compression marker in catalog Name; raw TD column names use a different decoding contract",
+  "repair": {
+    "checkpoint": ".cache/ace16-native-catalog-name-encoding-next-20261031/coherent-private-freeze.sha256",
+    "checkpoint_sha256": "edb240aedf97d548d1f8cb77f372b0ce35afb857d04a76285526fcd2776aeffd",
+    "files": 7,
+    "allocated_during_plan": false,
+    "plan_before_image_allocation": true,
+    "escaped_bytes": "FF FE 00 then original UTF16LE",
+    "escaped_condition": "leading FEFF and all UTF16 units have a nonzero low byte",
+    "unsupported_encoding": "CreateDatabaseError::TextEncoding before image allocation",
+    "definition_name_encoding_changed": false,
+    "source_or_format_retry": false,
+    "future_variable_data_consumer": "not implemented in this repair"
+  },
+  "independent_sources": {
+    "source_commit_before_producer": "dd000ad6",
+    "qualified_record": "docs/testing/results/ace16-catalog-name-source-2026-10-31.json",
+    "freeze": ".cache/ace16-native-catalog-name-sources-next-20261031/private-freeze.json",
+    "freeze_sha256": "8d2c843b803f779a9bbb3357d0958e4ae231e4cecd661185cb7efa83f8ad17d6",
+    "cases": [
+      "table-bom",
+      "table-mixed",
+      "table-boundary",
+      "column-raw"
+    ],
+    "user_rows": 0,
+    "table_payload_bytes": [
+      5,
+      17,
+      131
+    ],
+    "source_static_review": "passed; independent record/footer/free and full complement checks",
+    "native_source_gate": "passed",
+    "sdk_reads_and_saved_verifier": "passed; four original files"
+  },
+  "repair_validation": {
+    "new_whole_image_comparisons": 8,
+    "creator_apis": [
+      "create_ace16_database",
+      "create_ace16_int32_database"
+    ],
+    "new_focused_tests": 3,
+    "retained_creator_tests": 11,
+    "producer_execution": {
+      "status": "passed_first_attempt",
+      "tests": 14,
+      "failed": 0,
+      "feature_configuration": "no default features; only ace16-create",
+      "compile_seconds": 8.69,
+      "test_seconds": 0.01,
+      "log": ".cache/ace16-native-catalog-name-encoding-next-20261031/repair-first-root.log",
+      "sha256": "eacfa2ce2d444509951364748bc02b82824c8123b56335bfa06e36f606f3096a"
+    },
+    "cli_acceptance": {
+      "status": "passed",
+      "tests": 8,
+      "failed": 0,
+      "seconds": 0.23,
+      "log": ".cache/ace16-native-catalog-name-encoding-next-20261031/cli-first-root.log",
+      "sha256": "fdb9ef746db190b7400a28dea63ca6e2af89e300e897a6b5324f054d2dcbe769"
+    },
+    "post_fix_process_reproduction": {
+      "status": "passed",
+      "calls": 4,
+      "exits": {
+        "create": 0,
+        "inspect_catalog": 0,
+        "rows_tsv": 0,
+        "unsupported_encoding": 2
+      },
+      "exact_tsv_header": true,
+      "unsupported_output_exists": false,
+      "complete_file_matches_independent_source": "table-bom",
+      "build_scope": "fresh working-tree build with actual repair changes; not a committed source export",
+      "binary": {
+        "bytes": 66089768,
+        "sha256": "e9af3e08d1a715f0da263be45f60eaa51102040dcb1af05cf779e7e4d5b0c96d"
+      },
+      "build_log": {
+        "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/build-first-root.log",
+        "sha256": "77868ac6e009ba9245caca66f734e493b16de5ba9e88ed6232da744bd10356a7"
+      },
+      "record": {
+        "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/process-fixed-first/result.json",
+        "sha256": "9eff3b727c998641fe2badf148adb461d34d98c7b0b3ab997428d2ec77016850"
+      }
+    },
+    "strict": {
+      "status": "passed",
+      "configuration": "all targets and all features for ACE, Access and CLI",
+      "log": ".cache/ace16-native-catalog-name-encoding-next-20261031/strict-first-root.log",
+      "sha256": "59243ddd43c1b3b1b65ad58ec19f88efb3575eacfa1490171d51002154597cb5"
+    },
+    "format_and_links": "pending",
+    "minimal_create_check": {
+      "status": "passed",
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/minimal-first-root.log",
+      "sha256": "847b0c1909e8d4cc939d8bca3fc0651b80df476019e3243b9a61196b65a5c4b8"
+    },
+    "final_format": {
+      "status": "passed",
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/fmt-final-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6885,
+      "missing": 0,
+      "path": ".cache/ace16-native-catalog-name-encoding-next-20261031/links-final-root.log",
+      "sha256": "c95d3fbce0daed3bf5785f9cbd54547d30af9df039430db30db2cc693767a165"
+    }
+  },
+  "limits": [
+    "Unsupported representation is not an Access impossibility claim",
+    "No native Access or Windows qualification",
+    "No imported-file mutation, normal save, macro or journal permission"
+  ]
+}

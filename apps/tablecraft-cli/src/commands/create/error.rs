@@ -29,6 +29,7 @@ impl Error {
                         | CreateDatabaseError::RowLimit
                         | CreateDatabaseError::RowWidth
                         | CreateDatabaseError::PageCapacity
+                        | CreateDatabaseError::TextEncoding
                 ))
         )
     }
