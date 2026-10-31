@@ -92,3 +92,37 @@ pub(super) fn resolve<'a>(
         BeforeGuardSelectionError::Missing,
     ))
 }
+
+pub(super) fn require_complete(
+    extra: &TableExtra,
+    selectors: &[BeforeEventGuardSelector<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), BeforeEventGuardError> {
+    let inventory = extra.inspect_macro_inventory(budget, cancelled)?;
+    if !inventory.opaque_groups().is_empty()
+        || !inventory.unrepresented_names().is_empty()
+        || inventory.properties().len() != selectors.len()
+    {
+        return Err(BeforeEventGuardError::Unsupported(
+            BeforeGuardUnsupported::Structure,
+        ));
+    }
+    for property in inventory.properties() {
+        check(budget, cancelled)?;
+        if !matches!(
+            property.observation(),
+            crate::MacroPropertyObservation::Envelopes(_)
+        ) {
+            return Err(BeforeEventGuardError::Unsupported(
+                BeforeGuardUnsupported::Structure,
+            ));
+        }
+    }
+    // validate/resolve ensure an injective exact selection. Equal complete counts
+    // then exclude every unselected parsed property, even for zero selected rows.
+    for selector in selectors {
+        resolve(extra, *selector, budget, cancelled)?;
+    }
+    Ok(())
+}

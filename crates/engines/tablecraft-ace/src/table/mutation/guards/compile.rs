@@ -1,6 +1,6 @@
 use super::{
     BeforeEvent, BeforeEventGuardError, BeforeEventGuardSelector, BeforeGuardProgramRevision,
-    BeforeGuardUnsupported, buffer, expression, selection, source,
+    BeforeGuardUnsupported, PreparationProfile, buffer, expression, selection, source,
 };
 use crate::{
     InspectError, MacroProgramNodeKind, MacroProgramProfile, MacroProgramTextKind, NativeImage,
@@ -12,6 +12,8 @@ use tablecraft_sql::select::Expression;
 
 const MAX_INSTRUCTIONS: usize = 4096;
 const MAX_DESCRIPTION_BYTES: usize = EvalLimits::DEFAULT_TEXT_BYTES;
+// Explicit native MR2 carrier profile; no broader property-flag meaning inferred.
+const BEFORE_CHANGE_PROPERTY_FLAGS: u8 = 0x01;
 
 pub(super) enum Description {
     Literal(String),
@@ -19,6 +21,10 @@ pub(super) enum Description {
 }
 
 pub(super) enum Operation {
+    SetField {
+        column: usize,
+        expression: Expression,
+    },
     If {
         expression: Expression,
         end: usize,
@@ -50,6 +56,50 @@ pub(super) fn derive(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Compiled, BeforeEventGuardError> {
+    derive_for(
+        image,
+        table,
+        selectors,
+        event,
+        PreparationProfile::Guards,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn derive_fields(
+    image: &NativeImage,
+    table: &TableSnapshot,
+    selectors: &[BeforeEventGuardSelector<'_>],
+    event: BeforeEvent,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Compiled, BeforeEventGuardError> {
+    if event == BeforeEvent::Delete {
+        return Err(BeforeEventGuardError::Unsupported(
+            BeforeGuardUnsupported::Context,
+        ));
+    }
+    derive_for(
+        image,
+        table,
+        selectors,
+        event,
+        PreparationProfile::BeforeChangeFields,
+        budget,
+        cancelled,
+    )
+}
+
+fn derive_for(
+    image: &NativeImage,
+    table: &TableSnapshot,
+    selectors: &[BeforeEventGuardSelector<'_>],
+    event: BeforeEvent,
+    profile: PreparationProfile,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Compiled, BeforeEventGuardError> {
     selection::validate(selectors, budget, cancelled)?;
     let extra = image.inspect_table_extra(table.schema().object_id(), budget, cancelled)?;
     if extra.presence() != PayloadPresence::Present
@@ -58,6 +108,9 @@ pub(super) fn derive(
         return Err(BeforeEventGuardError::Unsupported(
             BeforeGuardUnsupported::Structure,
         ));
+    }
+    if profile == PreparationProfile::BeforeChangeFields {
+        selection::require_complete(&extra, selectors, budget, cancelled)?;
     }
     let mut instructions = Vec::new();
     let mut programs = Vec::new();
@@ -68,8 +121,19 @@ pub(super) fn derive(
         let group = &extra.groups()[selected_property.group];
         let property = selected_property.value;
         check(budget, cancelled)?;
+        if profile == PreparationProfile::BeforeChangeFields
+            && (property.native_type() != crate::format::data_type::LONG_TEXT
+                || property.flags() != BEFORE_CHANGE_PROPERTY_FLAGS)
+        {
+            return Err(BeforeEventGuardError::Unsupported(
+                BeforeGuardUnsupported::Structure,
+            ));
+        }
         let program = property.inspect_macro_program(
-            MacroProgramProfile::DocumentedDesktop,
+            match profile {
+                PreparationProfile::Guards => MacroProgramProfile::DocumentedDesktop,
+                PreparationProfile::BeforeChangeFields => MacroProgramProfile::BeforeChangeFields,
+            },
             budget,
             cancelled,
         )?;
@@ -133,8 +197,14 @@ pub(super) fn derive(
                                 cancelled,
                             )?
                             .ok_or(InspectError::Malformed)?;
-                        let expression =
-                            expression::compile(text.text(), event, table, budget, cancelled)?;
+                        let expression = expression::compile(
+                            text.text(),
+                            event,
+                            table,
+                            profile,
+                            budget,
+                            cancelled,
+                        )?;
                         let parent = program
                             .nodes()
                             .get(node.parent().ok_or(InspectError::Malformed)?)
@@ -143,6 +213,34 @@ pub(super) fn derive(
                             expression,
                             end: parent.span().end(),
                         }
+                    }
+                    MacroProgramNodeKind::SetField { .. } => {
+                        let target = program
+                            .text_content(
+                                node_index,
+                                MacroProgramTextKind::Field,
+                                budget,
+                                cancelled,
+                            )?
+                            .ok_or(InspectError::Malformed)?;
+                        let value = program
+                            .text_content(
+                                node_index,
+                                MacroProgramTextKind::Value,
+                                budget,
+                                cancelled,
+                            )?
+                            .ok_or(InspectError::Malformed)?;
+                        let column = expression::target(target.text(), table, budget, cancelled)?;
+                        let expression = expression::compile(
+                            value.text().strip_prefix('=').unwrap_or(value.text()),
+                            event,
+                            table,
+                            profile,
+                            budget,
+                            cancelled,
+                        )?;
+                        Operation::SetField { column, expression }
                     }
                     MacroProgramNodeKind::RaiseError { .. } => {
                         let number = program
@@ -157,6 +255,7 @@ pub(super) fn derive(
                             number.text().strip_prefix('=').unwrap_or(number.text()),
                             event,
                             table,
+                            profile,
                             budget,
                             cancelled,
                         )?;
@@ -169,8 +268,10 @@ pub(super) fn derive(
                             )?
                             .map(|text| {
                                 if let Some(value) = text.text().strip_prefix('=') {
-                                    expression::compile(value, event, table, budget, cancelled)
-                                        .map(Description::Expression)
+                                    expression::compile(
+                                        value, event, table, profile, budget, cancelled,
+                                    )
+                                    .map(Description::Expression)
                                 } else {
                                     if text.text().len() > MAX_DESCRIPTION_BYTES {
                                         return Err(InspectError::StructureLimit.into());

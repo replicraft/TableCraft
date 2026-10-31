@@ -88,7 +88,8 @@ pub use table::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
-    BeforeEvent, BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
+    BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
+    BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
     BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
     BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
 };

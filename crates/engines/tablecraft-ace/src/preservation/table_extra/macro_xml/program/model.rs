@@ -7,6 +7,8 @@ use crate::InspectError;
 pub enum MacroProgramProfile {
     /// Documented desktop Statements/If/RaiseError shapes; expressions unevaluated.
     DocumentedDesktop,
+    /// Explicit BeforeChange-only profile adding same-row Field/Value SetField.
+    BeforeChangeFields,
 }
 
 /// Structural coverage never authorizes execution, macro absence or writes.
@@ -58,6 +60,10 @@ pub enum MacroProgramTextKind {
     Number,
     /// The optional RaiseError Description argument's text.
     Description,
+    /// Static SetField target text in the explicit BeforeChange profile.
+    Field,
+    /// SetField expression text, without evaluation or storage conversion.
+    Value,
 }
 
 /// Explicitly materialized XML text, without expression evaluation or coercion.
@@ -110,6 +116,13 @@ pub enum MacroProgramNodeKind {
         number: XmlByteSpan,
         /// Optional Description contents; None differs from a present-empty range.
         description: Option<XmlByteSpan>,
+    },
+    /// BeforeChange-only SetField cardinality, without target binding/evaluation.
+    SetField {
+        /// Present static target contents.
+        field: XmlByteSpan,
+        /// Present expression contents.
+        value: XmlByteSpan,
     },
     /// Entire uninterpreted subtree remains available through its source span.
     Opaque {

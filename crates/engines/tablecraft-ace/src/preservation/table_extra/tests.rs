@@ -8,6 +8,8 @@ mod inspect;
 #[cfg(feature = "ace16-write-preview")]
 mod observed_macro_inventory;
 mod program_sources;
+#[cfg(feature = "ace16-write-preview")]
+mod setfield_sources;
 
 use tablecraft_core::limits::ResourceBudget;
 

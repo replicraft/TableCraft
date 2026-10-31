@@ -61,6 +61,11 @@ universal execution rule. [Services RaiseError](https://learn.microsoft.com/en-u
 [custom web app RaiseError](https://learn.microsoft.com/en-us/office/client-developer/access/raiseerror-macro-action-access-custom-web-app),
 [SetField context](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/setfield-macro-action)
 
+The additive [BeforeChange field profile](NATIVE_BEFORE_CHANGE_FIELDS.md) can
+explicitly recognize `SetField` with `Field`/`Value` text slots under BeforeChange.
+`DocumentedDesktop` retains the opaque behavior described above; no inspection
+profile authorizes native event dispatch or saves.
+
 ## Exact source and bounds
 
 The result borrows its original property owner. Native property bytes remain

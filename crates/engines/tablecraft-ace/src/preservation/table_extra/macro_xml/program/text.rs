@@ -27,6 +27,12 @@ impl DataMacroProgram<'_> {
                 MacroProgramNodeKind::RaiseError { description, .. },
                 MacroProgramTextKind::Description,
             ) => description,
+            (MacroProgramNodeKind::SetField { field, .. }, MacroProgramTextKind::Field) => {
+                Some(field)
+            }
+            (MacroProgramNodeKind::SetField { value, .. }, MacroProgramTextKind::Value) => {
+                Some(value)
+            }
             _ => return Err(InspectError::Unsupported),
         };
 

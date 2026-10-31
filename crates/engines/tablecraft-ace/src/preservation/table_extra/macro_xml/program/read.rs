@@ -20,24 +20,35 @@ pub(super) fn inspect<'a>(
     check(budget, cancelled)?;
     let xml = property.text().ok_or(InspectError::Unsupported)?;
     let envelopes = lexical::program_envelopes(xml, budget, cancelled)?;
+    if profile == MacroProgramProfile::BeforeChangeFields {
+        for definition in envelopes.definitions() {
+            check(budget, cancelled)?;
+            if definition.event() != Some("BeforeChange") {
+                return Err(InspectError::Unsupported);
+            }
+        }
+    }
     let tree = tree::scan(xml, envelopes.namespace().uri(), budget, cancelled)?;
     let mut builder = Builder {
         tree: &tree,
         definition: 0,
         nodes: Vec::new(),
         opaque: false,
+        profile,
     };
 
     match profile {
-        MacroProgramProfile::DocumentedDesktop => match tree.elements[tree.root].kind {
-            Kind::Definition => builder.definition(tree.root, budget, cancelled)?,
-            Kind::Wrapper => {
-                for child in tree.children(tree.root) {
-                    builder.definition(child, budget, cancelled)?;
+        MacroProgramProfile::DocumentedDesktop | MacroProgramProfile::BeforeChangeFields => {
+            match tree.elements[tree.root].kind {
+                Kind::Definition => builder.definition(tree.root, budget, cancelled)?,
+                Kind::Wrapper => {
+                    for child in tree.children(tree.root) {
+                        builder.definition(child, budget, cancelled)?;
+                    }
                 }
+                _ => return Err(InspectError::Unsupported),
             }
-            _ => return Err(InspectError::Unsupported),
-        },
+        }
     }
     if builder.definition != envelopes.definitions().len() {
         return Err(InspectError::Malformed);
@@ -63,6 +74,7 @@ struct Builder<'a> {
     definition: usize,
     nodes: Vec<MacroProgramNode>,
     opaque: bool,
+    profile: MacroProgramProfile,
 }
 
 impl Builder<'_> {
@@ -232,6 +244,9 @@ impl Builder<'_> {
         } else {
             match action.attributes.name {
                 Some(Name::RaiseError) => None,
+                Some(Name::SetField) if self.profile == MacroProgramProfile::BeforeChangeFields => {
+                    None
+                }
                 Some(Name::SetField) => Some(Diagnostic::UnsupportedAction),
                 Some(_) => Some(Diagnostic::UnknownAction),
                 None => Some(Diagnostic::UnsupportedStructure),
@@ -239,6 +254,10 @@ impl Builder<'_> {
         };
         if let Some(reason) = reason {
             return self.opaque(element, parent, reason, budget, cancelled);
+        }
+
+        if action.attributes.name == Some(Name::SetField) {
+            return self.set_field(element, parent, budget, cancelled);
         }
 
         let mut number = None;
@@ -286,6 +305,62 @@ impl Builder<'_> {
                 number,
                 description,
             },
+            budget,
+            cancelled,
+        )?;
+        Ok(())
+    }
+
+    fn set_field(
+        &mut self,
+        element: usize,
+        parent: Option<usize>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), InspectError> {
+        let tree = self.tree;
+        let mut field = None;
+        let mut value = None;
+        for child in tree.children(element) {
+            check(budget, cancelled)?;
+            let argument = &tree.elements[child];
+            let reason = if argument.kind == Kind::Foreign {
+                Some(Diagnostic::ForeignElement)
+            } else if argument.attributes.foreign {
+                Some(Diagnostic::ForeignAttribute)
+            } else if argument.attributes.extra {
+                Some(Diagnostic::UnknownAttribute)
+            } else if argument.kind != Kind::Argument || argument.first.is_some() {
+                Some(Diagnostic::UnsupportedStructure)
+            } else {
+                match argument.attributes.name {
+                    Some(Name::Field) if field.replace(argument.content).is_some() => {
+                        Some(Diagnostic::DuplicateArgument)
+                    }
+                    Some(Name::Value) if value.replace(argument.content).is_some() => {
+                        Some(Diagnostic::DuplicateArgument)
+                    }
+                    Some(Name::Field | Name::Value) => None,
+                    _ => Some(Diagnostic::UnknownArgument),
+                }
+            };
+            if let Some(reason) = reason {
+                return self.opaque(element, parent, reason, budget, cancelled);
+            }
+        }
+        let (Some(field), Some(value)) = (field, value) else {
+            return self.opaque(
+                element,
+                parent,
+                Diagnostic::MissingArgument,
+                budget,
+                cancelled,
+            );
+        };
+        self.push(
+            element,
+            parent,
+            NodeKind::SetField { field, value },
             budget,
             cancelled,
         )?;

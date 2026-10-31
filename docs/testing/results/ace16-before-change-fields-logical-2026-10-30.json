@@ -1,0 +1,311 @@
+{
+  "feature": "explicit BeforeChange SetField logical preparation",
+  "date": "2026-10-30",
+  "phase": "logical-only; physical consumer separate",
+  "native_access_qualification": false,
+  "normal_ace_write_permission": false,
+  "writers": 0,
+  "source_before_evaluator": {
+    "functions": 1,
+    "programs": 18,
+    "headers": [
+      5,
+      6
+    ],
+    "native_carriers": 36,
+    "first_exit": 0
+  },
+  "logical_api": {
+    "functions": 4,
+    "literal_calls": 36,
+    "passed_preparations": 16,
+    "completed_rejections": 2,
+    "typed_failures": 18,
+    "first_exit": 0,
+    "metadata_name_correction_rerun_exit": 0
+  },
+  "causal_authority": {
+    "functions": 2,
+    "exit": 0,
+    "controls": [
+      "correlated instruction/final-row cache",
+      "forged frozen Old and matching final row",
+      "changed retained program witness with otherwise healthy output"
+    ]
+  },
+  "regressions": {
+    "guard_authority_functions": 6,
+    "table_extra_functions": 46,
+    "exit": 0
+  },
+  "checks": {
+    "ace_library_strict_all_features_before_metadata_target_correction": 0,
+    "ace_minimal_before_metadata_target_correction": 0,
+    "current_strict": 0,
+    "current_package_formatter": 0,
+    "cli_normal_and_strict": 0,
+    "cli_unit_functions": 65,
+    "existing_cli_copy_inspection_functions": 22
+  },
+  "history": [
+    {
+      "phase": "first source and evaluator",
+      "outcome": "all pass; original literals unchanged"
+    },
+    {
+      "phase": "static field-selector correction",
+      "reason": "Field is a native metadata-name string, not a SQL expression; reserved SQL words must bind if the actual field exists",
+      "archive": {
+        "path": ".cache/ace16-before-change-setfield-next-20261030/expression-before-metadata-target.rs",
+        "bytes": 8947,
+        "sha256": "05618cb6cec5518b30f31ba7aab039265700d89ac507a36b8e4c621d13d10d54"
+      },
+      "receipt": {
+        "path": ".cache/ace16-before-change-setfield-next-20261030/metadata-target-correction.json",
+        "bytes": 454,
+        "sha256": "dcfd954b4bc028896ef51434fe476fa2c0a5895ce592637a73a73d1cedeb2287"
+      },
+      "result": "all4 logical API and2 causal functions pass again; no source/expected changes"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/source-first-root.log",
+      "bytes": 631,
+      "sha256": "90ab9cb03cba1de3174ec1e7851bf3f46d04c53cd437d1f6fb9f78e2532262b1"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-check-first-root.log",
+      "bytes": 293,
+      "sha256": "3250b27316b947598cecf7069d0bfff4da53aaf373fd15db2900a9ac092f713a"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/source-logical-root.log",
+      "bytes": 521,
+      "sha256": "46e8a40a324710be69c764db781f9a29144db03d7d91fc37faebf7e483584518"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-api-first-root.log",
+      "bytes": 827,
+      "sha256": "bdccbf43bc6dd4ef5313b009e987bba7bf1029f3092711baf9eee154244243b8"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/guards-first-root.log",
+      "bytes": 1190,
+      "sha256": "dcd50b0402e8188b8ab6b46b278401c5a738ae6cab88e761c7fb5e69a36d6f19"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/programs-first-root.log",
+      "bytes": 6405,
+      "sha256": "6876b7b9887379f2b6ddc63e5ea82230ac18ecff5791c35aea8877240aa5408e"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-strict-first-root.log",
+      "bytes": 999,
+      "sha256": "40be69ca5f439f5f02ba3896245a8ac097b2eb78572eda67dd61bddc5a6cfe38"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-minimal-root.log",
+      "bytes": 293,
+      "sha256": "42b0d1f8a49eca479e5f5b6aebc0c1e05c64f3d82521eca2fb5eddd32823a735"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-api-metadata-target-root.log",
+      "bytes": 827,
+      "sha256": "d8a5e5d3835b488f672b29b6f7b8f4fda9b7219a03d6ed661e5469ef380d90ca"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/causal-metadata-target-root.log",
+      "bytes": 539,
+      "sha256": "5fe0121b3e98ae606fa6657d0b2927fec31b2cf962ebddba726ad3a5600a7c05"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-strict-metadata-target-root.log",
+      "bytes": 183,
+      "sha256": "f4bf7c0a757cd1fd317cc56cd0fcdb9693c21d8813efb3738e90f2e108bc852b"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-fmt-final-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/check-first-root.log",
+      "bytes": 631,
+      "sha256": "4624f3abb22fb870b74bfb4e407d0b799d6204c6c28ab210fd10534b3c0b4198"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/strict-first-root.log",
+      "bytes": 988,
+      "sha256": "7124420a039510f35256faaa61682f43803321fbecd5d78932710eab81230cbb"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/unit-all-root.log",
+      "bytes": 7238,
+      "sha256": "59e9e4aa8a7b269b0b0fb98f6c67755c24967bfffc8af6149997647d19a1083e"
+    },
+    {
+      "path": ".cache/cli-journal-consumer-next-20261030/copy-inspection-regression-root.log",
+      "bytes": 2522,
+      "sha256": "ac5a299d584c52ac8a72ecc04944b64ee923000ecb7eafbf1b1bc17af6c4dc5c"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/first-literal-freeze.json",
+      "bytes": 1706,
+      "sha256": "e068c30494bbb76db1021a8b253a880310132490a786d2b38f4398736f91ce1e"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/source-installed-freeze.json",
+      "bytes": 1302,
+      "sha256": "70bf0ec017c2d4429a04cde3fa4e07edb286406d692ea1a09dc1f2e3bf8e05f4"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-first-coherent-freeze.json",
+      "bytes": 3688,
+      "sha256": "bf35e056c1ddfe0963f3c6c3a7a0948ce8fdfd5c38bce8d9c6e763180d626739"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-api-first-freeze.json",
+      "bytes": 4118,
+      "sha256": "82167792bf120f8163f321c94c3fb146e08110f489ad57beccc7c20c2cc2922a"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-causal-first-freeze.json",
+      "bytes": 4354,
+      "sha256": "54e18a75168e2ff22310572d4523069122697e95ec0e488622d5121ad68ece79"
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 7971,
+      "sha256": "96379b95a11b7ecd4ba16fa1e7e2fa365dbc2f14b09cd0f612099f22bedb5918"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 5145,
+      "sha256": "426e018f671b67bc3a821655097bdf4467b3d44e5b45830832164c6089033d05"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 2696,
+      "sha256": "d49f11f5e25435b56f24e9a53582df9493ee9802e827a79b1a489c5ffe6e978f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/model.rs",
+      "bytes": 7340,
+      "sha256": "c59b778b8bb9fa7f53b253efc1bcccf5b7b3a448bab04d9b2448e44e7e995011"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/read.rs",
+      "bytes": 13999,
+      "sha256": "12757bb54ca5e2a7224acd92d82c8bba2e5b0518d7ca6e2f8bf2e49338f48d36"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/tree.rs",
+      "bytes": 9633,
+      "sha256": "da93b2e55fa0c7794dee2641c92a233d30e22c3c1ce074e96ec6c6c73fcc2631"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/text.rs",
+      "bytes": 2058,
+      "sha256": "14f72c735cd0d34c9cf3dac6b5e48084906b306aa1a121f6627834d14c5c9277"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/macro_xml/program/tests.rs",
+      "bytes": 9931,
+      "sha256": "973da6f9ca6865082e3ebea50bb8a530ebca5ce5584dcf2e2fef62d37bf59cf5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/mod.rs",
+      "bytes": 3316,
+      "sha256": "699c48ea720923e504396b497d0b18e3cff8c3e75b8674d73ee44bd9d60f9f39"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/compile.rs",
+      "bytes": 12279,
+      "sha256": "267ac89814cbadf838cbca981a01cb9469c2ac89b0e175f0c5ee47710753f057"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/expression.rs",
+      "bytes": 8099,
+      "sha256": "9def05fef27e2428736007088eebcc77fbe8f03bc254a239f60a8b806d94aeff"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/evaluate.rs",
+      "bytes": 8725,
+      "sha256": "318d1eb17ad35f9fb6536e605ff614afab3ef650e5445f9f2370788dc5e7c43a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/selection.rs",
+      "bytes": 4373,
+      "sha256": "db1baf13bd1d5e57c6a9e9564d932a87711166c64abe7695a66503fe3375a132"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields.rs",
+      "bytes": 2714,
+      "sha256": "1506c437d30d0e9a93c3b921416cc1a2ac17f56783f95a3a2a4de13404e6b787"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/model.rs",
+      "bytes": 3648,
+      "sha256": "72991edc442fe540f9aa02ec7e1d0dc4688c90b783af7ad4f85346074717d774"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/evaluate.rs",
+      "bytes": 7136,
+      "sha256": "b350908eb0fa9aec15d7cb04b53b59b267869378e3d24b214cf51e78521edde1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/authority.rs",
+      "bytes": 3089,
+      "sha256": "5825edf5c944e7028973394c415d090504142fbb6d5ae924c680e129dac5b431"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests.rs",
+      "bytes": 482,
+      "sha256": "b2064d756c1c202aa019e3e7e23751d3b593e956be28e1e13ab412140fae32a5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/setfield_sources.rs",
+      "bytes": 5183,
+      "sha256": "725fc81d0b1a63fa371277affe510e61d22f43d1a299eb757d12f3884c4336c2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/setfield_sources/cases.rs",
+      "bytes": 7862,
+      "sha256": "02c8e4df07cfbad4eff7a0574de35bd6af07d1748a2dc69a7575f597136271fb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/preservation/table_extra/tests/setfield_sources/api.rs",
+      "bytes": 11073,
+      "sha256": "9f2ef781e918ef99ac64a8b12d18b034595eeb8f9974aca095835f92a914492a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/authority/tests.rs",
+      "bytes": 5528,
+      "sha256": "c0b9c2ca3ea2b6caee087e27c0b422c72f9b490bbaae71347dbaea1d3a20bcdc"
+    },
+    {
+      "path": "apps/tablecraft-cli/src/commands/inspect/extra/program.rs",
+      "bytes": 7936,
+      "sha256": "478cb2dda6c0d33525665cfc0fc3de88777832315730dff9b1a008dacbd6c022"
+    }
+  ],
+  "independent_staging": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields.rs",
+    "logical_blob": {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/logical-staging/fields.rs",
+      "bytes": 2679,
+      "sha256": "c2a1285506c161fa9ba395b4b6934ce830f7cfe409257f53861ed3fcaba170a6"
+    },
+    "difference": "only cfg(test) physical_sources registration removed; actual owner remains unchanged"
+  },
+  "primary_references": [
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event",
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/setfield-macro-action",
+    "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/raiseerror-macro-action"
+  ]
+}
