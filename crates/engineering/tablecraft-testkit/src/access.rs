@@ -146,3 +146,6 @@ pub mod canonical_before_change;
 
 /// Independent indexed BeforeChange originals and literal complete outcomes.
 pub mod canonical_indexed_before_change;
+
+/// Independent retained-tree and compressed-prefix BeforeChange source images.
+pub mod canonical_tree_before_change;

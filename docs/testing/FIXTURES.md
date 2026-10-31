@@ -10696,3 +10696,13 @@ key profiles to the existing original-only event envelope. No third-party
 database bytes or production writer outputs supply these sources. The linked
 result and ordinary hash anchors retain the source/request freeze separately
 from future indexed normal-write and native Access qualification.
+
+## Authored retained-tree BeforeChange sources
+
+The [tree source corpus](ACE16_TREE_BEFORE_CHANGE_SOURCES.md) adds eighteen
+originals and eighteen complete fitting expectations under the repository
+license. It retains original-only event/index envelopes and independently
+encodes compressed leaves, retained nodes, cross-leaf swaps and prefix loss.
+No third-party database bytes or production writer outputs supply the images.
+Ordinary hash anchors and the linked execution record distinguish source/read
+qualification from normal writer and native Access outcomes.
