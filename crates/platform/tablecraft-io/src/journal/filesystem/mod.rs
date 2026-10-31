@@ -6,13 +6,16 @@
 //! Initial filesystem support is macOS/Linux; unsupported Unix refuses before
 //! opening source files. Executable hosts provide unsupported handlers elsewhere.
 mod binding;
+mod create;
 mod pair;
 mod reopen;
+mod retirement;
 mod storage;
 mod target;
 
 pub use binding::BindingError;
 pub use pair::{OfflineJournalPair, PairError, PairSetupFailure, PairState};
+pub use retirement::{FinalizationError, FinalizationPhase};
 pub use storage::PairedStorage;
 pub use target::{OfflineTarget, TargetLockState};
 

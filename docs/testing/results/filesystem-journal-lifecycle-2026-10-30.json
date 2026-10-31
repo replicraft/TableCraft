@@ -1,0 +1,170 @@
+{
+  "feature": "Explicit retained filesystem image-journal creation and retirement",
+  "date": "2026-10-30",
+  "observed_platform": "macOS only",
+  "status": "IO SOURCE/focused/full/strict/minimal passed; executable host checked separately",
+  "checks": [
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/filesystem-source-first-root.log",
+        "bytes": 1228,
+        "sha256": "c0ff0cf449965346fcf6439b4500dfea553d46edb9fc7bf18f598f1113a2ec76"
+      },
+      "exit_code": 0,
+      "observed": {
+        "source_functions": 8,
+        "new_source_functions": 6
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/filesystem-api-first-root.log",
+        "bytes": 2029,
+        "sha256": "23dfb1238b4d18b6a176dd93ccffca1db0529b6dbc74e60bd2bb86ce71258236"
+      },
+      "exit_code": 0,
+      "observed": {
+        "readonly_filesystem_functions": 15
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-create-first-root.log",
+        "bytes": 739,
+        "sha256": "ddaf81c8446a281a26d498283ff481d41c2bcdcf25ee30312dae65981506c92d"
+      },
+      "exit_code": 0,
+      "observed": {
+        "factory_functions": 4
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-retirement-first-root.log",
+        "bytes": 1087,
+        "sha256": "f67b80f1b2d0a5f5a7a6256a64dd465d73dcc5ff4524783ece00062784fbc496"
+      },
+      "exit_code": 0,
+      "observed": {
+        "retirement_functions": 7
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-io-all-root.log",
+        "bytes": 10791,
+        "sha256": "fa9930d17a22c1bd3602c1692dbcd416f8a61e52a33f87a54f58a32db724bd7c"
+      },
+      "exit_code": 0,
+      "observed": {
+        "unit": 81,
+        "integration": 9,
+        "documentation": 2
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-strict-first-root.log",
+        "bytes": 2271,
+        "sha256": "91c536bf133411dbb6d5cef615db402d68df073467a869b152ab52596cbbebdf"
+      },
+      "exit_code": 101,
+      "observed": {
+        "finding": "result_large_err for inline retained CreateFailure/PairSetupFailure; no behavior failures"
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-strict-owner-corrected-root.log",
+        "bytes": 182,
+        "sha256": "c6ea82666ba0930aa2df313f724fa3a0a70a4f0f00e230248e639fbdac452e56"
+      },
+      "exit_code": 0,
+      "observed": {}
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-io-owner-corrected-root.log",
+        "bytes": 10791,
+        "sha256": "29e84263658179ac836706e7fa49d54ca0d5a5678204e4a68530a38b373c6afe"
+      },
+      "exit_code": 0,
+      "observed": {
+        "unit": 81,
+        "integration": 9,
+        "documentation": 2
+      }
+    },
+    {
+      "log": {
+        "path": ".cache/jet4-host-journal-lifecycle-next-20261030/lifecycle-minimal-root.log",
+        "bytes": 72,
+        "sha256": "ee1d3fffa2022e962e63e0dbe4d35c9c198450a20c29fc09030f635dbb38bfcd"
+      },
+      "exit_code": 0,
+      "observed": {}
+    }
+  ],
+  "implementation_inputs": [
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/mod.rs",
+      "bytes": 1290,
+      "sha256": "6a2fed4fd9e0fa91e458e9e8bc1b16837e4afec4e6596c50e20938e6b8cf27a2"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/pair.rs",
+      "bytes": 14293,
+      "sha256": "344ecfd0b8c8c53669e40e87e4b8b52e929af2f9c7958c7c7552797d0a8e2308"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/binding.rs",
+      "bytes": 8321,
+      "sha256": "4191af1bad9b568fb76186ce607fedcbf8a42bde457404df80ccd2777eeed337"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/target.rs",
+      "bytes": 6294,
+      "sha256": "41bea6a326a33f1befc6f8e628eea7182e13abfb6a913dedb7a8a2fcb7f898bf"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/create.rs",
+      "bytes": 12166,
+      "sha256": "f46b6868ec9a5397a8e8f34d3e4a7c5dc6186102a4bd15a7b0ae270f4f8d4c69"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/create/tests.rs",
+      "bytes": 9790,
+      "sha256": "b82420485ef4d74402e2dfe6381486ed6be59db6cf9cdafe79a2d2de6eecbeb7"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/retirement.rs",
+      "bytes": 10101,
+      "sha256": "371217d7494311b01d9ba0a782ea8ec5b2ce7e175e4baf9837d8dc6c84b6d7c9"
+    },
+    {
+      "path": "crates/platform/tablecraft-io/src/journal/filesystem/retirement/tests.rs",
+      "bytes": 11662,
+      "sha256": "1f11926787fe7416d24572e43652db2e52f913f172446538d36b4bb37604ac5d"
+    }
+  ],
+  "retained_history": [
+    "Readonly source/body goldens passed before factory/retirement execution",
+    "Initial factory4/retirement7 and full81+9+2 behavior passes precede first strict large-error findings",
+    "One bounded fallible resource-owner slot reserved before target baseline/effects; no late heap allocation or capability loss",
+    "Corrected strict/full/minimal pass; wire/source literal bytes unchanged"
+  ],
+  "protocol_facts": [
+    "Known native outcome is retained separately from namespace/cleanup/unlock state",
+    "Unknown rename never retries; known successful rename with failed parent barrier permits explicit barrier-only confirmation",
+    "Retired garbage cleanup deletes only checked owned bundle children/directory, never the target or a foreign entry",
+    "Opaque binding/checksum/dev-inode identity is data under stable lifetime/offline/private namespace conditions, not native permission/authentication",
+    "Same target+journal descriptors survive capture, preparation, commit/recovery and finalization; borrowed views cannot replace owned guards"
+  ],
+  "limits": [
+    "No ordinary-reader automatic bundle discovery or normal ACE save/macro qualification",
+    "Mac/Linux implementation support, no Linux/Windows runtime or hardware power-loss qualification",
+    "After process exit, retired-bundle finalization resolution is still pending; reserved retired names cannot be reopened as active",
+    "Native SQL/default/clock/provider code is not replayed on recovery",
+    "Private mode/uid checks do not establish ACL privacy or defeat capable namespace writers/noncooperating handles"
+  ]
+}

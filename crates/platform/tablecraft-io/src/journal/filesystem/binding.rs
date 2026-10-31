@@ -14,7 +14,7 @@ const IDENTITY_BYTES: usize = 2 * size_of::<u64>();
 const ROLE_COUNT: usize = 5;
 const INTENT_LENGTH_OFFSET: usize = IDENTITIES_OFFSET + ROLE_COUNT * IDENTITY_BYTES;
 const INTENT_DIGEST_OFFSET: usize = INTENT_LENGTH_OFFSET + size_of::<u64>();
-const DIGEST_BYTES: usize = 32;
+pub(super) const DIGEST_BYTES: usize = 32;
 const CHECKSUM_OFFSET: usize = INTENT_DIGEST_OFFSET + DIGEST_BYTES;
 const FIXED_V1_PROTOCOL: u32 = 1;
 const UNIX_OBJECT_SCHEME: u32 = 1;
@@ -120,7 +120,6 @@ impl BindingData {
         Ok(())
     }
 
-    #[cfg(test)]
     pub(super) fn encode(
         &self,
         budget: &mut ResourceBudget,

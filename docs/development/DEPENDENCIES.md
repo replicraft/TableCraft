@@ -933,8 +933,9 @@ dependency edges. Standalone ACE checks and workspace tests/Clippy exercise them
 
 `tablecraft-ace/journal` now enables the existing `tablecraft-io/journal` feature
 for validated native edit plans and recovery. It reuses the reviewed optional
-SHA-256 dependency; no registry package is added. Default engine/CLI readers keep
-this feature disabled. Standalone minimal/all-feature engine and I/O checks
+SHA-256 dependency; no registry package is added. Standalone engine defaults keep
+this feature disabled. The later explicit CLI filesystem-journal consumers enable
+it at their member boundary without automatic recovery while reading. Standalone minimal/all-feature engine and I/O checks
 exercise both dependency closures. Hosts retain durable namespace/locking duties.
 
 ## Working database contract package
@@ -950,7 +951,9 @@ Locked standalone checks, focused tests and all-target Clippy verify this split.
 Query editing now consumes `tablecraft-db` alongside existing scalar semantics.
 The CLI directly consumes the existing `tablecraft-io` for shared input locks and
 bounded fresh-copy output. No registry package, GUI/network/async runtime or
-journal feature is added to the default CLI. SQLite production code is unchanged;
+journal feature was introduced by that original fresh-copy slice. The later
+explicit journal commands enable the existing journal features as recorded below;
+ordinary read/copy behavior remains unchanged. SQLite production code is unchanged;
 its optional tests verify shared query-runtime changes without expanding scope.
 
 ## Engineering dependency-boundary checks
@@ -1357,6 +1360,15 @@ default fresh-copy CLI behavior is unchanged.
 Unix rustix descriptor operations and SHA-256 binding; no registry dependency,
 version, default feature or runtime is added. Generic native policy stays out of
 I/O. Source-first association checks, fifteen filesystem functions, the complete
-I/O suite, strict checks and the minimal profile pass locally on macOS. Creation,
-retirement and CLI consumers remain unfinished; unsupported hosts gain no save
-capability from enabling the feature.
+I/O suite, strict checks and the minimal profile pass locally on macOS. The later
+creation/retirement slice adds no dependency: factory4/retirement7 functions and
+full IO81 unit+nine integration+two documentation tests pass, with corrected strict
+and minimal checks. A bounded resource-owner slot is fallibly reserved before
+effects rather than allocating on a late setup error.
+
+The CLI member explicitly enables `tablecraft-io/filesystem-journal` and the
+existing native/Access journal features for offline apply/recovery commands;
+host validation is recorded separately. Standalone IO/ACE/Access default features
+and default read/fresh-copy behavior remain unchanged. Unsupported hosts gain no
+save capability from enabling a feature, and restart resolution of retired bundles
+remains an explicit [lifecycle gap](../foundation/FILESYSTEM_JOURNALS.md).
