@@ -1,5 +1,5 @@
 use crate::{ExclusiveFile, IoError, journal::DurableStorage};
-use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::io::{self, ErrorKind, Read, Seek, SeekFrom, Write};
 
 /// A borrowed storage view of an already paired locked descriptor. Its private
 /// inner reference cannot be replaced with another ExclusiveFile guard. No raw
@@ -7,11 +7,22 @@ use std::io::{self, Read, Seek, SeekFrom, Write};
 /// Ordinary Write/Seek behavior remains; hosts must use the qualified protocol.
 pub struct PairedStorage<'a> {
     file: &'a mut ExclusiveFile,
+    writable: bool,
 }
 
 impl<'a> PairedStorage<'a> {
     pub(super) fn new(file: &'a mut ExclusiveFile) -> Self {
-        Self { file }
+        Self {
+            file,
+            writable: true,
+        }
+    }
+
+    pub(super) fn confirmation(file: &'a mut ExclusiveFile) -> Self {
+        Self {
+            file,
+            writable: false,
+        }
     }
 }
 
@@ -23,10 +34,16 @@ impl Read for PairedStorage<'_> {
 
 impl Write for PairedStorage<'_> {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        if !self.writable {
+            return Err(ErrorKind::PermissionDenied.into());
+        }
         self.file.write(bytes)
     }
 
     fn flush(&mut self) -> io::Result<()> {
+        if !self.writable {
+            return Err(ErrorKind::PermissionDenied.into());
+        }
         self.file.flush()
     }
 }

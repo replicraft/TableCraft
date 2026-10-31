@@ -85,10 +85,34 @@ full IO81+9+2 and minimal builds. Wire/source literals were unchanged. See the
 These are injected/local filesystem checks, not hardware power-loss or native
 Access qualification. CLI validation is recorded separately by its actual host.
 
-Restart finalization remains incomplete: exiting after a retirement error loses
-the same-owner barrier-confirm capability, and active reopening refuses reserved
-retired names. A later explicit read-only completed-target verification and retired
-bundle resolution path is needed. Never blindly replay pending recovery or SQL.
-Successful apply/recovery and same-process confirmation do not establish a full
-crash lifecycle. Windows support, broader filesystem/platform execution, native
-shared-file rules and ACE write admission remain separate work.
+## Explicit intact-bundle restart finalization
+
+`open_retired` repeats the five-object and intent checks and requires the exact
+nonce-derived reserved retirement leaf. Active `open_existing` still refuses
+that name. `confirmation_storage` lends retained views that deny `Write` and
+`flush` before reaching either descriptor.
+
+`CheckedV1::confirm_completed` requires exact AFTER for a committed marker or
+exact BEFORE for a pending/partial marker, then synchronizes target and journal.
+Opposite or mixed images refuse without repair. The native qualified method
+retains the original-intent normal Jet4 replan and full BEFORE/AFTER comparisons.
+Neither path replays SQL, copies back pending bytes or grants ACE writes.
+
+The outcome describes currently verified complete bytes and acknowledged barriers,
+not historical commit/rollback events or external effects. `acknowledge_retired`
+records that fact before checking the selected entry and synchronizing only its
+held parent; it never renames. Entry mismatch blocks cleanup and barrier-only
+retry. Known entry plus failed parent barrier permits explicit barrier-only
+confirmation, followed by existing cleanup and release.
+
+Both SOURCE functions passed before implementation. The IO target passes seven
+functions (SOURCE plus six API controls), and the native target passes four
+(SOURCE plus three API controls). Strict IO/ACE lib/tests with all features, full
+IO81 unit +16 integration +two documentation tests, and minimal build pass. See
+[the restart confirmation result](../testing/results/intact-retired-confirmation-2026-10-30.json).
+CLI adoption is recorded separately after its own checks.
+
+Partial garbage or missing-child resolution, automatic discovery, Windows support,
+broader filesystem/platform execution, hardware power-loss qualification and
+normal ACE save admission remain separate work. Current filesystem execution is
+macOS; Linux implementation support is not Linux runtime qualification.

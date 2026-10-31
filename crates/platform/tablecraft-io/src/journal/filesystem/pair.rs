@@ -49,6 +49,8 @@ pub enum PairError {
 /// A phase and known outcome are separate: release errors cannot erase completion.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PairState {
+    /// An intact reserved retired bundle requires write-free native confirmation.
+    RetiredVerificationRequired,
     /// New durable bundle is initialized; no native storage borrow occurred.
     Ready,
     /// An active entry check/known collision prevented retirement.
@@ -171,6 +173,45 @@ impl OfflineJournalPair {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, PairSetupFailure> {
+        Self::open_bound(
+            target,
+            bundle,
+            maximum_intent_bytes,
+            false,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Open only an intact reserved retired bundle, without granting write or
+    /// normal access. All actual objects/intent must match and the final leaf
+    /// must equal this binding nonce's exact retirement name. Missing/partial
+    /// bundles remain diagnosis; no pending recovery or SQL runs here.
+    pub fn open_retired(
+        target: OfflineTarget,
+        bundle: &Path,
+        maximum_intent_bytes: u64,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PairSetupFailure> {
+        Self::open_bound(
+            target,
+            bundle,
+            maximum_intent_bytes,
+            true,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn open_bound(
+        target: OfflineTarget,
+        bundle: &Path,
+        maximum_intent_bytes: u64,
+        retired: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PairSetupFailure> {
         let _span = tracing::debug_span!("io.journal.open_pair").entered();
         let terminal = match TerminalPermit::reserve(bundle.as_os_str().len(), budget, cancelled) {
             Ok(terminal) => terminal,
@@ -200,7 +241,9 @@ impl OfflineJournalPair {
                 incomplete: Vec::new(),
             });
         }
-        if opened.name.as_bytes() == retirement_name(&opened.binding.nonce).as_slice() {
+        let reserved_name =
+            opened.name.as_bytes() == retirement_name(&opened.binding.nonce).as_slice();
+        if reserved_name != retired {
             return Err(PairSetupFailure {
                 cause: PairError::ReservedName,
                 target,
@@ -210,7 +253,11 @@ impl OfflineJournalPair {
         Ok(Self {
             target,
             bundle: opened,
-            state: PairState::RecoveryRequired,
+            state: if retired {
+                PairState::RetiredVerificationRequired
+            } else {
+                PairState::RecoveryRequired
+            },
             known: None,
             before_release: None,
             terminal,
@@ -274,6 +321,43 @@ impl OfflineJournalPair {
             PairedStorage::new(self.target.storage_mut()?),
             PairedStorage::new(&mut self.bundle.journal),
         ))
+    }
+
+    /// Lend read/seek/sync-only views for completed-image confirmation. Both
+    /// Write and flush are denied before invoking the underlying descriptor.
+    pub fn confirmation_storage(
+        &mut self,
+    ) -> Result<(PairedStorage<'_>, PairedStorage<'_>), PairError> {
+        if self.state != PairState::RetiredVerificationRequired || self.known.is_some() {
+            return Err(PairError::InvalidState);
+        }
+        Ok((
+            PairedStorage::confirmation(self.target.storage_mut()?),
+            PairedStorage::confirmation(&mut self.bundle.journal),
+        ))
+    }
+
+    /// Record a write-free native confirmation, then acknowledge only the held
+    /// parent namespace barrier. This never renames or replays pending recovery.
+    pub fn acknowledge_retired(
+        &mut self,
+        outcome: RecoveryOutcome,
+    ) -> Result<(), FinalizationError> {
+        let _span = tracing::debug_span!("io.journal.acknowledge_retired").entered();
+        if self.state != PairState::RetiredVerificationRequired || self.known.is_some() {
+            return Err(FinalizationError {
+                phase: FinalizationPhase::State,
+                outcome: self.known,
+                cause: PairError::InvalidState,
+            });
+        }
+        self.known = Some(outcome);
+        retirement::acknowledge_completed(
+            &self.bundle,
+            &mut self.state,
+            &mut self.terminal,
+            outcome,
+        )
     }
 
     /// Record an already acknowledged native/generic outcome before any fallible

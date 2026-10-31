@@ -1,0 +1,99 @@
+{
+  "feature": "Explicit intact retired journal confirmation",
+  "date": "2026-10-30",
+  "scope": "Core IO and native normal Jet4 only; CLI confirmation qualification is separate",
+  "outcome": "pass",
+  "source_before_new_api": {
+    "io_functions": 1,
+    "io_legitimate_retired_sources": 2,
+    "native_functions": 1,
+    "native_literal_views": 16,
+    "native_mixed_source": 1
+  },
+  "focused": {
+    "io_functions": 7,
+    "io_source_functions": 1,
+    "io_api_functions": 6,
+    "native_functions": 4,
+    "native_source_functions": 1,
+    "native_api_functions": 3
+  },
+  "broader": {
+    "strict_io_and_ace_lib_tests_all_features": "pass",
+    "io_unit": 81,
+    "io_integration": 16,
+    "io_doc": 2,
+    "minimal": "pass"
+  },
+  "properties": [
+    "Exact full BEFORE for pending/partial marker; exact full AFTER for committed",
+    "No confirmation Write or flush; both storage barriers acknowledged",
+    "Original native intent and normal Jet4 full-image replan retained",
+    "Exact reserved name and five-object binding; active reserved-name refusal retained",
+    "Known current-image fact retained before parent-only barrier; no rename",
+    "Original SOURCE functions and existing model unchanged"
+  ],
+  "limits": [
+    "Not proof of historical actions or external effects",
+    "Partial garbage/missing-child resolution and automatic discovery remain unimplemented",
+    "macOS execution only; no Windows filesystem support or Linux runtime claim",
+    "No hardware power-loss or normal ACE save qualification"
+  ],
+  "pins": [
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/io-all-first-root.log",
+      "bytes": 11590,
+      "sha256": "b3c5b01e0f83014c3c19d28087cca67d431efe1f42bd3a8a2208360cb8d4ad8a"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/io-api-first-root.log",
+      "bytes": 872,
+      "sha256": "af8e7022273989549d73d8d8f0f589dabdbb88f8e41a4148eab86be38b0b8d4b"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/io-source-confirmation-root.log",
+      "bytes": 463,
+      "sha256": "35967cfc625fd0cc32f67a04e5dd13bc4d4a574f0fa20d98a259ad21686cc8b9"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/io-source-first-root.log",
+      "bytes": 463,
+      "sha256": "0cc99c7024c657cbd2cd1cfbf680b2308283a1936880701058a849c039ca4002"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/minimal-first-root.log",
+      "bytes": 72,
+      "sha256": "f0788aa36d1c86b6ccdfb7f4042a5574102d82061c046422a2d42e008a1e4710"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/native-api-first-root.log",
+      "bytes": 658,
+      "sha256": "2f8260567dae3c9b272824b4d82e78ee3586c37f4a0200e51a5cd73a312c8e81"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/native-source-confirmation-root.log",
+      "bytes": 612,
+      "sha256": "f00b0fa85f651a0c2f4afecf958d3262fa2fa36067dd82e99ae13762d3c7a1d7"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/native-source-first-root.log",
+      "bytes": 613,
+      "sha256": "f2d039022ce28e07a3159d18d15f93c696c04e79e32792a30b89ba4632565671"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/strict-first-root.log",
+      "bytes": 518,
+      "sha256": "d567d336b20de161f76593095a99255d05b89f2396fb5c4623b1e1213ad3cdb7"
+    },
+    {
+      "path": ".cache/jet4-restart-finalization-next-20261030/actual-first-coherent.json",
+      "bytes": 2133,
+      "sha256": "d0114b7be393b9cb1ad1dac37eca4b144d8f509724c71ee3d92c8eb8d8baec5e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/tests/qualified_recovery/model.rs",
+      "bytes": 4373,
+      "sha256": "e7d3882fbe814b2d1b6e625e1720c102cd95432ad14821aa2d8457460aa3d30e"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 use super::{
     DurableStorage, JournalError, RecoveryOutcome,
     format::{self, Record, State},
-    recovery,
+    recovery, storage,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -86,6 +86,32 @@ impl<J: DurableStorage> CheckedV1<'_, J> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoveryOutcome, JournalError> {
         recovery::recover_loaded(target, self.journal, &self.record, budget, cancelled)
+    }
+
+    /// Verify a completed image without restoring or rewriting any byte. A
+    /// committed record requires exact AFTER, a pending/partial marker exact
+    /// BEFORE. Both storage barriers must acknowledge before returning. Outcome
+    /// describes current complete bytes/barriers, not historical events.
+    pub fn confirm_completed<D: DurableStorage>(
+        self,
+        target: &mut D,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoveryOutcome, JournalError> {
+        let _span = tracing::debug_span!("io.journal.confirm_completed").entered();
+        let expected = match self.record.state {
+            State::Committed => State::Committed,
+            State::Pending => State::Original,
+            State::Original => unreachable!("V1 loading never creates comparison-only state"),
+        };
+        recovery::verify_target(target, &self.record, expected, budget, cancelled)?;
+        storage::sync(target, budget, cancelled)?;
+        storage::sync(self.journal, budget, cancelled)?;
+        Ok(if expected == State::Committed {
+            RecoveryOutcome::Committed
+        } else {
+            RecoveryOutcome::RolledBack
+        })
     }
 }
 
