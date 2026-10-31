@@ -1,6 +1,6 @@
 //! Complete independently authored expectations, read without a batch writer.
 use super::super::{joint_fixed_sources::model as fixed_model, source as preserved_source};
-use super::{model as sources, required as required_sources};
+use super::{model as sources, required::model as required_sources};
 #[path = "expectations/model.rs"]
 pub(crate) mod model;
 

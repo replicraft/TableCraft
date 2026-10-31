@@ -1,10 +1,11 @@
-use super::{budget, fixture};
+use super::budget;
 use crate::{
     InspectError,
     preservation::table_extra::{TableExtraCoverage, decode::decode},
 };
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_testkit::access::wide_properties as fixture;
 
 #[test]
 fn numeric_groups_names_and_uncompressed_text_remain_independent_facts() {

@@ -1,5 +1,4 @@
 mod decode;
-mod fixture;
 #[cfg(feature = "ace16-write-preview")]
 pub(crate) mod guard_selector_sources;
 #[cfg(feature = "ace16-write-preview")]

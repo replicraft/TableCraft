@@ -1,5 +1,5 @@
 //! Additive rich catalog carriers; original fixture owners are never changed.
-use super::{int32_model, programs, raw, rich};
+use super::{int32_model, raw, rich};
 
 const PAGE: usize = 4096;
 const CATALOG_DATA: usize = 4;
@@ -236,11 +236,11 @@ pub(crate) fn source(code: u8, recipe: Recipe) -> Case {
         .iter()
         .map(|(name, xml)| (name.as_str(), xml.as_str()))
         .collect::<Vec<_>>();
-    let carrier = programs::carrier(code, &borrowed);
+    let event_properties = raw::wide_properties::event_properties(&borrowed);
     let extra = if recipe == Recipe::OpaqueExtra {
         b"opaque executable-potential bytes".to_vec()
     } else {
-        carrier.extra
+        event_properties
     };
     let body = (recipe == Recipe::BodyPresent).then(|| b"opaque body".to_vec());
     let module = (recipe == Recipe::ModulePresent).then(|| b"opaque module".to_vec());

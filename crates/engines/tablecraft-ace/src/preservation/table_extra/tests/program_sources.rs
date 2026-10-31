@@ -3,7 +3,8 @@ use super::super::{
     TableExtraCoverage, decode,
     program_fixtures::{Outcome, sources},
 };
-use super::{budget, fixture};
+use super::budget;
+use tablecraft_testkit::access::wide_properties as fixture;
 
 #[test]
 fn qualify_documented_desktop_macro_program_sources_before_inspection() {

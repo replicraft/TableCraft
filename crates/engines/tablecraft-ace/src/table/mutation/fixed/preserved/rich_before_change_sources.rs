@@ -1,6 +1,5 @@
 //! Inert rich catalog, program and ownership observations before batch writers.
 use super::{int32::tests::model as int32_model, larger_capture_tests::preserved_model as rich};
-use crate::preservation::table_extra::tests::multievent_sources as programs;
 use tablecraft_testkit::access as raw;
 #[path = "rich_before_change_sources/model.rs"]
 pub(crate) mod model;

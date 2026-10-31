@@ -1,7 +1,7 @@
 #[path = "../../../../tests/object_payloads/fixture.rs"]
 pub(super) mod payload_fixture;
 
-use super::{budget, fixture};
+use super::budget;
 use crate::InspectError;
 use crate::NativeImage;
 use crate::PayloadPresence;
@@ -11,6 +11,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::access as support;
 use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::access::wide_properties as fixture;
 
 fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(

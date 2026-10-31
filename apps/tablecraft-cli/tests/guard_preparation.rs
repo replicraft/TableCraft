@@ -2,9 +2,6 @@
 #[path = "guard_preparation/api.rs"]
 mod api;
 use tablecraft_testkit::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs"]
-mod fixture;
 #[path = "guard_preparation/guard_sources.rs"]
 mod guard_sources;
 #[path = "guard_preparation/inspect.rs"]

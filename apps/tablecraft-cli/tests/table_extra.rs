@@ -4,8 +4,7 @@ mod program;
 use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "support/mod.rs"]
 mod cli_support;
-#[path = "../../../crates/engines/tablecraft-ace/src/preservation/table_extra/tests/fixture.rs"]
-mod extra_fixture;
+use tablecraft_testkit::access::wide_properties as extra_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/object_payloads/fixture.rs"]
 mod payload_fixture;
 
