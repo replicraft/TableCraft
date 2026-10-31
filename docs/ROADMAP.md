@@ -2,6 +2,15 @@
 
 ## Current product priority
 
+[Native-owned event selection](access/schema/NATIVE_MACRO_COVERAGE.md#native-owned-event-selection)
+now derives UPDATE BeforeChange property selectors from the exact native table
+and XML declarations. Forty-one logical/coverage tests and a separate nine-
+declaration retained-file read pass. Required after-effects and incomplete
+coverage still refuse; normal ACE saves must next consume native bindings through
+qualified physical admission and recovery. This logical step grants no absence
+certificate or general save permission.
+
+
 Fresh ACE 16 construction now covers ten fixed families plus explicitly declared
 Short Text, Short Binary and Decimal through the existing typed creation service.
 It remains one table and one user DATA page; multiple tables, indexes,

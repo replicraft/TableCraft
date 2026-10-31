@@ -49,6 +49,33 @@ report's allocated metadata does not invalidate them. Neither preparation is a
 physical edit or a required-event certificate. Existing image-based APIs and
 physical write consumers keep their original admission and proof rules.
 
+## Native-owned event selection
+
+`NativeImage::prepare_native_before_change_fields(object_id, intents, ...)`
+prepares an UPDATE without caller-supplied property selectors. It resolves the
+actual local table's catalog LvExtra, MR2 group/property and XML Event/Name before
+using the existing complete BeforeChange compiler. A property alias such as
+`ValidateUpdate` does not determine the event; the stored XML declaration does.
+
+The operation retains the existing all-Int32 logical preparation profile.
+BeforeChange definitions run with sequential Current and frozen Old values;
+qualified dormant BeforeDelete definitions still undergo complete preflight.
+Required after-effects, named macros and duplicate event identities refuse before
+row evaluation, including empty intents. Missing, opaque, names-only and
+unrepresented carriers remain unresolved. No empty inventory becomes evidence
+of macro absence. Returned preparations retain their original source lifetime.
+
+Eight authored source views passed before producer registration. Forty-one
+focused tests pass, including four new logical API tests and existing coverage/
+guard regressions. A separate inert read of four retained ACE 2010 files also
+binds nine declarations across seven tables, preserving aliases, named definitions
+and unresolved names. This is observed native-reference evidence, not ACE 16
+native dispatch/save qualification. The [binding result](../../testing/results/native-event-binding-2026-10-31.json)
+retains the separate phases and earlier compiler/preflight diagnostics.
+
+Physical mutation, normal-save admission and journal recovery do not yet consume
+this binding. It grants no required-event completeness or absence permit.
+
 ## CLI inspection
 
 ```sh

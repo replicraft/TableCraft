@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "native_mr2_event_reference_binding_and_selector_free_preparation",
+  "status": "source_binding_logical_preparation_and_local_checks_passed",
+  "operation": "NativeImage::prepare_native_before_change_fields(ObjectId, BeforeEventIntents, budget, cancel)",
+  "profile": {
+    "intents": "UPDATE",
+    "logical_fields": "existing all-Int32 preparation profile; not the rich physical write service",
+    "reference_form": "exact local table catalog row -> LvExtra -> wide MR2 group/property -> actual single XML Event/Name",
+    "caller_property_or_event_selectors": false,
+    "compiler": "existing complete BeforeChange fields compiler; sequential Current and frozen Old",
+    "unresolved": "names-only, unrepresented names, opaque/uninspected carriers, body/module/children",
+    "unsupported": "required after-effects, named macros, unfamiliar contexts/actions and conflicting event identities",
+    "absence_or_save_permission": false
+  },
+  "private_inputs": {
+    "first_freeze": ".cache/ace16-native-event-binding-next-20261031/private-first-coherent-freeze.sha256",
+    "readability_derivative": {
+      "path": ".cache/ace16-native-event-binding-next-20261031/api-readability-derivative-freeze.sha256",
+      "sha256": "ba4128ad343b835cd43709e8c5f64c4c832dfcd34f2a77434206d1b2727f990d",
+      "changes": "fixture import moved to top and one dense matches macro expanded; semantics unchanged",
+      "predecessor_directory": ".cache/ace16-native-event-binding-next-20261031/before-api-readability"
+    }
+  },
+  "acceptance": {
+    "source_gate": {
+      "status": "passed",
+      "tests": 1,
+      "views": 8,
+      "recipes": 4,
+      "headers": [
+        5,
+        6
+      ],
+      "seconds": 0.02,
+      "log": ".cache/ace16-native-event-binding-next-20261031/source-second-root.log",
+      "sha256": "d917bf120bf5d21c2673673671a72eddc1971a028394223aa78fcd5de216cb85"
+    },
+    "selector_free_api_and_legacy_regressions": {
+      "status": "passed_after_compile_only_correction",
+      "tests": 41,
+      "failed": 0,
+      "seconds": 0.06,
+      "new_api_tests": 4,
+      "log": ".cache/ace16-native-event-binding-next-20261031/api-second-root.log",
+      "sha256": "4e1b7bbb8bfb891543eb293a9c8696e2966be175d7fbd4da8d1b49e2b7231605"
+    },
+    "retained_native_originals": {
+      "status": "passed_first_execution",
+      "tests": 1,
+      "ignored_opt_in": true,
+      "files": 4,
+      "tables": 7,
+      "references": 9,
+      "seconds": 0.08,
+      "source_profile": "desktop-origin ACE2010; not ACE16 native comparison",
+      "log": ".cache/ace16-native-event-binding-next-20261031/originals-first-root.log",
+      "sha256": "a0d73a5a8682f7bc5645657611db26ea9b358fada6954b0bf339daf8fc0904e4"
+    },
+    "strict_format_and_links": {
+      "status": "passed",
+      "strict": {
+        "status": "passed",
+        "path": ".cache/ace16-native-event-binding-next-20261031/strict-first-root.log",
+        "sha256": "d0611dbb7d2b244c926c697220824c6a9b42ecaaf2ff7efec77214a1453a27c5"
+      },
+      "format": {
+        "status": "passed",
+        "path": ".cache/ace16-native-event-binding-next-20261031/fmt-first-root.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "links": {
+        "status": "passed",
+        "path": ".cache/ace16-native-event-binding-next-20261031/links-first-root.log",
+        "sha256": "53c9b31e6591bd387440885d3da1ad93ad9b50270de44a6a015870f2f2c3796e"
+      },
+      "link_targets": 6901,
+      "missing_targets": 0
+    },
+    "minimal": {
+      "status": "passed",
+      "path": ".cache/ace16-native-event-binding-next-20261031/minimal-third-root.log",
+      "sha256": "bf2f0df5c5d55c3ef9954bbeaa01252e2039281727ef2acd7c93bbf86cc7fa67"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "phase": "initial installation preflight",
+      "status": "aborted_before_source_mutation",
+      "cause": "original API hash checked after the requested private readability derivative",
+      "installed_source_files": 0,
+      "producer_calls": 0,
+      "record": {
+        "path": ".cache/ace16-native-event-binding-next-20261031/root-preflight-first.json",
+        "sha256": "96f7014be06941eb2b5de396a53256c15d7abaf652b91e71b66601eca6e9a5c6"
+      }
+    },
+    {
+      "phase": "accidental following Cargo selector",
+      "tests_selected": 0,
+      "exit": 0,
+      "qualification_pass": false,
+      "cause": "source selector was not registered after aborted installation",
+      "log": {
+        "path": ".cache/ace16-native-event-binding-next-20261031/source-first-root.log",
+        "sha256": "05edcd1898632f46e642a1b4a3b8e079151deda57296df77ac8756e9b1a32fe9"
+      }
+    },
+    {
+      "phase": "first API compilation",
+      "exit": 101,
+      "tests_executed": 0,
+      "producer_calls": 0,
+      "cause": "LowerHex unavailable for SHA256 digest in ignored original-reader assertion",
+      "correction": "Compare digest bytes against decoded independent literal hash",
+      "source_or_program_bytes_changed": false,
+      "log": {
+        "path": ".cache/ace16-native-event-binding-next-20261031/api-first-root.log",
+        "sha256": "742d16e7641517fd60fcee2e467885e860ae923bfb1d1c9244fcf335db4b0f5a"
+      }
+    },
+    {
+      "phase": "minimal_first",
+      "status": "compile_failed_before_completion",
+      "reason": "ENOSPC in ordinary target temp output",
+      "path": ".cache/ace16-native-event-binding-next-20261031/minimal-first-root.log",
+      "sha256": "a764b436db79162bb348f82947478370bcd1128cafca8aea8b51478bd0e2a549",
+      "recovery": "Removed only disposable target/debug/incremental after compiler handles were terminal; kept incremental compilation enabled"
+    }
+  ],
+  "limits": [
+    "No program executes during inspection",
+    "No fabricated macro absence",
+    "No new physical candidate or normal-save permit",
+    "No native Access/Windows event timing or save comparison claimed"
+  ]
+}
