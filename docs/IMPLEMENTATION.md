@@ -29,8 +29,14 @@ full preserved frontend targets pass 25 and 23 tests respectively. Variable
 mode remains Text-only for these rich projected schemas. No new CLI mode or
 request kind is introduced.
 
-These authored-source results do not establish genuine-file or Microsoft Access
-qualification, required-macro absence, journal permission or normal ACE saves.
+Two independently generated V2016/V2019 originals now also pass 24 complete-image
+comparisons through a fresh committed CLI, followed by 24 fresh read-only SDK
+inventories. Signed integer/Currency boundaries, DATE negative zero and NULL
+transitions retain all rich companions. The
+[genuine-file record](testing/results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+separates source, independent expected, build, producer and reader evidence.
+These checks do not establish Microsoft Access qualification, required-macro
+absence, journal permission or normal ACE saves.
 
 ## Explicit BeforeChange field-update candidates
 
