@@ -33,7 +33,7 @@ tablecraft-expressions = { workspace = true, features = ["sql", "fluent-catalog"
 tablecraft-query.workspace = true
 tablecraft-ace = { workspace = true, features = ["ace16-write-preview", "journal"] }
 tablecraft-model.workspace = true
-tablecraft-access = { workspace = true, features = ["ace16-write-preview", "journal"] }
+tablecraft-access = { workspace = true, features = ["ace16-write-preview", "journal", "offline-write-session"] }
 tablecraft-sqlite.workspace = true
 uuid.workspace = true
 

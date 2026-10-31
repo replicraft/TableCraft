@@ -1,17 +1,13 @@
 //! Confirm an intact retired bundle without replaying its native edit.
-use super::{Error, FinalizeArguments, report};
+use super::{Error, FinalizeArguments, error::UnexpectedReceipt, report};
 use crate::native;
 use std::{fmt, io::Write};
-use tablecraft_ace::{InspectError, NativeInt32EditIntent, qualify_jet4_int32_recovery};
-use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_io::journal::{
-    RecoveryOutcome,
-    filesystem::{OfflineJournalPair, OfflineTarget, PairSetupFailure},
-    inspect_v1,
+use tablecraft_access::editing::offline::{
+    OfflineWriteSession, VerifiedImage as NativeVerifiedImage,
 };
+use tablecraft_core::limits::ResourceBudget;
 
 const NAMESPACE_REPORT: &str = "Journal namespace\tRetired and synchronized\n";
-const RETAINED_OPEN_FAILURES: usize = 1;
 
 /// A verified current complete image, not a claim about historical operations.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -21,10 +17,10 @@ pub(crate) enum VerifiedImage {
 }
 
 impl VerifiedImage {
-    fn from_confirmation(outcome: RecoveryOutcome) -> Self {
-        match outcome {
-            RecoveryOutcome::Committed => Self::Replacement,
-            RecoveryOutcome::RolledBack => Self::Original,
+    fn from_confirmation(image: NativeVerifiedImage) -> Self {
+        match image {
+            NativeVerifiedImage::Replacement => Self::Replacement,
+            NativeVerifiedImage::Original => Self::Original,
         }
     }
 }
@@ -74,74 +70,27 @@ impl Reports {
 pub(super) fn run(args: FinalizeArguments, writer: &mut dyn Write) -> Result<(), Error> {
     let _span = tracing::debug_span!("cli.query.finalize_update").entered();
     let mut budget = args.work.budget();
-    let mut retained = reserve_open_failure(&mut budget)?;
-    let target = OfflineTarget::open(&args.database, &mut budget, &|| false).map_err(Error::Io)?;
-    let mut pair = OfflineJournalPair::open_retired(
-        target,
-        &args.journal,
-        NativeInt32EditIntent::MAX_ENCODED_BYTES as u64,
-        &mut budget,
-        &|| false,
-    )
-    .map_err(|error| {
-        // Capacity was paid and reserved before opening the target. Keep the
-        // complete typed cause and retained capabilities without late allocation.
-        retained.push(error);
-        Error::RetiredOpen(retained)
-    })?;
-    let intent = NativeInt32EditIntent::decode(pair.intent_bytes(), &mut budget, &|| false)
-        .map_err(Error::ConfirmationIntent)?;
+    let session =
+        OfflineWriteSession::open(&args.database, native::CATALOG_SCOPE, &mut budget, &|| {
+            false
+        })
+        .map_err(Error::OfflineOpen)?;
     let reports = Reports::prepare(&mut budget)?;
-
-    let outcome = {
-        // These views deny payload writes/flush before reaching the underlying
-        // devices. Confirmation checks the current image and performs barriers;
-        // it never invokes the active-journal recovery operation.
-        let (mut target, mut journal) = pair.confirmation_storage().map_err(Error::RetiredPair)?;
-        let checked =
-            inspect_v1(&mut journal, &mut budget, &|| false).map_err(Error::Confirmation)?;
-        let qualified = qualify_jet4_int32_recovery(
-            checked,
-            intent,
-            native::CATALOG_SCOPE,
-            &mut budget,
-            &|| false,
-        )
-        .map_err(Error::ConfirmationQualification)?;
-        qualified
-            .confirm_completed(&mut target, &mut budget, &|| false)
-            .map_err(Error::Confirmation)?
+    let (session, receipt) = session
+        .confirm_retired(&args.journal, &mut budget, &|| false)
+        .map_err(Error::Offline)?;
+    let Some(verified) = receipt.verified_image() else {
+        return Err(Error::UnexpectedReceipt(UnexpectedReceipt {
+            session,
+            receipt,
+        }));
     };
-    let image = VerifiedImage::from_confirmation(outcome);
+    let image = VerifiedImage::from_confirmation(verified);
 
-    // The image/barrier fact is retained separately from namespace completion.
-    // No rename, recovery retry or SQL execution is authorized by this branch.
-    pair.acknowledge_retired(outcome)
-        .map_err(|error| Error::VerifiedFinalization { image, error })?;
-    pair.cleanup_retired()
-        .map_err(|error| Error::VerifiedFinalization { image, error })?;
-    pair.release()
-        .map_err(|error| Error::VerifiedRelease { image, error })?;
+    // The shared receipt certifies the current image, without asserting that a
+    // historical commit or rollback occurred. Report only after explicit release.
+    session.release().map_err(Error::Offline)?;
     reports.publish(image, writer)
-}
-
-fn reserve_open_failure(budget: &mut ResourceBudget) -> Result<Vec<PairSetupFailure>, Error> {
-    budget
-        .charge_allocation(
-            RETAINED_OPEN_FAILURES as u64,
-            size_of::<PairSetupFailure>() as u64,
-        )
-        .map_err(InspectError::from)
-        .map_err(Error::ConfirmationResources)?;
-    budget
-        .charge(Resource::Steps, 1)
-        .map_err(InspectError::from)
-        .map_err(Error::ConfirmationResources)?;
-    let mut retained = Vec::new();
-    retained
-        .try_reserve_exact(RETAINED_OPEN_FAILURES)
-        .map_err(|_| Error::ConfirmationResources(InspectError::Allocation))?;
-    Ok(retained)
 }
 
 #[cfg(test)]

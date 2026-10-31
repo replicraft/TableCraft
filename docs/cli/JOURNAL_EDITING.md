@@ -29,8 +29,11 @@ Apply accepts one local table and one Int32 assignment under the existing
 [normal native write gates](../access/writes/NATIVE_WRITES.md). Closed-shape SQL
 validation happens before opening files. All selected expressions finish against
 one original snapshot before journal setup. Zero matches still pass native gates.
-The shared Access planner owns editing semantics; the CLI owns explicit paths,
-comparison selection, resources and reporting.
+The shared [Access offline session](../access/writes/OFFLINE_WRITE_SESSIONS.md)
+owns planning, journal apply/recovery and retired confirmation through one retained
+target. The CLI supplies explicit paths, comparison selection, resources and
+preformatted reporting. The same backend service supports successive edits
+without releasing the target between operations.
 
 Only clear Jet4 is admitted. `--password` refuses before opening files and never
 prompts. There is no decrypt/re-encrypt route, engineering-candidate conversion,
