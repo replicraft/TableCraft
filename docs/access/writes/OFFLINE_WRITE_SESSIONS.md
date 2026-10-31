@@ -7,9 +7,12 @@ The normal mutation routes are the existing Jet4 fixed Int32 profile and the
 separate [positive native ACE BeforeChange profile](NORMAL_ACE_BEFORE_CHANGE.md).
 The latter requires unencoded ACE 2016/2019 subversion zero, complete source-owned
 pure program binding and an admitted ordinary non-NULL Int32 table. Checked
-indexes are limited to one prefix-zero root leaf per physical index, including
-consistent aliases and Int32 composites; relationships, ignore-NULL indexes,
-splits and map/storage growth refuse. It grants no general ACE save or data-macro absence permission;
+indexes may retain qualified compressed prefixes and interior nodes, including
+consistent aliases and Int32 composites. Fitting is selected before preparation;
+page identities, child topology and per-leaf entry counts remain fixed.
+Relationships, ignore-NULL indexes, mixed scalar schemas, original/final NULL
+fields, splits and map/storage growth refuse. It grants no general ACE save or
+data-macro absence permission;
 ACE engineering candidates remain separate.
 
 The host must provide an explicitly offline target, exclude noncooperating

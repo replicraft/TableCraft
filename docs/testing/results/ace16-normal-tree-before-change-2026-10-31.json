@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_ace_retained_tree_before_change_updates",
+  "status": "bounded_retained_tree_normal_saves_recovery_cli_and_checks_passed",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "subversion": 0,
+    "encoding": "unencoded",
+    "fields": "ordinary manual non-NULL Int32 throughout the original table",
+    "programs": "positive complete native pure BeforeChange, existing dormant-program preflight",
+    "indexes": "checked non-foreign/non-ignored Int32 indexes with original qualified topology",
+    "fitting": "Mode::Repack selected before key preparation; no Fixed attempt/catch/retry",
+    "retained": [
+      "page identities",
+      "child topology",
+      "per-leaf entry counts",
+      "owner/stamp/links",
+      "maps/counters/metadata",
+      "unused/vacated bytes"
+    ],
+    "partitions": "final keys may move between existing leaves while counts stay fixed",
+    "bounds": "validate original inclusive bounds; affected separators use final complete key/ROW maxima; unchanged indexes preserve original raw bounds",
+    "record": "TCNI0002/profile2 unchanged; original user requests only",
+    "legacy_jet4": "ordinary index_patches Fixed path and TCNI0001/profile1 unchanged",
+    "observed_tree_height": 1,
+    "recursive_implementation_qualification": "not a claim of all deeper original-file variants"
+  },
+  "sources": {
+    "record": "ace16-tree-before-change-sources-2026-10-31.json",
+    "commit": "7fc01efb",
+    "originals": 18,
+    "complete_expectations": 18,
+    "readonly_sdk_observations": 108,
+    "native_source_anchors_and_readers_precede_expanded_producer_installation": true,
+    "source_oracle_uses_production_writer": false
+  },
+  "observed": {
+    "standalone_journal_compile": {
+      "status": "passed_first_check",
+      "preview_feature": false
+    },
+    "native_first_runtime": {
+      "tests": 6,
+      "status": "passed",
+      "complete_memory_commits": 18,
+      "original_intent_pending_and_committed_recovery_pairs": 18
+    },
+    "direct_proof_first_runtime": {
+      "tests": 3,
+      "status": "passed",
+      "literal_observations_without_staging": 18,
+      "coverage": "prefix/node/child/count/intent forgery, original ownership contradictions, old Fixed/new fitting policy and typed failures"
+    },
+    "offline_sessions_first_runtime": {
+      "tests": 2,
+      "status": "passed",
+      "typed_and_sql_whole_image_saves": 36,
+      "successive_same_lease_saves": 4,
+      "successive_scores": [
+        28,
+        64
+      ],
+      "stale_handles_refused": true
+    },
+    "native_legacy_and_intent_regression": {
+      "tests": [
+        1,
+        31,
+        3
+      ],
+      "status": "passed"
+    },
+    "normal_direct_proof_regression": {
+      "tests": 9,
+      "status": "passed"
+    },
+    "additional_nonkey_changes": {
+      "headers": [
+        5,
+        6
+      ],
+      "whole_image_comparisons": 2,
+      "native_expected_read_precedes_plan": true,
+      "index_loose_bounds_preserved": true,
+      "status": "passed"
+    },
+    "cli": {
+      "fresh_build": "passed",
+      "complete_fitting_commits": 18,
+      "exact_row_readbacks": 18,
+      "help": "passed",
+      "source_hashes_unchanged": 36,
+      "status": "passed"
+    },
+    "all_feature_strict": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "status": "passed_final_after_additional_control"
+    },
+    "generated_signed_key_regression": {
+      "tests": 1,
+      "status": "passed",
+      "owner": "normal_index_audit::wire::tests"
+    },
+    "access_legacy_leaf_and_unindexed_regression": {
+      "tests": [
+        2,
+        3,
+        2,
+        15,
+        1
+      ],
+      "status": "passed"
+    },
+    "cli_journal_regression": {
+      "tests": 7,
+      "status": "passed"
+    },
+    "journal_only_strict": {
+      "all_targets": true,
+      "status": "passed"
+    },
+    "default_disabled": {
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access"
+      ],
+      "status": "passed"
+    },
+    "format_and_boundaries": {
+      "formatter": "passed",
+      "dependency_packages": 15,
+      "documentation_missing": 0,
+      "status": "passed"
+    }
+  },
+  "first_semantic_runtime_failures": 0,
+  "current_code_owner": "crates/engines/tablecraft-ace/src/table/indexes/mutation/normal_index_audit",
+  "rename": "normal_leaf_audit moved and all direct consumers updated; no compatibility re-export; existing generated signed-key test retained",
+  "not_qualified_or_unfinished": [
+    "Native Access execution/event timing/save/reopen",
+    "general macro absence",
+    "mixed/nullable/generated-field writes",
+    "ignore-NULL and relationship mutation",
+    "page allocation, splits, insert/delete or map growth in this normal route",
+    "all deeper original-file tree variants",
+    "native shared-file coordination, encrypted editing and Windows filesystem journal host",
+    "physical power loss and network-filesystem durability"
+  ],
+  "evidence_namespace": ".cache/ace16-native-before-change-tree-next-20261031",
+  "logs": [
+    "journal-check-first-root.log",
+    "native-first-root.log",
+    "proof-first-root.log",
+    "session-first-root.log",
+    "native-and-legacy-final-root.log",
+    "normal-proof-final-root.log",
+    "retained-nonkey-first-root.log",
+    "generated-wire-final-root.log",
+    "strict-first-root.log",
+    "cli-build-first-root.log",
+    "cli-smoke-first-root.log",
+    "access-regression-final-root.log",
+    "cli-journal-final-root.log",
+    "journal-strict-final-root.log",
+    "default-disabled-final-root.log",
+    "strict-final-root.log"
+  ]
+}

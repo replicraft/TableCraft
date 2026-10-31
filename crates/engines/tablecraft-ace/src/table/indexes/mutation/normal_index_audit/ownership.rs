@@ -1,5 +1,5 @@
-//! Fresh catalog-wide writable leaf-page qualification; no staged page authority.
-use super::vector;
+//! Fresh catalog-wide original tree-page qualification; no staged page authority.
+use super::{tree::Tree, vector};
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableCheck, TableSchema,
     WriteBlocker,
@@ -10,13 +10,7 @@ use crate::{
         reader::Reader,
     },
     header::check,
-    table::{
-        indexes::{
-            header::IndexHeader,
-            page::{LEAF, PAGE_VERSION},
-        },
-        mutation::map_authority::{self, Owner},
-    },
+    table::mutation::map_authority::{self, Owner},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -25,7 +19,7 @@ pub(in crate::table) struct Ownership {
     address: usize,
     length: usize,
     definition: u32,
-    leaves: Vec<(u32, u32)>,
+    trees: Vec<(u32, Tree)>,
 }
 
 fn protect(
@@ -84,7 +78,7 @@ impl Ownership {
             }
         }
         let mut owners = vector(checked.indexes().len(), budget, cancelled)?;
-        let mut leaves = vector(checked.indexes().len(), budget, cancelled)?;
+        let mut trees: Vec<(u32, Tree)> = vector(checked.indexes().len(), budget, cancelled)?;
         let mut source = image.reader();
         let mut reader = Reader {
             source: &mut source,
@@ -126,33 +120,22 @@ impl Ownership {
             }
             let map = RepresentedMap::read(&mut reader, index.usage_map(), MapRole::Owned)?;
             map.require_allocated_storage(&mut reader, &global)?;
-            let pages = allocation::pages(&mut reader, index.usage_map())?;
-            if pages.as_slice() != [index.root_page()] {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-            }
-            global.require_allocated(&mut reader, index.root_page())?;
-            let raw = reader.page(index.root_page())?;
-            let header = IndexHeader::read(&raw)?;
-            if header.kind != LEAF
-                || header.version != PAGE_VERSION
-                || header.owner.get() != selected
-                || !header.qualified_for_update(0)
-                || header.prefix.get() != 0
-                || header.previous.get() != 0
-                || header.next.get() != 0
-                || header.tail.get() != 0
-            {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-            }
-            reader.work(leaves.len())?;
-            if leaves.iter().any(|&(_, page)| page == index.root_page()) {
-                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            let tree = Tree::capture(image, index, selected, reader.budget, cancelled)?;
+            for page in &tree.pages {
+                reader.tick()?;
+                global.require_allocated(&mut reader, *page)?;
+                for (_, prior) in &trees {
+                    reader.work(prior.pages.len().checked_ilog2().unwrap_or(0) as usize + 1)?;
+                    if prior.pages.binary_search(page).is_ok() {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                }
             }
             owners.push(Owner::IndexOwned {
                 definition: selected,
                 physical: index.data_number(),
             });
-            leaves.push((index.data_number(), index.root_page()));
+            trees.push((index.data_number(), tree));
         }
         let mut protected = Vec::new();
         let census = map_authority::capture_catalog(
@@ -178,11 +161,13 @@ impl Ownership {
         )?;
         census.require_exclusive(&owners, reader.budget, cancelled)?;
         census.protect_storage(&mut protected, &mut reader)?;
-        for (_, page) in &leaves {
-            reader.tick()?;
-            reader.work(protected.len())?;
-            if protected.contains(page) {
-                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        for (_, tree) in &trees {
+            for page in &tree.pages {
+                reader.tick()?;
+                reader.work(protected.len())?;
+                if protected.contains(page) {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
             }
         }
         check(reader.budget, cancelled)?;
@@ -190,28 +175,25 @@ impl Ownership {
             address: image.as_bytes().as_ptr() as usize,
             length: image.as_bytes().len(),
             definition: selected,
-            leaves,
+            trees,
         })
     }
 
-    pub(in crate::table) fn require(
-        &self,
+    pub(in crate::table) fn require<'a>(
+        &'a self,
         image: &NativeImage,
         schema: &TableSchema,
         index: &NativeIndex,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), EditError> {
+    ) -> Result<&'a Tree, EditError> {
         check(budget, cancelled)?;
         budget
-            .charge(Resource::Steps, self.leaves.len() as u64)
+            .charge(Resource::Steps, self.trees.len() as u64)
             .map_err(InspectError::from)?;
         if self.address != image.as_bytes().as_ptr() as usize
             || self.length != image.as_bytes().len()
             || self.definition != schema.definition_page()
-            || !self
-                .leaves
-                .contains(&(index.data_number(), index.root_page()))
             || (index.root_page() as usize)
                 .checked_mul(PAGE_BYTES)
                 .and_then(|start| start.checked_add(PAGE_BYTES))
@@ -219,6 +201,13 @@ impl Ownership {
         {
             return Err(EditError::Preservation);
         }
-        Ok(())
+        let (_, tree) = self
+            .trees
+            .iter()
+            .find(|(physical, tree)| {
+                *physical == index.data_number() && tree.root.number == index.root_page()
+            })
+            .ok_or(EditError::Preservation)?;
+        Ok(tree)
     }
 }

@@ -39,12 +39,14 @@ Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
 requires an unencoded ACE 2016/2019 layout with subversion zero and a positive,
 complete source-owned pure BeforeChange program. The selected ordinary Int32
-table may have checked non-NULL Int32 indexes with one prefix-zero root leaf
-per physical index. Ascending/descending components, composites, consistent
-logical aliases and final unique-key swaps are supported. Relationships,
-ignore-NULL indexes, interior nodes, splits and map/storage growth refuse.
-Unknown/opaque/unrepresented event content, body/module payloads, unsupported required effects and final NULL values
-refuse; an empty macro inventory is not an absence certificate.
+table may have checked non-NULL Int32 indexes with qualified compressed
+prefixes and existing interior nodes. Page identities, child topology and each
+leaf's entry count remain fixed; fitting serialization is selected before
+preparation, without retrying a failed encoder. Ascending/descending components,
+composites, consistent logical aliases and final unique-key swaps are supported. Relationships,
+ignore-NULL indexes, mixed scalar schemas, original/final NULL fields, splits
+and map/storage growth refuse. Unknown/opaque/unrepresented event content,
+body/module payloads and unsupported required effects refuse; an empty macro inventory is not an absence certificate.
 
 Native programs are discovered and fully preflighted even for zero matched rows.
 A supplied equal expected/replacement assignment refuses with `EventTiming`,

@@ -1,6 +1,7 @@
-//! Original-only leaf INDEX reconstruction for normal BeforeChange proof.
+//! Original-only fitting INDEX tree reconstruction for normal BeforeChange.
 mod ownership;
 mod population;
+mod tree;
 mod wire;
 
 pub(in crate::table) use ownership::Ownership;
@@ -84,12 +85,15 @@ pub(in crate::table) fn reconstruct(
         {
             continue;
         }
-        ownership.require(image, schema, index, budget, cancelled)?;
+        let tree = ownership.require(image, schema, index, budget, cancelled)?;
         wire::reconstruct(
-            image,
-            &checked,
-            index,
-            &population,
+            &wire::Operation {
+                image,
+                checked: &checked,
+                index,
+                population: &population,
+                tree,
+            },
             expected,
             budget,
             cancelled,

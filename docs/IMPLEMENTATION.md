@@ -12,7 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
-## Journaled indexed ACE BeforeChange updates
+## Retained-tree journaled ACE updates
+
+Normal BeforeChange updates now retain existing index trees and compressed
+prefixes, including fitting prefix loss, both child forms and cross-leaf unique
+swaps. Fitting is selected before key preparation; the ordinary Jet 4 Fixed path
+is unchanged. Independent reconstruction validates original bounds and derives
+changed separators from final key/row maxima, while unchanged indexes retain
+their exact original pages and loose bounds. The audit now lives in
+`normal_index_audit`, with direct consumers and no compatibility re-export.
+Six native integration and three proof/policy tests pass on eighteen frozen
+images. Typed/SQL sessions pass 36 whole-image saves and successive same-lease
+edits; eighteen CLI saves match the complete expected files. See the
+[contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md) and
+[result](testing/results/ace16-normal-tree-before-change-2026-10-31.json).
+Observed tree sources are height one. Mixed schemas, NULLs, relationships,
+allocation/splits, broader normal writes and native Access qualification remain.
+
+## Initial journaled indexed ACE BeforeChange updates
 
 Normal journaled updates now maintain qualified existing Int32 root-leaf indexes,
 including descending/composite keys and consistent logical aliases. One shared

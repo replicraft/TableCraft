@@ -7,7 +7,7 @@ use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker, ace_profile, g
 use crate::{
     BeforeChangeFieldPreparation, BeforeEventGuardError, BeforeEventIntents, FixedScalarUpdate,
     InspectError, NativeImage, TableCheck, TableSchema, TableSnapshot, header::check,
-    inspect_table_schema, read_table, table::indexes::mutation::normal_leaf_audit::Ownership,
+    inspect_table_schema, read_table, table::indexes::mutation::normal_index_audit::Ownership,
 };
 use tablecraft_core::{
     ids::ObjectId,
@@ -239,3 +239,6 @@ mod evaluation_tests;
 
 #[cfg(test)]
 mod index_tests;
+
+#[cfg(test)]
+mod tree_tests;
