@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_fixed_ieee_creation_source_continuation",
+  "status": "complete_source_qualification_passed",
+  "base_source_record": {
+    "path": "docs/testing/results/ace16-fixed-creation-source-2026-10-31.json",
+    "bytes": 18966,
+    "sha256": "8f1233c703f69d3de132db3cdae8fdca15314dc84b7fa799779064c790fb9d54"
+  },
+  "base_fixture_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_fixed_creation.rs",
+    "bytes": 13098,
+    "sha256": "6035f464746d74397b2a3d6b110a211f833bd03dcee9e78a0dbeeeef45e8f6a4"
+  },
+  "fixture_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_fixed_float_creation.rs",
+    "bytes": 3286,
+    "sha256": "63e935c7e2b308e68c9063fb61d9d65dbd64afe7f4a54f81516dd576a0baf58e"
+  },
+  "initial_private_freeze": {
+    "path": ".cache/ace16-native-fixed-float-sources-next-20261031/private-freeze.json",
+    "bytes": 1511,
+    "sha256": "eb9318f5f3b0a085ed0df4894234281c8545ac8ee8b8884c8f6fdef505d73706"
+  },
+  "source_before_generic_producer": true,
+  "generic_creator_executed": false,
+  "profile": {
+    "header": 5,
+    "files": 5,
+    "bytes_per_file": 36864,
+    "rows_per_file": 2,
+    "total_rows": 10,
+    "columns": 10,
+    "modified_fields": [
+      "SingleValue",
+      "DoubleValue"
+    ],
+    "allowed_payload_spans_per_row": [
+      [
+        25,
+        29
+      ],
+      [
+        29,
+        37
+      ]
+    ],
+    "allowed_bytes_per_file": 24,
+    "unchanged_complement_bytes_per_file": 36840,
+    "record_bytes": 63,
+    "data_free_bytes": 3952,
+    "owned_and_candidate_pages": [
+      8
+    ],
+    "cases": [
+      {
+        "id": "positive-subnormal",
+        "single_bits": [
+          "00000001",
+          "007fffff"
+        ],
+        "double_bits": [
+          "0000000000000001",
+          "000fffffffffffff"
+        ]
+      },
+      {
+        "id": "negative-subnormal",
+        "single_bits": [
+          "80000001",
+          "807fffff"
+        ],
+        "double_bits": [
+          "8000000000000001",
+          "800fffffffffffff"
+        ]
+      },
+      {
+        "id": "infinity",
+        "single_bits": [
+          "7f800000",
+          "ff800000"
+        ],
+        "double_bits": [
+          "7ff0000000000000",
+          "fff0000000000000"
+        ]
+      },
+      {
+        "id": "quiet-nan",
+        "single_bits": [
+          "7fc12345",
+          "ffe54321"
+        ],
+        "double_bits": [
+          "7ff8123456789abc",
+          "fff8fedcba987654"
+        ]
+      },
+      {
+        "id": "signalling-nan",
+        "single_bits": [
+          "7f812345",
+          "ff854321"
+        ],
+        "double_bits": [
+          "7ff0123456789abc",
+          "fff0fedcba987654"
+        ]
+      }
+    ]
+  },
+  "validation": {
+    "independent_static_review": {
+      "status": "passed_no_concrete_defect",
+      "note": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/result-draft/STATIC_REVIEW.md",
+        "bytes": 1971,
+        "sha256": "0f3dfcbdfa93542d60b0f82c5a178dfc0987a5bc2b316d7895b49708396b3ddb"
+      },
+      "reviewer_execution_calls": 0
+    },
+    "native_source_gate": {
+      "status": "first_attempt_passed",
+      "tests": 1,
+      "files": 5,
+      "rows": 10,
+      "compile_seconds": 30.7,
+      "test_seconds": 0.02,
+      "log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/native-source-first-root.log",
+        "bytes": 617,
+        "sha256": "0a35500965a12e2d3374aad38ebe0813e815de223c247adedfa919fb07297085"
+      },
+      "scope": [
+        "all bytes outside four payload spans unchanged",
+        "literal LE payload bits",
+        "complete representational row equality including signalling/payload/sign bits",
+        "ordinary structural gates",
+        "fresh source-bound full Metadata capture"
+      ]
+    },
+    "original_export_and_hash_anchor": {
+      "export_status": "first_attempt_passed",
+      "export_tests": 1,
+      "files": 5,
+      "compile_seconds": 13.23,
+      "test_seconds": 0.0,
+      "log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/source-export-first-root.log",
+        "bytes": 495,
+        "sha256": "a172d74263853ed85505ac9d50c45a2c782e8f8c299b7b7fcd785f69d5d80f11"
+      },
+      "original_freeze": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first-freeze-root.json",
+        "bytes": 1457,
+        "sha256": "c7c3a8849e8efe73d2676e9138b18732983e4e6aae962db479fb067f0825955a"
+      },
+      "hash_anchor_status": "first_attempt_passed",
+      "hash_anchor_freeze": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/hash-anchor-draft/private-freeze.json",
+        "bytes": 1309,
+        "sha256": "6982f2a500223a0a96b2c37a66468a83b8b2ad6f79cca42e29004a54a5b07b8b"
+      },
+      "hash_anchor_tests": 1,
+      "hash_anchor_hashes": 5,
+      "hash_anchor_compile_seconds": 31.61,
+      "hash_anchor_test_seconds": 0.0,
+      "hash_anchor_log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/hash-anchor-first-root.log",
+        "bytes": 517,
+        "sha256": "3e5192c9cb2fc892612f8a82b10058bf35cc2eb89991a6f9aa5330bef428d8fb"
+      },
+      "installed_hash_anchor": {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/creation_fixed_float_sources/hash_anchor.rs",
+        "bytes": 1592,
+        "sha256": "15368fb794fd5a33f62c93f7380aa51876703f4cf8f08a22e0518f95cf656ae9"
+      }
+    },
+    "independent_sdk_observation": {
+      "status": "all_five_first_attempts_passed",
+      "calls": 5,
+      "rows": 10,
+      "sdk": "Jackcess 5.0.4",
+      "class": "CanonicalFixedAceGetter",
+      "old_getter_and_compiled_classes_reused_unchanged": true,
+      "new_compilation": false,
+      "closed_input_pins": 37,
+      "source_and_closed_inputs_unchanged": true,
+      "writer_calls": 0,
+      "signalling_nan_payloads_and_signs": "Exactly preserved by the recorded JVM read transport; no quieting or canonicalization observed",
+      "numeric_arithmetic_preservation_claim": false,
+      "other_jvm_or_native_access_claim": false,
+      "reader_preflight": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/reader-precall-root.json",
+        "bytes": 185,
+        "sha256": "4ce1b11f655a25eb334d1f664780a2299970a34fd089eeff7b7472b3d86687bf"
+      },
+      "expectation_input_freeze": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/input-freeze.json",
+        "bytes": 11257,
+        "sha256": "7c3d334d85433866be3aa18d27b165f6b3f3ee5ab3b27d6037b7dfd8ea5623e2"
+      },
+      "bound_expectation_freeze": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/bound-first-freeze.json",
+        "bytes": 911,
+        "sha256": "0f23ce3774ed596e18cc8318f160621281d2b9d77eb6959c0299214d0c32d99a"
+      },
+      "immutable_code_freeze": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/code-first-freeze.json",
+        "bytes": 1089,
+        "sha256": "d82684893f33ce5de7da6ff14997f323806f42aae94ee19ee4179953925df0d0"
+      },
+      "observations": [
+        {
+          "case": "positive-subnormal",
+          "result": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-positive-subnormal-first-result.json",
+            "bytes": 585,
+            "sha256": "c21c07264c2d8e08ae23f0e916c43fede76e1ff36758cb0707cd51a5216bbf52"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-positive-subnormal-first.stdout",
+            "bytes": 4524,
+            "sha256": "2e25876be0fd551f77fba2186e2d3e0b2b83dc6f73224851280a8e7b2f1d9a52"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-positive-subnormal-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "negative-subnormal",
+          "result": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-negative-subnormal-first-result.json",
+            "bytes": 586,
+            "sha256": "ac7383234ab7ae8d973b5fbb658b62bbeff8871a684ae50bbb5f5b64f5623981"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-negative-subnormal-first.stdout",
+            "bytes": 4524,
+            "sha256": "b1f9f31171fa20d819c9a64961be78eb672aaf42e6840a611cc4dc2b4cb3ff73"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-negative-subnormal-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "infinity",
+          "result": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-infinity-first-result.json",
+            "bytes": 576,
+            "sha256": "54169546cd108aefbce9af4d7165be5823ebd605bad750ec345a720d7f2f5a36"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-infinity-first.stdout",
+            "bytes": 4524,
+            "sha256": "1dfbe7a805ef8f7d4e40d31802fd02388833c200fe012082a6ea49256818aaae"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-infinity-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "quiet-nan",
+          "result": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-quiet-nan-first-result.json",
+            "bytes": 576,
+            "sha256": "d356d6395bc2523a34aec57c04241c4c46544a3e765a54b2c2b3e09efcbe53ec"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-quiet-nan-first.stdout",
+            "bytes": 4524,
+            "sha256": "9905c61a6f6c183308bb10cd24257b8bfa8a2fd452ab45fcc38cbffc4f4c0793"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-quiet-nan-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "case": "signalling-nan",
+          "result": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-signalling-nan-first-result.json",
+            "bytes": 582,
+            "sha256": "fcc2b7152af5882a44f695a1274f755b94bc6462ee0f6cd31e6cf4ff489ca2ef"
+          },
+          "stdout": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-signalling-nan-first.stdout",
+            "bytes": 4524,
+            "sha256": "bcf4952cc5a5d4ee96fbf5ff8349b3e15951bed2d2ac347829a1b548fac1dd97"
+          },
+          "stderr": {
+            "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/observations-first/sdk-signalling-nan-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ]
+    },
+    "saved_independent_comparison": {
+      "status": "first_attempt_passed",
+      "whole_images": 5,
+      "whole_sdk_stdout": 5,
+      "four_span_complements": 5,
+      "scope": "Frozen signed-zero base plus four independent literal float spans; all original bytes and ordered SDK metadata/schema/rows/raw bits exactly compared",
+      "child_calls": 0,
+      "writer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/saved-first-root.log",
+        "bytes": 2070,
+        "sha256": "7ec54734abfdf7a4dec95fb2a2c730e0ddbd0e1075a873480a9fa6e62b9c443c"
+      },
+      "expectations": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/expectations.py",
+        "bytes": 1901,
+        "sha256": "cfe403c55394671cdeb177083f7d4db7c63ec6cb1a99d1384a54eaba894f9f64"
+      },
+      "verifier": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/getter/verify_saved.py",
+        "bytes": 5152,
+        "sha256": "0bfd2d11b883064f4907af11ae0b80eb8dca836a09b4687d1b028bdecf64b7b1"
+      }
+    },
+    "final_strict_format_links": {
+      "strict": "passed",
+      "format": "passed",
+      "format_log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/source-final-fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "links": "passed",
+      "strict_seconds": 20.64,
+      "strict_log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/source-final-strict-root.log",
+        "bytes": 307,
+        "sha256": "a4738ddfa0906fd1cd49f6e2eeb947c886037f695daeab5ff6e214a01e93fae7"
+      },
+      "link_targets": 6874,
+      "links_log": {
+        "path": ".cache/ace16-native-fixed-float-sources-next-20261031/source-links-root.log",
+        "bytes": 53,
+        "sha256": "75334805b33c36c096895ec252e1ca6f5e8503ebc746d414f46bf7f432c36beb"
+      }
+    }
+  },
+  "boundaries": [
+    "No production creator/encoder/SDK output supplies source or expected bit authority",
+    "Native raw-bit observations are distinct from JVM transport and numeric equality",
+    "No DATE payload is changed or reconstructed from a calendar token",
+    "No native Access creation/open/save/reopen, Windows or normal imported ACE edit/recovery grant",
+    "Inherited unknown header/system semantics and required-event absence remain unqualified"
+  ],
+  "originals": [
+    {
+      "case": "positive-subnormal",
+      "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first/fixed-ieee-h5-positive-subnormal.accdb",
+      "bytes": 36864,
+      "sha256": "31a7c3c8f4cf2fe5b8fdf27b9806f541b5e46de976c1f0ea179c04f341791a60"
+    },
+    {
+      "case": "negative-subnormal",
+      "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first/fixed-ieee-h5-negative-subnormal.accdb",
+      "bytes": 36864,
+      "sha256": "ff3b401aa87a6a0d4f1f06d8f461297103f8f43808722baaa5ce8bc46511034a"
+    },
+    {
+      "case": "infinity",
+      "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first/fixed-ieee-h5-infinity.accdb",
+      "bytes": 36864,
+      "sha256": "d1eb78dcdf3e85eff551a26e907b72a3c4685451a89345cd0201bf292eaae9cf"
+    },
+    {
+      "case": "quiet-nan",
+      "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first/fixed-ieee-h5-quiet-nan.accdb",
+      "bytes": 36864,
+      "sha256": "d1727b139e0248106da78248b530ecdac373ab708b4e310e5c98f58d4559bdc8"
+    },
+    {
+      "case": "signalling-nan",
+      "path": ".cache/ace16-native-fixed-float-sources-next-20261031/originals-first/fixed-ieee-h5-signalling-nan.accdb",
+      "bytes": 36864,
+      "sha256": "2934336e5a848e50b46b0e7112c698df87b98387abc43982738bc4b68049cf65"
+    }
+  ]
+}
