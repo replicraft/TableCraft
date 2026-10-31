@@ -103,7 +103,18 @@ wrong carriers, foreign metadata and substituted requests. A forged observed
 Required-property disable still fails validation of the proof's independently
 reconstructed image against original properties.
 
-Frontend acceptance and genuine-file qualification for this new profile are
-separate; neither is established by these authored images. Native
+The [frontend result](results/ace16-preserved-fixed-scalar-frontends-2026-10-31.json)
+records the separate consumer runs and retained first failure.
+The shared Access editor now admits the same target families in Default and
+Fixed(Fitted) modes. Variable remains Short Text-only for projected rich schemas.
+Seventy typed and eight SQL complete-image comparisons pass through the adapter;
+35 typed and four SQL images pass through the CLI. The complete preserved
+frontend targets pass 25 adapter and 23 CLI functions. Required, header-profile,
+mode, handle, mixed-target, budget, cancellation and output-conflict checks retain
+their refusals. The first CLI run retained a test that incorrectly used excluded
+`CDate`; its correction selects admitted date literals or NULL from the existing
+frozen corpus without changing expected bytes or function admission.
+
+Genuine-file qualification for this new profile remains separate. Native
 Microsoft Access save/reopen, required-macro discovery and normal ACE writes
 remain unqualified.

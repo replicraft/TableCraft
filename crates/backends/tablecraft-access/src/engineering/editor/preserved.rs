@@ -34,15 +34,21 @@ impl AccessEngineeringEditor {
         if matches!(self.mode, ScalarUpdateMode::Variable { .. }) && !short_text {
             return Err(NativeEditError::Unsupported);
         }
-        if !matches!(target.data_type(), ScalarType::Boolean | ScalarType::Int32)
-            && !(short_text
-                && matches!(
-                    self.mode,
-                    ScalarUpdateMode::Default
-                        | ScalarUpdateMode::Variable {
-                            index_growth: false
-                        }
-                ))
+        if !matches!(
+            target.data_type(),
+            ScalarType::Boolean
+                | ScalarType::Int32
+                | ScalarType::Int64
+                | ScalarType::Currency
+                | ScalarType::DateTime
+        ) && !(short_text
+            && matches!(
+                self.mode,
+                ScalarUpdateMode::Default
+                    | ScalarUpdateMode::Variable {
+                        index_growth: false
+                    }
+            ))
         {
             return Err(NativeEditError::Unsupported);
         }
