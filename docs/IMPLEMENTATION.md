@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fresh ACE 16 database construction
+
+The optional standalone `ace16-create` feature now constructs one complete
+header-5 database in memory with one table, 1–16 ordinary non-null Int32 columns
+and up to 64 rows subject to single-page fit. It directly authors all nine pages;
+no database template or existing image is accepted. The first execution matches
+all six independent whole-file goldens. Five focused tests, independent exact
+and insufficient resource allowances, cancellation, minimal/all-feature strict
+checks and 59 existing preview tests pass. The
+[creation contract](testing/ACE16_DATABASE_CREATION.md) separates this working
+constructor from filesystem publication, normal imported-file saves and native
+Access qualification. Broader schemas and creation remain unfinished.
+
 ## Shared offline write sessions
 
 The Access adapter now owns the [offline write-session lifecycle](access/writes/OFFLINE_WRITE_SESSIONS.md)

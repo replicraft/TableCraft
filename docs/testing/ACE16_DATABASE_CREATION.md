@@ -1,8 +1,54 @@
-# Native ACE 16 database-creation qualification
+# Fresh ACE 16 Int32 database creation
 
-A production database creator is not implemented. The source-first work below
-establishes independent complete-file inputs before introducing one. It uses
-originally authored bytes, not a bundled SDK database or an opaque template.
+The standalone `tablecraft-ace` feature `ace16-create` provides
+`create_ace16_int32_database`. It creates a fresh, complete header-5 database in
+memory from one table name, ordered column names and borrowed Int32 rows. It
+uses no existing database, SDK template, active content or filesystem operation.
+The returned `CreatedDatabase` exposes immutable bytes and row/column counts.
+Filesystem publication is a separate host operation and is not qualified here.
+
+The current profile admits one table, 1–16 ordinary Int32 columns and 0–64 rows
+of present values. Rows must also fit one DATA page: 16-column rows use 68 bytes,
+so 58 fit while 59 refuse. Names preserve their spelling and must fit 64 UTF-16
+units, be nonempty and control-free, have no leading ASCII space or native
+prohibited punctuation, and avoid duplicate columns under ASCII folding. The
+three actual system table names cannot be used for the user table. Nullable
+values, additional tables, indexes and other user-field types are not admitted.
+
+```rust
+use tablecraft_ace::create_ace16_int32_database;
+
+let rows: [&[i32]; 1] = [&[1, 10]];
+let created = create_ace16_int32_database(
+    "Items", &["Id", "Score"], &rows, budget, cancelled,
+)?;
+let bytes = created.as_bytes();
+```
+
+Input validation precedes one paid, fallible image allocation. The serializer
+writes all nine pages directly, including system catalog rows, complete column
+and LVAL declarations, masks, variable footers and represented allocation maps.
+Rows, bytes and steps have separate cumulative allowances. Initial or final
+cancellation returns no artifact. The API requires neither `ace16-write-preview`
+nor `journal`, and adds no dependency.
+
+The first producer execution matched all six complete independent source images:
+empty, one-row, signed extrema, 64 rows, Unicode names and the full 16-column
+58-row case. Five focused tests passed; exact and one-below allowances for each
+resource pool and pre/final cancellation also passed. Standalone compilation,
+minimal-library and minimal-all-target strict checks, all-feature strict checks,
+workspace formatting and the two affected preview-contract regressions passed.
+The SDK comparisons belong to the previously qualified independent sources;
+this phase did not publish or reopen new producer files with the SDK.
+
+This is a bounded fresh-creation capability. It grants no existing-file update,
+macro-absence, journal, recovery or normal ACE save permission. Unresolved header
+bytes remain explicitly chosen zeros; reader acceptance does not establish native
+system/ACL sufficiency. Native Access creation/open/save/reopen and Windows
+behavior remain unqualified.
+
+The [constructor result](results/ace16-native-int32-creation-2026-10-31.json)
+records passing checks, retained diagnostics and qualification boundaries.
 
 ### Authored header-5 source qualification, version 1
 

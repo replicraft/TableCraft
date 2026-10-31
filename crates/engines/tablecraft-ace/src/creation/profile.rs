@@ -1,0 +1,161 @@
+//! Explicit bounded roles and native system declarations; no imported template.
+use crate::format::data_type::{
+    BOOLEAN, BOOLEAN_BYTES, DATE_TIME, DATE_TIME_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES,
+    OLE, SHORT_BINARY, SHORT_TEXT,
+};
+use crate::format::{allocation::INLINE_BITMAP_OFFSET, page::PAGE_BYTES};
+
+pub(super) const PAGE_COUNT: usize = 9;
+pub(super) const IMAGE_BYTES: usize = PAGE_COUNT * PAGE_BYTES;
+pub(super) const MAX_COLUMNS: usize = 16;
+pub(super) const MAX_ROWS: usize = 64;
+pub(super) const MAX_NAME_UNITS: usize = 64;
+pub(super) const ROOT_ID: u32 = 0x0f00_0000;
+pub(super) const TABLES_ID: u32 = ROOT_ID + 1;
+pub(super) const DATABASES_ID: u32 = ROOT_ID + 2;
+pub(super) const RELATIONSHIPS_ID: u32 = ROOT_ID + 3;
+pub(super) const SYSTEM_FLAGS: u32 = 0x8000_0002;
+pub(super) const GLOBAL_PAGE: usize = 1;
+pub(super) const CATALOG_DEFINITION: usize = 2;
+pub(super) const MAP_PAGE: usize = 3;
+pub(super) const CATALOG_DATA: usize = 4;
+pub(super) const RELATIONSHIPS_DEFINITION: usize = 5;
+pub(super) const ACES_DEFINITION: usize = 6;
+pub(super) const USER_DEFINITION: usize = 7;
+pub(super) const USER_DATA: usize = 8;
+pub(super) const CATALOG_MAP_SLOT: usize = 0;
+pub(super) const RELATIONSHIPS_MAP_SLOT: usize = 1;
+pub(super) const ACES_MAP_SLOT: usize = 2;
+pub(super) const USER_MAP_SLOT: usize = 3;
+pub(super) const TABLE_COUNT: usize = 4;
+pub(super) const CATALOG_OBJECT_COUNT: usize = 8;
+pub(super) const LONG_VALUE_COLUMNS: [usize; 4] = [5, 6, 7, 8];
+pub(super) const FIRST_LONG_VALUE_MAP_SLOT: usize = 2 * TABLE_COUNT;
+pub(super) const MAP_ROWS: usize = 2 * (TABLE_COUNT + LONG_VALUE_COLUMNS.len());
+pub(super) const USER_CANDIDATE_SLOT: usize = USER_MAP_SLOT + TABLE_COUNT;
+pub(super) const CATALOG_CANDIDATE_SLOT: usize = CATALOG_MAP_SLOT + TABLE_COUNT;
+pub(super) const CATALOG_ID: usize = 0;
+pub(super) const CATALOG_PARENT: usize = 1;
+pub(super) const CATALOG_NAME: usize = 2;
+pub(super) const CATALOG_TYPE: usize = 3;
+pub(super) const CATALOG_FLAGS: usize = 4;
+pub(super) const CATALOG_CREATED: usize = 13;
+pub(super) const CATALOG_UPDATED: usize = 14;
+pub(super) const MAP_BITMAP_BYTES: usize = 8;
+pub(super) const MAP_RECORD_BYTES: usize = INLINE_BITMAP_OFFSET + MAP_BITMAP_BYTES;
+pub(super) const GENERAL_SORT: [u8; 4] = [9, 4, 0, 1];
+pub(super) const SYSTEM_NAMES: [&str; 3] = ["MSysObjects", "MSysRelationships", "MSysACEs"];
+
+#[derive(Clone, Copy)]
+pub(super) struct Field<'a> {
+    pub name: &'a str,
+    pub kind: u8,
+    pub offset: Option<usize>,
+    pub width: usize,
+}
+
+const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Field<'_> {
+    Field {
+        name,
+        kind,
+        offset,
+        width,
+    }
+}
+
+pub(super) const CATALOG_FIELDS: [Field<'static>; 15] = [
+    field("Id", INT32, Some(0), INT32_BYTES),
+    field("ParentId", INT32, Some(4), INT32_BYTES),
+    field("Name", SHORT_TEXT, None, 510),
+    field("Type", INT16, Some(8), INT16_BYTES),
+    field("Flags", INT32, Some(10), INT32_BYTES),
+    field("LvProp", OLE, None, 0),
+    field("Lv", OLE, None, 0),
+    field("LvExtra", OLE, None, 0),
+    field("LvModule", OLE, None, 0),
+    field("Database", SHORT_TEXT, None, 510),
+    field("ForeignName", SHORT_TEXT, None, 510),
+    field("Connect", SHORT_TEXT, None, 510),
+    field("Owner", SHORT_BINARY, None, 255),
+    field("DateCreate", DATE_TIME, Some(14), DATE_TIME_BYTES),
+    field("DateUpdate", DATE_TIME, Some(22), DATE_TIME_BYTES),
+];
+
+pub(super) const RELATIONSHIP_FIELDS: [Field<'static>; 8] = [
+    field("szRelationship", SHORT_TEXT, None, 510),
+    field("grbit", INT32, Some(0), INT32_BYTES),
+    field("ccolumn", INT32, Some(4), INT32_BYTES),
+    field("icolumn", INT32, Some(8), INT32_BYTES),
+    field("szReferencedObject", SHORT_TEXT, None, 510),
+    field("szObject", SHORT_TEXT, None, 510),
+    field("szReferencedColumn", SHORT_TEXT, None, 510),
+    field("szColumn", SHORT_TEXT, None, 510),
+];
+
+pub(super) const ACE_FIELDS: [Field<'static>; 4] = [
+    field("ACM", INT32, Some(0), INT32_BYTES),
+    field("FInheritable", BOOLEAN, Some(0), BOOLEAN_BYTES),
+    field("ObjectId", INT32, Some(4), INT32_BYTES),
+    field("SID", SHORT_BINARY, None, 255),
+];
+
+#[derive(Clone, Copy)]
+pub(super) enum Fields<'a> {
+    Known(&'a [Field<'a>]),
+    User(&'a [&'a str]),
+}
+
+impl<'a> Fields<'a> {
+    pub fn count(self) -> usize {
+        match self {
+            Self::Known(fields) => fields.len(),
+            Self::User(names) => names.len(),
+        }
+    }
+
+    pub fn get(self, index: usize) -> Field<'a> {
+        match self {
+            Self::Known(fields) => fields[index],
+            Self::User(names) => field(
+                names[index],
+                INT32,
+                Some(index * size_of::<i32>()),
+                size_of::<i32>(),
+            ),
+        }
+    }
+
+    pub fn variable_count(self) -> usize {
+        (0..self.count())
+            .filter(|&index| self.get(index).offset.is_none())
+            .count()
+    }
+
+    pub fn ordinary_variable_count(self) -> usize {
+        (0..self.count())
+            .filter(|&index| {
+                let field = self.get(index);
+                field.offset.is_none() && field.kind != OLE
+            })
+            .count()
+    }
+
+    pub fn fixed_end(self) -> usize {
+        size_of::<u16>()
+            + (0..self.count())
+                .filter_map(|index| {
+                    let field = self.get(index);
+                    field.offset.map(|offset| offset + field.width)
+                })
+                .max()
+                .unwrap_or(0)
+    }
+}
+
+/// One internal catalog row, without an independently allocated value vector.
+pub(super) struct CatalogObject<'a> {
+    pub id: u32,
+    pub parent: u32,
+    pub name: &'a str,
+    pub system: bool,
+}
