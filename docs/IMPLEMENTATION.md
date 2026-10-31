@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Untouched NULL-key source qualification
+
+Twelve independently authored originals and twelve complete literal outcomes
+now cover scalar/composite NULL keys and NULL node bounds while changing only
+present Int32 cells. Two native source/anchor tests and strict checks pass. NULL
+presence/inactive bytes and original PrimaryId storage remain exact. The unique
+all-NULL pair remains an authored read hypothesis. All ninety-six exact
+independent SDK observations and the saved-only verifier pass; producer execution
+is still pending. See the
+[source contract](testing/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) and
+[record](testing/results/ace16-nullable-key-before-change-sources-2026-10-31.json).
+
 ## Journaled indexed mixed-schema Int32 updates
 
 Complete ordinary scalar tables now maintain checked non-NULL fixed-I32 indexes

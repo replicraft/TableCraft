@@ -10738,3 +10738,13 @@ control, separate from the twenty-six independently read indexed mixed views.
 The [writer record](results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
 retains its failure/correction and actual session/recovery checks. No third-party
 fixture bytes are copied or native Access compatibility inferred.
+
+## Authored untouched NULL-key sources
+
+The [NULL-key corpus](ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) adds twelve
+originals and twelve literal expected images under the repository license.
+Only present Score payloads change; NULL masks, inactive bytes and original
+PrimaryId storage remain exact. Native/hash checks precede producer execution;
+independent reader observations and native Access behavior remain separate.
+The unique all-NULL pair is explicitly an authored read hypothesis. No copied
+third-party database bytes or production writer outputs supply these fixtures.
