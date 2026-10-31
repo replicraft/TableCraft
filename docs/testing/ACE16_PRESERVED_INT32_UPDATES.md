@@ -79,3 +79,39 @@ the old Boolean stage/proof bodies after removing additive dispatch branches.
 Adapter/CLI adoption and its evidence are separate. Native Access save/reopen,
 required macro discovery/semantics, shared-file coordination and normal ACE saves
 remain unqualified.
+
+## Existing SQL and typed frontend consumers
+
+The Access engineering editor admits an exact ordinary Int32 target alongside its
+existing preserved Boolean target under Default or explicit fitting fixed mode.
+The existing `query preview-update` and typed `write preview-update` commands use
+that same native service; no new flag, retry, normal-save or journal permission is
+introduced. Native admission still requires one non-NULL, nonindexed,
+calculation-independent Int32 target. Mixed Boolean/numeric groups, multiple
+numeric groups, unavailable operands and other update modes remain refused.
+The existing Boolean lookup and charged scans stay unchanged.
+
+Both frontend targets reuse the actual public integration SOURCE owner and its
+eight immutable pairs: four header 6 originals are positive cases; four header 5
+originals retain their unsupported Extended Date declarations and must refuse.
+Both SOURCE gates pass, and the actual adapter snapshot SOURCE gate passes.
+The CLI's first SOURCE compilation exposed a missing direct test dependency on
+`tablecraft-schema`; adding that development edge preserves the exact assertions
+and owning type. The corrected SOURCE gate passes. No source or expected image
+changed.
+
+The first adapter API matrix passed all twelve complete positive comparisons
+and twelve header 5 refusals. Its separate negative-control function stopped at an
+unbracketed reserved `Number` identifier before backend admission. Only the
+SQL tests were corrected to `[Number]`; the first files/log remain retained.
+SQL extrema use the existing explicit `CLng` conversion, while typed requests
+remain Int32. The corrected adapter APIs pass both functions, including twelve
+complete positive comparisons and twelve header 5 refusals. Both CLI API functions
+pass: eight complete SQL/typed copies and eight header 5 refusals, with stale,
+NULL, joint-target, dependency/index and output-preservation controls.
+
+The full preserved targets pass all six adapter and seven CLI functions, retaining
+existing Boolean coverage. Combined native/Access/CLI strict checks and dependency
+boundaries (15 packages and 12 checker tests) pass. Format checks for ACE/Access/CLI, no-default-feature checks for ACE/Access, and
+6,718 documentation link targets with no missing links also pass. Exact logs and
+retained first failures are in the [frontend record](results/ace16-preserved-int32-frontends-2026-10-30.json).

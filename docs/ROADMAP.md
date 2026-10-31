@@ -8,9 +8,9 @@ images match through each consumer, including NULL/duplicate keys and root-leaf
 growth. A fresh committed-source producer also matches sixteen whole images on
 eight independently generated originals, followed by sixteen passing fresh
 Jackcess readers. Explicit [required fresh-copy publication](cli/DURABLE_OUTPUT.md)
-now completes file and captured-directory barriers through two existing CLI
-consumers. Read-only journal inspection now retains exact images and the same
-journal for policy checks before recovery writes. The native qualifier now binds
+now completes file and captured-directory barriers for offline UPDATE, index
+creation and selected BeforeChange copies. Read-only journal inspection retains
+exact images and the same journal for policy checks before recovery writes. The native qualifier now binds
 original typed intent and proves both complete images by rebuilding the normal
 Jet 4 plan; seven focused checks pass. Normal and explicit recoverable SQL
 planning are shared in the Access adapter. Retained filesystem pairing now supplies
@@ -59,13 +59,21 @@ constraint checks. Eight whole-image comparisons and the mutation regression pas
 Physical INSERT handling, required-event discovery and normal ACE saves remain
 unfinished; the candidate type grants no journal or ordinary save permission.
 The shared Access SQL planner now consumes that service for a bounded one-column
-UPDATE. Focused service and existing guard/adapter checks pass; the explicit CLI
-copy consumer is the next host step.
+UPDATE. The explicit [`query preview-before-change`](cli/BEFORE_CHANGE_COPY.md)
+copy consumer now supports default or required-durability publication, with typed
+state retained through publication/output failures.
 Complete selected [before-event collections](testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
 now validate inactive BeforeDelete definitions as well as active BeforeChange
 definitions before rows execute. Inactive definitions do not run during a change;
 unsupported content still refuses empty operations. Native required-program
 discovery and normal save admission remain open.
+
+Qualified [mixed-schema Int32 copies](testing/ACE16_PRESERVED_INT32_UPDATES.md)
+now extend the preserved fixed service beyond Boolean masks. One ordinary,
+nonindexed field outside calculation dependencies can change through existing
+typed/SQL/CLI consumers while attachments and stored caches remain byte-exact.
+Broader targets, unsupported source properties, required macros and normal saves
+remain unfinished.
 
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.
