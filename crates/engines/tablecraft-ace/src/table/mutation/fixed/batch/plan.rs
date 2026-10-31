@@ -4,6 +4,7 @@ use super::super::super::{
 };
 use super::super::masked;
 use super::FixedColumnUpdates;
+use crate::table::mutation::guards::fields::physical::SourceWitness;
 use crate::table::mutation::patch::spans;
 use crate::{
     InspectError, NativeImage, TableCheck,
@@ -17,6 +18,12 @@ use tablecraft_core::{
     values::Guid,
 };
 use tablecraft_schema::ScalarType;
+
+#[derive(Clone, Copy)]
+enum SourceAdmission<'a> {
+    Ordinary,
+    BeforeChange(&'a SourceWitness),
+}
 
 pub(super) struct Table<'a> {
     pub(super) name: &'a str,
@@ -63,6 +70,37 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Ace16WritePreview, EditError> {
+        self.preview_fixed_batch_source::<EXTENDED_FIXED, ALLOCATING>(
+            groups,
+            SourceAdmission::Ordinary,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table::mutation) fn preview_before_change_batch(
+        self,
+        groups: &[FixedColumnUpdates<'_>],
+        witness: &SourceWitness,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
+        qualify(&self)?;
+        self.preview_fixed_batch_source::<true, false>(
+            groups,
+            SourceAdmission::BeforeChange(witness),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn preview_fixed_batch_source<const EXTENDED_FIXED: bool, const ALLOCATING: bool>(
+        self,
+        groups: &[FixedColumnUpdates<'_>],
+        source: SourceAdmission<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
         let _span =
             tracing::debug_span!("native.edit.batch_preview", groups = groups.len()).entered();
         check(budget, cancelled)?;
@@ -74,7 +112,8 @@ impl NativeImage {
         if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
             return Err(InspectError::StructureLimit.into());
         }
-        if EXTENDED_FIXED
+        if matches!(source, SourceAdmission::Ordinary)
+            && EXTENDED_FIXED
             && !ALLOCATING
             && super::super::preserved::selected(&self, groups, budget, cancelled)?
         {
@@ -107,10 +146,20 @@ impl NativeImage {
                 .iter()
                 .any(|table| table.name.eq_ignore_ascii_case(group.table()))
             {
-                let before = if EXTENDED_FIXED {
-                    gates::before_fixed_update(&self, group.table(), budget, cancelled)?
-                } else {
-                    gates::before(&self, group.table(), budget, cancelled)?
+                let before = match source {
+                    SourceAdmission::BeforeChange(witness) => gates::before_prepared_fields(
+                        &self,
+                        group.table(),
+                        witness,
+                        budget,
+                        cancelled,
+                    )?,
+                    SourceAdmission::Ordinary if EXTENDED_FIXED => {
+                        gates::before_fixed_update(&self, group.table(), budget, cancelled)?
+                    }
+                    SourceAdmission::Ordinary => {
+                        gates::before(&self, group.table(), budget, cancelled)?
+                    }
                 };
                 if !ALLOCATING {
                     super::super::super::data_ownership::require_index_disjointness(

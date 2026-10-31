@@ -5,13 +5,16 @@ mod compile;
 mod error;
 mod evaluate;
 mod expression;
-mod fields;
+pub(super) mod fields;
 mod model;
 mod selection;
 mod source;
 
 pub use error::{BeforeEventGuardError, BeforeGuardSelectionError, BeforeGuardUnsupported};
-pub use fields::{BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow};
+pub use fields::{
+    Ace16BeforeChangePreview, BeforeChangeAssignment, BeforeChangeFieldPreparation,
+    BeforeChangeFinalRow, BeforeChangePreviewError,
+};
 pub use model::{
     BeforeEvent, BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
     BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardTrace, BeforeGuardTraceKind,

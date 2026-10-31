@@ -1,0 +1,240 @@
+{
+  "feature": "explicit BeforeChange fitting field-update candidates",
+  "date": "2026-10-30",
+  "scope": {
+    "physical_operation": "ordinary Int32/NULL fixed UPDATE",
+    "logical_insert": "separate logical preparation only; physical INSERT unfinished",
+    "capture": "Standard only",
+    "allocation": false,
+    "map_write_permission": false,
+    "normal_save_or_journal_permission": false,
+    "native_macro_locator_or_required_coverage": false,
+    "native_access_qualification": false,
+    "host_command": false
+  },
+  "source_before_consumer": {
+    "pairs": 10,
+    "views": 20,
+    "independent_changed_expected_images": 8,
+    "late_rejection_sources": 2,
+    "constructors_and_expected_unchanged": true,
+    "first_run": "failed test-reader admission assertion before writer",
+    "corrected_run": 0,
+    "reason": "public complete All read correctly rejects Ignore-NULL subset; check_table and independent raw KEY/ROW validation qualify physical membership"
+  },
+  "first_consumer": {
+    "combined_ace_cli_check": 0,
+    "api_functions": 4,
+    "exit": 0,
+    "distinct_prefrozen_candidate_images": 8,
+    "source_exact_empty_candidate_images": 8,
+    "additional_budget_healthy_exact_compares": 2,
+    "late_raise_calls": 4,
+    "group_metadata_name_logical_calls": 2,
+    "controls": [
+      "stale and duplicate original requests",
+      "ordinary named-empty ActiveContent refusal",
+      "normal ACE format refusal",
+      "exact3resource pools and each one-below",
+      "final cancellation, no returned partial candidate"
+    ]
+  },
+  "causal_authority": {
+    "functions": 2,
+    "exit": 0,
+    "controls": [
+      "alternative valid original-request group cache rejected against actual original",
+      "identical-byte distinct NativeImage rejected by sealed witness",
+      "cached program raw bytes rechecked against original"
+    ]
+  },
+  "broader_checks": {
+    "mutation_regression": {
+      "passed": 568,
+      "ignored": 4,
+      "failed": 0
+    },
+    "library_strict": {
+      "status": "passed",
+      "packages": [
+        "tablecraft-io",
+        "tablecraft-ace",
+        "tablecraft-formats",
+        "tablecraft-access"
+      ]
+    },
+    "combined_host_strict": {
+      "status": "retained first failure",
+      "cause": "CLI result_large_err in journal error propagation; separate host owner correcting",
+      "physical_producer_changed": false
+    },
+    "remaining_host_strict": "pending root retry"
+  },
+  "source_pins": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/gates.rs",
+      "bytes": 16615,
+      "sha256": "10c860a21187784534afe0e34f8b8457f6d00f7f19e8d40752779dd27ea56198"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/plan.rs",
+      "bytes": 14457,
+      "sha256": "660116af17d459abe91a4421cc625006db7ee7708449fdad903a5b26e8cd87b7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/extended.rs",
+      "bytes": 4610,
+      "sha256": "c3fff8d334b288d6764494918be5de833d134c99a96b66b00ddb379e4612980a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 490,
+      "sha256": "34cbd9f586c666a12048fda577a0e60e3b6980ecba89bdc6117b1507be5f67df"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/mod.rs",
+      "bytes": 3390,
+      "sha256": "0423eff26f554a401d9fe43c9a343109136b4d3423350fc93bf02eef39fad4b9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields.rs",
+      "bytes": 3378,
+      "sha256": "16a930a3afa4e9a718170cf23d500389cba87e3ab3cab971a5dc0d5de5d8f122"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 8027,
+      "sha256": "9afea0aff272c2901770a7191ce56a03110f7b93c470dc0d2ed69c0dde7609bc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mod.rs",
+      "bytes": 5201,
+      "sha256": "5fc76380e2b0404a04c68a45834026a6ca3836b8ff20d80ec46e4adbf8b68a7e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/mod.rs",
+      "bytes": 2752,
+      "sha256": "d1c089bd5c6244aa5238d723356bcf00c5cdf903908097eaf72c3dc23f800848"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical.rs",
+      "bytes": 12606,
+      "sha256": "00cce87b8a5fec4b9fda21e92f1f18981cc836bda44585a2e7cde2c526e77cc7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical_sources.rs",
+      "bytes": 9356,
+      "sha256": "a857b319f90149fec93542321a6762da0db93820222f344e1a8cf2690436e6b4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical_sources/api.rs",
+      "bytes": 8920,
+      "sha256": "bdab020477b2bdf733d773acc8015fd48ff72f4a9a9a8c04e0479afc2aaca65f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical/tests.rs",
+      "bytes": 4297,
+      "sha256": "4d5ee2a449d943f89bd7c4191fabc95250d91566bedce4720c972a62711171a8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/mod.rs",
+      "bytes": 230,
+      "sha256": "2be4856b20ca5fa485a6fa306916c8cd9acfe89f27704c171e18201ba8098b99"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/batch/split_tests.rs",
+      "bytes": 6034,
+      "sha256": "ec7c78bf26da58ce4cf15f6a0f653552d83247613e5692563bfdf487f30714ab"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/guards/fields/physical_sources/model.rs",
+      "bytes": 6768,
+      "sha256": "7bea751f1a9304c5edb07824acdd98a30c45129baeaa9be089b8d5536b2c2071"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-private-freeze.json",
+      "bytes": 3109,
+      "sha256": "5fc321d429a2b6015fb6b2eefbbfe3e5d9a34f48dc47be703cb0c98a50b725b7"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-installed-freeze.json",
+      "bytes": 3690,
+      "sha256": "ae7b9665499d232f99b4f607da95edb670dd2625e5a1aa3c16e96e92243858b4"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-reader-correction.json",
+      "bytes": 914,
+      "sha256": "17bb8855a4b88850071384dad24a8f775c12b2989bf78a3a5bbb53438c78ce1b"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-private-first-coherent.json",
+      "bytes": 4571,
+      "sha256": "e1e85bdb0154f708dfd125d335ce780b329a5970fd9d1aaec86318522a044667"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-installed-first-freeze.json",
+      "bytes": 2596,
+      "sha256": "41cf2c603d4402c64417ef5eb3c9a655917030201760666207727c85c55c6c8f"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-causal-first-freeze.json",
+      "bytes": 2835,
+      "sha256": "38a04c0dce9bed417a7a29067702fb6e29e66fe759dc6000856568caaeed9c9d"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-first-root.log",
+      "bytes": 1260,
+      "sha256": "f3222aa69293c0f12cc7981f5ac937d98555cc675af1384788c08ac13402474c"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-reader-corrected-root.log",
+      "bytes": 520,
+      "sha256": "84a319ab11e259d1068e9a902fb34723e7b4784fbcae90d7f1dc49102c95ad08"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-source-producer-root.log",
+      "bytes": 520,
+      "sha256": "cfaa5c629ec932be886935d2a78c9583107b41ea750dfa57951fafff70ad7528"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-combined-check-first-root.log",
+      "bytes": 632,
+      "sha256": "6d39f51a69dd1f6a7894683c72aa6d3873cdeb2394f6e47e863aa390a2f70aa3"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-api-first-root.log",
+      "bytes": 858,
+      "sha256": "373f3b1c90dae92b5ab5715ac46a153afd798df82b81153d77f567a1ba027ef4"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-causal-first-root.log",
+      "bytes": 658,
+      "sha256": "70aea476cea8a35d39c848c5f93f91dc5e6abf8bd136d627687b1d73e1209f62"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-mutation-regression-root.log",
+      "bytes": 77782,
+      "sha256": "dcd3bd83f319944645366e1138e5452bdce5bc38e2bdbc4635cfc8dfa70d671e"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-library-strict-root.log",
+      "bytes": 531,
+      "sha256": "490cd5c100c3844957d7b741f1aa6fc79cc9d3cf058750fb0fc4e16f247c1e62"
+    },
+    {
+      "path": ".cache/ace16-before-change-setfield-next-20261030/physical-host-strict-first-root.log",
+      "bytes": 8742,
+      "sha256": "955ea2a2943be374d2fa728459a46b7b19476c66569ad822bfaef357318251a3"
+    }
+  ],
+  "retained_failed_source": {
+    "path": ".cache/ace16-before-change-setfield-next-20261030/physical-sources-before-reader-profile.rs",
+    "bytes": 7124,
+    "sha256": "e16521de20269c4c4c7d8ecddd9d07b172f0a7306c1fded0b538c6c4fd953594"
+  },
+  "logical_phase_record": "docs/testing/results/ace16-before-change-fields-logical-2026-10-30.json"
+}

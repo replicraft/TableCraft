@@ -78,5 +78,7 @@ passed; the subsequent target-binding correction is preview-feature-only.
 Existing CLI compilation/strict checks, 65 unit functions and 22 copy/inspection
 integration functions also pass with the additive structural enum. No new CLI
 SetField command is introduced. The [focused result](../../testing/results/ace16-before-change-fields-logical-2026-10-30.json)
-retains those exact phases. Physical source images and an atomic engineering
-consumer are a separate tranche, with no physical writer claim here.
+retains those exact logical phases. The separate
+[physical field-update consumer](../../testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+now applies prepared fixed UPDATE rows once through the engineering batch;
+logical preparation itself remains read-only.

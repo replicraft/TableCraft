@@ -69,6 +69,14 @@ pub use table::{
     InsertFieldValue, OmittedRowInsert, RowInsert, SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
+pub use table::{
+    Ace16BeforeChangePreview, BeforeChangeAssignment, BeforeChangeFieldPreparation,
+    BeforeChangeFinalRow, BeforeChangePreviewError, BeforeEvent, BeforeEventGuardError,
+    BeforeEventGuardPreparation, BeforeEventGuardSelector, BeforeEventIntents,
+    BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardSelectionError, BeforeGuardTrace,
+    BeforeGuardTraceKind, BeforeGuardUnsupported,
+};
+#[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16IndexCreatePreview, SecondaryIndexCreate};
@@ -85,13 +93,6 @@ pub use table::{
     AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
     inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
     inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
-};
-#[cfg(feature = "ace16-write-preview")]
-pub use table::{
-    BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
-    BeforeEventGuardError, BeforeEventGuardPreparation, BeforeEventGuardSelector,
-    BeforeEventIntents, BeforeGuardProgramRevision, BeforeGuardRejection,
-    BeforeGuardSelectionError, BeforeGuardTrace, BeforeGuardTraceKind, BeforeGuardUnsupported,
 };
 pub use table::{
     BinaryIndexSelection, GeneralEqualityPrefix, GuidIndexSelection, TextIndexSelection,

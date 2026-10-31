@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Explicit BeforeChange field-update candidates
+
+The native [BeforeChange update service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+now prepares caller-selected field assignments and produces one jointly final
+fixed Int32/NULL engineering candidate. It reconstructs original programs and
+requests before physical admission, preserves the complete Extra payload and
+retains ordinary source, constraint and index checks. RaiseError returns no
+candidate. Eight independent whole-image comparisons, two causal controls and
+568 mutation regression functions pass; four existing helpers remain ignored.
+Normal ACE saves, required-event discovery and physical INSERT handling remain
+unfinished. This API does not supply a normal edit plan or journal permission.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal

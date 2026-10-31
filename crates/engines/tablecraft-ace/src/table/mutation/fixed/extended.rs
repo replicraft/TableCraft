@@ -23,6 +23,16 @@ pub(super) fn qualify<'a>(
     if image.fixed_update_limits().is_none() {
         return Ok(());
     }
+    protect_source(image, checked, names, budget, cancelled)
+}
+
+pub(in crate::table::mutation) fn protect_source<'a>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    names: impl Iterator<Item = &'a str>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     let schema = checked.schema();
     budget
         .charge_allocation(schema.columns().len() as u64, size_of::<usize>() as u64)
