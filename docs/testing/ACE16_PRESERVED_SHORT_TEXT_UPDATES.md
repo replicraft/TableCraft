@@ -113,9 +113,9 @@ from subsequent passing checks. The fixture lint correction replaces a constant
 source and expected bytes remain unchanged. Source and literal expected
 bytes were not retuned from producer output.
 
-These are authored-source engineering checks. Genuine-file candidate qualification,
-Microsoft Access save/reopen, required-macro discovery and ordinary ACE saves
-remain separate work.
+These authored-source engineering checks are separate from the independently
+generated source and candidate qualification below. Microsoft Access save/reopen,
+required-macro discovery and ordinary ACE saves remain open.
 
 
 ## Independently generated Short Text source admission
@@ -142,10 +142,44 @@ failed at file open; the unchanged helper passed after correcting only that
 environment path. Both logs are retained.
 
 System timestamps, GUIDs and physical allocation are measured/pinned artifacts,
-not byte-identical regeneration promises. Actual record capacity must be derived
-from these original records, including possibly zero-length NULL spans; the
-hand-authored corpus's 10-byte and two-byte capacities are not assumed. Independent
-framing/expectations, candidate comparisons and SDK candidate readbacks remain
-pending. This source checkpoint supplies no native Microsoft Access save/reopen,
-required-macro absence or normal ACE save permission. Exact provenance, source
-pins and observations are in the [source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json).
+not byte-identical regeneration promises. Independent raw framing measures seven
+bytes of fitting capacity for each present Text row and zero for the NULL row;
+the authored corpus's 10-byte and two-byte capacities are not assumed. Exact
+source provenance and the retained path-setup failure are in the
+[source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json).
+
+## Genuine complete-image comparisons
+
+Original-only framing and literal requests froze 18 complete expected images and
+four overflow controls before any candidate. A fresh isolated build from commit
+`b101c78fb5b32451d61b875de3426d0d36cee194` compiled the engine, adapter and CLI
+without accessing the corpus or invoking the producer. Its first 22 candidate
+calls match all 18 complete images (8,884,224 bytes) and return four expected
+RowLayout refusals with no output artifact. Fourteen successful cases change one
+row and four are whole-image no-ops. The exact engineering completion reports
+retain one matched row and the independent changed-row count.
+
+The first 18 fresh readonly SDK calls then match every ordered tagged observation
+against independently frozen original/request projections. Only the selected
+Text/NULL token may differ. Catalog and property identities, index/map/counter
+facts, stale calculated caches, Sentinel, LVAL and attachment observations remain
+exact. The unchanged generic getter and classes are reused; no SDK UPDATE,
+recompilation, retry or original/expected retuning occurs.
+
+The zero-capacity NULL row honestly refuses nonempty replacements. NULL-to-empty
+fits as present raw zero-length Text and remains distinct from NULL. Equal Text
+retains its original compact representation. Sibling variable bytes may move
+inside a selected record, but complete-image proof fixes their contents and all
+bytes outside the selected record; physical record position and length stay
+unchanged. Original hashes remain stable through every phase.
+
+The [genuine image record](results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+pins separate source, expected, build, candidate and SDK receipts. Its
+[maintained saved-only verifier](preserved_short_text_genuine/README.md) rederives
+expectations from original inputs and reads saved evidence without launching
+fixture processes. Its first saved replay passes 257 pinned artifacts, both
+originals, all 22 native outcomes and all 18 SDK inventories with zero child
+processes. Local documentation links and whitespace checks also pass.
+These independently generated SDK files and comparisons do not establish native
+Microsoft Access creation/event/save/reopen compatibility, required-macro absence
+or normal ACE save/journal permission.

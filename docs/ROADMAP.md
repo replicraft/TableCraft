@@ -88,10 +88,13 @@ genuine nullable sources and native Access qualification remain separate.
 One qualified [Short Text target](testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 now also fits its existing mixed-schema record through a separate preservation
 service, retaining rich siblings, raw no-ops and final field/table rules. Eight
-whole-image native comparisons pass. Broader mixed targets, allocation and
-genuine/native Access qualification remain open.
-Broader targets, unsupported source properties, required macros and normal saves
-remain unfinished.
+whole-image authored comparisons pass. Two independently generated V2016/V2019
+originals now also pass 18 complete-image committed-CLI comparisons, four honest
+capacity refusals and 18 fresh readonly SDK inventories, with original hashes
+unchanged. The [genuine-file result](testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+retains independent expectations and separate execution phases. Broader mixed
+targets, allocation, unsupported properties, required macro discovery/semantics,
+normal ACE saves and native Microsoft Access qualification remain open.
 
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.

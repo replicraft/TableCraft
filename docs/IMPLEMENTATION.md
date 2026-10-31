@@ -81,8 +81,13 @@ now handles one qualified unindexed target in a preserved mixed schema without
 moving the record or allocating pages. It retains opaque rich payloads and raw
 Text/NULL no-ops, independently reconstructs the complete image and checks final
 rules on both the proof's expected projection and the candidate. Eight literal
-whole-image comparisons and four proof functions pass. Native Access save and
-genuine-file qualification remain separate.
+whole-image comparisons and four proof functions pass. On two independently
+generated V2016/V2019 originals, 18 original/request-only complete images now
+match a freshly built committed CLI, four capacity-overflow requests refuse,
+and 18 fresh readonly SDK inventories remain exact. Real zero-capacity NULL
+spans retain their fitting refusals. The [genuine-file record](testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+keeps source, expected, build, candidate and reader evidence separate. Native
+Access save/reopen, required-macro discovery and normal ACE saves remain open.
 
 ## Offline journaled updates and recovery
 
