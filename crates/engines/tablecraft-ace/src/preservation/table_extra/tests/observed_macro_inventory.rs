@@ -171,3 +171,5 @@ fn qualify_observed_macro_inventory_sources_before_inventory() {
 }
 
 mod coverage_sources;
+
+mod native_binding_sources;

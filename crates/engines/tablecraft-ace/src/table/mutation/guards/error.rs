@@ -26,6 +26,12 @@ pub enum BeforeGuardUnsupported {
     Expression,
     /// Source table/carrier outside the initial all-explicit Int32 profile.
     SourceProfile,
+    /// Native carrier coverage is unresolved; this does not mean macro absence.
+    NativeCoverage,
+    /// A stored native event or named macro requires effects outside this operation.
+    NativeEvent,
+    /// Multiple native definitions claim the same event or named identity.
+    NativeEventConflict,
 }
 
 /// Guard preparation failures expose no SQL, XML, names or row values.
