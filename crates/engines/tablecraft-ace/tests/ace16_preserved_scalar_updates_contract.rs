@@ -10,6 +10,8 @@ use tablecraft_testkit::access::mutation_fixture as base;
 mod catalog_flag;
 #[path = "complex_schema/fixture.rs"]
 pub mod complex_fixture;
+#[path = "ace16_preserved_scalar_updates_contract/fixed_scalar_sources.rs"]
+mod fixed_scalar_sources;
 #[path = "ace16_preserved_scalar_updates_contract/growing_sources.rs"]
 mod growing_sources;
 #[path = "ace16_preserved_scalar_updates_contract/model.rs"]
