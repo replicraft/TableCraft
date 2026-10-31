@@ -1,7 +1,9 @@
 use super::CreationError;
 use std::{fmt, path::Path};
-use tablecraft_ace::{CreatedDatabase, create_ace16_int32_database};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_ace::{
+    CreateColumn, CreatedDatabase, create_ace16_database, create_ace16_int32_database,
+};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_io::publication::{ParentIdentity, PublicationReceipt, RequiredOutput};
 
 /// Captured destination for one no-clobber, namespace-durable creation.
@@ -56,15 +58,37 @@ impl CreationDestination {
             database,
         })
     }
+
+    /// Construct one explicit ordinary fixed-scalar schema from exact carriers.
+    /// Column declarations remain authoritative for empty/all-NULL input. The
+    /// native creator rejects unsupported families, carrier mismatches and
+    /// Boolean NULL before any output is staged. No normal ACE edit or imported
+    /// image authority is granted; publication uses the same required protocol.
+    pub fn prepare_typed(
+        self,
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        rows: &[&[Value]],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedCreation, CreationError> {
+        let _span = tracing::debug_span!("access.creation.prepare_typed").entered();
+        let database = create_ace16_database(table, columns, rows, budget, cancelled)?;
+
+        Ok(PreparedCreation {
+            output: self.output,
+            database,
+        })
+    }
 }
 
 impl PreparedCreation {
-    /// Number of present Int32 rows in the completed, unpublished image.
+    /// Number of complete logical rows in the unpublished image.
     pub fn row_count(&self) -> usize {
         self.database.row_count()
     }
 
-    /// Number of ordinary Int32 columns in the completed, unpublished image.
+    /// Number of ordinary fixed-scalar columns in the unpublished image.
     pub fn column_count(&self) -> usize {
         self.database.column_count()
     }
@@ -97,7 +121,7 @@ impl CreationReceipt {
         self.rows
     }
 
-    /// Number of ordinary Int32 columns in the acknowledged published file.
+    /// Number of ordinary fixed-scalar columns in the acknowledged published file.
     pub const fn column_count(&self) -> usize {
         self.columns
     }

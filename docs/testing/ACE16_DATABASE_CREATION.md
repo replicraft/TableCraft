@@ -5,7 +5,8 @@ database in memory with one ordinary table. `create_ace16_database` accepts name
 `CreateColumn` declarations and borrowed `Value` rows. It supports Boolean, Byte,
 Int16, Int32, Int64, Currency, Single, Double, legacy DateTime and Guid.
 `create_ace16_int32_database` remains the convenience API for borrowed Int32 rows.
-The Access creation service and CLI creation command remain Int32-only.
+The Access creation service accepts these typed declarations through
+`prepare_typed`; the CLI creation command remains Int32-only.
 
 The profile admits 1–16 columns and 0–64 rows, also requiring the complete records
 and row directory to fit one DATA page. Names retain their spelling under the
@@ -123,3 +124,11 @@ signed zero, GUID byte order and physical page fit. Their frozen originals and
 CI hash anchor precede execution of a generic fixed-scalar creator. The current
 generic constructor consumes those qualified fixed-scalar declarations;
 the CLI remains restricted to Int32.
+
+## Shared publication boundary
+
+The [Access creation service](../access/writes/FRESH_DATABASE_CREATION.md)
+forwards typed declarations and exact Value rows through `prepare_typed`, then
+uses the existing required fresh publisher and receipt. Its ten fixed/IEEE
+whole-file publications pass. The [CLI](../cli/NATIVE_CREATION.md) retains its
+Int32 input syntax; this library method adds no imported-file write permission.

@@ -722,8 +722,8 @@ normal ACE admission or claiming native shared-file coordination.
 The standalone [fresh database constructor](testing/ACE16_DATABASE_CREATION.md)
 now serializes one ordinary table of ten fixed scalar families into a complete
 nine-page ACE 16 image. Eleven controls and 28 complete-image comparisons pass;
-the shared Access service and CLI currently publish Int32 inputs through required
-fresh-file durability. Broader schemas and native Access qualification remain
+the shared Access service now publishes typed fixed-scalar inputs through
+required fresh-file durability; the CLI retains its Int32 convenience. Broader schemas and native Access qualification remain
 unfinished. This does not admit normal saves of existing ACE files.
 
 Major gates still open before the full backend is complete:

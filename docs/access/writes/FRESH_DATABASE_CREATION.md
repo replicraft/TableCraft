@@ -1,10 +1,10 @@
 # Fresh native database creation
 
 The optional `tablecraft-access/ace16-create` feature composes the
-[native Int32 creator](../../testing/ACE16_DATABASE_CREATION.md) with required
-fresh-file publication. It accepts one explicit user-table name, ordered
-ordinary Int32 column names and borrowed present Int32 rows. It accepts no
-database template, imported image or engineering candidate.
+[native creator](../../testing/ACE16_DATABASE_CREATION.md) with required
+fresh-file publication. The Int32 convenience and typed fixed-scalar path accept
+explicit user schemas and borrowed rows. Neither accepts a database template,
+imported image or engineering candidate.
 
 `CreationDestination::capture(path, budget, cancelled)` holds the output's actual
 parent directory and preflights its barrier without creating a temporary or final
@@ -39,13 +39,35 @@ publication. Report write/flush failure retains the successful receipt and
 returns failure; a failed diagnostic cannot invoke read-only BrokenPipe success
 handling. Libraries do not publish reports themselves.
 
-The current schema is one table, 1–16 ordinary Int32 columns and at most
-64 rows of present values, with a separate single-DATA-page fit check. NULL input
-is refused; no Required property or NOT NULL constraint is authored. Columns are
-manual values;
-there is no implicit AutoNumber, primary index, default or constraint authoring.
-The engine owns native eligibility and exact bytes. Shared work budgets and
-cancellation pass through construction and publication.
+## Typed fixed-scalar preparation
+
+`CreationDestination::prepare_typed(table, columns, rows, budget, cancelled)`
+accepts borrowed engine `CreateColumn` declarations and exact shared `Value`
+rows. It returns the same `PreparedCreation`; report preparation, required
+publication, counts, receipts and typed publication failures use the existing
+service unchanged.
+
+The engine's qualified fixed families are Boolean, Byte, Int16, Int32, Int64,
+Currency, Single, Double, legacy DateTime and Guid. Declarations remain explicit
+for empty tables and all-NULL columns. NonBoolean fields may receive NULL;
+Boolean requires a Boolean value. Numerically equal values with another carrier
+are refused. There is no type inference, coercion, native flag input or copied
+Access declaration DTO. Variable/extended families remain outside this path.
+
+Both preparation methods retain one user table, 1–16 columns, at most 64 rows and
+an independent one-DATA-page fit check. NULL input does not author a Required,
+AllowZeroLength or other native constraint property. Native eligibility and exact
+encoding remain in the engine; no additional permission is implied by the host.
+
+The CLI `create` command continues to use the Int32 convenience method. Its
+`--column` arguments are names, and its TSV cells remain present decimal Int32
+values. It gains no typed-schema syntax, NULL token or additional scalar parsing
+from this library entry point.
+
+Two typed service tests publish all ten independent fixed/IEEE images exactly
+and reject invalid declarations/carriers before staging. The complete six-test
+creation suite also retains Int32, directory-retargeting and publication-failure
+coverage. See the [typed acceptance record](../../testing/results/typed-native-creation-host-2026-10-31.json).
 
 This service creates an unencrypted fresh file. It grants no normal update,
 macro-absence or recovery permission for arbitrary existing ACE files. Native
