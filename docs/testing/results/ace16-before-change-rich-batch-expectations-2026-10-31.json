@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Independent rich BeforeChange batch expectations passed complete selected Source admission before any new batch writer",
+  "scope": "Literal original/request/XML fixed updates with Current/Old semantics on preserved authored rich schemas",
+  "recipes_per_header": 29,
+  "positive_header_6_images": 15,
+  "original_and_expected_positive_source_views": 30,
+  "no_expected_candidate_controls": 43,
+  "changed_images": 12,
+  "exact_noops": 3,
+  "changed_logical_root_observations": 16,
+  "source_commits": [
+    "d78cacb0",
+    "886f4010"
+  ],
+  "new_batch_writer_calls": 0,
+  "files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/expectations.rs",
+      "bytes": 6996,
+      "sha256": "efcba34c29fe1d9d720f8dd515590f4bdfe8329dbc4f2e2a61872108f33456d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/rich_before_change_sources/expectations/model.rs",
+      "bytes": 16198,
+      "sha256": "0baad0c1a963aad84056a008c045364189a399e78799d791bbcee1bb2259f805"
+    }
+  ],
+  "frozen_author_inputs": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/expected-draft/installed-29-freeze.json",
+    "bytes": 3441,
+    "sha256": "6576bf58636f941ab63b7687c635db141663cf887021ddd31e19051400b5c63c"
+  },
+  "passing_log": {
+    "path": ".cache/ace16-before-change-rich-batch-next-20261031/expected-draft/expected-source-first-root.log",
+    "bytes": 536,
+    "sha256": "8a6d6ef1ff07c87cd8f1c10189e8b9f229e38724a7aa0989434e9496c2b97cb5"
+  },
+  "notes": [
+    "Expected values and complete bytes are authored directly from literal XML/request semantics and original fixed payload/mask positions, without production preparation, interpreter or encoder output.",
+    "The read-only gate performs actual SelectedPrograms capture and source::capture_before_change on every admitted original and expected image, alongside public scalar/constraint/metadata/cache/attachment observations. It invokes no event evaluator or writer.",
+    "Current starts from simultaneous user Int32 assignments; Old remains original. Wide-only requested rows still join the event-row union. Restore-original runs real SetField assignments but ends byte-identical with zero changed rows.",
+    "Required-repair expectation uses a separately source-qualified healthy original; unrepaired final NULL remains a no-candidate Required control.",
+    "Header-5 unsupported rich profiles and source/selection/field/rejection controls remain explicit, not inferred passing candidates. No normal-save, native required-event discovery, journal or Microsoft Access qualification follows."
+  ]
+}
