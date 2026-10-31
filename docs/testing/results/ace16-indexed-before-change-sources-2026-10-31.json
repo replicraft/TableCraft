@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-10-31",
   "kind": "independent_indexed_before_change_sources",
-  "status": "native_source_hashes_and_strict_passed_independent_sdk_pending",
+  "status": "native_source_hashes_independent_sdk_and_strict_passed",
   "normal_indexed_writer_calls": 0,
   "native_access_qualification": "unrun",
   "profile": {
@@ -626,8 +626,56 @@
     "status": "passed"
   },
   "independent_sdk": {
-    "status": "pending",
-    "observations": 0,
-    "writes": 0
+    "status": "passed_all_first_calls",
+    "observations": 106,
+    "whole_data_inventories": 34,
+    "index_metadata_observations": 34,
+    "named_index_cursor_observations": 38,
+    "writes": 0,
+    "program_rows_evaluated": 0,
+    "new_index_observer_classes": 2,
+    "exact_javac_status": "passed",
+    "new_observer_logic": false,
+    "jackcess_version": "5.0.4",
+    "inputs_and_class_inventories_unchanged": true,
+    "literal_expected_observations_frozen_before_javac": 106,
+    "normal_save_authority": false,
+    "initial_freeze": {
+      "path": ".cache/ace16-native-before-change-indexed-next-20261031/getter/code-and-source-first-freeze.json",
+      "bytes": 1891,
+      "sha256": "47c17ffab5fc0b36a1dd8bbfb6294a8f257ec0e17509facbed613a153413ba9c"
+    },
+    "initial_authority_retained": {
+      "path": ".cache/ace16-native-before-change-indexed-next-20261031/getter/input-authority.json",
+      "bytes": 88604,
+      "sha256": "b79918ee2624cceaa6dc8257744f5405b363872f9ca99cd1cd28d7c7622c1416"
+    },
+    "compiled_authority": {
+      "path": ".cache/ace16-native-before-change-indexed-next-20261031/getter/authority-before-sdk-root.json",
+      "bytes": 89530,
+      "sha256": "4c2b3583f7aea257034a9cc36f2a69011f73a880d278854c089009de6ac5eed9"
+    },
+    "receipt": {
+      "path": ".cache/ace16-native-before-change-indexed-next-20261031/getter/receipt-first-root.json",
+      "bytes": 108762,
+      "sha256": "bcb9c5a3cf6cbcc934c687e1ad8c46a92f4a46ed369f25c4a9edc4bd685355fc"
+    },
+    "saved_verifier_status": "passed_first_execution_zero_children",
+    "saved_verifier_result": {
+      "completed": true,
+      "source_views": 34,
+      "originals": 18,
+      "modeled_after_images": 16,
+      "observed_sdk_calls": 106,
+      "verified": {
+        "inventory": 34,
+        "index-metadata": 34,
+        "index-cursor": 38
+      },
+      "child_calls": 0,
+      "writer_calls": 0,
+      "program_calls": 0,
+      "normal_save_authority": false
+    }
   }
 }
