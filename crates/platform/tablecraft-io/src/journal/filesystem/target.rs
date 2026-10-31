@@ -146,7 +146,6 @@ impl OfflineTarget {
             .verify_child(self.name.as_c_str(), self.identity)
     }
 
-    #[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
     pub(super) fn sync_baseline(
         &mut self,
         budget: &mut ResourceBudget,

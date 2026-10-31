@@ -6,7 +6,8 @@ ExclusiveFile implements that interface using its OS lock and sync_all. The
 protocol is format-independent, experimental and not a Jet/ACE journal format or
 native database writer. An additive V2 API supports independently sized images
 through explicit resizable storage; the original fixed-length V1 APIs and bytes
-remain unchanged. Default CLI/native-reader builds do not enable the feature.
+remain unchanged. Standalone IO defaults remain empty; merely enabling a journal
+feature does not discover, prepare or recover a transaction while opening data.
 
 ## Ownership and durability boundary
 
@@ -264,3 +265,20 @@ The optional [retained filesystem owner](FILESYSTEM_JOURNALS.md) validates exist
 private bundle objects and lends the same locked descriptors to explicit
 recovery. It does not discover journals, qualify native writes or implement
 bundle creation/retirement yet. Generic V1/V2 wire bytes remain unchanged.
+
+
+## Explicit filesystem pairing and retirement
+
+The additive [filesystem journal owner](FILESYSTEM_JOURNALS.md) supplies retained
+target/journal descriptors, bounded binding/intent checks, durable private-bundle
+setup and whole-bundle retirement for explicit macOS/Linux hosts. It reuses V1
+bytes and never reopens a journal from a publication receipt. A borrowed storage
+view does not expose a replaceable owned lock guard. Native format/constraint
+qualification remains with its consumer; this feature grants no normal ACE save.
+
+Setup reserves incomplete-resource ownership fallibly before effects and retains
+it on error. Known commit/recovery outcome is recorded before fallible retirement;
+namespace/barrier/cleanup/unlock errors preserve that outcome. Same-process
+barrier-only confirmation is explicit. Restart resolution of a retired bundle
+still requires a future completed-target verification/cleanup path, so this is
+not yet a complete crash lifecycle or native power-loss qualification.
