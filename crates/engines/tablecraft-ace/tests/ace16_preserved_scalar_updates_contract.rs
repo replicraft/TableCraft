@@ -385,3 +385,6 @@ mod int32_sources;
 
 #[path = "ace16_preserved_scalar_updates_contract/int32_sources/api.rs"]
 mod int32_api;
+
+#[path = "ace16_preserved_scalar_updates_contract/short_text_sources.rs"]
+mod short_text_sources;

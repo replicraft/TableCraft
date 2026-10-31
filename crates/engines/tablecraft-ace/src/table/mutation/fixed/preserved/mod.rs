@@ -1,4 +1,4 @@
-//! Preserved fixed updates: existing Boolean masks and one closed Int32 target.
+//! Source-certified mixed-schema copies for fixed scalars and fitting Short Text.
 mod dependencies;
 mod int32;
 mod namemap;
@@ -6,6 +6,7 @@ mod proof;
 mod properties;
 mod source;
 mod stage;
+mod text;
 
 use super::FixedColumnUpdates;
 use crate::{
@@ -169,3 +170,6 @@ pub(super) fn projected(
 
 #[cfg(test)]
 mod larger_capture_tests;
+
+#[cfg(test)]
+mod short_text_sources;
