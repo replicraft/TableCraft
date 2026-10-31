@@ -8,6 +8,7 @@ mod evaluate;
 mod expression;
 pub(super) mod fields;
 mod model;
+mod resolver;
 mod selection;
 mod source;
 

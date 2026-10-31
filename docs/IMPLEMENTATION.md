@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Rich-schema BeforeChange batches
+
+The explicit native [BeforeChange batch service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md#rich-schema-original-fixed-batches)
+now composes original fixed user assignments with selected Int32 macro programs
+over preserved mixed-schema tables. Current starts with all proposed Int32 values;
+Old stays original. Ordinary indexed/counter operands remain read-only, dormant
+targets qualify before rows, and final Required checks follow transformation.
+A fresh original-intent replay independently proves the complete fitting image.
+
+Ten focused native functions pass, including 60 complete-image comparisons;
+the mutation regression passes 629 functions with 11 ignored helpers. The
+[focused record](testing/results/ace16-before-change-rich-batch-copies-2026-10-31.json)
+retains source-first expectations, failures and qualification boundaries.
+This remains an engineering candidate service: native required-event discovery,
+normal saves, physical INSERT macro handling and Access qualification remain open.
+
 ## Joint preserved fitting Text and fixed updates
 
 The existing fitted engineering API now composes one ordinary Short Text target

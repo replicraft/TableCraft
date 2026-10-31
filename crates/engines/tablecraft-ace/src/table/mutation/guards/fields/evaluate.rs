@@ -5,15 +5,15 @@ use super::super::{
     evaluate::{self as scalar, MAX_TRACE, RowBindings},
     source::Frame,
 };
-use super::{BeforeChangeAssignment, BeforeChangeFinalRow};
+use super::{BeforeChangeAssignment, BeforeChangeFinalRow, batch::frames::ProjectedRow};
 use crate::{InspectError, header::check};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
-pub(super) struct Execution {
+pub(super) struct Completed<Row> {
     pub trace: Vec<BeforeGuardTrace>,
     pub assignments: Vec<BeforeChangeAssignment>,
     pub rejection: Option<BeforeGuardRejection>,
-    pub rows: Option<Vec<BeforeChangeFinalRow>>,
+    pub rows: Option<Vec<Row>>,
 }
 
 fn assignment(value: Value) -> Result<Value, BeforeEventGuardError> {
@@ -30,6 +30,9 @@ fn assignment(value: Value) -> Result<Value, BeforeEventGuardError> {
     Ok(Value::Int32(value))
 }
 
+pub(super) type Execution = Completed<BeforeChangeFinalRow>;
+pub(super) type ProjectedExecution = Completed<ProjectedRow>;
+
 pub(super) fn run(
     compiled: &Compiled,
     frames: &[Frame],
@@ -37,6 +40,40 @@ pub(super) fn run(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Execution, BeforeEventGuardError> {
+    run_rows(
+        compiled,
+        frames,
+        event,
+        budget,
+        cancelled,
+        |ordinal, values| BeforeChangeFinalRow { ordinal, values },
+    )
+}
+
+pub(super) fn run_projected(
+    compiled: &Compiled,
+    frames: &[Frame],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ProjectedExecution, BeforeEventGuardError> {
+    run_rows(
+        compiled,
+        frames,
+        BeforeEvent::Update,
+        budget,
+        cancelled,
+        |ordinal, values| ProjectedRow { ordinal, values },
+    )
+}
+
+fn run_rows<Row>(
+    compiled: &Compiled,
+    frames: &[Frame],
+    event: BeforeEvent,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    finish_row: fn(usize, Vec<Value>) -> Row,
+) -> Result<Completed<Row>, BeforeEventGuardError> {
     check(budget, cancelled)?;
     let maximum = compiled
         .instructions
@@ -160,7 +197,7 @@ pub(super) fn run(
                         cancelled,
                     )?;
                     check(budget, cancelled)?;
-                    return Ok(Execution {
+                    return Ok(Completed {
                         trace,
                         assignments,
                         rejection: Some(rejection),
@@ -177,10 +214,7 @@ pub(super) fn run(
             budget,
             cancelled,
         )?;
-        rows.push(BeforeChangeFinalRow {
-            ordinal: frame.ordinal,
-            values: current,
-        });
+        rows.push(finish_row(frame.ordinal, current));
     }
     scalar::trace(
         &mut trace,
@@ -191,7 +225,7 @@ pub(super) fn run(
         cancelled,
     )?;
     check(budget, cancelled)?;
-    Ok(Execution {
+    Ok(Completed {
         trace,
         assignments,
         rejection: None,
