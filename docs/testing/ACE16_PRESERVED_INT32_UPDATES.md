@@ -152,3 +152,33 @@ provenance and observed outcomes are in the
 The source helper formatting and ACE library/test all-feature strict checks pass.
 Documentation validation passes 6,723 link targets with no missing links. These
 checks do not run a candidate writer or establish native Access compatibility.
+
+## Genuine-file update and independent readback
+
+The committed CLI producer now matches ten complete, independently constructed
+expected images on those two SDK originals. Each original covers 101, -101,
+Int32 maximum, Int32 minimum and an exact no-op. Expectations were frozen before
+the first CLI invocation and allow changes only within the selected four-byte
+Score payload. All other bytes, including masks, indexes, allocation maps,
+calculated caches, LVAL storage, attachments and the Sentinel table, remain exact.
+
+Ten subsequent fresh readonly Jackcess processes also pass. Their entire ordered
+inventories match the original observations with only the requested Score token
+changed. Both no-op inventories remain byte-identical to their originals. All
+originals and candidate files retain their hashes across readback. CLI reports
+show one matched row, with one changed row for replacements and zero for no-ops.
+
+The first independent framing preflight mistook a physical-index header marker
+for an index ordinal and stopped before constructing any expected image. The
+corrected model follows the original logical descriptor's data number to its
+positional physical owner, retaining all identity and ownership checks. Original
+files, requests and four-byte preservation rules did not change. The failed
+programs and log remain separate from the successful construction.
+
+The [image and readback record](results/ace16-preserved-int32-genuine-images-2026-10-30.json)
+keeps source admission, committed build, independent construction, native copies
+and external observations distinct. The maintained
+[saved-evidence verifier](preserved_int32_genuine/README.md) reconstructs expected
+images without running a database process. These results qualify the stated
+engineering-copy profile, not Microsoft Access save/reopen, normal ACE saves,
+required macro handling or general mixed-schema editing.

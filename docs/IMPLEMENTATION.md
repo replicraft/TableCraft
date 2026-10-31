@@ -55,6 +55,14 @@ four-byte field. Native, typed, SQL and CLI complete-image comparisons pass;
 unsupported profiles, NULL transitions and mixed-target batches still refuse.
 These are authored-source engineering results, not native Access save qualification.
 
+The same path also passes ten complete-image comparisons on two independently
+generated V2016/V2019 originals, followed by ten fresh readonly Jackcess inventories.
+Positive, negative, signed-boundary and no-op requests retain all non-target
+bytes, including stored caches and attachments. Expected images preceded CLI
+production; the [genuine-file result](testing/results/ace16-preserved-int32-genuine-images-2026-10-30.json)
+retains the source-framing correction and separate execution phases. Native Access
+save qualification remains pending.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal
