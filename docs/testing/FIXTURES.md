@@ -10619,3 +10619,16 @@ is added to the repository. The existing reviewed Jackcess artifact is used only
 as a read-only reference tool. The [creation-source qualification](ACE16_DATABASE_CREATION.md)
 records exact SDK and native read observations, known constructive omissions and
 unqualified native Access/save behavior. These sources are not a normal-write permit.
+
+### Corrective complete-file creation sources, version 2
+
+Six independently authored nine-page header-5 originals correct the constructive
+declarations without changing the earlier sources. They cover empty, one-row,
+extrema, 64-row, Unicode-name and 16-column/58-row tables. The independent Rust
+recipes in `tablecraft-testkit::access::canonical_creation` match every byte and
+frozen hash before production constructor execution. Both recipes are repository
+authored; no bundled SDK database or third-party implementation is copied.
+The reviewed Jackcess runtime is a read-only reference. Private generated files
+remain ignored. The [source qualification](ACE16_DATABASE_CREATION.md) and
+[version-two record](results/ace16-canonical-creation-source-v2-2026-10-31.json)
+keep read observations separate from creation, native Access and normal saves.
