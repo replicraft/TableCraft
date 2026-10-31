@@ -379,3 +379,9 @@ fn qualify_preserved_boolean_properties_and_three_original_index_owners() {
         }
     }
 }
+
+#[path = "ace16_preserved_scalar_updates_contract/int32_sources.rs"]
+mod int32_sources;
+
+#[path = "ace16_preserved_scalar_updates_contract/int32_sources/api.rs"]
+mod int32_api;

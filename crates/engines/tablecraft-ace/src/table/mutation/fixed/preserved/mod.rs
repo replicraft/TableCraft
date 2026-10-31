@@ -1,5 +1,6 @@
-//! Internal Boolean-only preservation capability in the existing fixed service.
+//! Preserved fixed updates: existing Boolean masks and one closed Int32 target.
 mod dependencies;
+mod int32;
 mod namemap;
 mod proof;
 mod properties;

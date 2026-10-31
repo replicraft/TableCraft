@@ -1,5 +1,5 @@
 //! Full-image authority independently reconstructed from original requests.
-use super::{FixedColumnUpdates, copy, name_work, source, unique};
+use super::{FixedColumnUpdates, copy, int32, name_work, source, unique};
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -24,6 +24,9 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if int32::requested(groups) {
+        return int32::proof::prove(image, groups, after, returned_count, budget, cancelled);
+    }
     let table = groups.first().ok_or(EditError::Preservation)?.table();
     let original = source::capture(image, table, budget, cancelled)?;
     let schema = original.table.schema();
@@ -64,6 +67,22 @@ pub(super) fn prove(
             }
         }
         let selected = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        if selected.scalar_type() == Some(ScalarType::Int32)
+            && groups.len() == 1
+            && group.updates().is_empty()
+        {
+            // Reuse only this auditor's freshly recaptured source and original
+            // byte copy; neither came from a staged numeric result.
+            return int32::proof::prove_original(
+                &original,
+                expected,
+                groups,
+                after,
+                returned_count,
+                budget,
+                cancelled,
+            );
+        }
         if selected.scalar_type() != Some(ScalarType::Boolean)
             || !selected.fixed()
             || selected.storage_length() != 0
