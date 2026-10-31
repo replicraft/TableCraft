@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-10-31",
   "kind": "independent_mixed_schema_before_change_sources",
-  "status": "native_sources_anchors_readable_exports_and_strict_passed",
+  "status": "native_sources_anchors_strict_and_80_independent_reads_passed",
   "expanded_normal_writer_calls": 0,
   "native_access_qualification": "unrun",
   "source_freeze_sha256": "238bc3f4a133304692338300abd43a52a457a81fad38560422fab9de4934c285",
@@ -253,7 +253,20 @@
         "sha256": "341addbc391b463cbddd0f016b85769f52442d410f1f44570e56abc5bc0c8f28"
       }
     ],
-    "independent_sdk_precondition": "Static review: missing Tables catalog container; bounded open/projection probe pending. No complete SDK inventory qualification."
+    "independent_sdk_precondition": {
+      "observed": true,
+      "started_children": 1,
+      "completed_children": 1,
+      "returncode": 1,
+      "result": "Did not find required parent table id",
+      "sdk_projection_completed": false,
+      "sdk_rich_inventory_qualified": false,
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/rich-probe-first/receipt.json",
+        "bytes": 1178,
+        "sha256": "6550fcc2e46bbbe29cc0ae82c5aa81781cfde13252cc95c9ad03feb9037a5283"
+      }
+    }
   },
   "first_compile_failure": {
     "scope": "ordinary source integration test",
@@ -261,7 +274,53 @@
     "correction": "use public single BeforeChange inspection; source bytes unchanged",
     "log": ".cache/ace16-native-before-change-mixed-next-20261031/ab-source-first-root.log"
   },
-  "independent_sdk_reads": "not yet executed",
+  "independent_sdk_reads": {
+    "views": 40,
+    "inventory_calls": 40,
+    "index_metadata_calls": 20,
+    "index_cursor_calls": 20,
+    "first_attempt_calls": 80,
+    "failed_calls": 0,
+    "saved_verifier_child_calls": 0,
+    "normal_writer_calls": 0,
+    "artifacts": [
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/code-and-source-bound-freeze.json",
+        "bytes": 17770,
+        "sha256": "ace0fb690df3962516d6d81610aa8d94a22090523626862632918e22446253ed"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/input-authority.json",
+        "bytes": 80533,
+        "sha256": "c35e24240f996700abe6522c2ec2bf85338bf05fd199e2384951f6fa079c5b50"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/expected-first-root.json",
+        "bytes": 74301,
+        "sha256": "1e912400ac6da68b46cb20084b7d7a711339334af5b89b7fef07fac43466617d"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/reader-precall-root.json",
+        "bytes": 745,
+        "sha256": "d749265e7811f83c668892697006ccd261505de71511c06236789d44f37d06cf"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/receipt-first-root.json",
+        "bytes": 82793,
+        "sha256": "1df6af6e972467ec86138528d8e7ba08238835faea64ca18f6a9c6e3c3a2d517"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/saved-first-root.log",
+        "bytes": 352,
+        "sha256": "959c1dc4d5c7c7ce48e4b530f14f57573baac095022a8977a1f087a5f7df8be3"
+      },
+      {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/compile-inventory-saved-root.json",
+        "bytes": 1684,
+        "sha256": "deff80072168dd935ab7f3960e9a0efe669e46585d959dcf5e9265f62b83aee7"
+      }
+    ]
+  },
   "limits": [
     "No macro absence certificate",
     "No normal write admission from source tests",
@@ -294,5 +353,9 @@
     "passed": true,
     "seconds": 27.32
   },
-  "readable_export_comparison": "all images, inventories and requests byte-identical to first exports"
+  "readable_export_comparison": "all images, inventories and requests byte-identical to first exports",
+  "tooling_limitations": [
+    "Root javac controller produced three classes, then sorted dictionary inventory raised TypeError; preserved first sources, precall, stdout/stderr and saved class inventory without repeating compilation or inventing its return code.",
+    "Static artifact binder wrote an empty predecessor freeze before a stream-variable shadow error; complete derivative freeze retained before reader preparation/calls."
+  ]
 }
