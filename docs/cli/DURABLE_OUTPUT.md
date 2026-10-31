@@ -7,6 +7,11 @@ publisher. Other write-preview commands do not acquire a directory durability
 claim. The verification history below records the original two consumers; the
 BeforeChange guide records its separate qualification.
 
+The [fresh native create command](NATIVE_CREATION.md) always requires this
+captured-parent protocol through the shared Access creation service. It has no
+`--durable-output` toggle or content-only fallback. Its publication/output
+acceptance is recorded separately from the historical copy-command results below.
+
 ```sh
 tablecraft query update 'UPDATE Items SET Score=27 WHERE Id=2' \
   --database offline.mdb --output edited.mdb --durable-output
@@ -21,7 +26,8 @@ directory early; it never retries a failed required operation under the default
 publisher. Windows currently refuses Required at capture before staging; ordinary
 Windows copies retain their existing behavior.
 
-Planning still consumes one immutable source image. Complete report construction
+For the source-copy commands, planning still consumes one immutable source image.
+Complete report construction
 and fallible source release finish before publication. The index command now
 also reports source-release failure before either publication mode, correcting
 its earlier silent-drop ordering. `AccessInput::into_native` recovers only its

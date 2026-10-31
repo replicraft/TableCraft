@@ -12,6 +12,7 @@ description = "Native database and saved-query adapter for TableCraft"
 workspace = true
 
 [features]
+ace16-create = ["tablecraft-ace/ace16-create", "tablecraft-io/fresh-publication"]
 offline-write-session = ["journal", "tablecraft-io/filesystem-journal"]
 journal = ["tablecraft-ace/journal"]
 ace16-write-preview = ["tablecraft-ace/ace16-write-preview"]

@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "fresh_native_creation_host_acceptance",
+  "status": "local_macos_host_tests_and_cli_process_checks_passed",
+  "committed_foundations": {
+    "independent_sources": "6111e6d2",
+    "engine_constructor": "0f17d3aa",
+    "regular_input_opening": "86d7cc4e"
+  },
+  "profile": {
+    "format": "ACE 2016 header 5",
+    "tables": 1,
+    "columns": "1..16 ordinary Int32",
+    "rows": "0..64 present rows subject to single DATA-page fit",
+    "input": "optional at most 64 KiB strict quoted TSV with exact ordered header",
+    "required_property_authored": false,
+    "publication": "required captured-parent durable fresh output; no overwrite or downgrade"
+  },
+  "observed": {
+    "access_functions_passed": 4,
+    "access_principal_whole_image_matches": 6,
+    "access_edge_coverage": [
+      "captured directory survives textual parent retargeting and retains actual parent identity",
+      "early cancellation, zero byte/step publication pools and cancellation after actual private payload write leave no final or stage"
+    ],
+    "cli_creation_functions_passed": 6,
+    "cli_principal_whole_image_matches": 6,
+    "cli_failure_coverage": [
+      "invalid headers, carriers, shapes, passwords",
+      "existing files, directories and symlinks unchanged",
+      "report allocation refused before publication",
+      "acknowledged receipt retained after stdout write or flush failure"
+    ],
+    "protected_diagnostic_functions_passed": 3,
+    "existing_write_preview_functions_passed": 8,
+    "access_cli_all_target_all_feature_strict_passed": true,
+    "access_standalone_creation_feature_check_passed": true,
+    "workspace_formatting_passed": true,
+    "dependency_boundary_guard_passed": true,
+    "actual_cli_process_checks": [
+      "help",
+      "create",
+      "rows",
+      "inspect --check",
+      "occupied destination refusal"
+    ],
+    "actual_cli_image_matches_frozen_original": true
+  },
+  "evidence": {
+    "independent_source_record": {
+      "path": "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+      "bytes": 28569,
+      "sha256": "a25f18159ce39421ea71ef9cac4006aa39c5856f99925fd3d36606a20f6da592"
+    },
+    "engine_record": {
+      "path": "docs/testing/results/ace16-native-int32-creation-2026-10-31.json",
+      "bytes": 12012,
+      "sha256": "41187076c33357d9a7ccf4d272d8228d4a47a04b87bc0520498da33c983aaf04"
+    },
+    "process_precall": {
+      "path": ".cache/ace16-native-create-host-next-20261031/process-smoke-first/precall-freeze.json",
+      "bytes": 346,
+      "sha256": "0f4076c8dc5c40b40abbd737ee00a73d7bbe00dc65d86de7bf651f5a4a03fc9e"
+    },
+    "process_result": {
+      "path": ".cache/ace16-native-create-host-next-20261031/process-smoke-first/result.json",
+      "bytes": 561,
+      "sha256": "c8a8b9d24120b7568279379dc754b728fe05d9bfdd1b295ee160f309d5b3b2d1"
+    },
+    "quote_extraction_inverse": {
+      "path": ".cache/ace16-native-create-host-next-20261031/quote-extraction-inverse.json",
+      "bytes": 796,
+      "sha256": "8e5b69628fb2b78104598a5c55f4ee754558e1d666f171a9d26a06cd96f795f6"
+    },
+    "logs": [
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/access-creation-second-root.log",
+        "bytes": 582,
+        "sha256": "3e1b79760c4cdcea4a82909793c7f66419b94b9b00ace685c4b102e4c04f1513"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/access-creation-edges-first-root.log",
+        "bytes": 810,
+        "sha256": "6164c5568f6088928ef59fcd66ae649b3f8ae4406de6836161c6278bcf7988eb"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/cli-creation-first-root.log",
+        "bytes": 1223,
+        "sha256": "f351ffa1238ab10cc3fd9019ae19507d6ea46a0873aeafc064dee49e9070df1f"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/cli-protected-output-root.log",
+        "bytes": 560,
+        "sha256": "2443245136020803e18d7eda0ee0ee4dbb5642b6d1440b8c415a8c43e7d51ccf"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/host-strict-first-root.log",
+        "bytes": 755,
+        "sha256": "5fc30e35af21b09e8755c88b38ccb765b33147dc2d74149935eb07c04d159cdf"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/access-minimal-creation-root.log",
+        "bytes": 557,
+        "sha256": "df95c998344ddef358e9c37c01a8ac6a0fe4f1780e06c36872b39eaf85c3ca3b"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/cli-write-regression-root.log",
+        "bytes": 1056,
+        "sha256": "ee318899d25a80b69574f308680a56bfc30c2b3e3d6ed7053a64a7ca729e9c0f"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/cli-build-root.log",
+        "bytes": 126,
+        "sha256": "a8838785cf152a61a1bb49d6e26ad3070648795cac31408ec01f4c7afff7dea0"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/host-final-fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/host-boundaries-root.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/access-edges-strict-second-root.log",
+        "bytes": 190,
+        "sha256": "5c2ba32fff48205cba43ebc7d40b5c32ceb0bedeb3f5df94629ec7efe6feb0e3"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/host-terminal-fmt-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-native-create-host-next-20261031/host-final-links-root.log",
+        "bytes": 53,
+        "sha256": "3574ce1da0abc109e5298c8f3ca77f6f2fc51eae0f79ec594e45aba8aad67734"
+      }
+    ]
+  },
+  "retained_failed_attempt": {
+    "log": {
+      "path": ".cache/ace16-native-create-host-next-20261031/access-creation-first-root.log",
+      "bytes": 34727,
+      "sha256": "d011ce4b394d3aea9c4bdeefb7d21457db4fac1c158d072555e4fdafc7c080fb"
+    },
+    "outcome": "linker ENOSPC before focused tests because command also built unrelated integration targets",
+    "continuation": "terminal failure confirmed; only ordinary target/debug/incremental cache removed; focused --lib retry passed with unchanged source and expectations; incremental compilation remains enabled"
+  },
+  "qualification_limits": [
+    "Local working-tree build, not a committed-export producer qualification",
+    "No new SDK readback of producer files in this phase; whole images equal source-qualified goldens",
+    "Microsoft Access creation/open/save/reopen and Windows runtime unrun",
+    "Normal existing ACE writes, arbitrary data-macro absence, ACE recovery and shared-file coordination are not admitted",
+    "Broader field types, multiple tables, indexes and Required/default/AutoNumber authoring remain unfinished"
+  ],
+  "retained_test_lint_attempt": {
+    "log": {
+      "path": ".cache/ace16-native-create-host-next-20261031/access-edges-strict-root.log",
+      "bytes": 1417,
+      "sha256": "9e6565eb4f0f8106c4f8c00a49a594951c7235a6b5aefb3c8f92b35368a338ae"
+    },
+    "outcome": "Clippy err_expect on added edge-test assertion; replaced err().expect() with expect_err(); subsequent strict check passed; no production or expected-image change"
+  }
+}

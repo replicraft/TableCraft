@@ -1,6 +1,8 @@
 //! CLI command arguments, dispatch and feature-specific handlers.
 mod clock;
+mod create;
 mod execution;
+mod tsv;
 pub(crate) use execution::ExecutionError;
 mod encryption;
 mod error;
@@ -15,6 +17,8 @@ use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {
+    /// Construct one fresh unencrypted ACE 2016 database with ordinary Int32 columns.
+    Create(create::Arguments),
     /// List user table names in a stable/offline MDB/ACCDB, including linked tables.
     Tables(tables::Args),
     /// Browse stored local table contents or stream ordinary scalar rows without SQL.
@@ -60,6 +64,9 @@ pub(crate) enum Command {
 impl Command {
     pub(crate) fn run(self, format: Format, password: Option<&str>) -> Result<String, String> {
         match self {
+            Self::Create(_) => {
+                Err("Creation requires its protected publication execution path".to_owned())
+            }
             Self::Encryption { command } => {
                 command.run(format, password).map_err(|e| e.to_string())
             }

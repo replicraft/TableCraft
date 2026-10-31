@@ -15,15 +15,24 @@ engineering previews and independent comparisons do not establish full parity.
 ## Fresh ACE 16 database construction
 
 The optional standalone `ace16-create` feature now constructs one complete
-header-5 database in memory with one table, 1–16 ordinary non-null Int32 columns
-and up to 64 rows subject to single-page fit. It directly authors all nine pages;
+header-5 database in memory with one table, 1–16 ordinary Int32 columns
+and up to 64 rows of present values subject to single-page fit. It directly
+authors all nine pages;
 no database template or existing image is accepted. The first execution matches
 all six independent whole-file goldens. Five focused tests, independent exact
 and insufficient resource allowances, cancellation, minimal/all-feature strict
 checks and 59 existing preview tests pass. The
 [creation contract](testing/ACE16_DATABASE_CREATION.md) separates this working
 constructor from filesystem publication, normal imported-file saves and native
-Access qualification. Broader schemas and creation remain unfinished.
+Access qualification. The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md)
+now composes that artifact with required fresh publication, and the CLI
+[`create` command](cli/NATIVE_CREATION.md) supplies bounded typed TSV inputs.
+Counts are available before publication for complete report preparation; typed
+publication and output failures retain their visibility/durability facts.
+Six complete-image publications pass through both the shared service and CLI;
+protected output failures and actual create/read/check/no-overwrite checks pass.
+Broader schemas, multiple tables and native Access creation/save qualification
+remain unfinished.
 
 ## Shared offline write sessions
 
