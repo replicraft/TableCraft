@@ -152,3 +152,6 @@ pub mod canonical_tree_before_change;
 
 /// Independent mixed-schema BeforeChange source images and literal outcomes.
 pub mod canonical_mixed_before_change;
+
+/// Independent indexed mixed-schema BeforeChange originals and literal outcomes.
+pub mod canonical_indexed_mixed_before_change;

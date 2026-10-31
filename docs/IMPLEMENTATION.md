@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Indexed mixed-schema source qualification
+
+Fourteen independently authored originals and twelve complete literal expected
+images now qualify mixed scalar fields with a mutable Score index and preserved
+readonly AutoNumber/PrimaryId. Two native source/anchor tests and one hundred
+exact independent SDK observations pass, including unique swaps, descending
+composites, prefix loss and retained loose bounds. The saved verifier starts no
+children. Indexed mixed normal writer execution has not begun; see the
+[source contract](testing/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) and
+[record](testing/results/ace16-indexed-mixed-before-change-sources-2026-10-31.json).
+
 ## Journaled ACE mixed-schema Int32 updates
 
 Normal recoverable updates now admit supported mixed scalar and rich siblings
