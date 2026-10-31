@@ -176,3 +176,6 @@ mod short_text_sources;
 
 #[cfg(test)]
 mod growth_sources;
+
+#[cfg(test)]
+mod fixed_scalar_sources;
