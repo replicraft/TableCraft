@@ -10521,3 +10521,18 @@ and [genuine-image record](results/ace16-preserved-short-text-genuine-images-202
 keep generation, independent expectations, committed build, candidate and reader
 phases separate. SDK-created sources are not native Access save evidence;
 required macros, native Access comparisons and normal ACE saves remain open.
+
+The separate [genuine growth corpus](results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+reuses these exact originals, creation recipe, classes and readonly getter.
+Original-only raw measurements establish their actual parent DATA candidate
+hints, allocated GLOBAL membership and 3,816 free bytes before construction.
+Eight original/request-only complete images cover two single-row growth cases
+and a two-row batch in both typed caller orders per original. The actual cached
+calculation payload is 27 bytes; descriptor capacity does not determine its
+stored span. No old fitting expectations or original bytes were patched.
+All eight expected images pass direct complete native source admission before
+the fresh committed producer matches all 3,948,544 bytes. Eight fresh unchanged
+SDK getter calls also match every expected tagged inventory on the first attempt.
+These are same-page placement results; genuine-file EOF allocation is not
+qualified here. Generated binaries, JARs and classes remain private; these observations
+grant no normal ACE save or native Microsoft Access qualification.

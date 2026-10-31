@@ -100,6 +100,17 @@ original record capacity. INDEX/map-storage growth, larger-image modes, mixed
 preserved targets and normal ACE saves remain unqualified; required macros are
 never skipped.
 
+The unchanged independently generated V2016/V2019 Short Text originals now
+also pass eight independent complete-image growth comparisons through a fresh
+committed CLI build. Original-only map measurements and direct expected-image
+preservation admission precede every producer call. Four SQL singles and four
+typed batches retain logical roots, rich companions and unchanged maps/EOF;
+both typed batch orders produce the same image. Eight fresh unchanged SDK
+getters also match complete expected inventories. This qualifies same-page
+placement on these two profiles; genuine-file EOF allocation remains open.
+The [separate genuine-growth record](testing/results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+retains each phase independently.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal

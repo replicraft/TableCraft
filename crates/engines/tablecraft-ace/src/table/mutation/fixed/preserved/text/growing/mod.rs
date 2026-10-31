@@ -1,5 +1,7 @@
 //! Explicit DATA placement for one preserved, ordinary Short Text target.
 mod finish;
+#[cfg(test)]
+mod genuine_sources;
 mod proof;
 mod stage;
 #[cfg(test)]

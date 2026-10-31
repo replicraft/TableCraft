@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "Eight same-page genuine growth images, eight fresh SDK inventories and maintained saved verification passed",
+  "scope": "One unindexed nondependent ordinary Short Text target in unchanged genuine V2016/V2019 mixed-schema originals; same-page hidden placement engineering copies only",
+  "producer_revision": "109670565260214c9b0c5b5a44e702e30ab45639",
+  "maintained_files": [
+    {
+      "path": "docs/testing/preserved_text_growth_genuine/__init__.py",
+      "bytes": 83,
+      "sha256": "25d087c2d873fef6d80b1feb31aa53510be602b1a3708b3ea9e307d461441bc2"
+    },
+    {
+      "path": "docs/testing/preserved_text_growth_genuine/model.py",
+      "bytes": 10505,
+      "sha256": "f66f8d9cd088077f87c957af8ffb9e4c4478b9cd69d0eed141ee007a8fd03eb7"
+    },
+    {
+      "path": "docs/testing/preserved_text_growth_genuine/prepare.py",
+      "bytes": 1164,
+      "sha256": "138a39f7b80d4c681087e4ad6e30506d0796adc40afdaa454bd52a24bb95dd5b"
+    },
+    {
+      "path": "docs/testing/preserved_text_growth_genuine/verify.py",
+      "bytes": 14472,
+      "sha256": "2ee2c66bb62a5e7d06e3cdfa435888ae85d5319bab4e1eb43980e1de4f1716a7"
+    },
+    {
+      "path": "docs/testing/preserved_text_growth_genuine/README.md",
+      "bytes": 1319,
+      "sha256": "080e8231b68aab9bd9d3f59ac3adb4e108ef88a720426f0307352afbeccb828a"
+    },
+    {
+      "path": "scripts/compat_artifacts.py",
+      "bytes": 1302,
+      "sha256": "43a25d1854133786866a8ec861b4c72684b7d9e9932543e4c028ff87a763db8f"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/__init__.py",
+      "bytes": 159,
+      "sha256": "a287a807f14734657180c09d25348ea71359f40f0eba1f59f7844922fa6c9acb"
+    },
+    {
+      "path": "docs/testing/preserved_int32_genuine/framing.py",
+      "bytes": 19571,
+      "sha256": "4fd4e65ccd9db12ec1789e68527c15de642a1852d2d037c8f3e37889e12150e2"
+    },
+    {
+      "path": "docs/testing/ace16_insert_candidates/model.py",
+      "bytes": 13121,
+      "sha256": "e25461040e1315054d2ce30771481262e0f59fa9b703b9cf5a8c294a942680be"
+    }
+  ],
+  "evidence": {
+    "expectations": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-expected-first-20261030/expectations.json",
+      "bytes": 18946,
+      "sha256": "cb8a5294c40c612e2b01e9c0db912629cc9f6f841b6cce10bc2c03352cb260f4"
+    },
+    "expected_report": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-expected-first-20261030/report.json",
+      "bytes": 383,
+      "sha256": "7bea0baca34baca49dd5f9dc290ac7cbf613c757618e4ba784a0f32353bb8f15"
+    },
+    "requests": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/requests.json",
+      "bytes": 10552,
+      "sha256": "c7d3a5f18657a135aafa5df9130304221ddc3c25577917820f4fcad601d8cb27"
+    },
+    "original_maps": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/original-maps-first-root.json",
+      "bytes": 17317,
+      "sha256": "3dd9e2fa760dc97319f9528908ae3391d4f7185c2f8a1591ad36bc65ed3b29f0"
+    },
+    "source_plan": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/execution-plan.json",
+      "bytes": 8559,
+      "sha256": "70e649f3f34478f6240e6b099360fc06bfcec7c57c9179559d8dded976dabbee"
+    },
+    "source_receipt": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/source-receipt.json",
+      "bytes": 17168,
+      "sha256": "c6274c26e630569149bfaf2458a7343ec1e44e56b4bde1566e3d1311de002f48"
+    },
+    "native_plan": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-candidates-first-20261030/plan.json",
+      "bytes": 30444,
+      "sha256": "984aaf76f67efed797b665f999c1f74c7113369b6aa01859e107580ad4059c15"
+    },
+    "native_receipt": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-candidates-first-20261030/receipt.json",
+      "bytes": 15872,
+      "sha256": "01e890424b58e1b84313d08650761ac3adb5755effed4b522b1e33fcc8bba07c"
+    },
+    "export_receipt": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-cli-build-first-20261030/export-receipt.json",
+      "bytes": 673,
+      "sha256": "d91f3b433c950a7890f2a79b48167affb8f840756568892f2dfdc8bad463c2bd"
+    },
+    "build_receipt": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-cli-build-first-20261030/build-receipt.json",
+      "bytes": 92805,
+      "sha256": "71ca313eac5e17f688b8d81bb42ac6d79bb5d78800f916dc24a4c85fdfda9b77"
+    },
+    "constructor_log": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/constructor-first-root.log",
+      "bytes": 383,
+      "sha256": "7bea0baca34baca49dd5f9dc290ac7cbf613c757618e4ba784a0f32353bb8f15"
+    },
+    "original_source_admission": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-second-root.log",
+      "bytes": 418,
+      "sha256": "e4c3b34a23533e5adbc1108ad6820444b591ae9dec62888ebd2429d275ffe0f8"
+    },
+    "original_source_path_failure": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-first-root.log",
+      "bytes": 1363,
+      "sha256": "648164eb65174ba802ef0560f26b09d35ad18b76b924b4d7ce8e60923b50ef30"
+    },
+    "expected_source_log": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/expected-source-first-root.log",
+      "bytes": 531,
+      "sha256": "209ad1d0c46bd4b269dea9c010aab6ded75236808b2dd2bbb7c962ad46c618ea"
+    },
+    "sdk_plan": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-readback-first-20261030/plan.json",
+      "bytes": 57498,
+      "sha256": "0445d1a4df1c0abfed195ddd3406fcea1f4a452da0849b83c26a052167bbd665"
+    },
+    "sdk_receipt": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-readback-first-20261030/receipt.json",
+      "bytes": 11558,
+      "sha256": "c0dd7bfe039f68c33f1f89e0d388f6a11b86d187eee28429d65e4c77c449ea9f"
+    },
+    "saved_verifier": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/saved-verifier-second-root.log",
+      "bytes": 135,
+      "sha256": "4fa388076ec26cf0dcfe71887b4d31d54ba006cdb504ffe6d47eb4ac7a5e08ef"
+    },
+    "source_helper_strict": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/strict-helper-first-root.log",
+      "bytes": 184,
+      "sha256": "e81dba046bf22fa993d6137d6386e4eaab46aa7ed1fe672d4846fbdb65291da0"
+    },
+    "formatting": {
+      "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/fmt-helper-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "observed": {
+    "originals": 2,
+    "pure_expected_images": 8,
+    "pure_child_calls": 0,
+    "pure_writer_calls": 0,
+    "direct_expected_source_functions": 1,
+    "direct_expected_source_images": 8,
+    "native_calls": 8,
+    "sql_single_calls": 4,
+    "typed_batch_calls": 4,
+    "complete_images_matched": 8,
+    "sdk_reads": 8,
+    "saved_verification": {
+      "status": "passed",
+      "artifact_pins": 494,
+      "originals": 2,
+      "images": 8,
+      "sql_calls": 4,
+      "typed_calls": 4,
+      "sdk_reads": 8,
+      "child_calls": 0
+    },
+    "complete_image_bytes_matched": 3948544,
+    "genuine_same_page_qualification": true,
+    "genuine_eof_allocation_qualification": false
+  },
+  "history": [
+    "Original source qualification retained its relative environment-path failure before the passing absolute-path invocation. No source bytes changed.",
+    "Static constructor review added unchanged unselected directory-word assertions and clarified SQL singles versus typed batches before first pure execution; no byte choices changed.",
+    {
+      "phase": "First saved-only replay",
+      "result": "Stopped on stale maintained verifier hash after adding archive-revision and fresh-compiler-event checks; record pin refreshed with no database, model or request changes",
+      "log": {
+        "path": ".cache/ace16-preserved-text-growth-genuine-next-20261030/saved-verifier-first-root.log",
+        "bytes": 1139,
+        "sha256": "4ad0fc7c87e8ae196a2a0f3ceb9208f916320c43f44792491ba84e738a45141a"
+      }
+    }
+  ],
+  "limits": [
+    "No native Microsoft Access save/reopen qualification",
+    "Required macro discovery and normal ACE writes remain unqualified",
+    "Same-page placement on the two measured original profiles; no new allocation or map storage growth qualification"
+  ],
+  "final_checks": {
+    "saved_verification": "passed",
+    "source_helper_strict": "passed: ACE all targets/all features",
+    "formatting": "passed: workspace",
+    "documentation_links": {
+      "targets": 6764,
+      "missing": 0
+    },
+    "diff_check_exit_code": 0
+  }
+}
