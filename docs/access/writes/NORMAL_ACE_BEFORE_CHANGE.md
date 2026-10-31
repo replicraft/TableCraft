@@ -1,7 +1,7 @@
 # Journaled ACE BeforeChange updates
 
 The optional `journal` engine profile now supports normal recoverable updates for
-one narrow ACE 16 table profile. The Access adapter exposes it through
+bounded ACE 16 table profiles. The Access adapter exposes it through
 `NativeJournalEditor` and the existing retained `OfflineWriteSession`;
 [`query journal-update`](../../cli/JOURNAL_EDITING.md) supplies the CLI host.
 Ordinary fresh-copy `query update` remains Jet 4 only. Engineering candidates
@@ -10,8 +10,8 @@ cannot be converted into normal plans or recovery permission.
 ## Admission
 
 The source must be an unencoded, standard-capture ACE 2016/2019 layout with
-subversion zero. The selected ordinary table must have supported fixed Int32
-fields, complete native event coverage and a positive pure BeforeChange program.
+subversion zero. The selected table must have a supported ordinary fixed Int32 target, complete
+native event coverage and a positive pure BeforeChange program.
 Native catalog/Extra references select the actual XML event, rather than a
 caller-selected property alias. Complete dormant BeforeDelete definitions are
 compiled but do not execute during UPDATE.
@@ -25,11 +25,25 @@ descending components, composites,
 consistent logical aliases and final unique-key checks are supported. Aliases
 share one physical rewrite. Final uniqueness is checked over the complete result,
 so an atomic key swap need not satisfy an intermediate assignment order.
-For indexed tables, every field of every original row must be ordinary non-NULL
-Int32, including unselected rows and non-key fields.
+For the all-ordinary-Int32 index-rewrite route, every field of every original
+row must be ordinary non-NULL Int32, including unselected rows and non-key fields.
 
-Relationships, ignore-NULL indexes, splits, allocation/map changes, mixed scalar
-schemas, original or final NULL fields, unknown properties, opaque or incomplete
+A metadata-selected mixed-schema route now preserves supported scalar and rich
+siblings while changing ordinary unindexed Int32 payloads. It uses a real scalar
+projection, retaining unavailable declarations without inventing NULL cells.
+Readonly Int32 AutoNumber and indexed Int32 fields may supply program operands; user
+assignments and dormant SetField targets cannot write generated fields. Non-Int32
+field operands refuse. Changed fields must remain outside admitted indexes and
+calculation/collection dependencies. Native field numbers must currently match
+the complete schema order. Targets must have present original and final Int32
+values; unchanged NULL and present-empty sibling values retain their bytes.
+
+The all-Int32 index-rewrite route retains its non-NULL and no-ignore-NULL limits.
+Mixed tables retain checked unchanged index pages; they do not acquire mixed-key
+mutation, record resizing or index allocation. Unsupported native siblings remain
+refusals; in particular the rich header-5 native-20 source remains unsupported.
+
+Relationships, splits, allocation/map changes, unknown properties, opaque or incomplete
 macro carriers, unrepresented event names, body/module content, unsupported
 actions and required after-effects refuse. Tables without a qualified positive
 event are not admitted: successful creation or an empty macro inventory is not an absence certificate.
@@ -85,6 +99,24 @@ successive edits. Existing explicit journal ownership, durable namespace setup,
 retirement and known-outcome reporting remain required. Filesystem integration
 currently targets macOS and Linux; this is not Access shared-file coordination.
 
+## Shared mixed source and independent proof
+
+Shared projected source validation, logical record roots and long-value ownership
+now live below the preview-only mutation modules. Engineering consumers use those
+owners directly; there are no forwarding compatibility re-exports. The normal
+`journal` feature does not require `ace16-write-preview`. Existing engineering
+source admission remains distinct, and the public complete-row BeforeChange
+preparation API keeps its earlier strict profile.
+
+Mixed planning compiles all native-selected definitions before supplied assignment
+timing checks. It stages only eligible original fixed payloads, then replays the
+original requests against a fresh source. The proof independently binds readable
+Int32 operands to original raw rows, overlays literal little-endian values and
+checks final original-property constraints, changed-row count and the complete
+image. Index pages, counters, variable records, masks, long values and unrelated
+objects remain exact. Recovery retains the same original TCNI0002 request record;
+it obtains no caller-selected programs or final-row authority.
+
 ## Evidence and limits
 
 [Original sources and independently read modeled outcomes](../../testing/ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md)
@@ -124,3 +156,21 @@ unchanged loose upper bound. All 108 read-only SDK observations and complete
 saved comparisons pass. The implementation traverses bounded trees recursively;
 these observations do not qualify every historical tree variant or deeper
 layout. Read-only source comparisons do not establish Access event timing.
+
+### Mixed-schema continuation
+
+The [frozen mixed sources](../../testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
+provide sixteen complete ordinary outcomes and two separately observed rich
+projection outcomes. Seven native/journal tests and four direct independent-proof
+tests pass. Offline sessions pass sixteen typed and twelve SQL complete-image
+saves, plus stale/foreign handle controls. The four fixed signed-zero cases use
+typed ordinal handles because supported SQL predicates cannot distinguish their
+two rows. Two explicit rich journal-editor plans pass without enabling preview
+writers. The rich SDK catalog-open refusal remains separate from those native
+observations. Twelve CLI commits and twelve complete TSV readbacks also pass on the unchanged
+ordinary variable/counter sources. General mixed writes and native Access
+qualification remain open.
+
+The [mixed execution record](../../testing/results/ace16-normal-mixed-before-change-2026-10-31.json)
+retains feature-boundary compilation corrections separately from first passing
+native/session outcomes and exact CLI/save/readback qualification.

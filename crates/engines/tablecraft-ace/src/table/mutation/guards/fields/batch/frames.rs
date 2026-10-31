@@ -13,10 +13,12 @@ pub(in crate::table::mutation) struct ProjectedRow {
 }
 
 impl ProjectedRow {
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn ordinal(&self) -> usize {
         self.ordinal
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn values(&self) -> &[Value] {
         &self.values
     }

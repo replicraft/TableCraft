@@ -44,8 +44,12 @@ prefixes and existing interior nodes. Page identities, child topology and each
 leaf's entry count remain fixed; fitting serialization is selected before
 preparation, without retrying a failed encoder. Ascending/descending components,
 composites, consistent logical aliases and final unique-key swaps are supported. Relationships,
-ignore-NULL indexes, mixed scalar schemas, original/final NULL fields, splits
-and map/storage growth refuse. Unknown/opaque/unrepresented event content,
+ignore-NULL index rewriting, splits and map/storage growth refuse. A separately
+selected mixed-schema route preserves supported scalar/rich siblings and checked
+unchanged indexes while editing unindexed ordinary Int32 fields. Int32 AutoNumber Id
+may be read but never assigned; unsupported operands, generated targets and
+calculation/collection dependencies refuse. Changed target values remain
+non-NULL. Unknown/opaque/unrepresented event content,
 body/module payloads and unsupported required effects refuse; an empty macro inventory is not an absence certificate.
 
 Native programs are discovered and fully preflighted even for zero matched rows.

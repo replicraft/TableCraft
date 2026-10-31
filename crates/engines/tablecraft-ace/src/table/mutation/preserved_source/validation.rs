@@ -6,7 +6,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) fn expected(
+pub(in crate::table::mutation) fn expected(
     image: &NativeImage,
     table: &str,
     original: &TableSnapshot,

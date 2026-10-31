@@ -1,0 +1,274 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_journaled_ace_mixed_before_change_updates",
+  "status": "native_proof_sessions_cli_and_regressions_passed",
+  "source_commit": "9346ef66",
+  "independent_reader_commit": "ee643b00",
+  "source_images_changed": false,
+  "native_access_qualification": "unrun",
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "ordinary_expected_images": 16,
+    "typed_session_saves": 16,
+    "sql_session_saves": 12,
+    "rich_projected_editor_plans": 2,
+    "normal_target": "present ordinary unindexed fixed Int32 outside dependent fields",
+    "readonly_operands": "qualified ordinary Int32 AutoNumber and indexed Int32 fields",
+    "original_intent": "unchanged TCNI0002/profile2",
+    "relationships": "refused",
+    "allocation": "refused",
+    "required_programs": "complete native-selected positive pure BeforeChange"
+  },
+  "checks": {
+    "journal_only_check": {
+      "passed": true,
+      "seconds": 4.08,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/journal-check-api-root.log",
+        "bytes": 183,
+        "sha256": "06685c2ef6bcf6d7c1faf9324a33190df5aa56c8cfdbf349be2aea85d506c870"
+      }
+    },
+    "native_mixed": {
+      "passed": 7,
+      "seconds": 1.34,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/native-first-root.log",
+        "bytes": 1141,
+        "sha256": "bde5b166d0f54c0467b10d3784eef5a5e72b6736888e952e92e3c9667e1d881f"
+      }
+    },
+    "direct_mixed_proof": {
+      "passed": 4,
+      "seconds": 0.34,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/proof-first-root.log",
+        "bytes": 976,
+        "sha256": "0a130295511674c2c596ccea5daf4231124158a612c5df9c71bc920805fbeabb"
+      }
+    },
+    "mixed_sessions": {
+      "passed": 2,
+      "ignored": 1,
+      "seconds": 2.42,
+      "whole_image_saves": 28,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/session-first-root.log",
+        "bytes": 869,
+        "sha256": "1089ba3879e6753f04795c20fe1b2d8f793989b8e485e1f08c97f77e819170f9"
+      }
+    },
+    "explicit_rich_projection": {
+      "passed": 1,
+      "seconds": 0.06,
+      "whole_image_plans": 2,
+      "journal_only": true,
+      "sdk_catalog_open_limitation_retained": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/rich-session-first-root.log",
+        "bytes": 394,
+        "sha256": "63e814c6c9a5b9414a91be6406463a6265e7d4e443abc38b7f52191d0d547100"
+      }
+    },
+    "native_and_legacy_recovery": {
+      "passed_recovery_tests": 38,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/native-regression-first-root.log",
+        "bytes": 4508,
+        "sha256": "2a1aed5b758927cf00b69558e8bccb36220a43cc8382503c2e6d7b0acd3b97ab"
+      }
+    },
+    "journal_only_strict": {
+      "passed": true,
+      "seconds": 21.22,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-journal-gates-root.log",
+        "bytes": 302,
+        "sha256": "03c3121e598023eb1fa80be11597b46d15d539c2f59173843ff1f1fa77bda4cc"
+      }
+    },
+    "all_feature_strict": {
+      "passed": true,
+      "seconds": 61,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-all-ownership-root.log",
+        "bytes": 403,
+        "sha256": "e67e657a550fc6b7e90174733f8a48e03a85a20df95bc6a991b587f5bfd2fd28"
+      }
+    },
+    "ace_unit_regression": {
+      "passed": 1011,
+      "ignored": 25,
+      "seconds": 130.62,
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/ace-unit-regression-first-root.log",
+        "bytes": 136976,
+        "sha256": "7f743ea70aa536ee6bee0519c1b81ace828b3c6be348c959a85079a45f2721f4"
+      }
+    },
+    "saved_sources_after_normal_writes": {
+      "passed": true,
+      "children": 0,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/getter/saved-after-normal-root.log",
+        "bytes": 352,
+        "sha256": "959c1dc4d5c7c7ce48e4b530f14f57573baac095022a8977a1f087a5f7df8be3"
+      }
+    },
+    "cli_build": {
+      "passed": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-build-final-root.log",
+        "bytes": 173,
+        "sha256": "83ae369fbd07d14a1f0436533eea8ddf7dac434e81c7cdee06e03416e54d87dc"
+      }
+    },
+    "cli_exact_smoke": {
+      "passed": true,
+      "whole_image_saves": 12,
+      "exact_tsv_readbacks": 12,
+      "children": 24,
+      "all46source_images_unchanged": true,
+      "authority": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-smoke-authority-root.json",
+        "bytes": 610,
+        "sha256": "1e15addbc00289f9cdab068868dcea0369ea5bb896761aa53b60cdbe0af4a648"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-smoke-first/receipt.json",
+        "bytes": 30226,
+        "sha256": "d4606d4ef0f4b5c0ae16dc8be85401871880c39e98b29b753cadda1c258ada40"
+      },
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-smoke-first-root.log",
+        "bytes": 97,
+        "sha256": "711604c5e294b2bd67b5de1f01ea426a0adb0575255b5a659e19f5c6eb4daef6"
+      }
+    },
+    "access_regressions": {
+      "passed": 63,
+      "test_counts": [
+        3,
+        2,
+        2,
+        2,
+        15,
+        39
+      ],
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/access-regression-first-root.log",
+        "bytes": 7840,
+        "sha256": "e5153e4b0d32c575d5ed229cb3e689a330780cc2be5320c3b720ffd52a4fd760"
+      }
+    },
+    "cli_journal_unit": {
+      "passed": 4,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-journal-first-root.log",
+        "bytes": 34390,
+        "sha256": "50c3bd1aa955e0e8d31eb4f6891e79e275ee0b402750663eba8bd4b59efdd926"
+      }
+    },
+    "cli_journal_integration": {
+      "passed": 8,
+      "seconds": 1.04,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/cli-journal-integration-root.log",
+        "bytes": 954,
+        "sha256": "7e00934568994e188278ccac67af4bb5710cdaf62e571a0c5db8b9e5efafd09a"
+      }
+    },
+    "default_strict": {
+      "passed": true,
+      "all_targets": true,
+      "features_disabled": true,
+      "seconds": 43.05,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-default-first-root.log",
+        "bytes": 478,
+        "sha256": "e945de18f4e0c4f23beff16ce19c0e59196aa106fdded119cfcee35aeba5c72a"
+      }
+    },
+    "final_all_feature_strict": {
+      "passed": true,
+      "seconds": 3.7,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-final-root.log",
+        "bytes": 173,
+        "sha256": "3bc1f3efe89fd6aacd50a9914680aa4cb62e5257d542051c06efe820af944047"
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6938,
+      "missing_documentation_targets": 0,
+      "dependency_packages": 15,
+      "dependency_guard": true,
+      "diff_check": true
+    }
+  },
+  "preserved_failures": [
+    {
+      "phase": "first journal-only compile",
+      "reason": "RecordLayout.mask API mismatch and validation function visibility after extraction",
+      "correction": "actual mask_start and mutation-scoped shared validator",
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/journal-check-first-root.log",
+        "bytes": 3461,
+        "sha256": "9d3fa0848ba9428c46fe91a77971f1ad5e5e4ca3437d0f9f982e26fb5896a885"
+      }
+    },
+    {
+      "phase": "first journal-only all-target strict",
+      "reason": "existing preview integration-test owner lacked required preview feature gate",
+      "correction": "gate preview-only consumer suite; normal mixed tests remain journal-only",
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-journal-first-root.log",
+        "bytes": 11891,
+        "sha256": "403f68b547501760871903481e322ea7c2c49d375bae20d37689ff0d808a2549"
+      }
+    },
+    {
+      "phase": "first all-feature strict",
+      "reason": "moved ownership consumer tests reached private long-value preview internals",
+      "correction": "keep consumer tests under long_value/tests and import the shared readonly Inventory directly",
+      "log": {
+        "path": ".cache/ace16-native-before-change-mixed-next-20261031/strict-all-first-root.log",
+        "bytes": 3559,
+        "sha256": "1b8ac777caaffe2edf00911e40a1be573277547d2718cb965b8d9db948320562"
+      }
+    }
+  ],
+  "limits": [
+    "No native Access event execution/save/reopen qualification",
+    "No general mixed-schema/key/carrier writes",
+    "No native Access shared-file locking",
+    "No physical power-loss/network-filesystem qualification",
+    "No macro-absence permission",
+    "Rich authored catalog lacks independent SDK Tables container",
+    "Four fixed signed-zero requests are typed ordinal selections, not SQL-addressable single-row requests"
+  ],
+  "private_checkpoint": {
+    "path": ".cache/ace16-native-before-change-mixed-next-20261031/production-checkpoint.json",
+    "bytes": 35579,
+    "sha256": "48e9a3de930b0e22ec3ae34afd52917ebb1ebe67d0fa88403c8f1e52df32971c"
+  }
+}

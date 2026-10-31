@@ -52,7 +52,7 @@ qualification.
 The [historical source qualifier](../../crates/engines/tablecraft-ace/src/table/mutation/gates/historical.rs)
 runs only for gapped `FixedUpdate` admission. It pays for the complete original
 row selection and reuses the actual
-[logical-root owner](../../crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs).
+[logical-root owner](../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs).
 That owner verifies declared/live counts, DATA ownership and exclusive resolved
 final-record identities before returning records. Existing forwarding, aliases,
 wrong-owner and cycle checks remain authoritative.

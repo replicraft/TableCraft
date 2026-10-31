@@ -28,6 +28,8 @@ mod insert;
 #[cfg(feature = "ace16-write-preview")]
 mod long_value;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod lval_ownership;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod map_authority;
 #[cfg(feature = "journal")]
 pub(crate) mod normal_before_change;
@@ -37,8 +39,12 @@ mod patch;
 mod physical;
 mod plan;
 mod preservation;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod preserved_source;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod record_roots;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod requests;
 mod rows;
@@ -71,8 +77,6 @@ pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use fitted::FittedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
-pub use fixed::FixedColumnUpdates;
-#[cfg(feature = "ace16-write-preview")]
 pub use guards::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use guards::{
@@ -84,6 +88,8 @@ pub use guards::{
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;
+#[cfg(feature = "ace16-write-preview")]
+pub use requests::FixedColumnUpdates;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use requests::FixedScalarUpdate;
 

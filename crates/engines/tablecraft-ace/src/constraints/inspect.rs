@@ -75,7 +75,7 @@ pub fn check_table_constraints<R: crate::NativeReadSource>(
 
 /// Internal ordinary-projection constraint audit for schema-stable preservation.
 /// The caller separately certifies every excluded field and its declarations.
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(crate) fn check_scalar_projection(
     table: &crate::TableSnapshot,
     properties: &crate::TableProperties,

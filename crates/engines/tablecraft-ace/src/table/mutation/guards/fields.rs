@@ -1,6 +1,6 @@
 //! Explicit BeforeChange row transformations, separate from guard-only behavior.
 mod authority;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table::mutation) mod batch;
 mod evaluate;
 mod model;

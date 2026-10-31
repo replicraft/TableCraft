@@ -9,7 +9,7 @@ use crate::{
         reader::Reader,
     },
     header::check,
-    table::mutation::{page_update::roots, variable_split::metadata::Metadata},
+    table::mutation::{record_roots as roots, variable_split::metadata::Metadata},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 

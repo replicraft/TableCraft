@@ -29,7 +29,7 @@ membership, counter and retained-topology rules.
 
 ## Capture before callbacks
 
-The actual shared [root capture](../../crates/engines/tablecraft-ace/src/table/mutation/page_update/roots.rs)
+The actual shared [root capture](../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs)
 now accepts the existing row-assignment contract. Its earlier variable-record
 consumers retain their concrete `SlotScalarUpdate` binding; it is not a copied
 forwarding implementation or a new interpretation of pointer bytes.

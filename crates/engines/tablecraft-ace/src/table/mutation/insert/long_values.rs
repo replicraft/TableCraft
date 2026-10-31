@@ -19,7 +19,8 @@ use crate::{
     table::long_value::check_table_long_values_for_initialization,
     table::mutation::{
         append::State,
-        long_value::{encode::StorageChoice, maps::Scope, ownership::Inventory},
+        long_value::{encode::StorageChoice, maps::Scope},
+        lval_ownership::Inventory,
     },
 };
 use tablecraft_core::limits::ResourceBudget;

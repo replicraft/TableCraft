@@ -11,5 +11,5 @@ pub use metadata::{
     ConstraintReport, FieldCheck, RelationshipCheck, RelationshipCheckStatus, RuleCheckStatus,
 };
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(crate) use inspect::check_scalar_projection;

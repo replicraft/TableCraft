@@ -1,18 +1,14 @@
 //! Source-certified mixed-schema copies for fixed scalars and fitting Short Text.
 mod before_change;
-mod dependencies;
 mod int32;
 mod joint;
-mod namemap;
 mod proof;
-mod properties;
 mod scalar;
-mod source;
 mod stage;
 mod text;
-mod validation;
 
 use super::FixedColumnUpdates;
+use crate::table::mutation::preserved_source::{self as source, validation};
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, WriteBlocker, header::check,
     inspect_table_schema, preservation::COPY_CHUNK_BYTES, table::mutation::patch::BytePatch,

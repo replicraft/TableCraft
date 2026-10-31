@@ -17,7 +17,7 @@ use crate::{
     table::long_value::{check_table_long_values_for_initialization, maps as source_maps},
     table::mutation::{
         insert::{RowInsert, Staged},
-        long_value::ownership::Inventory,
+        lval_ownership::Inventory,
     },
 };
 use std::io::Cursor;

@@ -1,5 +1,5 @@
 //! Borrowed private field resolution, retaining the old complete-table loop.
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use super::fields::batch::projection::Int32Projection;
 use super::{BeforeEventGuardError, BeforeGuardUnsupported};
 use crate::{InspectError, TableSnapshot, header::check};
@@ -11,7 +11,7 @@ use tablecraft_core::{
 #[derive(Clone, Copy)]
 pub(super) enum Fields<'a> {
     Complete(&'a TableSnapshot),
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     Projected(&'a Int32Projection<'a>),
 }
 
@@ -19,7 +19,7 @@ impl Fields<'_> {
     pub(super) fn object_id(self) -> ObjectId {
         match self {
             Self::Complete(table) => table.schema().object_id(),
-            #[cfg(feature = "ace16-write-preview")]
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
             Self::Projected(projection) => projection.object_id(),
         }
     }
@@ -31,7 +31,7 @@ impl Fields<'_> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<usize, BeforeEventGuardError> {
         let position = self.position(name, budget, cancelled)?;
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         if let Self::Projected(projection) = self {
             projection.require_target(position)?;
         }
@@ -57,7 +57,7 @@ impl Fields<'_> {
                     }
                 }
             }
-            #[cfg(feature = "ace16-write-preview")]
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
             Self::Projected(projection) => {
                 for position in 0..projection.len() {
                     check(budget, cancelled)?;

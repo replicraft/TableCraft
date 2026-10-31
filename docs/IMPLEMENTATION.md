@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Journaled ACE mixed-schema Int32 updates
+
+Normal recoverable updates now admit supported mixed scalar and rich siblings
+through real projected sources while changing ordinary unindexed Int32 fields.
+Readonly AutoNumber/indexed Int32 operands remain separate from writable targets;
+compiled dormant generated targets refuse. Shared source/record-root/long-value
+ownership lives below preview writers, with direct consumers. The existing
+TCNI0002 record and original-intent recovery are unchanged. Seven native tests,
+four direct proof tests, 28 typed/SQL full-file saves and two explicit rich
+projected plans pass. Mixed stale/foreign handles remain refused under the same
+lease. Twelve CLI commits and twelve exact TSV readbacks pass with all sources
+unchanged. The ACE unit batch passes 1,011 tests (25 ignored), the focused adapter
+batch passes 63, and CLI journal unit/integration checks pass twelve. See the
+[result](testing/results/ace16-normal-mixed-before-change-2026-10-31.json).
+See the [normal write contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md).
+General carriers, indexed mixed targets, NULL target transitions, relationships,
+allocation and native Access save qualification remain unfinished.
+
 ## Mixed-schema normal-write source corpus
 
 Twenty-eight independently authored original files and eighteen literal expected
@@ -21,8 +39,7 @@ rich profiles use actual projected source reads, keeping header-5 native-20
 refusals explicit. Four focused source/anchor tests and eighty exact independent SDK observations
 pass; the saved-only verifier starts no children. A separate rich SDK probe
 confirms the missing catalog-container refusal and supplies no rich readback
-qualification. No proposed mixed normal writer has run against these sources;
-the normal-save phase remains pending. See the [source contract](testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
+qualification. Source qualification preceded the normal writer checks recorded above. See the [source contract](testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
 and [record](testing/results/ace16-mixed-before-change-sources-2026-10-31.json).
 
 ## Retained-tree journaled ACE updates

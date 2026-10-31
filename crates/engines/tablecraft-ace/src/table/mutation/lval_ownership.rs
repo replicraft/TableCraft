@@ -1,9 +1,9 @@
 //! Writable ownership additionally checks other catalog declarations and live refs.
 mod profile;
-#[cfg(test)]
-mod tests;
 
-use super::super::{EditError, WriteBlocker};
+use super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::mutation::map_authority::{Census, Owner, RecordIdentity};
 use crate::{
     InspectError, NativeImage, NativeIndex, TableSchema,
     format::{
@@ -17,19 +17,24 @@ use crate::{
     header::check,
     table::{
         long_value::{maps as storage_maps, trace},
-        mutation::map_authority::{self, Census, Owner, RecordIdentity},
+        mutation::map_authority,
         record_layout,
     },
 };
-use std::{io::Cursor, ops::Range};
+use std::io::Cursor;
+#[cfg(feature = "ace16-write-preview")]
+use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 struct Claim {
     page: u32,
+    #[cfg(feature = "ace16-write-preview")]
     definition: u32,
+    #[cfg(feature = "ace16-write-preview")]
     column: usize,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 #[derive(Clone, Copy)]
 pub(in crate::table::mutation) enum ColumnMapKind {
     Owned,
@@ -40,14 +45,15 @@ pub(in crate::table::mutation) struct Inventory {
     claims: Vec<Claim>,
     live: Vec<Claim>,
     protected: Vec<u32>,
+    #[cfg(feature = "ace16-write-preview")]
     maps: Option<Census>,
 }
 
 fn append_claim(
     claims: &mut Vec<Claim>,
     page: u32,
-    schema: &TableSchema,
-    column: usize,
+    _schema: &TableSchema,
+    _column: usize,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<(), EditError> {
     reader.tick()?;
@@ -60,8 +66,10 @@ fn append_claim(
         .map_err(|_| InspectError::Allocation)?;
     claims.push(Claim {
         page,
-        definition: schema.definition_page(),
-        column,
+        #[cfg(feature = "ace16-write-preview")]
+        definition: _schema.definition_page(),
+        #[cfg(feature = "ace16-write-preview")]
+        column: _column,
     });
 
     Ok(())
@@ -87,15 +95,18 @@ fn protect(
     Ok(())
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) struct ZeroPair {
     pub column: usize,
     pub offset: usize,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) struct MissingDeclaration {
     pub column: usize,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) struct InitializationSources {
     pub zeros: Vec<ZeroPair>,
     pub missing: Vec<MissingDeclaration>,
@@ -103,6 +114,47 @@ pub(in crate::table::mutation) struct InitializationSources {
 }
 
 impl Inventory {
+    #[cfg(all(feature = "journal", not(feature = "ace16-write-preview")))]
+    pub fn capture(
+        image: &NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let mut result = Self {
+            claims: Vec::new(),
+            live: Vec::new(),
+            protected: Vec::new(),
+        };
+        let maps = map_authority::capture_catalog(
+            image,
+            budget,
+            cancelled,
+            |schema, indexes, declarations, reader| {
+                // This is the existing non-initializing reader law: zero-pair
+                // declarations cannot be made writable by a normal fixed edit.
+                for declaration in &declarations.entries {
+                    reader.tick()?;
+                    if declaration.references.owned() == 0
+                        && declaration.references.candidate() == 0
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                }
+                result.table(schema, indexes, declarations, &[], reader)
+            },
+        )?;
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        maps.protect_storage(&mut result.protected, &mut reader)?;
+        Ok(result)
+    }
+
     pub(in crate::table::mutation) fn require_no_long_value_data_overlap(
         &self,
         pages: &[u32],
@@ -129,6 +181,7 @@ impl Inventory {
         Ok(())
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn capture(
         image: &NativeImage,
         budget: &mut ResourceBudget,
@@ -137,6 +190,7 @@ impl Inventory {
         Self::capture_inner(image, None, &[], budget, cancelled).map(|(inventory, _)| inventory)
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn capture_for_insert(
         image: &NativeImage,
         schema: &TableSchema,
@@ -154,6 +208,7 @@ impl Inventory {
         )
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     fn capture_inner(
         image: &NativeImage,
         initializing: Option<(u32, &[usize])>,
@@ -392,6 +447,7 @@ impl Inventory {
         Ok(())
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn require_global_record_rewrite(
         &self,
         record: RecordIdentity,
@@ -413,6 +469,7 @@ impl Inventory {
             )
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn require_record_rewrite(
         &self,
         schema: &TableSchema,
@@ -442,6 +499,7 @@ impl Inventory {
             )
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn require_exclusive(
         &self,
         schema: &TableSchema,

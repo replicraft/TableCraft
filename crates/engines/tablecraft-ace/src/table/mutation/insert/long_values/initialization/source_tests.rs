@@ -8,7 +8,7 @@ use crate::{
         long_value::{check_table_long_values_for_initialization, maps},
         mutation::{
             insert::tests::long_value_inserts::{Family, initialization::model},
-            long_value::ownership::{Inventory, ZeroPair},
+            lval_ownership::{Inventory, ZeroPair},
             variable_split::metadata::Metadata,
         },
     },

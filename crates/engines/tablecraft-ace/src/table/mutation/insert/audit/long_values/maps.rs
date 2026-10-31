@@ -9,7 +9,7 @@ use crate::{
         row::{reference_page, reference_slot},
     },
     table::mutation::{
-        long_value::ownership::{ColumnMapKind, Inventory},
+        lval_ownership::{ColumnMapKind, Inventory},
         variable_update::map_audit::ExpectedByte,
     },
 };

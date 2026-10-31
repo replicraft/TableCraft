@@ -351,15 +351,19 @@ The optional `journal` feature adds a separate normal route for unencoded ACE
 2016/2019 layouts with subversion zero. A positive source-owned BeforeChange
 binding and complete supported program preflight are required even for empty
 requests. Actual XML events determine dispatch, rather than caller-selected
-property aliases. All table fields must fit the supported fixed Int32 profile;
+property aliases. A qualified target must fit the ordinary fixed Int32 profile;
 relationships, opaque/incomplete event coverage and unsupported required
 effects refuse. Checked non-NULL Int32 indexes may retain qualified compressed
 prefixes and existing interior nodes, with ascending/descending components,
 composites, consistent aliases and complete final uniqueness checks. Fitting
 serialization is selected before preparation, without retrying a failed encoder.
 Original page identities, child topology and per-leaf entry counts remain fixed.
-Ignore-NULL indexes, mixed scalar schemas, original/final NULL fields, splits
-and map/storage growth refuse. This
+A separate metadata-selected mixed-schema route preserves admitted scalar/rich
+siblings and checked unchanged indexes while modifying unindexed ordinary Int32
+fields. Readonly AutoNumber values can be operands but never assigned. Its targets
+remain non-NULL and outside calculation/collection dependencies. Int32 tree
+rewriting still refuses ignore-NULL membership; splits and map/storage growth
+remain outside both profiles. This
 introduces no general ACE save permission or macro-absence certificate.
 
 Original user requests retain exact row/expected/replacement values. Any supplied
@@ -458,7 +462,7 @@ prefix/header/height rejection and CLI output atomicity. A separate
 replacements and two tree heights. Empty non-root leaves and unbalanced source
 levels remain unsupported.
 This index-maintenance path remains an offline Jet4 profile. The separate normal
-ACE BeforeChange route has its separate bounded Int32 retained-tree profile; see
+ACE BeforeChange route has bounded Int32 retained-tree and unindexed mixed-schema profiles; see
 [its contract](NORMAL_ACE_BEFORE_CHANGE.md).
 
 Complete Boolean/numeric/GUID composite index reads/checks now work, but an update touching
@@ -477,8 +481,8 @@ it enables no floating target edits, key mutation or ACE writes. Physical IEEE
 index checks do not qualify native Access non-finite write acceptance.
 Legacy DateTime indexes likewise remain byte-identical through unrelated eligible
 Jet4 Int32 edits; DateTime target/key mutation remains outside this writer. The
-separate ACE BeforeChange route admits only its qualified Int32 retained-tree
-profile, not DateTime key updates.
+separate ACE BeforeChange route admits qualified Int32 targets with retained-tree
+or unindexed mixed-schema preservation; DateTime key updates remain unsupported.
 ACE 16-family single/composite Decimal index reads/checks do not qualify normal
 Decimal target/key mutation or expand either normal route. Older numeric index variants remain unqualified.
 Nodes that represent their final child with an explicit upper-bound entry and

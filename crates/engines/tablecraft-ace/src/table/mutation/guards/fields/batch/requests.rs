@@ -1,8 +1,9 @@
 //! Complete original user intent admission before any event frame is evaluated.
 use super::super::super::{BeforeEventGuardError, buffer, error};
 use super::{bound::SourceFacts, projection::Int32Projection};
+use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{
-    EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
+    EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64},
     header::check,
     table::mutation::{field, rows},

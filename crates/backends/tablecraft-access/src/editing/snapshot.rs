@@ -1,9 +1,9 @@
 //! Capture one complete owned scalar relation from its immutable native image.
 use super::NativeEditError;
 use tablecraft_ace::{InspectError, NativeImage, TableSchema, TableSnapshot, read_table};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use tablecraft_ace::{inspect_table_schema, read_table_projection};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use tablecraft_core::limits::Resource;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::Snapshot;
@@ -31,22 +31,23 @@ pub(crate) fn capture(
     finish(native, budget, cancelled).map(|(snapshot, _)| snapshot)
 }
 
-#[cfg(feature = "ace16-write-preview")]
-pub(crate) struct EngineeringSnapshot {
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub(crate) struct ProjectedSnapshot {
     pub snapshot: Snapshot,
+    #[cfg(feature = "ace16-write-preview")]
     pub schema: TableSchema,
+    #[cfg(feature = "ace16-write-preview")]
     pub projected: bool,
 }
 
-/// Engineering-only ordinary projection. Excluded declarations remain available
-/// to the editor; no cached calculation or collection becomes a scalar NULL.
-#[cfg(feature = "ace16-write-preview")]
-pub(crate) fn capture_engineering(
+/// Actual scalar projection. Excluded declarations do not become NULL cells.
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub(crate) fn capture_projected(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<EngineeringSnapshot, NativeEditError> {
+) -> Result<ProjectedSnapshot, NativeEditError> {
     let schema = inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -72,10 +73,12 @@ pub(crate) fn capture_engineering(
             budget,
             cancelled,
         )?;
-        let (snapshot, schema) = finish(native, budget, cancelled)?;
-        return Ok(EngineeringSnapshot {
+        let (snapshot, _schema) = finish(native, budget, cancelled)?;
+        return Ok(ProjectedSnapshot {
             snapshot,
-            schema,
+            #[cfg(feature = "ace16-write-preview")]
+            schema: _schema,
+            #[cfg(feature = "ace16-write-preview")]
             projected: false,
         });
     }
@@ -92,10 +95,12 @@ pub(crate) fn capture_engineering(
     if !metadata.matches(&native) {
         return Err(InspectError::Malformed.into());
     }
-    let (snapshot, schema) = finish(native, budget, cancelled)?;
-    Ok(EngineeringSnapshot {
+    let (snapshot, _schema) = finish(native, budget, cancelled)?;
+    Ok(ProjectedSnapshot {
         snapshot,
-        schema,
+        #[cfg(feature = "ace16-write-preview")]
+        schema: _schema,
+        #[cfg(feature = "ace16-write-preview")]
         projected: true,
     })
 }
@@ -124,4 +129,14 @@ fn finish(
         cancelled,
     )?;
     Ok((snapshot, schema))
+}
+
+#[cfg(feature = "ace16-write-preview")]
+pub(crate) fn capture_engineering(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ProjectedSnapshot, NativeEditError> {
+    capture_projected(image, table, budget, cancelled)
 }

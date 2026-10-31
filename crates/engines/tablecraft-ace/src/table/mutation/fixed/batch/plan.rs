@@ -10,7 +10,6 @@ use crate::{
     InspectError, NativeImage, TableCheck,
     format::data_type::NUMERIC_BYTES,
     header::check,
-    limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
     table::indexes::{IndexKeyUpdate, fixed_index_patches, index_patches},
 };
 use tablecraft_core::{
@@ -32,11 +31,6 @@ pub(super) struct Table<'a> {
 }
 
 impl NativeImage {
-    /// Current engineering-profile column-group ceiling, not a format maximum.
-    pub const MAX_FIXED_BATCH_GROUPS: usize = MAX_COLUMNS;
-    /// Current cumulative assignment ceiling across all batch groups/tables.
-    pub const MAX_FIXED_BATCH_ASSIGNMENTS: usize = MAX_LIVE_ROWS;
-
     /// Prepare one complete fixed-size scalar payload batch across tables on ACE 16.
     ///
     /// Expected values and row ordinals refer to this original image. Disjoint

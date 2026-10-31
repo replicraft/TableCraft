@@ -55,6 +55,7 @@ qualifies no complete rich SDK inventory. The actual rich native/raw checks rema
 separate. The record preserves this first failure, a compile-controller inventory
 error and an artifact-binder predecessor rather than rewriting their history.
 
-Normal mixed-schema writer acceptance is still pending. These sources and
+The separate [normal mixed writer record](results/ace16-normal-mixed-before-change-2026-10-31.json)
+reports subsequent planning/save checks. These sources and
 independent reads do not establish Microsoft Access program execution, native
 save/reopen, generated writes or general mixed-schema compatibility.

@@ -1,5 +1,7 @@
 //! Final certification rebinds map authority to the immutable original catalog.
-use super::super::{Operation, admission, finish, stage, tests::model};
+use super::super::{Operation, admission, finish, stage};
+use super::model;
+use crate::table::mutation::lval_ownership::Inventory;
 use crate::{
     EditError, InspectError, WriteBlocker,
     table::mutation::map_authority::{self, Owner},
@@ -79,7 +81,7 @@ fn finalizer_rechecks_empty_map_identity_against_the_original_catalog() {
 fn readable_unreferenced_physical_slot_does_not_establish_complete_map_authority() {
     let healthy = source_model::source(6, 1);
     let image = model::capture(&healthy);
-    super::Inventory::capture(&image, &mut model::budget(), &|| false).unwrap();
+    Inventory::capture(&image, &mut model::budget(), &|| false).unwrap();
 
     let mut hole = healthy.clone();
     let definition = &mut hole[10 * 4096..11 * 4096];
@@ -97,7 +99,7 @@ fn readable_unreferenced_physical_slot_does_not_establish_complete_map_authority
     assert_eq!(model::check(&hole).columns()[0].owned_pages(), 1);
     let image = model::capture(&hole);
     assert_eq!(
-        super::Inventory::capture(&image, &mut model::budget(), &|| false).err(),
+        Inventory::capture(&image, &mut model::budget(), &|| false).err(),
         Some(EditError::Unsupported(WriteBlocker::RowLayout))
     );
     let request = [model::memo_update(Value::Text("B".into()))];
@@ -131,7 +133,7 @@ fn metadata_footprints_do_not_grant_payload_membership_or_write_authority() {
         .require_exclusive(&[Owner::GlobalFree], &mut model::budget(), &|| false)
         .unwrap();
     assert_eq!(
-        super::Inventory::capture(&image, &mut model::budget(), &|| false).err(),
+        Inventory::capture(&image, &mut model::budget(), &|| false).err(),
         Some(EditError::Inspect(InspectError::Malformed))
     );
     assert_eq!(

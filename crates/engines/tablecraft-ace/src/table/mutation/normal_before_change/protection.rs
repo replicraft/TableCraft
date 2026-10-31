@@ -13,7 +13,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) struct Protection {
+pub(in crate::table::mutation) struct Protection {
     address: usize,
     length: usize,
     definition: u32,

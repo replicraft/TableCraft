@@ -5,7 +5,7 @@ use super::super::{
     evaluate::{self as scalar, MAX_TRACE, RowBindings},
     source::Frame,
 };
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use super::batch::frames::ProjectedRow;
 use super::{BeforeChangeAssignment, BeforeChangeFinalRow};
 use crate::{InspectError, header::check};
@@ -33,7 +33,7 @@ fn assignment(value: Value) -> Result<Value, BeforeEventGuardError> {
 }
 
 pub(super) type Execution = Completed<BeforeChangeFinalRow>;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) type ProjectedExecution = Completed<ProjectedRow>;
 
 pub(super) fn run(
@@ -53,7 +53,7 @@ pub(super) fn run(
     )
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) fn run_projected(
     compiled: &Compiled,
     frames: &[Frame],

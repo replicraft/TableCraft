@@ -14,10 +14,8 @@ use crate::{
     },
     table::mutation::{
         append::{self, State},
-        long_value::{
-            maps::Scope,
-            ownership::{ColumnMapKind, Inventory},
-        },
+        long_value::maps::Scope,
+        lval_ownership::{ColumnMapKind, Inventory},
     },
 };
 use std::io::Cursor;

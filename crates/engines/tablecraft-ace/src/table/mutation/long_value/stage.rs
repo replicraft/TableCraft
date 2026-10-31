@@ -7,10 +7,10 @@ use super::{
     admission::Prepared,
     encode::{self, Encoded, StorageChoice},
     maps::{Family, Maps},
-    ownership::Inventory,
     placement::Plan,
     value,
 };
+use crate::table::mutation::lval_ownership::Inventory;
 use crate::{
     InspectError, NativeImage,
     format::{

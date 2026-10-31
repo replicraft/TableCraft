@@ -9,7 +9,7 @@ use crate::{
     header::check,
     table::{
         indexes::{IndexKeyUpdate, MutationKey},
-        mutation::{field, page_update::roots},
+        mutation::{field, record_roots as roots},
     },
 };
 use tablecraft_core::{
