@@ -43,6 +43,15 @@ uses fresh create-exclusive files and retains the original eighteen request
 records. Ordinary tests pin all thirty-four image hashes and a separate original
 request binding before indexed writer execution.
 
+Independent read-only SDK validation now passes all 106 first-attempt calls:
+34 complete inventories, 34 index metadata observations and 38 named index
+cursor traversals, including both aliases. Two unchanged repository observers
+were compiled against the pinned Jackcess 5.0.4 JAR; the canonical inventory
+observer retained its existing class. Exact expected observations were frozen
+before compilation. Complete ordered output, empty diagnostics, all source/tool
+hashes and the complete class inventories pass the separate saved-only verifier.
+Neither the observers nor that verifier execute event rows or obtain a write plan.
+
 The [source execution record](results/ace16-indexed-before-change-sources-2026-10-31.json)
 records native checks and the separate independent reader phase. Generated files,
 compiled SDK tooling and raw observations remain ignored local evidence. These
