@@ -15,6 +15,12 @@ use thiserror::Error;
 /// Payload-free input, resource or serialization failure for fresh creation.
 #[derive(Debug, Error)]
 pub enum CreateDatabaseError {
+    /// The bounded multi-table operation needs one through sixteen user tables.
+    #[error("creation requires between one and sixteen user tables")]
+    TableLimit,
+    /// Two table names collide under the same ASCII folding policy.
+    #[error("creation table names must be distinct under ASCII folding")]
+    DuplicateTable,
     /// A name is empty, starts with a space, contains prohibited characters or exceeds 64 UTF-16 units.
     #[error("creation requires a valid native identifier of at most 64 UTF-16 units")]
     InvalidName,

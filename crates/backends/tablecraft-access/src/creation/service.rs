@@ -1,7 +1,8 @@
 use super::CreationError;
 use std::{fmt, path::Path};
 use tablecraft_ace::{
-    CreateColumn, CreatedDatabase, create_ace16_database, create_ace16_int32_database,
+    CreateColumn, CreateTable, CreatedDatabase, create_ace16_database,
+    create_ace16_database_tables, create_ace16_int32_database,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_io::publication::{ParentIdentity, PublicationReceipt, RequiredOutput};
@@ -25,6 +26,7 @@ pub struct CreationReceipt {
     publication: PublicationReceipt,
     rows: usize,
     columns: usize,
+    tables: usize,
 }
 
 impl CreationDestination {
@@ -80,17 +82,40 @@ impl CreationDestination {
             database,
         })
     }
+
+    /// Construct a bounded list of explicit tables in one fresh native image.
+    /// All tables qualify before staging; the same required publication protocol
+    /// and known-publication failures apply. Counts are aggregate user counts.
+    pub fn prepare_tables(
+        self,
+        tables: &[CreateTable<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedCreation, CreationError> {
+        let _span = tracing::debug_span!("access.creation.prepare_tables").entered();
+        let database = create_ace16_database_tables(tables, budget, cancelled)?;
+
+        Ok(PreparedCreation {
+            output: self.output,
+            database,
+        })
+    }
 }
 
 impl PreparedCreation {
-    /// Number of complete logical rows in the unpublished image.
+    /// Total complete logical rows across the unpublished user tables.
     pub fn row_count(&self) -> usize {
         self.database.row_count()
     }
 
-    /// Number of ordinary fixed-scalar columns in the unpublished image.
+    /// Total scalar columns across all user tables in the unpublished image.
     pub fn column_count(&self) -> usize {
         self.database.column_count()
+    }
+
+    /// Number of user tables in the unpublished complete image.
+    pub fn table_count(&self) -> usize {
+        self.database.table_count()
     }
 
     /// Publish once under the captured fresh name, then finish its barriers.
@@ -104,6 +129,7 @@ impl PreparedCreation {
         let _span = tracing::debug_span!("access.creation.publish").entered();
         let rows = self.database.row_count();
         let columns = self.database.column_count();
+        let tables = self.database.table_count();
         let publication = self
             .output
             .publish(self.database.as_bytes(), budget, cancelled)?;
@@ -111,19 +137,25 @@ impl PreparedCreation {
             publication,
             rows,
             columns,
+            tables,
         })
     }
 }
 
 impl CreationReceipt {
-    /// Number of complete rows in the acknowledged published file.
+    /// Total complete rows across the acknowledged user tables.
     pub const fn row_count(&self) -> usize {
         self.rows
     }
 
-    /// Number of ordinary fixed-scalar columns in the acknowledged published file.
+    /// Total scalar columns across all user tables in the acknowledged file.
     pub const fn column_count(&self) -> usize {
         self.columns
+    }
+
+    /// Number of user tables in the acknowledged published file.
+    pub const fn table_count(&self) -> usize {
+        self.tables
     }
 
     /// The captured directory acknowledged its terminal namespace barrier.

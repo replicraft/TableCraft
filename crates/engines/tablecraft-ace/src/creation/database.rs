@@ -2,6 +2,7 @@
 use super::{
     CreateColumn, CreateDatabaseError, build,
     input::{Columns, Rows},
+    multiple::{self, CreateTable},
     request,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -16,6 +17,7 @@ pub struct CreatedDatabase {
     bytes: Vec<u8>,
     rows: usize,
     columns: usize,
+    tables: usize,
 }
 
 impl CreatedDatabase {
@@ -24,14 +26,19 @@ impl CreatedDatabase {
         &self.bytes
     }
 
-    /// Number of rows in the single user table.
+    /// Total complete rows across the created user tables.
     pub const fn row_count(&self) -> usize {
         self.rows
     }
 
-    /// Number of ordinary scalar columns in the single user table.
+    /// Total declared scalar columns across the created user tables.
     pub const fn column_count(&self) -> usize {
         self.columns
+    }
+
+    /// Number of user tables; existing single-table operations always return one.
+    pub const fn table_count(&self) -> usize {
+        self.tables
     }
 }
 
@@ -108,5 +115,34 @@ fn create<'a>(
         bytes,
         rows: rows.count(),
         columns: columns.count(),
+        tables: 1,
+    })
+}
+
+/// Serialize one fresh ACE 16 image containing one through sixteen user tables.
+///
+/// Each borrowed table retains explicit native declarations and exact Value rows.
+/// Table names are distinct under ASCII folding and share the existing name
+/// bounds. Every table must independently fit its one DATA page with at most
+/// sixteen columns and sixty-four rows. All tables and actual catalog/map layout
+/// bounds are validated before image allocation, under one cumulative budget.
+/// No relationship, generated field, constraint property, existing-file edit,
+/// required-event absence or native Access save permission is inferred.
+/// Artifact row/column counts are totals; table_count reports the user count.
+pub fn create_ace16_database_tables(
+    tables: &[CreateTable<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<CreatedDatabase, CreateDatabaseError> {
+    let _span = tracing::debug_span!("native.database.create_tables").entered();
+    let captured = multiple::capture(tables, budget, cancelled)?;
+    let bytes = multiple::build(&captured, budget, cancelled)?;
+    crate::header::check(budget, cancelled)?;
+
+    Ok(CreatedDatabase {
+        bytes,
+        rows: captured.rows,
+        columns: captured.columns,
+        tables: tables.len(),
     })
 }

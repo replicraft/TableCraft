@@ -4,6 +4,7 @@ mod column;
 mod database;
 mod definition;
 mod input;
+mod multiple;
 mod profile;
 mod record;
 mod request;
@@ -11,7 +12,11 @@ mod stored_text;
 mod variable;
 
 pub use column::CreateColumn;
-pub use database::{CreatedDatabase, create_ace16_database, create_ace16_int32_database};
+pub use database::{
+    CreatedDatabase, create_ace16_database, create_ace16_database_tables,
+    create_ace16_int32_database,
+};
+pub use multiple::CreateTable;
 pub use request::CreateDatabaseError;
 
 #[cfg(test)]

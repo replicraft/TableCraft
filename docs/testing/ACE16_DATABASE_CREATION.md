@@ -1,14 +1,14 @@
 # Fresh ACE 16 scalar construction
 
 The optional standalone `ace16-create` feature constructs a complete header-5
-database in memory with one ordinary table. `create_ace16_database` accepts named
+database in memory, with single-table and multiple-table operations. `create_ace16_database` accepts named
 `CreateColumn` declarations and borrowed `Value` rows. It supports Boolean, Byte,
 Int16, Int32, Int64, Currency, Single, Double, legacy DateTime and Guid.
 `create_ace16_int32_database` remains the convenience API for borrowed Int32 rows.
 The Access creation service accepts these typed declarations through
 `prepare_typed`; the CLI accepts explicit typed declarations with `--field`.
 
-The profile admits 1–16 columns and 0–64 rows, also requiring the complete records
+The single-table profile admits 1–16 columns and 0–64 rows, requiring the complete records
 and row directory to fit one DATA page. Names retain their spelling under the
 existing native name checks. Declarations are validated even for empty tables or
 all-NULL input. Present values must have the exact declared carrier; there is no
@@ -29,7 +29,7 @@ its raw bits without calendar conversion; Currency stores its scaled Int64 and
 Guid uses the native mixed-endian representation. These storage results do not
 qualify arithmetic or expression behavior.
 
-Construction validates borrowed inputs before reserving one complete 36,864-byte
+Single-table construction validates borrowed inputs before reserving one complete 36,864-byte
 image. Bytes, Rows and Steps remain independent cumulative allowances, with
 initial and final cancellation checks. The returned `CreatedDatabase` exposes
 immutable bytes and counts. It performs no filesystem operation and supplies no
@@ -55,6 +55,60 @@ The [generic constructor result](results/ace16-native-fixed-creation-2026-10-31.
 records the first execution and encoder regressions. The
 [Int32 constructor result](results/ace16-native-int32-creation-2026-10-31.json)
 retains the earlier implementation phase.
+
+## Multiple user tables
+
+`create_ace16_database_tables(tables, budget, cancelled)` creates one complete
+image from 1–16 borrowed `CreateTable` specifications. Each table uses existing
+`CreateColumn` declarations and exact `Value` rows:
+
+```rust
+use tablecraft_ace::{CreateColumn, CreateTable, create_ace16_database_tables};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_schema::ScalarType;
+
+let mut budget = ResourceBudget::new(16 * 1024 * 1024, 100_000, 16_000_000);
+let cancelled = || false;
+let numbers = [
+    CreateColumn::new("Id", ScalarType::Int32),
+    CreateColumn::new("Score", ScalarType::Int32),
+];
+let notes = [CreateColumn::short_text("Caption", 8)?];
+let row = [Value::Int32(1), Value::Int32(10)];
+let number_rows = [row.as_slice()];
+let tables = [
+    CreateTable::new("Numbers", &numbers, &number_rows),
+    CreateTable::new("Notes", &notes, &[]),
+];
+let database = create_ace16_database_tables(&tables, &mut budget, &cancelled)?;
+```
+
+The artifact's `table_count()` is two, `row_count()` is one and `column_count()`
+is three in this example. Row and column counts are checked totals across user
+tables; old single-table entry points retain their byte and resource paths and
+report `table_count() == 1`.
+
+Names remain explicit, unnormalized and limited to 64 UTF-16 units. Table names
+must be distinct under the existing ASCII folding policy and must not collide
+with authored system tables. Column-name uniqueness is per table: two tables may
+both declare `Id`, and identical row ordinals belong to their own table. Each
+table independently allows 1–16 columns and 0–64 rows subject to one DATA-page
+fit. Every table and actual combined catalog/map size qualifies before output
+image allocation, under one shared resource and cancellation budget.
+
+The image contains seven shared pages plus one TD/DATA pair per user table,
+reaching 39 pages for sixteen tables. Existing system, first-user and catalog
+LVAL map roles remain fixed; additional user owned/candidate map pairs append.
+Each TD, DATA owner, catalog identity and space hint refers to its actual table.
+There is no intermediate database, candidate chaining or copied input template.
+
+`TableLimit` rejects zero or more than sixteen tables. `DuplicateTable` reports
+folded table-name collisions. Existing typed metadata, carrier, shape, constraint
+representation, physical-fit and resource errors apply independently to every
+table; an invalid late table returns no artifact. This operation authors no keys,
+relationships, Required/AllowZeroLength properties or normal-save authority.
+The single-table CLI syntax is unchanged.
+
 
 ## Explicit variable declarations
 

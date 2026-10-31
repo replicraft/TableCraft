@@ -25,48 +25,7 @@ pub(super) fn build(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, CreateDatabaseError> {
-    check(budget, cancelled)?;
-    budget
-        .charge_allocation(profile::IMAGE_BYTES as u64, 1)
-        .map_err(InspectError::from)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(profile::IMAGE_BYTES)
-        .map_err(|_| InspectError::Allocation)?;
-    while bytes.len() < profile::IMAGE_BYTES {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, PAGE_BYTES as u64)
-            .map_err(InspectError::from)?;
-        bytes.resize(bytes.len() + PAGE_BYTES, 0);
-    }
-
-    let root = page(&mut bytes, 0)?;
-    root[..ROOT_PREFIX.len()].copy_from_slice(&ROOT_PREFIX);
-    root[ROOT_PREFIX.len()..header::FORMAT_CODE_OFFSET].copy_from_slice(ACE_ENGINE_NAME);
-    root[header::FORMAT_CODE_OFFSET] = ACE16_FORMAT_CODE;
-    definition::put16(root, CODE_PAGE_OFFSET, CODE_PAGE)?;
-    root[SORT_ORDER_OFFSET..SORT_ORDER_OFFSET + profile::GENERAL_SORT.len()]
-        .copy_from_slice(&profile::GENERAL_SORT);
-    // Clear subversion/key/password/date and unmodeled header fields are
-    // explicit authored zero choices. They are not declared reserved bytes,
-    // imported identity seeds or evidence of native Access creation behavior.
-    budget
-        .charge(Resource::Steps, header_mask::PREFIX_END as u64)
-        .map_err(InspectError::from)?;
-    header_mask::apply(root)?;
-
-    {
-        let mut global = DataPage::new(
-            page(&mut bytes, profile::GLOBAL_PAGE)?,
-            profile::GLOBAL_PAGE,
-        )?;
-        record::inline_map(
-            global.append(profile::MAP_RECORD_BYTES, budget, cancelled)?,
-            None,
-        )?;
-        global.finish()?;
-    }
+    let mut bytes = initialize(profile::IMAGE_BYTES, budget, cancelled)?;
     {
         let mut maps = DataPage::new(page(&mut bytes, profile::MAP_PAGE)?, 0)?;
         for slot in 0..profile::MAP_ROWS {
@@ -131,64 +90,15 @@ pub(super) fn build(
             page(&mut bytes, profile::CATALOG_DATA)?,
             profile::CATALOG_DEFINITION,
         )?;
-        for (id, parent, name, system) in [
-            (
-                profile::ROOT_ID,
-                0,
-                Plan::ascii_literal("DatabaseRoot"),
-                true,
-            ),
-            (
-                profile::TABLES_ID,
-                profile::ROOT_ID,
-                Plan::ascii_literal("Tables"),
-                true,
-            ),
-            (
-                profile::DATABASES_ID,
-                profile::ROOT_ID,
-                Plan::ascii_literal("Databases"),
-                true,
-            ),
-            (
-                profile::RELATIONSHIPS_ID,
-                profile::ROOT_ID,
-                Plan::ascii_literal("Relationships"),
-                true,
-            ),
-            (
-                profile::CATALOG_DEFINITION as u32,
-                profile::TABLES_ID,
-                Plan::ascii_literal("MSysObjects"),
-                true,
-            ),
-            (
-                profile::RELATIONSHIPS_DEFINITION as u32,
-                profile::TABLES_ID,
-                Plan::ascii_literal("MSysRelationships"),
-                true,
-            ),
-            (
-                profile::ACES_DEFINITION as u32,
-                profile::TABLES_ID,
-                Plan::ascii_literal("MSysACEs"),
-                true,
-            ),
-            (
-                profile::USER_DEFINITION as u32,
-                profile::TABLES_ID,
-                request.catalog_name,
-                false,
-            ),
-        ] {
-            let object = profile::CatalogObject {
-                id,
-                parent,
-                name,
-                system,
-            };
+        let user = profile::CatalogObject {
+            id: profile::USER_DEFINITION as u32,
+            parent: profile::TABLES_ID,
+            name: request.catalog_name,
+            system: false,
+        };
+        for object in systems().into_iter().chain(std::iter::once(user)) {
             record::catalog(
-                catalog.append(record::catalog_length(name), budget, cancelled)?,
+                catalog.append(record::catalog_length(object.name), budget, cancelled)?,
                 &object,
                 budget,
                 cancelled,
@@ -216,7 +126,7 @@ pub(super) fn build(
     Ok(bytes)
 }
 
-fn page(bytes: &mut [u8], number: usize) -> Result<&mut [u8], CreateDatabaseError> {
+pub(super) fn page(bytes: &mut [u8], number: usize) -> Result<&mut [u8], CreateDatabaseError> {
     let start = number
         .checked_mul(PAGE_BYTES)
         .ok_or(CreateDatabaseError::Layout)?;
@@ -224,4 +134,84 @@ fn page(bytes: &mut [u8], number: usize) -> Result<&mut [u8], CreateDatabaseErro
         .checked_add(PAGE_BYTES)
         .ok_or(CreateDatabaseError::Layout)?;
     bytes.get_mut(start..end).ok_or(CreateDatabaseError::Layout)
+}
+
+pub(super) fn initialize(
+    image_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, CreateDatabaseError> {
+    check(budget, cancelled)?;
+    budget
+        .charge_allocation(image_bytes as u64, 1)
+        .map_err(InspectError::from)?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(image_bytes)
+        .map_err(|_| InspectError::Allocation)?;
+    while bytes.len() < image_bytes {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, PAGE_BYTES as u64)
+            .map_err(InspectError::from)?;
+        bytes.resize(bytes.len() + PAGE_BYTES, 0);
+    }
+
+    let root = page(&mut bytes, 0)?;
+    root[..ROOT_PREFIX.len()].copy_from_slice(&ROOT_PREFIX);
+    root[ROOT_PREFIX.len()..header::FORMAT_CODE_OFFSET].copy_from_slice(ACE_ENGINE_NAME);
+    root[header::FORMAT_CODE_OFFSET] = ACE16_FORMAT_CODE;
+    definition::put16(root, CODE_PAGE_OFFSET, CODE_PAGE)?;
+    root[SORT_ORDER_OFFSET..SORT_ORDER_OFFSET + profile::GENERAL_SORT.len()]
+        .copy_from_slice(&profile::GENERAL_SORT);
+    // Clear subversion/key/password/date and unmodeled header fields are
+    // explicit authored zero choices. They are not declared reserved bytes,
+    // imported identity seeds or evidence of native Access creation behavior.
+    budget
+        .charge(Resource::Steps, header_mask::PREFIX_END as u64)
+        .map_err(InspectError::from)?;
+    header_mask::apply(root)?;
+
+    {
+        let mut global = DataPage::new(
+            page(&mut bytes, profile::GLOBAL_PAGE)?,
+            profile::GLOBAL_PAGE,
+        )?;
+        record::inline_map(
+            global.append(profile::MAP_RECORD_BYTES, budget, cancelled)?,
+            None,
+        )?;
+        global.finish()?;
+    }
+    Ok(bytes)
+}
+
+pub(super) fn systems() -> [profile::CatalogObject<'static>; profile::SYSTEM_OBJECT_COUNT] {
+    [
+        (profile::ROOT_ID, 0, "DatabaseRoot"),
+        (profile::TABLES_ID, profile::ROOT_ID, "Tables"),
+        (profile::DATABASES_ID, profile::ROOT_ID, "Databases"),
+        (profile::RELATIONSHIPS_ID, profile::ROOT_ID, "Relationships"),
+        (
+            profile::CATALOG_DEFINITION as u32,
+            profile::TABLES_ID,
+            "MSysObjects",
+        ),
+        (
+            profile::RELATIONSHIPS_DEFINITION as u32,
+            profile::TABLES_ID,
+            "MSysRelationships",
+        ),
+        (
+            profile::ACES_DEFINITION as u32,
+            profile::TABLES_ID,
+            "MSysACEs",
+        ),
+    ]
+    .map(|(id, parent, name)| profile::CatalogObject {
+        id,
+        parent,
+        name: Plan::ascii_literal(name),
+        system: true,
+    })
 }

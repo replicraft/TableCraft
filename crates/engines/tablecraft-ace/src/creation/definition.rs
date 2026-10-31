@@ -73,7 +73,40 @@ pub(super) fn write(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
-    let catalog = map_slot == profile::CATALOG_MAP_SLOT;
+    write_role(
+        page,
+        fields,
+        rows,
+        Role {
+            user: map_slot == profile::USER_MAP_SLOT,
+            catalog: map_slot == profile::CATALOG_MAP_SLOT,
+            owned: row::reference(profile::MAP_PAGE as u32, map_slot as u8),
+            candidate: row::reference(
+                profile::MAP_PAGE as u32,
+                (map_slot + profile::TABLE_COUNT) as u8,
+            ),
+        },
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) struct Role {
+    pub user: bool,
+    pub catalog: bool,
+    pub owned: u32,
+    pub candidate: u32,
+}
+
+pub(super) fn write_role(
+    page: &mut [u8],
+    fields: Fields<'_>,
+    rows: usize,
+    role: Role,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    let catalog = role.catalog;
     let length = length(fields, catalog)?;
     if page.len() != PAGE_BYTES || length > PAGE_BYTES {
         return Err(CreateDatabaseError::Layout);
@@ -88,27 +121,12 @@ pub(super) fn write(
     put32(page, MAGIC_OFFSET, MAGIC)?;
     put32(page, layout::RECORD_COUNT_OFFSET, rows as u32)?;
     page[AUTO_SUPPORT_OFFSET] = 1;
-    page[TYPE_OFFSET] = if map_slot == profile::USER_MAP_SLOT {
-        USER_TABLE
-    } else {
-        SYSTEM_TABLE
-    };
+    page[TYPE_OFFSET] = if role.user { USER_TABLE } else { SYSTEM_TABLE };
     put16(page, MAX_COLUMNS_OFFSET, fields.count())?;
     put16(page, VARIABLE_COLUMNS_OFFSET, fields.variable_count())?;
     put16(page, COLUMNS_OFFSET, fields.count())?;
-    put32(
-        page,
-        OWNED_MAP_OFFSET,
-        row::reference(profile::MAP_PAGE as u32, map_slot as u8),
-    )?;
-    put32(
-        page,
-        CANDIDATE_MAP_OFFSET,
-        row::reference(
-            profile::MAP_PAGE as u32,
-            (map_slot + profile::TABLE_COUNT) as u8,
-        ),
-    )?;
+    put32(page, OWNED_MAP_OFFSET, role.owned)?;
+    put32(page, CANDIDATE_MAP_OFFSET, role.candidate)?;
 
     let mut names = HEADER_BYTES + fields.count() * COLUMN_BYTES;
     let mut ordinary = 0;
