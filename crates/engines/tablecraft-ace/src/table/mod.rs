@@ -37,6 +37,7 @@ pub use complex::{
 };
 mod mutation;
 mod schema;
+mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
