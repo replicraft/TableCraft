@@ -164,7 +164,7 @@ fn preserved_scalar_shared_sql_uses_existing_explicit_conversions_in_both_modes(
 }
 
 #[test]
-fn preserved_scalar_service_keeps_variable_modes_joint_targets_and_handles_closed() {
+fn preserved_scalar_service_modes_handles_and_joint_complete_images() {
     let case = model::source(6, model::Target::Currency, model::Recipe::Change);
     for mode in [
         ScalarUpdateMode::Variable {
@@ -225,9 +225,27 @@ fn preserved_scalar_service_keeps_variable_modes_joint_targets_and_handles_close
         Err(NativeEditError::Unsupported)
     ));
 
-    for statement in [
-        "UPDATE Items SET [Currency_Field]=CCur(-1.0001),[Date_Field]=#1899-12-31 06:00:00# WHERE [ID]=1",
-        "UPDATE Items SET [Currency_Field]=CCur(-1.0001),[Date_Field]=#1899-12-31 06:00:00# WHERE [ID]=-1",
+    let date = model::source(6, model::Target::Date, model::Recipe::Change);
+    assert_image(&date.before, &case.before);
+    let date_expected = date.expected.as_ref().unwrap();
+    let mut joint_expected = case.expected.as_ref().unwrap().clone();
+    // Compose two independently frozen single-field images with identical BEFORE.
+    // Their actual target spans are disjoint; no producer output is an input.
+    for offset in 0..case.before.len() {
+        if date_expected[offset] != case.before[offset] {
+            assert_eq!(joint_expected[offset], case.before[offset]);
+            joint_expected[offset] = date_expected[offset];
+        }
+    }
+    for (statement, matched) in [
+        (
+            "UPDATE Items SET [Currency_Field]=CCur(-1.0001),[Date_Field]=#1899-12-31 06:00:00# WHERE [ID]=1",
+            1,
+        ),
+        (
+            "UPDATE Items SET [Currency_Field]=CCur(-1.0001),[Date_Field]=#1899-12-31 06:00:00# WHERE [ID]=-1",
+            0,
+        ),
     ] {
         let mut allowance = budget();
         let image = NativeImage::capture(
@@ -238,16 +256,25 @@ fn preserved_scalar_service_keeps_variable_modes_joint_targets_and_handles_close
         )
         .unwrap();
         let query = parse_query(statement, ParseLimits::default()).unwrap();
-        assert!(
-            sql::preview_batch_update(
-                image,
-                query.query(),
-                ScalarUpdateMode::Default,
-                &mut allowance,
-                None,
-                &|| false
-            )
-            .is_err()
+        let plan = sql::preview_batch_update(
+            image,
+            query.query(),
+            ScalarUpdateMode::Default,
+            &mut allowance,
+            None,
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(plan.matched_rows(), matched);
+        let copy = plan.into_backend();
+        assert_eq!(copy.affected_rows(), matched);
+        assert_image(
+            copy.candidate_bytes(),
+            if matched == 0 {
+                &case.before
+            } else {
+                &joint_expected
+            },
         );
     }
     let other = model::source(5, model::Target::Currency, model::Recipe::Change);

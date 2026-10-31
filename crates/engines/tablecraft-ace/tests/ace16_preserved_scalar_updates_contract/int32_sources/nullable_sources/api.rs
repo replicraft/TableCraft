@@ -142,7 +142,7 @@ fn nullable_int32_required_and_stale_carriers_are_typed_refusals() {
 }
 
 #[test]
-fn nullable_int32_duplicate_ordinals_and_mixed_groups_refuse() {
+fn nullable_int32_duplicate_ordinals_refuse_and_joint_boolean_matches() {
     let case = model::source("null_to_value");
     for updates in [
         vec![FixedScalarUpdate::new(3, Value::Null, Value::Int32(101))],
@@ -165,6 +165,11 @@ fn nullable_int32_duplicate_ordinals_and_mixed_groups_refuse() {
         Value::Boolean(false),
         Value::Boolean(true),
     )];
+    let yes_mask = 13 * 4096 - 1;
+    let yes_bit = 1_u8 << 2;
+    assert_eq!(case.before[yes_mask] & yes_bit, 0);
+    let mut joint_expected = case.expected.as_ref().unwrap().clone();
+    joint_expected[yes_mask] |= yes_bit;
     for reverse in [false, true] {
         let mut groups = [
             FixedColumnUpdates::new("Items", "Large_Number", &numeric),
@@ -181,10 +186,12 @@ fn nullable_int32_duplicate_ordinals_and_mixed_groups_refuse() {
             &|| false,
         )
         .unwrap();
-        assert!(matches!(
-            image.preview_ace16_batch_updates(&groups, &mut allowance, &|| false),
-            Err(EditError::Unsupported(WriteBlocker::Column))
-        ));
+        let result = image
+            .preview_ace16_batch_updates(&groups, &mut allowance, &|| false)
+            .unwrap();
+        assert_eq!(result.before_bytes(), case.before);
+        assert_eq!(result.candidate_bytes(), joint_expected);
+        assert_eq!(result.changed_rows(), 1);
     }
 }
 

@@ -34,8 +34,10 @@ expectations, plus unchanged empty operations. Controls cover stale values,
 wrong carriers and targets, NameMap anomalies, ownership/allocation contradictions,
 exact resource limits and final cancellation. Actual adapter, SQL CLI and typed
 CLI consumers produce six exact copies; nine refusal calls preserve the source
-and leave no new output. Qualification currently covers one Boolean target per
-operation, not multiple Boolean fields or general advanced-field edits.
+and leave no new output. That tranche qualifies one Boolean target per operation.
+The later [joint fixed profile](ACE16_PRESERVED_JOINT_FIXED.md) additionally
+qualifies multiple Boolean and numeric fields; general advanced-field editing
+remains separate.
 
 The affected round passes 530 native mutation functions, 15 preserved-source/API
 functions, 60 adapter functions and 72 CLI functions. Strict ACE/Access/CLI checks

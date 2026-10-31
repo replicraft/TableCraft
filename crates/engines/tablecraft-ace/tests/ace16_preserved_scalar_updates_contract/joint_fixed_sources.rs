@@ -1,4 +1,4 @@
-//! Read-only qualification of literal joint requests and complete expected images.
+//! Read-only source qualification with separate public-API acceptance.
 #[path = "joint_fixed_sources/model.rs"]
 pub(crate) mod model;
 
@@ -186,3 +186,6 @@ fn qualify_joint_fixed_originals_and_literal_images_before_any_writer() {
         (54, 38, 16)
     );
 }
+
+#[path = "joint_fixed_sources/api.rs"]
+mod api;

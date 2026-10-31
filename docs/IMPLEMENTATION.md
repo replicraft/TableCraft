@@ -12,6 +12,22 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Joint preserved fixed-field updates
+
+The existing native batch API now composes ordinary Boolean, Int32, Int64,
+Currency and legacy DateTime groups into one same-table engineering candidate.
+[Joint preservation](testing/ACE16_PRESERVED_JOINT_FIXED.md) merges shared mask bits,
+retains inactive NULL bytes and Int32 padding, validates all targets including
+empty groups, and counts changed logical roots once. All expectations refer to
+the original image; a late failure returns no candidate.
+
+Source-first qualification covers 19 positive pairs and eight healthy refusal
+originals per header. Seventy-six order-varied complete images, seven causal
+proof functions, 53 preserved-contract functions and 609 mutation-library tests
+pass. Existing unrelated refusals remain. This adds no normal save, journal or
+required-macro permission; genuine joint and native Access qualification remain
+separate.
+
 ## Preserved eight-byte scalar updates
 
 The existing native fixed and batch engineering services now admit one qualified
@@ -86,7 +102,8 @@ field outside calculation dependencies in qualified mixed schemas. The
 [native and frontend contract](testing/ACE16_PRESERVED_INT32_UPDATES.md) retains
 attachments, stored caches, opaque values and every byte outside the exact
 four-byte field. Native, typed, SQL and CLI complete-image comparisons pass;
-unsupported profiles and mixed-target batches still refuse. NULL transitions now
+unsupported profiles still refuse. Qualified mixed fixed targets now use the
+joint service above. NULL transitions now
 preserve inactive payload bytes and change only the selected presence bit, with
 exact Int32 payload replacement when making a NULL value present. Required and
 qualified validation rules remain mandatory before a candidate returns.

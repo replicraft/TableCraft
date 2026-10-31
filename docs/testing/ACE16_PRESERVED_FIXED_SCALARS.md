@@ -33,9 +33,9 @@ Time are the same legacy DATE storage family. Single, Double, GUID and Date/Time
 Extended do not enter this new profile merely because the encoder can represent
 other types.
 
-Only one target group is admitted. Indexed, generated, calculated or
-calculation-dependent targets, multiple scalar targets and mixed Boolean/scalar
-groups remain refused. Expected and replacement values must be NULL or the exact
+The single-target path admits one group; the batch API additionally supports
+[joint fixed-field requests](ACE16_PRESERVED_JOINT_FIXED.md). Indexed, generated,
+calculated and calculation-dependent targets remain refused. Expected and replacement values must be NULL or the exact
 target carrier. Caller-supplied ordinals and original expectations are checked;
 duplicate, absent and stale rows do not silently change the selected operation.
 

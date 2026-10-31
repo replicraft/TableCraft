@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "One preserved mixed-schema fixed batch over original Boolean, Int32, Int64, Currency and legacy DATE groups",
+  "source_commit": "931e2972",
+  "observed": {
+    "principal_whole_image_comparisons": 76,
+    "positive_source_pairs": 19,
+    "native_focused_functions_passed": 5,
+    "independent_proof_functions_passed": 7,
+    "first_preserved_contract": {
+      "passed": 50,
+      "failed_obsolete_refusals": 3,
+      "existing_ignored": 2
+    },
+    "corrected_preserved_contract": {
+      "passed": 53,
+      "failed": 0,
+      "existing_ignored": 2
+    },
+    "mutation_library": {
+      "passed": 609,
+      "failed": 0,
+      "existing_ignored": 9,
+      "filtered": 323
+    },
+    "strict_engine_adapter_cli_all_targets_all_features": "passed",
+    "minimal_engine_adapter_builds": "passed",
+    "workspace_format": "passed",
+    "documentation_links_checked": 6793,
+    "missing_documentation_links": 0
+  },
+  "authority": [
+    "One staging Source and one original-row visit in the joint owner",
+    "Independent original Source, bit accumulator and changed-root union",
+    "Exact inactive NULL bytes, DATE representations and Int32 padding",
+    "Every selected field qualifies, including empty groups",
+    "Complete expected validation against original properties and independent final candidate Source"
+  ],
+  "retained_failures": [
+    "Initial unit compilation stopped because root accidentally added an argument to unchanged Int32 proof test calls. Those calls were restored byte-for-byte before successful proof execution.",
+    "First full contract retained three obsolete blanket joint refusals; these now compare original/request-only complete positive images without changing Source or expected models."
+  ],
+  "limits": [
+    "Engineering candidate only, no normal save or journal permission",
+    "No required-macro absence or native Access qualification",
+    "Same table; ordinary unindexed and calculation-independent selected targets only",
+    "Text, variable/LVAL, other carriers and table/schema edits remain separate profiles",
+    "Genuine multi-target qualification pending"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/api-first-root.log",
+      "bytes": 954,
+      "sha256": "8445a5714233edfdcd0297d8529eba51e663ecf7905b54c44782be3aadb06d41"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/contract-first-root.log",
+      "bytes": 8009,
+      "sha256": "1279a3d818dd2bf8d223801d5a07ff95876b3f5212d19646be77e14f8d5e3947"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/contract-second-root.log",
+      "bytes": 6187,
+      "sha256": "eac66867b11f25cb833f5af912de9e608468123114e7b466bd4a40bb048e2b8b"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/proof-first-root.log",
+      "bytes": 5603,
+      "sha256": "35785887908a99794e697c2cb8ed21436c6087988f987a7fcde5074b8ae82ad6"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/proof-second-root.log",
+      "bytes": 1382,
+      "sha256": "7fc1bfd1dc93cf3f9264c10e31f1e9172c027d78d53ab18870d93341ee8f39fd"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/mutation-first-root.log",
+      "bytes": 84796,
+      "sha256": "d092cec8f655022c4d0abe64db5d89d5e407a852f3f90debdd48a809eeca6c00"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/strict-first-root.log",
+      "bytes": 403,
+      "sha256": "14b2bf5d4ea4f79f0624e25a814768fc7e1fc7d34df368d843c1da0626351484"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/minimal-first-root.log",
+      "bytes": 72,
+      "sha256": "45d8f7d972875790a6cec7ca48e9acc17c5af68372da1940633becec3b4cd60a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/format-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-dispatch-next-20261031/documentation-first-root.log",
+      "bytes": 53,
+      "sha256": "00bafe56030c691c7ed1296e67a13b39da018299f6b41fc296feca29712af292"
+    }
+  ]
+}

@@ -65,14 +65,13 @@ fn preserved_int32_actual_sql_and_typed_commands_match_complete_images_or_refuse
 }
 
 #[test]
-fn preserved_int32_stale_joint_and_output_failures_preserve_source() {
+fn preserved_int32_joint_copies_and_refusals_preserve_source() {
     let case = model::source(6, 101);
     let directory = tempfile::tempdir().unwrap();
     let source = directory.path().join("source.accdb");
     fs::write(&source, &case.before).unwrap();
     for (ordinal, statement) in [
         "UPDATE Items SET [Number]=12 WHERE ID=-1",
-        "UPDATE Items SET Large_Number=101,Yes_Field=True WHERE ID=1",
         "UPDATE Items SET Large_Number=101,[Number]=12 WHERE ID=1",
         "UPDATE Items SET Large_Number=Calculated WHERE ID=1",
     ]
@@ -89,6 +88,68 @@ fn preserved_int32_stale_joint_and_output_failures_preserve_source() {
             .unwrap();
         assert!(!result.status.success());
         assert!(!output.exists());
+        assert!(fs::read(&source).unwrap() == case.before);
+    }
+    let yes_mask = 13 * 4096 - 1;
+    let yes_bit = 1_u8 << 2;
+    assert_eq!(case.before[yes_mask] & yes_bit, 0);
+    let mut expected = case.expected.clone();
+    expected[yes_mask] |= yes_bit;
+    for typed in [false, true] {
+        let output = directory.path().join(if typed {
+            "joint-typed.accdb"
+        } else {
+            "joint-sql.accdb"
+        });
+        let mut command = Command::new(env!("CARGO_BIN_EXE_tablecraft"));
+        if typed {
+            command
+                .args(["write", "preview-update"])
+                .arg(&source)
+                .arg(&output)
+                .args([
+                    "--set",
+                    "Items",
+                    "Large_Number",
+                    "0",
+                    "int32",
+                    "1000",
+                    "101",
+                ])
+                .args([
+                    "--set",
+                    "Items",
+                    "Yes_Field",
+                    "0",
+                    "boolean",
+                    "false",
+                    "true",
+                ]);
+        } else {
+            command
+                .args([
+                    "query",
+                    "preview-update",
+                    "UPDATE Items SET Large_Number=101,Yes_Field=True WHERE ID=1",
+                    "--database",
+                ])
+                .arg(&source)
+                .arg("--output")
+                .arg(&output);
+        }
+        let result = command.output().unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(result.stderr.is_empty());
+        assert!(
+            String::from_utf8(result.stdout)
+                .unwrap()
+                .contains("Candidate rows\t1\n")
+        );
+        assert!(fs::read(&output).unwrap() == expected);
         assert!(fs::read(&source).unwrap() == case.before);
     }
     let stale = directory.path().join("stale.accdb");
