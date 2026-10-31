@@ -1,11 +1,12 @@
 //! One fitting Short Text replacement profile with retained advanced payloads.
 mod growing;
+mod joint;
 pub(super) mod proof;
 mod stage;
 
 use super::{copy, source};
 use crate::{
-    Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate,
+    Ace16WritePreview, EditError, FittedColumnUpdates, InspectError, NativeImage, SlotScalarUpdate,
     header::check,
     table::mutation::{patch::BytePatch, preview},
 };
@@ -53,6 +54,54 @@ impl NativeImage {
             column,
             updates,
             proof::Observed {
+                bytes: &after,
+                changed_rows: changed,
+            },
+            budget,
+            cancelled,
+        )?;
+        let candidate = self.recapture_fixed_candidate(&after, budget, cancelled)?;
+        source::capture(&candidate, table, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(Ace16WritePreview::from_candidate(
+            self.bytes, after, changed,
+        ))
+    }
+
+    pub(in crate::table::mutation) fn preview_preserved_fitted_updates(
+        self,
+        table: &str,
+        groups: &[FittedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Ace16WritePreview, EditError> {
+        let _span = tracing::debug_span!("native.edit.preserved_fitted_preview").entered();
+        check(budget, cancelled)?;
+        preview::qualify(&self)?;
+
+        let original = source::capture(&self, table, budget, cancelled)?;
+        let (patches, changed) = joint::stage::prepare(&original, groups, budget, cancelled)?;
+        let mut after = copy(self.as_bytes(), budget, cancelled)?;
+        for patch in patches {
+            check(budget, cancelled)?;
+            let end = patch
+                .offset()
+                .checked_add(patch.before().len())
+                .ok_or(EditError::Preservation)?;
+            let bytes = after
+                .get_mut(patch.offset()..end)
+                .ok_or(EditError::Preservation)?;
+            if bytes != patch.before() {
+                return Err(EditError::Preservation);
+            }
+            bytes.copy_from_slice(patch.after());
+        }
+
+        joint::proof::prove(
+            &self,
+            table,
+            groups,
+            joint::proof::Observed {
                 bytes: &after,
                 changed_rows: changed,
             },

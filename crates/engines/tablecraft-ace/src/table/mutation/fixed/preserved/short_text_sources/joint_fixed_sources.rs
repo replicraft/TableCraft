@@ -2,7 +2,7 @@
 use super::super::{joint_fixed_sources::model as fixed_model, source};
 use super::{model as text_model, zero_length_source};
 #[path = "../../../../../../tests/ace16_preserved_scalar_updates_contract/short_text_sources/joint_fixed_sources/model.rs"]
-pub(super) mod model;
+pub(in crate::table::mutation::fixed::preserved) mod model;
 
 use crate::{EditError, NativeImage, WriteBlocker};
 use std::io::Cursor;

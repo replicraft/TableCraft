@@ -94,4 +94,4 @@ fn qualify_preserved_short_text_zero_length_prohibition_as_healthy_original() {
 }
 
 #[path = "short_text_sources/joint_fixed_sources.rs"]
-mod joint_fixed_sources;
+pub(super) mod joint_fixed_sources;

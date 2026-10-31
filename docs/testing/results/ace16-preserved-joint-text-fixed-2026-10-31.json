@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Authored-source joint fitting native checks passed",
+  "scope": "One preserved fitting ordinary Short Text target and ordinary unindexed Boolean/Int32/Int64/Currency/legacy DATE groups on one original table",
+  "source_commit": "a356f1d5",
+  "source_record": {
+    "path": "docs/testing/results/ace16-preserved-joint-text-fixed-sources-2026-10-31.json",
+    "bytes": 5106,
+    "sha256": "1598734203d464939284d2c1d48ef90d997633aa32fefa09d2ce301a69e30020"
+  },
+  "source_constructors_and_expectations_unchanged_since_source_commit": true,
+  "current_source_model": {
+    "path": "crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/short_text_sources/joint_fixed_sources/model.rs",
+    "bytes": 25023,
+    "sha256": "edcd6db52fdfb7d3253bc91cea4d91a64030bc65978b21ab0278a28c18416ed6"
+  },
+  "implementation_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fitted/mod.rs",
+      "bytes": 3755,
+      "sha256": "cfbe169b1f8e2618d5e541d2d1e2f1a178863764a86b377b768e515af09e7a01"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/mod.rs",
+      "bytes": 521,
+      "sha256": "27da6fe80e505c56782461f8103a24af0e521c0290b9673f11cad985a000877e"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/mod.rs",
+      "bytes": 6226,
+      "sha256": "7b853306829262ef06d7c69c0894909b5b12107027c29a826c57cd5c923316ef"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/joint/mod.rs",
+      "bytes": 136,
+      "sha256": "d7e46a4bf60989d9acfaa7f6af6bdcbe5ad5671f65a8fc4f2edee42e07c94eda"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/joint/binding.rs",
+      "bytes": 5472,
+      "sha256": "31be14f6f4f669fd05c41440e0143c28db71efbe5b423a1517e22808ecfa647f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/mod.rs",
+      "bytes": 4387,
+      "sha256": "58adc6a94e735c1bfee10e9a0c60d0e26bd2cf2da6c824585a7c89cda7fee051"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/stage.rs",
+      "bytes": 8049,
+      "sha256": "0cd1403e57d00ccd049df3d24fb7ae4ef711d1264dba29fdbb3afb5f4eecafe8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/binding.rs",
+      "bytes": 5065,
+      "sha256": "593430884795fe9843277b173b49574ae6ae1eb5223d30be5d414cb25ca67042"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/mod.rs",
+      "bytes": 142,
+      "sha256": "beae426b81db32cdf99a1df85b352605d487f685b3c827880b143f3a53cce676"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/proof/fixed.rs",
+      "bytes": 8018,
+      "sha256": "3f66eddd3498ba1194aa5b214b37eb29e2a77252c06706c1ec08ba2c57f8490a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/proof/text.rs",
+      "bytes": 1300,
+      "sha256": "f2462c29afcf3a9e91978ac69aa5faf9b96fc016d52729769cc208e1098e2cbb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/proof.rs",
+      "bytes": 11246,
+      "sha256": "e492571e8055bbf626d6066b8555f948b2252fa4719c7808167373024ca9aa89"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/stage.rs",
+      "bytes": 11094,
+      "sha256": "f95efe0394e18f91ffa4e3068d33b0a7626142a00a9d7b38386efaa6a6b9147a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/tests.rs",
+      "bytes": 13718,
+      "sha256": "33146a3a0ea7e341fc11ae1106c678bb2849e4ec0c35028b4d81eb8ff8b55aa9"
+    }
+  ],
+  "principal_complete_image_comparisons": 72,
+  "checks": [
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/native-candidates-first-root.log",
+        "bytes": 1192,
+        "sha256": "c9e2cd8dfd2048cc898feda1493eb225c973de42510edc18928d90148509c8e4"
+      },
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/mutation-batch-first-root.log",
+        "bytes": 85937,
+        "sha256": "750664057cfbcbe2bb84263880b775f6ff5a68109c09727eca8e33b883b58b0f"
+      },
+      "exit_code": 0,
+      "passed": 616,
+      "ignored": 10
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/native-contract-first-root.log",
+        "bytes": 6303,
+        "sha256": "22a9c90a7f9a268bb29e17c933e511ba54e685fb90813e079a7152c5baecdffd"
+      },
+      "exit_code": 0,
+      "passed": 54,
+      "ignored": 2
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/source-assertion-final-root.log",
+        "bytes": 551,
+        "sha256": "f78435a48478e621d6608d77ef10abe7bc90b58c3d5f5334e70105643858d104"
+      },
+      "exit_code": 0,
+      "passed": 1,
+      "ignored": 0
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/strict-batch-corrected-root.log",
+        "bytes": 403,
+        "sha256": "2a238807a352d4a90ed00f9378079c20f77de883bc2cbad9bf4ee13a9ca24e7e"
+      },
+      "exit_code": 0,
+      "passed": null,
+      "ignored": null
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/minimal-batch-first-root.log",
+        "bytes": 72,
+        "sha256": "1f5852af1ed7025b5728e842e3c3c2f5d2f720d25557d84c38f1ffda99719c59"
+      },
+      "exit_code": 0,
+      "passed": null,
+      "ignored": null
+    }
+  ],
+  "retained_initial_diagnostic": {
+    "log": {
+      "path": ".cache/ace16-preserved-joint-text-fixed-stage-next-20261031/strict-batch-first-root.log",
+      "bytes": 2270,
+      "sha256": "03a8b69406e4dbb3dfec1106446472a1be1a80589acc7aac5b3dc2d43029d3d0"
+    },
+    "exit_code": 101,
+    "passed": null,
+    "ignored": null
+  },
+  "notes": [
+    "The initial strict check found an assertion-only range loop in the fixture complement checker. An equivalent iterator rewrite changes no constructor or expected bytes; the final 90-view source assertion gate passes.",
+    "Source helper module visibility widened only for the sibling causal tests after source qualification.",
+    "Existing native blanket mixed-refusal assertion migrated to independent Text golden plus literal Boolean bit; unrelated refusals remain.",
+    "No normal save, journal, required macro coverage, generated-file or Microsoft Access qualification follows."
+  ]
+}

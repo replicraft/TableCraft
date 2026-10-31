@@ -1,6 +1,6 @@
 use super::super::{name_work, source::Source, unique};
 use crate::{
-    EditError, InspectError, NativeColumn, SlotScalarUpdate, WriteBlocker,
+    EditError, InspectError, NativeColumn, SlotScalarUpdate, TableSchema, WriteBlocker,
     header::check,
     table::{
         mutation::{page_update::record, patch::BytePatch, rows, slot::storage},
@@ -129,38 +129,14 @@ pub(super) fn prepare<'a>(
         if equal(update.expected(), update.value(), budget, cancelled)? {
             continue;
         }
-        let layout = record_layout::parse(&source.data, schema, budget)?;
-        let start = *layout
-            .offsets
-            .get(field.field.variable)
-            .ok_or(InspectError::Malformed)?;
-        let end = *layout
-            .offsets
-            .get(field.field.variable + 1)
-            .ok_or(InspectError::Malformed)?;
-        let preserved = layout
-            .offsets
-            .last()
-            .ok_or(InspectError::Malformed)?
-            .checked_sub(end.checked_sub(start).ok_or(InspectError::Malformed)?)
-            .ok_or(InspectError::Malformed)?;
-        let capacity = layout
-            .data_end
-            .checked_sub(preserved)
-            .ok_or(InspectError::Malformed)?;
-        let payload = storage::encode_declared(field, update.value(), capacity, budget, cancelled)?;
-        let after = record::replace_payload(
+        let after = rebuild(
             schema,
             selected,
             &source.data,
-            &payload,
-            !matches!(update.value(), Value::Null),
+            update.value(),
             budget,
             cancelled,
         )?;
-        if after.len() != source.data.len() {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
         let end = source
             .offset
             .checked_add(source.data.len())
@@ -191,7 +167,7 @@ pub(super) fn prepare<'a>(
     Ok((patches, count))
 }
 
-fn equal(
+pub(super) fn equal(
     left: &Value,
     right: &Value,
     budget: &mut ResourceBudget,
@@ -211,7 +187,7 @@ fn equal(
     Ok(left == right)
 }
 
-fn validate(
+pub(super) fn validate(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,
@@ -226,4 +202,54 @@ fn validate(
         .charge(Resource::Steps, work)
         .map_err(InspectError::from)?;
     storage::validate(field, value)
+}
+
+// Preserve the original single-field serializer and work order for both callers.
+pub(super) fn rebuild(
+    schema: &TableSchema,
+    selected: usize,
+    before: &[u8],
+    value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let layout = record_layout::parse(before, schema, budget)?;
+    let start = *layout
+        .offsets
+        .get(schema.columns()[selected].field.variable)
+        .ok_or(InspectError::Malformed)?;
+    let end = *layout
+        .offsets
+        .get(schema.columns()[selected].field.variable + 1)
+        .ok_or(InspectError::Malformed)?;
+    let preserved = layout
+        .offsets
+        .last()
+        .ok_or(InspectError::Malformed)?
+        .checked_sub(end.checked_sub(start).ok_or(InspectError::Malformed)?)
+        .ok_or(InspectError::Malformed)?;
+    let capacity = layout
+        .data_end
+        .checked_sub(preserved)
+        .ok_or(InspectError::Malformed)?;
+    let payload = storage::encode_declared(
+        &schema.columns()[selected],
+        value,
+        capacity,
+        budget,
+        cancelled,
+    )?;
+    let after = record::replace_payload(
+        schema,
+        selected,
+        before,
+        &payload,
+        !matches!(value, Value::Null),
+        budget,
+        cancelled,
+    )?;
+    if after.len() != before.len() {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    Ok(after)
 }

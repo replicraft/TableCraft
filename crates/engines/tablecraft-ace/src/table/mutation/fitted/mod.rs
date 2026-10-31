@@ -9,7 +9,10 @@ mod variables;
 pub use request::FittedColumnUpdates;
 
 use super::{Ace16WritePreview, EditError, gates, preview};
-use crate::{NativeImage, table::indexes::index_row_patches};
+use crate::{
+    InspectError, NativeImage, inspect_table_schema,
+    table::{indexes::index_row_patches, mutation::fixed::preserved},
+};
 use tablecraft_core::limits::ResourceBudget;
 
 impl NativeImage {
@@ -19,6 +22,10 @@ impl NativeImage {
     /// checked jointly. Text prefers declared Unicode compression when its units
     /// and existing capacity allow it, including the marker-only empty form;
     /// legal raw UTF16 remains available when its smaller form alone fits.
+    /// Preservation-qualified mixed schemas admit one unindexed Short Text
+    /// target with ordinary unindexed Boolean, Int32, Int64, Currency or legacy
+    /// DateTime siblings outside calculated dependencies. Their unchanged
+    /// advanced fields remain opaque and each changed logical row counts once.
     /// No DATA/INDEX allocation, forwarding placement, save,
     /// journal or macro permission is introduced by this engineering preview.
     pub fn preview_ace16_fitted_updates(
@@ -31,6 +38,28 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.edit.fitted_preview").entered();
         request::check(budget, cancelled)?;
         preview::qualify(&self)?;
+        if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
+            return Err(InspectError::StructureLimit.into());
+        }
+
+        // Choose from original metadata before ordinary full-row admission.
+        // Projected rich schemas retain their own complete preservation proof.
+        let schema = inspect_table_schema(
+            &mut self.reader(),
+            self.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        if preserved::projected(&schema, budget, cancelled)? {
+            if let [FittedColumnUpdates::Variable { column, updates }] = groups {
+                return self.preview_ace16_preserved_text_updates(
+                    table, column, updates, budget, cancelled,
+                );
+            }
+            return self.preview_preserved_fitted_updates(table, groups, budget, cancelled);
+        }
+
         let original = gates::before_slot(&self, table, budget, cancelled)?;
         let staged = stage::build(&self, &original, groups, budget, cancelled)?;
         let keys = staged.keys(budget, cancelled)?;

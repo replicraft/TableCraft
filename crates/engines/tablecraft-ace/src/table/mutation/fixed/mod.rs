@@ -4,7 +4,7 @@ mod decimal;
 mod encoding;
 pub(super) mod extended;
 pub(in crate::table::mutation) mod masked;
-mod preserved;
+pub(in crate::table::mutation) mod preserved;
 mod preview;
 mod update;
 

@@ -643,9 +643,13 @@ pub(crate) fn assert_protected(case: &Case) {
                 }
             }
         }
-        for at in old.absolute..old.absolute + old.offsets[0] {
+        for (offset, value) in expected[old.absolute..old.absolute + old.offsets[0]]
+            .iter()
+            .enumerate()
+        {
+            let at = old.absolute + offset;
             assert!(
-                case.before[at] == expected[at] || prefix_allowed.contains(&at),
+                case.before[at] == *value || prefix_allowed.contains(&at),
                 "unselected prefix {at}"
             );
         }
