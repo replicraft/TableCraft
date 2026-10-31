@@ -66,3 +66,6 @@ impl NativeImage {
         ))
     }
 }
+
+#[cfg(test)]
+mod genuine_sources;

@@ -10488,3 +10488,30 @@ no writer or native Microsoft Access save/reopen has been run for these files.
 System-generated timestamps/GUIDs prevent a byte-identical regeneration claim.
 The initial Java compile failure and the separate zero-child controller preflight
 failure are preserved in the [source record](results/ace16-preserved-int32-genuine-sources-2026-10-30.json).
+
+
+## Preserved Short Text SDK originals (2026-10-30)
+
+The [creation-only recipe](preserved_short_text_originals/PreservedShortTextOriginals.java)
+is repository-authored synthetic input using pinned Jackcess 5.0.4 public
+builders. It creates nullable ordinary Short_Text beside stored calculations,
+Memo/OLE and attachments, with a separate Sentinel table. It reuses the unchanged
+bounded-channel class and the prior generic readonly
+[getter](preserved_int32_originals/PreservedInt32Originals.java). No third-party
+fixture or implementation is copied. Runtime JARs, classes and generated database
+binaries remain private.
+
+| Original | Bytes | SHA-256 |
+| --- | ---: | --- |
+| V2016 (header 5) | 458752 | `37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6` |
+| V2019 (header 6) | 528384 | `dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3` |
+
+All five bounded source children and one strongest native SOURCE function pass;
+the latter admits both originals without a writer/no-op preview. A first relative
+environment path failed before file admission and is retained separately from the
+unchanged helper's passing absolute-path invocation. No original was patched.
+Expected images and candidate/readback qualification remain pending; these are
+SDK-created sources, not native Access save evidence. The
+[source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json)
+pins actual generation and inspection artifacts, distinct from recipe
+repeatability and system-generated timestamps/GUIDs.

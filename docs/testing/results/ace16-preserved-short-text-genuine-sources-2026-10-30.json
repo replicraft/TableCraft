@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "SOURCE-only independently generated mixed-schema V2016/V2019 Short Text originals; no expected/candidate construction",
+  "status": "Five bounded source processes and strongest native source admission passed; expected/candidate qualification pending",
+  "recipe": {
+    "ownership": "Repository-authored creation-only synthetic recipe; reviewed Jackcess public builders; no third-party fixture copied",
+    "maintained_source": {
+      "path": "docs/testing/preserved_short_text_originals/PreservedShortTextOriginals.java",
+      "bytes": 5812,
+      "sha256": "86333c401b8be6f246d5503c43dd154fe1bb751e8292dc07bca5c6cd1d9b9462"
+    },
+    "historical_compiled_source": {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/PreservedShortTextOriginals.java",
+      "bytes": 5812,
+      "sha256": "86333c401b8be6f246d5503c43dd154fe1bb751e8292dc07bca5c6cd1d9b9462"
+    },
+    "bounded_channel": "Reused unchanged BoundedFileChannel.class from qualified prior source phase; no helper copy",
+    "readonly_getter": "Unchanged PreservedInt32Originals --inspect and existing qualified class files; no getter recompile",
+    "repeatability": "Repeatable row recipe, not byte-identical system timestamps/GUID/physical allocation"
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    }
+  ],
+  "observed": {
+    "source5": {
+      "planned": 5,
+      "started": 5,
+      "completed": 5,
+      "all_exit_zero": true,
+      "receipt": {
+        "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/source-receipt.json",
+        "bytes": 17168,
+        "sha256": "c6274c26e630569149bfaf2458a7343ec1e44e56b4bde1566e3d1311de002f48"
+      },
+      "plan": {
+        "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/execution-plan.json",
+        "bytes": 8559,
+        "sha256": "70e649f3f34478f6240e6b099360fc06bfcec7c57c9179559d8dded976dabbee"
+      },
+      "classes": {
+        "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/class-inventory.json",
+        "bytes": 233,
+        "sha256": "d522eef8c862d16d4483c939871fb938fdadea8a7a3bb529d15f9ae1581592d9"
+      }
+    },
+    "native_source_admission": {
+      "functions_passed": 1,
+      "originals_admitted": 2,
+      "writer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-second-root.log",
+        "bytes": 418,
+        "sha256": "e4c3b34a23533e5adbc1108ad6820444b591ae9dec62888ebd2429d275ffe0f8"
+      },
+      "helper": {
+        "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/genuine_sources.rs",
+        "bytes": 7524,
+        "sha256": "808efcbabe2a1bd4c63e7d0eb5fd6a9eddb26cadd3b2556059b1d28b9376e186"
+      }
+    },
+    "promotion_checks": {
+      "strict": {
+        "exit_code": 0,
+        "scope": "ACE all targets and features",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/strict-source-root.log",
+          "bytes": 1487,
+          "sha256": "75f31f010e9c7b0ab0aa33fd7a29d7c828cdfe5b68756b058fa176277710385e"
+        }
+      },
+      "formatter": {
+        "exit_code": 0,
+        "scope": "Workspace",
+        "log": {
+          "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/fmt-source-root.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "documentation_links": {
+        "targets": 6746,
+        "missing": 0
+      },
+      "retained_source_pins": "All source inputs, originals and new classes rehashed exact after native admission"
+    }
+  },
+  "history": [
+    {
+      "phase": "First ignored native SOURCE invocation",
+      "result": "Relative source-directory environment resolved from crate test cwd; file open returned OS NotFound before source admission",
+      "functions_passed": 0,
+      "functions_failed": 1,
+      "log": {
+        "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/native-source-first-root.log",
+        "bytes": 1363,
+        "sha256": "648164eb65174ba802ef0560f26b09d35ad18b76b924b4d7ce8e60923b50ef30"
+      },
+      "correction": "Absolute explicit source-directory environment; helper, source and generator bytes unchanged"
+    }
+  ],
+  "profile": {
+    "table": "PreservedRows",
+    "target": "Short_Text",
+    "native": "Ordinary nullable TEXT40, compressed Unicode, Required false, AllowZeroLength true",
+    "original_values": [
+      "alpha",
+      null,
+      "omega"
+    ],
+    "companions": "Manual ID primary, indexed Base, stored Cached [Base]*2 values999/-333/0, Boolean/Memo/OLE/Files plus Sentinel",
+    "attachments": [
+      2,
+      1,
+      0
+    ],
+    "PublishToWeb": "BYTE0 at original creation only",
+    "physical_capacity": "Not inferred from authored fixture; independent raw framing measurement required before literal requests/expectations"
+  },
+  "pins": [
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source-plan.json",
+      "bytes": 9656,
+      "sha256": "55062cd76be8f08de19a67de5741efd67bf873970ffb52ca71e8e80dd5e1891b"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/source-first-private-freeze.json",
+      "bytes": 4054,
+      "sha256": "d775fc5cc4596ca1e6803f3453ba99e8049df2b17efe3371f95fbb43bca67879"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/controller-freeze.json",
+      "bytes": 1841,
+      "sha256": "2a7e9472650dd60e61d85db62465f36a03b325361601ffc96ae5a0d581bf6434"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-next-20261030/native-source-helper-freeze.json",
+      "bytes": 1810,
+      "sha256": "b566261f9eb281ccc591282b5fae65fc4b80198efed92a2855fa950f1530060c"
+    }
+  ],
+  "pending": [
+    "Independent original-only record/capacity proof",
+    "Frozen complete expected images and literal requests",
+    "Committed-producer candidate comparisons",
+    "Fresh readonly SDK candidate readbacks"
+  ],
+  "limits": [
+    "No native Microsoft Access creation/save/reopen evidence",
+    "No required-event discovery/absence or normal ACE save/journal authority",
+    "No original patches, getter changes or writer calls in source qualification"
+  ],
+  "retained_getter_inputs": [
+    {
+      "path": "docs/testing/preserved_int32_originals/PreservedInt32Originals.java",
+      "bytes": 15406,
+      "sha256": "df508688eede7fd12330b8be69eec7f765de5418c06746897a76f0b4e2c64ea8"
+    },
+    {
+      "path": "docs/testing/parent_index_split_originals/BoundedFileChannel.java",
+      "bytes": 3952,
+      "sha256": "2191d11f88f3158e83929591acee803553c703e06127839caa7143340f8afd7e"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/classes/PreservedInt32Originals.class",
+      "bytes": 18503,
+      "sha256": "61425000c04857c3b675c9cf71f6f65a5a1dfafe20923c2c6fa92b3795e15d6f"
+    },
+    {
+      "path": ".cache/ace16-preserved-int32-genuine-source-second-20261030/classes/BoundedFileChannel.class",
+      "bytes": 3080,
+      "sha256": "608c31190c2bcbc9582fd0332813b8697820604b208b9d17c7b1548791c3916b"
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+      "bytes": 1407244,
+      "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+    }
+  ]
+}
