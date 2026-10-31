@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "typed_native_creation_shared_host",
+  "status": "local_macos_acceptance_passed",
+  "engine_commit": "a3af5f04",
+  "api": "CreationDestination::prepare_typed",
+  "working_profile": "one table; 1..16 fixed scalar declarations; 0..64 rows subject to single DATA-page fit; exact Value carriers and nonBoolean NULL",
+  "publication": "same RequiredOutput, PreparedCreation and receipt as Int32; no overwrite or downgrade",
+  "observed": {
+    "creation_suite_functions_passed": 6,
+    "new_typed_functions": 2,
+    "new_typed_complete_image_matches": 10,
+    "retained_int32_complete_image_matches": 6,
+    "invalid_controls": [
+      "same-width wrong numeric carrier",
+      "Boolean NULL",
+      "empty unsupported Text schema"
+    ],
+    "directory_retarget_and_publication_failure_controls_retained": true,
+    "cli_creation_regression_functions_passed": 6,
+    "access_cli_all_target_all_feature_strict_passed": true,
+    "access_standalone_creation_feature_check_passed": true,
+    "formatting_passed": true,
+    "documentation_links": {
+      "targets": 6878,
+      "missing": 0
+    }
+  },
+  "evidence": {
+    "engine": {
+      "path": "docs/testing/results/ace16-native-fixed-creation-2026-10-31.json",
+      "bytes": 5180,
+      "sha256": "7ad65d44869eb5c5a0ce386788f2c664ac429ccee4ce5338144344db2d065193"
+    },
+    "logs": [
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/typed-first-root.log",
+        "bytes": 1133,
+        "sha256": "1071d4399871263cf6b355f62e40f3d9e151a86834a5c4746b847739f19a0cb2"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/strict-first-root.log",
+        "bytes": 526,
+        "sha256": "2047696f53ec4bb428ae975cce04f35af73411ec31b0a17bf82ed4f98713e2b0"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/cli-regression-root.log",
+        "bytes": 1400,
+        "sha256": "7bd39cfa127609d5585f41ba5d5b6b9f9bda38407572fcfc44e8b59eed4dd58e"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/minimal-first-root.log",
+        "bytes": 301,
+        "sha256": "8eb0450fb7a02d8c092d9e34daadaff9d765740eb18ee4dc0dfe611ea5ca28c7"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/fmt-first-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/links-root.log",
+        "bytes": 53,
+        "sha256": "ea1b22b89dca21bde422b1a247476fbf3a043b2d48e3f0b2666760921ffa1f47"
+      },
+      {
+        "path": ".cache/ace16-native-create-typed-access-next-20261031/fmt-final-root.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "existing_service_inverse": {
+      "path": ".cache/ace16-native-create-typed-access-next-20261031/inverse.json",
+      "bytes": 531,
+      "sha256": "37b09977ee99fabee0e2cff6e15c37182e79c3a5736f57bb1c1b2507bcec15d5"
+    }
+  },
+  "limits": [
+    "CLI remains Int32-only",
+    "No additional producer-output SDK reads in this phase; complete files equal independently qualified source originals",
+    "Windows runtime and native Access creation/open/save unrun",
+    "Normal imported ACE editing, macro absence, recovery and shared-file coordination remain unchanged"
+  ]
+}

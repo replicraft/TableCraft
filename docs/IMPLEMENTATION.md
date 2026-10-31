@@ -24,12 +24,14 @@ regressions pass 187 functions, alongside minimal/all-feature strict checks.
 The [creation contract](testing/ACE16_DATABASE_CREATION.md) separates source
 observations, construction and native Access qualification.
 
-The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md) and
-[`create` command](cli/NATIVE_CREATION.md) currently expose Int32 inputs. Counts
+The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md) now
+provides `prepare_typed` for the ten fixed families; ten exact file publications
+and typed no-file refusal controls pass. The [`create` command](cli/NATIVE_CREATION.md)
+retains Int32 inputs. Counts
 precede publication for complete report preparation; typed publication/output
 failures retain known visibility and durability facts. Six complete images pass
-both services, with actual create/read/check/no-overwrite checks. Broader types
-in the host, multiple tables, variable fields and native Access create/save
+both services, with actual create/read/check/no-overwrite checks. Broader CLI inputs,
+multiple tables, variable fields and native Access create/save
 qualification remain unfinished. Normal imported ACE saves remain blocked.
 
 ## Shared offline write sessions

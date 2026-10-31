@@ -4,6 +4,10 @@
 one table of ordinary Int32 columns. Existing files, directories and symlinks
 are never overwritten.
 
+The shared Access typed creation API is separate. This command continues to use
+the Int32 convenience path: `--column` supplies names, and TSV does not gain
+additional scalar kinds or a NULL token. See the [shared service](../access/writes/FRESH_DATABASE_CREATION.md#typed-fixed-scalar-preparation).
+
 ```sh
 tablecraft create new.accdb --table Items --column Id --column Score
 ```
