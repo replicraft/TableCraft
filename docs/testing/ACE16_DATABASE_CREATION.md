@@ -132,3 +132,11 @@ forwards typed declarations and exact Value rows through `prepare_typed`, then
 uses the existing required fresh publisher and receipt. Its ten fixed/IEEE
 whole-file publications pass. The [CLI](../cli/NATIVE_CREATION.md) retains its
 Int32 input syntax; this library method adds no imported-file write permission.
+
+### Stored-text and variable-field source qualification
+
+[Variable-field sources](ACE16_VARIABLE_CREATION_SOURCES.md) now qualify exact
+Text/Binary/Decimal declarations, NULL/empty masks, UTF-16 and retained Decimal
+scale before adding those families to the creator. Separately,
+[catalog-name sources](ACE16_CATALOG_NAME_SOURCES.md) qualify escaped stored
+names and raw definition names before repairing the leading-BOM name bug.

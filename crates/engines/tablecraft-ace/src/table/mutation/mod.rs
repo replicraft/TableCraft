@@ -89,3 +89,9 @@ mod creation_fixed_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod creation_fixed_float_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_variable_sources;
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod creation_catalog_name_sources;

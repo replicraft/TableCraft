@@ -128,3 +128,9 @@ pub mod canonical_fixed_creation;
 
 /// Independent special IEEE payload continuations of fixed creation sources.
 pub mod canonical_fixed_float_creation;
+
+/// Independent variable-field creation sources and raw BOM reader control.
+pub mod canonical_variable_creation;
+
+/// Independent catalog-name encoding sources and raw column-name control.
+pub mod canonical_catalog_names;

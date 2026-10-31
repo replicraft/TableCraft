@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_catalog_name_encoding_sources",
+  "status": "source_read_qualification_passed",
+  "envelope_source_record": "docs/testing/results/ace16-canonical-creation-source-v2-2026-10-31.json",
+  "source_before_repair_execution": true,
+  "production_creator_or_encoder_imports": false,
+  "source_freeze": {
+    "path": ".cache/ace16-native-catalog-name-sources-next-20261031/private-freeze.json",
+    "sha256": "8d2c843b803f779a9bbb3357d0958e4ae231e4cecd661185cb7efa83f8ad17d6"
+  },
+  "cases": [
+    {
+      "id": "table-bom",
+      "table_utf16_units": 1,
+      "catalog_name_bytes": 5,
+      "catalog_free_bytes": 3461
+    },
+    {
+      "id": "table-mixed",
+      "table_utf16_units": 7,
+      "catalog_name_bytes": 17,
+      "catalog_free_bytes": 3449
+    },
+    {
+      "id": "table-boundary",
+      "table_utf16_units": 64,
+      "catalog_name_bytes": 131,
+      "catalog_free_bytes": 3335
+    },
+    {
+      "id": "column-raw",
+      "table_utf16_units": 5,
+      "catalog_name_bytes": 10,
+      "catalog_free_bytes": 3456,
+      "raw_td_changed_bytes": 10
+    }
+  ],
+  "files": 4,
+  "bytes_per_file": 36864,
+  "user_rows": 0,
+  "source_complement": "Outside DATA4 unchanged except exact ten TD7 bytes in column-raw; seven other catalog records and directory entries unchanged",
+  "validation": {
+    "static_review": "passed",
+    "native_gate": {
+      "status": "passed_first_attempt",
+      "tests": 1,
+      "sources": 4,
+      "seconds": 0.01,
+      "log": ".cache/ace16-native-catalog-name-sources-next-20261031/native-first-root.log",
+      "sha256": "b8cc13b63158352a655a9c94323dd832af8bfa4af7b2924db84787ed930b0cf2"
+    },
+    "export": {
+      "status": "passed_first_attempt",
+      "tests": 1,
+      "sources": 4,
+      "seconds": 0.0,
+      "freeze": ".cache/ace16-native-catalog-name-sources-next-20261031/originals-first-freeze-root.json",
+      "sha256": "5c4eebc3b82abca524344d01e9fdda31f5100b2a87f1d328a1aade76c3511493"
+    },
+    "sdk_reads": {
+      "status": "first_actual_four_calls_passed",
+      "calls": 4,
+      "failed": 0,
+      "getter_and_classes": "unchanged canonical V2",
+      "observations": ".cache/ace16-native-catalog-name-sources-next-20261031/getter/observations-driver-v2"
+    },
+    "saved_verifier": {
+      "status": "passed",
+      "complete_images": 4,
+      "whole_sdk_observations": 4,
+      "child_calls": 0,
+      "writer_calls": 0,
+      "log": ".cache/ace16-native-catalog-name-sources-next-20261031/getter/saved-driver-v2-first-root.log",
+      "sha256": "15d6641f562f5203d55d4e00870a6fb5828deb40f06063d727e975dcd459c8ca"
+    },
+    "ordinary_ci_hash_anchor": {
+      "status": "passed",
+      "sources": 4
+    },
+    "strict_and_format": {
+      "status": "passed"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "phase": "driver preflight",
+      "sdk_calls": 0,
+      "observations_written": 0,
+      "cause": "argv_prefix key absent; reader authority is under reader_closure",
+      "record": ".cache/ace16-native-catalog-name-sources-next-20261031/getter/driver-preflight-first-root.json",
+      "sha256": "29fa9298475449544d87d2283a49d2b63737b9b491a1a0c3021e179c40d748a3",
+      "source_or_executable_changes": false
+    },
+    {
+      "phase": "premature saved verification",
+      "cause": "FileNotFound for absent observations from zero-call driver attempt",
+      "log": ".cache/ace16-native-catalog-name-sources-next-20261031/getter/saved-first-root.log",
+      "sha256": "0076b74321e1fcfbbfaacc55c958e6c700a74a6c346f1651d730180c1f4e5910"
+    }
+  ],
+  "repair_producer_execution_claimed": false,
+  "limits": [
+    "No native Access or Windows qualification",
+    "No imported ACE mutation, normal save or macro permission",
+    "Existing canonical header uncertainties unchanged"
+  ],
+  "final_checks": {
+    "status": "passed",
+    "strict": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-strict-second-root.log",
+      "bytes": 184,
+      "sha256": "df547c2acc8646509c5fdf39d65e19a7c6fedfe9dbef2577871e3e64fb07bf03"
+    },
+    "strict_seconds": 15.71,
+    "format": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-fmt-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hash_anchors": {
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-hashes-first-root.log",
+      "bytes": 920,
+      "sha256": "df5e747f5fdd5ba28fb5c032476e914a00c52b73880ebe1d3576c1241bcfcd3a"
+    },
+    "retained_strict_failure": {
+      "outcome": "ENOSPC before complete all-target checking; terminal failure confirmed; only ordinary incremental cache removed; -j 2 retry passed",
+      "log": {
+        "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-final-strict-root.log",
+        "bytes": 3490,
+        "sha256": "dc556ebe790c01282e8d8ed1f4305762df28b35f53b589aca45ea9a095771ff2"
+      }
+    },
+    "documentation_links": {
+      "status": "passed",
+      "targets": 6884,
+      "missing": 0,
+      "path": ".cache/ace16-native-catalog-name-sources-next-20261031/source-links-root.log",
+      "sha256": "3bfcee6720bb40ba257ae06e00eeab61e3f88570e0218dea820446f935df44c4"
+    }
+  }
+}

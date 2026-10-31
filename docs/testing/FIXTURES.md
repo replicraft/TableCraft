@@ -10648,3 +10648,14 @@ adds five two-row originals derived only by four literal Float/Double payload
 spans. Independent SDK reads retain subnormals, infinities and asymmetric quiet
 and signalling NaNs exactly on the recorded JVM. All other bytes remain equal
 to the qualified signed-zero source; the earlier five originals remain unchanged.
+
+### Variable fields and catalog names (2026-10-31)
+
+The [variable sources](ACE16_VARIABLE_CREATION_SOURCES.md) add five independently
+authored Text/Binary/Decimal cases and a separate raw-BOM reader control. The
+[catalog-name sources](ACE16_CATALOG_NAME_SOURCES.md) independently rebuild
+stored names and protect raw column-definition names. They reuse only the owned
+canonical envelope; no SDK template or production encoder supplies their bytes.
+Complete native/SDK observations and saved whole-file comparisons pass for all
+ten originals. Generated files and reader artifacts remain private. These are
+source/read results, not producer or Microsoft Access save qualification.
