@@ -392,3 +392,6 @@ mod int32_api;
 
 #[path = "ace16_preserved_scalar_updates_contract/short_text_sources.rs"]
 mod short_text_sources;
+
+#[path = "ace16_preserved_scalar_updates_contract/joint_fixed_sources.rs"]
+mod joint_fixed_sources;

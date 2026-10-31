@@ -208,7 +208,7 @@ pub(super) fn prepare_bound(
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;
 
 #[cfg(test)]
 mod genuine_sources;

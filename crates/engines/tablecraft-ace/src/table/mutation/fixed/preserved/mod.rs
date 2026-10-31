@@ -181,3 +181,6 @@ mod growth_sources;
 
 #[cfg(test)]
 mod fixed_scalar_sources;
+
+#[cfg(test)]
+mod joint_fixed_sources;

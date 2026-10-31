@@ -1,7 +1,7 @@
 //! Reuse the existing loaded rich owner and the exact public SOURCE derivative.
 use super::super::larger_capture_tests::preserved_model as rich;
 #[path = "../../../../../../tests/ace16_preserved_scalar_updates_contract/int32_sources/model.rs"]
-mod model;
+pub(in crate::table::mutation::fixed::preserved) mod model;
 
 use crate::{EditError, FixedColumnUpdates, FixedScalarUpdate, NativeImage};
 use std::io::Cursor;

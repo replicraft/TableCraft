@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "scope": "Read-only source-first qualification for joint preserved Boolean, Int32, Int64, Currency and legacy DATE engineering updates",
+  "observed": {
+    "recipes_per_header": 27,
+    "positive_pairs_per_header": 19,
+    "healthy_refusal_originals_per_header": 8,
+    "original_views": 54,
+    "expected_views": 38,
+    "complete_header_6_source_admissions": 46,
+    "complete_header_5_column_refusals": 46,
+    "source_integration_functions_passed": 1,
+    "native_source_functions_passed": 1,
+    "strict_all_targets_all_features": "passed",
+    "workspace_format": "passed",
+    "joint_producer_calls": 0
+  },
+  "preservation": [
+    "Both shared mask bytes",
+    "Overlapping row sets and changed-root union",
+    "Reversed groups and request order",
+    "Exact DATE aliases",
+    "Inactive NULL bytes and nonzero Int32 padding",
+    "Indexes, stored calculations, opaque values and attachments"
+  ],
+  "retained_observations": "The first native source pass emitted an unused required_patch warning. Additional healthy Required-source assertions consume that field; the second native run and strict checks pass. No expected bytes changed.",
+  "limits": [
+    "Source admission only; no new writer permission",
+    "No native Access comparison or normal ACE save qualification",
+    "Header-5 rich sources retain their unsupported Extended Date sibling refusal"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-source-next-20261031/source-integration-first-root.log",
+      "bytes": 536,
+      "sha256": "88e01566d7dca81af9e276c60413063e8ea0f7d6b62c5109af231a37e44c70ba"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-source-next-20261031/source-native-first-root.log",
+      "bytes": 1033,
+      "sha256": "455cb98589fe9f1e9683acf6c07b996477c4f26dea1e44111e9b44814a377cc5"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-source-next-20261031/source-native-second-root.log",
+      "bytes": 515,
+      "sha256": "d2063cddb248a2130f6e0d31d2d2367113dbfe1110d21f16e9a2c9b76d8616a1"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-source-next-20261031/source-strict-first-root.log",
+      "bytes": 184,
+      "sha256": "f66b77109d0f209c161fa419ab09c446d6c71148b4e181480e3072f535da555a"
+    },
+    {
+      "path": ".cache/ace16-preserved-joint-fixed-source-next-20261031/source-format-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
