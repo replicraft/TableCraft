@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "status": "Fourteen original-only expectations passed native Source admission before any candidate call",
+  "producer_revision_for_next_phase": "510b4824d436e26c71c64c12306f198b2a6ef219",
+  "sources": [
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h5.accdb",
+      "bytes": 458752,
+      "sha256": "37768ba455ce2467a650858bfb627d91aad7758cac57ee7967f524f9c216aba6"
+    },
+    {
+      "path": ".cache/ace16-preserved-short-text-genuine-source-first-20261030/sources/h6.accdb",
+      "bytes": 528384,
+      "sha256": "dd0d0aba5c738040ae10abb8273ec36071ce760ac0afcb48f6579d3e7bb43ba3"
+    }
+  ],
+  "request_inventory": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/requests.json",
+    "bytes": 25079,
+    "sha256": "13ed068efd72c004e591ff326cd63558c62e66a96a693cb92204dbf49a1fe81c"
+  },
+  "original_bindings": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/original-bindings.json",
+    "bytes": 2874,
+    "sha256": "cb905dac3c6b4cc50186fb9739c41c2ca4f2b0b5de6e829ff2c2fe2b8de4333c"
+  },
+  "original_freeze": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected/input-freeze.json",
+    "bytes": 10582,
+    "sha256": "3157a0cde47354f062396526493549c0221dcab1aa60acd0a7bb130706072704"
+  },
+  "expectations": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/expectations.json",
+    "bytes": 48241,
+    "sha256": "0d2b72ac53836cb57d6967112015ad796b12ff96d6f7bd88f49e6453aec0e1f0"
+  },
+  "expected_report": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-expected-first-20261031/report.json",
+    "bytes": 365,
+    "sha256": "b2743795704c7b889420ffeb58405806ff30d43c815ad7f68cb9b3df9f879445"
+  },
+  "fresh_original_source_log": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/original-source-first-root.log",
+    "bytes": 530,
+    "sha256": "af70ddf702966cc5b2252143da90fda94a8ba9c162aa2962eb7681a4ece29f33"
+  },
+  "expected_source_log": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/expected-source-first-root.log",
+    "bytes": 263,
+    "sha256": "fbf1dd18f527791db8b1d4335ebb472c7806b8bdc48bcd04b37afb1c1b57dad9"
+  },
+  "source_test_artifact": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/retained-source-test/tablecraft-ace-source-tests",
+    "bytes": 68280544,
+    "sha256": "dfea74b04379286336ee8f8a8bd9b23aad524418ad3cf9be695b17d4b8c425e3"
+  },
+  "public_promotion": {
+    "path": ".cache/ace16-preserved-joint-text-fixed-genuine-next-20261031/public-promotion-freeze.json",
+    "bytes": 666,
+    "sha256": "fc8e6ac49e2e1f6b5867b36aa09076ce9cd25ac424a04dd849658c618b360a31"
+  },
+  "source_helper": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/fixed/preserved/text/joint/genuine_sources.rs",
+    "bytes": 11502,
+    "sha256": "7be17058c4cec21cdfece205e508e128f9be08c0913280f268bdde7d542fd5c4"
+  },
+  "producer_calls": 0,
+  "expected_images": 14,
+  "scope": "Fitting Short Text plus ordinary unindexed Boolean on unchanged repository-authored V2016/V2019 originals",
+  "notes": [
+    "Native original Source gate ran first. The same compiled test harness then admitted all fourteen expectations directly while the isolated release producer build ran in its distinct target directory. Its executed artifact bytes are retained unchanged.",
+    "The pure model and recipes promoted to public source are byte-identical to the executed private originals.",
+    "The original forty-nine-file freeze retains two historical system-tool observations separately from repository-scoped artifact checks; the controller explicitly checked both unchanged tool hashes before construction.",
+    "No database was recreated, changed or used as after-image authority. No writer or fresh SDK readback has run in this tranche.",
+    "This does not establish normal-save, journal, required-macro or native Microsoft Access qualification.",
+    "A first retention copy failed with ENOSPC after successful Source admission and producer build. Its incomplete bytes were retained separately. After removing only derived main incremental caches, a second retained copy matches the executed artifact exactly; no source or expected bytes changed."
+  ]
+}
