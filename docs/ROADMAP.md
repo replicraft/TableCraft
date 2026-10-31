@@ -16,9 +16,11 @@ Jet 4 plan; seven focused checks pass. Normal and explicit recoverable SQL
 planning are shared in the Access adapter. Retained filesystem pairing now supplies
 durable creation, recovery and retirement through explicit
 [Jet 4 CLI commands](cli/JOURNAL_EDITING.md), with complete-image and known-outcome
-checks passing. Restart finalization/partial-garbage resolution and automatic
-journal discovery remain open; general ACE saves, required macros and broader
-index profiles also remain open.
+checks passing. Explicit `query finalize-update` now verifies an intact retired
+bundle and completes cleanup without writing database contents or replaying
+recovery. Partially cleaned/incomplete bundle resolution and automatic journal
+discovery remain open; general ACE saves, required macros and broader index
+profiles also remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
@@ -56,6 +58,9 @@ original-request reconstruction, complete Extra preservation and existing index/
 constraint checks. Eight whole-image comparisons and the mutation regression pass.
 Physical INSERT handling, required-event discovery and normal ACE saves remain
 unfinished; the candidate type grants no journal or ordinary save permission.
+The shared Access SQL planner now consumes that service for a bounded one-column
+UPDATE. Focused service and existing guard/adapter checks pass; the explicit CLI
+copy consumer is the next host step.
 
 The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.

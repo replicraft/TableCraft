@@ -24,6 +24,14 @@ candidate. Eight independent whole-image comparisons, two causal controls and
 Normal ACE saves, required-event discovery and physical INSERT handling remain
 unfinished. This API does not supply a normal edit plan or journal permission.
 
+The shared Access SQL service now selects one original UPDATE through the existing
+planner and finishes that same native BeforeChange candidate. Eight focused
+service functions, all 15 guard integration functions and 69 adapter unit functions
+pass, along with strict and minimal builds. Its
+[result record](testing/results/ace16-before-change-sql-service-2026-10-30.json)
+retains the initial test-boundary and incomplete-fixture failures. The original
+inspection fixtures remain separate from the fully framed physical derivatives.
+
 ## Offline journaled updates and recovery
 
 `query journal-update` and `query recover-update` now expose the qualified normal
@@ -42,11 +50,21 @@ The [CLI result](testing/results/jet4-journal-cli-2026-10-30.json) and
 [filesystem result](testing/results/filesystem-journal-lifecycle-2026-10-30.json)
 retain actual evidence and failures separately.
 
-Automatic journal discovery, post-restart resolution of retired/incomplete garbage,
-Windows lifecycle support and normal ACE saves remain unfinished. The current
-commands require an explicit stable/offline namespace; ordinary readers stay
-closed while recovery is required. Existing fresh-copy edits remain available.
-Native Access and physical power-loss qualification remain separate.
+`query finalize-update` now verifies an explicitly selected intact retired bundle
+after restart and completes its cleanup without database writes or recovery
+replay. It requires exact original bytes for pending journals and exact replacement
+bytes for committed journals, retaining the same native replan and object bindings.
+Reports describe the verified current image rather than claiming a historical
+commit or rollback. Eight journal CLI integration functions and 70 CLI unit
+functions pass, with strict all-target checks passing. The
+[finalization result](testing/results/jet4-retired-journal-finalization-cli-2026-10-30.json)
+records the retained-error sizing correction separately from the first checks.
+
+Automatic journal discovery, partially cleaned or incomplete bundle resolution,
+Windows lifecycle support and normal ACE saves remain unfinished. The commands
+require an explicit stable/offline namespace; ordinary readers stay closed while
+recovery is required. Existing fresh-copy edits remain available. Native Access
+and physical power-loss qualification remain separate.
 
 ## Required fresh-output publication
 

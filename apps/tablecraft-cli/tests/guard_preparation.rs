@@ -117,3 +117,6 @@ fn qualify_guard_host_selector_sources_before_commands() {
     }
     assert_eq!((admitted, refused), (6, 2));
 }
+
+#[path = "guard_preparation/before_change_sources.rs"]
+mod before_change_sources;

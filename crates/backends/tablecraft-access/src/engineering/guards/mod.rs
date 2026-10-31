@@ -1,4 +1,5 @@
 //! Explicit SQL-selected before-event preparation; no write candidate or publication.
+pub mod before_change;
 mod deleting;
 mod error;
 mod inserting;
