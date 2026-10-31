@@ -10668,3 +10668,11 @@ bytes. Their exact hashes, native reads and independent SDK observations are
 recorded in the linked result. They retain the prior variable-source envelope
 and add the 57/58-row minimum-record candidate-map boundary. Original bytes stay
 in ignored local evidence; ordinary CI reconstructs them and checks both hashes.
+
+## Authored multiple-table creation originals
+
+The [four multiple-table sources](ACE16_MULTIPLE_TABLE_CREATION_SOURCES.md) use
+repository-authored complete images, with no copied third-party database bytes.
+The linked result records hashes, native source admission and independent SDK
+read inventories. Ordinary CI reconstructs and anchors each complete image;
+local source files and compiled reader tooling remain ignored.
