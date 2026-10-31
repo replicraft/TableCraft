@@ -28,6 +28,11 @@ fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
 }
 
+#[path = "preserved_boolean_updates/before_change_api.rs"]
+mod before_change_api;
+#[path = "preserved_boolean_updates/before_change_fixtures.rs"]
+mod before_change_fixtures;
+
 #[path = "preserved_boolean_updates/int32_api.rs"]
 mod int32_api;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/int32_sources.rs"]

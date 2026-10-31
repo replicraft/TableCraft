@@ -202,3 +202,59 @@ Microsoft Access save/reopen compatibility, required-event discovery, native
 ordering/timing, normal ACE saves, journal permission or macro absence. See
 [the complete collection contract](ACE16_BEFORE_EVENT_COLLECTIONS.md) and
 [data-macro acceptance](DATA_MACROS.md).
+
+## Preserved rich fixed batches through Access
+
+The Access adapter's `engineering::guards::before_change::BeforeChangeBatchEditor`
+provides the existing typed `EditableTable`/`EditableBatch` contracts over one
+original projected snapshot. `preview_batch_update` is its shared SQL consumer:
+it accepts the existing closed local multi-target UPDATE shape and finishes once
+through `preview_ace16_before_change_batch_updates`. Caller property selectors
+remain exact, explicit and borrowed; stored programs are never auto-selected.
+
+User targets may be qualified unindexed, calculation-independent Boolean, Int32,
+Int64, Currency or legacy DateTime fields in the preserved rich schema. Macro
+operands and SetField retain the qualified ordinary Int32/NULL profile. Ordinary
+counter/indexed fields can be read without gaining write permission. Opaque
+calculated/complex fields are not fake NULL cells; unselected Short Text, caches,
+attachments and other rich siblings remain preserved by the native proof.
+
+All SQL RHS expressions use the original snapshot. Current then contains every
+original Int32 replacement before the first macro statement, SetField changes it
+sequentially, and Old stays original. Wide user values remain separate typed
+intents. A proposed NULL may be repaired by SetField; original Required and other
+final properties are enforced on the complete final image. Late RaiseError
+returns a typed rejection and no candidate.
+
+The new facade selects only the projected-rich fixed profile under Default.
+Unsupported declarations and explicit generic variable/LVAL/index-growth modes
+do not trigger retries or implicit macro execution. Empty groups and zero matches
+still require every original target and dormant program to qualify. Snapshot
+handles remain local to their captured source. Existing ordinary single-column
+`preview_update` behavior stays unchanged.
+
+The result is the existing `Ace16BeforeChangePreview`: complete before/candidate
+bytes and physical trace metadata, with no partial public logical row report.
+This service publishes no files, changes no CLI flags or commands, and grants no
+native required-event discovery, dispatch, normal-save, journal or Microsoft
+Access compatibility authority. The focused adapter record retains both initial
+test-expectation failures and the final validation phase separately.
+
+### Adapter evidence
+
+The corrected complete Access preserved target passes all 39 functions, including
+five new batch functions. They compare 30 typed and 14 SQL whole images from the
+same frozen matrix, exercise Current/Old and original SQL RHS, verify final
+Required repair/refusal and late rejection, and retain snapshot/mode/header,
+three resource-pool and final-cancellation controls. The combined strict check
+passes. It preceded the test-only assertion correction described below and a
+native whitespace change.
+
+The first focused run passed four functions and failed one assertion that expected
+an index blocker for dormant SetField on ID. A diagnostic-only rerun confirmed
+`Unsupported(Column)`: the original AutoNumber metadata rejects the write before
+its separate index restriction. Only the test expectation/comment changed;
+production code and source/expected images remained unchanged. Both failed logs
+are retained separately from the passing corrected full target.
+
+See the [adapter record](results/ace16-before-change-rich-batch-access-2026-10-31.json).
