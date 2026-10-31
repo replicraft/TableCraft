@@ -11,18 +11,25 @@ The feature requires `ace16-write-preview`. Every ordinary source field must be
 Int32/NULL with the existing qualified fixed flags. INSERT supplies every field;
 defaults, generated fields, cascades, other-table actions and ambient callbacks
 are unsupported. The inherited source profile also excludes a field named
-IsInsert. BeforeDelete refuses this profile.
+IsInsert. Active Delete intents refuse this profile. In a complete selected
+collection, dormant BeforeDelete definitions are nevertheless compiled under
+their own Old-only guard context before any INSERT/UPDATE row executes; they
+do not run or grant physical DELETE permission.
 
 ## Source and execution
 
 Explicit selectors bind exact original Extra group-kind/property-name pairs.
 Every parsed property must be selected and compiled, even for no selected rows or
 unreachable branches. Opaque groups, unrepresented names, nontext/unknown bodies,
-malformed programs and other event contexts refuse. The source table's body,
+malformed programs and events outside BeforeChange/BeforeDelete refuse. The source
+table's body,
 module and child payload checks remain in place. No locator or native dispatch
 order is inferred from these selectors or from a successful result.
 
-The additive `MacroProgramProfile::BeforeChangeFields` recognizes the documented
+Public structural inspection with `MacroProgramProfile::BeforeChangeFields`
+remains Change-only. The complete preparation path uses an internal before-event
+collection inspector; neither inspector grants execution or write permission.
+The additive structural profile recognizes the documented
 BeforeChange `SetField` shape with exactly one `Field` and one `Value` argument.
 `Field` binds directly to an actual metadata name; it is not parsed as SQL. Value
 uses the existing closed expression subset. A successful assignment updates
@@ -82,3 +89,8 @@ retains those exact logical phases. The separate
 [physical field-update consumer](../../testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
 now applies prepared fixed UPDATE rows once through the engineering batch;
 logical preparation itself remains read-only.
+
+The [complete selected before-event collection](../../testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+profile also preflights explicitly selected BeforeDelete programs under their own
+bindings while executing only the operation-matching BeforeChange definitions.
+Existing public guard-only preparation retains its selected-event contract.
