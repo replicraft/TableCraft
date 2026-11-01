@@ -263,3 +263,6 @@ pub mod genuine_integral_indexed;
 
 /// Independent complete wider-scalar INSERT source images.
 pub mod canonical_ordinary_wide_insert;
+
+/// Independent Required/AllowZeroLength creation source images.
+pub mod canonical_creation_properties;
