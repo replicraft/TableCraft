@@ -1,6 +1,6 @@
 //! Original single-field builders and separate joint variable composition.
 pub(in crate::table::mutation) mod multiple;
-use super::super::{EditError, WriteBlocker, slot::storage};
+use super::super::{EditError, WriteBlocker, record_serialization::storage};
 use crate::{
     InspectError, TableSchema,
     format::row::{MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},

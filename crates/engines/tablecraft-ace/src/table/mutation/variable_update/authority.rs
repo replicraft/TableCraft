@@ -1,11 +1,11 @@
 //! Record authority rebound exclusively from original metadata and requests.
 #[cfg(test)]
 mod tests;
-use super::super::{EditError, SlotScalarUpdate, WriteBlocker, page_update::roots, slot::storage};
-use super::{
-    placement::{DataView, Plan},
-    record_proof,
+use super::super::{
+    EditError, SlotScalarUpdate, WriteBlocker, page_update::roots, record_serialization::storage,
 };
+use super::placement::{DataView, Plan};
+use crate::table::mutation::record_serialization::proof as record_proof;
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::reader::Reader,

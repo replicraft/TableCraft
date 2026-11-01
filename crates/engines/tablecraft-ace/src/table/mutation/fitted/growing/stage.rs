@@ -2,9 +2,9 @@
 use super::super::{
     record_proof::{self, verified::Verified},
     request::{self, FittedColumnUpdates},
-    serialization::RecordPolicy,
     stage,
 };
+use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, row::reference_page},

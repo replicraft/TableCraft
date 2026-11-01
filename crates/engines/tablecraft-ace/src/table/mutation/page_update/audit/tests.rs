@@ -1,10 +1,11 @@
 //! Opaque record bytes require independent preservation, not just equal values.
-use super::super::{record as builder, roots};
+use super::super::roots;
 use crate::EditError;
 use crate::NativeImage;
 use crate::SlotScalarUpdate;
 use crate::check_table;
 use crate::table::mutation::gates;
+use crate::table::mutation::record_serialization::record as builder;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;

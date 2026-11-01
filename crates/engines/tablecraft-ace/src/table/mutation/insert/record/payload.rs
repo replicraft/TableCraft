@@ -6,7 +6,7 @@ use crate::{
     table::{
         decimal,
         long_value::profile as long_profile,
-        mutation::{long_value::encode as long_encode, slot::storage},
+        mutation::{long_value::encode as long_encode, record_serialization::storage},
     },
 };
 use tablecraft_core::{

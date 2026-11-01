@@ -1,9 +1,7 @@
 //! One original record becomes one complete fitted record and joint key cache.
-use super::{
-    request::{self, FittedColumnUpdates},
-    serialization::RecordPolicy,
-    variables,
-};
+use super::request::{self, FittedColumnUpdates};
+use crate::table::mutation::record_serialization::policy::RecordPolicy;
+use crate::table::mutation::record_serialization::variables;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{
@@ -314,24 +312,4 @@ pub(super) fn build_with(
         projection,
         records,
     })
-}
-
-pub(super) fn copy(
-    bytes: &[u8],
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, EditError> {
-    request::check(budget, cancelled)?;
-    budget
-        .charge_allocation(bytes.len() as u64, 1)
-        .map_err(InspectError::from)?;
-    budget
-        .charge(Resource::Steps, bytes.len() as u64)
-        .map_err(InspectError::from)?;
-    let mut result = Vec::new();
-    result
-        .try_reserve_exact(bytes.len())
-        .map_err(|_| InspectError::Allocation)?;
-    result.extend_from_slice(bytes);
-    Ok(result)
 }

@@ -2,9 +2,7 @@
 pub(in crate::table) mod growing;
 mod record_proof;
 mod request;
-mod serialization;
 mod stage;
-mod variables;
 
 pub use request::FittedColumnUpdates;
 

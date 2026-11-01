@@ -12,6 +12,15 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Shared native record serialization
+
+Existing fitted, placement, INSERT, long-value and preserved-text consumers now
+use one internal record-serialization owner directly. Independent proof encoders
+remain separate, and old forwarding modules are removed. All 426 focused tests
+pass, alongside strict engine/adapter/CLI checks and the journal-only build.
+This prerequisite adds no normal Text/Binary save capability or new intent
+version; see the [extraction record](testing/results/ace16-record-serialization-extraction-2026-10-31.json).
+
 ## Genuine ordinary target writes
 
 The ordinary fixed route now saves ten independently qualified outcomes on two

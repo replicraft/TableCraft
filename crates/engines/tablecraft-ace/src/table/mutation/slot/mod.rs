@@ -1,9 +1,9 @@
 //! Existing-slot Text/Binary changes with mandatory index and constraint proof.
 pub(super) mod stage;
-pub(super) mod storage;
 mod update;
 
 use super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview};
+use crate::table::mutation::record_serialization::storage;
 use crate::{
     InspectError, NativeImage, TableSchema,
     header::check,

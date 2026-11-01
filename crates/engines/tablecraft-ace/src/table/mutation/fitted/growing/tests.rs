@@ -1,10 +1,9 @@
 //! Prefrozen original images, joint updates and actual authority forgeries.
 mod boundary;
 
-use super::super::{
-    record_proof, request::FittedColumnUpdates, serialization::RecordPolicy, stage as record_stage,
-};
+use super::super::{record_proof, request::FittedColumnUpdates, stage as record_stage};
 use super::{finish, stage};
+use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate, WriteBlocker,
     table::{

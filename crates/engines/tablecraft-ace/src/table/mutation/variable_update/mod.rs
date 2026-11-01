@@ -5,11 +5,10 @@ pub(super) mod finish;
 pub(in crate::table) mod map_audit;
 pub(super) mod maps;
 pub(super) mod placement;
-pub(in crate::table::mutation) mod record_proof;
 
 use super::{
     Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, page_update::stage,
-    preview, slot::storage,
+    preview, record_serialization::storage,
 };
 use crate::{
     InspectError, NativeImage,
