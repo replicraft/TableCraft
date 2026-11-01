@@ -2,7 +2,7 @@
 mod literal;
 
 use super::{AutoNumberRowInsert, IncrementingAutoNumber};
-use crate::table::mutation::insert::values::copy_value;
+use crate::table::mutation::insert_defaults::values::copy_value;
 use crate::{
     EditError, IndexCheckStatus, InspectError, LongValueCheckStatus, PropertyGroupKind,
     RuleCheckStatus, WriteBlocker, check_table, check_table_constraints, check_table_long_values,

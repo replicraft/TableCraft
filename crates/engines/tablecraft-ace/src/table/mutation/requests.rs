@@ -2,11 +2,13 @@
 mod delete;
 mod fitted;
 mod insert;
+mod omitted;
 mod slot;
 
 pub use delete::{RowDelete, TableRowDeletes};
 pub use fitted::FittedColumnUpdates;
 pub use insert::RowInsert;
+pub use omitted::{InsertFieldValue, OmittedRowInsert};
 pub use slot::SlotScalarUpdate;
 
 use super::rows::RowAssignment;

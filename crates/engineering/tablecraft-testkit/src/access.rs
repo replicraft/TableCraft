@@ -242,3 +242,6 @@ pub mod genuine_desc_nullable_insert;
 
 /// Independent fitting NODE INSERT originals and complete images.
 pub mod genuine_retained_node_insert;
+
+/// Independent constant-default and supplied-NULL INSERT views.
+pub mod genuine_default_insert;

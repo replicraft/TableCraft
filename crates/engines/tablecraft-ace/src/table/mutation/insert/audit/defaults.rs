@@ -1,15 +1,10 @@
 //! Rebind original omissions from SOURCE; no producer default/cache inputs.
-mod literal;
+use crate::table::mutation::insert_defaults::{proof_literal as literal, values::copy_value};
 
-use super::super::{
-    AutoNumberRowInsert, RowInsert,
-    omitted::{InsertFieldValue, Original},
-    primary_column,
-    values::copy_value,
-};
+use super::super::{AutoNumberRowInsert, RowInsert, omitted::Original, primary_column};
 use crate::{
-    EditError, InspectError, NativeImage, PropertyGroupKind, TableCheck, WriteBlocker,
-    header::check, inspect_table_properties,
+    EditError, InsertFieldValue, InspectError, NativeImage, PropertyGroupKind, TableCheck,
+    WriteBlocker, header::check, inspect_table_properties,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},

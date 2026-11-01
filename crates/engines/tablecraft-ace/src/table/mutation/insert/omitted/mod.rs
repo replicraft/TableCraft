@@ -1,11 +1,10 @@
 //! Resolve original insertion intent after full source qualification.
 pub(super) mod clock;
-mod constant;
 pub(super) mod preview;
-mod request;
 pub(super) mod stage;
 
-use super::{IncrementingAutoNumber, autonumber, values::copy_value};
+use super::{IncrementingAutoNumber, autonumber};
+use crate::table::mutation::insert_defaults::{literal as constant, values::copy_value};
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeProperty, PropertyGroupKind,
     TableCheck, TableProperties, WriteBlocker, header::check, inspect_table_properties,
@@ -16,7 +15,7 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub use request::{InsertFieldValue, OmittedRowInsert};
+use crate::table::mutation::requests::{InsertFieldValue, OmittedRowInsert};
 
 pub(super) struct ResolvedRow {
     pub values: Vec<Value>,

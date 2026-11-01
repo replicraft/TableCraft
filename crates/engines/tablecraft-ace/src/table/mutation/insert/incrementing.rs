@@ -2,8 +2,8 @@
 use super::{
     Ace16AutoNumberInsertPreview, AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber,
     RowInsert, Staged, autonumber, finish_with, gates, prepare_with, preview, record,
-    values::copy_value,
 };
+use crate::table::mutation::insert_defaults::values::copy_value;
 use crate::{EditError, InspectError, NativeImage, TableCheck, WriteBlocker, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},

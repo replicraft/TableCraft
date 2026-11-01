@@ -1,14 +1,17 @@
 //! Metadata-only ordinary insertion; complete native admission occurs at finish.
+mod plan;
+
 use super::Error;
 use crate::editing::NativeEditError;
+pub use plan::NativeJournalInsertPlan;
 use tablecraft_ace::{
-    InspectError, NativeImage, RecoverableNativeInsertPlan, RowInsert, inspect_table_schema,
+    InsertFieldValue, InspectError, NativeImage, OmittedRowInsert, RowInsert, inspect_table_schema,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_db::InsertableTable;
+use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 use tablecraft_schema::{Column, NameComparison, SchemaPolicy};
 
 const MAX_NAME_BYTES: usize = 255;
@@ -72,7 +75,7 @@ impl NativeJournalInserter {
 
 impl InsertableTable for NativeJournalInserter {
     type Error = Error;
-    type Plan = RecoverableNativeInsertPlan;
+    type Plan = NativeJournalInsertPlan;
 
     fn name(&self) -> &str {
         &self.name
@@ -109,9 +112,10 @@ impl InsertableTable for NativeJournalInserter {
         rows.try_reserve_exact(1)
             .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
         rows.push(RowInsert::new(values));
-        Ok(self
-            .image
-            .plan_recoverable_ordinary_row_inserts(&self.name, rows, budget, cancelled)?)
+        self.image
+            .plan_recoverable_ordinary_row_inserts(&self.name, rows, budget, cancelled)
+            .map(NativeJournalInsertPlan::Complete)
+            .map_err(Error::from)
     }
 }
 
@@ -123,4 +127,45 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
         .charge(Resource::Steps, 1)
         .map_err(InspectError::from)?;
     Ok(())
+}
+
+impl OmittingInsertableTable for NativeJournalInserter {
+    fn plan_insert_with_omissions(
+        self,
+        values: Vec<InsertValue>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        check(budget, cancelled)?;
+        budget
+            .charge_allocation(
+                values.len() as u64,
+                std::mem::size_of::<InsertFieldValue>() as u64,
+            )
+            .map_err(InspectError::from)
+            .map_err(NativeEditError::from)?;
+        let mut native = Vec::new();
+        native
+            .try_reserve_exact(values.len())
+            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
+        for value in values {
+            check(budget, cancelled)?;
+            native.push(match value {
+                InsertValue::Supplied(value) => InsertFieldValue::Supplied(value),
+                InsertValue::Omitted => InsertFieldValue::Omitted,
+            });
+        }
+        budget
+            .charge_allocation(1, std::mem::size_of::<OmittedRowInsert>() as u64)
+            .map_err(InspectError::from)
+            .map_err(NativeEditError::from)?;
+        let mut rows = Vec::new();
+        rows.try_reserve_exact(1)
+            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
+        rows.push(OmittedRowInsert::new(native));
+        self.image
+            .plan_recoverable_ordinary_omitted_row_inserts(&self.name, rows, budget, cancelled)
+            .map(NativeJournalInsertPlan::Omitted)
+            .map_err(Error::from)
+    }
 }

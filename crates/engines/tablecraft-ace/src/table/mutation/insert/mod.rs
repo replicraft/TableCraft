@@ -3,7 +3,6 @@ mod audit;
 mod autonumber;
 mod compose;
 mod counters;
-mod default_clock;
 mod incrementing;
 mod indexes;
 mod long_values;
@@ -14,7 +13,6 @@ pub(super) mod primary_column;
 mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
-mod values;
 
 use super::{gates, preview, requests::RowInsert};
 use crate::{
@@ -36,8 +34,6 @@ pub use autonumber::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
     IncrementingAutoNumber,
 };
-
-pub use omitted::{InsertFieldValue, OmittedRowInsert};
 
 struct Staged {
     data: placement::Plan,

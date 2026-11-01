@@ -4,6 +4,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Currency, Decimal, Value},
 };
+#[cfg(feature = "ace16-write-preview")]
 use tablecraft_expressions::functions::dates::clock::ClockFunction;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 use tablecraft_sql::{
@@ -16,7 +17,7 @@ const MAX_DEFAULT_BYTES: usize = MAX_DEFAULT_UNITS * size_of::<char>();
 const MAX_DEFAULT_TOKENS: usize = 64;
 const MAX_DEFAULT_DEPTH: usize = 16;
 
-pub(super) fn resolve(
+pub(in crate::table::mutation) fn resolve(
     column: &NativeColumn,
     text: &str,
     budget: &mut ResourceBudget,
@@ -26,12 +27,14 @@ pub(super) fn resolve(
     assign(column, expression, budget, cancelled)
 }
 
-pub(super) enum Bound {
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) enum Bound {
     Literal(Value),
     Clock(ClockFunction),
 }
 
-pub(super) fn bind_clock(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn bind_clock(
     column: &NativeColumn,
     text: &str,
     budget: &mut ResourceBudget,
