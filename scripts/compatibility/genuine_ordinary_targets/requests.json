@@ -1,0 +1,324 @@
+{
+  "state": "Frozen original request choices before expected construction or genuine producer calls",
+  "table": "Items",
+  "columns": [
+    "Id",
+    "Score",
+    "Guard"
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      0
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "cases": [
+    {
+      "id": "h5-score-seventeen",
+      "header": 5,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 17
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-score-clear",
+      "header": 5,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Null"
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-score-noop",
+      "header": 5,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": -1
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h5-score-empty",
+      "header": 5,
+      "table": "Items",
+      "column": "Score",
+      "updates": [],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h5-manual-id-seven",
+      "header": 5,
+      "table": "Items",
+      "column": "Id",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 7
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h5-id-duplicate",
+      "header": 5,
+      "table": "Items",
+      "column": "Id",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 2
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "refusal",
+        "error": "DuplicateKey"
+      }
+    },
+    {
+      "id": "h5-stale-score",
+      "header": 5,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 0
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 17
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "refusal",
+        "error": "Conflict"
+      }
+    },
+    {
+      "id": "h6-score-seventeen",
+      "header": 6,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 17
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-score-clear",
+      "header": 6,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Null"
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-score-noop",
+      "header": 6,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": -1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": -1
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h6-score-empty",
+      "header": 6,
+      "table": "Items",
+      "column": "Score",
+      "updates": [],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 0
+      }
+    },
+    {
+      "id": "h6-manual-id-seven",
+      "header": 6,
+      "table": "Items",
+      "column": "Id",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 7
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "candidate",
+        "changed_rows": 1
+      }
+    },
+    {
+      "id": "h6-id-duplicate",
+      "header": 6,
+      "table": "Items",
+      "column": "Id",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 1
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 2
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "refusal",
+        "error": "DuplicateKey"
+      }
+    },
+    {
+      "id": "h6-stale-score",
+      "header": 6,
+      "table": "Items",
+      "column": "Score",
+      "updates": [
+        {
+          "row": 0,
+          "expected": {
+            "type": "Int32",
+            "value": 0
+          },
+          "replacement": {
+            "type": "Int32",
+            "value": 17
+          }
+        }
+      ],
+      "expected_outcome": {
+        "kind": "refusal",
+        "error": "Conflict"
+      }
+    }
+  ]
+}
