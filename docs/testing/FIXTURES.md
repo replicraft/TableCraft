@@ -10797,3 +10797,13 @@ user tables; 24 exact independent SDK observations pass before ordinary mutation
 producers run. All 58 exported inputs remain unchanged. The source and its
 literal protocol expectations use the repository license; no third-party
 database bytes, JARs or class files are tracked.
+
+## Authored larger ordinary inline-map sources
+
+The [96-page corpus](ACE16_ORDINARY_INLINE_SOURCES.md) extends only independent
+original Int32 input envelopes. Twelve recipes declare relocated DATA95, complete
+zero/free holes and variable inline windows; they do not reuse producer results.
+Ten header-selected ordinary views pass native reads/constraints and exact SDK
+observations before new mutation calls. Fourteen adversarial views retain
+separate refusal expectations. All exported inputs and expected observations
+remain frozen; no third-party database bytes are copied.
