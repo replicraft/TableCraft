@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-01",
+  "feature": "native17_creation",
+  "scope": "Native17 catalog creation and real normal INSERT/DELETE sessions",
+  "source_qualification_before_producers": true,
+  "expected_bytes_retuned_to_producers": false,
+  "focused_receipts": [
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/creation-first.log",
+      "bytes": 3268,
+      "sha256": "bee859d94d22a1c66738bffee69de57f04e8b2071ff88e7d55ebdf983714a737",
+      "test_result": [
+        "ok. 26 passed; 0 failed; 1 ignored; 0 measured; 1227 filtered out; finished in 0.46s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/native17_creation_sessions-first.log",
+      "bytes": 522,
+      "sha256": "a371a3d328f7d189b9cb61efeed6bdfa5098625f965b2b02e137577aecd0842c",
+      "test_result": [
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/native17_creation_sessions_sql-first.log",
+      "bytes": 496,
+      "sha256": "02fee510088665633fbe090b14d8beeefbe7d13ccc66afa3f09d4408d52d3d78",
+      "test_result": [
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s"
+      ]
+    }
+  ],
+  "broad_checks": {
+    "passed": true,
+    "ace_units": 1134,
+    "access_units": 79,
+    "cli_units": 102,
+    "default_recovery_functions": 83,
+    "receipts": [
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/strict-all-second.log",
+        "bytes": 183,
+        "sha256": "68d89c71aa6aa2d7db301547bed5affd4d1b116a51b652dbf322d2ac0d4fae47",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/journal-first.log",
+        "bytes": 307,
+        "sha256": "ae1b79901122debc20c086149bc322e751fc4c451dee732bbc194706ef17df9d",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "30be7bc8f8c21b0ab4ce9aa7eda55b13231101245a40d07e5d9f6048680a2c0b",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "e448afda7c7e90464b3b874ed4244c066cde65314509d441c26ee57125caf2de",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/ace-units-first.log",
+        "bytes": 173332,
+        "sha256": "0d5ea330a4c2dcc79eb0700106b82af851d3e7cf4b2fbc9e973d007939d5f893",
+        "test_result": [
+          "ok. 1134 passed; 0 failed; 120 ignored; 0 measured; 0 filtered out; finished in 118.24s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/access-units-first.log",
+        "bytes": 9690,
+        "sha256": "8225cb551830ba1f761135d457c9c7189b4665dbb15e7cacbdd37b42ec7c5586",
+        "test_result": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.59s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/cli-units-second.log",
+        "bytes": 11586,
+        "sha256": "8311f7fce6423e879323ccee7f392be3e8e200fd2f5a7cb46db368ec27847a8f",
+        "test_result": [
+          "ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/recovery-default-first.log",
+        "bytes": 28878,
+        "sha256": "00f4db18681bb6714803885cb8e66abad0993049f283b0567b487a5efc08fb15",
+        "test_result": [
+          "ok. 83 passed; 0 failed; 93 ignored; 0 measured; 0 filtered out; finished in 4.16s"
+        ]
+      }
+    ]
+  },
+  "remaining": [
+    "creation properties/defaults/generated fields/indexes/relationships",
+    "broader normal INSERT scalar carriers",
+    "future GLOBAL free authority",
+    "native Access creation/save/reopen"
+  ],
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "source_images": 62,
+  "independent_sdk_source_reports": 62,
+  "independent_session_views": 6,
+  "independent_sdk_session_reports": 6
+}

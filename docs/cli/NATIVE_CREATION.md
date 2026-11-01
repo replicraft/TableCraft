@@ -1,5 +1,22 @@
 # Create a fresh ACE database
 
+## Normal editing after creation
+
+Fresh output now uses the seventeen-field catalog required by ordinary normal
+INSERT/DELETE admission. Eligible created schemas can use the existing
+`query journal-insert` and `query journal-delete` commands through fresh content
+qualification and retained offline sessions. No creator token or implicit edit
+permission is passed.
+
+A focused process test creates an Int32 file, inserts `(2,20)` and deletes that
+new row, matching independent whole images and exact SELECT readbacks after each
+save. The existing creation publication/report contract is unchanged. Complete
+INSERT carrier limits and field policies still apply; creation of a broader
+scalar schema alone does not qualify all its normal writes. Future GLOBAL FREE
+metadata, property/default/AutoNumber authoring and native Access save/reopen
+remain separate compatibility work. See the
+[creation/session contract](../access/writes/FRESH_DATABASE_CREATION.md#current-catalog-and-normal-session-consumption).
+
 `tablecraft create` constructs a fresh unencrypted ACE 2016 database containing
 one table of explicitly declared scalar columns. Existing files, directories
 and symlinks are never overwritten.
