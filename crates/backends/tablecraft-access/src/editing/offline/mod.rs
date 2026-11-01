@@ -1,8 +1,10 @@
 //! Explicit offline normal edits over one retained exclusive target descriptor.
 //! Hosts must exclude noncooperating writers and unresolved external journals.
 //! Native planners retain their own admission; shared-file coordination is separate.
+mod apply;
 mod delete;
 mod error;
+mod insert;
 mod plan;
 mod recovery;
 mod table;
@@ -13,6 +15,7 @@ mod tests;
 
 pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
+pub use insert::{OfflineTableInserter, StagedInsert};
 pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;
 

@@ -1,0 +1,126 @@
+//! Metadata-only ordinary insertion; complete native admission occurs at finish.
+use super::Error;
+use crate::editing::NativeEditError;
+use tablecraft_ace::{
+    InspectError, NativeImage, RecoverableNativeInsertPlan, RowInsert, inspect_table_schema,
+};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
+use tablecraft_db::InsertableTable;
+use tablecraft_schema::{Column, NameComparison, SchemaPolicy};
+
+const MAX_NAME_BYTES: usize = 255;
+const MAX_COLUMNS: usize = 256;
+
+/// A complete insertion schema, without a target-row snapshot or generated fields.
+/// This capability retains the immutable image; it grants no mutation permission.
+pub struct NativeJournalInserter {
+    image: NativeImage,
+    name: String,
+    columns: Vec<Column>,
+}
+
+impl NativeJournalInserter {
+    /// Inspect the actual complete schema without scanning target records.
+    pub fn new(
+        image: NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeEditError> {
+        let _span = tracing::debug_span!("access.insert.capture_metadata").entered();
+        check(budget, cancelled)?;
+        let schema = inspect_table_schema(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        for (position, column) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            let work = column
+                .name()
+                .len()
+                .checked_mul(position + 1)
+                .ok_or(InspectError::StructureLimit)?;
+            budget
+                .charge(Resource::Steps, work as u64)
+                .map_err(InspectError::from)?;
+        }
+        let columns = schema.scalar_columns_with_budget(budget)?;
+        budget
+            .charge_allocation(schema.name().len() as u64, 1)
+            .map_err(InspectError::from)?;
+        budget
+            .charge(Resource::Steps, schema.name().len() as u64)
+            .map_err(InspectError::from)?;
+        let mut name = String::new();
+        name.try_reserve_exact(schema.name().len())
+            .map_err(|_| InspectError::Allocation)?;
+        name.push_str(schema.name());
+        check(budget, cancelled)?;
+        Ok(Self {
+            image,
+            name,
+            columns,
+        })
+    }
+}
+
+impl InsertableTable for NativeJournalInserter {
+    type Error = Error;
+    type Plan = RecoverableNativeInsertPlan;
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn columns(&self) -> &[Column] {
+        &self.columns
+    }
+
+    fn schema_policy(&self) -> SchemaPolicy {
+        SchemaPolicy {
+            max_name_bytes: MAX_NAME_BYTES,
+            max_columns: MAX_COLUMNS,
+            names: NameComparison::AsciiInsensitive,
+        }
+    }
+
+    fn requires_field_list(&self) -> bool {
+        false
+    }
+
+    fn plan_insert(
+        self,
+        values: Vec<Value>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        check(budget, cancelled)?;
+        budget
+            .charge_allocation(std::mem::size_of::<RowInsert>() as u64, 1)
+            .map_err(InspectError::from)
+            .map_err(NativeEditError::from)?;
+        let mut rows = Vec::new();
+        rows.try_reserve_exact(1)
+            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
+        rows.push(RowInsert::new(values));
+        Ok(self
+            .image
+            .plan_recoverable_ordinary_row_inserts(&self.name, rows, budget, cancelled)?)
+    }
+}
+
+fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), NativeEditError> {
+    if cancelled() {
+        return Err(InspectError::Cancelled.into());
+    }
+    budget
+        .charge(Resource::Steps, 1)
+        .map_err(InspectError::from)?;
+    Ok(())
+}
