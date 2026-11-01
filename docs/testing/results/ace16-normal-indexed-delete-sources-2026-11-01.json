@@ -1,0 +1,832 @@
+{
+  "date": "2026-11-01",
+  "scope": "original-only indexed DELETE source qualification; no matching normal producer execution",
+  "source_checkpoint": {
+    "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/first-private-checkpoint.json",
+    "bytes": 2005,
+    "sha256": "d88c0cb1c72c5317a5179c2862641d46a92af9ffd2f54877efe441d7448e65fc"
+  },
+  "input_first_freeze": {
+    "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/input-first-freeze.json",
+    "bytes": 3577,
+    "sha256": "cd3451d488e4cdf1b6922ba7f86264939615cb55cca238486ced348e6e8b933d"
+  },
+  "constructed_manifest": {
+    "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/expected-first/manifest.json",
+    "bytes": 26210,
+    "sha256": "09f384cfe16d166d81f8f014d7fbb637dd89b2c6f7c463592db5c79227b694b2"
+  },
+  "cases": [
+    {
+      "id": "h5-indexed-delete-first",
+      "header": 5,
+      "recipe": "first",
+      "selected": [
+        0
+      ],
+      "request_orders": [
+        [
+          0
+        ]
+      ],
+      "retained": [
+        1,
+        2
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h5-indexed-delete-first-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-first-expected-PrimaryID.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h5-indexed-delete-first-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-first-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h5-indexed-delete-first-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-first-expected-GroupOrder.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h5-indexed-delete-first-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-first-expected-GroupAlias.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        }
+      },
+      "before": {
+        "file": "h5-indexed-delete-first-before.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-delete-first-deleted.accdb",
+        "bytes": 405504,
+        "sha256": "aca0a0c8d49867e680f6fed07d26e6a9e3c2bafdc9968d7bce30cbe42a9c27b2"
+      },
+      "before_reader": {
+        "file": "h5-indexed-delete-first-before.inventory.tsv",
+        "bytes": 918249,
+        "sha256": "a7b1781d83001aaf568fdc42219fefbf9409e5d1074236dd3536f506852bb7c8"
+      },
+      "reader": {
+        "file": "h5-indexed-delete-first-deleted.inventory.tsv",
+        "bytes": 918126,
+        "sha256": "ddc05409da5b7b918bb9d26ef4494d754aa7eb8909ea93aa1a69384024118883"
+      },
+      "proof": {
+        "file": "h5-indexed-delete-first.proof.json",
+        "bytes": 5081,
+        "sha256": "5573110e9d1a6be8ea9581b4759fe4722b11584a0efe7d89d97c0fc8476f39a2"
+      }
+    },
+    {
+      "id": "h5-indexed-delete-middle",
+      "header": 5,
+      "recipe": "middle",
+      "selected": [
+        1
+      ],
+      "request_orders": [
+        [
+          1
+        ]
+      ],
+      "retained": [
+        0,
+        2
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h5-indexed-delete-middle-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-middle-expected-PrimaryID.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h5-indexed-delete-middle-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-middle-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h5-indexed-delete-middle-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-middle-expected-GroupOrder.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h5-indexed-delete-middle-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-middle-expected-GroupAlias.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        }
+      },
+      "before": {
+        "file": "h5-indexed-delete-middle-before.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-delete-middle-deleted.accdb",
+        "bytes": 405504,
+        "sha256": "c9fc6bd2a25ea403e5baa3464002fb6f8c2bcd9de44bf1b5ef2fc3091203ae4d"
+      },
+      "before_reader": {
+        "file": "h5-indexed-delete-middle-before.inventory.tsv",
+        "bytes": 918249,
+        "sha256": "a7b1781d83001aaf568fdc42219fefbf9409e5d1074236dd3536f506852bb7c8"
+      },
+      "reader": {
+        "file": "h5-indexed-delete-middle-deleted.inventory.tsv",
+        "bytes": 918127,
+        "sha256": "dd1907eaed09866608ed65fcd7459678cc494c861ae869d4a4aa7f33f48a9790"
+      },
+      "proof": {
+        "file": "h5-indexed-delete-middle.proof.json",
+        "bytes": 5083,
+        "sha256": "4c9207ffeb21713110d309187346d006dde8167276554dcf83393d76eae7be20"
+      }
+    },
+    {
+      "id": "h5-indexed-delete-exterior",
+      "header": 5,
+      "recipe": "exterior",
+      "selected": [
+        0,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "retained": [
+        1
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h5-indexed-delete-exterior-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-exterior-expected-PrimaryID.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h5-indexed-delete-exterior-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-exterior-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h5-indexed-delete-exterior-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-exterior-expected-GroupOrder.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h5-indexed-delete-exterior-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-exterior-expected-GroupAlias.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        }
+      },
+      "before": {
+        "file": "h5-indexed-delete-exterior-before.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-delete-exterior-deleted.accdb",
+        "bytes": 405504,
+        "sha256": "9f16d86877ce3e0430bd3d7b3161099f3b51d508932f396b932a94b4ccdb039c"
+      },
+      "before_reader": {
+        "file": "h5-indexed-delete-exterior-before.inventory.tsv",
+        "bytes": 918249,
+        "sha256": "a7b1781d83001aaf568fdc42219fefbf9409e5d1074236dd3536f506852bb7c8"
+      },
+      "reader": {
+        "file": "h5-indexed-delete-exterior-deleted.inventory.tsv",
+        "bytes": 918004,
+        "sha256": "16249f0e795b155c8814257f03e13e8f4bad3fa3716f8f3dde142c8c7bcbe986"
+      },
+      "proof": {
+        "file": "h5-indexed-delete-exterior.proof.json",
+        "bytes": 5095,
+        "sha256": "50e1f1405fa62b8ee90dda2d9472e68485816a953dbf99853859b3935b338b21"
+      }
+    },
+    {
+      "id": "h5-indexed-delete-all",
+      "header": 5,
+      "recipe": "all",
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "retained": [],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h5-indexed-delete-all-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-all-expected-PrimaryID.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h5-indexed-delete-all-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-all-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h5-indexed-delete-all-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-all-expected-GroupOrder.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h5-indexed-delete-all-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h5-indexed-delete-all-expected-GroupAlias.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "before": {
+        "file": "h5-indexed-delete-all-before.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-delete-all-deleted.accdb",
+        "bytes": 405504,
+        "sha256": "1aa761e24fabbab4760086a8271b2075efdeac4e19aeb6c0aad80627877a1885"
+      },
+      "before_reader": {
+        "file": "h5-indexed-delete-all-before.inventory.tsv",
+        "bytes": 918249,
+        "sha256": "a7b1781d83001aaf568fdc42219fefbf9409e5d1074236dd3536f506852bb7c8"
+      },
+      "reader": {
+        "file": "h5-indexed-delete-all-deleted.inventory.tsv",
+        "bytes": 917882,
+        "sha256": "577a9d38b5428166aa9ba2b7f590609037d034292bdda64c1fd3cb1e7b5594d3"
+      },
+      "proof": {
+        "file": "h5-indexed-delete-all.proof.json",
+        "bytes": 4853,
+        "sha256": "d9492e653ffee24cded5948b54e139cd2e9391324d0a76730ba2bb345ff1d508"
+      }
+    },
+    {
+      "id": "h6-indexed-delete-first",
+      "header": 6,
+      "recipe": "first",
+      "selected": [
+        0
+      ],
+      "request_orders": [
+        [
+          0
+        ]
+      ],
+      "retained": [
+        1,
+        2
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h6-indexed-delete-first-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-first-expected-PrimaryID.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h6-indexed-delete-first-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-first-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h6-indexed-delete-first-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-first-expected-GroupOrder.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h6-indexed-delete-first-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-first-expected-GroupAlias.cursor.tsv",
+            "bytes": 12,
+            "sha256": "4272b17ffc7cb50d1e39984f860419b14dd530ab4c09da62f29d42af5b11e8d0"
+          }
+        }
+      },
+      "before": {
+        "file": "h6-indexed-delete-first-before.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-delete-first-deleted.accdb",
+        "bytes": 475136,
+        "sha256": "b77fb1b76fdddd9334a95826ad3c3ca367d41c588c151aca38393386bc251824"
+      },
+      "before_reader": {
+        "file": "h6-indexed-delete-first-before.inventory.tsv",
+        "bytes": 971376,
+        "sha256": "d4c61254651e03ddc172a6d0c6e0cc5d1fab599d158ab0f45b321eb5db5a01d4"
+      },
+      "reader": {
+        "file": "h6-indexed-delete-first-deleted.inventory.tsv",
+        "bytes": 971252,
+        "sha256": "669bdca0da9dc05447114f19e7c892ec54373e8ced2e193d5dddeeb763c2388e"
+      },
+      "proof": {
+        "file": "h6-indexed-delete-first.proof.json",
+        "bytes": 5081,
+        "sha256": "6809764614632e62e5c51751ea18a7b1f4b11bc155d884c6d307a1255288c97f"
+      }
+    },
+    {
+      "id": "h6-indexed-delete-middle",
+      "header": 6,
+      "recipe": "middle",
+      "selected": [
+        1
+      ],
+      "request_orders": [
+        [
+          1
+        ]
+      ],
+      "retained": [
+        0,
+        2
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h6-indexed-delete-middle-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-middle-expected-PrimaryID.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h6-indexed-delete-middle-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-middle-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h6-indexed-delete-middle-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-middle-expected-GroupOrder.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h6-indexed-delete-middle-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-middle-expected-GroupAlias.cursor.tsv",
+            "bytes": 13,
+            "sha256": "7849ce9ea599bc09bcd830751100faf32c1ab2c9a8e5ec650bd1b5bc6dc2e63c"
+          }
+        }
+      },
+      "before": {
+        "file": "h6-indexed-delete-middle-before.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-delete-middle-deleted.accdb",
+        "bytes": 475136,
+        "sha256": "90850fe6764b7bc140487658c4f048369fd1c8ad56faa4f0759ea16b7ac02bcc"
+      },
+      "before_reader": {
+        "file": "h6-indexed-delete-middle-before.inventory.tsv",
+        "bytes": 971376,
+        "sha256": "d4c61254651e03ddc172a6d0c6e0cc5d1fab599d158ab0f45b321eb5db5a01d4"
+      },
+      "reader": {
+        "file": "h6-indexed-delete-middle-deleted.inventory.tsv",
+        "bytes": 971253,
+        "sha256": "e6437b4f432fd604939ddda13656b7efedc1caedb70df8ac2b7fe78ad934e1a4"
+      },
+      "proof": {
+        "file": "h6-indexed-delete-middle.proof.json",
+        "bytes": 5083,
+        "sha256": "87cde9e81042c6e98ae56feafc0dfa10424cac3e74a35c57eb59c915f6ea3405"
+      }
+    },
+    {
+      "id": "h6-indexed-delete-exterior",
+      "header": 6,
+      "recipe": "exterior",
+      "selected": [
+        0,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "retained": [
+        1
+      ],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h6-indexed-delete-exterior-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-exterior-expected-PrimaryID.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h6-indexed-delete-exterior-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-exterior-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h6-indexed-delete-exterior-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-exterior-expected-GroupOrder.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h6-indexed-delete-exterior-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-exterior-expected-GroupAlias.cursor.tsv",
+            "bytes": 6,
+            "sha256": "91f06a492f1c5c95ef915b989db37f94a7c62c609e87b6f032a31c9596064ea5"
+          }
+        }
+      },
+      "before": {
+        "file": "h6-indexed-delete-exterior-before.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-delete-exterior-deleted.accdb",
+        "bytes": 475136,
+        "sha256": "cb3507d404d487af308f77f3ce02f33759d876428f09eac25289caf590ea75c9"
+      },
+      "before_reader": {
+        "file": "h6-indexed-delete-exterior-before.inventory.tsv",
+        "bytes": 971376,
+        "sha256": "d4c61254651e03ddc172a6d0c6e0cc5d1fab599d158ab0f45b321eb5db5a01d4"
+      },
+      "reader": {
+        "file": "h6-indexed-delete-exterior-deleted.inventory.tsv",
+        "bytes": 971129,
+        "sha256": "1c68a621e62735739f6159cc79a8cca9c75a1dba0972163b8ac172264d4b96c8"
+      },
+      "proof": {
+        "file": "h6-indexed-delete-exterior.proof.json",
+        "bytes": 5095,
+        "sha256": "569258d7c22941de302a7361ff47b02da233183871d9efd5f2e1ed5f33f8a02e"
+      }
+    },
+    {
+      "id": "h6-indexed-delete-all",
+      "header": 6,
+      "recipe": "all",
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "retained": [],
+      "cursors": {
+        "PrimaryID": {
+          "before": {
+            "file": "h6-indexed-delete-all-before-PrimaryID.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-all-expected-PrimaryID.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "PrimaryAlias": {
+          "before": {
+            "file": "h6-indexed-delete-all-before-PrimaryAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-all-expected-PrimaryAlias.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "GroupOrder": {
+          "before": {
+            "file": "h6-indexed-delete-all-before-GroupOrder.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-all-expected-GroupOrder.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "GroupAlias": {
+          "before": {
+            "file": "h6-indexed-delete-all-before-GroupAlias.cursor.tsv",
+            "bytes": 19,
+            "sha256": "255f0927460d0459843f269c6e205efdd3fa6af3f0a0bdd86c93edbaec44014a"
+          },
+          "expected": {
+            "file": "h6-indexed-delete-all-expected-GroupAlias.cursor.tsv",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "before": {
+        "file": "h6-indexed-delete-all-before.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-delete-all-deleted.accdb",
+        "bytes": 475136,
+        "sha256": "185e81274647b9f4ef79b51ba4ae830095d553ce2fa0b40bcc26ff00b971cf2e"
+      },
+      "before_reader": {
+        "file": "h6-indexed-delete-all-before.inventory.tsv",
+        "bytes": 971376,
+        "sha256": "d4c61254651e03ddc172a6d0c6e0cc5d1fab599d158ab0f45b321eb5db5a01d4"
+      },
+      "reader": {
+        "file": "h6-indexed-delete-all-deleted.inventory.tsv",
+        "bytes": 971006,
+        "sha256": "c4018b47188585e3fffc489a91f57d10d2a82bb185497cf0d9b150cc634416b8"
+      },
+      "proof": {
+        "file": "h6-indexed-delete-all.proof.json",
+        "bytes": 4853,
+        "sha256": "2b2bf0bd7a0f239457831a41fbe30bfc46d60f4d70dcc5fe04ca4709006d3a79"
+      }
+    }
+  ],
+  "native": {
+    "passed": true,
+    "views": 16,
+    "functions": 1,
+    "seconds": 0.7,
+    "log": {
+      "path": ".cache/ace16-indexed-write-sources-next-20261101/delete-exact-first.log",
+      "bytes": 426,
+      "sha256": "c57ed68d0d84a9d0def7b1080d67cfb907522634b07fdc8db727b03a9aa66675"
+    }
+  },
+  "independent_sdk": {
+    "passed": true,
+    "calls": 80,
+    "new_compiler_calls": 0,
+    "inputs_unchanged": true,
+    "execution_receipt": {
+      "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/readonly-execution-first.json",
+      "bytes": 2860,
+      "sha256": "f4f410283505eeba9bb74598e8ad3714068da6df3092ba427880b19f7b2e682b"
+    },
+    "precall": {
+      "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/getter/reads-first/precall.json",
+      "bytes": 129671,
+      "sha256": "d2dc9efbec7c79c05421fd8d4119609521e4f058cfbc8888aaeda0b9c474b939"
+    },
+    "reads": {
+      "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/getter/reads-first/receipt.json",
+      "bytes": 102655,
+      "sha256": "f0d92a3615041a910642f0539e6de30e0ba4ec8e4d4372f855f1efa4562c2ec5"
+    },
+    "saved_verification": {
+      "path": ".cache/ace16-normal-indexed-delete-next-20261101/source/getter/reads-first/saved-verification.json",
+      "bytes": 573,
+      "sha256": "5b20a715b12a983a7906767e8b83b14e822b0f8ecc48fa2db72a203c1490b28a"
+    }
+  },
+  "preserved_first_selection_failure": {
+    "log": {
+      "path": ".cache/ace16-indexed-write-sources-next-20261101/native-first.log",
+      "bytes": 2164,
+      "sha256": "e5e3ae60e13ec2ba902664c0f07b3ad2ee2c13e0f7896c8c6740d7703ce99ae5"
+    },
+    "resolution": "All three intended gates passed. Broad indexed prefix also selected two unrelated legacy exporters without fresh-output environment, which refused. Exact individual selectors pass; no fixture/golden/code admission change."
+  },
+  "maintained_artifacts": [
+    {
+      "path": "docs/testing/indexed_delete_originals/model.py",
+      "bytes": 8380,
+      "sha256": "ab7eb277891769a240bf0059cd2dcffa73a31d2a4fb77a1f589424783279c8d4"
+    },
+    {
+      "path": "docs/testing/indexed_delete_originals/requests.json",
+      "bytes": 4001,
+      "sha256": "7bd04f0ae2926574e6c6e9d9b3615bb4d3df45f447c554c12ddf2905547856e5"
+    }
+  ],
+  "limitations": [
+    "Independent/native reader evidence only; no mutation qualification or native Access save/reopen claim.",
+    "Generated databases/classes/JARs remain outside Git."
+  ],
+  "literal_law": "Original ROW tombstones and TD count; filter both physical root leaves, rebuild free/bitmap/active prefix, preserve four aliases, histories, vacated tail, maps and EOF. Four recipes/header; both exterior request orders share one image.",
+  "view_scope": "16 read views contain repeated unchanged originals and eight literal AFTERs, not16 unique originals."
+}

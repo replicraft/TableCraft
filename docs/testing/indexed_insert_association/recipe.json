@@ -1,0 +1,147 @@
+{
+  "state": "GENERATION_RECIPE_BEFORE_ANY_ORIGINAL_CREATION",
+  "formats": [
+    "V2016",
+    "V2019"
+  ],
+  "table": "Items",
+  "columns": [
+    {
+      "name": "Id",
+      "native": "LONG",
+      "auto": false
+    },
+    {
+      "name": "Score",
+      "native": "LONG",
+      "auto": false
+    },
+    {
+      "name": "Guard",
+      "native": "LONG",
+      "auto": false
+    },
+    {
+      "name": "Label",
+      "native": "TEXT",
+      "units": 255,
+      "compressed": false
+    }
+  ],
+  "indexes": [
+    {
+      "name": "PrimaryID",
+      "key": "Id",
+      "primary": true
+    },
+    {
+      "name": "PrimaryAlias",
+      "key": "Id",
+      "unique": true,
+      "required": true
+    },
+    {
+      "name": "GroupOrder",
+      "key": "Guard"
+    },
+    {
+      "name": "GroupAlias",
+      "key": "Guard"
+    }
+  ],
+  "original_rows": [
+    {
+      "Id": 1,
+      "Score": -4,
+      "Guard": 0,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 2,
+      "Score": -3,
+      "Guard": 1,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 3,
+      "Score": -2,
+      "Guard": 2,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 4,
+      "Score": -1,
+      "Guard": 0,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 5,
+      "Score": 0,
+      "Guard": 1,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 6,
+      "Score": 1,
+      "Guard": 2,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 7,
+      "Score": 2,
+      "Guard": 0,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 8,
+      "Score": 3,
+      "Guard": 1,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    },
+    {
+      "Id": 9,
+      "Score": 4,
+      "Guard": 2,
+      "Label": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    }
+  ],
+  "sentinel": {
+    "table": "Sentinel",
+    "Marker": 999
+  },
+  "original_sdk_adjustment": {
+    "operation": "UsageMap.read at actual SDK OFFSET_FREE_SPACE_PAGES; addPageNumber(earliest existing owned DATA page)",
+    "scope": "candidate hint only; no ownership/GLOBAL/row/INDEX/raw byte patch",
+    "reason": "SDK clears earlier hint on overflow; restoring an approximate hint keeps genuine healthy capacity explicitly selectable",
+    "write_bracket": "PageChannel.startWrite/finishWrite"
+  },
+  "future_original_requests": [
+    {
+      "Id": 10,
+      "Score": 17,
+      "Guard": 7,
+      "Label": "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+    },
+    {
+      "Id": 11,
+      "Score": 18,
+      "Guard": 7,
+      "Label": "new"
+    }
+  ],
+  "manual_width_hypothesis": {
+    "overhead": 21,
+    "old": 481,
+    "long": 421,
+    "short": 27,
+    "slot": 2,
+    "early_rows": 8,
+    "late_rows": 1,
+    "early_free_predicted": 218,
+    "late_free_predicted": 3599
+  },
+  "mandatory_observation": "actual two ascending owned DATA pages A/B; both candidate; short+slot<=freeA<long+slot<=freeB; every original row481B. Refuse recipe on mismatch; do not silently adapt/retry. Page numbers/hashes unknown until creation.",
+  "expected_after_images": 0,
+  "new_rows_inserted_by_sdk_generator": 0,
+  "native_producer_calls": 0
+}

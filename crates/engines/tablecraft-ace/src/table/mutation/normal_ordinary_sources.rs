@@ -159,3 +159,8 @@ mod insert;
 mod insert_multirow;
 
 mod insert_feff;
+
+mod indexed_delete;
+mod indexed_insert;
+
+mod indexed_association_originals;
