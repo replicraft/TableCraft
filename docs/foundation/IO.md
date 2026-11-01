@@ -175,3 +175,19 @@ power-loss qualification of the filesystem/device or another operating system.
 The first strict check found only a test-only function-pointer type-complexity
 lint, corrected by a named alias without behavior or trace changes.
 See the [observed IO result](../testing/results/io-required-fresh-publication-2026-10-30.json).
+
+
+## Inspecting a versioned image journal
+
+`journal::inspect_image` reads the exact eight-byte discriminator and selects
+one V1 or V2 inspector. Unknown, short and corrupt framing refuses; a failed
+inspection never retries another decoder. `CheckedImage` retains the selected
+fully checked journal and the same exclusive mutable storage borrow. It grants
+no native format admission or target identity. Native consumers must separately
+rederive their original requests and compare complete images before recovery.
+
+Five focused tests cover literal framing, truncation, corruption, partial commit
+markers, selected-inspector traces, exact byte/step limits and every measured
+cancellation boundary. Fixtures forbid writes, flushes and syncs during inspection;
+loaded byte views require no later reads. A compile-fail example proves that the
+borrowed journal cannot be replaced while its checked session remains live.
