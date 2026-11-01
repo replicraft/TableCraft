@@ -192,3 +192,5 @@ mod integral_cross_byte;
 mod creation_properties;
 
 mod creation_defaults;
+
+mod binary_indexed;
