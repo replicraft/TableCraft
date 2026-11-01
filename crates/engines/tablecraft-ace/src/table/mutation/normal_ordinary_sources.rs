@@ -153,3 +153,5 @@ mod compound_eof;
 mod normal_delete;
 
 mod forwarded_delete;
+
+mod insert;
