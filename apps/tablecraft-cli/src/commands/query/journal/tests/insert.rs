@@ -124,7 +124,7 @@ fn insertion_help_keeps_the_normal_action_boundary_explicit() {
         "other indexes and relationships refuse",
         "qualified constant defaults for omitted fields",
         "Supplied NULL remains explicit NULL",
-        "Complete supplied rows may add one qualified EOF DATA page",
+        "Complete supplied rows derive existing or represented EOF DATA capacity",
         "omitted/default rows retain existing capacity",
         "at most 64 encoded payload bytes inline",
         "external payload allocation refuses",

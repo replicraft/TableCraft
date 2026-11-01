@@ -1,11 +1,33 @@
 # Implementation status
 
+## Complete-row insertion and numeric primary keys
+
+Complete supplied rows now use TCNA4 through native planning, typed/SQL sessions
+and the CLI. Unindexed insertion adds exact Byte, Int16, Single, Double, GUID and
+Decimal carriers and source-derived represented EOF pages. Original requests
+carry no allocation permission; recovery rederives placement and compares both
+whole images through one checked journal session. Manual Int64/Currency root
+leaves now admit qualified primary keys; dense empty/all-NULL numeric action
+sources also pass. Omitted/default requests retain TCNA2 and fixed capacity;
+explicit native TCNA1/3 APIs and recovery retain their closed profiles.
+
+Focused whole-image, proof, interruption, refusal, budget, typed/SQL and CLI checks
+pass. The broad batch passes 1,142 ACE units, 104 I/O units, 79 adapter units,
+102 CLI units and 90 default recovery functions, plus strict feature builds.
+The [execution record](testing/results/ace16-complete-insert-writes-2026-11-01.json)
+retains failed lint receipts and exact passing results. Wider-carrier witnesses
+cover existing capacity/one EOF page; multi-page witnesses use I32/NULL rows.
+Their Cartesian composition, index allocation/splits, sparse stable-ID writes,
+generation, broader constraints/required programs and native Access save/reopen
+remain open. See the [complete INSERT contract](access/writes/NORMAL_COMPLETE_INSERT.md).
+
 ## Numeric index insertion and deletion
 
 Normal INSERT/DELETE now maintain qualified manual Int64/Currency secondary
 root leaves alongside Int32 indexes. Thirty-six literal native commits,
 independent raw proofs, typed/SQL saves and restarts, CLI saves/readbacks and
-resource/forgery controls pass. UPDATE keeps its prior Int32 admission. The
+resource/forgery controls pass. Indexed UPDATE keeps its prior Int32 target admission; unindexed fixed-scalar
+UPDATE retains its existing wider carriers. The
 [execution record](testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
 records the first missed capture guard, correction and passing strict/broad batch.
 Wide primary keys, additional ordinal/ID profiles and wider tree shapes remain

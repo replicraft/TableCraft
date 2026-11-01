@@ -242,9 +242,18 @@ retains focused receipts, strict feature builds, the broad regression batch and
 first failures for these three additions.
 
 
+## Current complete-row protocol
+
+The shared host now emits [TCNA4 complete-row requests](NORMAL_COMPLETE_INSERT.md).
+That route adds exact wider scalar carriers and derives represented EOF pages
+from original capacity. Its independent proof and recovery use one checked V1/V2
+session. Manual Int64/Currency root leaves also admit qualified primary keys.
+The TCNA1/3 APIs and evidence below retain their original scope; omitted/default
+TCNA2 requests remain fixed-length.
+
 ## Represented EOF allocation
 
-Complete supplied rows now use a metadata-derived choice between the existing
+The explicit legacy TCNA3 API uses a metadata-derived choice between the existing
 capacity route and one represented EOF DATA page. TCNA0003/profile3 retains the
 original complete rows and BEFORE binding. It grants no allocation authority:
 the native planner derives capacity and the three exact map claims from fresh
