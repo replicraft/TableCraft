@@ -12,6 +12,15 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary counter and retained-index source qualification
+
+Eighteen original views with AutoNumbers, retained Int32 indexes, logical aliases,
+historical counters and inactive INDEX capacity now pass native read/constraint
+checks and exact independent SDK observations. Thirty adversarial views retain
+separate content-validator expectations. This is source evidence; write admission
+and recovery require their own checks. See the
+[source contract](testing/ACE16_ORDINARY_INDEXED_SOURCES.md).
+
 ## Ordinary writes with dynamic inline windows
 
 The ordinary content ledger now covers actual captured EOF with borrowed

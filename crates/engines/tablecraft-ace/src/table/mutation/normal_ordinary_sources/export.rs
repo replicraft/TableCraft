@@ -18,7 +18,7 @@ fn create(path: &Path, bytes: &[u8]) {
     file.sync_all().unwrap();
 }
 
-fn cell(value: &Value) -> String {
+pub(super) fn cell(value: &Value) -> String {
     match value {
         Value::Null => "N".into(),
         Value::Boolean(true) => "B1".into(),
@@ -87,9 +87,14 @@ pub(super) fn expected(source: &model::Source, header: u8, digest: &str) -> Stri
         ));
         for (position, column) in table.columns.iter().enumerate() {
             // Independent source geometry, never a production descriptor or
-            // decoder. The original schemas use 63-byte TD headers and 25-byte
-            // declarations, already qualified through earlier source owners.
-            let tag = source.bytes[table.definition as usize * 4096 + 63 + position * 25];
+            // decoder. Physical index count records precede 25-byte columns.
+            let definition = table.definition as usize * 4096;
+            let physical = u32::from_le_bytes(
+                source.bytes[definition + 51..definition + 55]
+                    .try_into()
+                    .unwrap(),
+            ) as usize;
+            let tag = source.bytes[definition + 63 + physical * 12 + position * 25];
             output.push_str(&format!(
                 "COLUMN\t{name}\t{position}\t{}\t{}\n",
                 hex(column.as_bytes()),

@@ -179,3 +179,6 @@ pub mod canonical_ordinary_content;
 
 /// Independent larger ordinary inputs with variable inline-map windows.
 pub mod canonical_ordinary_inline;
+
+/// Independent ordinary counter and retained-index inputs.
+pub mod canonical_ordinary_indexed;
