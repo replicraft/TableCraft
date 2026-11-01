@@ -1,5 +1,6 @@
 //! Shared fixed-record staging and independent complete-image authority.
 pub(in crate::table::mutation) mod binding;
+pub(in crate::table::mutation) mod indexed;
 pub(in crate::table::mutation) mod proof;
 pub(in crate::table::mutation) mod stage;
 

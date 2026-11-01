@@ -13,9 +13,11 @@ use super::{
     derive::{self, FinalGroup},
     frames, requests, targets,
 };
+#[cfg(feature = "journal")]
+use crate::EditError;
 use crate::InspectError;
 use crate::table::mutation::requests::FixedColumnUpdates;
-use crate::{EditError, NativeImage, TableSchema, header::check};
+use crate::{NativeImage, TableSchema, header::check};
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 pub(in crate::table::mutation) struct Prepared<'image> {
@@ -139,6 +141,7 @@ fn prepare_with_indexes<'image>(
 }
 
 impl Prepared<'_> {
+    #[cfg(feature = "journal")]
     pub(in crate::table::mutation) fn require_source(
         &self,
         image: &NativeImage,
