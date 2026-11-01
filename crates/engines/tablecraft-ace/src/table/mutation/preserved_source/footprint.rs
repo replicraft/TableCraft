@@ -3,7 +3,7 @@ use super::PayloadAdmission;
 #[cfg(feature = "ace16-write-preview")]
 use crate::format::page::PAGE_BYTES;
 #[cfg(feature = "journal")]
-use crate::table::mutation::normal_before_change::protection::Protection;
+use crate::table::mutation::record_protection::Protection;
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::mutation::variable_split::metadata::Metadata;
 use crate::{EditError, NativeImage, NativeIndex, TableSchema};
@@ -27,9 +27,11 @@ impl Footprint {
     ) -> Result<Self, EditError> {
         match payload {
             #[cfg(feature = "journal")]
-            PayloadAdmission::NativeSelected(_) | PayloadAdmission::NativeChecked(_, _) => Ok(
-                Self::Normal(Protection::capture(image, schema, budget, cancelled)?),
-            ),
+            PayloadAdmission::NativeSelected(_)
+            | PayloadAdmission::NativeChecked(_, _)
+            | PayloadAdmission::Closed(_) => Ok(Self::Normal(Protection::capture(
+                image, schema, budget, cancelled,
+            )?)),
             #[cfg(feature = "ace16-write-preview")]
             PayloadAdmission::Inert | PayloadAdmission::Selected(_) => {
                 let metadata = Metadata::capture_for_preserved_boolean(

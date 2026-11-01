@@ -1,5 +1,5 @@
 //! Fresh complete metadata footprints deny ordinary DATA payload overlap.
-use super::super::{EditError, WriteBlocker, map_authority};
+use super::{EditError, WriteBlocker, map_authority};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{

@@ -668,3 +668,6 @@ mod native_fixed;
 
 #[path = "normal/native_fixed_controls.rs"]
 mod native_fixed_controls;
+
+#[path = "normal/native_ordinary.rs"]
+mod native_ordinary;

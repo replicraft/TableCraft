@@ -1,6 +1,8 @@
 //! Independent original-intent reconstruction; staged patches are never inputs.
-use super::super::{EditError, Int32Update, NativeEditPlan, WriteBlocker, rows};
-use super::{prepare, protection::Protection, qualify, validate_intents};
+use super::super::{
+    EditError, Int32Update, NativeEditPlan, WriteBlocker, record_protection::Protection, rows,
+};
+use super::{prepare, qualify, validate_intents};
 use crate::{
     InspectError, NativeImage,
     format::{

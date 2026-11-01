@@ -12,6 +12,7 @@ use tablecraft_model::CatalogScope;
 enum Qualified<'a, J: DurableStorage> {
     Jet4(QualifiedJet4Recovery<'a, J>),
     BeforeChange(CheckedV1<'a, J>),
+    Ordinary(CheckedV1<'a, J>),
 }
 
 /// The same checked journal after complete original-intent replanning.
@@ -27,7 +28,7 @@ impl<J: DurableStorage> QualifiedNativeRecovery<'_, J> {
     pub fn state(&self) -> V1State {
         match &self.qualified {
             Qualified::Jet4(qualified) => qualified.state(),
-            Qualified::BeforeChange(checked) => checked.state(),
+            Qualified::BeforeChange(checked) | Qualified::Ordinary(checked) => checked.state(),
         }
     }
 
@@ -42,7 +43,9 @@ impl<J: DurableStorage> QualifiedNativeRecovery<'_, J> {
         let _span = tracing::debug_span!("native.update_recovery.apply").entered();
         match self.qualified {
             Qualified::Jet4(qualified) => qualified.recover(target, budget, cancelled),
-            Qualified::BeforeChange(checked) => checked.recover(target, budget, cancelled),
+            Qualified::BeforeChange(checked) | Qualified::Ordinary(checked) => {
+                checked.recover(target, budget, cancelled)
+            }
         }
     }
 
@@ -57,7 +60,7 @@ impl<J: DurableStorage> QualifiedNativeRecovery<'_, J> {
         let _span = tracing::debug_span!("native.update_recovery.confirm_completed").entered();
         match self.qualified {
             Qualified::Jet4(qualified) => qualified.confirm_completed(target, budget, cancelled),
-            Qualified::BeforeChange(checked) => {
+            Qualified::BeforeChange(checked) | Qualified::Ordinary(checked) => {
                 checked.confirm_completed(target, budget, cancelled)
             }
         }
@@ -130,6 +133,28 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
             check(budget, cancelled)?;
             Qualified::BeforeChange(checked)
+        }
+        (NativeUpdateProfile::Ace16OrdinaryFixed, NativeUpdateBody::Fixed(original)) => {
+            check(budget, cancelled)?;
+            original.verify_before(checked.before_bytes(), budget, cancelled)?;
+            let image = NativeImage::capture(
+                &mut Cursor::new(checked.before_bytes()),
+                scope,
+                budget,
+                cancelled,
+            )?;
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            let plan =
+                image.plan_ordinary_fixed_updates(original.table(), &groups, budget, cancelled)?;
+            equal_image(
+                plan.before_bytes(),
+                checked.before_bytes(),
+                budget,
+                cancelled,
+            )?;
+            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
+            check(budget, cancelled)?;
+            Qualified::Ordinary(checked)
         }
         _ => return Err(super::NativeIntentError::UnsupportedProfile.into()),
     };

@@ -45,6 +45,8 @@ mod preservation;
 mod preserved_source;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
+#[cfg(feature = "journal")]
+mod record_protection;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod record_roots;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
@@ -137,3 +139,9 @@ mod normal_fixed_sql_sources;
 
 #[cfg(all(test, feature = "journal"))]
 mod normal_ordinary_sources;
+
+#[cfg(feature = "journal")]
+mod ordinary_content;
+
+#[cfg(feature = "journal")]
+mod normal_ordinary;

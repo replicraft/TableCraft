@@ -29,6 +29,8 @@ use tablecraft_core::{
 };
 
 use crate::table::mutation::guards::fields::batch::SelectedPrograms;
+#[cfg(feature = "journal")]
+use crate::table::mutation::ordinary_content::ClosedContent;
 
 const CATALOG_HAS_COMPLEX: u32 = 0x0004_0000;
 
@@ -98,6 +100,8 @@ enum PayloadAdmission<'admission, 'image> {
         &'admission SelectedPrograms<'image>,
         &'admission crate::TableCheck,
     ),
+    #[cfg(feature = "journal")]
+    Closed(&'admission ClosedContent<'image>),
 }
 
 fn capture_with_payload(
@@ -228,6 +232,10 @@ fn capture_with_payload(
         PayloadAdmission::NativeSelected(selected)
         | PayloadAdmission::NativeChecked(selected, _) => {
             selected.require_source(image, schema, budget, cancelled)?
+        }
+        #[cfg(feature = "journal")]
+        PayloadAdmission::Closed(certificate) => {
+            certificate.require_source(image, schema, budget, cancelled)?
         }
     }
     let properties = inspect_table_properties(
@@ -509,7 +517,7 @@ impl PayloadAdmission<'_, '_> {
     fn allows_scalar(&self) -> bool {
         match self {
             #[cfg(feature = "journal")]
-            Self::NativeSelected(_) | Self::NativeChecked(_, _) => true,
+            Self::NativeSelected(_) | Self::NativeChecked(_, _) | Self::Closed(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -553,6 +561,25 @@ pub(in crate::table::mutation) fn capture_checked_before_change(
         image,
         table,
         PayloadAdmission::NativeChecked(selected, checked),
+        budget,
+        cancelled,
+    )
+}
+
+/// Actual ordinary-content proof replaces neither source validation nor field
+/// admission. It must name this exact image and an actual user-table role.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_closed_content(
+    image: &NativeImage,
+    table: &str,
+    certificate: &ClosedContent<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(
+        image,
+        table,
+        PayloadAdmission::Closed(certificate),
         budget,
         cancelled,
     )

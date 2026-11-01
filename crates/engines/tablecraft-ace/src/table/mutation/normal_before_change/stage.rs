@@ -1,7 +1,6 @@
 //! Original-record fixed patches; all final values come from fresh preparation.
-use super::{
-    super::{EditError, Int32Update, guards::buffer, physical},
-    protection::Protection,
+use super::super::{
+    EditError, Int32Update, guards::buffer, physical, record_protection::Protection,
 };
 use crate::{
     BeforeChangeFieldPreparation, InspectError, NativeImage, TableCheck, TableSnapshot,

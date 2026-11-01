@@ -83,6 +83,27 @@ impl NativeImage {
         let intent = NativeUpdateIntent::from_fixed(original);
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
+
+    /// Plan ordinary fixed requests only after native complete-content admission.
+    /// The original groups and exact BEFORE binding are retained under a distinct
+    /// intent profile. No serialized absence flag or engineering conversion occurs.
+    /// Recovery independently reconstructs closure and the complete native plan.
+    pub fn plan_recoverable_ordinary_fixed_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFixedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.ordinary_fixed_edit.plan_recoverable").entered();
+        let borrowed = super::fixed::borrow_groups(table, &groups, budget, cancelled)?;
+        let plan = self.plan_ordinary_fixed_updates(table, &borrowed, budget, cancelled)?;
+        drop(borrowed);
+        let original =
+            NativeFixedEditIntent::new(table, groups, plan.before_bytes(), budget, cancelled)?;
+        let intent = NativeUpdateIntent::from_ordinary_fixed(original);
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
 }
 
 impl RecoverableNativeEditPlan {
