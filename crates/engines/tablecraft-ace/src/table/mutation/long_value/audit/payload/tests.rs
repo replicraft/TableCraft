@@ -1,5 +1,6 @@
 //! Reader-valid alternate encodings cannot replace exact request wire authority.
-use super::super::super::{admission, encode::Encoded, stage, tests::model};
+use super::super::super::{admission, stage, tests::model};
+use crate::table::mutation::record_serialization::long_value::Encoded;
 use crate::{EditError, SlotScalarUpdate};
 use model::source as source_model;
 use tablecraft_core::values::Value;

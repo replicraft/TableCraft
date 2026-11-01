@@ -140,14 +140,14 @@ fn physical_ordinal_first_sufficient_payload_is_externalized_with_literal_comple
     assert!(matches!(
         &producer.payloads[0],
         input::Payload::Long {
-            choice: crate::table::mutation::long_value::encode::StorageChoice::Single,
+            choice: crate::table::mutation::record_serialization::long_value::StorageChoice::Single,
             ..
         }
     ));
     assert!(matches!(
         &producer.payloads[1],
         input::Payload::Long {
-            choice: crate::table::mutation::long_value::encode::StorageChoice::Inline,
+            choice: crate::table::mutation::record_serialization::long_value::StorageChoice::Inline,
             ..
         }
     ));

@@ -245,3 +245,6 @@ pub mod genuine_retained_node_insert;
 
 /// Independent constant-default and supplied-NULL INSERT views.
 pub mod genuine_default_insert;
+
+/// Independent inline Memo/OLE insertion views.
+pub mod genuine_inline_lval_insert;

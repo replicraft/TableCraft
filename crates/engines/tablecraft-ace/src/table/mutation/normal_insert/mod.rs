@@ -146,3 +146,6 @@ mod feff_tests;
 
 #[cfg(test)]
 mod node_sources;
+
+#[cfg(test)]
+mod inline_tests;

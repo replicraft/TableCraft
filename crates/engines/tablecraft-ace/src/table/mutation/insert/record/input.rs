@@ -9,7 +9,7 @@ use crate::{
     header::check,
     table::{
         long_value::profile as long_profile,
-        mutation::long_value::encode::{self, Encoded, StorageChoice},
+        mutation::record_serialization::long_value::{self, Encoded, StorageChoice},
     },
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -112,7 +112,7 @@ fn prepare_with_generated(
         check(budget, cancelled)?;
         let field = &schema.columns()[position];
         let next = if long_profile::ordinary(field) {
-            let encoded = encode::encode(field, &values[position], budget, cancelled)?;
+            let encoded = long_value::encode(field, &values[position], budget, cancelled)?;
             let choice = encoded.preferred();
             Payload::Long { encoded, choice }
         } else {

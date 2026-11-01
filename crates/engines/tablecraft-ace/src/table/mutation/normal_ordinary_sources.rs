@@ -173,3 +173,5 @@ mod indexed_insert_desc_nullable;
 mod constant_default_originals;
 
 mod constant_default_sources;
+
+mod inline_lval;

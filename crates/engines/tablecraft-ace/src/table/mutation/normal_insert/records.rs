@@ -46,7 +46,12 @@ pub(super) fn qualify(
         }
         for (field, value) in schema.columns().iter().zip(request.values()) {
             check(budget, cancelled)?;
-            if matches!(field.native_type(), LONG_TEXT | OLE) && !matches!(value, Value::Null) {
+            let supported = match field.native_type() {
+                LONG_TEXT => matches!(value, Value::Null | Value::Text(_)),
+                OLE => matches!(value, Value::Null | Value::Binary(_)),
+                _ => true,
+            };
+            if !supported {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
         }

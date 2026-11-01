@@ -1,6 +1,5 @@
 //! INSERT variable carriers; existing-slot update eligibility remains separate.
-#[cfg(feature = "ace16-write-preview")]
-use crate::table::mutation::long_value::encode as long_encode;
+use crate::table::mutation::record_serialization::long_value as long_encode;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{data_type::NUMERIC_BYTES, layout::UPDATABLE_FLAG},
@@ -42,22 +41,11 @@ pub(in crate::table::mutation) fn encode(
     check(budget, cancelled)?;
     qualify(column)?;
     if long_profile::ordinary(column) {
-        #[cfg(feature = "ace16-write-preview")]
-        {
-            let encoded = long_encode::encode(column, value, budget, cancelled)?;
-            if encoded.preferred() != long_encode::StorageChoice::Inline {
-                return Err(EditError::Unsupported(WriteBlocker::Column));
-            }
-            return encoded.descriptor(long_encode::StorageChoice::Inline, None, budget, cancelled);
+        let encoded = long_encode::encode(column, value, budget, cancelled)?;
+        if encoded.preferred() != long_encode::StorageChoice::Inline {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        #[cfg(not(feature = "ace16-write-preview"))]
-        {
-            return if matches!(value, Value::Null) {
-                Ok(Vec::new())
-            } else {
-                Err(EditError::Unsupported(WriteBlocker::Column))
-            };
-        }
+        return encoded.descriptor(long_encode::StorageChoice::Inline, None, budget, cancelled);
     }
     if column.scalar_type() != Some(ScalarType::Decimal) {
         return storage::encode_preferred(column, value, budget, cancelled);

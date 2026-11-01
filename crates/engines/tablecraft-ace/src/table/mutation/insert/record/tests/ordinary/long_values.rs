@@ -2,7 +2,7 @@
 use super::*;
 use crate::table::mutation::{
     insert::record::input::{self, Payload},
-    long_value::encode::{Encoded, StorageChoice},
+    record_serialization::long_value::{Encoded, StorageChoice},
 };
 use tablecraft_core::values::ExtendedDateTime;
 

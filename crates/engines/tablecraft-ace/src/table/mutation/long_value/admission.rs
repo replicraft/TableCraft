@@ -1,6 +1,6 @@
 //! Mutation authority is narrower than the read-only long-value report.
 use super::super::{EditError, WriteBlocker, gates, preview};
-use super::encode;
+use crate::table::mutation::record_serialization::long_value as encode;
 use crate::{
     InspectError, LongValueCheckStatus, NativeImage, PropertyGroupKind, TableCheck,
     TableLongValueCheck, check_table_long_values, inspect_table_properties,
