@@ -40,3 +40,9 @@ pub use eof_insert::{
     NativeEofInsertIntent, QualifiedNativeEofInsertRecovery, RecoverableNativeEofInsertPlan,
     RecoverableNativeInsertOperation, qualify_native_eof_insert_recovery,
 };
+
+mod complete;
+pub use complete::{
+    NativeCompleteInsertIntent, QualifiedNativeCompleteInsertRecovery,
+    RecoverableNativeCompleteInsertPlan, qualify_native_complete_insert_recovery,
+};

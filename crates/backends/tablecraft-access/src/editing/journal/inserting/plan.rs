@@ -1,14 +1,17 @@
 //! Closed actual INSERT families; omitted presence never becomes a TCNA1 body.
 use tablecraft_ace::{
-    NativeIntentError, PreparedNativeEdit, PreparedNativeUpdate, RecoverableNativeEofInsertPlan,
+    NativeIntentError, PreparedNativeEdit, PreparedNativeUpdate,
+    RecoverableNativeCompleteInsertPlan, RecoverableNativeEofInsertPlan,
     RecoverableNativeInsertPlan, RecoverableNativeOmittedInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
 
 /// A qualified complete-row or original-presence native INSERT operation.
-/// Both variants retain source-bound native admission and independent proof.
+/// All variants retain source-bound native admission and independent proof.
 pub enum NativeJournalInsertPlan {
+    /// Complete original exact carriers with source-derived V1/V2 geometry, TCNA4.
+    CompleteTyped(RecoverableNativeCompleteInsertPlan),
     /// Exact complete supplied rows, retaining the original TCNA0001 contract.
     Complete(RecoverableNativeInsertPlan),
     /// Original complete rows with one represented EOF DATA page, TCNA3/V2.
@@ -21,6 +24,7 @@ impl NativeJournalInsertPlan {
     /// Complete original source bytes, not a storage capability.
     pub fn before_bytes(&self) -> &[u8] {
         match self {
+            Self::CompleteTyped(plan) => plan.before_bytes(),
             Self::Complete(plan) => plan.before_bytes(),
             Self::AllocateEof(plan) => plan.before_bytes(),
             Self::Omitted(plan) => plan.before_bytes(),
@@ -30,6 +34,7 @@ impl NativeJournalInsertPlan {
     /// Complete independently checked replacement bytes.
     pub fn after_bytes(&self) -> &[u8] {
         match self {
+            Self::CompleteTyped(plan) => plan.after_bytes(),
             Self::Complete(plan) => plan.after_bytes(),
             Self::AllocateEof(plan) => plan.after_bytes(),
             Self::Omitted(plan) => plan.after_bytes(),
@@ -39,6 +44,7 @@ impl NativeJournalInsertPlan {
     /// Number of explicitly requested rows, without a matched-old-row count.
     pub fn inserted_rows(&self) -> usize {
         match self {
+            Self::CompleteTyped(plan) => plan.inserted_rows(),
             Self::Complete(plan) => plan.inserted_rows(),
             Self::AllocateEof(plan) => plan.inserted_rows(),
             Self::Omitted(plan) => plan.inserted_rows(),
@@ -52,6 +58,7 @@ impl NativeJournalInsertPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match self {
+            Self::CompleteTyped(plan) => plan.intent().encode(budget, cancelled),
             Self::Complete(plan) => plan.intent().encode(budget, cancelled),
             Self::AllocateEof(plan) => plan.intent().encode(budget, cancelled),
             Self::Omitted(plan) => plan.intent().encode(budget, cancelled),
@@ -67,6 +74,7 @@ impl NativeJournalInsertPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeEdit<'a, D, J>, JournalError> {
         match self {
+            Self::CompleteTyped(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Complete(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::AllocateEof(_) => Err(JournalError::ImageSize),
             Self::Omitted(plan) => plan.prepare(target, journal, budget, cancelled),
@@ -83,6 +91,7 @@ impl NativeJournalInsertPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
         match self {
+            Self::CompleteTyped(plan) => plan.prepare_insert(target, journal, budget, cancelled),
             Self::Complete(plan) => plan
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),

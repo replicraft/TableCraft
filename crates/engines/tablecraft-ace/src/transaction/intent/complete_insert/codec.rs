@@ -1,10 +1,9 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
-use super::{CompleteRows, NativeIntentError, Protocol, binding, names};
+use super::{CompleteRows, NativeIntentError, Protocol, binding, carrier, names};
 use crate::{
     InspectError, RowInsert,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
-    transaction::intent::fitted::carrier,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -35,6 +34,7 @@ fn add(length: usize, extra: usize) -> Result<usize, NativeIntentError> {
 
 fn row_length(
     row: &RowInsert,
+    protocol: Protocol,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
@@ -44,7 +44,7 @@ fn row_length(
     let mut length = ROW_HEADER_BYTES;
     for value in row.values() {
         check(budget, cancelled)?;
-        let encoded = carrier::row_view(value)?;
+        let encoded = carrier::row_view(value, protocol)?;
         carrier::pay_scan(encoded.bytes(), budget, cancelled)?;
         length = add(add(length, carrier::HEADER_BYTES)?, encoded.bytes().len())?;
     }
@@ -54,6 +54,7 @@ fn row_length(
 pub(super) fn validate_requests(
     name_bytes: usize,
     rows: &[RowInsert],
+    protocol: Protocol,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
@@ -68,7 +69,7 @@ pub(super) fn validate_requests(
         if Some(row.values().len()) != width {
             return Err(NativeIntentError::InvalidRecord);
         }
-        total = add(total, row_length(row, budget, cancelled)?)?;
+        total = add(total, row_length(row, protocol, budget, cancelled)?)?;
     }
     check(budget, cancelled)?;
     Ok(total)
@@ -109,6 +110,7 @@ impl<'a> Cursor<'a> {
 
     fn cell(
         &mut self,
+        protocol: Protocol,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<carrier::Borrowed<'a>, NativeIntentError> {
@@ -122,7 +124,7 @@ impl<'a> Cursor<'a> {
         }
         let length = self.u32()?;
         let bytes = self.take(length)?;
-        carrier::row_parse(header[0], bytes, budget, cancelled)
+        carrier::row_parse(header[0], bytes, protocol, budget, cancelled)
     }
 
     fn finished(&self) -> bool {
@@ -196,7 +198,7 @@ fn preflight<'a>(
         }
         width = Some(values);
         for _ in 0..values {
-            row.cell(budget, cancelled)?;
+            row.cell(protocol, budget, cancelled)?;
         }
         if !row.finished() {
             return Err(NativeIntentError::InvalidRecord);
@@ -239,7 +241,8 @@ impl CompleteRows {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
-        let length = validate_requests(self.table().len(), self.rows(), budget, cancelled)?;
+        let length =
+            validate_requests(self.table().len(), self.rows(), protocol, budget, cancelled)?;
         budget
             .charge_allocation(length as u64, 1)
             .map_err(InspectError::from)?;
@@ -262,7 +265,7 @@ impl CompleteRows {
         copy(&mut output, self.table().as_bytes(), budget, cancelled)?;
         for row in self.rows() {
             check(budget, cancelled)?;
-            let length = row_length(row, budget, cancelled)?;
+            let length = row_length(row, protocol, budget, cancelled)?;
             budget
                 .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
                 .map_err(InspectError::from)?;
@@ -270,11 +273,11 @@ impl CompleteRows {
             output.extend_from_slice(&(row.values().len() as u32).to_le_bytes());
             for value in row.values() {
                 check(budget, cancelled)?;
-                let encoded = carrier::row_view(value)?;
+                let encoded = carrier::row_view(value, protocol)?;
                 budget
                     .charge(Resource::Steps, carrier::HEADER_BYTES as u64)
                     .map_err(InspectError::from)?;
-                output.extend_from_slice(&[encoded.tag, 0, 0, 0]);
+                output.extend_from_slice(&[encoded.tag(), 0, 0, 0]);
                 output.extend_from_slice(&(encoded.bytes().len() as u32).to_le_bytes());
                 copy(&mut output, encoded.bytes(), budget, cancelled)?;
             }
@@ -317,7 +320,7 @@ impl CompleteRows {
                 .map_err(|_| InspectError::Allocation)?;
             for _ in 0..count {
                 values.push(carrier::owned(
-                    row.cell(budget, cancelled)?,
+                    row.cell(protocol, budget, cancelled)?,
                     budget,
                     cancelled,
                 )?);

@@ -1,4 +1,5 @@
-//! Exact original complete-row data shared by closed TCNA1 and TCNA3 families.
+//! Exact original complete-row data shared by closed TCNA1, TCNA3 and TCNA4 families.
+mod carrier;
 mod codec;
 
 use super::{NativeIntentError, binding, model as names};
@@ -10,6 +11,7 @@ use tablecraft_schema::SchemaName;
 pub(super) enum Protocol {
     Existing,
     Eof,
+    Complete,
 }
 
 impl Protocol {
@@ -17,6 +19,7 @@ impl Protocol {
         match self {
             Self::Existing => b"TCNA0001",
             Self::Eof => b"TCNA0003",
+            Self::Complete => b"TCNA0004",
         }
     }
 
@@ -24,6 +27,7 @@ impl Protocol {
         match self {
             Self::Existing => 1,
             Self::Eof => 3,
+            Self::Complete => 4,
         }
     }
 }
@@ -51,9 +55,30 @@ impl CompleteRows {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::capture(table, rows, before, Protocol::Existing, budget, cancelled)
+    }
+
+    pub(super) fn new_complete(
+        table: &str,
+        rows: Vec<RowInsert>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(table, rows, before, Protocol::Complete, budget, cancelled)
+    }
+
+    fn capture(
+        table: &str,
+        rows: Vec<RowInsert>,
+        before: &[u8],
+        protocol: Protocol,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
         names::validate_name(table, budget, cancelled)?;
-        codec::validate_requests(table.len(), &rows, budget, cancelled)?;
+        codec::validate_requests(table.len(), &rows, protocol, budget, cancelled)?;
         let before_binding = binding::digest(before, budget, cancelled)?;
         let table = names::copy_name(table, budget)?;
         check(budget, cancelled)?;
