@@ -269,10 +269,10 @@ fn genuine_indexed_delete_literals_read_all_aliases_and_preserve_complete_comple
         let mut expected = before.clone();
         assert_eq!(&before[td + 16..td + 20], &[3, 0, 0, 0]);
         expected[td + 16..td + 20].copy_from_slice(&(retained.len() as u32).to_le_bytes());
-        for slot in 0..3 {
+        for (slot, values) in ROWS.iter().enumerate() {
             let start = 4081 - slot * 15;
             let mut record = vec![3, 0];
-            for value in ROWS[slot] {
+            for value in values {
                 record.extend_from_slice(&value.to_le_bytes());
             }
             record.push(7);

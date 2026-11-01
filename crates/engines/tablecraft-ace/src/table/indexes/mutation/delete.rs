@@ -1,13 +1,13 @@
 //! Cardinality changes preserve retained original keys and qualified page ownership.
 pub(super) mod requests;
-use super::super::{NativeIndex, header::IndexHeader, page, page::KeyRef};
+use super::super::{NativeIndex, page, page::KeyRef};
 use super::{
     PatchSet, repack,
     retained::RetainedProfile,
     tree::{Contraction, Deletion, Tree},
 };
 use crate::{
-    EditError, InspectError, NativeImage, WriteBlocker,
+    EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, reader::Reader},
 };
 
@@ -37,14 +37,7 @@ pub(super) fn edit<P: RetainedProfile, const N: usize>(
         .bytes
         .get(offset..end)
         .ok_or(InspectError::Truncated)?;
-    if !root.leaf
-        || root.previous != 0
-        || root.next != 0
-        || root.tail != 0
-        || !IndexHeader::read(original)?.qualified_for_update(0)
-    {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
+    super::leaf_removal::require_root(&root, original)?;
     let effective = requests::capture(
         index,
         profile,
@@ -56,22 +49,12 @@ pub(super) fn edit<P: RetainedProfile, const N: usize>(
     let references = effective.references();
     // Every effective root has one physical entry. Complete before checks
     // independently establish eligible membership and row/key agreement.
-    let mut removed = 0;
-    let mut retained = 0;
-    for position in 0..root.entries.len() {
-        reader.tick()?;
-        reader.work(references.len())?;
-        if references.contains(&root.entries[position].value.row) {
-            removed += 1;
-        } else {
-            root.entries.swap(retained, position);
-            retained += 1;
-        }
-    }
-    if removed != references.len() {
-        return Err(EditError::Preservation);
-    }
-    root.entries.truncate(retained);
+    super::leaf_removal::remove(
+        &mut root.entries,
+        references,
+        reader.budget,
+        reader.cancelled,
+    )?;
     if references.is_empty() {
         return Ok(());
     }

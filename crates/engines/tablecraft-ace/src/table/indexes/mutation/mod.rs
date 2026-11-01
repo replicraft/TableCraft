@@ -85,3 +85,9 @@ pub(in crate::table) struct PatchSet {
 
 #[cfg(test)]
 mod numeric_tests;
+
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod leaf_removal;
+
+#[cfg(feature = "journal")]
+pub(in crate::table) mod normal_deletion;
