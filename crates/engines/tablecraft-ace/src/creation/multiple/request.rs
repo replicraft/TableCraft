@@ -112,6 +112,7 @@ pub(in crate::creation) fn capture<'a>(
         }
         requests.push(request);
     }
+    let layout = layout.bind_primary(&requests, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(Captured {
         layout,

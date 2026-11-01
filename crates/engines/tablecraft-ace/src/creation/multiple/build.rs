@@ -18,7 +18,7 @@ pub(in crate::creation) fn build(
         let mut maps = DataPage::new(build::page(&mut bytes, profile::MAP_PAGE)?, 0)?;
         for slot in 0..captured.layout.map_rows {
             check(budget, cancelled)?;
-            let member = member(captured, slot)?;
+            let member = member(captured, slot, budget, cancelled)?;
             record::inline_map(
                 maps.append(profile::MAP_RECORD_BYTES, budget, cancelled)?,
                 member,
@@ -72,7 +72,17 @@ pub(in crate::creation) fn build(
     for (index, request) in captured.tables.iter().enumerate() {
         check(budget, cancelled)?;
         let role = captured.layout.role(index)?;
-        definition::write_role(
+        let index_role = captured.layout.index_role(index)?;
+        let primary = match (request.primary.as_ref(), index_role) {
+            (Some(prepared), Some(index)) => Some(definition::PrimaryRole {
+                prepared,
+                root: index.root,
+                map: index.owned_reference()?,
+            }),
+            (None, None) => None,
+            _ => return Err(CreateDatabaseError::Layout),
+        };
+        definition::write_role_with_primary(
             build::page(&mut bytes, role.definition)?,
             request.fields(),
             request.rows.count(),
@@ -82,6 +92,7 @@ pub(in crate::creation) fn build(
                 owned: role.owned_reference()?,
                 candidate: role.candidate_reference()?,
             },
+            primary,
             budget,
             cancelled,
         )?;
@@ -134,11 +145,44 @@ pub(in crate::creation) fn build(
         }
         data.finish()?;
     }
+    for (index, request) in captured.tables.iter().enumerate() {
+        check(budget, cancelled)?;
+        if let Some(primary) = request.primary.as_ref() {
+            let role = captured.layout.role(index)?;
+            let index_role = captured
+                .layout
+                .index_role(index)?
+                .ok_or(CreateDatabaseError::Layout)?;
+            primary.write_leaf(
+                build::page(&mut bytes, index_role.root)?,
+                role.definition,
+                role.data,
+                budget,
+                cancelled,
+            )?;
+        }
+    }
     check(budget, cancelled)?;
     Ok(bytes)
 }
 
-fn member(captured: &Captured<'_>, slot: usize) -> Result<Option<usize>, CreateDatabaseError> {
+fn member(
+    captured: &Captured<'_>,
+    slot: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<usize>, CreateDatabaseError> {
+    if slot >= captured.layout.index_maps_start() {
+        for index in 0..captured.tables.len() {
+            check(budget, cancelled)?;
+            if let Some(role) = captured.layout.index_role(index)?
+                && role.owned == slot
+            {
+                return Ok(Some(role.root));
+            }
+        }
+        return Err(CreateDatabaseError::Layout);
+    }
     if matches!(
         slot,
         profile::CATALOG_MAP_SLOT | profile::CATALOG_CANDIDATE_SLOT

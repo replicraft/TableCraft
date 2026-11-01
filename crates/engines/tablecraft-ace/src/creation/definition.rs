@@ -1,6 +1,6 @@
 //! Complete table declarations, including explicit column LVAL map pairs.
 use super::{
-    CreateDatabaseError,
+    CreateDatabaseError, primary,
     profile::{self, Fields},
 };
 use crate::format::{
@@ -65,6 +65,16 @@ pub(super) fn length(fields: Fields<'_>, catalog: bool) -> Result<usize, CreateD
         .ok_or(CreateDatabaseError::Layout)
 }
 
+pub(super) fn length_with_primary(
+    fields: Fields<'_>,
+    catalog: bool,
+    primary: Option<&primary::Prepared<'_>>,
+) -> Result<usize, CreateDatabaseError> {
+    length(fields, catalog)?
+        .checked_add(primary.map_or(0, primary::Prepared::extra_definition_bytes))
+        .ok_or(CreateDatabaseError::PageCapacity)
+}
+
 pub(super) fn write(
     page: &mut [u8],
     fields: Fields<'_>,
@@ -106,8 +116,31 @@ pub(super) fn write_role(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
+    write_role_with_primary(page, fields, rows, role, None, budget, cancelled)
+}
+
+pub(super) struct PrimaryRole<'a, 'request> {
+    pub prepared: &'a primary::Prepared<'request>,
+    pub root: usize,
+    pub map: u32,
+}
+
+pub(super) fn write_role_with_primary(
+    page: &mut [u8],
+    fields: Fields<'_>,
+    rows: usize,
+    role: Role,
+    primary: Option<PrimaryRole<'_, '_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
     let catalog = role.catalog;
-    let length = length(fields, catalog)?;
+    if primary.is_some() && (!role.user || catalog) {
+        return Err(CreateDatabaseError::Layout);
+    }
+    let prepared = primary.as_ref().map(|index| index.prepared);
+    let length = length_with_primary(fields, catalog, prepared)?;
+    let column_start = HEADER_BYTES + prepared.map_or(0, primary::Prepared::column_shift);
     if page.len() != PAGE_BYTES || length > PAGE_BYTES {
         return Err(CreateDatabaseError::Layout);
     }
@@ -128,13 +161,23 @@ pub(super) fn write_role(
     put32(page, OWNED_MAP_OFFSET, role.owned)?;
     put32(page, CANDIDATE_MAP_OFFSET, role.candidate)?;
 
-    let mut names = HEADER_BYTES + fields.count() * COLUMN_BYTES;
+    if let Some(index) = &primary {
+        put32(page, layout::LOGICAL_INDEX_COUNT_OFFSET, 1)?;
+        put32(page, layout::INDEX_COUNT_OFFSET, 1)?;
+        put32(
+            page,
+            HEADER_BYTES + size_of::<u32>(),
+            u32::try_from(index.prepared.count()).map_err(|_| CreateDatabaseError::Layout)?,
+        )?;
+    }
+
+    let mut names = column_start + fields.count() * COLUMN_BYTES;
     let mut ordinary = 0;
     let mut long_value = fields.ordinary_variable_count();
     for index in 0..fields.count() {
         check(budget, cancelled)?;
         let field = fields.get(index);
-        let start = HEADER_BYTES + index * COLUMN_BYTES;
+        let start = column_start + index * COLUMN_BYTES;
         page[start] = field.kind;
         put32(page, start + COLUMN_MAGIC, MAGIC)?;
         put16(page, start + COLUMN_NUMBER, index)?;
@@ -199,6 +242,11 @@ pub(super) fn write_role(
             )?;
             names += LVAL_PAIR_BYTES;
         }
+    }
+    if let Some(index) = primary {
+        index
+            .prepared
+            .write_tail(page, &mut names, index.root, index.map, budget, cancelled)?;
     }
     put16(page, names, usize::from(u16::MAX))?;
     if names + END_BYTES != length {

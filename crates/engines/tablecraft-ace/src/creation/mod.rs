@@ -6,6 +6,7 @@ mod defaults;
 mod definition;
 mod input;
 mod multiple;
+mod primary;
 mod profile;
 mod properties;
 mod record;
@@ -41,3 +42,6 @@ mod property_tests;
 
 #[cfg(test)]
 mod default_tests;
+
+#[cfg(test)]
+mod primary_tests;
