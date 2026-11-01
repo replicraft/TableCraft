@@ -18,9 +18,10 @@ readbacks. Focused tests and the strict/broad regression batch pass; exact recei
 in the [execution record](../../testing/results/ace16-native17-creation-writes-2026-11-01.json).
 
 The [source qualification](../../testing/ACE16_NATIVE17_CREATION_SOURCES.md)
-precedes these producers. Scalar INSERT limits, missing AllowZeroLength metadata
-for requested empty Text, generated/default policies and represented future FREE
-requirements remain explicit normal gates. No future GLOBAL bits are changed by
+precedes these producers. Complete-row INSERT now has its separate
+[wider scalar and represented EOF profile](NORMAL_COMPLETE_INSERT.md). Explicit
+Required/AllowZeroLength creation is described below; generated/default policies
+and represented future FREE requirements remain explicit normal gates. No future GLOBAL bits are changed by
 this upgrade, and native Access/Windows conformance is not inferred.
 
 The optional `tablecraft-access/ace16-create` feature composes the
@@ -141,3 +142,31 @@ eighteen exact read-only SDK reports and saved verification pass before any
 matching creator is run. The [source record](../../testing/results/ace16-creation-property-sources-2026-11-01.json)
 retains receipts. These are authored metadata sources, not native Access creation
 or save/reopen qualification. Creator support is tested separately.
+
+
+## Explicit Required and AllowZeroLength creation
+
+`CreateColumn::with_required(bool)` authors an explicit Required property.
+`CreateColumn::short_text(...).with_allow_zero_length(bool)` authors an explicit
+empty-Text rule; other declaration families reject that option. Omission remains
+distinct from false. Both single-table and multiple-table creators serialize
+bounded native MR2 column properties into the catalog and validate initial rows
+before allocating the image. Aggregate catalog capacity is checked before staging.
+No-policy creation retains its existing complete bytes.
+
+Five focused functions pass, including fourteen full-image creator/source
+comparisons, four initial-row refusals, three two-table component comparisons
+and invalid-policy/early-allocation controls. The existing creation regression
+filter passes 31 functions with one ignored exporter. The
+[batch record](../../testing/results/ace16-sparse-actions-and-creation-properties-2026-11-01.json)
+separates these from source qualification and broader regression. The two-table
+checks qualify independent catalog and user-page components, not whole-image
+source equality. The CLI currently has no field-policy flags. DefaultValue and
+AutoNumber creation remain separate work; native Access save/reopen is unrun.
+
+
+The combined local batch passes 1,148 ACE units, 79 adapter units, 102 CLI units
+and 90 default recovery functions. Strict all-feature, journal-only, preview-only
+and minimal checks pass. Fixture-dependent ignored functions are covered only by
+the separately executed focused receipts. Native Access and Windows qualification
+remain unrun.

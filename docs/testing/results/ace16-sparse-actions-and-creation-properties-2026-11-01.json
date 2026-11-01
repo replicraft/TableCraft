@@ -1,0 +1,859 @@
+{
+  "date": "2026-11-01",
+  "scope": [
+    "Normal manual INSERT/DELETE for fixed sparse native ordinals and stored column-ID gaps",
+    "Fresh native single/multiple-table Required and AllowZeroLength creation"
+  ],
+  "expected_bytes_retuned_to_producers": false,
+  "source_phases_precede_matching_producers": true,
+  "creation_source_record": "ace16-creation-property-sources-2026-11-01.json",
+  "focused_checks": [
+    {
+      "name": "creation-properties-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::property_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 5,
+      "actual_passed": 5,
+      "accepted": true,
+      "log_sha256": "09bade46422300b22051a6632b126d778811eb9e046164e22de5bf4ce154cc48",
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/creation-properties-first.log",
+        "bytes": 1115,
+        "sha256": "09bade46422300b22051a6632b126d778811eb9e046164e22de5bf4ce154cc48",
+        "test_results": [
+          "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1282 filtered out; finished in 0.01s"
+        ]
+      }
+    },
+    {
+      "name": "action-guards-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "no_required_programs::action_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "log_sha256": "9fe17b0b2c22d191e1ea81e6182411e4d5918480423dcbfd6580df509057455c",
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/action-guards-first.log",
+        "bytes": 583,
+        "sha256": "9fe17b0b2c22d191e1ea81e6182411e4d5918480423dcbfd6580df509057455c",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1285 filtered out; finished in 0.04s"
+        ]
+      }
+    },
+    {
+      "name": "sparse-direct-third",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "sparse_numeric_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "log_sha256": "889cb70272ec6cef41d8f988b983b412651beb3ef2e0189c9a20a05dd518b346",
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/sparse-direct-third.log",
+        "bytes": 691,
+        "sha256": "889cb70272ec6cef41d8f988b983b412651beb3ef2e0189c9a20a05dd518b346",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1285 filtered out; finished in 8.18s"
+        ]
+      }
+    },
+    {
+      "name": "sparse-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::sparse_numeric::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 5,
+      "actual_passed": 6,
+      "accepted": true,
+      "log_sha256": "c2d17f0266473ba4593bb0bf79647739bee0d4628183c89c15cbc3ef819cebfd",
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/sparse-native-first.log",
+        "bytes": 1155,
+        "sha256": "c2d17f0266473ba4593bb0bf79647739bee0d4628183c89c15cbc3ef819cebfd",
+        "test_results": [
+          "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 192 filtered out; finished in 26.41s"
+        ]
+      }
+    },
+    {
+      "name": "sparse-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_sparse_numeric",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "log_sha256": "a69953a0e2687d3ccdb1719e18f51eea18190387a1324507e4884a8ef9800b93",
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/sparse-host-first.log",
+        "bytes": 615,
+        "sha256": "a69953a0e2687d3ccdb1719e18f51eea18190387a1324507e4884a8ef9800b93",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.75s"
+        ]
+      }
+    }
+  ],
+  "creation_regression": {
+    "path": ".cache/ace16-sparse-properties-integration-20261101/creation-regression-first.log",
+    "bytes": 3873,
+    "sha256": "04ae37e57f21951c936be5ac142a7ae42fd1c2c4420e0643062e3f86e12f55be",
+    "test_results": [
+      "ok. 31 passed; 0 failed; 1 ignored; 0 measured; 1255 filtered out; finished in 0.50s"
+    ]
+  },
+  "prior_profile_regressions": [
+    {
+      "name": "complete-physical-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::complete::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 6,
+      "actual_passed": 6,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/complete-physical-first.log",
+        "bytes": 1155,
+        "sha256": "ac6e1657b2ba687768f49f1137ca78da607c3998f7a343ed92c615ae050ca008",
+        "test_results": [
+          "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1281 filtered out; finished in 1.70s"
+        ]
+      }
+    },
+    {
+      "name": "primary-policy-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "indexes::mutation::insertion::primary_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/primary-policy-first.log",
+        "bytes": 415,
+        "sha256": "3d377374f47c5bbd25ae2c3b41519c26d88e4036203c36ecd91fcb8721adbd85",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1286 filtered out; finished in 0.04s"
+        ]
+      }
+    },
+    {
+      "name": "primary-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::wide_primary_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/primary-direct-first.log",
+        "bytes": 417,
+        "sha256": "fe3d659b0d900c1609e1d4c26ba7d0335d0ef4b2febfa31d5731b95c3b9e1ded",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1286 filtered out; finished in 3.52s"
+        ]
+      }
+    },
+    {
+      "name": "wide-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_complete_insert::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 7,
+      "actual_passed": 7,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/wide-native-first.log",
+        "bytes": 1225,
+        "sha256": "f9dc694314bace6174fe6e721c9c361a159f948952d614579d75bda8550669fc",
+        "test_results": [
+          "ok. 7 passed; 0 failed; 0 ignored; 0 measured; 191 filtered out; finished in 2.97s"
+        ]
+      }
+    },
+    {
+      "name": "primary-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_primary_numeric::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/primary-native-first.log",
+        "bytes": 643,
+        "sha256": "a2f2c8f8fed2ad94e8e14098be1982af5d6274909e361d2104cd379c793d693b",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 195 filtered out; finished in 7.14s"
+        ]
+      }
+    },
+    {
+      "name": "dense-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::dense_numeric::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/dense-native-first.log",
+        "bytes": 527,
+        "sha256": "54cbe48010386135278db5bb2d78c55881ababbc0d3be48310938d1eb10c3468",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 196 filtered out; finished in 16.63s"
+        ]
+      }
+    },
+    {
+      "name": "ordinary_wide_complete_insert-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "ordinary_wide_complete_insert",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/ordinary_wide_complete_insert-first.log",
+        "bytes": 516,
+        "sha256": "259e43b6e1717bab9c141de4eeb081ad369cc11fd9a1b8e386d6630738eee26b",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_complete_insert_restart-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_complete_insert_restart",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_complete_insert_restart-first.log",
+        "bytes": 631,
+        "sha256": "58eed369cf1a81258db1a72725fc77d562b83ad2f7911af8aab857bd740a39fa",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.46s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_numeric_followons-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_numeric_followons",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_numeric_followons-first.log",
+        "bytes": 601,
+        "sha256": "60b7cf3430b93a047e5817abf01969bdb6665875ab64d271a401dcccfd02ba05",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.65s"
+        ]
+      }
+    },
+    {
+      "name": "ordinary_wide_complete_insert_sql-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "ordinary_wide_complete_insert_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/ordinary_wide_complete_insert_sql-first.log",
+        "bytes": 865,
+        "sha256": "f1be629927bd2357db3a4971a0b6a37e5e061f2455b221916f48ba3eada3cf4f",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_indexed_insert-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_indexed_insert",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_indexed_insert-first.log",
+        "bytes": 589,
+        "sha256": "8038726a84e8a9317d80179413a8e8cc8b7b4c60292afcea7b7d68fcbab5fb38",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_integral_indexed-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_integral_indexed",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_integral_indexed-first.log",
+        "bytes": 598,
+        "sha256": "91a0d67c6d0a33b8219795dd5b1f983c54ebf842742a2b0833e926c72cad15c0",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.33s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_integral_indexed_sql-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "genuine_integral_indexed_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_integral_indexed_sql-first.log",
+        "bytes": 577,
+        "sha256": "2c054095e57799c48190bacb64c4f749ff0a5c70e5e3c047df8b6c6ac73809a1",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.52s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_default_insert-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_default_insert",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_default_insert-first.log",
+        "bytes": 606,
+        "sha256": "3bfc0e8eb5baced121b0ffaca5164b4915bb1225e5cbc3b48d60a193b34d860c",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.84s"
+        ]
+      }
+    },
+    {
+      "name": "genuine_retained_node_insert-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_retained_node_insert",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/genuine_retained_node_insert-first.log",
+        "bytes": 498,
+        "sha256": "96cb837cc707091869baa5ef8bab0b17c757d1eb8d65965521c7070350dae843",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.30s"
+        ]
+      }
+    },
+    {
+      "name": "io-borrow-doc-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-io",
+        "--all-features",
+        "--doc"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 4,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/prior-regressions-first/io-borrow-doc-first.log",
+        "bytes": 891,
+        "sha256": "924acbbdcdd4211f0263409d7801761d0e7022a88d709afd41ae9be51585e6a1",
+        "test_results": [
+          "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s"
+        ]
+      }
+    }
+  ],
+  "preserved_first_failures": [
+    {
+      "path": ".cache/ace16-sparse-properties-integration-20261101/sparse-direct-first.log",
+      "bytes": 1717,
+      "sha256": "95600a1ab75c642386b83fb1f3248e27bdf55f1ae264469b858de20aad008b97",
+      "test_results": [
+        "FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1285 filtered out; finished in 0.40s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-sparse-properties-integration-20261101/sparse-direct-second.log",
+      "bytes": 1356,
+      "sha256": "283812a0ef2f47bf6d86db7701c747b3a3207bac93960554c3419b3c45fa2eed",
+      "test_results": [
+        "FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 1285 filtered out; finished in 7.03s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-sparse-properties-integration-20261101/strict-all-first.log",
+      "bytes": 1361,
+      "sha256": "7b85c87224a4062844fcdab12259118a0fb8ef47b0e876e9d221e95bd99bcb19",
+      "test_results": []
+    }
+  ],
+  "corrections": [
+    "Action raw-index declaration now resolves native column numbers through the actual bounded action path. Canonical selected/global lookup remains unchanged.",
+    "Normal integral INSERT retains its root-leaf restriction while resolving values by visible position, without equating visible and native column numbers.",
+    "The retained-index qualifier now takes one optional framing profile derived from existing payload admission, preserving the prior early refusal and resource work while avoiding eight arguments."
+  ],
+  "source_families": [
+    "genuine native0/1/2 with stored IDs0/3/4",
+    "authored native0/3/4, stored IDs0/3/4, extent5",
+    "authored native0/8/9, stored IDs0/8/9, extent10 and two mask bytes"
+  ],
+  "creation_evidence": {
+    "full_independent_image_matches": 14,
+    "initial_row_refusals": 4,
+    "two_table_component_comparisons": 3,
+    "two_table_whole_image_source_claim": false,
+    "no_policy_complete_bytes_preserved": true,
+    "cli_property_flags": false
+  },
+  "boundaries": [
+    "Canonical UPDATE, positive-program and original-omission admission are not widened by sparse action support.",
+    "Sparse native profile is fixed fields without missing variable slots.",
+    "Original complete INSERT and raw DELETE request protocols remain unchanged.",
+    "Creation DefaultValue and AutoNumber remain separate work."
+  ],
+  "broad_state": "PASS",
+  "native_access_save_reopen": "unrun",
+  "windows_durability": "unrun",
+  "broad_checks": [
+    {
+      "name": "strict-all-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/strict-all-second.log",
+        "bytes": 403,
+        "sha256": "f63927e65483ebdda8aec98a1fed4c0ceac60aecf175dad76c98baa88f5976bb",
+        "test_results": []
+      }
+    },
+    {
+      "name": "journal-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/journal-first.log",
+        "bytes": 417,
+        "sha256": "4f7fe2085d51ff61d66d8895a1498b6c7ff32b72c55643d269dd269c29702358",
+        "test_results": []
+      }
+    },
+    {
+      "name": "preview-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "b636cae32df4fbf73844deb61eb736628a7c22de48632fb44a4fce99486c3831",
+        "test_results": []
+      }
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "ccfc9d765c31cafab87dd8965ade291c24b99a03a87866cd26c8a60c1e052661",
+        "test_results": []
+      }
+    },
+    {
+      "name": "ace-units-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/ace-units-first.log",
+        "bytes": 179312,
+        "sha256": "4d0afb2bb8d0fe9aeae57b55bfcfa03b8c0fcd5d1fb2bf271afd34194ca4e9c0",
+        "test_results": [
+          "ok. 1148 passed; 0 failed; 139 ignored; 0 measured; 0 filtered out; finished in 114.03s"
+        ]
+      }
+    },
+    {
+      "name": "access-units-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/access-units-first.log",
+        "bytes": 9690,
+        "sha256": "af232ac892929c91bd7d1c92430644b1b9c6abc9bea6508d2994ff244a023337",
+        "test_results": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.54s"
+        ]
+      }
+    },
+    {
+      "name": "cli-units-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/cli-units-first.log",
+        "bytes": 11586,
+        "sha256": "c695b46debe9734875ebb62524d4c784fba0eb9c6736cf7d034e67e2d4158449",
+        "test_results": [
+          "ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s"
+        ]
+      }
+    },
+    {
+      "name": "recovery-default-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-sparse-properties-integration-20261101/recovery-default-first.log",
+        "bytes": 32578,
+        "sha256": "2d0330dbe766cface2a5a4b93ce3785ff182ad9a4a1ec805848d0ea0e2015c3f",
+        "test_results": [
+          "ok. 90 passed; 0 failed; 108 ignored; 0 measured; 0 filtered out; finished in 6.56s"
+        ]
+      }
+    }
+  ],
+  "platform": "aarch64-apple-darwin",
+  "rustc": "1.99.0 (b940084d7 2026-09-28)",
+  "documentation_links": {
+    "checked": 7258,
+    "missing": 0
+  },
+  "dependency_boundaries": {
+    "workspace_packages": 15,
+    "passed": true
+  }
+}
