@@ -1,4 +1,4 @@
-//! Independent literal same-owned-page forwarding source reads, no writer API.
+//! Independent cross-page forwarded second-edit source reads, no writer API.
 use crate::format::{allocation, reader::Reader};
 use crate::{
     LongValueCheckStatus, NativeImage, PayloadPresence, PropertyGroupKind, check_table_long_values,
@@ -215,7 +215,7 @@ fn alternate_owned_second_sources_read_before_any_writer() {
         memberships(&before, maps, old, new);
         let start = new as usize * 4096 + 4034;
         let end = start + 38;
-        for pair in before[start..end].chunks_exact(2) {
+        for pair in before[start..end].as_chunks::<2>().0 {
             assert_eq!(pair, &[97, 0]);
         }
         let mut literal = before.clone();

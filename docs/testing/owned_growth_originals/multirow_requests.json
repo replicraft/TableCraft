@@ -1,0 +1,87 @@
+{
+  "state": "MULTIROW_PARENT_AND_REQUESTS_BEFORE_MODEL",
+  "table": "Sentinel",
+  "profiles": [
+    {
+      "header": 5,
+      "parent": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h5-alternate-owned-before.accdb",
+      "bytes": 462848,
+      "sha256": "a8954a42742b6414726055970c628c88436059d7e14f919d939cae95d35c4cbd",
+      "definition": 107,
+      "maps": 108,
+      "bitmap": 111,
+      "root": 110,
+      "first": 112,
+      "second": 113
+    },
+    {
+      "header": 6,
+      "parent": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h6-alternate-owned-before.accdb",
+      "bytes": 532480,
+      "sha256": "a0b3bf39db8322a21b90cde1c72d168f1ece059c268fae6212eb93c4692b0a21",
+      "definition": 125,
+      "maps": 126,
+      "bitmap": 128,
+      "root": 127,
+      "first": 129,
+      "second": 130
+    }
+  ],
+  "requests": [
+    {
+      "ordinal": 0,
+      "identity": 23,
+      "expected": "unchanged sentinel",
+      "replacement": "aaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "ordinal": 1,
+      "identity": 24,
+      "expected": "unchanged sentinel",
+      "replacement": "ccccccccccccccccccc"
+    }
+  ],
+  "source_shape": {
+    "root_slots": 255,
+    "root_record_spans": [
+      [
+        4030,
+        4096
+      ],
+      [
+        3964,
+        4030
+      ]
+    ],
+    "root_free": 3440,
+    "td_rows": 2,
+    "first_slots": 254,
+    "first_empty_deleted_word": 36864,
+    "first_frontier": 4096,
+    "first_free": 3574,
+    "second_slots": 0,
+    "second_free": 4082
+  },
+  "after_shape": {
+    "ordered_reservations": "Original row order and ascending owned page numbers; no hint removal/map changes",
+    "first_hidden_slot": 254,
+    "first_slots": 255,
+    "first_free": 3504,
+    "second_hidden_slot": 0,
+    "second_slots": 1,
+    "second_free": 4012,
+    "terminal_span": [
+      4028,
+      4096
+    ],
+    "root_slots": 255,
+    "root_free": 3440
+  },
+  "no_capacity_source": {
+    "second_slots": 255,
+    "second_free": 3572,
+    "second_empty_deleted_word": 36864,
+    "maps_unchanged_from_positive_source": true,
+    "expected_after": null
+  }
+}
