@@ -746,3 +746,6 @@ mod genuine_desc_nullable_insert;
 
 #[path = "normal/genuine_retained_node_insert.rs"]
 mod genuine_retained_node_insert;
+
+#[path = "normal/genuine_default_insert.rs"]
+mod genuine_default_insert;

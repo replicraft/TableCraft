@@ -10,7 +10,7 @@ const COPY_CHUNK: usize = 1024;
 /// Copy data only after its allocation and traversal are charged. Both producer
 /// normalization and independent audit reconstruction use this carrier utility;
 /// it does not select columns or derive generated values.
-pub(in crate::table::mutation::insert) fn copy_value(
+pub(in crate::table::mutation) fn copy_value(
     value: &Value,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

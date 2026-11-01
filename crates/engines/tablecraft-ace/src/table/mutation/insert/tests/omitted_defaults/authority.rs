@@ -2,9 +2,9 @@
 use super::*;
 use crate::table::mutation::insert::{
     AuditRequest, audit, compose,
-    omitted::{self, InsertFieldValue, OmittedRowInsert, Original, stage},
+    omitted::{self, Original, stage},
 };
-use crate::{EditError, NativeImage};
+use crate::{EditError, InsertFieldValue, NativeImage, OmittedRowInsert};
 use tablecraft_core::values::Value;
 
 fn request(row: &Row, omitted: Option<usize>) -> OmittedRowInsert {

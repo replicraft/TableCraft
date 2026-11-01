@@ -1,7 +1,7 @@
 //! Audit literal projection is independent of producer assignment/rescale code.
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker, header::check,
-    table::mutation::insert::default_clock,
+    table::mutation::insert_defaults::clock as default_clock,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -19,7 +19,7 @@ const PROPERTY_BYTES: usize = PROPERTY_UNITS * 4;
 const TOKEN_LIMIT: usize = 64;
 const DEPTH_LIMIT: usize = 16;
 
-pub(super) fn derive(
+pub(in crate::table::mutation) fn derive(
     column: &NativeColumn,
     text: &str,
     reading: Option<ClockReading>,

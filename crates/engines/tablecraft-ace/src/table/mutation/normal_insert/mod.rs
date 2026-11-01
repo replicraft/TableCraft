@@ -1,5 +1,6 @@
 //! Normal complete-row INSERT into protected, already-owned DATA capacity.
 mod indexed;
+mod omitted;
 mod placement;
 mod proof;
 mod records;

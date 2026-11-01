@@ -3,7 +3,7 @@ mod deleting;
 mod fitted;
 mod inserting;
 
-pub use inserting::NativeJournalInserter;
+pub use inserting::{NativeJournalInsertPlan, NativeJournalInserter};
 mod fixed;
 
 use super::{NativeEditError, NativeEditor};

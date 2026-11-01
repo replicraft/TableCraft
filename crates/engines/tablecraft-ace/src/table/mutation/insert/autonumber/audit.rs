@@ -3,7 +3,7 @@ use super::{
     AutoNumberRowInsert, IncrementingAutoNumber,
     counter::{Plan, Source},
 };
-use crate::table::mutation::insert::values::copy_value;
+use crate::table::mutation::insert_defaults::values::copy_value;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::page::PAGE_BYTES,

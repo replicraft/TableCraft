@@ -1,7 +1,10 @@
 //! Explicit clock authorization is additive to literal-only omission previews.
 use super::super::{OmittedRowInsert, Original, preview::qualify, stage};
 use super::bind;
-use crate::table::mutation::insert::{AuditRequest, default_clock, finish_with_clock};
+use crate::table::mutation::{
+    insert::{AuditRequest, finish_with_clock},
+    insert_defaults::clock as default_clock,
+};
 use crate::{
     Ace16AutoNumberInsertPreview, Ace16WritePreview, EditError, IncrementingAutoNumber, NativeImage,
 };

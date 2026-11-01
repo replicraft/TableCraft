@@ -1,16 +1,20 @@
 //! Complete-row typed and SQL INSERT over the same retained target lease.
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SessionState};
-use crate::editing::{journal::NativeJournalInserter, sql};
+use crate::editing::{
+    journal::{NativeJournalInsertPlan, NativeJournalInserter},
+    sql,
+};
 use std::path::Path;
-use tablecraft_ace::{NativeImage, RecoverableNativeInsertPlan};
+use tablecraft_ace::NativeImage;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_db::InsertableTable;
+use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 use tablecraft_schema::{Column, SchemaPolicy};
 use tablecraft_sql::query::Query;
 
 /// Metadata-only complete supplied-column schema retaining the target owner.
-/// No row handles, omissions, defaults or generated-column companions are issued.
+/// No row handles or generated-column companions are issued. Ordinary omitted
+/// fields retain presence until fresh native planning and recovery.
 pub struct OfflineTableInserter {
     session: OfflineWriteSession,
     inserter: NativeJournalInserter,
@@ -19,7 +23,7 @@ pub struct OfflineTableInserter {
 /// Qualified insertion with its count available before durable effects.
 pub struct StagedInsert {
     session: OfflineWriteSession,
-    plan: RecoverableNativeInsertPlan,
+    plan: NativeJournalInsertPlan,
 }
 
 impl StagedInsert {
@@ -160,6 +164,22 @@ impl InsertableTable for OfflineTableInserter {
         let _span = tracing::debug_span!("access.offline.plan_typed_insert").entered();
         let Self { session, inserter } = self;
         match inserter.plan_insert(values, budget, cancelled) {
+            Ok(plan) => Ok(StagedInsert { session, plan }),
+            Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
+        }
+    }
+}
+
+impl OmittingInsertableTable for OfflineTableInserter {
+    fn plan_insert_with_omissions(
+        self,
+        values: Vec<InsertValue>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        let _span = tracing::debug_span!("access.offline.plan_omitted_insert").entered();
+        let Self { session, inserter } = self;
+        match inserter.plan_insert_with_omissions(values, budget, cancelled) {
             Ok(plan) => Ok(StagedInsert { session, plan }),
             Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
         }

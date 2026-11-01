@@ -1,8 +1,9 @@
 //! Private normal mutation composition; UPDATE, DELETE and INSERT keep distinct intents.
+use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{
-    NativeDeleteIntent, NativeInsertIntent, NativeIntentError, NativeUpdateIntent,
-    PreparedNativeUpdate, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
-    RecoverableNativeInsertPlan,
+    NativeDeleteIntent, NativeInsertIntent, NativeIntentError, NativeOmittedInsertIntent,
+    NativeUpdateIntent, PreparedNativeUpdate, RecoverableNativeDeletePlan,
+    RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
@@ -10,7 +11,7 @@ use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStora
 pub(super) enum MutationPlan {
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
-    Insert(RecoverableNativeInsertPlan),
+    Insert(NativeJournalInsertPlan),
 }
 
 impl MutationPlan {
@@ -30,7 +31,7 @@ impl MutationPlan {
         match self {
             Self::Update(plan) => plan.intent().encode(budget, cancelled),
             Self::Delete(plan) => plan.intent().encode(budget, cancelled),
-            Self::Insert(plan) => plan.intent().encode(budget, cancelled),
+            Self::Insert(plan) => plan.encode_intent(budget, cancelled),
         }
     }
 
@@ -57,6 +58,7 @@ pub(super) enum MutationIntent {
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
+    OmittedInsert(NativeOmittedInsertIntent),
 }
 
 impl MutationIntent {
@@ -69,6 +71,8 @@ impl MutationIntent {
         // never retried as another action or promoted from its record prefix.
         if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
+        } else if raw.starts_with(b"TCNA0002") {
+            NativeOmittedInsertIntent::decode(raw, budget, cancelled).map(Self::OmittedInsert)
         } else if raw.starts_with(b"TCNA") {
             NativeInsertIntent::decode(raw, budget, cancelled).map(Self::Insert)
         } else {

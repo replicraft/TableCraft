@@ -76,7 +76,7 @@ pub(in crate::table) mod variable_update;
 #[cfg(feature = "ace16-write-preview")]
 pub use insert::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert,
+    IncrementingAutoNumber,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use variable_update::map_audit::CertifiedData;
@@ -166,4 +166,7 @@ mod record_insertion;
 mod normal_insert;
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
-pub use requests::RowInsert;
+pub use requests::{InsertFieldValue, OmittedRowInsert, RowInsert};
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+mod insert_defaults;

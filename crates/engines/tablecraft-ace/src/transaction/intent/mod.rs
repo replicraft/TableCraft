@@ -27,3 +27,9 @@ pub use insert::{
     NativeInsertIntent, QualifiedNativeInsertRecovery, RecoverableNativeInsertPlan,
     qualify_native_insert_recovery,
 };
+
+mod omitted_insert;
+pub use omitted_insert::{
+    NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
+    RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
+};

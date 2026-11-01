@@ -4,8 +4,9 @@ mod preview;
 use super::{
     InsertFieldValue, Original, Prepared, ResolvedRow, constant::Bound, declaration, reserve,
 };
-use crate::table::mutation::insert::{
-    autonumber, default_clock, primary_column, record, values::copy_value,
+use crate::table::mutation::{
+    insert::{autonumber, primary_column, record},
+    insert_defaults::{clock as default_clock, values::copy_value},
 };
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker, header::check,
