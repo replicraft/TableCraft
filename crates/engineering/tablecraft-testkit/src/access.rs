@@ -239,3 +239,6 @@ pub mod genuine_retained_node_delete;
 
 /// Literal optional and descending Int32 root-leaf insertion views.
 pub mod genuine_desc_nullable_insert;
+
+/// Independent fitting NODE INSERT originals and complete images.
+pub mod genuine_retained_node_insert;
