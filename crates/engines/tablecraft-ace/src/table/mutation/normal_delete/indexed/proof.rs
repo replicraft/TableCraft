@@ -316,6 +316,24 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
             .as_bytes()
             .get(start..end)
             .ok_or(EditError::Preservation)?;
+        if before[0] == crate::table::indexes::page::NODE {
+            let tree =
+                admission
+                    .ownership
+                    .require(image, checked.schema(), index, budget, cancelled)?;
+            let mut population = vector(keys.len(), budget, cancelled)?;
+            for key in &keys {
+                check(budget, cancelled)?;
+                let mut wire = vector(key.length, budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, key.length as u64)
+                    .map_err(InspectError::from)?;
+                wire.extend_from_slice(key.wire());
+                population.push(wire);
+            }
+            tree.reconstruct_deletions(image, &population, &removed, expected, budget, cancelled)?;
+            continue;
+        }
         original(before, &keys, budget, cancelled)?;
         if removed.is_empty() {
             continue;

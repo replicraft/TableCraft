@@ -1,4 +1,5 @@
-//! Root-leaf Int32 cardinality changes below normal admission and journal packaging.
+//! Existing-page Int32 deletions below normal admission and journal packaging.
+mod tree;
 use super::{IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack};
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck, WriteBlocker,
@@ -72,6 +73,19 @@ pub(in crate::table) fn patches(
             .as_bytes()
             .get(start..end)
             .ok_or(InspectError::Truncated)?;
+        if !root.leaf {
+            drop(root);
+            tree::patches(
+                image,
+                &mut reader,
+                index,
+                schema.definition_page(),
+                references,
+                &profile,
+                &mut result,
+            )?;
+            continue;
+        }
         leaf_removal::require_root(&root, original)?;
         leaf_removal::remove(&mut root.entries, references, reader.budget, cancelled)?;
         if references.is_empty() {

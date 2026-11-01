@@ -106,3 +106,6 @@ fn capture(
 
 #[cfg(test)]
 mod node_sources;
+
+#[cfg(test)]
+mod node_delete_sources;

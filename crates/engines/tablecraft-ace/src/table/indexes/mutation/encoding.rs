@@ -33,7 +33,7 @@ pub(super) fn entry<P: WriteProfile, const N: usize>(
     })
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) fn retained_entry<P: RetainedProfile, const N: usize>(
     entry: &Entry<P::Key>,
     profile: &P,

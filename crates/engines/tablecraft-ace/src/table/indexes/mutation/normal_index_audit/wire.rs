@@ -271,61 +271,14 @@ impl Replay<'_, '_> {
             return Err(EditError::Preservation);
         }
 
-        let layout = layout(&entries, node, self.budget, self.cancelled)?;
-        let start = (node.number as usize)
-            .checked_mul(PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        let end = start
-            .checked_add(PAGE_BYTES)
-            .ok_or(EditError::Preservation)?;
-        let original = self
-            .image
-            .as_bytes()
-            .get(start..end)
-            .ok_or(EditError::Preservation)?;
-        let page = self
-            .expected
-            .get_mut(start..end)
-            .ok_or(EditError::Preservation)?;
-        self.budget
-            .charge(Resource::Steps, PAGE_BYTES as u64)
-            .map_err(InspectError::from)?;
-        if page != original {
-            return Err(EditError::Preservation);
-        }
-        let free = u16::try_from(PAGE_BYTES - ENTRY_START - layout.bytes)
-            .map_err(|_| EditError::Preservation)?;
-        let prefix = u16::try_from(layout.prefix).map_err(|_| EditError::Preservation)?;
-        page[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()].copy_from_slice(&free.to_le_bytes());
-        page[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()]
-            .copy_from_slice(&prefix.to_le_bytes());
-        self.budget
-            .charge(Resource::Steps, MASK_BYTES as u64)
-            .map_err(InspectError::from)?;
-        page[MASK_START..ENTRY_START].copy_from_slice(&layout.bitmap);
-        let mut position = ENTRY_START;
-        for (ordinal, entry) in entries.iter().enumerate() {
-            check(self.budget, self.cancelled)?;
-            let shared = if ordinal == 0 { 0 } else { layout.prefix };
-            let suffix = entry.get(shared..).ok_or(EditError::Preservation)?;
-            self.budget
-                .charge(Resource::Steps, suffix.len() as u64)
-                .map_err(InspectError::from)?;
-            let end = position
-                .checked_add(suffix.len())
-                .filter(|end| *end <= ENTRY_START + layout.bytes)
-                .ok_or(EditError::Preservation)?;
-            page.get_mut(position..end)
-                .ok_or(EditError::Preservation)?
-                .copy_from_slice(suffix);
-            position = end;
-        }
-        if position != ENTRY_START + layout.bytes {
-            return Err(EditError::Preservation);
-        }
-        // Vacated bytes retain the original page. Header, topology, child/tail
-        // identities and the complete unused complement are not reconstructed.
-        check(self.budget, self.cancelled)?;
+        write_page(
+            self.image,
+            node,
+            &entries,
+            self.expected,
+            self.budget,
+            self.cancelled,
+        )?;
         Ok(maximum)
     }
 }
@@ -440,5 +393,70 @@ pub(super) fn reconstruct(
         return Err(EditError::Preservation);
     }
     check(replay.budget, cancelled)?;
+    Ok(())
+}
+
+/// Independent manual page replay shared by the actual UPDATE and DELETE proofs.
+/// The caller owns original membership/cardinality; no producer patches enter.
+pub(super) fn write_page(
+    image: &NativeImage,
+    node: &Node,
+    entries: &[Vec<u8>],
+    expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let layout = layout(entries, node, budget, cancelled)?;
+    let start = (node.number as usize)
+        .checked_mul(PAGE_BYTES)
+        .ok_or(EditError::Preservation)?;
+    let end = start
+        .checked_add(PAGE_BYTES)
+        .ok_or(EditError::Preservation)?;
+    let original = image
+        .as_bytes()
+        .get(start..end)
+        .ok_or(EditError::Preservation)?;
+    let page = expected
+        .get_mut(start..end)
+        .ok_or(EditError::Preservation)?;
+    budget
+        .charge(Resource::Steps, PAGE_BYTES as u64)
+        .map_err(InspectError::from)?;
+    if page != original {
+        return Err(EditError::Preservation);
+    }
+    let free = u16::try_from(PAGE_BYTES - ENTRY_START - layout.bytes)
+        .map_err(|_| EditError::Preservation)?;
+    let prefix = u16::try_from(layout.prefix).map_err(|_| EditError::Preservation)?;
+    page[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()].copy_from_slice(&free.to_le_bytes());
+    page[PREFIX_OFFSET..PREFIX_OFFSET + size_of::<u16>()].copy_from_slice(&prefix.to_le_bytes());
+    budget
+        .charge(Resource::Steps, MASK_BYTES as u64)
+        .map_err(InspectError::from)?;
+    page[MASK_START..ENTRY_START].copy_from_slice(&layout.bitmap);
+    let mut position = ENTRY_START;
+    for (ordinal, entry) in entries.iter().enumerate() {
+        check(budget, cancelled)?;
+        let shared = if ordinal == 0 { 0 } else { layout.prefix };
+        let suffix = entry.get(shared..).ok_or(EditError::Preservation)?;
+        budget
+            .charge(Resource::Steps, suffix.len() as u64)
+            .map_err(InspectError::from)?;
+        let end = position
+            .checked_add(suffix.len())
+            .filter(|end| *end <= ENTRY_START + layout.bytes)
+            .ok_or(EditError::Preservation)?;
+        page.get_mut(position..end)
+            .ok_or(EditError::Preservation)?
+            .copy_from_slice(suffix);
+        position = end;
+    }
+    if position != ENTRY_START + layout.bytes {
+        return Err(EditError::Preservation);
+    }
+    // Vacated bytes retain the original page. Header, topology, child/tail
+    // identities and the complete unused complement are not reconstructed.
+    check(budget, cancelled)?;
     Ok(())
 }

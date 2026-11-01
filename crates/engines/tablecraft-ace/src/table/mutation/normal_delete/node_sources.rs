@@ -1,7 +1,7 @@
 //! Original-only NODE qualification and separate current normal-action refusals.
 use crate::{
-    EditError, IndexCheckStatus, NativeImage, RecoverableEditError, RowDelete, RowInsert,
-    WriteBlocker, read_table, read_table_index,
+    EditError, IndexCheckStatus, NativeImage, RecoverableEditError, RowInsert, WriteBlocker,
+    read_table, read_table_index,
 };
 use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
@@ -166,43 +166,10 @@ fn sdk_node_originals_have_complete_native_source_rows_aliases_and_owned_tree_me
 
 #[test]
 #[ignore = "requires the separate native NODE source qualification gate to pass first"]
-fn healthy_node_profiles_refuse_current_normal_insert_delete_including_empty_requests() {
+fn healthy_node_insert_profiles_refuse_including_empty_requests() {
     for case in cases() {
         qualify(&case);
         for count in [0, 1] {
-            let ordinals = if count == 0 { vec![] } else { vec![0] };
-            assert!(matches!(
-                image(&case).prepare_ordinary_row_deletes(
-                    "Items",
-                    &ordinals,
-                    &mut budget(),
-                    &|| false,
-                ),
-                Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            ));
-
-            let mut first = vec![3, 0];
-            for value in [1_i32, -400, 0] {
-                first.extend_from_slice(&value.to_le_bytes());
-            }
-            first.push(7);
-            let deletes = if count == 0 {
-                vec![]
-            } else {
-                vec![RowDelete::new(0, first)]
-            };
-            assert!(matches!(
-                image(&case).plan_recoverable_ordinary_row_deletes(
-                    "Items",
-                    deletes,
-                    &mut budget(),
-                    &|| false,
-                ),
-                Err(RecoverableEditError::Edit(EditError::Unsupported(
-                    WriteBlocker::IndexedColumn
-                )))
-            ));
-
             let inserts = if count == 0 {
                 vec![]
             } else {
