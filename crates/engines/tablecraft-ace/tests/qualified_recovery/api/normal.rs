@@ -758,3 +758,6 @@ mod genuine_eof_insert;
 
 #[path = "normal/resizable_storage.rs"]
 mod resizable_storage;
+
+#[path = "normal/genuine_integral_indexed.rs"]
+mod genuine_integral_indexed;

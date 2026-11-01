@@ -3,6 +3,7 @@ use super::{Admission, references, vector};
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeIndex, RowDelete, TableSchema,
     format::{
+        data_type::{CURRENCY, INT64},
         page::PAGE_BYTES,
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -303,6 +304,17 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
             .iter()
             .any(|prior| prior.index().data_number() == index.data_number())
         {
+            continue;
+        }
+        let integral = index
+            .columns()
+            .first()
+            .and_then(|key| source.table.schema().columns().get(key.number()))
+            .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY));
+        if integral {
+            super::integral::reconstruct(
+                image, source, index, &removed, expected, budget, cancelled,
+            )?;
             continue;
         }
         let keys = keys(source, index, budget, cancelled)?;

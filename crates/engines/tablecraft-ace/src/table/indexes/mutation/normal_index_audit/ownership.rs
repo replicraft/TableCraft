@@ -5,6 +5,7 @@ use crate::{
     WriteBlocker,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
+        data_type::{CURRENCY, INT64},
         definition,
         page::PAGE_BYTES,
         reader::Reader,
@@ -120,7 +121,20 @@ impl Ownership {
             }
             let map = RepresentedMap::read(&mut reader, index.usage_map(), MapRole::Owned)?;
             map.require_allocated_storage(&mut reader, &global)?;
-            let tree = Tree::capture(image, index, selected, reader.budget, cancelled)?;
+            // Dense native keys have an O(1) original-schema discriminator.
+            // Sparse I32/composite/NODE paths keep the existing capture and
+            // exact charged loops. Wide sparse keys are not newly admitted.
+            let integral = index.columns().first().and_then(|key| {
+                schema.columns().get(key.number()).filter(|field| {
+                    field.number() == key.number()
+                        && matches!(field.native_type(), INT64 | CURRENCY)
+                })
+            });
+            let tree = if let Some(field) = integral {
+                Tree::capture_integral(image, index, selected, field, reader.budget, cancelled)?
+            } else {
+                Tree::capture(image, index, selected, reader.budget, cancelled)?
+            };
             for page in &tree.pages {
                 reader.tick()?;
                 global.require_allocated(&mut reader, *page)?;

@@ -109,3 +109,6 @@ mod node_sources;
 
 #[cfg(test)]
 mod node_delete_sources;
+
+#[cfg(test)]
+mod integral_tests;

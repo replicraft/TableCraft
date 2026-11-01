@@ -52,9 +52,13 @@ pub(in crate::table) fn patches(
             .iter()
             .position(|field| field.number() == key.number())
             .ok_or(InspectError::Malformed)?;
+        let kind = match schema.columns()[column].scalar_type() {
+            Some(kind @ (ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)) => kind,
+            _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
+        };
         let profile = SingleProfile {
             column,
-            kind: NumericKey::new(ScalarType::Int32)?,
+            kind: NumericKey::new(kind)?,
             descending: key.descending(),
         };
         let mut root = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(

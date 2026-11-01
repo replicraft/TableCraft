@@ -1,9 +1,13 @@
-//! Complete original single-I32 trees, aliases and exclusive mutation roles.
+//! Original Int32 trees and numeric root leaves with exclusive mutation roles.
+mod integral;
 mod proof;
 
 use crate::{
     EditError, InspectError, NativeImage, RowDelete, TableCheck, WriteBlocker,
-    format::{data_type::INT32, page::PAGE_BYTES},
+    format::{
+        data_type::{CURRENCY, INT32, INT64},
+        page::PAGE_BYTES,
+    },
     header::check,
     table::{
         indexes::{
@@ -31,8 +35,12 @@ impl<'image> Admission<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        let facts =
-            CheckedIndexes::capture(image, source.table.schema().name(), budget, cancelled)?;
+        let facts = CheckedIndexes::capture_actions(
+            image,
+            source.table.schema().name(),
+            budget,
+            cancelled,
+        )?;
         facts.require_source(image, source.table.schema(), budget, cancelled)?;
         let checked = facts.checked();
         let schema = checked.schema();
@@ -72,7 +80,16 @@ impl<'image> Admission<'image> {
                 .iter()
                 .find(|field| field.number() == key.number())
                 .ok_or(InspectError::Malformed)?;
-            if field.native_type() != INT32 {
+            let integral = matches!(field.native_type(), INT64 | CURRENCY);
+            if field.native_type() != INT32 && !integral {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            if integral
+                && schema
+                    .columns()
+                    .get(field.number())
+                    .is_none_or(|dense| dense.number() != field.number())
+            {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             budget
@@ -101,6 +118,9 @@ impl<'image> Admission<'image> {
                 || (header.kind == LEAF
                     && (header.tail.get() != 0 || !header.qualified_for_update(0)))
             {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            if integral && (header.kind != LEAF || header.prefix.get() != 0) {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             has_node |= header.kind == NODE;

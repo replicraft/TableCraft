@@ -1,4 +1,6 @@
 //! Image-bound complete scalar/index facts, independent of event admission.
+#[cfg(feature = "journal")]
+mod actions;
 use crate::{
     EditError, NativeImage, TableCheck, TableSchema, WriteBlocker, format::data_type::INT32,
     header::check,
