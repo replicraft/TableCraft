@@ -76,7 +76,7 @@ pub(crate) struct DeleteArguments {
         "Supply all fields positionally, or use an explicit field list with qualified constant defaults for omitted fields. Supplied NULL remains explicit NULL. ",
         "Generated values, clock or arbitrary-expression defaults, INSERT SELECT, parameters and external sources refuse. ",
         "The native planner rechecks required programs, constraints and preservation before any journal exists. ",
-        "Placement uses existing qualified owned DATA space without file or map growth. Qualified single-column Int32 root leaves and retained trees support nullable and descending keys; splits, other indexes and relationships refuse. ",
+        "Complete supplied rows may add one qualified EOF DATA page; omitted/default rows retain existing capacity. Indexed insertion retains existing pages. Qualified single-column Int32 root leaves and retained trees support nullable and descending keys; splits, other indexes and relationships refuse. ",
         "Qualified Memo/OLE values fit at most 64 encoded payload bytes inline; external payload allocation refuses. Existing readonly content remains preserved. ",
         "Keep other applications closed until completion or explicit recovery. The journal directory must be fresh. ",
         "Interrupted journals use recover-update or finalize-update, which validate original typed INSERT intent without replaying SQL. ",

@@ -33,12 +33,12 @@ const DELETED_MASK: u16 = 0x8000;
 const UNSUPPORTED_MASK: u16 = 0x2000;
 const MAX_REFERENCE_PAGE: u32 = u32::MAX >> u8::BITS;
 
-struct Capacity {
-    number: u32,
-    count: usize,
-    end: usize,
-    free: usize,
-    eligible: bool,
+pub(super) struct Capacity {
+    pub(super) number: u32,
+    pub(super) count: usize,
+    pub(super) end: usize,
+    pub(super) free: usize,
+    pub(super) eligible: bool,
 }
 
 pub(super) fn prove(
@@ -228,7 +228,7 @@ fn reconstruct_records(
     Ok((expected, references))
 }
 
-fn encode(
+pub(super) fn encode(
     image: &NativeImage,
     source: &Source,
     requests: &[RowInsert],
@@ -298,7 +298,7 @@ fn encode(
     Ok(encoded)
 }
 
-fn capacities(
+pub(super) fn capacities(
     image: &NativeImage,
     source: &Source,
     budget: &mut ResourceBudget,

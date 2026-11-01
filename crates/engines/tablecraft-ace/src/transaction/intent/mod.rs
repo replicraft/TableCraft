@@ -33,3 +33,10 @@ pub use omitted_insert::{
     NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
     RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
 };
+
+mod complete_insert;
+mod eof_insert;
+pub use eof_insert::{
+    NativeEofInsertIntent, QualifiedNativeEofInsertRecovery, RecoverableNativeEofInsertPlan,
+    RecoverableNativeInsertOperation, qualify_native_eof_insert_recovery,
+};

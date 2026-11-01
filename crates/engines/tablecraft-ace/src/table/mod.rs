@@ -1,5 +1,7 @@
 #[cfg(feature = "journal")]
 pub(crate) use mutation::normal_eof::OrdinaryVariablePlanKind;
+#[cfg(feature = "journal")]
+pub(crate) use mutation::normal_insert::OrdinaryInsertPlanKind;
 mod attachment;
 mod calculated;
 pub use attachment::{

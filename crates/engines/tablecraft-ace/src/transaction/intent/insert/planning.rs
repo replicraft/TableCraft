@@ -36,6 +36,21 @@ impl NativeImage {
 }
 
 impl RecoverableNativeInsertPlan {
+    pub(in crate::transaction::intent) fn from_parts(
+        plan: NativeEditPlan,
+        intent: NativeInsertIntent,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, RecoverableEditError> {
+        if plan.before_bytes().len() != plan.after_bytes().len()
+            || plan.changed_rows() != intent.rows().len()
+        {
+            return Err(EditError::Preservation.into());
+        }
+        check(budget, cancelled).map_err(EditError::from)?;
+        Ok(Self { plan, intent })
+    }
+
     /// Original request record bound to this plan's complete BEFORE image.
     pub fn intent(&self) -> &NativeInsertIntent {
         &self.intent

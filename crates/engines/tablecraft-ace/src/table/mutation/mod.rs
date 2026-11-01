@@ -163,7 +163,7 @@ pub use requests::{RowDelete, TableRowDeletes};
 mod record_insertion;
 
 #[cfg(feature = "journal")]
-mod normal_insert;
+pub(super) mod normal_insert;
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use requests::{InsertFieldValue, OmittedRowInsert, RowInsert};
