@@ -1,0 +1,65 @@
+{
+  "state": "JOINT_ORIGINAL_REQUESTS_BEFORE_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110
+    },
+    {
+      "header": 6,
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127
+    }
+  ],
+  "table": "Sentinel",
+  "groups": [
+    {
+      "family": "Variable",
+      "column": "Marker",
+      "ordinal": 0,
+      "expected": {
+        "kind": "Text",
+        "value": "unchanged sentinel"
+      },
+      "replacement": {
+        "kind": "Text",
+        "value": "aaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "family": "Fixed",
+      "column": "ID",
+      "ordinal": 0,
+      "expected": {
+        "kind": "Int32",
+        "value": 23
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "id-null",
+      "replacement": {
+        "kind": "Null"
+      },
+      "mask": 6,
+      "inactive_id": 23
+    },
+    {
+      "id": "id-twenty-four",
+      "replacement": {
+        "kind": "Int32",
+        "value": 24
+      },
+      "mask": 7
+    }
+  ],
+  "source_property_facts": "Sentinel has one PublishToWeb table property and no Required ID property in complete original SDK inventory. Original public builder declares ID LONG without Required/index/generated flags. Native source gate must confirm nullable metadata/constraints; no Required bypass."
+}

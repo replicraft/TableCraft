@@ -40,3 +40,11 @@ cargo test --locked -p tablecraft-ace --all-features --lib \
 The shared testkit loader pins all six images before returning a case to a write
 test. These are evidence bindings, not engine permission. Native write admission,
 recovery and Microsoft Access save/reopen remain separate qualification gates.
+
+Separate [joint sources](results/ace16-joint-owned-growth-sources-2026-11-01.json)
+add four original-derived outcomes combining Marker growth with ID NULL or 24.
+Their [model](owned_growth_originals/joint_model.py) and
+[requests](owned_growth_originals/joint_requests.json) preserve the original ID
+payload for NULL and clear its bit at the new mask offset 67. Six native views
+and four fresh SDK inventories pass before their producer calls. The first six
+images and their original evidence remain unchanged.

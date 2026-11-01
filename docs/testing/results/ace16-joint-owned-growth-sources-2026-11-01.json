@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-01",
+  "scope": "Separate original/request-only same-page Marker growth with ID NULL or24",
+  "original_source_record": "ace16-owned-growth-sources-2026-11-01.json",
+  "input_freeze_sha256": "9088eb2c0c0b1f6e6c1c1107e75752218a295aeaa7e64342cd64e35a2316b202",
+  "manifest_sha256": "752f142370f5dd98ab98d01a61b3bf1232870dcaff3e074bd9bbe7614edf2746",
+  "counts": {
+    "originals": 2,
+    "expected_images": 4,
+    "native_read_views": 6,
+    "independent_sdk_reads": 4
+  },
+  "nullable_scope": "Complete observed properties have no ID Required declaration or primary index; source constraint/read checks admit NULL, preserving inactive ID23 bytes",
+  "models": [
+    {
+      "path": "docs/testing/owned_growth_originals/joint_model.py",
+      "bytes": 3776,
+      "sha256": "25dc6f71af27a3babc8e8dd13bb15b84f2ea33903301f644ccd88068143f7201"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/joint_requests.json",
+      "bytes": 1532,
+      "sha256": "ec5056ac07be375660dc8e084f476ca51547e3d4bb1e01ab4937576f058ea4f8"
+    }
+  ],
+  "execution": [
+    {
+      "path": ".cache/owned-growth-next-20261101/joint-source/construct-first.log",
+      "bytes": 203,
+      "sha256": "694d808bf5f86cf0824b1ac90b0ac84138f2dc8e247595d40eff3af70df11baf"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/joint-source/native-reads-first.log",
+      "bytes": 537,
+      "sha256": "795f57fafbff94c925e2eb2f1203ca97945aaa9ecd5c10c0f64d9b7476a7e80e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/joint-source/sdk-expected-first/result.json",
+      "bytes": 1417,
+      "sha256": "dd5016bb400b12e67d10c52a14e902bff4253c752477913f6644ff4b48c95a25"
+    }
+  ],
+  "native_producer_calls_during_source_preparation": 0,
+  "inputs_unchanged": true,
+  "native_access": "Unrun; independent sources/readers do not establish Microsoft Access save compatibility"
+}

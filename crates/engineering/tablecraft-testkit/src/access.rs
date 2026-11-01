@@ -200,3 +200,6 @@ pub mod genuine_retained_numeric;
 
 /// Pinned original, owned-page growth and forwarded second-edit images.
 pub mod genuine_owned_growth;
+
+/// Pinned joint growth and fixed-field NULL/present-mask outcomes.
+pub mod genuine_owned_growth_joint;
