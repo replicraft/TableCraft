@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent Binary-index DELETE source views before matching native producers",
+  "views": 14,
+  "original_views": 2,
+  "literal_after_views": 12,
+  "sdk_read_only_calls": 112,
+  "sdk_inventories": 14,
+  "sdk_metadata_reports": 14,
+  "sdk_exact_cursors": 84,
+  "source_manifest": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/expected-first/manifest.json",
+    "bytes": 30841,
+    "sha256": "d055d976fde94c7f1c248d57091211029cbf6ab837fbc9a12fe175e97943810a"
+  },
+  "source_laws": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/input-first-freeze.json",
+    "bytes": 5598,
+    "sha256": "0af91d9df17cb6fb584b4bc9edd9707489572b44f999285f29f23ebe736c6667"
+  },
+  "first_preparation_failure": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/prepare-first.log",
+    "bytes": 995,
+    "sha256": "e7319d1716ac9294691c11bb9b98500e583bedc026974c4cc91fe130df183e6f"
+  },
+  "first_tool_closure": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/code-first-freeze.json",
+    "bytes": 8553,
+    "sha256": "5fa6135a10563c57f9d5e7401fe82cc68720b191b489811935c4ad8821ec9894"
+  },
+  "reviewed_tool_successor": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/code-successor-freeze.json",
+    "bytes": 9840,
+    "sha256": "e9ba9ee78d94918406ac8ce691f2fd5d2adb1895bc3507909eba70a1da66c49d"
+  },
+  "sdk_receipt": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/reads-first/receipt.json",
+    "bytes": 148565,
+    "sha256": "a7b7ca91a4a46b4bb1a748ce4cc60db518694763da4e51f84a87c4cde03a5d02"
+  },
+  "sdk_saved_verification": {
+    "path": ".cache/ace16-normal-binary-delete-next-20261101/source/reads-first/saved-verification.json",
+    "bytes": 616,
+    "sha256": "a4f57e9404779f1052e0a2ace53a8bb71e72005b2c0073146ee4a184b489407d"
+  },
+  "native_read_gate": {
+    "path": ".cache/ace16-next-source-qualification-20261101/binary-delete-native-first.log",
+    "bytes": 428,
+    "sha256": "ac66e49f56ac6d6917d210e111ac5a641b96161e88ef41aa8a0d5f542c3f5f08",
+    "test_results": [
+      "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 509 filtered out; finished in 0.44s"
+    ]
+  },
+  "correction": "Before output or child calls, the first preparation exposed a cursor tuple-shape mismatch. The reviewed successor maps (slot, values) to (values, full physical ROW) without changing source laws or model bytes.",
+  "source_expectations_retuned_to_producers": false,
+  "matching_native_producer_calls": 0,
+  "scope_limits": [
+    "Six deletion recipes retain original survivor slots, all payload bytes, map roles, historical counters and inactive index tails.",
+    "The empty final table retains thirteen physical DATA slots and original index history.",
+    "Generic read/constraint qualification is not mutation permission or native Access save qualification."
+  ],
+  "native_access_save_reopen": "unrun"
+}

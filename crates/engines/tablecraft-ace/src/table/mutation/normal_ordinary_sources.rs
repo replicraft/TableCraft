@@ -194,3 +194,5 @@ mod creation_properties;
 mod creation_defaults;
 
 mod binary_indexed;
+
+mod binary_delete;
