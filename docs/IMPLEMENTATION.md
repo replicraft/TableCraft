@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary fixed writes through shared sessions and CLI
+
+The adapter now retains an explicit existing/ordinary route over its immutable
+image. A weak metadata hint never grants capability: full native checking must
+pass, and later planning/recovery repeat it. Seven adapter tests and the original
+session/journal regressions pass; ordinary single Int32/empty/batch requests keep
+TCNI0004 while existing routes retain versions 1/2/3. The CLI passes 22 literal
+complete-image saves, equal/empty retirements and a real create/update/TSV workflow.
+An old indexed-unavailable control now asserts the earlier explicit capability
+refusal, retaining all byte/lease/receipt checks. See the
+[host record](testing/results/ace16-normal-ordinary-host-2026-10-31.json).
+
 ## Normal ordinary-content fixed writes
 
 The native engine now has a distinct ordinary fixed-field planner and TCNI0004
@@ -20,7 +32,7 @@ independent full-image proof. Three content tests, four planner/proof tests and
 five public recovery tests pass, including 22 complete-image commits. All 1,049
 ACE unit tests pass (29 ignored), and all 66 recovery integration tests pass.
 This is an initial bounded data-only family, not arbitrary database admission;
-shared-session and CLI wiring remain next. See the
+shared-session/CLI consumers now have their own verification above. See the
 [contract](access/writes/NORMAL_ACE_ORDINARY_FIXED.md).
 
 ## Ordinary-content source qualification

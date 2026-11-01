@@ -1,5 +1,5 @@
 //! Exact original-snapshot carriers for the normal fixed batch intent.
-use super::{Error, NativeJournalEditor};
+use super::{Error, JournalRoute, NativeJournalEditor};
 use crate::editing::NativeEditError;
 use tablecraft_ace::{
     FixedScalarUpdate, InspectError, NativeFixedIntentGroup, NativeImage, RecoverableEditError,
@@ -21,6 +21,14 @@ impl NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, NativeEditError> {
+        if self.route == JournalRoute::Ordinary {
+            if self.profile != UpdateProfile::StoredScalar {
+                return Err(NativeEditError::Unsupported);
+            }
+            // Ordinary single Int32 and empty requests retain their distinct
+            // native closure/TCNI0004 route rather than the positive-event route.
+            return Ok(false);
+        }
         if self.profile != UpdateProfile::StoredScalar {
             return Ok(true);
         }
@@ -166,9 +174,14 @@ impl NativeJournalEditor {
         rows.dedup();
         check(budget, cancelled)?;
         let matched = rows.len();
-        let plan = self
-            .editor
-            .plan_recoverable_fixed(groups, budget, cancelled)?;
+        let plan = match self.route {
+            JournalRoute::Ordinary => self
+                .editor
+                .plan_recoverable_ordinary_fixed(groups, budget, cancelled)?,
+            JournalRoute::Existing => self
+                .editor
+                .plan_recoverable_fixed(groups, budget, cancelled)?,
+        };
         Ok((plan, matched))
     }
 }

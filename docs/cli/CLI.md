@@ -31,8 +31,10 @@ tablecraft create new.accdb --table Items --column Id --column Score
 table. Add `--data rows.tsv` for a bounded quoted TSV with an exact column header;
 omit it for an empty table. It never overwrites a destination and requires
 captured-directory durability. See [fresh native creation](NATIVE_CREATION.md)
-for the current schema, input and publication limits. Normal imported-ACE write
-eligibility remains unchanged.
+for the current schema, input and publication limits. Files matching the
+[closed ordinary family](../access/writes/NORMAL_ACE_ORDINARY_FIXED.md) can use
+normal journaled fixed updates; creating a file never grants write permission
+without the same complete content checks.
 
 ## Inspect and browse
 
@@ -234,7 +236,8 @@ its owning guide. Jet 4 UPDATE uses a complete synced temporary and no-clobber
 publication. General native saves remain unavailable. Separate explicit
 [offline journal commands](JOURNAL_EDITING.md) apply or recover qualified normal
 updates in place: Jet4 Int32 and restricted ACE BeforeChange profiles, including
-atomic unindexed fixed-scalar groups. They do not enable general native saves.
+atomic unindexed fixed-scalar groups and the initial closed ordinary-content
+family. They do not enable general native saves.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
 

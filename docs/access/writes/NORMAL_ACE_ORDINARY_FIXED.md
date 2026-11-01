@@ -2,8 +2,9 @@
 
 `NativeImage::plan_recoverable_ordinary_fixed_updates` accepts original fixed-field
 groups only after fresh, complete content validation. It is a separate normal
-engine route from positive BeforeChange updates and engineering previews. The
-shared Access session and CLI are not connected to it yet.
+engine route from positive BeforeChange updates and engineering previews.
+`NativeJournalEditor`, the retained `OfflineWriteSession` and
+`query journal-update` now consume it through their existing lifecycle.
 
 ## Current admitted family
 
@@ -67,3 +68,19 @@ pass. First compile/test/lint diagnostics remain in the
 [execution record](../../testing/results/ace16-normal-ordinary-fixed-2026-10-31.json).
 Native Microsoft Access save/reopen, Windows, power-loss and mixed-client
 qualification remain separate and unrun.
+
+## Shared sessions and CLI
+
+Inert metadata chooses which family to attempt; it never proves absence. The
+ordinary candidate must pass complete content/source/target checking before the
+adapter advertises `StoredScalar`. A failed check does not try another writer.
+The private retained route keeps ordinary single Int32, empty and batch requests
+on TCNI0004. Existing Jet4/positive Int32/positive fixed records remain 1/2/3.
+Every subsequent actual plan and recovery repeats native qualification.
+
+Seven adapter tests pass, including typed/SQL literal saves, equal/zero-match
+requests, empty tables, stale handles, unknown-content refusals and the older
+record routes. The CLI passes 22 literal complete-image saves, four equal/empty
+retirements and a real create/update/TSV-readback workflow. It adds no absence
+override or alternate publication lifecycle. See the
+[host execution record](../../testing/results/ace16-normal-ordinary-host-2026-10-31.json).

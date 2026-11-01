@@ -56,6 +56,15 @@ separate restrictions below; the fixed-scalar route does not add indexed NULL
 transitions, record growth or relationship actions. Jet4 retains its single-SET
 Int32 profile.
 
+The [ordinary-content ACE route](../access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
+also admits the initial complete data-only family: known unencoded header 5/6,
+1252/General declarations, at most 64 pages, closed ordinary metadata and no
+indexes, relationships or program/property carriers. Metadata is only a routing
+hint; complete content validation must pass before capability is advertised and
+again for every native plan/recovery. There is no caller absence flag. Ordinary
+equal assignments and genuine empty selections retain bytes and complete the
+normal journal lifecycle. This is not admission for arbitrary imported databases.
+
 Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
 requires an unencoded ACE 2016/2019 layout with subversion zero and a positive,
@@ -78,7 +87,8 @@ generated targets and calculation/collection dependencies refuse; changed target
 values remain non-NULL. Unknown/opaque/unrepresented event content,
 body/module payloads and unsupported required effects refuse; an empty macro inventory is not an absence certificate.
 
-Native programs are discovered and fully preflighted even for zero matched rows.
+On the positive-program route, native programs are discovered and fully
+preflighted even for zero matched rows.
 A supplied equal expected/replacement assignment refuses with `EventTiming`,
 including one inside a mixed list; native equal-assignment event timing is
 unqualified. A real user change that a program restores to Old may succeed with
