@@ -42,7 +42,7 @@ fn number(raw: &[u8], at: usize) -> u32 {
 
 fn original_rows(raw: &[u8], definition: u32) -> Vec<OriginalRow> {
     let mut rows = Vec::new();
-    for (page_number, page) in raw.chunks_exact(PAGE).enumerate() {
+    for (page_number, page) in raw.as_chunks::<PAGE>().0.iter().enumerate() {
         if page[..2] != [1, 1] || number(page, 4) != definition {
             continue;
         }
