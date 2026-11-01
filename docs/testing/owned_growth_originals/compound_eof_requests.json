@@ -1,0 +1,56 @@
+{
+  "state": "ORIGINALS_AND_LITERAL_REQUESTS_FROZEN_BEFORE_MODEL",
+  "table": "Sentinel",
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h5-multirow-owned-no-capacity.accdb",
+      "bytes": 466944,
+      "sha256": "2515f4fe4977005335f5aa68a6375ade70b75ffd0dd9f552fa4e62c249a27888",
+      "definition": 107,
+      "maps": 108,
+      "bitmap": 111,
+      "root": 110,
+      "first": 112,
+      "second": 113,
+      "eof": 114,
+      "before_reader": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h5-multirow-owned-before.reader.txt"
+    },
+    {
+      "header": 6,
+      "before": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h6-multirow-owned-no-capacity.accdb",
+      "bytes": 536576,
+      "sha256": "cbfaca8d36102e477d3aa7a7b86830169de70b5a64ff6d24b10f2855e81a9bde",
+      "definition": 125,
+      "maps": 126,
+      "bitmap": 128,
+      "root": 127,
+      "first": 129,
+      "second": 130,
+      "eof": 131,
+      "before_reader": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h6-multirow-owned-before.reader.txt"
+    }
+  ],
+  "requests": [
+    {
+      "ordinal": 0,
+      "identity": 23,
+      "expected": "unchanged sentinel",
+      "replacement": "aaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "ordinal": 1,
+      "identity": 24,
+      "expected": "unchanged sentinel",
+      "replacement": "ccccccccccccccccccc"
+    }
+  ],
+  "law": {
+    "after_length_delta": 4096,
+    "row0_target": "first:254",
+    "row1_target": "eof:0",
+    "second_destination": "byte-exact unchanged",
+    "map_changes": "exactly GLOBAL EOF 1->0, selected owned EOF 0->1, selected candidate EOF 0->1",
+    "old_hints": "unchanged"
+  }
+}

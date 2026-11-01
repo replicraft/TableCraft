@@ -147,3 +147,5 @@ mod alternate_owned_second;
 mod competing_owned;
 
 mod eof_allocation;
+
+mod compound_eof;

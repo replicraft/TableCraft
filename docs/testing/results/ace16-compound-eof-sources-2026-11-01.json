@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-01",
+  "status": "qualified-source-reads-only",
+  "scope": "Compound already-owned plus first EOF DATA allocation: two source-qualified no-capacity originals and two independently modeled AFTERs",
+  "parent_record": "ace16-multirow-owned-sources-2026-11-01.json",
+  "input_freeze": {
+    "path": ".cache/owned-growth-next-20261101/compound-eof-source/input-freeze.json",
+    "bytes": 1669,
+    "sha256": "a9dedc0cea80b9bdbb48a43b9d41880a2aa0b7e512a769f8bb22cf85b63dc586"
+  },
+  "manifest": {
+    "path": ".cache/owned-growth-next-20261101/compound-eof-source/expected-first/manifest.json",
+    "bytes": 2184,
+    "sha256": "fdc3f813e3e747fa9f137eadf70ee488f3b748ffa8ae6e3e420742da9fe57ef1"
+  },
+  "public_models": [
+    {
+      "path": "docs/testing/owned_growth_originals/compound_eof_model.py",
+      "bytes": 5756,
+      "sha256": "af154dbaab991356820ce64f1473278b6eba1278babe2e931c447d7a4861d36b"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/compound_eof_requests.json",
+      "bytes": 1750,
+      "sha256": "2a345eb601e7a3b92d44edac89faee5967abc2e3dc674725a2ae794f81347fa3"
+    }
+  ],
+  "cases": [
+    {
+      "id": "h5-compound-eof",
+      "header": 5,
+      "before": {
+        "file": "h5-compound-eof-before.accdb",
+        "bytes": 466944,
+        "sha256": "2515f4fe4977005335f5aa68a6375ade70b75ffd0dd9f552fa4e62c249a27888"
+      },
+      "expected": {
+        "file": "h5-compound-eof-growth.accdb",
+        "bytes": 471040,
+        "sha256": "1c555926c1d10f3ee11b6dfa513e38b1dacd0c878602dd7f21b6b9bb5f516cd3"
+      },
+      "before_reader": {
+        "file": "h5-compound-eof-before.reader.txt",
+        "bytes": 4442,
+        "sha256": "aef8c72d572329b85fd712b96abcc59322e4ab0793851f5f818e89fecf7e4cd3"
+      },
+      "reader": {
+        "file": "h5-compound-eof-growth.reader.txt",
+        "bytes": 4450,
+        "sha256": "3b1a78c0bc0b714fdf20d07eabaa8074bd888d322b8d9df87aabe92d09268e2d"
+      },
+      "proof": {
+        "file": "h5-compound-eof.proof.json",
+        "bytes": 584,
+        "sha256": "4f999a31a702758a2bba17604cadbf353528c0b330a519a77b790cc9b39605bd"
+      }
+    },
+    {
+      "id": "h6-compound-eof",
+      "header": 6,
+      "before": {
+        "file": "h6-compound-eof-before.accdb",
+        "bytes": 536576,
+        "sha256": "cbfaca8d36102e477d3aa7a7b86830169de70b5a64ff6d24b10f2855e81a9bde"
+      },
+      "expected": {
+        "file": "h6-compound-eof-growth.accdb",
+        "bytes": 540672,
+        "sha256": "2e0050cc028b21b6d5bf940a830bd2fd6e45dfc8a1a4036a7a7fa88e7a563cd2"
+      },
+      "before_reader": {
+        "file": "h6-compound-eof-before.reader.txt",
+        "bytes": 4455,
+        "sha256": "bd91bc46d1b4f79229dfaee51023c3b5363f789cf6c57a4d24e6b5500cda3a80"
+      },
+      "reader": {
+        "file": "h6-compound-eof-growth.reader.txt",
+        "bytes": 4463,
+        "sha256": "91ddde2b99bb024f147f09b5915d7995d7bfd4d4440edeb1dd51d23e391a5111"
+      },
+      "proof": {
+        "file": "h6-compound-eof.proof.json",
+        "bytes": 584,
+        "sha256": "d7d10d45dcc734d116af5d7a34f6e2851ac07be7b776989f8ecf0899621eda37"
+      }
+    }
+  ],
+  "counts": {
+    "previously_qualified_before_images": 2,
+    "new_literal_after_images": 2,
+    "native_source_functions": 1,
+    "native_read_views": 4,
+    "independent_sdk_reads": 4
+  },
+  "model_law": "Row0 consumes first owned destination slot254; row1 uses new EOF slot0. Preserve full second destination, original root identity/count/free, all unrelated bytes and all map bits except the three EOF claims.",
+  "observations": [
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-eof-source/construct-first.log",
+      "bytes": 125,
+      "sha256": "de43c8e0246d81fab1bb1443551cf3619e117c4e12e220d56db398f8f3f3b7ae"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-eof-source/native-reads-first.log",
+      "bytes": 1180,
+      "sha256": "be74850a173f26b2920222c480ed95f7c6b6160c08fe5ed08e01236f2f57ea0d"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-eof-source/native-reads-second.log",
+      "bytes": 502,
+      "sha256": "92848dd5fd487fd4ee40a643c69e0040d0fa40bfe4f60da9fa4ccbed70a62a24"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-eof-source/sdk-first/result.json",
+      "bytes": 1373,
+      "sha256": "2be05b7302192ad24ffcf269faf2b4fe968603581f770eb80c24d48e9a5f7eb1"
+    }
+  ],
+  "retained_first_failure": "The source-only Rust gate initially referenced undeclared serde_json. It now loads literal known filenames and verifies fixed image hashes directly; no dependency or golden changed.",
+  "source_reads_before_corresponding_producers": true,
+  "inputs_unchanged": true,
+  "native_access": "Unrun; authored derivative and independent-reader evidence does not establish native Access placement/save conformance."
+}
