@@ -103,3 +103,6 @@ fn capture(
     check(budget, cancelled)?;
     Ok(source)
 }
+
+#[cfg(test)]
+mod node_sources;
