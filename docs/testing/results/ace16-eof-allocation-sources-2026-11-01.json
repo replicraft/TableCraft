@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-01",
+  "status": "qualified-source-reads-only",
+  "scope": "Original-only authored first EOF DATA allocation inputs and literal one-page-growth expectations before any allocation producer",
+  "original_provenance": "ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json",
+  "input_freeze": {
+    "path": ".cache/owned-growth-next-20261101/eof-source/input-freeze.json",
+    "bytes": 2445,
+    "sha256": "bf99a4c4e7efc362934976e4269d9a4660172727fb3f8273af7e58e4106e6a1b"
+  },
+  "manifest": {
+    "path": ".cache/owned-growth-next-20261101/eof-source/expected-first/manifest.json",
+    "bytes": 2349,
+    "sha256": "c5674f327b787012c677627d128e30aaac4d58be6ecfb28d2d2817bc58b688be"
+  },
+  "public_models": [
+    {
+      "path": "docs/testing/owned_growth_originals/eof_model.py",
+      "bytes": 6902,
+      "sha256": "3f1da74dc9db5d7b695332dc45639dda1d4680b8886cdd41f9b0b6fb0e9c787d"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/eof_requests.json",
+      "bytes": 1923,
+      "sha256": "de7321f5fbe278456733001de74968835b33d4731278c59fa24945b1ab788b9e"
+    }
+  ],
+  "cases": [
+    {
+      "id": "h5-eof-allocation",
+      "header": 5,
+      "original_sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "before": {
+        "file": "h5-eof-allocation-before.accdb",
+        "bytes": 458752,
+        "sha256": "11029803d999803afd9c5311d1e09788c9209a2aa9f9e6ee23d10fe9920b068e"
+      },
+      "expected": {
+        "file": "h5-eof-allocation-growth.accdb",
+        "bytes": 462848,
+        "sha256": "3a95a4ecc876ea3cc88990cd83309a051515ddad1b698414cb6c51b53d5841db"
+      },
+      "before_reader": {
+        "file": "h5-eof-allocation-before.reader.txt",
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "reader": {
+        "file": "h5-eof-allocation-growth.reader.txt",
+        "sha256": "9959e3c3df264a038f094f80b8c412b2d5c68d2ecb0835bdb5fe31c5b2240973"
+      },
+      "proof": {
+        "file": "h5-eof-allocation.proof.json",
+        "sha256": "d127b9236313f69dafa7e62ac03a9571170e1db09ef7f802de24346fde694825"
+      },
+      "changed_rows": 1
+    },
+    {
+      "id": "h6-eof-allocation",
+      "header": 6,
+      "original_sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "before": {
+        "file": "h6-eof-allocation-before.accdb",
+        "bytes": 528384,
+        "sha256": "67ff2be8acf40c287f8281e9044c8eec3296ecab23b9197c2b5d81d790d6f5d0"
+      },
+      "expected": {
+        "file": "h6-eof-allocation-growth.accdb",
+        "bytes": 532480,
+        "sha256": "0db9f897700066ef36bf9acfc90f3f29eda234012ee09515a876bdea3f698b50"
+      },
+      "before_reader": {
+        "file": "h6-eof-allocation-before.reader.txt",
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "reader": {
+        "file": "h6-eof-allocation-growth.reader.txt",
+        "sha256": "4c3a89416d322696a549460e6d0228d389ba2bd5d07d142b3ae7780f1f719a32"
+      },
+      "proof": {
+        "file": "h6-eof-allocation.proof.json",
+        "sha256": "7c928b787964c13bde94d90329044055f961532c4e6f425d06c63a3064829317"
+      },
+      "changed_rows": 1
+    }
+  ],
+  "counts": {
+    "genuine_originals": 2,
+    "authored_before_images": 2,
+    "literal_after_images": 2,
+    "native_source_functions": 1,
+    "native_read_views": 4,
+    "independent_sdk_reads": 4,
+    "allocation_producer_calls": 0
+  },
+  "raw_law": "Original EOF112/129 is represented FREE1, owned0, candidate0; BEFORE preserves original file length and map bytes while saturating root255slots. AFTER appends4096 DATA bytes, claims exactlythree bits, and forwards root without clearing its old hint.",
+  "receipts": [
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-source/construct-first.log",
+      "bytes": 185,
+      "sha256": "2a70a245e5d93aadf31546cc55225694efc5899666816423a4967e68c1d9d961"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-source/native-reads-first.log",
+      "bytes": 528,
+      "sha256": "aeac96021e24f2265d2a80d9bd5c1c1ad2e6d32ecf110ba7f877b29d02843ac5"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-source/sdk-expected-first/result.json",
+      "bytes": 1389,
+      "sha256": "7c38c580741fb92808386a908cd10838223417c40dfe79adadd43e4f92f6e63d"
+    }
+  ],
+  "inputs_unchanged": true,
+  "limitations": [
+    "Authored derivatives and independently read hypotheses; not Access-generated allocation outcomes.",
+    "No normal allocation API, durable resized save or resizable native recovery is qualified by this record.",
+    "Microsoft Access save/reopen and shared-file comparisons remain unrun."
+  ]
+}
