@@ -1,8 +1,8 @@
 //! Private normal mutation composition; UPDATE, DELETE and INSERT keep distinct intents.
 use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{
-    NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent, NativeIntentError,
-    NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
+    NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent,
+    NativeIntentError, NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
     RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -57,6 +57,7 @@ pub(super) enum MutationIntent {
     Delete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
     EofInsert(NativeEofInsertIntent),
+    CompleteInsert(NativeCompleteInsertIntent),
     OmittedInsert(NativeOmittedInsertIntent),
 }
 
@@ -70,6 +71,8 @@ impl MutationIntent {
         // never retried as another action or promoted from its record prefix.
         if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
+        } else if raw.starts_with(b"TCNA0004") {
+            NativeCompleteInsertIntent::decode(raw, budget, cancelled).map(Self::CompleteInsert)
         } else if raw.starts_with(b"TCNA0003") {
             NativeEofInsertIntent::decode(raw, budget, cancelled).map(Self::EofInsert)
         } else if raw.starts_with(b"TCNA0002") {

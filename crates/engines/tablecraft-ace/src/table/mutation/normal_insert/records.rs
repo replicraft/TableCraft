@@ -17,12 +17,45 @@ pub(super) fn qualify(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    qualify_with(schema, requests, false, budget, cancelled)
+}
+
+/// TCNA4 declaration admission. Legacy protocols never call this entry.
+pub(super) fn qualify_complete(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    qualify_with(schema, requests, true, budget, cancelled)
+}
+
+fn qualify_with(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    complete: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     // Complete declaration validation also runs for an empty batch. Generated
     // fields cannot become explicit manual targets through supplied NULL values.
     record_insertion::layout::variables(schema, budget, cancelled)?;
     for field in schema.columns() {
         check(budget, cancelled)?;
-        if !matches!(field.native_type(), LONG_TEXT | OLE)
+        let wider = complete
+            && matches!(
+                field.scalar_type(),
+                Some(
+                    ScalarType::Byte
+                        | ScalarType::Int16
+                        | ScalarType::Single
+                        | ScalarType::Double
+                        | ScalarType::Guid
+                        | ScalarType::Decimal
+                )
+            );
+        if !wider
+            && !matches!(field.native_type(), LONG_TEXT | OLE)
             && !matches!(
                 field.scalar_type(),
                 Some(

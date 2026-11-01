@@ -89,7 +89,7 @@ fn interrupted_insert_commit_recovers_pending_on_the_same_retained_session() {
         for (at, byte) in current.iter().enumerate() {
             assert!(case.before.get(at) == Some(byte) || case.after.get(at) == Some(byte));
         }
-        assert_eq!(&fs::read(bundle.join("intent")).unwrap()[..8], b"TCNA0001");
+        assert_eq!(&fs::read(bundle.join("intent")).unwrap()[..8], b"TCNA0004");
         assert_eq!(&fs::read(bundle.join("journal")).unwrap()[..8], b"TCIMG001");
         assert!(matches!(ExclusiveFile::open(&path), Err(IoError::LockBusy)));
         let (session, receipt) = failure

@@ -12,3 +12,6 @@ mod owned_audit;
 pub(super) mod empty;
 #[cfg(feature = "journal")]
 pub(super) mod future;
+
+#[cfg(feature = "journal")]
+pub(super) mod future_pages;
