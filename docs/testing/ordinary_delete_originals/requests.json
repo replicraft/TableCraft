@@ -1,0 +1,43 @@
+{
+  "state": "ORIGINALS_AND_RAW_DELETE_LAW_FROZEN_BEFORE_MODEL",
+  "table": "Sentinel",
+  "ordinal": 0,
+  "identity": 23,
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h5.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h5/stdout.log",
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h6.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h6/stdout.log",
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "bitmap": 128
+    }
+  ],
+  "law": {
+    "definition_record_count_at_16": [
+      1,
+      0
+    ],
+    "root_slot_word_at_data_plus_14": [
+      "0x0fbe",
+      "0xcfbe"
+    ],
+    "preservation": "exact complete complement; record66/free4014/slotcount1/maps/EOF/properties/OLE/unrelated objects unchanged",
+    "authority": "literal both native tombstone bits from independent engineering observations, no production constants or writer output"
+  },
+  "producer_calls": 0
+}

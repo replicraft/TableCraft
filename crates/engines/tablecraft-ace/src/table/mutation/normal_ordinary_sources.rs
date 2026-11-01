@@ -149,3 +149,5 @@ mod competing_owned;
 mod eof_allocation;
 
 mod compound_eof;
+
+mod normal_delete;

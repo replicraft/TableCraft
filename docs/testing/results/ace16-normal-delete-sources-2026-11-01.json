@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-01",
+  "status": "qualified-source-reads-only",
+  "scope": "Ordinary one-row DELETE authored from unchanged genuine originals before native delete producers",
+  "original_provenance": "ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json",
+  "input_freeze": {
+    "path": ".cache/ace16-normal-delete-next-20261101/source/input-freeze.json",
+    "bytes": 1163,
+    "sha256": "2a8b0594efa0ed0ea6a411454a5a3d42fa5cfe50ad731feadce94a544de146b9"
+  },
+  "manifest": {
+    "path": ".cache/ace16-normal-delete-next-20261101/source/expected-first/manifest.json",
+    "bytes": 2224,
+    "sha256": "7ae0c006c1fecf81a32ae6f39ef86ee02701091e21429ff46eae2e989ac760e9"
+  },
+  "public_artifacts": [
+    {
+      "path": "docs/testing/ordinary_delete_originals/model.py",
+      "bytes": 3035,
+      "sha256": "55ff011652d7094ec28c4a10cb92e3b75d6864c50c2b1a4e0df705c323c9fa18"
+    },
+    {
+      "path": "docs/testing/ordinary_delete_originals/requests.json",
+      "bytes": 1452,
+      "sha256": "ca668e0e2e5dfe9d26b361f2c8c5b91a630fe279483672b1d40720065dfd040a"
+    },
+    {
+      "path": "docs/testing/preserved_fixed_scalars_genuine/OrdinaryDeleteGetter.java",
+      "bytes": 11571,
+      "sha256": "1e27ab7a081627c1fbee73f5a8c91b34de88a711cd4bbb7a9909b485b94c3935"
+    }
+  ],
+  "cases": [
+    {
+      "id": "h5-ordinary-delete",
+      "header": 5,
+      "before": {
+        "file": "h5-ordinary-delete-before.accdb",
+        "bytes": 458752,
+        "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+      },
+      "expected": {
+        "file": "h5-ordinary-delete-deleted.accdb",
+        "bytes": 458752,
+        "sha256": "187714c3125969f8b47a50b1e83d993f3512fe21911bb0043e650b7dcd2754da"
+      },
+      "before_reader": {
+        "file": "h5-ordinary-delete-before.reader.txt",
+        "bytes": 4318,
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "reader": {
+        "file": "h5-ordinary-delete-deleted.reader.txt",
+        "bytes": 4194,
+        "sha256": "b9f6f90980de9ee6654197a7fe7f99aeb4939b7b94b0b78b1f99d5e713681098"
+      },
+      "proof": {
+        "file": "h5-ordinary-delete.proof.json",
+        "bytes": 210,
+        "sha256": "7d8bba4bb518927ae691f17a59e6be86f1965ff5d57e9fa06ac284ce72e4eeff"
+      }
+    },
+    {
+      "id": "h6-ordinary-delete",
+      "header": 6,
+      "before": {
+        "file": "h6-ordinary-delete-before.accdb",
+        "bytes": 528384,
+        "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+      },
+      "expected": {
+        "file": "h6-ordinary-delete-deleted.accdb",
+        "bytes": 528384,
+        "sha256": "de8da4c54fb46f384102900212376ca1c91768bdf8e6b2c153e4410e844ab03e"
+      },
+      "before_reader": {
+        "file": "h6-ordinary-delete-before.reader.txt",
+        "bytes": 4331,
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "reader": {
+        "file": "h6-ordinary-delete-deleted.reader.txt",
+        "bytes": 4207,
+        "sha256": "820ecb3a5a525612ea5aaba9cbec61447c10c1be5216b8eb92d1b50379da5588"
+      },
+      "proof": {
+        "file": "h6-ordinary-delete.proof.json",
+        "bytes": 210,
+        "sha256": "1bbedacc93a7d48b322a00a0dac0c942ff6b752d5c3f1c6c2722c266b3de9f75"
+      }
+    }
+  ],
+  "counts": {
+    "before_images": 2,
+    "literal_after_images": 2,
+    "native_read_views": 4,
+    "independent_sdk_reads": 4
+  },
+  "physical_law": "TDcount1to0 and logical root word0x0fbe to0xcfbe; record/free/slot counts/maps/properties/OLE/EOF and every other byte remain exact.",
+  "source_qualification_before_corresponding_producers": true,
+  "observations": [
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/source/construct-first.log",
+      "bytes": 125,
+      "sha256": "17047f98722d85e19650aeac99cbccd24f1c6dc51b6c7140900f8bffb9a9a4ba"
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/source/native-reads-first.log",
+      "bytes": 1182,
+      "sha256": "407f3fa6cdc2d274a690500ef842be2c828c8f6120358c0df03c4c4364d92f9b"
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/source/native-reads-second.log",
+      "bytes": 531,
+      "sha256": "55c0e07d02093011eeee0b689d42c45c8e5bf9b81d6a0c42bab5d0fe15cfce4b"
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/getter/compile-first/execution.json",
+      "bytes": 1107,
+      "sha256": "7d2d0daecfbffac8322dbf3d2154c53b19ad47d7e4bf3c5c944007087b779477"
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/getter/classes-first.json",
+      "bytes": 490,
+      "sha256": "4aa71ddc8f8a2f373bc8568c01ff7aea76ae303e5b684bef4949e0bc3b1c9a84"
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/getter/reads-first/result.json",
+      "bytes": 1381,
+      "sha256": "b096dbfb8d6757bf8d3ce17436037c76a70292677e6e0444dd9940e2964a319c"
+    }
+  ],
+  "retained_failure": "Source gate initially referenced undeclared serde_json; replaced with literal known source filenames/hashes, with no dependency or expected-byte changes.",
+  "getter_boundary": "Explicit Sentinel0 observer preserves the old formatter and unrelated exact3row bounds. The old Sentinel1 observer remains unchanged.",
+  "limitations": [
+    "Authored derivative and independent read evidence only.",
+    "No native DELETE save/reopen or Windows compatibility established."
+  ]
+}
