@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-01",
+  "scope": "Same-original-owned-DATA-page Sentinel.Marker growth and separate forwarded second-edit sources before producers",
+  "original_provenance": "ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json",
+  "first_input_freeze_sha256": "bc4ec196f1bfa2fe3965edafca79d6ed012fbbe885a41640cf5b4e3a9d619a74",
+  "first_manifest_sha256": "7dc4ab0edab3e43d64945f1f8964db79cce490b51d1ad3c8c3518f6a0b0024b3",
+  "second_input_freeze_sha256": "420677108d23150a14447138aabdc0a7e23382ae055d430fad1ffdb9e1049fae",
+  "second_manifest_sha256": "0e95ea38829bc31e884e7b254c937102a19076d612dd1b8ecc13d6313088cac3",
+  "counts": {
+    "originals": 2,
+    "growth_expected": 2,
+    "second_edit_expected": 2,
+    "native_source_test_functions": 2,
+    "native_read_views": 8,
+    "unique_source_images": 6,
+    "independent_sdk_reads": 4
+  },
+  "source_inputs_unchanged": true,
+  "source_constructor_native_calls": 0,
+  "source_constructor_child_calls": 0,
+  "public_models": [
+    {
+      "path": "docs/testing/owned_growth_originals/model.py",
+      "bytes": 4761,
+      "sha256": "268cf1c756c4b7d51cdf8087c3969ca86e55cba884460c8e1240145cbf404d30"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/second_model.py",
+      "bytes": 2430,
+      "sha256": "f957e5c29711d400c39bcf6fddf7e166ab3d48bd03a8e243558119716eb759e0"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/original-observations.json",
+      "bytes": 1267,
+      "sha256": "b2c33fa3058c187b583bda6a7ab2c0460fbcb69ac503627d1b1f347821859551"
+    }
+  ],
+  "execution": [
+    {
+      "path": ".cache/owned-growth-next-20261101/private-source/construct-first.log",
+      "bytes": 203,
+      "sha256": "7ac9912c0cc9cdba02c469125f0cd0f0264656ce7559500b17a1f5b345a6ba24"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/second-source/construct-first.log",
+      "bytes": 203,
+      "sha256": "a7b1bad43ab8b450de89d0aa1070a29fbe957efaed2d1b66cbe982b88d818e5b"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/native-source-reads-first.log",
+      "bytes": 656,
+      "sha256": "b780e9733c3a0f717203d10d2b3bb31250cb859034ea09c3f91e03a8f2ccd09a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/private-source/sdk-expected-first/result.json",
+      "bytes": 723,
+      "sha256": "b070c2c40ebac9878df61fe3479921a938d6320ff76154526250098bd30084b2"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/second-source/sdk-expected-first/result.json",
+      "bytes": 737,
+      "sha256": "fd46ce3002c64e4e9cd165da76712ebd58e007518a19742e97958364a58632c7"
+    }
+  ],
+  "native_access": "Unrun; independent readers do not establish Microsoft Access save/reopen conformance",
+  "producer_admission": "Separate work; source reads and test input pins grant no mutation authority"
+}
