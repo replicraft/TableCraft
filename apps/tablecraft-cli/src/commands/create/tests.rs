@@ -307,3 +307,6 @@ fn escaped_catalog_names_and_raw_definition_names_match_independent_sources() {
 }
 
 mod typed;
+
+#[path = "tests/primary.rs"]
+mod primary;
