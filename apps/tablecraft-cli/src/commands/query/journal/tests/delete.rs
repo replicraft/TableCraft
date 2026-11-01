@@ -118,7 +118,8 @@ fn deletion_help_keeps_the_normal_action_boundary_explicit() {
         .to_string();
     let help = help.split_whitespace().collect::<Vec<_>>().join(" ");
     for expected in [
-        "selected indexes and relationships refuse",
+        "single-Int32 root-leaf indexes are supported",
+        "other indexes, required programs and relationships refuse",
         "including empty operations",
         "no reclamation, cascade or compaction",
         "recover-update and finalize-update",

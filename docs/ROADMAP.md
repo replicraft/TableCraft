@@ -42,8 +42,11 @@ and native-qualified V2 recovery. Actual typed/SQL/CLI saves, compound two-row
 placement and active/retired recovery pass. The bounded
 [normal DELETE route](access/writes/NORMAL_ACE_DELETE.md) now uses original raw
 witnesses through retained sessions and the CLI. The [normal explicit-row INSERT route](access/writes/NORMAL_ACE_INSERT.md)
-now supplies typed, SQL and CLI saves for qualified unindexed targets using
-existing owned capacity. Next are indexed INSERT/DELETE, defaults and AutoNumber,
+now supplies typed, SQL and CLI saves using existing owned capacity. Both routes
+now maintain qualified single-Int32 root-leaf indexes; INSERT currently requires
+ascending present keys. Whole-image source, recovery and host checks are in the
+[indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json).
+Next are broader index trees/keys, defaults and AutoNumber,
 broader relationship/program behavior and wider allocation. Native Access
 qualification remains open. Completed
 fixed/fitted implementation does not need repeating.

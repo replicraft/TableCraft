@@ -1,5 +1,21 @@
 # Implementation status
 
+## Indexed ordinary INSERT and DELETE
+
+The normal journal routes now maintain qualified single-Int32 root-leaf indexes.
+INSERT currently requires ascending present keys; DELETE retains the shared
+nullable/directional key grammar, with the new write evidence covering ascending
+present keys. Each physical index changes once across compatible logical aliases.
+Original intents, complete ownership, independent whole-image reconstruction,
+historical counters, protected tails and the existing V1 lifecycle remain intact.
+
+Thirteen focused native functions pass, including pending/committed mixed-target
+recovery, protected-image refusals and resource/cancellation controls. Typed/SQL
+sessions and CLI saves match independently authored full images. See the
+[indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json)
+for exact scope, broader checks and retained first failures. Broader trees,
+generation/defaults, relationships and native Access save/reopen remain open.
+
 ## Leading U+FEFF INSERT preservation
 
 Normal INSERT now preserves the qualified leading-U+FEFF marked-wide form.
@@ -15,9 +31,9 @@ zero-low-byte representations remain unsupported. See the
 Qualified native17 ordinary tables now accept complete explicitly supplied rows
 through a separate TCNA0001 intent and V1 recovery. The shared session and
 `query journal-insert` retain metadata-only preparation, honest inserted counts,
-continuous exclusivity and known outcomes through cleanup. Actual indexes,
-target relationships, defaults/generation, new LVAL payloads and allocation stay
-outside this initial normal route.
+continuous exclusivity and known outcomes through cleanup. The initial unindexed evidence below retains its scope. Qualified ascending,
+present-Int32 root-leaf insertion is now covered separately above; target
+relationships, defaults/generation, new LVAL payloads and allocation remain open.
 
 Single-row and two-row batches in both orders match six independent whole-image
 expectations. Native recovery, protected-byte forgeries, capacity, resource and
@@ -32,15 +48,16 @@ and [native record](testing/results/ace16-normal-insert-writes-2026-11-01.json).
 Normal DELETE now has a separate TCND0001 original-request intent and V1 recovery
 path through typed editors, shared SQL sessions and `query journal-delete`.
 Admission uses fresh native target-local program absence and full Source
-protection; selected indexes and target relationships refuse. Direct and resolved
+protection. The initial unindexed results below retain their scope; qualified
+single-Int32 root-leaf deletion is covered separately above. Target relationships
+remain unsupported. Direct and resolved
 root deletion changes only logical slot flags and the table's live-row count.
 Retained payloads, forwarding storage, properties, maps and EOF remain exact.
 
 Five direct-root and four forwarded-root native functions pass. Four typed/SQL growth-then-delete workflows
 perform eight exact commits; two CLI workflows perform four commits and four
-readbacks. All complete images match frozen expectations. Broader INSERT,
-indexed DELETE, cascades and Microsoft Access save/reopen conformance remain
-open. The batch passes 1,114 ACE units, 79 adapter units, 98 CLI units and
+readbacks. All complete images match frozen expectations. Broader key/tree profiles, cascades and Microsoft Access save/reopen
+conformance remain open. The batch passes 1,114 ACE units, 79 adapter units, 98 CLI units and
 83 recovery functions, with strict feature checks and prior EOF workflows intact.
 See the [normal deletion contract](access/writes/NORMAL_ACE_DELETE.md) and
 [native write record](testing/results/ace16-normal-delete-writes-2026-11-01.json).
