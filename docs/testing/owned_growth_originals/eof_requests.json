@@ -1,0 +1,58 @@
+{
+  "state": "EOF_SOURCE_LAWS_AND_ORIGINAL_REQUEST_BEFORE_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "eof": 112,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "eof": 129,
+      "bitmap": 128
+    }
+  ],
+  "table": "Sentinel",
+  "column": "Marker",
+  "ordinal": 0,
+  "expected": "unchanged sentinel",
+  "replacement": "aaaaaaaaaaaaaaaaaaa",
+  "before_laws": {
+    "origin": "only pinned genuine original, never alternate allocated source",
+    "length": "unchanged original EOF",
+    "root_slots": 255,
+    "root_slot0": "direct66 bytes at4030 with literal ID23 and inline OLE C700FF",
+    "empty_deleted_slots": "slots1..254 word0x8fbe",
+    "root_free": 3506,
+    "maps": "byte-exact genuine original; candidate root bit remains set",
+    "eof_claim": "original GLOBAL1:0 inline base0 FREE1; actual indirect owned0; inline candidate0"
+  },
+  "after_laws": {
+    "append_bytes": 4096,
+    "target_page": "original EOF112/129",
+    "target_owner": "actual Sentinel TD107/125",
+    "target_slots": 1,
+    "target_hidden_slot": 0,
+    "target_word": "0x8fbc",
+    "target_record_span": [4028,4096],
+    "target_free": 4012,
+    "target_record_bytes": 68,
+    "target_record_offsets": [6,44,59],
+    "target_record_mask": 7,
+    "root_change": "slot0 word0x4fbe and pointer(EOF<<8)|0 plus62 zero bytes",
+    "map_changes": "exact original EOF bit: GLOBAL1to0, owned0to1, candidate0to1",
+    "preservation": "root slots/free/deleted words and all other old bytes unchanged; no clearing saturated root hint"
+  },
+  "author_runtime_calls": 0,
+  "producer_calls": 0
+}
