@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-31",
+  "scope": "Ordinary fixed-field saves retaining counters and existing single-Int32 indexes",
+  "source_commit": "3021623c",
+  "source_gate": "18 native read/constraint and exact independent SDK observations preceded new closure and mutation calls",
+  "behavior": [
+    "One exact readonly Int32 AutoNumber; original LAST remains independent of live IDs",
+    "Actual native checks and original key/ROW population certify complete membership",
+    "Exact physical/logical/count declarations; compatible aliases grouped once per physical owner",
+    "Exclusive INDEX/map roles, retained compressed/interior trees and all-level links/heights/extents",
+    "Historical counters and inactive index capacity, including A7, preserved byte-exact",
+    "Generated/indexed targets refuse even for empty and zero-match requests",
+    "Existing shared sessions and TCNI0004 planning/recovery reused"
+  ],
+  "verification": [
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/content-first-root.log",
+        "bytes": 527,
+        "sha256": "f522ef060e742c2ea4c11afa089a28bcd74665ac7591e24474721b9fd62c7fd8"
+      },
+      "result": "1 passed:18 positive closures and30 refusals"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/native-first-root.log",
+        "bytes": 918,
+        "sha256": "dbe1038978234de64e41a40a0f17bf7aaebf1318291bc5cb60b294d8dbf689cf"
+      },
+      "result": "3 passed:18 literal full images, readonly target refusals and independent proof forgeries"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/resources-first-root.log",
+        "bytes": 732,
+        "sha256": "85383c8dbff4e97e938b1ae30c2a18a023a7e859e67e6f04597568efdb1e0b10"
+      },
+      "result": "2 passed:exact pools, one-short limits, entry/middle/terminal cancellation"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/cli-first-root.log",
+        "bytes": 914,
+        "sha256": "2d44b5f46b0e2e248a5e6dba738d0859acef98b45b389a7a03e47b32a579288c"
+      },
+      "result": "2 passed:18 saves, 18 exact query readbacks, 12 readonly target refusals"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/access-first-root.log",
+        "bytes": 2084,
+        "sha256": "85b9436260a05039a393ca5792ae48c4e0186943f39dc0c98e2c0c5f899869ad"
+      },
+      "result": "3 new plus11 predecessor tests passed;36 typed/SQL saves, 12 empty commits, 12 readonly Id refusals and successive/stale controls"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/ace-all-features-root.log",
+        "bytes": 145772,
+        "sha256": "24b5afeb17aa30701042599ebf5a893132fac2c6c2a573e3e4f498cba4ce14a8"
+      },
+      "result": "1067 passed, 31 ignored;236.21 seconds"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/recovery-first-root.log",
+        "bytes": 8645,
+        "sha256": "78677d652cff95565d07e35b43d3bc8543b89a4036a504e6e3dcc59abc193fa7"
+      },
+      "result": "75 passed including5 new tests;4.61 seconds"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/clippy-host-root.log",
+        "bytes": 301,
+        "sha256": "0a96dfbf89061f2bc3c524f648d45fed42d9e80fff148e2a7425d49a01355424"
+      },
+      "result": "Strict ACE/Access/CLI all-targets all-features clippy passed including new host tests"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/default-check-root.log",
+        "bytes": 72,
+        "sha256": "50030225e5ae0694fd524bd6ffaf6739a71feab2d9e42ecddfc4945633e875e4"
+      },
+      "result": "Access no-default-features check passed"
+    }
+  ],
+  "first_diagnostics": {
+    "log": {
+      "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/clippy-first-root.log",
+      "bytes": 1722,
+      "sha256": "b6d7a3345ac78bb35e7e1a381bcd76cce1dc2d9edc9caa2b2198b3e64416cbad"
+    },
+    "result": "Fixture eight-argument lint and manual slice-size arithmetic fixed with a documented fixture-only expectation and size_of_val. No runtime behavior or expected bytes changed."
+  },
+  "source_annotation": "Frozen source at3021623c received only a documented clippy expectation after original qualification; byte-authoring code unchanged. Original source pins remain historical evidence.",
+  "report_preflight": "An initial report assertion matched passing error::tests names as compiler errors. Anchored diagnostic checks corrected the report controller; no tests were rerun for this correction.",
+  "limitations": [
+    "Known clear ACE header 5/6, 1252/General and closed ordinary data-only metadata restrictions remain",
+    "Only fixed Boolean/Int32/Int64/Currency/legacy DATE targets; generated/indexed fields readonly",
+    "Only retained local single-I32 indexes; foreign/ignore-NULL profiles refused",
+    "No generation, index mutation, record growth or general INSERT/DELETE saves",
+    "Indirect maps, wider headers, property/object payloads and user Memo/OLE remain outside ordinary admission",
+    "Native Access, Windows, power-loss and mixed-client qualification remain unrun"
+  ],
+  "dependencies_added": false,
+  "intent_version_changed": false,
+  "write_goldens_retuned": false,
+  "push_performed": false
+}

@@ -22,13 +22,26 @@ tables and ordinary user tables. User names, values, table counts and physical
 locations are data, not creator identities. All fifteen catalog fields and nine
 variable slots are checked. Property/body/module/external-source carriers must
 be absent, catalog LVAL map pairs must be complete and empty, and the relationship
-and ACE system tables must be empty. Indexes, generated/calculated/complex fields,
-user Memo/OLE storage, wider headers and other objects remain outside this family.
+and ACE system tables must be empty. Calculated/complex fields, user Memo/OLE
+storage, wider headers and other objects remain outside this family.
+
+One ordinary Int32 AutoNumber declaration may be retained as a read-only field.
+Its exact native flags, width and extended metadata must qualify. Its stored LAST
+value is historical data, preserved independently of the live IDs; this route
+does not generate values or assign the counter field.
+
+Existing local ordinary/primary indexes may be retained when each physical index
+has one ordinary Int32 key and complete original membership. Untouched NULL keys
+are supported where the original required/unique constraints permit them.
+Compatible logical aliases share their actual physical ownership. Foreign and
+ignore-NULL index profiles remain refused. Index key fields remain read-only,
+including supplied empty groups; an eligible unindexed field must be selected
+for updates.
 
 Ordinary stored scalars, Short Text/Binary and Decimal can be preserved. Writable
 targets are the existing Boolean, Int32, Int64, Currency and legacy DATE fixed
 carriers; numeric NULL transitions retain inactive bytes. No record resizing,
-allocation or index mutation is added. These limits describe this initial route,
+allocation or index mutation is added. These limits describe this route,
 not the long-term compatibility target or the broader reader.
 
 ## Authority and physical proof
@@ -38,6 +51,19 @@ every live record, all referenced map cells and physical EOF. It rejects duplica
 ownership and accounts for free pages. Actual scalar reads independently validate
 the admitted user records. XML-looking names, Text/Binary values and inactive
 payloads remain ordinary data under their declared roles.
+
+For retained indexes, actual complete table checks and original row references
+and values establish key membership. Every physical declaration needs a real
+logical alias, and each physical map and INDEX page has exclusive ownership.
+Historical index counters are preserved as stored, never replaced by a live-row
+count. Full count, physical and logical declarations remain checked independently
+of the semantic reader.
+
+Existing compressed prefixes and interior nodes are validated with their
+original bounds, row suffixes, links, heights, entry extents and free counts.
+Inactive INDEX capacity may retain bytes such as A7 under that explicitly checked
+page role. Updates preserve the entire index, including inactive bytes; they do
+not rebuild keys, alter topology or reinterpret capacity as active content.
 
 Only a complete validation returns a private image-borrowed certificate. It binds
 the actual image instance and user-table identity. Neither an empty inventory,
@@ -91,6 +117,16 @@ images including all maps and free holes, with unchanged TCNI0004 framing and
 recovery. See the [dynamic execution record](../../testing/results/ace16-ordinary-inline-writes-2026-10-31.json).
 
 ## Shared sessions and CLI
+
+The retained counter/index extension passes eighteen literal native updates and
+eighteen public journal commits with unchanged TCNI0004 framing. Five public
+tests cover repeated recovery, forged counters/index bytes/requests, empty
+groups and resource/cancellation boundaries. The retained adapter passes
+36 typed/SQL saves plus empty requests, read-only target refusals and successive
+save/stale-handle checks. Two CLI tests pass eighteen saves and exact target
+readbacks, with twelve generated/indexed target refusals. The complete unit and
+recovery batches pass. See the
+[counter/index write record](../../testing/results/ace16-ordinary-counter-index-writes-2026-10-31.json).
 
 Inert metadata chooses which family to attempt; it never proves absence. The
 ordinary candidate must pass complete content/source/target checking before the

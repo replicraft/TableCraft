@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary writes preserving counters and indexes
+
+Ordinary fixed-field saves now retain one qualified Int32 AutoNumber and existing
+local single-Int32 indexes, including compatible aliases, nullable keys and
+retained interior nodes. Counter fields and indexed fields remain read-only.
+The source ledger checks complete native membership and exclusive INDEX roles;
+whole-image proof preserves historical counters and inactive index capacity.
+Eighteen literal native and public journal commits, 36 typed/SQL session saves,
+and 18 CLI saves with exact query readback pass. The complete ACE unit batch
+passes 1,067 tests (31 ignored), and all 75 recovery tests pass. Resource and
+cancellation controls also pass. See the
+[write record](testing/results/ace16-ordinary-counter-index-writes-2026-10-31.json).
+
 ## Ordinary counter and retained-index source qualification
 
 Eighteen original views with AutoNumbers, retained Int32 indexes, logical aliases,

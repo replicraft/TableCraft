@@ -1,5 +1,6 @@
 //! Exhaustive single-page declarations and exact catalog LVAL tail coverage.
 use super::{
+    indexes,
     inline::InlineBitmap,
     ledger::{Ledger, Role as PageRole},
     refused,
@@ -13,7 +14,10 @@ use crate::{
             SHORT_BINARY, SHORT_TEXT, SINGLE,
         },
         definition as native_definition,
-        layout::{self, FIXED_FLAG, Field, Layout, UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG},
+        layout::{
+            self, AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, FIXED_FLAG, Field, Layout,
+            UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG,
+        },
         page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
         reader::Reader,
     },
@@ -33,7 +37,8 @@ const CATALOG_FIRST_LVAL: usize = 5;
 const CATALOG_LVAL_COUNT: usize = 4;
 const FREE_OFFSET: usize = TABLE_DEFINITION_SIGNATURE.len();
 const MAGIC_OFFSET: usize = native_definition::LENGTH_OFFSET + size_of::<u32>();
-const AUTO_SUPPORT_OFFSET: usize = 24;
+const LAST_ISSUED_OFFSET: usize = 20;
+const AUTO_SUPPORT_OFFSET: usize = LAST_ISSUED_OFFSET + size_of::<i32>();
 const TABLE_ROLE_OFFSET: usize = 40;
 const MAX_COLUMNS_OFFSET: usize = 41;
 const VARIABLE_COLUMNS_OFFSET: usize = MAX_COLUMNS_OFFSET + size_of::<u16>();
@@ -93,8 +98,7 @@ pub(super) fn capture<'image>(
         };
         layout::read(&mut reader, number)?
     };
-    if layout.physical_indexes != 0
-        || layout.logical_indexes != 0
+    if (role != Role::User && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
         || layout.fields.len() != layout.max_columns
         || layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count()
@@ -135,13 +139,23 @@ pub(super) fn capture<'image>(
         .copy_from_slice(&layout.usage.to_le_bytes());
     let candidate = u32_at(page, CANDIDATE_MAP_OFFSET)?;
     expected[CANDIDATE_MAP_OFFSET..HEADER_BYTES].copy_from_slice(&candidate.to_le_bytes());
-    budget
-        .charge(Resource::Steps, PAGE_BYTES as u64)
-        .map_err(InspectError::from)?;
-    if page[..HEADER_BYTES] != expected || page[length..].iter().any(|byte| *byte != 0) {
-        return Err(refused());
-    }
-    let mut position = HEADER_BYTES + layout.fields.len() * COLUMN_BYTES;
+    expected
+        [layout::LOGICAL_INDEX_COUNT_OFFSET..layout::LOGICAL_INDEX_COUNT_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&(layout.logical_indexes as u32).to_le_bytes());
+    expected[layout::INDEX_COUNT_OFFSET..layout::INDEX_COUNT_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&(layout.physical_indexes as u32).to_le_bytes());
+    let column_start = layout
+        .physical_indexes
+        .checked_mul(layout::INDEX_ENTRY_BYTES)
+        .and_then(|bytes| HEADER_BYTES.checked_add(bytes))
+        .ok_or(InspectError::StructureLimit)?;
+    let mut position = layout
+        .fields
+        .len()
+        .checked_mul(COLUMN_BYTES)
+        .and_then(|bytes| column_start.checked_add(bytes))
+        .ok_or(InspectError::StructureLimit)?;
+    let mut has_counter = false;
     let mut ordinary_variable = 0;
     let mut long_variable = layout
         .fields
@@ -169,7 +183,7 @@ pub(super) fn capture<'image>(
             }
         }
         field_profile(field, role)?;
-        let start = HEADER_BYTES + index * COLUMN_BYTES;
+        let start = column_start + index * COLUMN_BYTES;
         let raw = page.get(start..start + COLUMN_BYTES).ok_or_else(refused)?;
         let mut descriptor = [0; COLUMN_BYTES];
         descriptor[COLUMN_KIND_OFFSET] = field.kind;
@@ -197,7 +211,27 @@ pub(super) fn capture<'image>(
             descriptor[COLUMN_PRECISION_OFFSET] = field.precision;
             descriptor[COLUMN_SCALE_OFFSET] = field.scale;
         }
-        descriptor[COLUMN_FLAGS_OFFSET] = UPDATABLE_FLAG | if field.fixed { FIXED_FLAG } else { 0 };
+        let generator_flags = field.flags & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG);
+        descriptor[COLUMN_FLAGS_OFFSET] = if generator_flags != 0 {
+            if role != Role::User
+                || has_counter
+                || field.kind != INT32
+                || !field.fixed
+                || field.length != size_of::<i32>()
+                || field.extended_flags != 0
+                || field.flags != (FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG)
+            {
+                return Err(refused());
+            }
+            has_counter = true;
+            // LAST is an original stored historical value. Readonly closure
+            // neither infers it from rows nor chooses a generation policy.
+            expected[LAST_ISSUED_OFFSET..AUTO_SUPPORT_OFFSET]
+                .copy_from_slice(&page[LAST_ISSUED_OFFSET..AUTO_SUPPORT_OFFSET]);
+            FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG
+        } else {
+            UPDATABLE_FLAG | if field.fixed { FIXED_FLAG } else { 0 }
+        };
         descriptor[COLUMN_EXTENDED_OFFSET] = field.extended_flags;
         descriptor[COLUMN_PAYLOAD_OFFSET..COLUMN_WIDTH_OFFSET]
             .copy_from_slice(&(field.offset as u16).to_le_bytes());
@@ -238,10 +272,19 @@ pub(super) fn capture<'image>(
         }
         position += bytes;
     }
+    budget
+        .charge(Resource::Steps, PAGE_BYTES as u64)
+        .map_err(InspectError::from)?;
+    if page[..HEADER_BYTES] != expected || page[length..].iter().any(|byte| *byte != 0) {
+        return Err(refused());
+    }
     if position != layout.index_start {
         return Err(refused());
     }
     system_schema(&layout, role)?;
+    if layout.physical_indexes != 0 || layout.logical_indexes != 0 {
+        position = indexes::capture(image, ledger, number, &layout, position, budget, cancelled)?;
+    }
     if role == Role::Catalog {
         let mut seen = [false; CATALOG_LVAL_COUNT];
         for _ in 0..CATALOG_LVAL_COUNT {
