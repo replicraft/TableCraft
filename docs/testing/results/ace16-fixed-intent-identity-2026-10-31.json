@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-31",
+  "scope": "Fixed original-intent metadata identity validation",
+  "behavior": [
+    "Reject repeated row ordinals within a group, whether identical or conflicting",
+    "Reject ASCII-case-equivalent columns across complete intents, including empty groups",
+    "Preserve request order, spelling, moved storage and original wire formats",
+    "Keep metadata Bytes/Steps/cancellation independent of database Rows",
+    "Keep native duplicate-column preflight error priority"
+  ],
+  "verification": [
+    {
+      "result": "13 intent unit tests passed before test extraction",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/intent-first-root.log",
+        "bytes": 1856,
+        "sha256": "4af2f1a3c3373bf8997302d9680fa1e2b2d6cc8735a51c5b0cd4eab442c0251d"
+      }
+    },
+    {
+      "result": "13 intent unit tests passed after feature-slicing additive tests",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/intent-sliced-root.log",
+        "bytes": 1917,
+        "sha256": "3697a42b74c1b1a22bb44df047795a8f7823433df9409443d4a8404c0e151ca2"
+      }
+    },
+    {
+      "result": "6 normal fixed recovery/control tests passed",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/recovery-first-root.log",
+        "bytes": 1112,
+        "sha256": "7ae1ca7d01e4a727c6fcbd995adf9f62c6639edb3c2cde4c3e9ee44c55977712"
+      }
+    },
+    {
+      "result": "4 legacy TCNI1/2 intent integration tests passed",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/legacy-intents-first-root.log",
+        "bytes": 1038,
+        "sha256": "a593753a214a818c5ad5f801b68d733bda75cefb97f782592368dec33311184b"
+      }
+    },
+    {
+      "result": "Standalone no-default-feature ACE check passed",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/default-check-root.log",
+        "bytes": 183,
+        "sha256": "5edfda8396a5c11c3d984db8e75e3b9c660b6d448e182246ea22b77c52919110"
+      }
+    },
+    {
+      "result": "Strict ACE all-target/all-feature clippy passed",
+      "log": {
+        "path": ".cache/ace16-fixed-intent-uniqueness-next-20261031/strict-root.log",
+        "bytes": 238,
+        "sha256": "7e84c89ded103ece038255901fc08115cc67cf007eb61ecb459b73431a17af4b"
+      }
+    }
+  ],
+  "compatibility_boundaries": [
+    "No new source admission or macro absence claim",
+    "ASCII-only metadata identity follows existing binder policy; no Unicode collation claim",
+    "Native Access, Windows, power-loss and mixed-client qualification unchanged"
+  ],
+  "fixture_or_expected_image_changes": false,
+  "wire_codec_changes": false,
+  "dependencies_added": false,
+  "draft_derivative": "New tests moved into tests/uniqueness.rs; original tests preserved byte-exact before child registration."
+}

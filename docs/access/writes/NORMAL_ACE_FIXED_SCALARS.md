@@ -54,6 +54,16 @@ permission flags. Decode validates bounded framing, carrier tags, padding and
 core DATE constructors. Metadata decoding consumes bytes/steps; actual row work
 is charged during native planning and recovery qualification.
 
+Group construction rejects repeated row ordinals, including repeated identical
+assignments. Complete intent construction and decoding reject column names that
+repeat under the existing ASCII-insensitive identity policy, even for empty
+groups. Both report request conflicts. Validation preserves the supplied order,
+original spelling and moved request storage; it consumes bounded bytes/steps and
+checks cancellation without charging database rows. Different columns may still
+address the same original row. These metadata checks do not change wire bytes,
+grant write permission or replace fresh native replay. The native duplicate-column
+preflight retains its existing `Column` refusal before intent packaging.
+
 `NativeUpdateIntent` exposes typed Int32/fixed bodies. `TCNI0001` and `TCNI0002`
 retain their original codecs and payloads. A single present-to-present Int32
 update, including an empty single-column request, keeps the old Int32 route even

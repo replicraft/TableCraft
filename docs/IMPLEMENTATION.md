@@ -12,6 +12,16 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Fixed-intent request identity validation
+
+Fixed request groups now reject repeated row ordinals, and complete intent
+construction/decoding reject ASCII-case-equivalent column groups. Checks preserve
+written order, spelling and request storage, retain native preflight error order,
+and use cancellable metadata budgets without database row charges. Existing wire
+literals and native recovery controls remain unchanged. See the
+[fixed-scalar contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
+[verification record](testing/results/ace16-fixed-intent-identity-2026-10-31.json).
+
 ## Journaled fixed-scalar SQL batches
 
 The CLI now routes validated multiple SET assignments to the shared batch service

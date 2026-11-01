@@ -244,3 +244,6 @@ fn fixed_intent_metadata_work_is_bounded_and_cancellable_without_visiting_rows()
         .is_err()
     );
 }
+
+#[path = "tests/uniqueness.rs"]
+mod uniqueness;
