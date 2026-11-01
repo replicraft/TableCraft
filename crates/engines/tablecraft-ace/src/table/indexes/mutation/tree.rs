@@ -9,7 +9,7 @@ mod partition;
 mod siblings;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use siblings::{SiblingAudit, audit_siblings};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod deletion;
 #[cfg(feature = "ace16-write-preview")]
 pub(super) mod population;
@@ -17,7 +17,7 @@ pub(super) mod population;
 mod replacement;
 #[cfg(feature = "ace16-write-preview")]
 pub(super) use contraction::Contraction;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) use deletion::Deletion;
 
 use super::super::{

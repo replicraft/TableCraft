@@ -18,6 +18,37 @@ pub(in crate::table::indexes::mutation) struct Deletion<'a, P> {
 }
 
 impl Tree {
+    pub(in crate::table::indexes::mutation) fn needs_contraction<K>(
+        &self,
+        keys: &mut &[KeyRef<K>],
+        references: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, EditError> {
+        check(budget, cancelled)?;
+        if self.children.is_empty() {
+            let (original, rest) = keys
+                .split_at_checked(self.count)
+                .ok_or(EditError::Preservation)?;
+            *keys = rest;
+            for key in original {
+                check(budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, references.len() as u64)
+                    .map_err(InspectError::from)?;
+                if !references.contains(&key.row) {
+                    return Ok(false);
+                }
+            }
+            return Ok(true);
+        }
+        let mut needed = false;
+        for child in &self.children {
+            needed |= child.needs_contraction(keys, references, budget, cancelled)?;
+        }
+        Ok(needed)
+    }
+
     pub(in crate::table::indexes::mutation) fn delete<P: RetainedProfile, const N: usize>(
         &self,
         image: &NativeImage,

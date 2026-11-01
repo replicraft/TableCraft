@@ -1,0 +1,68 @@
+//! Readable original trees still require qualified write framing and topology.
+use super::{budget, cases, fixtures, image, requests, scope};
+use std::io::Cursor;
+use tablecraft_ace::{EditError, RecoverableEditError, RowDelete, WriteBlocker, read_table_index};
+
+#[test]
+#[ignore = "requires four independent native/SDK-qualified retained NODE source images"]
+fn emptying_an_original_child_refuses_without_retirement_or_sequential_fallback() {
+    let mut refused = 0;
+    for case in cases() {
+        for removed in [302, 800] {
+            let requests = (0..removed)
+                .map(|ordinal| RowDelete::new(ordinal, fixtures::record(ordinal)))
+                .collect();
+            let error = image(&case.before)
+                .plan_recoverable_ordinary_row_deletes("Items", requests, &mut budget(), &|| false)
+                .err()
+                .expect("emptying a non-root leaf requires separately qualified retirement");
+            assert!(matches!(
+                error,
+                RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
+            ));
+            refused += 1;
+        }
+    }
+    assert_eq!(refused, 4);
+}
+
+#[test]
+#[ignore = "requires four independent native/SDK-qualified retained NODE source images"]
+fn readable_reserved_stamps_refuse_node_and_child_edits_including_empty_requests() {
+    let mut refused = 0;
+    for case in cases() {
+        for page in [case.roots[0], case.left[0]] {
+            let mut unknown = case.before.clone();
+            assert_eq!(&unknown[page * 4096 + 8..page * 4096 + 12], &[0; 4]);
+            unknown[page * 4096 + 8] = 1;
+            let read = read_table_index(
+                &mut Cursor::new(&unknown),
+                scope(),
+                "Items",
+                "PrimaryID",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(read.rows(), fixtures::rows(false, false));
+            for empty in [false, true] {
+                let requested = if empty { vec![] } else { requests(false) };
+                let error = image(&unknown)
+                    .plan_recoverable_ordinary_row_deletes(
+                        "Items",
+                        requested,
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .err()
+                    .expect("readability does not qualify unknown native write framing");
+                assert!(matches!(
+                    error,
+                    RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
+                ));
+                refused += 1;
+            }
+        }
+    }
+    assert_eq!(refused, 8);
+}

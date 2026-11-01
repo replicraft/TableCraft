@@ -233,3 +233,6 @@ pub mod genuine_indexed_insert;
 
 /// Independent varying-width INSERT sources with request-aligned physical ROWs.
 pub mod genuine_indexed_insert_association;
+
+/// Independent retained-NODE row-removal originals and literal complete results.
+pub mod genuine_retained_node_delete;

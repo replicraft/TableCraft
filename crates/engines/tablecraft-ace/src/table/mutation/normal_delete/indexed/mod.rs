@@ -1,15 +1,15 @@
-//! Complete original single-I32 root leaves, aliases and exclusive mutation roles.
+//! Complete original single-I32 trees, aliases and exclusive mutation roles.
 mod proof;
 
 use crate::{
-    EditError, InspectError, NativeImage, RowDelete, WriteBlocker,
+    EditError, InspectError, NativeImage, RowDelete, TableCheck, WriteBlocker,
     format::{data_type::INT32, page::PAGE_BYTES},
     header::check,
     table::{
         indexes::{
             header::IndexHeader,
             mutation::{IndexDataPatch, normal_deletion, normal_index_audit::Ownership},
-            page::LEAF,
+            page::{LEAF, NODE},
         },
         mutation::{
             fixed_records::indexed::CheckedIndexes, lval_ownership::Inventory,
@@ -21,7 +21,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 struct Admission<'image> {
     facts: CheckedIndexes<'image>,
-    _ownership: Ownership,
+    ownership: Ownership,
 }
 
 impl<'image> Admission<'image> {
@@ -49,6 +49,7 @@ impl<'image> Admission<'image> {
         {
             return Err(EditError::Preservation);
         }
+        let mut has_node = false;
         let mut pages = vector(checked.indexes().len(), budget, cancelled)?;
         for (position, check_index) in checked.indexes().iter().enumerate() {
             check(budget, cancelled)?;
@@ -94,14 +95,15 @@ impl<'image> Admission<'image> {
                 .get(start..end)
                 .ok_or(InspectError::Truncated)?;
             let header = IndexHeader::read(raw)?;
-            if header.kind != LEAF
+            if !matches!(header.kind, LEAF | NODE)
                 || header.previous.get() != 0
                 || header.next.get() != 0
-                || header.tail.get() != 0
-                || !header.qualified_for_update(0)
+                || (header.kind == LEAF
+                    && (header.tail.get() != 0 || !header.qualified_for_update(0)))
             {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
+            has_node |= header.kind == NODE;
             pages.push(index.root_page());
         }
         // This is actual catalog-wide ownership, not a selected map-only test.
@@ -109,13 +111,15 @@ impl<'image> Admission<'image> {
         for check_index in checked.indexes() {
             ownership.require(image, schema, check_index.index(), budget, cancelled)?;
         }
+        if has_node {
+            // Whole selected INDEX graphs, not just NODE roots, become mutable.
+            // Keep the old leaf-only pool/poll path unchanged.
+            pages = tree_pages(image, checked, &ownership, budget, cancelled)?;
+        }
         let inventory = Inventory::capture(image, budget, cancelled)?;
         inventory.require_no_long_value_data_overlap(&pages, budget, cancelled)?;
         check(budget, cancelled)?;
-        Ok(Self {
-            facts,
-            _ownership: ownership,
-        })
+        Ok(Self { facts, ownership })
     }
 }
 
@@ -188,3 +192,50 @@ pub(super) fn patches(
 }
 
 pub(super) use proof::reconstruct;
+
+fn tree_pages(
+    image: &NativeImage,
+    checked: &TableCheck,
+    ownership: &Ownership,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u32>, EditError> {
+    let mut count = 0_usize;
+    for (position, entry) in checked.indexes().iter().enumerate() {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, position as u64)
+            .map_err(InspectError::from)?;
+        let index = entry.index();
+        if checked.indexes()[..position]
+            .iter()
+            .any(|prior| prior.index().data_number() == index.data_number())
+        {
+            continue;
+        }
+        let tree = ownership.require(image, checked.schema(), index, budget, cancelled)?;
+        count = count
+            .checked_add(tree.pages().len())
+            .ok_or(InspectError::StructureLimit)?;
+    }
+    let mut pages = vector(count, budget, cancelled)?;
+    for (position, entry) in checked.indexes().iter().enumerate() {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, position as u64)
+            .map_err(InspectError::from)?;
+        let index = entry.index();
+        if checked.indexes()[..position]
+            .iter()
+            .any(|prior| prior.index().data_number() == index.data_number())
+        {
+            continue;
+        }
+        let tree = ownership.require(image, checked.schema(), index, budget, cancelled)?;
+        for page in tree.pages() {
+            check(budget, cancelled)?;
+            pages.push(*page);
+        }
+    }
+    Ok(pages)
+}

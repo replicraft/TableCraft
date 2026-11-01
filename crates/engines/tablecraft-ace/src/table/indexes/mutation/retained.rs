@@ -3,9 +3,9 @@
 mod tests;
 
 #[cfg(feature = "ace16-write-preview")]
+use super::super::key::KeyRow;
 use super::super::key::KeyWork;
-#[cfg(feature = "ace16-write-preview")]
-use super::super::{key::KeyRow, page::KeyRef};
+use super::super::page::KeyRef;
 use super::{super::key::KeyProfile, profile::WriteProfile};
 use crate::InspectError;
 #[cfg(feature = "ace16-write-preview")]
@@ -16,13 +16,11 @@ use std::cmp::Ordering;
 use tablecraft_core::limits::Resource;
 
 pub(super) trait RetainedProfile: KeyProfile {
-    #[cfg(feature = "ace16-write-preview")]
     fn retain(&self, key: &Self::Key, work: &mut KeyWork<'_>) -> Result<Self::Key, InspectError>;
     fn encode_retained(&self, key: &Self::Key, output: &mut [u8]) -> Result<usize, InspectError>;
 }
 
 impl<P: WriteProfile> RetainedProfile for P {
-    #[cfg(feature = "ace16-write-preview")]
     fn retain(&self, key: &Self::Key, _work: &mut KeyWork<'_>) -> Result<Self::Key, InspectError> {
         Ok(*key)
     }
@@ -32,7 +30,6 @@ impl<P: WriteProfile> RetainedProfile for P {
     }
 }
 
-#[cfg(feature = "ace16-write-preview")]
 pub(super) fn reference<P: RetainedProfile>(
     profile: &P,
     key: &KeyRef<P::Key>,
