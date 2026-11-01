@@ -49,6 +49,21 @@ impl Reports {
         })
     }
 
+    pub(super) fn insert(
+        inserted: usize,
+        budget: &mut ResourceBudget,
+    ) -> Result<Self, InspectError> {
+        let mut committed = buffer(budget)?;
+        writeln!(committed, "Transaction\tCommitted").map_err(|_| InspectError::Allocation)?;
+        writeln!(committed, "Inserted rows\t{inserted}").map_err(|_| InspectError::Allocation)?;
+        committed.push_str(RETIRED);
+
+        Ok(Self {
+            committed,
+            rolled_back: String::new(),
+        })
+    }
+
     pub(super) fn recovery(budget: &mut ResourceBudget) -> Result<Self, InspectError> {
         let mut committed = buffer(budget)?;
         committed.push_str("Recovery\tCommitted\n");

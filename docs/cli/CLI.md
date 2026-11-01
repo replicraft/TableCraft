@@ -241,8 +241,9 @@ family. Qualified ordinary variable updates also support owned-page growth and
 [one represented EOF DATA allocation](../access/writes/NORMAL_ACE_EOF_ALLOCATION.md),
 with native-qualified V2 recovery. Separate [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md)
 removes qualified original roots through `query journal-delete`, retaining their
-storage and refusing selected indexes or target relationships. These routes do
-not enable general native saves.
+storage and refusing selected indexes or target relationships. The separate [explicit-row INSERT route](../access/writes/NORMAL_ACE_INSERT.md)
+uses `query journal-insert` for qualified unindexed targets. These routes do not
+enable general native saves.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
 

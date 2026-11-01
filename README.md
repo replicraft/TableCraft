@@ -70,6 +70,7 @@ The [ordinary-content route](docs/access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 also supports fixed updates to qualified tables, with a separate
 [fitting Text/Binary route](docs/access/writes/NORMAL_ACE_FITTED.md) and
 [restricted row deletion](docs/access/writes/NORMAL_ACE_DELETE.md).
+Qualified unindexed targets also accept [explicit-row insertion](docs/access/writes/NORMAL_ACE_INSERT.md).
 
 ## Documentation
 

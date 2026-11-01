@@ -42,6 +42,9 @@ impl Command {
                 command: query::Command::JournalDelete(args),
             } => query::journal::delete(*args, password, writer).map_err(ExecutionError::Journal),
             Self::Query {
+                command: query::Command::JournalInsert(args),
+            } => query::journal::insert(*args, password, writer).map_err(ExecutionError::Journal),
+            Self::Query {
                 command: query::Command::RecoverUpdate(args),
             } => query::journal::recover(*args, password, writer).map_err(ExecutionError::Journal),
             Self::Rows(args) if args.stream => args.stream_rows(format, password, writer),

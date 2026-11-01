@@ -1,5 +1,12 @@
 # Bounded offline native edits
 
+The [normal explicit-row INSERT route](NORMAL_ACE_INSERT.md) now adds complete
+rows to qualified native17 unindexed tables using existing owned capacity.
+Original typed TCNA requests and independent complete-image proof support V1
+recovery through shared sessions and `query journal-insert`. Generated/default
+values, target relationships, new LVAL payloads and allocation remain separate.
+
+
 The [normal row deletion route](NORMAL_ACE_DELETE.md) now uses fresh target-local
 program admission, exact original raw witnesses and independent full-image proof.
 Qualified direct/resolved roots retain payloads, long values, maps and EOF. This

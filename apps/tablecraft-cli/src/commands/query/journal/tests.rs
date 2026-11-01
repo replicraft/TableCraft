@@ -164,3 +164,5 @@ mod password_priority;
 
 #[path = "tests/delete.rs"]
 mod delete;
+
+mod insert;

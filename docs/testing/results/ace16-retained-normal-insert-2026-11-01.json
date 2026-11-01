@@ -1,0 +1,248 @@
+{
+  "date": "2026-11-01",
+  "scope": "portable engineering qualification; native Access and Windows comparisons unrun",
+  "source_records": [
+    "ace16-normal-insert-sources-2026-11-01.json",
+    "ace16-normal-multirow-insert-sources-2026-11-01.json"
+  ],
+  "source_expectations_unchanged": true,
+  "broad_checks": [
+    {
+      "name": "strict-journal-second",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-preview-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-all-third",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal-first",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "units-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-units-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "recovery-regression-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery"
+      ],
+      "returncode": 0
+    }
+  ],
+  "broad_logs": [
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/strict-journal-second.log",
+      "bytes": 184,
+      "sha256": "1a06dc8e33a4a9a0fef876792762b78a861df5529a6ff1092a2b7344f774343b",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/strict-preview-first.log",
+      "bytes": 184,
+      "sha256": "a0a85ddf8f08281595a144019d6990395a19eeb9cf424d30673defe51fa79784",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/strict-all-third.log",
+      "bytes": 403,
+      "sha256": "68cc8290597072216e60867d4118e07ce9781e55c293661db723687cc0d9d01e",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/minimal-first.log",
+      "bytes": 301,
+      "sha256": "7c7ae436b5d130a1c8637a9ecdcb71fa622a7d802c7826eb458e0ae51ef77de7",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/units-first.log",
+      "bytes": 174301,
+      "sha256": "8af507ff16fdbc7c99dcdfa19fd8cc85def8c2be2483a343170f439e22786d6d",
+      "test_results": [
+        "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s",
+        "test result: ok. 1118 passed; 0 failed; 90 ignored; 0 measured; 0 filtered out; finished in 111.68s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/cli-units-first.log",
+      "bytes": 11816,
+      "sha256": "bfb5cf7c4b258fb84cc22b6f02e3fb5eecad52e0455ae8e312ca484258baa5c5",
+      "test_results": [
+        "test result: ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/recovery-regression-first.log",
+      "bytes": 18664,
+      "sha256": "a964a41b9015289d0449dfa8255e7fe3d03974a338673015e6a0cd638564982e",
+      "test_results": [
+        "test result: ok. 83 passed; 0 failed; 45 ignored; 0 measured; 0 filtered out; finished in 3.97s"
+      ]
+    }
+  ],
+  "prior_host_regressions": [
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/prior-host-first.log",
+      "bytes": 2054,
+      "sha256": "699e6ffb128602e84635846a9b8800aa4f9c450750e71b614da026804dcb5b2d",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.62s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.97s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.91s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.79s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/prior-cli-first.log",
+      "bytes": 1119,
+      "sha256": "d3f7b43d04e7d71008a75ac0cf7f9b64d0bc59f809d7c21c8dedc1c9b92142cc",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.91s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.38s"
+      ]
+    }
+  ],
+  "remaining": [
+    "indexed INSERT",
+    "AutoNumber and defaults/omissions",
+    "new non-NULL LVAL payloads",
+    "broader allocation",
+    "positive-program insertion",
+    "leading-FEFF source/proof follow-on",
+    "native Access save/reopen and Windows qualification"
+  ],
+  "feature": "metadata-only typed and SQL insertion through retained normal mutation lifecycle",
+  "observations": {
+    "typed_sql_principal_insert_commits": 4,
+    "same_session_follow_on_saves": 4,
+    "active_retired_restart_contexts": 8,
+    "observed_td_interrupted_sessions": 2,
+    "pre_bundle_shape_or_payload_refusals": 8,
+    "metadata_control_functions": 2,
+    "cli_insert_commits": 2,
+    "cli_follow_on_saves": 2,
+    "cli_exact_readbacks": 4,
+    "new_cli_unit_controls": 4
+  },
+  "focused_logs": [
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/host-first.log",
+      "bytes": 1761,
+      "sha256": "2d27e930947a9cd11e4f3d6432bbcf9e01c0d8fec9b991d7da1f13445c554e77",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.20s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/cli-first.log",
+      "bytes": 838,
+      "sha256": "5a980f79d24cd4140e08be1be3a33d5d67d6a15256e21ce866ef400c97dfb8dd",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.45s"
+      ]
+    }
+  ],
+  "counts": "INSERT receipts retain matched_rows=None, changed_rows=Some(inserted). UPDATE/DELETE retain their public matched count and receipt Some(matched).",
+  "metadata_boundary": "Literal corrupt target record derivative permits metadata-only NativeJournalInserter construction; consuming plan refuses, retains target lease and creates no bundle. Cancellation and zero Byte/Step allowances remain failures.",
+  "journal_dispatch": "TCNA V1, TCND V1, ordinary TCNI V1 and allocation TCNI7 V2 retain closed action-specific qualification and the same captured journal.",
+  "interruption_limit": "Observed TD count2 cancellation is an actual same-session recovery control. It is not claimed as a true TD-only mixed write because TD and DATA may share a 64 KiB transport chunk. Native causal mixtures are separately authored."
+}

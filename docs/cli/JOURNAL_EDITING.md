@@ -40,6 +40,18 @@ The report gives matched and deleted row counts after retirement and release.
 The existing `recover-update` and `finalize-update` commands also recognize its
 separate TCND intent; neither command replays SQL.
 
+`query journal-insert` uses the [normal INSERT service](../access/writes/NORMAL_ACE_INSERT.md)
+for one complete explicit VALUES row. The initial ACE target must be unindexed
+and have no relationships involving it; defaults, AutoNumber generation and new
+Memo/OLE payloads are not supplied implicitly. The report contains inserted rows,
+with no matched-old-row count. Existing recovery and finalization commands
+recognize its separate original TCNA intent.
+
+```sh
+tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES (24, 'new', NULL)" \
+  --database offline.accdb --journal fresh-insert-journal
+```
+
 ## Admission and resources
 
 Apply accepts one local table under the existing
