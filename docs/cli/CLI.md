@@ -239,7 +239,10 @@ updates in place: Jet4 Int32 and restricted ACE BeforeChange profiles, including
 atomic unindexed fixed-scalar groups and the initial closed ordinary-content
 family. Qualified ordinary variable updates also support owned-page growth and
 [one represented EOF DATA allocation](../access/writes/NORMAL_ACE_EOF_ALLOCATION.md),
-with native-qualified V2 recovery. They do not enable general native saves.
+with native-qualified V2 recovery. Separate [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md)
+removes qualified original roots through `query journal-delete`, retaining their
+storage and refusing selected indexes or target relationships. These routes do
+not enable general native saves.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
 

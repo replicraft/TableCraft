@@ -43,7 +43,7 @@ fn completion_output_failure_preserves_each_known_outcome() {
                         if *actual == outcome && error.kind() == kind
                 ));
                 assert!(!error.invalid_input());
-                assert!(error.to_string().contains("do not retry the UPDATE"));
+                assert!(error.to_string().contains("do not retry the mutation"));
                 assert_eq!(writer.bytes.is_empty(), fail_write);
             }
         }
@@ -161,3 +161,6 @@ mod batch;
 
 #[path = "tests/password_priority.rs"]
 mod password_priority;
+
+#[path = "tests/delete.rs"]
+mod delete;

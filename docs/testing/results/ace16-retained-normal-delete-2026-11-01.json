@@ -1,0 +1,267 @@
+{
+  "date": "2026-11-01",
+  "branch": "main",
+  "qualification": "portable engineering evidence; Microsoft Access and Windows comparisons unrun",
+  "source_records": [
+    "ace16-normal-delete-sources-2026-11-01.json",
+    "ace16-forwarded-delete-sources-2026-11-01.json"
+  ],
+  "source_expectations_unchanged": true,
+  "broad_checks": [
+    {
+      "name": "units-batch-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-units-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "recovery-regression-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-all-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-journal-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-preview-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal-first",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    }
+  ],
+  "broad_logs": [
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/units-batch-first.log",
+      "sha256": "d228462b0e30c55bb48d71fa885e75d72a453c14b872e3da158586a3beed8310",
+      "bytes": 172023,
+      "test_results": [
+        "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s",
+        "test result: ok. 1114 passed; 0 failed; 81 ignored; 0 measured; 0 filtered out; finished in 111.76s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/cli-units-first.log",
+      "sha256": "581d69a3d33feafebb87a611d5d2822daa58931b70b8528801b17327529409b5",
+      "bytes": 11330,
+      "test_results": [
+        "test result: ok. 98 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/recovery-regression-first.log",
+      "sha256": "99f683e75b7388ee1d8c869d36566ac37dc66b5ffad5141bfe75c23f0f9682f1",
+      "bytes": 16184,
+      "test_results": [
+        "test result: ok. 83 passed; 0 failed; 33 ignored; 0 measured; 0 filtered out; finished in 4.39s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-all-first.log",
+      "sha256": "865b18e07cecfea71031ee544bc33fab9871d31b827838132ccc1616092b8bf3",
+      "bytes": 526,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-journal-first.log",
+      "sha256": "6bf18eb0d798fad29979b94988ee46643638cf0a674d455eee94ff64bee94993",
+      "bytes": 307,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-preview-first.log",
+      "sha256": "1750469320c448073f8b83cbe9de765a125679de810addcb07e1fb7ba7c5d791",
+      "bytes": 184,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/minimal-first.log",
+      "sha256": "ba966ff523d1f0de5b8d23fc0b6a30d67178a30074c22ac08fa5b60cc64b488d",
+      "bytes": 301,
+      "test_results": []
+    }
+  ],
+  "remaining": [
+    "normal INSERT",
+    "selected-index DELETE",
+    "target relationships and cascades",
+    "required DELETE data-program execution",
+    "reclamation and compaction",
+    "broader allocation",
+    "native Access save/reopen and Windows qualification"
+  ],
+  "feature": "normal typed/SQL/CLI DELETE through retained mutation session",
+  "observations": {
+    "direct_typed_and_sql_delete_commits": 4,
+    "growth_then_delete_session_workflows": 4,
+    "growth_then_delete_session_commits": 8,
+    "direct_cli_delete_commits": 2,
+    "direct_cli_readbacks": 2,
+    "growth_then_delete_cli_workflows": 2,
+    "growth_then_delete_cli_commits": 4,
+    "growth_then_delete_cli_readbacks": 4,
+    "direct_active_retired_restart_contexts": 8,
+    "actual_same_session_interruptions": 2,
+    "authored_td_only_partial_restart_contexts": 2,
+    "wrong_family_refusals": 4
+  },
+  "focused_logs": [
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/direct-host-final.log",
+      "sha256": "ec1db5bab514adaeecc2109f63511a7ac8d89c7da8fc67c54ce24bf7296c3e59",
+      "bytes": 1452,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.84s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/direct-cli-final.log",
+      "sha256": "94b9e414900149953f4d24d9356ff7f347a823b7d3c0e96f010b188d2424be3b",
+      "bytes": 491,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/access-grow-delete-first.log",
+      "sha256": "aa95e502e86bbd8d61f54194caab18c052e2751d17b0ce27843604d3d7a03008",
+      "bytes": 752,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.09s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/cli-grow-delete-first.log",
+      "sha256": "64fd7c819be648417dd2b22b963cdcc4d434605ad9a7ad73954b25d8f340a926",
+      "bytes": 855,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.76s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/prior-eof-host-final.log",
+      "sha256": "66ded3120a80125451158116f4ad5bf30fe0db0bf3c98d5ec1c67db3e5314ac8",
+      "bytes": 975,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.64s",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.19s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/prior-eof-cli-final.log",
+      "sha256": "da9763ee031e5118984bfbf5ae12e1046d91af42b387222f6fc6fb571667cc14",
+      "bytes": 474,
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s"
+      ]
+    }
+  ],
+  "preserved_first_setup_failure": {
+    "artifact": {
+      "path": ".cache/ace16-normal-delete-next-20261101/host-tests/runtime-first.log",
+      "sha256": "131b1860713f27ff63a6daff96148305f4ed86b75a25e1b1da5d6ae027a62b61",
+      "bytes": 1145
+    },
+    "resolution": "Supplied shared loader TABLECRAFT_NORMAL_DELETE_SOURCE_DIR; native acceptance uses a different explicit environment key."
+  },
+  "lifecycle": "one retained target lease; original predicates complete before backend; report allocated before effects; receipt retains known outcome; same actual pair through active/retired recovery; closed action dispatch with no fallback",
+  "interruption_limit": "Observed write callback cancellation is not claimed as a TD-only causal partial: TD and DATA may share one 64 KiB write chunk. Separate authored TD-only restart cases supply that boundary."
+}

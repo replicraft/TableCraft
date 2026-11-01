@@ -1,5 +1,12 @@
 # Bounded offline native edits
 
+The [normal row deletion route](NORMAL_ACE_DELETE.md) now uses fresh target-local
+program admission, exact original raw witnesses and independent full-image proof.
+Qualified direct/resolved roots retain payloads, long values, maps and EOF. This
+route uses the shared retained session and CLI; selected indexes and target
+relationships refuse. Positive BeforeChange UPDATE and broader engineering
+DELETE candidates retain their separate boundaries.
+
 An opt-in [ACE 16 engineering preview](../../testing/ACE16_WRITE_PREVIEWS.md) now creates
 physical fixed scalar and qualified Text/Binary candidates for disposable-copy
 comparisons. It returns a separate,
@@ -20,7 +27,7 @@ deletion. A separate [slot-update service](../../testing/ACE16_WRITE_PREVIEWS.md
 now re-encodes changed single/mixed Text/Binary keys, preserving actual field
 spans and index topology with full final constraints. It does not resize records
 or enable ordinary saves. Allocation, Text/Binary
-composite deletion and ordinary SQL/backend DELETE remain unimplemented. Engine checks
+composite deletion and broader indexed SQL/backend DELETE remain unimplemented. Engine checks
 and original-file candidate replay have separate evidence records in the preview
 contract; neither establishes native Access save/reopen.
 The separate [slot-update original corpus](../../testing/SLOT_UPDATE_OBSERVATIONS.md)

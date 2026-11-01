@@ -173,3 +173,14 @@ The [focused record](../../testing/results/offline-write-sessions-2026-10-31.jso
 separates source admission, compiler/metadata diagnostics, direct tests and CLI
 validation. These are local engineering observations. Native Access save/reopen,
 power-loss/network filesystems, Windows and mixed-client behavior remain unqualified.
+
+## Normal deletion
+
+The separate [normal DELETE service](NORMAL_ACE_DELETE.md) implements
+`DeletableTable` on typed editors. `plan_deletes` validates issued handles and
+captures original raw witnesses; `plan_delete` uses the shared SQL predicate
+planner. `StagedDelete` uses the same retained target, receipt and cleanup
+lifecycle. TCND recovery reconstructs original DELETE from the same checked V1
+journal, preserving existing TCNI1–7 UPDATE dispatch. Refreshed snapshots issue
+new handles; live ordinals are not persistent identities. The initial route
+refuses selected indexes and relationships involving the target.

@@ -41,6 +41,36 @@ pub(crate) struct UpdateArguments {
 
 #[derive(Args)]
 #[command(
+    after_help = concat!(
+        "Offline normal DELETE for the qualified native ACE2016/2019 target-local profile. ",
+        "Keep other applications and ordinary readers closed until completion or explicit recovery. ",
+        "The journal directory must be fresh. All original WHERE predicates finish before planning, and reports are allocated before journal creation. ",
+        "The target must have complete native program-absence and physical preservation coverage. Required programs, selected indexes and relationships refuse, including empty operations. ",
+        "Deletion marks original row roots and decrements the stored live-row count. Record payloads, readonly OLE, properties, maps and file length remain preserved; no reclamation, cascade or compaction is performed. ",
+        "No passwords, parameters, external sources, joins or hidden provider opens are supported. ",
+        "Interrupted journals use the existing recover-update and finalize-update commands, which verify the original DELETE intent rather than replay SQL. ",
+        "This does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
+    )
+)]
+pub(crate) struct DeleteArguments {
+    /// One local DELETE; predicates read the original snapshot once.
+    #[arg(allow_hyphen_values = true)]
+    pub(super) sql: String,
+    /// Existing offline target retained under one exclusive lock.
+    #[arg(long, value_name = "PATH")]
+    pub(super) database: PathBuf,
+    /// Fresh journal bundle directory; existing entries are never replaced.
+    #[arg(long, value_name = "DIRECTORY")]
+    pub(super) journal: PathBuf,
+    /// Explicit ordinal Text comparison policy; no ambient locale.
+    #[arg(long, value_enum)]
+    pub(super) collation: Option<UpdateCollation>,
+    #[command(flatten)]
+    pub(super) work: Work,
+}
+
+#[derive(Args)]
+#[command(
     after_help = "Explicit offline recovery of a paired Jet4 or admitted ACE journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write; ACE recovery rederives its bounded pure required programs or closed data-only admission from BEFORE. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS and Linux."
 )]
 pub(crate) struct RecoveryArguments {
