@@ -194,3 +194,6 @@ pub mod canonical_ordinary_fitted;
 
 /// Frozen genuine Marker requests and explicitly supplied property/OLE artifacts.
 pub mod genuine_property_lval;
+
+/// Explicit pinned original/expected files for readonly numeric-index saves.
+pub mod genuine_retained_numeric;

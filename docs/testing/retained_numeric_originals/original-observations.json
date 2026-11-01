@@ -1,0 +1,111 @@
+{
+  "state": "ORIGINAL_LITERAL_FACTS_BEFORE_EXPECTED_MODEL",
+  "profiles": [
+    {
+      "profile": "V2016",
+      "header": 5,
+      "bytes": 757760,
+      "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6",
+      "tables": {
+        "ByteKeys": {
+          "definition": 89,
+          "data": 94,
+          "native": 2,
+          "width": 1,
+          "rows": 900,
+          "record_hex": "030001000000001100000007",
+          "marker_record_offset": 7,
+          "record_bytes": 12
+        },
+        "Int16Keys": {
+          "definition": 108,
+          "data": 114,
+          "native": 3,
+          "width": 2,
+          "rows": 900,
+          "record_hex": "03000100000000001100000007",
+          "marker_record_offset": 8,
+          "record_bytes": 13
+        },
+        "Int64Keys": {
+          "definition": 128,
+          "data": 133,
+          "native": 19,
+          "width": 8,
+          "rows": 400,
+          "record_hex": "03000100000000000000000000001100000007",
+          "marker_record_offset": 14,
+          "record_bytes": 19
+        },
+        "CurrencyKeys": {
+          "definition": 144,
+          "data": 149,
+          "native": 5,
+          "width": 8,
+          "rows": 400,
+          "record_hex": "03000100000000000000000000001100000007",
+          "marker_record_offset": 14,
+          "record_bytes": 19
+        }
+      }
+    },
+    {
+      "profile": "V2019",
+      "header": 6,
+      "bytes": 827392,
+      "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7",
+      "tables": {
+        "ByteKeys": {
+          "definition": 106,
+          "data": 111,
+          "native": 2,
+          "width": 1,
+          "rows": 900,
+          "record_hex": "030001000000001100000007",
+          "marker_record_offset": 7,
+          "record_bytes": 12
+        },
+        "Int16Keys": {
+          "definition": 126,
+          "data": 131,
+          "native": 3,
+          "width": 2,
+          "rows": 900,
+          "record_hex": "03000100000000001100000007",
+          "marker_record_offset": 8,
+          "record_bytes": 13
+        },
+        "Int64Keys": {
+          "definition": 145,
+          "data": 150,
+          "native": 19,
+          "width": 8,
+          "rows": 400,
+          "record_hex": "03000100000000000000000000001100000007",
+          "marker_record_offset": 14,
+          "record_bytes": 19
+        },
+        "CurrencyKeys": {
+          "definition": 161,
+          "data": 166,
+          "native": 5,
+          "width": 8,
+          "rows": 400,
+          "record_hex": "03000100000000000000000000001100000007",
+          "marker_record_offset": 14,
+          "record_bytes": 19
+        }
+      }
+    }
+  ],
+  "request": {
+    "column": "Marker",
+    "native": 4,
+    "ordinal": 0,
+    "identity": 1,
+    "expected": 17,
+    "replacement": 42,
+    "changed_rows": 1
+  },
+  "scope": "Eight independent four-byte Marker replacements; every other byte retained including all indexes, property maps, system objects, preserved Memo/OLE. Old noop/action outputs are not input authority."
+}
