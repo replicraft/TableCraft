@@ -1,15 +1,13 @@
 //! Bounded existing-page forwarding with stable logical roots and full checks.
 pub(super) mod audit;
-mod forward;
 pub(super) use super::record_roots as roots;
-pub(super) mod space;
 pub(super) mod stage;
 #[cfg(test)]
 mod tests;
 
 use super::{
     Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview,
-    record_serialization::storage,
+    record_placement::audit as placement_audit, record_serialization::storage,
 };
 use crate::{
     InspectError, NativeImage,
@@ -89,7 +87,7 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        audit::final_pages(&staged.plan, plan.after_bytes(), budget, cancelled)?;
+        placement_audit::final_pages(&staged.plan, plan.after_bytes(), budget, cancelled)?;
         staged
             .space
             .audit(plan.before_bytes(), plan.after_bytes(), budget, cancelled)?;

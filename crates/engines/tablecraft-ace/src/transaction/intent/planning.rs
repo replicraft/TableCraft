@@ -125,6 +125,67 @@ impl NativeImage {
     }
 }
 
+impl NativeImage {
+    /// Explicit record growth within already owned DATA capacity. This route
+    /// never retries a failed fitting plan or grows the file. Original requests
+    /// and full BEFORE binding select a distinct closed recovery validator.
+    pub fn plan_recoverable_ordinary_owned_growth_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.ordinary_owned_growth.plan_recoverable").entered();
+        let original =
+            NativeFittedEditIntent::new(table, groups, self.as_bytes(), budget, cancelled)?;
+        let borrowed = original.borrowed_groups(budget, cancelled)?;
+        let plan = self.plan_ordinary_owned_growth_updates(table, &borrowed, budget, cancelled)?;
+        if plan.after_bytes().len() != plan.before_bytes().len() {
+            return Err(EditError::Preservation.into());
+        }
+        drop(borrowed);
+        let intent = NativeUpdateIntent::from_owned_growth(original);
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
+}
+
+impl NativeImage {
+    /// Choose fitting or supported owned-page growth from complete original
+    /// requests and qualified native encoding sizes, before staging either plan.
+    /// No failed fitting plan selects another route. Explicit fitted-only APIs
+    /// and their TCNI0005 reconstruction contract remain unchanged.
+    pub fn plan_recoverable_ordinary_variable_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.ordinary_variable.plan_recoverable").entered();
+        let original =
+            NativeFittedEditIntent::new(table, groups, self.as_bytes(), budget, cancelled)?;
+        let borrowed = original.borrowed_groups(budget, cancelled)?;
+        let growing =
+            self.ordinary_variable_requires_growth(table, &borrowed, budget, cancelled)?;
+        let plan = if growing {
+            self.plan_ordinary_owned_growth_updates(table, &borrowed, budget, cancelled)?
+        } else {
+            self.plan_ordinary_fitted_updates(table, &borrowed, budget, cancelled)?
+        };
+        if plan.after_bytes().len() != plan.before_bytes().len() {
+            return Err(EditError::Preservation.into());
+        }
+        drop(borrowed);
+        let intent = if growing {
+            NativeUpdateIntent::from_owned_growth(original)
+        } else {
+            NativeUpdateIntent::from_fitted(original)
+        };
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
+}
+
 impl RecoverableNativeEditPlan {
     /// Original immutable resolved requests and source binding.
     pub fn intent(&self) -> &NativeUpdateIntent {

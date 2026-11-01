@@ -1,7 +1,7 @@
 //! Explicit ordinary/LVAL page owners share only bounded physical append framing.
 use super::super::{
-    EditError, SlotScalarUpdate, WriteBlocker,
-    page_update::{roots::Root, space::Space},
+    EditError, SlotScalarUpdate, WriteBlocker, page_update::roots::Root,
+    record_placement::space::Space,
 };
 use super::maps::{Family, Maps};
 use crate::{

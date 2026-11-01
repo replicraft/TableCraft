@@ -29,8 +29,11 @@ LVAL declarations and complete Source protection. Twelve native/session/CLI
 outcomes retain byte-exact independent expectations and recovery checks. Unindexed fixed edits now retain Byte/Int16/Int64/Currency indexes under
 complete-owned traversal and catalog member-role exclusion, with eight genuine
 native/session/CLI outcomes and fresh recovery proof. Wider indexed targets and
-the initial global family keep their existing limits. Next, promote normal record
-growth into already-owned DATA capacity, then allocation and general INSERT/DELETE. These are current admission gaps, not
+the initial global family keep their existing limits. Normal record growth now appends a hidden terminal on the original owned DATA
+page, with capacity selection before staging, TCNI6 recovery and actual retained
+session/CLI consumers. Independent first/second/joint images, causal partial
+recovery and slot-boundary controls pass. Next, use other already-owned DATA
+pages when the root page cannot fit, then allocation and general INSERT/DELETE. These are current admission gaps, not
 reasons to repeat completed fixed/fitted implementation work.
 
 

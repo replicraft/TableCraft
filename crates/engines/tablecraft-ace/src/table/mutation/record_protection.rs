@@ -133,10 +133,44 @@ impl Protection {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        self.require_extent(
+            image,
+            schema.definition_page(),
+            offset,
+            width,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table::mutation) fn require_page(
+        &self,
+        image: &NativeImage,
+        definition: u32,
+        page: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let offset = usize::try_from(page)
+            .ok()
+            .and_then(|number| number.checked_mul(PAGE_BYTES))
+            .ok_or(EditError::Preservation)?;
+        self.require_extent(image, definition, offset, PAGE_BYTES, budget, cancelled)
+    }
+
+    fn require_extent(
+        &self,
+        image: &NativeImage,
+        definition: u32,
+        offset: usize,
+        width: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
         check(budget, cancelled)?;
         if image.as_bytes().as_ptr() as usize != self.address
             || image.as_bytes().len() != self.length
-            || schema.definition_page() != self.definition
+            || definition != self.definition
             || width == 0
         {
             return Err(EditError::Preservation);

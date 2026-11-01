@@ -28,7 +28,7 @@ pub(in crate::table::mutation) struct Requested<'a> {
 #[derive(Clone, Copy)]
 pub(in crate::table::mutation) enum Encoding {
     Fitted,
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     Growing,
 }
 
@@ -87,7 +87,7 @@ pub(in crate::table::mutation) fn reconstruct(
         let (preferred, minimum) = measure(field, request.value, budget, cancelled)?;
         let length = match encoding {
             Encoding::Fitted => preferred,
-            #[cfg(feature = "ace16-write-preview")]
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
             Encoding::Growing => minimum,
         };
         planned = planned.checked_add(length).ok_or(EditError::Preservation)?;
@@ -144,7 +144,7 @@ pub(in crate::table::mutation) fn reconstruct(
             Encoding::Fitted => {
                 payload::encode_declared(item.field, item.value, item.length, budget, cancelled)?
             }
-            #[cfg(feature = "ace16-write-preview")]
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
             Encoding::Growing => payload::encode(item.field, item.value, budget, cancelled)?,
         };
         if item.bytes.len() != item.length {

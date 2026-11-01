@@ -1,5 +1,9 @@
 //! Explicit candidate-hint authority, separate from owned/global map polarity.
-use super::super::{EditError, WriteBlocker, variable_split::metadata::Metadata};
+use super::super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::mutation::variable_split::metadata::Metadata;
+#[cfg(feature = "journal")]
+use crate::table::mutation::{lval_ownership::Inventory, record_protection::Protection};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
@@ -19,7 +23,16 @@ pub(in crate::table::mutation) struct Space {
     hint: RepresentedMap,
     global: RepresentedMap,
     protected: Vec<u32>,
+    #[cfg(feature = "ace16-write-preview")]
     metadata: Option<Metadata>,
+    #[cfg(feature = "journal")]
+    normal: Option<NormalProtection>,
+}
+
+#[cfg(feature = "journal")]
+struct NormalProtection {
+    pages: Protection,
+    long_values: Inventory,
 }
 
 impl Space {
@@ -75,27 +88,54 @@ impl Space {
             hint,
             global,
             protected,
+            #[cfg(feature = "ace16-write-preview")]
             metadata: None,
+            #[cfg(feature = "journal")]
+            normal: None,
         })
     }
 
+    /// Capture physical exclusion from the same immutable normal Source image.
+    /// Neither this factory nor the resulting placement grants content admission.
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn capture_normal(
+        image: &NativeImage,
+        schema: &TableSchema,
+        owned: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let mut space = Self::capture(image, schema, owned, budget, cancelled)?;
+        let pages = Protection::capture(image, schema, budget, cancelled)?;
+        let long_values = Inventory::capture(image, budget, cancelled)?;
+        for &number in owned {
+            pages.require_page(image, schema.definition_page(), number, budget, cancelled)?;
+        }
+        long_values.require_no_long_value_data_overlap(owned, budget, cancelled)?;
+        space.normal = Some(NormalProtection { pages, long_values });
+        Ok(space)
+    }
+
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn with_metadata(mut self, metadata: Metadata) -> Self {
         self.metadata = Some(metadata);
         self
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn into_metadata(self) -> Option<Metadata> {
         self.metadata
     }
 
     pub(in crate::table::mutation) fn require_metadata_page(
         &self,
-        number: u32,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
+        _number: u32,
+        _budget: &mut ResourceBudget,
+        _cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        #[cfg(feature = "ace16-write-preview")]
         if let Some(metadata) = &self.metadata {
-            metadata.require_data_page(number, budget, cancelled)?;
+            metadata.require_data_page(_number, _budget, _cancelled)?;
         }
         Ok(())
     }
@@ -138,6 +178,17 @@ impl Space {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        #[cfg(feature = "journal")]
+        if let Some(normal) = &self.normal {
+            normal
+                .pages
+                .require_page(image, self.definition, number, budget, cancelled)?;
+            normal.long_values.require_no_long_value_data_overlap(
+                std::slice::from_ref(&number),
+                budget,
+                cancelled,
+            )?;
+        }
         self.require_metadata_page(number, budget, cancelled)?;
 
         let mut source = image.reader();

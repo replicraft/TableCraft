@@ -1,11 +1,12 @@
 //! Causal after-audit checks, independent of correct staging output.
-use super::{forward::Plan, roots, space::Space, stage};
+use super::{roots, stage};
 use crate::EditError;
 use crate::NativeImage;
 use crate::SlotScalarUpdate;
 use crate::WriteBlocker;
 use crate::check_table;
 use crate::table::mutation::gates;
+use crate::table::mutation::record_placement::{forward::Plan, space::Space};
 use crate::table::mutation::record_serialization::record;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};

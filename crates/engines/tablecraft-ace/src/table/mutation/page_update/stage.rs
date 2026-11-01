@@ -2,11 +2,12 @@
 use super::super::{EditError, SlotScalarUpdate, WriteBlocker, rows::RowAssignment};
 use super::{
     audit,
-    forward::Plan,
     roots::{self, Root},
-    space::Space,
 };
-use crate::table::mutation::record_serialization::record;
+use crate::table::mutation::{
+    record_placement::{audit as placement_audit, forward::Plan, space::Space},
+    record_serialization::record,
+};
 use crate::{
     InspectError, NativeImage, TableCheck, TableSchema,
     format::{page::PAGE_BYTES, reader::Reader, row::reference_page},
@@ -312,7 +313,7 @@ impl Placement for Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        audit::pages(self, budget, cancelled)
+        placement_audit::pages(self, budget, cancelled)
     }
 
     fn target(

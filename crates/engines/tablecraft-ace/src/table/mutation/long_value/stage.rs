@@ -1,7 +1,8 @@
 //! Actual value preconditions, new chunks and stable-root descriptor replacement.
 use super::super::{
     EditError, SlotScalarUpdate, WriteBlocker,
-    page_update::{roots, roots::Root, space::Space},
+    page_update::{roots, roots::Root},
+    record_placement::space::Space,
     record_serialization::record,
 };
 use super::{

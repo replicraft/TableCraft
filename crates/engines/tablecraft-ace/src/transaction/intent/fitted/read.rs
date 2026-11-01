@@ -3,6 +3,7 @@ use super::{
     carrier::{self, Borrowed},
     codec,
     model::{Family, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates},
+    profile::WireProfile,
 };
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
@@ -203,6 +204,7 @@ struct Header<'a> {
 
 fn scan<'a>(
     bytes: &'a [u8],
+    profile: WireProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Header<'a>, NativeIntentError> {
@@ -213,7 +215,7 @@ fn scan<'a>(
     budget
         .charge(Resource::Steps, codec::HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
-    if &bytes[..codec::MAGIC.len()] != codec::MAGIC {
+    if &bytes[..profile.magic().len()] != profile.magic() {
         return Err(if bytes.starts_with(b"TCNI") {
             NativeIntentError::UnsupportedVersion
         } else {
@@ -224,7 +226,7 @@ fn scan<'a>(
         bytes[codec::PROFILE_AT..codec::FLAGS_AT]
             .try_into()
             .unwrap(),
-    ) != codec::PROFILE
+    ) != profile.number()
     {
         return Err(NativeIntentError::UnsupportedProfile);
     }
@@ -323,11 +325,12 @@ fn scan<'a>(
 
 pub(super) fn decode(
     bytes: &[u8],
+    profile: WireProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeFittedEditIntent, NativeIntentError> {
     let _span = tracing::debug_span!("native.fitted_intent.decode").entered();
-    let header = scan(bytes, budget, cancelled)?;
+    let header = scan(bytes, profile, budget, cancelled)?;
     budget
         .charge_allocation(
             header.groups as u64,

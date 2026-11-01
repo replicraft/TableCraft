@@ -97,6 +97,10 @@ tablecraft query journal-update "UPDATE Items SET TextValue='beta' WHERE Id=1" \
 ```
 
 Fitted requests retain TCNI0005; fixed-only requests retain their prior profiles.
+Qualified native ACE tables can also use [same-page record growth](../access/writes/NORMAL_ACE_OWNED_GROWTH.md)
+through this command, with original capacity selecting TCNI0006 before staging.
+No extra flag is needed. Other-page placement, page allocation and file growth
+remain unsupported by this normal route.
 The adapter validates every target even for zero matches. This route allocates
 no DATA/index pages and rejects indexed variable targets, unsupported properties
 and required programs. Typed/native Binary writes have broader coverage than

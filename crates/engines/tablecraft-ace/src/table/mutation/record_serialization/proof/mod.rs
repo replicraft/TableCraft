@@ -18,7 +18,7 @@ use tablecraft_core::{
 
 const COPY_BYTES: usize = 256;
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table::mutation) fn reconstruct(
     schema: &TableSchema,
     column: usize,
@@ -60,7 +60,7 @@ pub(in crate::table::mutation) fn reconstruct_declared(
 }
 
 enum PayloadEncoding {
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     MinimumSize,
     DeclaredPreference,
 }
@@ -96,7 +96,7 @@ fn reconstruct_with(
         .ok_or(EditError::Preservation)?;
     let span = stop.checked_sub(start).ok_or(EditError::Preservation)?;
     let payload = match encoding {
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         PayloadEncoding::MinimumSize => payload::encode(field, value, budget, cancelled)?,
         PayloadEncoding::DeclaredPreference => {
             let preserved_payload = end.checked_sub(span).ok_or(EditError::Preservation)?;

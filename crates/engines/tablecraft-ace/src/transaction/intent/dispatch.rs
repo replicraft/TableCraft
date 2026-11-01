@@ -23,6 +23,8 @@ pub enum NativeUpdateProfile {
     Ace16OrdinaryFixed,
     /// Ordinary ACE16 fitting variable requests with optional fixed groups.
     Ace16OrdinaryFitted,
+    /// Explicit ordinary growth within existing owned DATA capacity; no EOF growth.
+    Ace16OrdinaryOwnedGrowth,
 }
 
 /// Immutable original user intent and BEFORE binding for one normal route.
@@ -41,6 +43,8 @@ pub enum NativeUpdateBody {
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
+    /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
+    OwnedGrowth(NativeFittedEditIntent),
 }
 
 impl NativeUpdateIntent {
@@ -92,6 +96,13 @@ impl NativeUpdateIntent {
         }
     }
 
+    pub(super) fn from_owned_growth(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16OrdinaryOwnedGrowth,
+            body: NativeUpdateBody::OwnedGrowth(original),
+        }
+    }
+
     /// Closed original body, requiring consumers to inspect its actual family.
     pub fn body(&self) -> &NativeUpdateBody {
         &self.body
@@ -101,7 +112,9 @@ impl NativeUpdateIntent {
     pub fn int32(&self) -> Option<&NativeInt32EditIntent> {
         match &self.body {
             NativeUpdateBody::Int32(original) => Some(original),
-            NativeUpdateBody::Fixed(_) | NativeUpdateBody::Fitted(_) => None,
+            NativeUpdateBody::Fixed(_)
+            | NativeUpdateBody::Fitted(_)
+            | NativeUpdateBody::OwnedGrowth(_) => None,
         }
     }
 
@@ -109,7 +122,9 @@ impl NativeUpdateIntent {
     pub fn fixed(&self) -> Option<&NativeFixedEditIntent> {
         match &self.body {
             NativeUpdateBody::Fixed(original) => Some(original),
-            NativeUpdateBody::Int32(_) | NativeUpdateBody::Fitted(_) => None,
+            NativeUpdateBody::Int32(_)
+            | NativeUpdateBody::Fitted(_)
+            | NativeUpdateBody::OwnedGrowth(_) => None,
         }
     }
 
@@ -117,7 +132,19 @@ impl NativeUpdateIntent {
     pub fn fitted(&self) -> Option<&NativeFittedEditIntent> {
         match &self.body {
             NativeUpdateBody::Fitted(original) => Some(original),
-            NativeUpdateBody::Int32(_) | NativeUpdateBody::Fixed(_) => None,
+            NativeUpdateBody::Int32(_)
+            | NativeUpdateBody::Fixed(_)
+            | NativeUpdateBody::OwnedGrowth(_) => None,
+        }
+    }
+
+    /// Explicit owned-page growth originals; absent for the unchanged fitting route.
+    pub fn owned_growth(&self) -> Option<&NativeFittedEditIntent> {
+        match &self.body {
+            NativeUpdateBody::OwnedGrowth(original) => Some(original),
+            NativeUpdateBody::Int32(_)
+            | NativeUpdateBody::Fixed(_)
+            | NativeUpdateBody::Fitted(_) => None,
         }
     }
 
@@ -126,7 +153,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.table(),
             NativeUpdateBody::Fixed(original) => original.table(),
-            NativeUpdateBody::Fitted(original) => original.table(),
+            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
+                original.table()
+            }
         }
     }
 
@@ -135,7 +164,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.before_length(),
             NativeUpdateBody::Fixed(original) => original.before_length(),
-            NativeUpdateBody::Fitted(original) => original.before_length(),
+            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
+                original.before_length()
+            }
         }
     }
 
@@ -149,7 +180,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.verify_before(before, budget, cancelled),
             NativeUpdateBody::Fixed(original) => original.verify_before(before, budget, cancelled),
-            NativeUpdateBody::Fitted(original) => original.verify_before(before, budget, cancelled),
+            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
+                original.verify_before(before, budget, cancelled)
+            }
         }
     }
 
@@ -175,6 +208,10 @@ impl NativeUpdateIntent {
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16OrdinaryFitted) => {
                 original.encode(budget, cancelled)
             }
+            (
+                NativeUpdateBody::OwnedGrowth(original),
+                NativeUpdateProfile::Ace16OrdinaryOwnedGrowth,
+            ) => original.encode_profile(super::fitted::WireProfile::OwnedOnly, budget, cancelled),
             _ => Err(NativeIntentError::UnsupportedProfile),
         }
     }
@@ -185,6 +222,18 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::OWNED_GROWTH_MAGIC.len())
+            == Some(super::fitted::OWNED_GROWTH_MAGIC.as_slice())
+        {
+            return Ok(Self::from_owned_growth(
+                NativeFittedEditIntent::decode_profile(
+                    bytes,
+                    super::fitted::WireProfile::OwnedOnly,
+                    budget,
+                    cancelled,
+                )?,
+            ));
+        }
         if bytes.get(..super::fitted::MAGIC.len()) == Some(super::fitted::MAGIC.as_slice()) {
             return Ok(Self::from_fitted(NativeFittedEditIntent::decode(
                 bytes, budget, cancelled,

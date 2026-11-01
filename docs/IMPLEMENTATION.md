@@ -12,6 +12,27 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal same-page record growth
+
+Ordinary variable requests now select fitted TCNI5 or owned-page-growth TCNI6
+from original bound expectations and encoded capacity before staging. Qualified
+native17 targets append hidden terminals on their original DATA page with stable
+logical roots, fresh physical/LVAL protection and independent complete-image
+reconstruction. The existing retained typed/SQL sessions and CLI consume this
+selection; explicit fitted APIs and TCNI1–5 remain unchanged.
+
+Genuine growth and forwarded second edits match independently authored whole
+images. Separate joint cases cover fixed ID NULL/present overlays at the resized
+mask position in both assignment orders. Native recovery handles causal partial
+pages and rejects protected-byte forgeries. Exact resource/cancellation and
+254/255-slot controls pass; general Reader behavior is unchanged. Other-page
+placement, allocation/EOF growth and native Access qualification remain open.
+Twelve native commits, twenty-four typed/SQL session saves and twelve CLI
+saves/readbacks pass; all 1,105 ACE units, 83 recovery regressions, 79 adapter
+units and 94 CLI units pass, alongside strict feature builds. See the
+[contract](access/writes/NORMAL_ACE_OWNED_GROWTH.md) and
+[write record](testing/results/ace16-normal-owned-growth-writes-2026-11-01.json).
+
 ## Normal writes beside unchanged numeric indexes
 
 Native17 ordinary tables now accept unindexed fixed edits while retaining exact

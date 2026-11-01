@@ -1,7 +1,7 @@
 //! Original single-field builders and separate joint variable composition.
 pub(in crate::table::mutation) mod multiple;
 use super::super::{EditError, WriteBlocker};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use super::storage;
 use crate::{
     InspectError, TableSchema,
@@ -10,10 +10,10 @@ use crate::{
     table::record_layout,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use tablecraft_core::values::Value;
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table::mutation) fn build(
     schema: &TableSchema,
     column: usize,

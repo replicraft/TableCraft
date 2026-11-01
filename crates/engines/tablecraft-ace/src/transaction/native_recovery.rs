@@ -178,6 +178,40 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             check(budget, cancelled)?;
             Qualified::Ordinary(checked)
         }
+        (
+            NativeUpdateProfile::Ace16OrdinaryOwnedGrowth,
+            NativeUpdateBody::OwnedGrowth(original),
+        ) => {
+            check(budget, cancelled)?;
+            original.verify_before(checked.before_bytes(), budget, cancelled)?;
+            let image = NativeImage::capture(
+                &mut Cursor::new(checked.before_bytes()),
+                scope,
+                budget,
+                cancelled,
+            )?;
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            let plan = image.plan_ordinary_owned_growth_updates(
+                original.table(),
+                &groups,
+                budget,
+                cancelled,
+            )?;
+            // OwnedOnly uses the unchanged fixed-length V1 journal protocol.
+            // A physical planner must not return a larger or shorter image.
+            if plan.after_bytes().len() != plan.before_bytes().len() {
+                return Err(super::NativeIntentError::UnsupportedProfile.into());
+            }
+            equal_image(
+                plan.before_bytes(),
+                checked.before_bytes(),
+                budget,
+                cancelled,
+            )?;
+            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
+            check(budget, cancelled)?;
+            Qualified::Ordinary(checked)
+        }
         _ => return Err(super::NativeIntentError::UnsupportedProfile.into()),
     };
     Ok(QualifiedNativeRecovery { qualified })

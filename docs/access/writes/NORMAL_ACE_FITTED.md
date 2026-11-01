@@ -37,8 +37,11 @@ limits do not enlarge native field widths. TCNI1–4 formats remain unchanged.
 Recovery re-admits BEFORE, replans original requests and compares both complete
 images before allowing recovery or write-free confirmation.
 
-`NativeJournalEditor` and retained `OfflineWriteSession` select fitted planning
-when an ordinary request includes a Text/Binary target, even with zero matches.
+`NativeJournalEditor` and retained `OfflineWriteSession` select ordinary variable
+planning when a request includes a Text/Binary target, even with zero matches.
+Original encoded capacity chooses fitting or qualified
+[same-page growth](NORMAL_ACE_OWNED_GROWTH.md) before staging; the explicit fitted
+native API remains fitting-only.
 Typed column batches retain exact snapshot handles/carriers. Fixed-only requests
 keep TCNI4; positive-program and Jet4 routes keep their existing families.
 The existing SQL/session and `query journal-update` consumers share this planning
