@@ -58,7 +58,7 @@ fn sdk_type(tag: u8) -> &'static str {
     }
 }
 
-fn expected(source: &model::Source, header: u8, digest: &str) -> String {
+pub(super) fn expected(source: &model::Source, header: u8, digest: &str) -> String {
     let format = if header == 5 { "V2016" } else { "V2019" };
     let mut output = format!(
         "FILE\t{}\t{digest}\nMETADATA\tFILE_FORMAT\tOK\t{format}\nMETADATA\tDATABASE\tOK\t0\nMETADATA\tSUMMARY\tOK\t0\nMETADATA\tUSER_DEFINED\tOK\t0\n",

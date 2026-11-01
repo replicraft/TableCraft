@@ -12,6 +12,14 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Larger ordinary inline-map source qualification
+
+Ten 96-page ordinary input views now pass native reads/constraints and exact
+independent SDK observations, before newly admitted producer calls. Fourteen
+adversarial views retain explicit allocation/ownership expectations. This is
+source evidence, separate from the dynamic content/write checks. See the
+[source contract](testing/ACE16_ORDINARY_INLINE_SOURCES.md).
+
 ## Ordinary fixed writes through shared sessions and CLI
 
 The adapter now retains an explicit existing/ordinary route over its immutable

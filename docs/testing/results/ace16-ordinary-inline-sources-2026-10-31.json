@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-31",
+  "scope": "96-page independent ordinary inline-map source qualification",
+  "recipes": 12,
+  "pages_per_image": 96,
+  "ordinary_views": 10,
+  "adversarial_views": 14,
+  "source_first_freeze": {
+    "path": ".cache/ace16-ordinary-inline-sources-next-20261031/source-first-freeze.json",
+    "bytes": 1039,
+    "sha256": "e1492265c27b4cbfef9bf06b5cfc92a816282b1344af78cd6f419f707345c469"
+  },
+  "format_only_successor": {
+    "path": ".cache/ace16-ordinary-inline-sources-next-20261031/source-format-successor.json",
+    "bytes": 475,
+    "sha256": "3a8426a2d533309365ec73894db1b52756ca0eccfac027acba376dc02f6337d8"
+  },
+  "native_read": {
+    "log": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/native-first-root.log",
+      "bytes": 641,
+      "sha256": "0b9b0facdb7b314b3034a4c6a6af035c6b61a718a5a8b1cc1b7a9ddf4f23badf"
+    },
+    "result": "1 source test passed, all10 positive table/constraint views"
+  },
+  "explicit_export": {
+    "log": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/export-first-root.log",
+      "bytes": 399,
+      "sha256": "c011e9b32baa2c0b5d86a0e9f31387429a0d4a57b16525ee05bb45986af1be8b"
+    },
+    "result": "1 ignored exporter passed; 24inputs and10literal observations frozen",
+    "inventory": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/originals-first/inventory.tsv",
+      "bytes": 2303,
+      "sha256": "4299e719c22730a99300cc2677b1b49c51fcfc2644b8e700d8f79038676d56ce"
+    }
+  },
+  "independent_sdk": {
+    "compile": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/sdk-first/compile-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "precall": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/sdk-first/compile-precall.json",
+      "bytes": 8842,
+      "sha256": "392c61c68281cfb734ca9c9ff4d7049f18ce9a2ebfff9f80c54029f0f9570dff"
+    },
+    "plan": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/sdk-first/plan-before-calls.json",
+      "bytes": 19963,
+      "sha256": "9504dcc0195f0573db823026df9d91ab7457b102d24f198a3dd64edbcca49931"
+    },
+    "receipt": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/sdk-first/reports-first/receipt.json",
+      "bytes": 11541,
+      "sha256": "d4233bc4afd9419a1dc6c9bd3d5152de5afcd3e004ac74512b0cb47c40243fef"
+    },
+    "log": {
+      "path": ".cache/ace16-ordinary-inline-sources-next-20261031/sdk-first/run-first-root.log",
+      "bytes": 76,
+      "sha256": "fae41293e250b98c61539148a699ef4e42d51cc78163e25912d1f5ca3497ee0e"
+    },
+    "result": "10 exact observations passed, first attempt; all pinned inputs unchanged",
+    "classes": 3,
+    "observer_delta": "Only MAX_PAGES64 to96; same protocol and readonly controls"
+  },
+  "boundaries": [
+    "Source observations do not grant absence/write authority",
+    "Dynamic validator/producer/recovery/session/CLI evidence is separate",
+    "No native Microsoft Access, Windows or mixed-client qualification"
+  ],
+  "third_party_database_bytes_copied": false
+}

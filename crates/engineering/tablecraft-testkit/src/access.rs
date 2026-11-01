@@ -176,3 +176,6 @@ pub mod canonical_fixed_sql_before_change;
 
 /// Independent ordinary-content inputs and adversarial ownership/framing cases.
 pub mod canonical_ordinary_content;
+
+/// Independent larger ordinary inputs with variable inline-map windows.
+pub mod canonical_ordinary_inline;
