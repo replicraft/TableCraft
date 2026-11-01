@@ -74,6 +74,29 @@ pub fn check_table<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, InspectError> {
+    check_table_with_ownership(source, scope, table, false, budget, cancelled)
+}
+
+/// Readonly retained-index facts; no mutation or active-content admission.
+#[cfg(feature = "journal")]
+pub(in crate::table) fn check_table_retained<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, InspectError> {
+    check_table_with_ownership(source, scope, table, true, budget, cancelled)
+}
+
+fn check_table_with_ownership<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    complete_ownership: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, InspectError> {
     let _span = tracing::debug_span!("native.table.check").entered();
     let mut inspection = inspect_table_indexes(source, scope, table, budget, cancelled)?;
     match super::links::qualify(source, scope, &mut inspection, budget, cancelled) {
@@ -115,7 +138,20 @@ pub fn check_table<R: crate::NativeReadSource>(
             Ok(profile) => {
                 let projection =
                     CheckProjection::new(&inspection.schema, &index, budget, cancelled)?;
-                let indexed = if let Some(eligible_rows) = eligible_rows {
+                let indexed = if complete_ownership {
+                    super::read::read_retained_membership_check(
+                        source,
+                        scope,
+                        table,
+                        index.name(),
+                        super::read::RetainedMembershipCheck {
+                            columns: projection.names(),
+                            eligible_rows,
+                        },
+                        budget,
+                        cancelled,
+                    )?
+                } else if let Some(eligible_rows) = eligible_rows {
                     super::read::read_ignored_membership_check(
                         source,
                         scope,

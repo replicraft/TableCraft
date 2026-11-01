@@ -1,5 +1,7 @@
 mod membership;
 mod references;
+#[cfg(all(test, feature = "journal"))]
+mod retained_tests;
 mod stored;
 use super::super::TableSchema;
 use super::super::{record, snapshot::TableSnapshot};
@@ -198,6 +200,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
             eligible_rows: None,
             row_references: None,
             stored_features: None,
+            complete_ownership: false,
         },
         budget,
         cancelled,
@@ -235,6 +238,7 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
             eligible_rows: None,
             row_references: None,
             stored_features: None,
+            complete_ownership: false,
         },
         budget,
         cancelled,
@@ -329,6 +333,7 @@ struct ReadOptions<'a> {
     eligible_rows: Option<usize>,
     row_references: Option<&'a mut Vec<NativeRowReference>>,
     stored_features: Option<&'a TableFeatures>,
+    complete_ownership: bool,
 }
 impl Default for ReadOptions<'_> {
     fn default() -> Self {
@@ -341,6 +346,7 @@ impl Default for ReadOptions<'_> {
             eligible_rows: None,
             row_references: None,
             stored_features: None,
+            complete_ownership: false,
         }
     }
 }
@@ -352,6 +358,7 @@ struct ReadView<'a> {
     table_order: bool,
     expected_rows: usize,
     omitted_nulls: bool,
+    complete_ownership: bool,
     row_references: Option<&'a mut Vec<NativeRowReference>>,
 }
 
@@ -384,6 +391,38 @@ pub(super) fn read_ignored_membership_check<R: NativeReadSource>(
         budget,
         cancelled,
     )
+}
+
+/// Complete readonly key/row membership plus exact index-owned page reachability.
+/// The sequential population is supplied only by the table consistency checker.
+pub(super) fn read_retained_membership_check<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    request: RetainedMembershipCheck<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableSnapshot, InspectError> {
+    read_selected(
+        source,
+        scope,
+        table,
+        index,
+        ReadOptions {
+            columns: Some(request.columns),
+            eligible_rows: request.eligible_rows,
+            complete_ownership: true,
+            ..ReadOptions::default()
+        },
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) struct RetainedMembershipCheck<'a> {
+    pub columns: &'a [&'a str],
+    pub eligible_rows: Option<usize>,
 }
 
 fn read_selected<R: crate::NativeReadSource>(
@@ -509,6 +548,7 @@ fn read_selected<R: crate::NativeReadSource>(
         table_order: options.table_order,
         expected_rows,
         omitted_nulls,
+        complete_ownership: options.complete_ownership,
         row_references: options.row_references,
     };
     let rows = match profile {
@@ -597,6 +637,25 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         reads: 0,
     };
     let owned = allocation::pages(&mut reader, selected.usage)?;
+    if view.complete_ownership {
+        if !complete {
+            return Err(InspectError::Unsupported);
+        }
+        for pair in owned.windows(2) {
+            reader.tick()?;
+            if pair[0] >= pair[1] {
+                return Err(InspectError::Malformed);
+            }
+        }
+        // Walker checks a growing visited list. Charge its complete worst-case
+        // membership work before traversal, just as the retained Int32 reader.
+        reader.work(
+            owned
+                .len()
+                .checked_mul(owned.len())
+                .ok_or(InspectError::StructureLimit)?,
+        )?;
+    }
     let mut walker = Walker::<_, _, N> {
         reader: &mut reader,
         owner: schema.definition,
@@ -617,6 +676,26 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         return Err(InspectError::Malformed);
     }
     let mut entries = walker.entries;
+    if view.complete_ownership {
+        if walker.next_leaf != 0 || walker.gap {
+            return Err(InspectError::Malformed);
+        }
+        let mut visited = walker.visited;
+        let levels = visited.len().checked_ilog2().unwrap_or(0) as usize + 1;
+        reader.tick()?;
+        reader.work(
+            visited
+                .len()
+                .checked_mul(levels)
+                .ok_or(InspectError::StructureLimit)?,
+        )?;
+        visited.sort_unstable();
+        reader.work(owned.len())?;
+        if visited != owned {
+            return Err(InspectError::Malformed);
+        }
+        reader.tick()?;
+    }
     if view.table_order {
         reader.tick()?;
         let levels = u64::from(entries.len().checked_ilog2().unwrap_or(0)) + 1;

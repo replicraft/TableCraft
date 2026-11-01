@@ -5,7 +5,7 @@ use super::{
     refused,
 };
 use crate::{
-    EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, check_table,
+    EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex,
     format::{layout::Layout, page::PAGE_BYTES, row::MASK_BITS},
     header::check,
     inspect_table_indexes,
@@ -13,6 +13,7 @@ use crate::{
     read_table,
     table::{
         indexes::{
+            check_table_retained,
             header::IndexHeader,
             page::{ENTRY_START, LEAF, NODE},
             preserved,
@@ -71,7 +72,7 @@ pub(super) fn capture(
     for index in inspection.indexes() {
         declaration::qualify(inspection.schema(), index, budget, cancelled)?;
     }
-    let checked = check_table(&mut image.reader(), scope, name, budget, cancelled)?;
+    let checked = check_table_retained(&mut image.reader(), scope, name, budget, cancelled)?;
     if checked.schema().definition_page() != definition
         || checked.schema().object_id() != object
         || checked.indexes().len() != layout.logical_indexes

@@ -41,6 +41,7 @@ fn read<R: NativeReadSource>(
             eligible_rows: None,
             row_references: options.references,
             stored_features: Some(&features),
+            complete_ownership: false,
         },
         budget,
         cancelled,

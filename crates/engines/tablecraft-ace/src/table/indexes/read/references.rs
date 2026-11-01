@@ -60,6 +60,7 @@ pub fn read_table_index_with_references<R: NativeReadSource>(
             eligible_rows: None,
             row_references: Some(&mut references),
             stored_features: None,
+            complete_ownership: false,
         },
         budget,
         cancelled,
