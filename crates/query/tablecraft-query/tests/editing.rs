@@ -155,7 +155,7 @@ fn unsupported_shapes_and_unknown_fields_fail_even_for_empty_tables() {
         "UPDATE Items SET Score=DatePart('d',#2026-01-01#)",
         "UPDATE Items SET Score=DateDiff('d',#2026-01-01#,#2026-01-02#)",
         "UPDATE Items SET Score=Day(DateAdd('d',1,#2026-01-01#))",
-        "UPDATE Items SET Score=1 WHERE IsNull(Score)",
+        "UPDATE Items SET Score=1 WHERE IsNull(Rnd())",
         "UPDATE Items SET Score=(SELECT 1)",
         "UPDATE Items SET Score=MissingField",
         "UPDATE Items SET Score=1 WHERE MissingField=0",
@@ -282,6 +282,7 @@ fn deterministic_calls_bind_on_empty_sources_without_widening_assignment_carrier
     // hypothetical result value or bypassing the actual target field profile.
     for sql in [
         "UPDATE Items SET Score=Abs(Score)",
+        "UPDATE Items SET Score=1 WHERE IsNull(Score)",
         "UPDATE Items SET Score=Year(#2026-01-01#)",
         "UPDATE Items SET Score=IIf(True,1,2)",
         "UPDATE Items SET Score=Nz(Score,0)",
