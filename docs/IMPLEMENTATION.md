@@ -12,6 +12,15 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## SQL-addressable fixed-scalar source qualification
+
+Ten discriminator originals and ten literal outcomes now qualify one-row wide
+SQL requests and both atomic SET orders. Two native source/anchor tests and
+20 exact independent SDK inventories pass before SQL execution. The joint case
+retains original false-Flag semantics, producing Int64 42. See the
+[source contract](testing/ACE16_FIXED_SQL_SOURCES.md) and
+[record](testing/results/ace16-fixed-sql-sources-2026-10-31.json).
+
 ## Journaled typed fixed-scalar batches
 
 The normal native planner and retained Access session now accept qualified fixed

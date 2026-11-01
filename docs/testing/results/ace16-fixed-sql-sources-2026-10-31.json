@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_fixed_sql_discriminator_sources",
+  "status": "native_sources_anchors_strict_and_twenty_independent_inventories_passed",
+  "sql_or_normal_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "source_freeze": {
+    "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/source-first-private-freeze.json",
+    "bytes": 1923,
+    "sha256": "943abefa05c6dd768bb2f6886415831d18dee9978f1f2fcb9eefa28ba02e4f47"
+  },
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "original_contexts": 10,
+    "literal_expected_images": 10,
+    "views": 20,
+    "image_bytes": 737280,
+    "matched_rows_per_statement": 1,
+    "changed_roots_per_statement": 1,
+    "image_aggregate_digest": "f991a15d728d36ee773fcf76f79726df0f3d70900559ae15a0455529249f46b9",
+    "original_sql_request_digest": "4eddabbf5877a455388da35b43b7294422bd0d666f2cd04b208eed8214aaf451"
+  },
+  "checks": {
+    "source_first": {
+      "passed": 1,
+      "seconds": 0.07,
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/source-first-root.log",
+        "bytes": 633,
+        "sha256": "b9d4a6a937e3ac9978291740c14d695f818de8b164ad221d22ddb7c4feff8e8c"
+      }
+    },
+    "export_first": {
+      "passed": 1,
+      "seconds": 0.15,
+      "readability_only_derivative": true,
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/export-first-root.log",
+        "bytes": 3065,
+        "sha256": "5641ff9b7e67d830148ad34df252d29f020fb7bb4cf17052172297a3102275b0"
+      },
+      "inventory": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/originals-first/inventory.json",
+        "bytes": 2580,
+        "sha256": "f8cd733bf2e345cc4e63f12696b71c7b13094fcc44209d3dc1ff242bfca9328a"
+      },
+      "requests": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/originals-first/requests.json",
+        "bytes": 6314,
+        "sha256": "00283e3035c935e8e24bf12fa30daaa757c42077a3ab4e3e687cd1d755f5c165"
+      }
+    },
+    "source_and_anchors": {
+      "passed": 2,
+      "ignored": 1,
+      "seconds": 0.08,
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/source-anchors-first-root.log",
+        "bytes": 817,
+        "sha256": "66f5cb3f531b54e8ee45847ff414b9691d3fcde70d64309d4394c74cebb8b31d"
+      }
+    },
+    "strict": {
+      "passed": true,
+      "seconds": 21.98,
+      "all_targets": true,
+      "features": "journal only",
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-testkit"
+      ],
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/source-strict-first-root.log",
+        "bytes": 307,
+        "sha256": "1e889911674f15e346dff4f314d96fe9e3da184d267c63f3fcae2a56f16ec898"
+      }
+    },
+    "independent_sdk": {
+      "passed": true,
+      "full_inventories": 20,
+      "new_compile_calls": 0,
+      "authority": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/input-authority.json",
+        "bytes": 42912,
+        "sha256": "504e0bc7be2f3d4847fc2c0dc2aa890fe44039440c5cf162bd9244512a50fee8"
+      },
+      "freeze": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/code-and-source-first-freeze.json",
+        "bytes": 17824,
+        "sha256": "924a875f76b937d7876398bb1496ce5b9f808db1726933b81755003255473a11"
+      },
+      "expected": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/expected-first-root.json",
+        "bytes": 23641,
+        "sha256": "3055b3574a13a4a00740ae516e84cf0909f78e8be0659505d6d45a1a118d9d29"
+      },
+      "receipt": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/receipt-first-root.json",
+        "bytes": 21533,
+        "sha256": "e140e50e4c48469ef44a44a5d0a3ac8b0e094b4054f8da89030665753d0ef299"
+      },
+      "runner": {
+        "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/runner-first-root.log",
+        "bytes": 145,
+        "sha256": "37d3126c575fb72e889b1694d819efba509922938df013fe62e2afab29fd76a0"
+      },
+      "saved_verifier": {
+        "passed": true,
+        "child_calls": 0,
+        "log": {
+          "path": ".cache/ace16-normal-fixed-scalars-sql-sources-next-20261031/getter/saved-first-root.log",
+          "bytes": 276,
+          "sha256": "bf01d779027215675f71f317ca467709dc60fb1c38f891486a367524b895f132"
+        }
+      }
+    }
+  }
+}
