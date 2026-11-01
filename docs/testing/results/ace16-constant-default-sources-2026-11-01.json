@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-01",
+  "scope": "Native source qualification for constant-default before matching producers",
+  "native_executed_functions": 1,
+  "native_returncode": 0,
+  "native_receipt": {
+    "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-text-source-gates-20261101/constant-native-first.log",
+    "bytes": 550,
+    "sha256": "76136aff4aa52c37d115f0e90124753cbed90ad0b2455af6f3a1f342841bc439"
+  },
+  "source_qualification_precedes_matching_producers": true,
+  "matching_mutation_or_creator_calls": 0,
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "artifacts": [
+    {
+      "path": ".cache/ace16-native-creation-constant-defaults-next-20261101/source/first-private-checkpoint.json",
+      "bytes": 3958,
+      "sha256": "70fed47626485fcb3938bdead4a9e00a2774b75cdb227ab18449fb8d6a91bc03"
+    },
+    {
+      "path": ".cache/ace16-native-creation-constant-defaults-next-20261101/source/driver-first-private-checkpoint.json",
+      "bytes": 861,
+      "sha256": "32d61c130e2abda15cf47a1ffdcb21bb15e5a5c4d33ad06dd009b4b229088a24"
+    },
+    {
+      "path": ".cache/ace16-native-creation-constant-defaults-next-20261101/source/readonly-execution-first.json",
+      "bytes": 32504,
+      "sha256": "8125e2b6a1e305a384889614ba995109334ae245911edb7d5ba5f21fefc62f50"
+    },
+    {
+      "path": ".cache/ace16-native-creation-constant-defaults-next-20261101/source/expected-first/manifest.json",
+      "bytes": 10250,
+      "sha256": "f517dfbd3b67a34c2d3f53de38c6e5b7917437ad4a6e84c041975195d0069d6a"
+    }
+  ],
+  "native_views": 28,
+  "sdk_read_only_calls": 28,
+  "sdk_compilations": 1,
+  "actual_action_Source": "PASS",
+  "copied_receipt_controls": {
+    "receipt_rejections": 26,
+    "summary_rejections": 10,
+    "plan_rejections": 6,
+    "sdk_calls": 0
+  },
+  "laws": [
+    "Eight BEFORE and twenty literal AFTER views.",
+    "Boolean, Int64, exact scaled Currency and quoted Unicode Text defaults; Date separate.",
+    "Omitted, supplied NULL, false and Text overrides remain distinct.",
+    "Required/empty refusals have no fabricated successful AFTER."
+  ]
+}
