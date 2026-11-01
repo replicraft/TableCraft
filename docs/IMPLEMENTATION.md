@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary writes with dynamic inline windows
+
+The ordinary content ledger now covers actual captured EOF with borrowed
+variable-length inline windows, preserving explicit GLOBAL coverage and distinct
+future-free polarity. The artificial 64-page ceiling is removed without changing
+TCNI0004 or host lifecycle. Four bitmap tests, two dynamic content tests and four
+public planning/recovery tests pass. The adapter passes four new tests with
+20 principal typed/SQL whole-image saves; the CLI passes ten whole-image writes
+and ten exact TSV readbacks. Existing ordinary source and consumer tests retain
+their behavior. See the [dynamic write record](testing/results/ace16-ordinary-inline-writes-2026-10-31.json).
+
 ## Larger ordinary inline-map source qualification
 
 Ten 96-page ordinary input views now pass native reads/constraints and exact

@@ -6,8 +6,9 @@ The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and
 the CLI, including equal/empty requests and TCNI0004 recovery. Full content proof
 replaces neither native mutation proof nor qualification of arbitrary imported
-files. Next, broaden inline-map/file-size coverage, then preserved counters and
-existing indexes; wider headers, metadata, other actions and native Access
+files. Variable inline-map windows now remove the initial 64-page ceiling, with
+qualified 96-page source/save/recovery/readback checks. Next, preserve counters and
+existing indexes; wider headers, indirect maps, metadata, other actions and native Access
 qualification remain explicit work.
 
 The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)

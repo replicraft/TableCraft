@@ -1,9 +1,9 @@
 //! Physical EOF closure and every referenced inline-map record, not provenance.
-use super::{records, refused};
+use super::{inline::InlineBitmap, records, refused};
 use crate::{
     EditError, InspectError, NativeImage,
     format::{
-        bytes::u32_at,
+        allocation::GLOBAL_FREE_REFERENCE,
         page::PAGE_BYTES,
         row::{reference, reference_page, reference_slot},
     },
@@ -11,15 +11,9 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const MAX_PAGES: usize = u64::BITS as usize;
-const INLINE_TAG_OFFSET: usize = 0;
-const INLINE_BASE_OFFSET: usize = size_of::<u8>();
-const INLINE_BITMAP_OFFSET: usize = INLINE_BASE_OFFSET + size_of::<u32>();
-const INLINE_BYTES: usize = INLINE_BITMAP_OFFSET + size_of::<u64>();
-const INLINE_TAG: u8 = 0;
-const GLOBAL_PAGE: u32 = 1;
-const GLOBAL_SLOT: u8 = 0;
-const GLOBAL_OWNER: u32 = 1;
+const MIN_PAGES: usize = 3;
+const GLOBAL_PAGE: u32 = reference_page(GLOBAL_FREE_REFERENCE);
+const GLOBAL_OWNER: u32 = GLOBAL_PAGE;
 const ORDINARY_MAP_OWNER: u32 = 0;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -35,7 +29,7 @@ pub(super) struct Ledger<'image> {
     image: &'image NativeImage,
     roles: Vec<Role>,
     references: Vec<u32>,
-    free: u64,
+    free: InlineBitmap<'image>,
 }
 
 impl<'image> Ledger<'image> {
@@ -50,7 +44,7 @@ impl<'image> Ledger<'image> {
             return Err(refused());
         }
         let pages = length / PAGE_BYTES;
-        if !(3..=MAX_PAGES).contains(&pages) {
+        if pages < MIN_PAGES || u32::try_from(pages).is_err() {
             return Err(refused());
         }
         budget
@@ -65,13 +59,10 @@ impl<'image> Ledger<'image> {
             image,
             roles,
             references: Vec::new(),
-            free: 0,
+            free: InlineBitmap::empty(),
         };
         result.claim(0, Role::Header, budget, cancelled)?;
-        result.free = result.map(reference(GLOBAL_PAGE, GLOBAL_SLOT), budget, cancelled)?;
-        if pages < MAX_PAGES && result.free >> pages != 0 {
-            return Err(refused());
-        }
+        result.free = result.map(GLOBAL_FREE_REFERENCE, budget, cancelled)?;
         Ok(result)
     }
 
@@ -105,7 +96,7 @@ impl<'image> Ledger<'image> {
         value: u32,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<u64, EditError> {
+    ) -> Result<InlineBitmap<'image>, EditError> {
         check(budget, cancelled)?;
         budget
             .charge(Resource::Steps, self.references.len() as u64)
@@ -114,7 +105,7 @@ impl<'image> Ledger<'image> {
             return Err(refused());
         }
         let number = reference_page(value);
-        if number == GLOBAL_PAGE && value != reference(GLOBAL_PAGE, GLOBAL_SLOT) {
+        if number == GLOBAL_PAGE && value != GLOBAL_FREE_REFERENCE {
             return Err(refused());
         }
         self.claim(number, Role::Maps, budget, cancelled)?;
@@ -130,16 +121,10 @@ impl<'image> Ledger<'image> {
             return Err(refused());
         }
         let record = records::row(page, slot)?;
-        budget
-            .charge(Resource::Steps, INLINE_BYTES as u64)
-            .map_err(InspectError::from)?;
-        if record.len() != INLINE_BYTES
-            || record[INLINE_TAG_OFFSET] != INLINE_TAG
-            || u32_at(record, INLINE_BASE_OFFSET)? != 0
-        {
-            return Err(refused());
+        let bitmap = InlineBitmap::capture(record, budget, cancelled)?;
+        if value != GLOBAL_FREE_REFERENCE {
+            bitmap.require_existing(self.roles.len(), budget, cancelled)?;
         }
-        let bitmap = u64::from_le_bytes(record[INLINE_BITMAP_OFFSET..].try_into().unwrap());
         budget
             .charge_allocation(1, size_of::<u32>() as u64)
             .map_err(InspectError::from)?;
@@ -152,28 +137,12 @@ impl<'image> Ledger<'image> {
 
     pub fn members(
         &self,
-        bitmap: u64,
+        bitmap: InlineBitmap<'_>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u32>, EditError> {
-        budget
-            .charge_allocation(u64::from(bitmap.count_ones()), size_of::<u32>() as u64)
-            .map_err(InspectError::from)?;
-        let mut result = Vec::new();
-        result
-            .try_reserve_exact(bitmap.count_ones() as usize)
-            .map_err(|_| InspectError::Allocation)?;
-        for number in 0..MAX_PAGES {
-            check(budget, cancelled)?;
-            if bitmap & (1_u64 << number) == 0 {
-                continue;
-            }
-            if number >= self.roles.len() {
-                return Err(refused());
-            }
-            result.push(number as u32);
-        }
-        Ok(result)
+        bitmap.require_existing(self.roles.len(), budget, cancelled)?;
+        bitmap.members(budget, cancelled)
     }
 
     pub fn finish(
@@ -183,7 +152,9 @@ impl<'image> Ledger<'image> {
     ) -> Result<(), EditError> {
         for (number, role) in self.roles.iter().enumerate() {
             check(budget, cancelled)?;
-            let free = self.free & (1_u64 << number) != 0;
+            // Future-free capacity outside physical EOF never supplies a role.
+            // Every actual page still has the ordinary polarity checks below.
+            let free = self.free.bit(number as u32).ok_or_else(refused)?;
             if *role == Role::Unclaimed {
                 if !free {
                     return Err(refused());

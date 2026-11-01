@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-31",
+  "scope": "Dynamic inline-map ordinary content, fixed writes and recovery",
+  "source_commit": "bffc8497",
+  "source_gate": "Ten native read/constraint and exact independent SDK source observations passed before dynamic producers",
+  "behavior": [
+    "Borrowed variable-length inline maps with checked base-relative membership",
+    "Candidate subset compares actual pages across different windows",
+    "Role allocation follows captured EOF and caller budget; no fixed 64-page, 13-byte or base-zero restriction",
+    "Every actual page needs a represented GLOBAL bit; futurefree capacity outsideEOF creates no roles",
+    "Owned/candidate SET pages outsideEOF and indirect maps refuse",
+    "Physical map cells stay unique/allocated and all source bytes remain classified",
+    "TCNI0004 and the shared session/CLI publication lifecycle unchanged"
+  ],
+  "verification": [
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/content-initial-root.log",
+        "bytes": 1223,
+        "sha256": "e535189fd8f2119ffa93445ec7ae07eb31ad39f6c9245bb91c6f3652f4a96035"
+      },
+      "result": "7 tests passed: 4 bitmap and 3 predecessor content tests"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/content-dynamic-first-root.log",
+        "bytes": 780,
+        "sha256": "9fa300f4650c3b260a0213ae3e21eee3833f18c3b476df8185347a305a6dee9a"
+      },
+      "result": "2 dynamic content tests passed:10 positive/14 negative contexts and independently constructed all-high-pages-allocated missingGLOBAL control"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/native-first-root.log",
+        "bytes": 860,
+        "sha256": "97dba71bf36b5fcca14551acf43215831aacbc8459d9c2213091807a021dba06"
+      },
+      "result": "4 public planner/recovery tests passed:10 literal commits,120-byte V4wire, repeated pending/partial/committed recovery,14 refusals, exact resource pools/cancellation"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/access-first-root.log",
+        "bytes": 1587,
+        "sha256": "f0bb987d39e0b3c65ca9fb46bc937283ff5ac1653f2e62b731734f360ff668dd"
+      },
+      "result": "4 new and 7 predecessor adapter tests passed;20 principal typed/SQL high-page saves plus no-op/empty/stale controls"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/cli-first-root.log",
+        "bytes": 11938,
+        "sha256": "3a4f2ca12bdb1d95253c4a90096ff475006aa7f2f924abffcd7b94643b8e7b6f"
+      },
+      "result": "94 CLI unit, 2 new dynamic CLI and 4 predecessor ordinary CLI tests passed;10 literal writes and10 exact TSV readbacks plus 8 bounds/indirect refusals"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/strict-first-root.log",
+        "bytes": 580,
+        "sha256": "a8cc1b676cb0d9a55f8bd88c9b1b335805a62f3510fb3b69c4656dd103ae3b9c"
+      },
+      "result": "Strict ACE/Access/CLI all-target/all-feature clippy passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/ace-unit-batch-root.log",
+        "bytes": 144252,
+        "sha256": "525a340217e71aee9f47e847a4a820a99f48c2e0a0d2a8ed2db0c731d0537f27"
+      },
+      "result": "1,059 ACE unit tests passed,30 ignored; 129.53 seconds"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-inline-maps-next-20261031/recovery-batch-root.log",
+        "bytes": 8035,
+        "sha256": "5b82e18ced04c0f07da9f0ce49e17f6688b2cf2d8138d19a8053f48a8fc4355f"
+      },
+      "result": "All 70 qualified recovery integration tests passed;8.82 seconds"
+    }
+  ],
+  "format_review": "Rustfmt adjusted two source expressions including a trailing comma. Original source retained; exact two-transform comparison and all exported input/expected bytes preserved. A whitespace-only comparison initially rejected the added comma; no source recipe or golden changed.",
+  "limitations": [
+    "Known unencoded 1252/General header 5/6 data-only family; same full header/object/property restrictions",
+    "Standard 64 MiB captured image envelope and other existing native/read/work limits remain",
+    "Indirect maps, ordinary counters/indexes, user long values, wider headers, other objects and general CRUD remain unfinished",
+    "Native Access/Windows/power-loss/mixed-client qualification unchanged and unrun"
+  ],
+  "dependencies_added": false,
+  "intent_version_changed": false,
+  "write_goldens_retuned": false,
+  "push_performed": false
+}

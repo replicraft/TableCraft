@@ -9,9 +9,11 @@ engine route from positive BeforeChange updates and engineering previews.
 ## Current admitted family
 
 The initial family is unencoded ACE header 5/6, with the known clear header
-fields, code page 1252 and General sort declaration. Images contain at most
-64 complete 4096-byte pages. Definitions fit one page; allocation uses the
-qualified inline maps and sole GLOBAL record. Direct live DATA slots, free-space
+fields, code page 1252 and General sort declaration. The standard 64 MiB captured
+image envelope and existing read/work limits remain. The earlier 64-page map
+ceiling is removed. Definitions fit one page; allocation uses qualified variable
+inline-map windows and the sole GLOBAL record. Indirect maps still refuse.
+Direct live DATA slots, free-space
 counts, catalog layouts and map ownership must be complete. Unknown fields,
 deleted/forwarded slots, unexplained pages or nonzero free bytes refuse.
 
@@ -68,6 +70,25 @@ pass. First compile/test/lint diagnostics remain in the
 [execution record](../../testing/results/ace16-normal-ordinary-fixed-2026-10-31.json).
 Native Microsoft Access save/reopen, Windows, power-loss and mixed-client
 qualification remain separate and unrun.
+
+## Dynamic inline-map coverage
+
+Inline maps borrow their original variable-length records. Checked base-relative
+members determine ownership and candidate subsets even when their windows differ.
+Empty windows establish no membership. The ledger allocates roles for actual
+captured EOF under the caller budget; it does not derive file size from a bitmap.
+Every actual page needs a represented GLOBAL bit and a complete allocated role or
+zero-filled free-page check. Future GLOBAL-free bits beyond EOF are valid capacity
+and never create physical roles. Owned/candidate members beyond EOF refuse.
+Physical map-cell uniqueness, allocated map storage and full record/byte closure
+remain mandatory.
+
+Ten 96-page originals pass native reads and exact independent SDK observations
+before mutation. Dynamic content controls include a file whose high pages all
+have valid DATA roles but lack GLOBAL cells: ordinary reading succeeds, while
+certification refuses. Native, retained-session and CLI consumers compare whole
+images including all maps and free holes, with unchanged TCNI0004 framing and
+recovery. See the [dynamic execution record](../../testing/results/ace16-ordinary-inline-writes-2026-10-31.json).
 
 ## Shared sessions and CLI
 

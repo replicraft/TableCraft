@@ -58,12 +58,14 @@ Int32 profile.
 
 The [ordinary-content ACE route](../access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 also admits the initial complete data-only family: known unencoded header 5/6,
-1252/General declarations, at most 64 pages, closed ordinary metadata and no
+1252/General declarations, variable inline-map windows under the captured-image
+and cumulative work/read limits, closed ordinary metadata and no
 indexes, relationships or program/property carriers. Metadata is only a routing
 hint; complete content validation must pass before capability is advertised and
 again for every native plan/recovery. There is no caller absence flag. Ordinary
 equal assignments and genuine empty selections retain bytes and complete the
 normal journal lifecycle. This is not admission for arbitrary imported databases.
+The earlier 64-page ceiling is removed; indirect maps remain outside this route.
 
 Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)

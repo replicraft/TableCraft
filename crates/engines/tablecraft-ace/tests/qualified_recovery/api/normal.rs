@@ -671,3 +671,6 @@ mod native_fixed_controls;
 
 #[path = "normal/native_ordinary.rs"]
 mod native_ordinary;
+
+#[path = "normal/ordinary_inline.rs"]
+mod ordinary_inline;

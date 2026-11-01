@@ -50,9 +50,9 @@ struct Object {
     object: ObjectId,
 }
 
-pub(super) fn capture(
-    image: &NativeImage,
-    ledger: &mut ledger::Ledger<'_>,
+pub(super) fn capture<'image>(
+    image: &'image NativeImage,
+    ledger: &mut ledger::Ledger<'image>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Objects, EditError> {
