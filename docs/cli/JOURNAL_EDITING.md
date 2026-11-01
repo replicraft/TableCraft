@@ -60,14 +60,22 @@ The [ordinary-content ACE route](../access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 also admits the initial complete data-only family: known unencoded header 5/6,
 1252/General declarations, variable inline-map windows under the captured-image
 and cumulative work/read limits, closed ordinary metadata and no
-relationships or program/property carriers. A qualified Int32 AutoNumber and
-existing local single-Int32 indexes may remain unchanged; generated and indexed
-fields are not update targets in this route. Metadata is only a routing
-hint; complete content validation must pass before capability is advertised and
+relationships or program/property carriers. A qualified Int32 AutoNumber remains
+read-only. Manual fields in checked local single-Int32 indexes support fitting
+updates, including numeric NULL transitions and atomic final UNIQUE swaps.
+Primary/required NULL keys and final duplicate keys refuse. Compatible aliases
+share one physical rewrite; unaffected index bytes and historical counters remain
+unchanged. Rewrites retain page identities, topology and per-leaf entry counts;
+splits, allocation and map/EOF growth refuse. Metadata is only a routing hint;
+complete content validation must pass before capability is advertised and
 again for every native plan/recovery. There is no caller absence flag. Ordinary
 equal assignments and genuine empty selections retain bytes and complete the
 normal journal lifecycle. This is not admission for arbitrary imported databases.
 The earlier 64-page ceiling is removed; indirect maps remain outside this route.
+The indexed-target CLI checks pass 24 literal saves and exact row readbacks,
+including NULL transitions, swaps, tree fitting and noops, with eight refusal
+controls. See the
+[indexed-target write record](../testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
 
 Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)

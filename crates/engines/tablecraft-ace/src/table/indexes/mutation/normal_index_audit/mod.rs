@@ -107,3 +107,5 @@ pub(in crate::table) fn reconstruct(
 }
 
 pub(in crate::table) use projected::reconstruct as reconstruct_projected;
+
+pub(in crate::table) use projected::reconstruct_nullable as reconstruct_nullable_projected;

@@ -247,7 +247,7 @@ fn retained_counter_index_recovery_recaptures_before_and_confirms_without_writes
 }
 
 #[test]
-fn empty_v4_groups_preserve_complete_images_but_never_grant_id_mutation() {
+fn empty_v4_manual_indexed_groups_commit_but_generated_id_still_refuses() {
     for header in [5, 6] {
         for identity in sources::CASES {
             if !sources::source(identity).ordinary {
@@ -278,15 +278,42 @@ fn empty_v4_groups_preserve_complete_images_but_never_grant_id_mutation() {
             );
             let id =
                 NativeFixedIntentGroup::new("Id", Vec::new(), &mut budget(), &|| false).unwrap();
-            let expected = if case.generated {
-                WriteBlocker::Column
+            let result = image(&case.before).plan_recoverable_ordinary_fixed_updates(
+                "Items",
+                vec![id],
+                &mut budget(),
+                &|| false,
+            );
+            if case.generated {
+                assert!(matches!(
+                    result,
+                    Err(RecoverableEditError::Edit(EditError::Unsupported(
+                        WriteBlocker::Column
+                    )))
+                ));
             } else {
-                WriteBlocker::IndexedColumn
-            };
-            assert!(matches!(
-                image(&case.before).plan_recoverable_ordinary_fixed_updates("Items", vec![id], &mut budget(), &|| false),
-                Err(RecoverableEditError::Edit(EditError::Unsupported(blocker))) if blocker == expected
-            ));
+                let plan = result.unwrap();
+                assert_eq!(plan.before_bytes(), case.before);
+                assert_eq!(plan.after_bytes(), case.before);
+                assert_eq!(plan.changed_rows(), 0);
+                assert_eq!(plan.intent().fixed().unwrap().groups()[0].column(), "Id");
+                assert!(
+                    plan.intent().fixed().unwrap().groups()[0]
+                        .updates()
+                        .is_empty()
+                );
+                let mut target = Storage::new(case.before.clone());
+                let mut journal = Storage::new(Vec::new());
+                let prepared = plan
+                    .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+                    .unwrap();
+                assert_eq!(prepared.commit(&mut budget(), &|| false).unwrap(), 0);
+                assert_eq!(target.bytes.get_ref(), &case.before);
+                assert_eq!(
+                    journal.bytes.get_ref(),
+                    &journals::journal(&case.before, &case.before, Marker::Committed,)
+                );
+            }
         }
     }
 }

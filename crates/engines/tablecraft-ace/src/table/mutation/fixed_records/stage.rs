@@ -1,5 +1,7 @@
 //! One paid original-row visit produces joint fixed payload/mask observations.
 use super::binding;
+#[cfg(feature = "journal")]
+use super::indexed::CheckedIndexes;
 use super::unique;
 use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpdates};
 use crate::table::scalar_encoding;
@@ -123,6 +125,20 @@ pub(in crate::table::mutation) fn prepare_normal(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_normal(source, groups, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_indexed(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &CheckedIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) =
+        binding::all_indexed(image, source, groups, indexed, budget, cancelled)?;
     compose(image, source, groups, bound, capacity, budget, cancelled)
 }
 

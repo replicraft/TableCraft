@@ -100,7 +100,7 @@ fn ordinary_counter_index_updates_match_eighteen_complete_literal_images() {
 }
 
 #[test]
-fn readable_generated_or_indexed_keys_do_not_become_empty_write_targets() {
+fn generated_keys_refuse_but_manual_indexed_empty_targets_preserve_whole_images() {
     for identity in sources::CASES {
         let source = sources::source(identity);
         if !source.ordinary {
@@ -113,15 +113,19 @@ fn readable_generated_or_indexed_keys_do_not_become_empty_write_targets() {
             &mut budget(),
             &|| false,
         );
-        let expected = if source.last_counter.is_some() {
-            WriteBlocker::Column
+        if source.last_counter.is_some() {
+            assert!(matches!(
+                result,
+                Err(EditError::Unsupported(WriteBlocker::Column))
+            ));
         } else {
-            WriteBlocker::IndexedColumn
-        };
-        assert!(matches!(
-            result,
-            Err(EditError::Unsupported(blocker)) if blocker == expected
-        ));
+            // Manual indexed targets are now qualified independently; an empty
+            // group preserves every original record, key and historical byte.
+            let plan = result.unwrap();
+            assert_eq!(plan.before_bytes(), source.bytes);
+            assert_eq!(plan.after_bytes(), source.bytes);
+            assert_eq!(plan.changed_rows(), 0);
+        }
     }
 }
 

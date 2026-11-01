@@ -1,4 +1,5 @@
 //! Complete joint target and carrier preflight before any record visitor.
+use super::indexed::CheckedIndexes;
 use super::name_work;
 use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpdates};
 use crate::{
@@ -40,7 +41,7 @@ pub(super) fn all(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
-    all_with_minimum(source, groups, 2, budget, cancelled)
+    all_with_minimum(source, groups, 2, None, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -50,13 +51,27 @@ pub(in crate::table::mutation) fn all_normal(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
-    all_with_minimum(source, groups, 1, budget, cancelled)
+    all_with_minimum(source, groups, 1, None, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_indexed(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &CheckedIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    indexed.require_source(image, source.table.schema(), budget, cancelled)?;
+    all_with_minimum(source, groups, 1, Some(indexed), budget, cancelled)
 }
 
 fn all_with_minimum(
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
     minimum: usize,
+    indexed: Option<&CheckedIndexes<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
@@ -105,10 +120,11 @@ fn all_with_minimum(
         if bound.iter().any(|prior: &Bound| prior.column == column) {
             return Err(EditError::Conflict);
         }
-        bound.push(qualify_selected(
+        bound.push(qualify_with_indexes(
             source,
             column,
             group.updates(),
+            indexed,
             budget,
             cancelled,
         )?);
@@ -117,11 +133,23 @@ fn all_with_minimum(
     Ok((bound, assignments))
 }
 
-// Both callers resolve and reject duplicate targets before field qualification.
+// Callers resolve and reject duplicate targets before field qualification.
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) fn qualify_selected(
     source: &Source,
     column: usize,
     updates: &[FixedScalarUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    qualify_with_indexes(source, column, updates, None, budget, cancelled)
+}
+
+fn qualify_with_indexes(
+    source: &Source,
+    column: usize,
+    updates: &[FixedScalarUpdate],
+    indexed: Option<&CheckedIndexes<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
@@ -147,7 +175,10 @@ pub(in crate::table::mutation) fn qualify_selected(
         for key in index.columns() {
             check(budget, cancelled)?;
             if key.number() == column {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                let Some(indexed) = indexed else {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                };
+                indexed.require_target(schema, column, budget, cancelled)?;
             }
         }
     }

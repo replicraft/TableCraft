@@ -7,6 +7,7 @@ use std::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_testkit::access::canonical_ordinary_indexed::{self as model, Case, Source};
+use tablecraft_testkit::access::canonical_ordinary_indexed_targets as targets;
 
 const PAGE: usize = 4096;
 
@@ -125,23 +126,47 @@ fn retained_index_cli_commits_eighteen_literal_images_and_reads_targets() {
 }
 
 #[test]
-fn generated_and_indexed_id_requests_refuse_even_when_no_row_matches() {
+fn generated_id_refuses_while_manual_indexed_id_updates_and_empty_selections_commit() {
     for header in [5_u8, 6] {
         for case in [Case::CounterOnly, Case::CounterPrimary, Case::UniqueManual] {
             let mut source = model::source(case);
             source.bytes[20..24].copy_from_slice(&u32::from(header).to_le_bytes());
             assert!(source.ordinary);
             for predicate in ["[Id]=1", "[Id]=-1"] {
+                // The newly qualified manual indexed target has its own frozen
+                // complete-image witness. This does not alter the older source.
+                let expected = if source.last_counter.is_none() && predicate == "[Id]=1" {
+                    let witness = targets::source(header, targets::Recipe::ManualSeven);
+                    assert_eq!(witness.before, source.bytes);
+                    witness.expected.unwrap()
+                } else {
+                    source.bytes.clone()
+                };
                 let root = tempfile::tempdir().unwrap();
                 let path = root.path().join("target.accdb");
                 let journal = root.path().join("journal");
                 fs::write(&path, &source.bytes).unwrap();
                 let sql = format!("UPDATE [Items] SET [Id]=7 WHERE {predicate}");
                 let output = update(&path, &journal, &sql);
-                assert!(!output.status.success(), "{}: {predicate}", case.id());
-                assert!(output.stdout.is_empty());
-                assert!(!output.stderr.is_empty());
-                assert_eq!(fs::read(&path).unwrap(), source.bytes);
+                if source.last_counter.is_some() {
+                    assert!(!output.status.success(), "{}: {predicate}", case.id());
+                    assert!(output.stdout.is_empty());
+                    assert!(!output.stderr.is_empty());
+                } else {
+                    assert!(
+                        output.status.success(),
+                        "{}",
+                        String::from_utf8_lossy(&output.stderr)
+                    );
+                    assert!(output.stderr.is_empty());
+                    let report = if predicate == "[Id]=1" {
+                        b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n".as_slice()
+                    } else {
+                        b"Transaction\tCommitted\nMatched rows\t0\nChanged rows\t0\nJournal namespace\tRetired and synchronized\n".as_slice()
+                    };
+                    assert_eq!(output.stdout, report);
+                }
+                assert_eq!(fs::read(&path).unwrap(), expected);
                 assert!(!journal.exists());
                 assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
             }

@@ -150,8 +150,9 @@ fn retained_counter_index_typed_and_sql_sessions_save_thirty_six_complete_images
 }
 
 #[test]
-fn empty_manual_groups_commit_but_empty_readonly_or_indexed_id_groups_refuse() {
+fn empty_manual_indexed_groups_commit_while_generated_id_groups_refuse() {
     let mut empty_saves = 0;
+    let mut indexed_empty_saves = 0;
     let mut refused = 0;
     for header in [5, 6] {
         for identity in [
@@ -194,50 +195,57 @@ fn empty_manual_groups_commit_but_empty_readonly_or_indexed_id_groups_refuse() {
                 locked(&path);
                 empty_saves += 1;
 
-                let failure = if typed {
+                let result = if typed {
                     let editor = session
                         .edit_table(source.table, &mut budget(), &|| false)
                         .unwrap();
-                    editor
-                        .plan_updates("Id", &[], &mut budget(), &|| false)
-                        .err()
-                        .unwrap()
+                    editor.plan_updates("Id", &[], &mut budget(), &|| false)
                 } else {
                     let query =
                         parse_query("UPDATE Items SET Id=7 WHERE Id=-1", ParseLimits::default())
                             .unwrap();
-                    session
-                        .plan_update(query.query(), &mut budget(), None, &|| false)
-                        .err()
-                        .unwrap()
+                    session.plan_update(query.query(), &mut budget(), None, &|| false)
                 };
-                let expected = if source.last_counter.is_some() {
-                    WriteBlocker::Column
+                if source.last_counter.is_some() {
+                    let failure = result.err().unwrap();
+                    assert!(matches!(
+                        adapter_error(&failure),
+                        journal::Error::Plan(RecoverableEditError::Edit(EditError::Unsupported(
+                            WriteBlocker::Column
+                        )))
+                    ));
+                    assert_eq!(failure.phase(), Phase::Planning);
+                    assert_eq!(failure.state(), SessionState::Ready);
+                    assert_eq!(failure.last_completed(), Some(receipt));
+                    assert_eq!(failure.current_outcome(), None);
+                    assert_eq!(failure.pair_state(), None);
+                    assert_eq!(fs::read(&path).unwrap(), source.bytes);
+                    assert!(!bundle.exists());
+                    locked(&path);
+                    failure.into_session().release().unwrap();
+                    refused += 1;
                 } else {
-                    WriteBlocker::IndexedColumn
-                };
-                assert!(matches!(
-                    adapter_error(&failure),
-                    journal::Error::Plan(RecoverableEditError::Edit(EditError::Unsupported(blocker)))
-                        if *blocker == expected
-                ));
-                assert_eq!(failure.phase(), Phase::Planning);
-                assert_eq!(failure.state(), SessionState::Ready);
-                assert_eq!(failure.last_completed(), Some(receipt));
-                assert_eq!(failure.current_outcome(), None);
-                assert_eq!(failure.pair_state(), None);
-                assert_eq!(fs::read(&path).unwrap(), source.bytes);
-                assert!(!bundle.exists());
-                locked(&path);
-                failure.into_session().release().unwrap();
+                    let staged = result.unwrap();
+                    assert_eq!((staged.matched_rows(), staged.changed_rows()), (0, 0));
+                    let (session, indexed_receipt) =
+                        staged.apply(&bundle, &mut budget(), &|| false).unwrap();
+                    assert_eq!(indexed_receipt.changed_rows(), Some(0));
+                    assert_eq!(indexed_receipt.outcome(), Some(RecoveryOutcome::Committed));
+                    assert_eq!(session.last_completed(), Some(indexed_receipt));
+                    assert_eq!(fs::read(&path).unwrap(), source.bytes);
+                    assert!(!bundle.exists());
+                    locked(&path);
+                    session.release().unwrap();
+                    indexed_empty_saves += 1;
+                }
                 ExclusiveFile::open(&path).unwrap().close().unwrap();
                 assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
-                refused += 1;
             }
         }
     }
     assert_eq!(empty_saves, 12);
-    assert_eq!(refused, 12);
+    assert_eq!(indexed_empty_saves, 4);
+    assert_eq!(refused, 8);
 }
 
 #[test]

@@ -677,3 +677,6 @@ mod ordinary_inline;
 
 #[path = "normal/ordinary_counter_index.rs"]
 mod ordinary_counter_index;
+
+#[path = "normal/ordinary_indexed_targets.rs"]
+mod ordinary_indexed_targets;

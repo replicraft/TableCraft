@@ -1,4 +1,5 @@
 //! Ordinary fixed requests require fresh complete content ownership proof.
+mod indexed;
 mod proof;
 mod selection;
 
@@ -34,6 +35,9 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.fixed.plan").entered();
         let source = capture(&self, table, budget, cancelled)?;
+        if indexed::selected(&source, original, budget, cancelled)? {
+            return indexed::plan(self, source, table, original, budget, cancelled);
+        }
         preflight(&source, original, budget, cancelled)?;
 
         let (patches, changed_rows) =
