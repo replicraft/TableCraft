@@ -291,3 +291,27 @@ qualification before this operation. Parent acknowledgement never renames.
 [Focused source/API and broader checks pass](../testing/results/intact-retired-confirmation-2026-10-30.json).
 Partial garbage, missing children, automatic discovery, unsupported platforms and
 hardware power-loss qualification remain outside this intact-bundle path.
+
+## Sealed V2 inspection and completion
+
+`inspect_v2` validates the existing V2 grammar, independent image lengths,
+digest and marker using the existing loader. `CheckedV2` retains the paid immutable
+images and the same mutable journal borrow. Inspection performs no writes or
+synchronization and never retries V1 or an unknown format. Native consumers must
+reconstruct and compare both complete images before consuming recovery.
+
+`CheckedV2::recover` uses that already loaded record and requires explicit
+`ResizableDurableStorage`. Pending recovery validates all current byte origins
+and intermediate length before restoring the original image and length; committed
+recovery requires exact AFTER. `confirm_completed` needs only `DurableStorage`,
+requires exact BEFORE or AFTER according to the marker, and acknowledges both
+barriers without writing or resizing. A mixed target cannot be confirmed as a
+settled image. The outcome describes current agreement rather than a historical
+transaction claim. Existing V1 and V2 wire bytes remain unchanged.
+
+Six focused tests cover the independent V2 golden records, retained journal
+borrow without reload, intermediate lengths, corruption, resource limits,
+cancellation, barrier failures and write-free confirmation. Filesystem capability
+and failure checks are in the [retained-pair contract](FILESYSTEM_JOURNALS.md).
+See the [verification record](../testing/results/checked-v2-retained-targets-2026-11-01.json).
+These generic operations establish no native write permission.

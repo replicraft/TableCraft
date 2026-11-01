@@ -43,11 +43,21 @@ pub fn recover_resizable<D: ResizableDurableStorage, J: DurableStorage>(
     }
 
     let record = format::load(journal, budget, cancelled)?;
+    recover_loaded(target, journal, &record, budget, cancelled)
+}
+
+pub(super) fn recover_loaded<D: ResizableDurableStorage, J: DurableStorage>(
+    target: &mut D,
+    journal: &mut J,
+    record: &Record,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RecoveryOutcome, JournalError> {
     let verification = match record.state {
         State::Pending => Verification::Pending,
         State::Committed => Verification::Committed,
     };
-    verify_target(target, &record, verification, budget, cancelled)?;
+    verify_target(target, record, verification, budget, cancelled)?;
 
     if record.state == State::Pending {
         storage::write_image(target, 0, &record.before, budget, cancelled)?;

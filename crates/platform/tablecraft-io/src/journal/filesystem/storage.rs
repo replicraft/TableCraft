@@ -1,6 +1,9 @@
 use crate::{ExclusiveFile, IoError, journal::DurableStorage};
 use std::io::{self, ErrorKind, Read, Seek, SeekFrom, Write};
 
+mod resizable;
+pub use resizable::ResizablePairedTarget;
+
 /// A borrowed storage view of an already paired locked descriptor. Its private
 /// inner reference cannot be replaced with another ExclusiveFile guard. No raw
 /// handle, clone, lock release or explicit truncation/resize method is exposed.

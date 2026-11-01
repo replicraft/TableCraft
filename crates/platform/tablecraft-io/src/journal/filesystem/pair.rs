@@ -2,7 +2,7 @@
 mod transfer;
 pub use transfer::TargetTransferFailure;
 
-use super::storage::PairedStorage;
+use super::storage::{PairedStorage, ResizablePairedTarget};
 use super::{
     BindingError, OfflineTarget,
     reopen::{self, ExistingBundle, ReopenError},
@@ -325,6 +325,17 @@ impl OfflineJournalPair {
             PairedStorage::new(self.target.storage_mut()?),
             PairedStorage::new(&mut self.bundle.journal),
         ))
+    }
+
+    /// Borrow a resizable target and fixed journal on the SAME held pair.
+    /// Normal active-state guards and recovery-required transition are identical
+    /// to storage(). No descriptor is reopened, cloned, unlocked or exposed.
+    /// Native policy qualification remains the caller's responsibility.
+    pub fn resizable_storage(
+        &mut self,
+    ) -> Result<(ResizablePairedTarget<'_>, PairedStorage<'_>), PairError> {
+        let (target, journal) = self.storage()?;
+        Ok((ResizablePairedTarget::new(target), journal))
     }
 
     /// Lend read/seek/sync-only views for completed-image confirmation. Both
