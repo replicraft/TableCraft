@@ -232,8 +232,9 @@ Encryption rewrites and qualified Jet 4 fixed Int32 UPDATEs use fresh outputs;
 existing files are not overwritten. Encryption failure behavior is described in
 its owning guide. Jet 4 UPDATE uses a complete synced temporary and no-clobber
 publication. General native saves remain unavailable. Separate explicit
-[offline Jet4 journal commands](JOURNAL_EDITING.md) apply or recover the qualified
-normal Int32 profile in place; they grant no ACE save permission.
+[offline journal commands](JOURNAL_EDITING.md) apply or recover qualified normal
+updates in place: Jet4 Int32 and restricted ACE BeforeChange profiles, including
+atomic unindexed fixed-scalar groups. They do not enable general native saves.
 Read [encryption](../access/storage/NATIVE_ENCRYPTION.md), [offline UPDATE limits](../access/writes/QUERY_EDITING.md)
 and [native write boundaries](../access/writes/NATIVE_WRITES.md) before using these commands.
 

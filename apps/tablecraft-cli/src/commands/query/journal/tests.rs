@@ -69,7 +69,7 @@ fn preopen_dispatch_rejects_passwords_and_unsupported_shapes() {
     use clap::Parser;
 
     for sql in [
-        "UPDATE Items SET Score=12, Id=2",
+        "INSERT INTO Items (Id,Score) VALUES (1,12)",
         "UPDATE [remote].[Items] SET Score=12",
         "DELETE FROM Items WHERE Id=1",
     ] {
@@ -155,3 +155,9 @@ fn journal_command_arguments_keep_recovery_free_of_sql_and_copy_flags() {
         );
     }
 }
+
+#[path = "tests/batch.rs"]
+mod batch;
+
+#[path = "tests/password_priority.rs"]
+mod password_priority;

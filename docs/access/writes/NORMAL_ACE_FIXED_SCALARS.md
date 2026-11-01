@@ -79,8 +79,28 @@ their typed failure and session state.
 Thirty-two native complete-image commits and the original-request recovery
 controls pass. Fifty-six real typed session saves cover the first 28 literal
 outcomes in both group orders. Separate controls verify the old Int32 record
-dispatch. SQL/CLI qualification and wider feature checks remain separate in the
+dispatch. Wider feature checks remain separate in the
 [execution record](../../testing/results/ace16-normal-fixed-before-change-2026-10-31.json).
 The [source contract](../../testing/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) records
 independent source/read evidence. Native Access event/save/reopen and
 mixed-client qualification remain unrun.
+
+## SQL and CLI integration
+
+`query journal-update` now selects the existing single-assignment service or the
+shared batch service from validated SQL shape before opening the target. It uses
+the same retained offline session, original snapshot, staged result and journal
+lifecycle. No failed planner is retried through another route. Multiple SET
+expressions read original row values; macro execution follows their composition.
+
+The separate SQL discriminator corpus passes twelve complete-image CLI saves,
+including both joint SET orders, plus eager-error, duplicate/unsupported target
+and genuine zero-match controls. The original source SQL left the reserved Money
+target unquoted; that first parser failure is retained. Executable successor
+requests quote `[Money]` without changing original requests, source images or
+literal expected outcomes. A separate immutable CLI artifact passes twelve fresh
+complete-image saves and twelve exact full TSV readbacks. Its first run stopped
+on an incorrect expected GUID; the successor uses the original fixture's literal
+GUID and independent BEFORE inventory. Both attempts remain in the
+[execution record](../../testing/results/ace16-normal-fixed-sql-cli-2026-10-31.json).
+See the [CLI guide](../../cli/JOURNAL_EDITING.md).
