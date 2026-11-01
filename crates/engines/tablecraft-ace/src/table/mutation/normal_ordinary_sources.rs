@@ -121,3 +121,5 @@ fn all_twenty_four_ordinary_views_match_independent_tables_and_values() {
 mod export;
 
 mod inline_sources;
+
+mod indexed_sources;

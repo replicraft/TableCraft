@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-31",
+  "scope": "Independent ordinary counter and retained single-Int32-index source reads",
+  "recipes": 24,
+  "header_selectors": [
+    5,
+    6
+  ],
+  "exported_inputs": 48,
+  "positive_views": 18,
+  "adversarial_views": 30,
+  "source_first_freeze": {
+    "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/first-source-freeze.json",
+    "bytes": 1034,
+    "sha256": "d47d82e2b0e229a8a0d57d23f1c0a4b1253a52a3cf781b6a7d78b278eccbc8c5"
+  },
+  "source_model": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_ordinary_indexed.rs",
+    "bytes": 19071,
+    "sha256": "071e4a25f54db8687165e25e7a3dbe8b2015082f5c1e955fb5bf8e04e7224ba8"
+  },
+  "native_read": {
+    "log": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/native-first-root.log",
+      "bytes": 796,
+      "sha256": "c73864dfd39b8b61f489b450fcec88499283562f742901cc28eaa2ecc51a3be8"
+    },
+    "tests_passed": 2,
+    "runtime_seconds": 0.04,
+    "result": "All48 originals construct; eighteen positive complete table/index/constraint views match literal source facts"
+  },
+  "explicit_export": {
+    "freeze": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/export-first-freeze.json",
+      "bytes": 274,
+      "sha256": "085835d56674f8af0bd3a3ce3e572c248d339c0fd74e64c5c236daf0e9abf8c8"
+    },
+    "log": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/export-first-root.log",
+      "bytes": 527,
+      "sha256": "bec723ccd2306e9d24ad0c0bea43452b27c21e085a73eb1534c64182e5302422"
+    },
+    "tests_passed": 1,
+    "inventory": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/originals-first/inventory.tsv",
+      "bytes": 4611,
+      "sha256": "9eb724c80cf430d8b9f5fbe499ba22228066f19a4d43726484d08848177a0db1"
+    },
+    "expected_reports": 18,
+    "exclusive_create": true
+  },
+  "retained_preflight_correction": {
+    "evidence": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/compile-precall.json",
+      "bytes": 16405,
+      "sha256": "d3fc746a76beda8c05cfb3dcde0e8942b675b54d5b93c0f852c306590aa2dbb2"
+    },
+    "description": "Initial controller selected the -d argument slot instead of the pinned JAR; corrected before compiler or SDK launch",
+    "compiler_children_before_correction": 0,
+    "sdk_children_before_correction": 0,
+    "source_or_observer_changes": false
+  },
+  "independent_sdk": {
+    "observer": {
+      "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/getter/OrdinaryContentGetter.java",
+      "bytes": 30719,
+      "sha256": "4759ba5a25e8b882d06c9f83f3d04f824889a3a7a94d4b56971d9f97a1d656eb"
+    },
+    "compile_preflight": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/compile-precall.json",
+      "bytes": 16405,
+      "sha256": "d3fc746a76beda8c05cfb3dcde0e8942b675b54d5b93c0f852c306590aa2dbb2"
+    },
+    "compile_stdout": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/compile-first.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile_stderr": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/compile-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile_result": "PASS, javac --release21 -Xlint:all -Werror",
+    "classes": 3,
+    "plan": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/plan-before-calls.json",
+      "bytes": 35983,
+      "sha256": "2a91c83e06cbbdb65924136a2a2e83759d661f91cb2b2d14e9c6f3ff07f597a0"
+    },
+    "receipt": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/reports-first/receipt.json",
+      "bytes": 20633,
+      "sha256": "0a1b053efaf77eb1878b34476b08369c2a5f61c4e5b662ba71c3520a26357b76"
+    },
+    "started": 18,
+    "completed": 18,
+    "failure": null,
+    "saved_verification": {
+      "path": ".cache/ace16-ordinary-indexed-sources-next-20261031/sdk-first/saved-verification.json",
+      "bytes": 170,
+      "sha256": "803f2d0b096c95ac31aa1e8a3ba81fbf7b3dc7837252e52673d9b36df30c1cdb"
+    },
+    "result": "PASS18 exact stdout/empty stderr; call identity/arguments/exit/transport checked; all frozen inputs/JAR/classes unchanged",
+    "sdk_writer_calls": 0
+  },
+  "source_cases": [
+    "counter-only",
+    "counter-primary",
+    "variable-primary",
+    "nullable-ordinary",
+    "unique-manual",
+    "alias-history",
+    "relocated-primary",
+    "retained-tree",
+    "inactive-index-tail"
+  ],
+  "boundaries": [
+    "Positive source read evidence does not certify ordinary content or grant normal write permission",
+    "Thirty adversarial views remain original source controls; their validator outcomes are outside this record",
+    "No index mutation, counter generation, normal save or journal/session outcome is claimed by this record",
+    "No native Microsoft Access, Windows or mixed-client qualification"
+  ],
+  "third_party_database_bytes_copied": false
+}
