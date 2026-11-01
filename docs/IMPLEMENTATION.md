@@ -17,6 +17,8 @@ engineering previews and independent comparisons do not establish full parity.
 Thirty-eight independently authored originals and 28 literal expected images
 now qualify wide user requests beside Int32-only native macro effects. Two
 native source/anchor tests and 66 exact independent SDK inventories pass.
+An additive nullable-Int32 companion passes two native tests and eight independent
+inventories, retaining inactive payloads while observing user and macro NULLs.
 Signed-zero and alias DATE bits, scaled Currency, Boolean masks and inactive
 NULL payloads retain explicit raw coverage. The first exporter compile correction
 is preserved separately. This is source qualification before normal typed saves,

@@ -10769,3 +10769,10 @@ pass before normal typed producer calls. The first exporter formatting failure
 is retained; no expected bytes were changed. These are repository-authored
 fixtures under the repository license, with typed ordinal and native save
 qualification boundaries recorded separately.
+
+The additive `canonical_nullable_fixed_int32_before_change` companion reuses
+only the original manual mixed image and original row facts. Four originals and
+four literal outcomes preserve inactive Id/Score payloads during NULL changes.
+Native/hash checks and eight independent SDK inventories pass before new normal
+writer calls. Its observer is a separately named successor to the present-Score
+reader; the predecessor and all first 66 views remain unchanged.

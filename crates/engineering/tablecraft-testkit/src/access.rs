@@ -167,3 +167,6 @@ pub mod canonical_nullable_index_id_before_change;
 
 /// Original typed fixed-scalar requests and literal BeforeChange source images.
 pub mod canonical_fixed_before_change;
+
+/// Original nullable Int32 requests and literal native macro NULL effects.
+pub mod canonical_nullable_fixed_int32_before_change;

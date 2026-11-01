@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_nullable_fixed_int32_before_change_sources",
+  "status": "native_anchors_strict_and_eight_independent_inventories_passed",
+  "normal_fixed_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "source_freeze": {
+    "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/source-first-root-freeze.json",
+    "bytes": 1007,
+    "sha256": "18872cb6f4fa81048a1bca206cc28873d732a975b3354393dc96e6cb77a889a3"
+  },
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "originals": 4,
+    "literal_expected_images": 4,
+    "views": 8,
+    "image_bytes": 294912,
+    "image_aggregate_digest": "cf95ee06fe37d7e4ac665d59a1b689263150500cdb03d92d70bcc4b65cde394f",
+    "original_request_digest": "c4311a7b508a82d2ded722b15e1c55a43e0d58ef998ae6e40fc6cf2210472524",
+    "original_request_column": "Id",
+    "macro_only_column": "Score",
+    "inactive_values_retained": [
+      1,
+      1000
+    ]
+  },
+  "checks": {
+    "source_first": {
+      "passed": 1,
+      "seconds": 0.04,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/source-first-root.log",
+        "bytes": 659,
+        "sha256": "809c1591f0dc234485db8d010a00f119cf31a390644fe0ee0d345905aa4565b1"
+      }
+    },
+    "export_first": {
+      "passed": 1,
+      "seconds": 0.07,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/export-first-root.log",
+        "bytes": 1430,
+        "sha256": "53b1c395c55db9629ab69d7ac7b536b7fc06e70db9ae4089bdc338b24cef283a"
+      },
+      "inventory": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/originals-first/inventory.json",
+        "bytes": 1048,
+        "sha256": "a956655e2fd67c0f15c1217e56a02d95ae4b1a5b83e6ef007443bcb48f16a6ef"
+      },
+      "requests": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/originals-first/requests.json",
+        "bytes": 986,
+        "sha256": "71b69e82f4d17a8a9616171cb8778cf8fcf91d5c0645cef2ef482244df983f08"
+      }
+    },
+    "source_and_anchors": {
+      "passed": 2,
+      "ignored": 1,
+      "seconds": 0.04,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/source-anchors-first-root.log",
+        "bytes": 859,
+        "sha256": "a29fbf941faf61da19f63531f8dd488bd508913fe0b0cc655b582f529b470579"
+      }
+    },
+    "strict": {
+      "passed": true,
+      "seconds": 20.19,
+      "all_targets": true,
+      "features": "journal only",
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-testkit"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/source-strict-first-root.log",
+        "bytes": 307,
+        "sha256": "2857c15983b4f4affadf2ca48d88213bc94cc3fd50441f15a8f21e2924869381"
+      }
+    },
+    "observer_compile": {
+      "passed": true,
+      "database_calls": 0,
+      "classes": 2,
+      "freeze": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/java-first-freeze.json",
+        "bytes": 1723,
+        "sha256": "e143df64650346f962f1c29816fd5eee15163bc169186da3dced3b7e85687e35"
+      },
+      "precall": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/compile-precall-first-root.json",
+        "bytes": 1571,
+        "sha256": "322b90e7fc116164add8326ba88de051d2a4f1267236626d315f3962d19fe945"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/compile-receipt-first-root.json",
+        "bytes": 1085,
+        "sha256": "f492e85c7b2ba4d0eee2a6a4c38c9104c448185cb7e08553a7cec4106beb2323"
+      }
+    },
+    "independent_sdk": {
+      "passed": true,
+      "full_inventories": 8,
+      "predecessor_boundary": "Retained static present-Score precondition, not an observed failure",
+      "authority": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/input-authority.json",
+        "bytes": 22311,
+        "sha256": "afef4687f25301e04aba69a4fe82811abcbb340f6032971e17ecc67c7636abf6"
+      },
+      "freeze": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/code-and-source-first-freeze.json",
+        "bytes": 10459,
+        "sha256": "c9036fbd85c72c376347af592c0ecde37037374bf11a77f347f96a53009a018c"
+      },
+      "expected": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/expected-first-root.json",
+        "bytes": 10303,
+        "sha256": "c4bb102188cad9916fc78740883d9f918c277db91ee0d1f466af5693a06168fc"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/receipt-first-root.json",
+        "bytes": 9395,
+        "sha256": "5aa04d6946869faa6991986977fccc356353e4dc1d1deaee5bd0408b4336bcf4"
+      },
+      "runner": {
+        "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/runner-first-root.log",
+        "bytes": 95,
+        "sha256": "fab8c7d8f4a66572c3f0ea71d9092d68f6f8d683b1a4bebd839d352bfa9b4d08"
+      },
+      "saved_verifier": {
+        "passed": true,
+        "child_calls": 0,
+        "log": {
+          "path": ".cache/ace16-native-before-change-nullable-fixed-int32-next-20261031/getter/saved-first-root.log",
+          "bytes": 272,
+          "sha256": "f4061e1af8f88fb8b7acbf6ae208127c59025d64fba959bfe705dafd24e1a3fc"
+        }
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6959,
+      "missing_targets": 0,
+      "dependency_packages": 15,
+      "diff_check": true
+    }
+  }
+}

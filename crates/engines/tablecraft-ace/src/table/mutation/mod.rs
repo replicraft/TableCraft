@@ -122,3 +122,10 @@ mod creation_multiple_sources;
 
 #[cfg(all(test, feature = "journal"))]
 mod normal_fixed_scalar_sources;
+
+#[cfg(all(test, feature = "journal"))]
+mod normal_nullable_fixed_int32_sources;
+
+#[cfg(all(test, feature = "journal"))]
+#[path = "normal_nullable_fixed_int32_sources/anchors.rs"]
+mod normal_nullable_fixed_int32_anchors;
