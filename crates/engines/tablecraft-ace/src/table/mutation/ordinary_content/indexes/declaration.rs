@@ -2,7 +2,12 @@
 use super::super::refused;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema,
-    format::{bytes::u16_at, data_type::INT32, layout, page::PAGE_BYTES},
+    format::{
+        bytes::u16_at,
+        data_type::{BYTE, CURRENCY, INT16, INT32, INT64},
+        layout,
+        page::PAGE_BYTES,
+    },
     header::check,
     inspect_table_index_counter,
     table::indexes::definition::{
@@ -20,6 +25,9 @@ const HISTORY_OFFSET: usize = size_of::<u32>();
 const NO_REFERENCE_OFFSET: usize = 13;
 const NO_REFERENCE: u32 = u32::MAX;
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
+
+#[cfg(test)]
+mod tests;
 
 pub(super) fn names<'index>(
     image: &NativeImage,
@@ -128,7 +136,7 @@ pub(super) fn physical<'index>(
     Ok(())
 }
 
-pub(in crate::table::mutation::ordinary_content) fn validate<'index>(
+pub(in crate::table::mutation::ordinary_content) fn validate_selected<'index>(
     image: &NativeImage,
     schema: &TableSchema,
     indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
@@ -138,7 +146,7 @@ pub(in crate::table::mutation::ordinary_content) fn validate<'index>(
     let mut logical_count = 0_usize;
     for index in indexes.clone() {
         check(budget, cancelled)?;
-        qualify(schema, index, budget, cancelled)?;
+        qualify_selected(schema, index, budget, cancelled)?;
         logical_count += 1;
     }
     if logical_count != schema.layout.logical_indexes {
@@ -190,20 +198,64 @@ pub(super) fn qualify(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    qualify_for(schema, index, KeyFamily::GlobalInt32, budget, cancelled)
+}
+
+fn qualify_selected(
+    schema: &TableSchema,
+    index: &NativeIndex,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    qualify_for(
+        schema,
+        index,
+        KeyFamily::SelectedIntegral,
+        budget,
+        cancelled,
+    )
+}
+
+// Global content closure still uses the Int32 population and frame certifier.
+// Selected-table closure has a separate complete readonly scalar-index proof.
+#[derive(Clone, Copy)]
+enum KeyFamily {
+    GlobalInt32,
+    SelectedIntegral,
+}
+
+fn qualify_for(
+    schema: &TableSchema,
+    index: &NativeIndex,
+    family: KeyFamily,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     check(budget, cancelled)?;
     let [key] = index.columns() else {
         return Err(refused());
     };
     let constraints = index.constraints().ok_or_else(refused)?;
     let field = schema.columns().get(key.number()).ok_or_else(refused)?;
+    if matches!(family, KeyFamily::GlobalInt32)
+        && (field.native_type() != INT32 || field.scalar_type() != Some(ScalarType::Int32))
+    {
+        return Err(refused());
+    }
+    let width = match (field.native_type(), field.scalar_type()) {
+        (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
+        (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
+        (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
+        (INT64, Some(ScalarType::Int64)) => size_of::<i64>(),
+        (CURRENCY, Some(ScalarType::Currency)) => size_of::<i64>(),
+        _ => return Err(refused()),
+    };
     if index.native_type() > 1
         || index.foreign_reference().is_some()
         || constraints.ignore_nulls()
         || field.number() != key.number()
-        || field.native_type() != INT32
-        || field.scalar_type() != Some(ScalarType::Int32)
+        || field.storage_length() != width
         || !field.fixed()
-        || field.storage_length() != size_of::<i32>()
         || field.extended_flags() != 0
     {
         return Err(refused());

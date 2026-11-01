@@ -3,6 +3,8 @@ mod dependencies;
 mod footprint;
 mod namemap;
 pub(in crate::table::mutation) mod properties;
+#[cfg(feature = "journal")]
+mod retained_integral;
 pub(in crate::table::mutation) mod validation;
 
 use crate::{
@@ -374,6 +376,17 @@ fn capture_with_payload(
         });
     }
 
+    #[cfg(feature = "journal")]
+    let retained_integral = retained_integral::qualify(
+        image,
+        &indexes,
+        &projected,
+        &payload,
+        &long_values,
+        budget,
+        cancelled,
+    )?;
+
     let mut physical: Vec<usize> = Vec::new();
     budget
         .charge_allocation(indexes.indexes().len() as u64, size_of::<usize>() as u64)
@@ -411,56 +424,68 @@ fn capture_with_payload(
             continue;
         }
         physical.push(position);
-        budget
-            .charge_allocation(records.len() as u64, size_of::<(u32, Option<i32>)>() as u64)
-            .map_err(InspectError::from)?;
-        let mut expected = Vec::new();
-        expected
-            .try_reserve_exact(records.len())
-            .map_err(|_| InspectError::Allocation)?;
-        if column.native_type() == COMPLEX {
-            let keys = complex
-                .iter()
-                .find(|keys| keys.column == key.number())
-                .ok_or(InspectError::Malformed)?;
-            if keys.keys.len() != records.len() {
-                return Err(InspectError::Malformed.into());
-            }
-            for (root, key) in records.iter().zip(&keys.keys) {
-                check(budget, cancelled)?;
-                expected.push((root.reference, *key));
-            }
-        } else if column.native_type() == INT32
-            && column.scalar_type() == Some(tablecraft_schema::ScalarType::Int32)
-        {
-            for field in projected.columns() {
-                name_work(field.name(), column.name(), budget)?;
-            }
-            let dense = projected
-                .columns()
-                .iter()
-                .position(|field| field.name() == column.name())
-                .ok_or(InspectError::Malformed)?;
-            for (root, row) in records.iter().zip(projected.rows()) {
-                check(budget, cancelled)?;
-                let key = match row.get(dense).ok_or(InspectError::Malformed)? {
-                    Value::Null => None,
-                    Value::Int32(value) => Some(*value),
-                    _ => return Err(EditError::Preservation),
-                };
-                expected.push((root.reference, key));
-            }
+        #[cfg(feature = "journal")]
+        let retained_pages = if retained_integral {
+            Some(retained_integral::pages(image, index, budget, cancelled)?)
         } else {
-            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-        }
-        let pages = preserved::certify(
-            image,
-            schema.definition_page(),
-            index,
-            &expected,
-            budget,
-            cancelled,
-        )?;
+            None
+        };
+        #[cfg(not(feature = "journal"))]
+        let retained_pages: Option<Vec<u32>> = None;
+        let pages = if let Some(pages) = retained_pages {
+            pages
+        } else {
+            budget
+                .charge_allocation(records.len() as u64, size_of::<(u32, Option<i32>)>() as u64)
+                .map_err(InspectError::from)?;
+            let mut expected = Vec::new();
+            expected
+                .try_reserve_exact(records.len())
+                .map_err(|_| InspectError::Allocation)?;
+            if column.native_type() == COMPLEX {
+                let keys = complex
+                    .iter()
+                    .find(|keys| keys.column == key.number())
+                    .ok_or(InspectError::Malformed)?;
+                if keys.keys.len() != records.len() {
+                    return Err(InspectError::Malformed.into());
+                }
+                for (root, key) in records.iter().zip(&keys.keys) {
+                    check(budget, cancelled)?;
+                    expected.push((root.reference, *key));
+                }
+            } else if column.native_type() == INT32
+                && column.scalar_type() == Some(tablecraft_schema::ScalarType::Int32)
+            {
+                for field in projected.columns() {
+                    name_work(field.name(), column.name(), budget)?;
+                }
+                let dense = projected
+                    .columns()
+                    .iter()
+                    .position(|field| field.name() == column.name())
+                    .ok_or(InspectError::Malformed)?;
+                for (root, row) in records.iter().zip(projected.rows()) {
+                    check(budget, cancelled)?;
+                    let key = match row.get(dense).ok_or(InspectError::Malformed)? {
+                        Value::Null => None,
+                        Value::Int32(value) => Some(*value),
+                        _ => return Err(EditError::Preservation),
+                    };
+                    expected.push((root.reference, key));
+                }
+            } else {
+                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+            }
+            preserved::certify(
+                image,
+                schema.definition_page(),
+                index,
+                &expected,
+                budget,
+                cancelled,
+            )?
+        };
         for page in pages {
             allocated(image, &global, &[page], budget, cancelled)?;
             // No index page may also be an ordinary DATA page. Metadata protects

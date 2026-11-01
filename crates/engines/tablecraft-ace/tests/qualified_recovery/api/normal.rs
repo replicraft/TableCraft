@@ -689,3 +689,6 @@ mod fitted;
 
 #[path = "normal/genuine_property_lval.rs"]
 mod genuine_property_lval;
+
+#[path = "normal/genuine_retained_numeric.rs"]
+mod genuine_retained_numeric;

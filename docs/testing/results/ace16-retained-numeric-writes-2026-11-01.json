@@ -1,0 +1,185 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-independent-engineering",
+  "scope": "Normal unindexed fixed updates beside unchanged local single-column Byte/Int16/Int64/Currency indexes in the native17 catalog family",
+  "source_record": "ace16-retained-numeric-sources-2026-11-01.json",
+  "source_evidence_commit": "d474dc93",
+  "strict_retained_check_commit": "5be3d3ee",
+  "source_admission_before_producer": true,
+  "native_access": "Unrun",
+  "counts": {
+    "source_files": 2,
+    "expected_images": 8,
+    "native_commits": 8,
+    "typed_saves": 8,
+    "sql_saves": 8,
+    "cli_saves": 8,
+    "cli_complete_readbacks": 8,
+    "recovery_contexts": 24,
+    "genuinely_mixed_partial_target_images": 0,
+    "stale_requests_refused": 8,
+    "protected_after_forgeries_refused": 16,
+    "canonical_owner_positive_contexts": 8,
+    "member_role_conflict_contexts": 8,
+    "indexed_wide_empty_groups_refused": 8,
+    "ace_unit_passed": 1099,
+    "ace_unit_ignored_at_full_batch": 57,
+    "recovery_passed": 83,
+    "recovery_ignored": 12,
+    "adapter_unit_passed": 79,
+    "cli_unit_passed": 94,
+    "additional_explicit_source_resource_test_functions": 1
+  },
+  "source_resource_controls": "Exact and one-less Bytes/Rows/Steps; entry/middle/final cancellation under both headers; no partial Source published",
+  "partial_state_boundary": "Marker17-to42 differs in one byte; partial journal states are tested without inventing a third mixed target image",
+  "ownership": "Fresh complete trees plus actual catalog member roles, canonical physical aliases, TD/header/map storage and declared/live LVAL exclusion",
+  "feature_checks": [
+    "all-feature strict engine/adapter/CLI all-targets",
+    "journal-only strict all-targets",
+    "preview-only strict all-targets",
+    "minimal reader",
+    "minimal adapter"
+  ],
+  "logs": [
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/strict-facts-first.log",
+      "bytes": 754,
+      "sha256": "60453991bf8d66d711c607db458445c9dd218eaec996a67bcbe1a5b8314ba2c1"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/ordinary-content-first.log",
+      "bytes": 3112,
+      "sha256": "509816a3571d65428664f662d052e337424c7065597a8a601a123444cb53d8bb"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/declaration-family-final-second.log",
+      "bytes": 825,
+      "sha256": "db2d6c6d33e8435311a11ee53e1ae30ba17db173b031a9392a863ad75fac9970"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/ownership-roles-second.log",
+      "bytes": 736,
+      "sha256": "d2d8fe0c0e2b7b6e35b6b24e57872338b7a55c936bd708ba9d71db79bf76ca69"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/source-admission-final-second.log",
+      "bytes": 401,
+      "sha256": "cb3a88a62c8bcda81f5c210b09682755308813d3d46877fb250d55c59e5f2d2e"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/selection-refusals-second.log",
+      "bytes": 567,
+      "sha256": "5619e4df212f0d5b5f374f8252d9e1d42dd5467985966c6cf4ed9443aa4a8b9c"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/source-limits-first.log",
+      "bytes": 538,
+      "sha256": "ba75d554065ae88ec95b1eaab64426a87a31a67c9b28165dacdf72f57fd6ea57"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/native-saves.log",
+      "bytes": 768,
+      "sha256": "6ecd9c0393378095ee31939a5b6e5120b69148421d4bc5c138de7dc6d006670c"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/access-saves.log",
+      "bytes": 613,
+      "sha256": "8b00452687e7013159546fd0bcd800c94feaddd376f93c2502daf122a5a1ea9e"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/cli-saves.log",
+      "bytes": 848,
+      "sha256": "358d460517ee8501ef579253bff014efa1d574beeb45fe5def7f00664b690ec5"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/ace-unit-final.log",
+      "bytes": 155382,
+      "sha256": "3f9990bdb19fd5ae1762bebd5279c5143170afff513dc1582341df7fa83afa54"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/recovery-final.log",
+      "bytes": 11796,
+      "sha256": "02f45d1dafd5fa595a94ad45c7cee3f151e6790531e8752d5f8dfb4908618821"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/access-unit-final.log",
+      "bytes": 9690,
+      "sha256": "5aa9c0bc076481e76c422c380ecb22486fa8e4fbfcbf67c98c96af45f135ea60"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/cli-unit-final.log",
+      "bytes": 10616,
+      "sha256": "2c1278c7be9d36fd644d72a630321b265b96bf4c1fc1138c28fbcf1c04048420"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/strict-final.log",
+      "bytes": 526,
+      "sha256": "5874317e9cd6a00dff4153690fc525c85cc3df96b41bfdb3ce8918733a9a9fd7"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/journal-only-final.log",
+      "bytes": 184,
+      "sha256": "73fdd96934d96750acf517e724785440d1d33dc203194a0572935dd20ed5a283"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/preview-only-final.log",
+      "bytes": 184,
+      "sha256": "52c26ecec839f98c3d42c027893e4d5062279f9435918e8ef97c3cff140dbaa9"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/minimal-reader-final.log",
+      "bytes": 183,
+      "sha256": "a023ccc1dc12525e2a563be598773f6feb9b577a5d6062ffdd3392c97a009375"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/minimal-adapter-final.log",
+      "bytes": 301,
+      "sha256": "c47f7dd705b20bc0016ef975c5d5fb3eb8e42f194ed44992c86853c78fd52d79"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/strict-source-limits.log",
+      "bytes": 184,
+      "sha256": "5b3196986f099ad8c55cfc5028d22349d374a9fb3fcb6545abf69dc86b7ec979"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/fmt-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/doc-links-final.log",
+      "bytes": 53,
+      "sha256": "e9d447aec66267bee6cc4726401e1d9612edfdbdd47a8ee29f8eb7e00a2e478f"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/dependency-final.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    }
+  ],
+  "retained_first_attempts": [
+    {
+      "log": "source/admission-first.log",
+      "result": "New source test used unsupported LowerHex formatting for digest array; corrected test hash formatting"
+    },
+    {
+      "log": "source/admission-second.log",
+      "result": "Metadata capability stopped at indexed ID before eligible unindexed Marker; changed structural candidate search without error-based retries"
+    },
+    {
+      "log": "declaration-family-first-compile-failure.log",
+      "result": "New role helper lacked LimitError-to-InspectError conversion on two allocation charges; corrected propagation"
+    },
+    {
+      "log": "ownership-roles-first.log",
+      "result": "Header-overlap negative assumed inline-map base0; actual base91 retained by independently rebasing original members before adding only page0"
+    }
+  ],
+  "expected_images_retuned_after_producer": false,
+  "limitations": [
+    "Wider indexes remain readonly targets",
+    "Initial global closed family retains Int32-only index grammar",
+    "No record/page/index growth or EOF change",
+    "No general INSERT/DELETE or native Access save qualification"
+  ]
+}

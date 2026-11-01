@@ -61,6 +61,7 @@ impl NativeImage {
     ) -> Result<(), EditError> {
         let _span = tracing::debug_span!("native.ordinary.fixed.table").entered();
         let source = capture(self, table, budget, cancelled)?;
+        let mut indexed_column = None;
         for field in source.table.schema().columns() {
             check(budget, cancelled)?;
             let supported = matches!(
@@ -93,18 +94,30 @@ impl NativeImage {
                     indexed |= key.number() == field.number();
                 }
             }
+            if indexed {
+                // Complete metadata selection precedes the indexed service:
+                // an unchanged wide index must not hide an eligible unindexed
+                // sibling just because indexed Id occurs earlier in the schema.
+                if indexed_column.is_none() {
+                    indexed_column = Some(field.name());
+                }
+                continue;
+            }
             let groups = [FixedColumnUpdates::new(
                 source.table.schema().name(),
                 field.name(),
                 &[],
             )];
-            if indexed {
-                let facts = CheckedIndexes::capture(self, table, budget, cancelled)?;
-                binding::all_indexed(self, &source, &groups, &facts, budget, cancelled)?;
-                return Ok(());
-            }
             return preflight(&source, &groups, budget, cancelled);
         }
-        Err(EditError::Unsupported(WriteBlocker::Column))
+        let column = indexed_column.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let groups = [FixedColumnUpdates::new(
+            source.table.schema().name(),
+            column,
+            &[],
+        )];
+        let facts = CheckedIndexes::capture(self, table, budget, cancelled)?;
+        binding::all_indexed(self, &source, &groups, &facts, budget, cancelled)?;
+        Ok(())
     }
 }

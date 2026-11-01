@@ -53,6 +53,12 @@ not the long-term compatibility target or the broader reader.
 
 ## Native seventeen-field target family
 
+This selected-table family also supports unindexed updates beside
+[unchanged Byte/Int16/Int64/Currency indexes](NORMAL_ACE_RETAINED_NUMERIC.md),
+using complete-owned generic checks and actual catalog member-role exclusion.
+Its wider readonly index policy does not expand the global closed family or
+permit those indexed fields as mutation targets.
+
 A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
 now admits the exact native seventeen-field catalog through a strict conjunction:
 three NULL code carriers and either NULL/empty or strictly qualified nonempty
