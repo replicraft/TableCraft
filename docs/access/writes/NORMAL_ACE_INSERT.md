@@ -11,7 +11,9 @@ tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES
 
 The first normal INSERT profile accepts complete explicitly supplied rows on a
 qualified native 17-field ordinary table with no required programs. The target
-must have no indexes and no relationship involving it. Every operation freshly derives NoRequired and the
+must have no relationship involving it. Unindexed targets retain their existing
+route; qualified ascending, present-Int32 root-leaf indexes now use the indexed
+route described below. Every operation freshly derives NoRequired and the
 complete native Source; creator provenance, an empty inventory or a caller flag
 cannot grant admission. The initial global 15-field catalog family remains outside this
 normal INSERT profile. Passive qualified properties and existing readonly LVAL
@@ -88,7 +90,7 @@ builds pass. Existing DELETE and EOF-update host workflows remain intact. See th
 and [retained host record](../../testing/results/ace16-retained-normal-insert-2026-11-01.json)
 for exact scope and preserved first failures.
 
-Next compatibility work includes indexed insertion, AutoNumber/default behavior,
+Next compatibility work includes broader index trees/keys, AutoNumber/default behavior,
 new LVAL values, allocation and positive-program INSERT. Native Access save/reopen
 and Windows behavior remain unrun; this bounded portable route does not establish
 complete ACE16 compatibility.
@@ -113,3 +115,38 @@ controls, 329 existing INSERT tests and strict all-feature/journal checks pass.
 The CLI readback verifies four UTF16 units and signed first-character code -257.
 See the [separate execution record](../../testing/results/ace16-normal-insert-feff-writes-2026-11-01.json)
 for focused scope and preserved first preview assertion failures.
+
+## Indexed existing-page insertion
+
+The indexed route requires complete ordinary scalar declarations and checked
+single-column Int32 indexes with present values, ascending direction and one
+qualified root leaf per physical index. All logical aliases must agree. Catalog
+ownership and live LVAL checks exclude conflicting page roles. Ignored-NULL,
+composite, descending, nullable-key, foreign-reference and interior-node profiles
+remain outside this initial insertion route. Empty batches retain these checks.
+
+The shared index builder reserves all rows and keys before copying candidate
+bytes, maintaining original topology without a split or allocation continuation.
+Each physical index is updated once even when several logical aliases expose it.
+Its historical counter increases by distinct new key families, rather than by
+inserted rows or alias count. Uniqueness and counter overflow refuse before staging.
+Existing slots, inactive leaf tails, maps and EOF remain protected.
+
+Independent proof replays DATA placement from original capacity and complete
+requests, retaining each resulting ROW identity at that request's placement.
+It manually encodes and orders key/ROW entries, rebuilds leaf framing and
+historical deltas, recaptures final Source and compares the complete image.
+It accepts no producer reservations or prepared keys. Physical row enumeration
+order cannot substitute for request-to-ROW association.
+
+Two genuine originals and four independently authored AFTERs passed six native
+source views and 36 independent SDK reports before matching producer calls.
+The single request adds one distinct key to each physical index; the two-row
+batch adds two primary keys but one secondary family. Four native commits,
+typed/SQL same-session saves and CLI saves match those complete images. Recovery
+checks include authored mixed DATA/INDEX/definition targets, pending rollback,
+committed mixed-target refusal and protected-byte forgeries. Duplicate-key
+refusals retain exact typed errors and CLI exit status. See the
+[source contract](../../testing/ACE16_NORMAL_INDEXED_INSERT_SOURCES.md) and
+[indexed write record](../../testing/results/ace16-normal-indexed-writes-2026-11-01.json).
+These checks do not establish native Microsoft Access save/reopen compatibility.

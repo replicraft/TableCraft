@@ -1,0 +1,217 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal source-bound native17 indexed DELETE and existing-page ASC present-Int32 indexed INSERT; fixed-length V1 journal, original TCND/TCNA intents",
+  "source_evidence_commit": "7fe205f6",
+  "source_records": [
+    "ace16-normal-indexed-delete-sources-2026-11-01.json",
+    "ace16-normal-indexed-insert-sources-2026-11-01.json"
+  ],
+  "native_focused": {
+    "passed": true,
+    "functions": 13,
+    "delete_functions": 7,
+    "insert_functions": 6,
+    "shared_cancellation_functions": 2
+  },
+  "delete": {
+    "complete_image_commits": 10,
+    "recovery_contexts": 22,
+    "committed_mixed_target_refusals": 8,
+    "after_forgery_refusals": 64,
+    "stale_original_witness_refusals": 8,
+    "full_planner_resource_contexts": 4,
+    "resource_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "exact_and_one_less": true,
+    "cancellation": [
+      "entry",
+      "middle",
+      "last"
+    ],
+    "typed_sql_principal_saves": 18,
+    "empty_follow_on_saves": 18,
+    "stale_handle_refusals": 18,
+    "host_restart_contexts": 8,
+    "cli_principal_saves": 8,
+    "cli_empty_follow_on_saves": 8,
+    "cli_readbacks": 16
+  },
+  "insert": {
+    "complete_image_commits": 4,
+    "empty_plans": 2,
+    "native_duplicate_refusals": 2,
+    "index_alias_history_forgery_refusals": 32,
+    "full_recovery_contexts": 4,
+    "authored_mixed_target_contexts": 16,
+    "mixed_pending_rollback": 8,
+    "mixed_committed_target_mismatch_refusals": 8,
+    "typed_sql_successive_saves": 8,
+    "host_precise_duplicate_refusals": 4,
+    "cli_commits": 4,
+    "cli_readbacks": 4,
+    "cli_precise_duplicate_refusals": 2,
+    "full_planner_resource_contexts": 4,
+    "exact_and_one_less_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "cancellation": [
+      "entry",
+      "middle",
+      "last"
+    ]
+  },
+  "focused_logs": [
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/native-first.log",
+      "bytes": 2372,
+      "sha256": "c433ba80b0bc317499ab2163560ec9cface6a65d10498650caf1f68a44926594"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/native-second.log",
+      "bytes": 2009,
+      "sha256": "84dcca7315931dc09069ecc74cf857e14e6f38f19459ebe86411c75931709234"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/leaf-first.log",
+      "bytes": 1033,
+      "sha256": "0cc6ac0f513a86f8fb8a2cb5f25ac6f078c177cf244e6582dcf354d2ada87710"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/host-first.log",
+      "bytes": 1706,
+      "sha256": "cad0d0c6bad152127abb7ac3c473c255764ae7c0266ed1d70d0dfcaf5c4eb235"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/host-second.log",
+      "bytes": 700,
+      "sha256": "98b6ad3a6893eecffbfa6da134c540155499b01b087a045928d27740be67eaf6"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/cli-first.log",
+      "bytes": 1534,
+      "sha256": "db6195b93c58145d293e55da6b1d2014f4690df9fef67658705c440feb79341a"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/cli-second.log",
+      "bytes": 714,
+      "sha256": "b3901ff128c8f2dc1630a435d0217a0714e44c7de20d26a2e18e35767123c259"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/insert-resources-first.log",
+      "bytes": 429,
+      "sha256": "1cd523d461a308c27f0c71475e327ce20a1fd420bf7753cd9781a6b726b092e9"
+    }
+  ],
+  "preserved_first_failures": [
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-all-first.log",
+      "bytes": 2576,
+      "sha256": "ebee70128954f1952a31bb3dd337d29ee038cf25aa1ab6c361d7376ebc79a1a2"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-all-second.log",
+      "bytes": 1516,
+      "sha256": "efd595686767b21e16fa73ffac99c83866c22e4d2def4079afad712aa66503a4"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-journal-first.log",
+      "bytes": 1373,
+      "sha256": "621870f1933dd3a0458ecaae2ae421ea50497b1957a39ff45f69492ad67131dd"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-journal-second.log",
+      "bytes": 1628,
+      "sha256": "05576d79921f083af572cdb11ac2d8a75841466d82005deffd706a474a898a34"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-preview-first.log",
+      "bytes": 4544,
+      "sha256": "aee9771a0f6d87dc60625491ba9e13c31eb9b29cda2814b5115104336074ca71"
+    }
+  ],
+  "first_failure_resolution": "Lint spacing/placement/signature and feature-specific imports were corrected. Journal-only build required the shared numeric row-key encoder while rich preview-only implementations remain gated. No golden images or native admission rules were relaxed. Preview tests now import InspectError explicitly rather than inheriting a production-parent import.",
+  "broad_checks": {
+    "passed": true,
+    "ace_units": {
+      "passed": 1121,
+      "ignored": 97
+    },
+    "access_units": {
+      "passed": 79
+    },
+    "cli_units": {
+      "passed": 102
+    },
+    "feature_checks": [
+      "strict all-features/all-targets on ACE/Access/CLI/testkit",
+      "strict journal-only/all-targets",
+      "strict preview-only/all-targets",
+      "minimal ACE/Access"
+    ],
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-journal-third.log",
+        "bytes": 184,
+        "sha256": "c89950abdb354f16b616dcb15dc98ed35f51745302e8801240011fec8778558b"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-preview-second.log",
+        "bytes": 184,
+        "sha256": "b61a0c0b586ecaa475b23f66a9a8f2626eeaada0006cde9e2c28f8defe9bcc3e"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "e9d9f39118878a59fd8330c25c60f664dd25927546e083b9166247d153af64b9"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-all-final.log",
+        "bytes": 403,
+        "sha256": "50b7af21f648f142140caa3968b7951e599034124c7514596ccad3bf2e1d2804"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/units-first.log",
+        "bytes": 176136,
+        "sha256": "f00d44adaeb6a19fa5114d89b6aebf02435a54096419156f0fc972f88f1a4614"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/cli-units-first.log",
+        "bytes": 11816,
+        "sha256": "7a07f37ca2703bc61b6c77cbc2f0ece46cfa072d6f3b44fcbc112b6ede0e4a13"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/recovery-first.log",
+        "bytes": 21810,
+        "sha256": "c3a5e3b5192d9c73902cb784dc3a221fc838fe9c11357a5d7fafab754b9a5a89"
+      }
+    ],
+    "qualification": "Broad batch precedes later source-only follow-on test modules; focused source and resource additions are recorded separately.",
+    "recovery_functions": {
+      "passed": 83,
+      "ignored": 60
+    }
+  },
+  "unrun": [
+    "Microsoft Access save/reopen comparisons",
+    "Windows locking and durability qualification",
+    "DESC/NULL indexed DELETE source comparison",
+    "cross-page varying-width indexed INSERT source comparison"
+  ],
+  "remaining": [
+    "broader index trees/key types",
+    "default/AutoNumber generation",
+    "relationships/cascades",
+    "positive-program INSERT/DELETE",
+    "new LVAL payloads",
+    "allocation and schema mutation"
+  ],
+  "engine_commits": {
+    "delete": "2ed5b6ce",
+    "insert": "565e7562"
+  }
+}
