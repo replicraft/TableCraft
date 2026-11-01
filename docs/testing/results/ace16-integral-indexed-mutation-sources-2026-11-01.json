@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-01",
+  "scope": "Source-only Int64/Currency root-leaf INSERT and DELETE expectations",
+  "views": 34,
+  "independent_sdk_observations": 284,
+  "new_numeric_mutation_producer_calls": 0,
+  "native_source_gate": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/native-source-second.log",
+    "bytes": 434,
+    "sha256": "a822cd5f002c1c2f435c0587eb8f22d12c3398e8a9a16b937a225e3b7448355c"
+  },
+  "native_source_test_result": "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1246 filtered out; finished in 4.41s",
+  "source_manifest": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/after-source/expected-first/manifest.json",
+    "bytes": 93032,
+    "sha256": "359cec123016c1b9bb4d0d3a5e5891c6b3af6ffacaabb21860db32962dea721d"
+  },
+  "independent_saved_verification": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/after-source/reads-first/saved-verification.json",
+    "bytes": 635,
+    "sha256": "d3a3922c15db22b3d64137169f4687d3a71931472fda31387e37c38bd0a47898"
+  },
+  "first_attempts": {
+    "original_inventory": "Initial raw preflight incorrectly assumed inactive NULL payload bytes were zero. SDK-created originals retained preceding MIN bytes under a clear mask. Originals were preserved; a separate read-only validator retained those bytes as opaque original facts.",
+    "native_invocation": "First native invocation omitted --ignored and executed zero tests. The explicit second invocation executed the source gate; the first log is preserved.",
+    "native_first_log": {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/native-source-first.log",
+      "bytes": 629,
+      "sha256": "a79c43cf0bcc18c41be144b7e2a78474b58807e3485da1fbd08628274856e550"
+    }
+  },
+  "coverage": [
+    "both priority ACE header codes",
+    "Int64 and scaled Currency exact MIN/NULL/MAX values",
+    "ascending/descending keys and logical aliases",
+    "literal complete DATA/index images and historical counters",
+    "whole-image preservation and complete native source qualification"
+  ],
+  "mutation_status": "Pending implementation and producer qualification",
+  "native_access": "UNRUN"
+}
