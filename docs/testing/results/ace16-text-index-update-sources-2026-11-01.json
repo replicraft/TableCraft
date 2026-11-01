@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-01",
+  "scope": "Native source qualification for text-index-update before matching producers",
+  "native_executed_functions": 1,
+  "native_returncode": 0,
+  "native_receipt": {
+    "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-text-source-gates-20261101/text-native-current-boundary-first.log",
+    "bytes": 427,
+    "sha256": "dbc36805b30cfa0bb7e1bec39b088212873beff070d24417f6f188a99dfe8a09"
+  },
+  "source_qualification_precedes_matching_producers": true,
+  "matching_mutation_or_creator_calls": 0,
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "artifacts": [
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source/first-private-checkpoint.json",
+      "bytes": 3729,
+      "sha256": "77c448407c902d7a821ad22ebfd6e06206cd5012e360b1df9d0d22638a39ad03"
+    },
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source/code-first-freeze.json",
+      "bytes": 4471,
+      "sha256": "f730917bc3f781b20d9974659854aad5f2ed0e7fa03c9960e152c99592b2f020"
+    },
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/native-source-draft/first-private-checkpoint.json",
+      "bytes": 2032,
+      "sha256": "801bca762a6bff4bd65384c82a708b20cbc58939f5cd9d4157e74c8ecbc4a75d"
+    },
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source/expected-first/manifest.json",
+      "bytes": 61902,
+      "sha256": "710051d16eefd9c7a08709b67f8291c7938f09b4bd2a971115c2b970f577868a"
+    },
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source/reads-first/receipt.json",
+      "bytes": 42082,
+      "sha256": "3ec9f1a69c5e00459706f93532b05acfa8b4b8aa2e47cd501c981382ffb2ccf7"
+    },
+    {
+      "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source/reads-first/saved-verification.json",
+      "bytes": 603,
+      "sha256": "e3f8400ab636913062a2c4a2dd6d77c9127110c62c8b9daa04196a43733e65d4"
+    }
+  ],
+  "unique_images": 34,
+  "literal_request_contexts": 44,
+  "generic_native_table_contexts": 36,
+  "sdk_complete_read_only_reports": 34,
+  "actual_action_Source": "CURRENT_REFUSAL: Unsupported(ActiveContent) from selected Text declaration profile.",
+  "actual_action_Source_granted": false,
+  "laws": [
+    "Exact General Legacy/2010 LCID/version and raw UTF16 declaration/profile remain source-bound.",
+    "Expected components come only from same-original carrier/key evidence, never TextProfile producer output.",
+    "Noops, empty requests, aliases, tails, history, maps and EOF remain independently reconstructed.",
+    "Public body/module/Extra absence is checked separately; the coarse ActiveContent refusal is a profile gap, not evidence of malicious content."
+  ]
+}
