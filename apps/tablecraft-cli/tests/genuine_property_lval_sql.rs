@@ -120,7 +120,7 @@ fn genuine_property_lval_cli_saves_and_reads_twelve_literal_images() {
 
 #[test]
 #[ignore = "requires the frozen original and twelve literal expectation files"]
-fn genuine_property_lval_cli_capacity_refuses_without_journal_or_file_changes() {
+fn genuine_property_lval_cli_declared_width_refuses_without_journal_or_file_changes() {
     let cases = sources::load_all(verify);
     let mut refusals = 0;
     for case in cases.iter().filter(|case| case.recipe == Recipe::Overflow) {
@@ -131,11 +131,11 @@ fn genuine_property_lval_cli_capacity_refuses_without_journal_or_file_changes() 
         let output = update(
             &path,
             &bundle,
-            "UPDATE Sentinel SET Marker='aaaaaaaaaaaaaaaaaaa' WHERE [ID]=23",
+            "UPDATE Sentinel SET Marker='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' WHERE [ID]=23",
         );
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
-        assert_eq!(output.stderr, b"error: offline write Planning failed: update backend rejected the candidate: native write profile is unsupported (RowLayout)\n");
+        assert_eq!(output.stderr, b"error: offline write Planning failed: update backend rejected the candidate: native write profile is unsupported (Column)\n");
         assert_eq!(fs::read(&path).unwrap(), case.before);
         assert!(!bundle.exists());
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);

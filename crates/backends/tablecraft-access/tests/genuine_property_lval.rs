@@ -138,7 +138,7 @@ fn genuine_property_lval_sessions_save_twelve_typed_and_twelve_sql_images() {
 
 #[test]
 #[ignore = "requires the frozen original and twelve literal expectation files"]
-fn genuine_property_lval_capacity_and_stale_handles_keep_files_leases_and_receipts() {
+fn genuine_property_lval_declared_width_and_stale_handles_keep_files_leases_and_receipts() {
     let cases = sources::load_all(verify);
     for case in cases.iter().filter(|case| case.recipe == Recipe::Overflow) {
         let root = tempfile::tempdir().unwrap();
@@ -150,7 +150,7 @@ fn genuine_property_lval_capacity_and_stale_handles_keep_files_leases_and_receip
             .unwrap();
         let updates = [CellUpdate::new(
             editor.snapshot().row_handle(0).unwrap(),
-            case.replacement.clone(),
+            Value::Text("a".repeat(41)),
         )];
         let failure = editor
             .plan_columns(
@@ -162,11 +162,11 @@ fn genuine_property_lval_capacity_and_stale_handles_keep_files_leases_and_receip
                 &|| false,
             )
             .err()
-            .expect("nineteen raw UTF16 units exceed this original record capacity");
+            .expect("forty-one UTF16 units exceed the declared forty-unit field width");
         assert!(matches!(
             failure.cause(),
             Cause::Editing(journal::Error::Plan(RecoverableEditError::Edit(
-                EditError::Unsupported(WriteBlocker::RowLayout)
+                EditError::Unsupported(WriteBlocker::Column)
             )))
         ));
         assert_eq!(failure.phase(), Phase::Planning);

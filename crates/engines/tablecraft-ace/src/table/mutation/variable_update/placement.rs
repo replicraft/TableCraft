@@ -2,7 +2,8 @@
 use super::super::{
     EditError, WriteBlocker,
     append::State,
-    page_update::{roots::Root, space::Space, stage::Placement},
+    page_update::{roots::Root, stage::Placement},
+    record_placement::space::Space,
     rows::RowAssignment,
     variable_split::metadata::Metadata,
 };

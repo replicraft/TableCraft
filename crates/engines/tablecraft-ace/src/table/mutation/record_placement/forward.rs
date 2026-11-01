@@ -1,12 +1,13 @@
 //! Append hidden targets without moving or reusing any original physical slot.
 use super::super::{EditError, WriteBlocker, patch::BytePatch, rows::RowAssignment};
-use super::{roots::Root, space::Space};
+use super::{slots, space::Space};
+use crate::table::mutation::record_roots::Root;
 use crate::{
     InspectError, NativeImage,
     format::{
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{row_count, row_range},
+        reader::row_count,
         row::{
             DELETED_MASK, MAX_SLOTS, OFFSET_MASK, RELOCATED_MASK, ROW_COUNT_OFFSET, SLOT_BYTES,
             reference, reference_page, reference_slot, slot_offset,
@@ -17,10 +18,10 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) const FREE_OFFSET: usize = DATA_SIGNATURE.len();
-pub(super) const POINTER_BYTES: usize = size_of::<u32>();
+pub(in crate::table::mutation) const FREE_OFFSET: usize = DATA_SIGNATURE.len();
+pub(in crate::table::mutation) const POINTER_BYTES: usize = size_of::<u32>();
 
-pub(super) struct Event {
+pub(in crate::table::mutation) struct Event {
     pub root: u32,
     pub root_word: u16,
     pub root_range: Range<usize>,
@@ -28,7 +29,7 @@ pub(super) struct Event {
     pub appended: Option<u8>,
 }
 
-pub(super) struct Page {
+pub(in crate::table::mutation) struct Page {
     pub number: u32,
     pub before: Vec<u8>,
     pub after: Vec<u8>,
@@ -53,12 +54,12 @@ impl BytePatch for Page {
     }
 }
 
-pub(super) struct Plan {
+pub(in crate::table::mutation) struct Plan {
     pub pages: Vec<Page>,
 }
 
 impl Plan {
-    pub(super) fn new() -> Self {
+    pub(in crate::table::mutation) fn new() -> Self {
         Self { pages: Vec::new() }
     }
 
@@ -86,11 +87,7 @@ impl Plan {
             return Err(InspectError::Malformed.into());
         }
         let count = row_count(raw)?;
-        let start = if count == 0 {
-            PAGE_BYTES
-        } else {
-            row_range(raw, count - 1)?.1
-        };
+        let start = slots::frontier(raw, budget, cancelled)?;
         if usize::from(u16_at(raw, FREE_OFFSET)?) != start - slot_offset(count) {
             return Err(InspectError::Malformed.into());
         }
@@ -125,7 +122,7 @@ impl Plan {
         self.pages.last_mut().ok_or(EditError::Preservation)
     }
 
-    pub(super) fn apply<U: RowAssignment>(
+    pub(in crate::table::mutation) fn apply<U: RowAssignment>(
         &mut self,
         image: &NativeImage,
         root: &Root<'_, U>,
@@ -182,11 +179,7 @@ impl Plan {
 
             let slot =
                 u8::try_from(count).map_err(|_| EditError::Unsupported(WriteBlocker::RowLayout))?;
-            let end = if count == 0 {
-                PAGE_BYTES
-            } else {
-                row_range(&page.after, count - 1)?.1
-            };
+            let end = slots::frontier(&page.after, budget, cancelled)?;
             let start = end
                 .checked_sub(record.len())
                 .filter(|start| *start >= slot_offset(count + 1))

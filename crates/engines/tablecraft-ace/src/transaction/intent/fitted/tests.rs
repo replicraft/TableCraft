@@ -461,3 +461,5 @@ fn fitted_model_codec_borrowing_and_binding_pay_exact_work_and_cancel() {
         }
     }
 }
+
+mod owned_growth;

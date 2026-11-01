@@ -15,12 +15,12 @@ const UNIT_BYTES: usize = size_of::<u16>();
 const ESCAPED_PREFIX: [u8; 3] = [0xff, 0xfe, 0];
 
 enum Compression {
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     MinimumSize,
     DeclaredPreference(usize),
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) fn encode(
     field: &NativeColumn,
     value: &Value,
@@ -71,7 +71,7 @@ fn encode_with(
                 narrow &= unit != 0 && unit <= u16::from(u8::MAX);
             }
             let compression_fits = match policy {
-                #[cfg(feature = "ace16-write-preview")]
+                #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
                 Compression::MinimumSize => count > MARKER.len(),
                 Compression::DeclaredPreference(capacity) => MARKER.len() + count <= capacity,
             };

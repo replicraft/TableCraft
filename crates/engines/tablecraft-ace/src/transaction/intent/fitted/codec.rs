@@ -1,7 +1,8 @@
-//! TCNI0005/profile5 only; old record layouts and carrier widths are unchanged.
+//! Shared original-group framing; public fitted encoding retains TCNI0005.
 use super::{
     carrier,
     model::{self, Family, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates},
+    profile::WireProfile,
     read,
 };
 use crate::{InspectError, header::check, transaction::intent::NativeIntentError};
@@ -149,6 +150,15 @@ impl NativeFittedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::Fitted, budget, cancelled)
+    }
+
+    pub(in crate::transaction::intent) fn encode_profile(
+        &self,
+        profile: WireProfile,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
         let _span = tracing::debug_span!("native.fitted_intent.encode").entered();
         let total = encoded_length(self, budget, cancelled)?;
         let count = model::validate_groups(self.groups(), budget, cancelled)?;
@@ -162,9 +172,9 @@ impl NativeFittedEditIntent {
         budget
             .charge(Resource::Steps, HEADER_BYTES as u64)
             .map_err(InspectError::from)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(profile.magic());
         output.extend_from_slice(&(total as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(&profile.number().to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -215,6 +225,15 @@ impl NativeFittedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        read::decode(bytes, budget, cancelled)
+        read::decode(bytes, WireProfile::Fitted, budget, cancelled)
+    }
+
+    pub(in crate::transaction::intent) fn decode_profile(
+        bytes: &[u8],
+        profile: WireProfile,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, profile, budget, cancelled)
     }
 }

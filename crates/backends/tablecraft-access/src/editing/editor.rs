@@ -291,13 +291,13 @@ impl NativeEditor {
 
 #[cfg(feature = "journal")]
 impl NativeEditor {
-    pub(super) fn plan_recoverable_ordinary_fitted(
+    pub(super) fn plan_recoverable_ordinary_variable(
         self,
         groups: Vec<NativeFittedIntentGroup>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
-        self.image.plan_recoverable_ordinary_fitted_updates(
+        self.image.plan_recoverable_ordinary_variable_updates(
             self.snapshot.name(),
             groups,
             budget,

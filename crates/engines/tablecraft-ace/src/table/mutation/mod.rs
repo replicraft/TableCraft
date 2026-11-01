@@ -47,6 +47,8 @@ mod preservation;
 mod preserved_source;
 #[cfg(feature = "ace16-write-preview")]
 mod preview;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod record_placement;
 #[cfg(feature = "journal")]
 mod record_protection;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]

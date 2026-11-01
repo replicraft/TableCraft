@@ -692,3 +692,9 @@ mod genuine_property_lval;
 
 #[path = "normal/genuine_retained_numeric.rs"]
 mod genuine_retained_numeric;
+
+#[path = "normal/genuine_owned_growth.rs"]
+mod genuine_owned_growth;
+
+#[path = "normal/genuine_owned_growth_joint.rs"]
+mod genuine_owned_growth_joint;

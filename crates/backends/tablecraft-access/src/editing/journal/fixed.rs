@@ -106,9 +106,9 @@ impl NativeJournalEditor {
                 .map_err(NativeEditError::from)?;
         }
         if self.route == JournalRoute::Ordinary
-            && self.fitted_columns_requested(columns, budget, cancelled)?
+            && self.variable_columns_requested(columns, budget, cancelled)?
         {
-            return self.plan_fitted_columns_with_count(columns, count, budget, cancelled);
+            return self.plan_variable_columns_with_count(columns, count, budget, cancelled);
         }
         let mut positions = vector(columns.len(), budget)?;
         let mut groups = vector(columns.len(), budget)?;

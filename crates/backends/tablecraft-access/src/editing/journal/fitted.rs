@@ -1,4 +1,4 @@
-//! Ordinary fitted requests retain exact original snapshot carriers and handles.
+//! Original variable requests retain exact carriers before native placement selection.
 use super::{
     Error, JournalRoute, NativeJournalEditor,
     fixed::{check, matched_rows, scalar, vector},
@@ -20,7 +20,7 @@ const COPY_BYTES: usize = 4096;
 impl NativeJournalEditor {
     /// Original target metadata chooses the request category before conversion.
     /// Empty Text/Binary groups retain their fitted semantics and are not dropped.
-    pub(super) fn fitted_columns_requested(
+    pub(super) fn variable_columns_requested(
         &self,
         columns: &[ColumnUpdates<'_>],
         budget: &mut ResourceBudget,
@@ -38,14 +38,14 @@ impl NativeJournalEditor {
         Ok(variable)
     }
 
-    pub(super) fn plan_fitted_columns_with_count(
+    pub(super) fn plan_variable_columns_with_count(
         self,
         columns: &[ColumnUpdates<'_>],
         count: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(RecoverableNativeEditPlan, usize), Error> {
-        let _span = tracing::debug_span!("access.journal.plan_fitted_columns").entered();
+        let _span = tracing::debug_span!("access.journal.plan_variable_columns").entered();
         check(budget, cancelled)?;
         if self.route != JournalRoute::Ordinary || self.profile != UpdateProfile::StoredScalar {
             return Err(NativeEditError::Unsupported.into());
@@ -145,7 +145,7 @@ impl NativeJournalEditor {
         let matched = matched_rows(rows, budget, cancelled)?;
         let plan = self
             .editor
-            .plan_recoverable_ordinary_fitted(groups, budget, cancelled)?;
+            .plan_recoverable_ordinary_variable(groups, budget, cancelled)?;
         Ok((plan, matched))
     }
 }

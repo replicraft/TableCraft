@@ -138,6 +138,18 @@ pub(in crate::table::mutation) fn rebuild(
     record::multiple::compose(schema, before, &payloads, budget, cancelled)
 }
 
+/// Minimum payload size for original-capacity planner selection, not admission.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn minimum_length(
+    field: &NativeColumn,
+    value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    storage::validate(field, value)?;
+    lengths(field, value, budget, cancelled).map(|(_, minimum)| minimum)
+}
+
 fn lengths(
     field: &NativeColumn,
     value: &Value,
@@ -182,7 +194,7 @@ fn single(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     match policy {
-        #[cfg(feature = "ace16-write-preview")]
+        #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
         RecordPolicy::GrowingPreferred => {
             return record::build(schema, cell.column, before, cell.value, budget, cancelled);
         }

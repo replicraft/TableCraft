@@ -36,6 +36,24 @@ pub(super) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
+    prepare_with(
+        image,
+        source,
+        groups,
+        RecordPolicy::FittedDeclared,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prepare_with(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    policy: RecordPolicy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Patch>, usize), EditError> {
     let bound = binding::all(source, groups, budget, cancelled)?;
     let schema = source.table.schema();
     let mut patches = binding::vector(bound.rows.len(), budget)?;
@@ -80,13 +98,17 @@ pub(super) fn prepare(
             &original.data,
             &layout,
             &variable,
-            RecordPolicy::FittedDeclared,
+            policy,
             budget,
             cancelled,
         )?;
-        if after.len() != original.data.len() {
+        if !policy.prefers_growth() && after.len() != original.data.len() {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
+        let mask_start = after
+            .len()
+            .checked_sub(layout.count.div_ceil(MASK_BITS))
+            .ok_or(EditError::Preservation)?;
         for assignment in &bound.assignments[selected.start..selected.end] {
             let Target::Fixed {
                 column,
@@ -135,7 +157,7 @@ pub(super) fn prepare(
                     .copy_from_slice(&payload[..width]);
             }
             let mask = after
-                .get_mut(layout.mask_start + field.number() / MASK_BITS)
+                .get_mut(mask_start + field.number() / MASK_BITS)
                 .ok_or(EditError::Preservation)?;
             let bit = 1 << (field.number() % MASK_BITS);
             *mask = (*mask & !bit) | if present { bit } else { 0 };

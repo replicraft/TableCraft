@@ -1,0 +1,232 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-independent-engineering",
+  "scope": "Normal native17 original-root-owned-DATA-page growth with TCNI6, Auto selection and forwarded TCNI5 continuation",
+  "source_records": [
+    "ace16-owned-growth-sources-2026-11-01.json",
+    "ace16-joint-owned-growth-sources-2026-11-01.json"
+  ],
+  "source_evidence_commits": [
+    "1bd7e3e6",
+    "6751868d"
+  ],
+  "source_reads_before_corresponding_producers": true,
+  "counts": {
+    "unique_independent_source_images": 10,
+    "independent_sdk_reads": 8,
+    "native_owned_growth_commits": 10,
+    "native_fitted_continuation_commits": 2,
+    "typed_session_saves": 12,
+    "sql_session_saves": 12,
+    "cli_saves": 12,
+    "cli_complete_readbacks": 12,
+    "recovery_contexts": 22,
+    "causal_mixed_partial_page_contexts": 4,
+    "protected_after_forgeries_refused": 14,
+    "authored_last_available_slot_positive_plans": 2,
+    "authored_exhausted_slot_refusals": 2,
+    "codec_test_functions": 3,
+    "physical_resource_slot_test_functions": 3,
+    "ace_unit_passed": 1105,
+    "ace_unit_ignored": 64,
+    "recovery_regression_passed": 83,
+    "recovery_regression_ignored": 17,
+    "adapter_unit_passed": 79,
+    "cli_unit_passed": 94,
+    "focused_cli_help_tests": 4
+  },
+  "joint_fixed_overlay": "ID NULL retains inactive23 and clears newmask67; ID24 writes newfixedpayload; both original group orders retain identical expectedimages",
+  "source_resource_controls": "Both headers exact/one-less Bytes, Rows, Steps and entry/middle/final cancellation before plan publication",
+  "intent_boundary": "TCNI5 explicit fitting behavior/bytes unchanged; TCNI6 stores original groups only and fresh recovery selects explicit growth, not Auto",
+  "shared_geometry": "Placement forward/space/page-audit owners extracted and existing preview/long-value consumers import actual new owners directly; general Reader unchanged",
+  "feature_checks": [
+    "strict all-feature engine/adapter/CLI all-targets",
+    "journal-only strict all-targets",
+    "preview-only strict all-targets",
+    "minimal reader",
+    "minimal adapter"
+  ],
+  "logs": [
+    {
+      "path": ".cache/owned-growth-next-20261101/codec-first.log",
+      "bytes": 962,
+      "sha256": "77086be48cfbf9b49ab60c4d1d27ce3262cd24bace7059513e62c6cd1abfa150"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/codec-second.log",
+      "bytes": 789,
+      "sha256": "e5b722f9d3625e9233ad4c0858b51e56f1b0dfd2e6a5f2e80e0be93ff0be1014"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/native-saves-first.log",
+      "bytes": 775,
+      "sha256": "4d467cd60c696327fae6c32cb044d8cf2aa66ca8a0e00c6082902dfb8b7b08e5"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/resource-slot-first.log",
+      "bytes": 776,
+      "sha256": "6c2d4a9d18f51e2f77e26737a3ad4242f171f96404cf04bac8f883e474de6078"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/resource-slot-second.log",
+      "bytes": 1396,
+      "sha256": "a59fec7270f3952ba20f6a6af33408cb85cf8de9feac5935c51620d664b9bdfe"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/resource-slot-third.log",
+      "bytes": 665,
+      "sha256": "ce7be0928c718dce10beb34dc945553b51861d901114a8c0c97e96d01670d030"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/resource-slot-final.log",
+      "bytes": 809,
+      "sha256": "bc6328d781aac2c635c5933695d819001a7891e254164d7854ed48249c9f9c88"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/native-saves-final.log",
+      "bytes": 1035,
+      "sha256": "503fa1508e4ccb122d280e74e914a1598b9070901ce68b5abc8c7a9d60bbe5dd"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/access-saves-first.log",
+      "bytes": 613,
+      "sha256": "b84ce86122ec3b5a0952281cbed9ff68acc476c374df78904eb88cc7dc207a30"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/cli-saves-first.log",
+      "bytes": 834,
+      "sha256": "6c761eb7059c1aa7a62b6f13dd6d9a7bf259205849a0c1b996a805c7d13a41b1"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/old-access-saves-first.log",
+      "bytes": 588,
+      "sha256": "033a05676183bbe8b994344569d2a1853da57d980c0775f7cf090741aa3e91c4"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/old-cli-saves-first.log",
+      "bytes": 567,
+      "sha256": "483055d639b3565cfdb71c88d1e3626a091d97fdbc2ff5059f26d21562d03277"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/joint-host-tests/access-first.log",
+      "bytes": 726,
+      "sha256": "9c3ec8196b715b89c3e55c786f84e360a939f36f85c9b0876fcf3b5640cb012e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/joint-host-tests/cli-first.log",
+      "bytes": 833,
+      "sha256": "7040d035a5708cea03ffc4e7ed93a20fe775a693f50115a1f4e32a43c44b3c8d"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/ace-unit-final.log",
+      "bytes": 157810,
+      "sha256": "2696dbd0da5034df68ee61651d24514da5ed654108356c1aa115deac1dd3c862"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/recovery-final.log",
+      "bytes": 12781,
+      "sha256": "b421f8f84d44641c9e26c7e1e06c4ee541e38bee9b3a80bc70032dc33a22a1c1"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/access-unit-final.log",
+      "bytes": 9802,
+      "sha256": "0c64dd1c8b593e272d377936b1c30efff910a0b1a2a670e2b509b07b4c597ef5"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/cli-unit-final.log",
+      "bytes": 10846,
+      "sha256": "cd424a6fe46fc67be1f07fe96dc02c16e34ae9634c02227e41b195cc63dcf10c"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/strict-final.log",
+      "bytes": 526,
+      "sha256": "53c3e8e17348ae7201ca3d176a706ed13e85e2e583f6c5faa140eed896b3b433"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/journal-only-final.log",
+      "bytes": 307,
+      "sha256": "1103d599fc87fbb15854a19de5063bd8da9814aad61cc1ecbbbeba4bcb10eb5e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/preview-only-final.log",
+      "bytes": 184,
+      "sha256": "de4ad704925b64cd5fbbc952aaf7cc71e18f193eabf5ffdf269a1194ac223231"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/minimal-reader-final.log",
+      "bytes": 183,
+      "sha256": "e570bfe5f7d4307325156c2d8fb0ba8a6f7692842c26a0dc9dfcf65c0771d515"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/minimal-adapter-final.log",
+      "bytes": 301,
+      "sha256": "95de9a97a9e08b817d5e5c6ce6d89ee3706b27257f887c92d9af15c59008da2a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/strict-host-additions.log",
+      "bytes": 526,
+      "sha256": "f52e519f2c34b3c908696260cddfdadb2aa6433976611844a2ec36559709426a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/cli-help-final.log",
+      "bytes": 984,
+      "sha256": "aa8be84bd7381ffea770c2364ab70d3abab5966b2d99b50b1a0d9ca49d27db5a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/fmt-check-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/doc-links-final.log",
+      "bytes": 53,
+      "sha256": "84bdcb0605d01af6f1d794a460a829574cc9e4828ee1b7a7056935ec135da057"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/dependency-final.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/strict-imports-final.log",
+      "bytes": 307,
+      "sha256": "2d0152f05837efffec2959a17ba21be2fb6bc30e632d11bd3c26d45f00d01b26"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/fmt-imports-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "additional_joint_native_log": {
+    "path": ".cache/owned-growth-next-20261101/joint-source/native-saves-first.log",
+    "bytes": 655,
+    "sha256": "2667e8b8de5b54cfbf109e7c4353a9fab8508bde26fad0eed77f0df24b450dd8"
+  },
+  "first_attempts": [
+    {
+      "log": "codec-first.log",
+      "result": "Extracted Space had two missed long-value imports; consumers now import the actual neutral owner"
+    },
+    {
+      "log": "resource-slot-first.log",
+      "result": "Root mistyped frozen child hash; validation refused copy and compilation reported missing new child; corrected hash from original handoff before installation"
+    },
+    {
+      "log": "resource-slot-second.log",
+      "result": "Healthy255-slot source qualified, but placement rejected final empty deleted extent as malformed before capacity refusal. Added bounded physical-slot framing and independent proof scan; healthy254 now grows,255 refuses atomically"
+    },
+    {
+      "old_host_control_change": "Only genuine host overflow19-character requests changed to41-character declared-width violations because Auto now legitimately grows19; native explicit fitting refusals and all prior source goldens unchanged"
+    }
+  ],
+  "original_and_expected_artifacts_retuned_after_producer": false,
+  "native_access": "Unrun; independent source/read/write engineering does not establish Microsoft Access save/reopen conformance",
+  "limits": [
+    "Original root DATA page only",
+    "No map/page/index allocation or EOF changes",
+    "Initial global closed-content family remains fitting-only",
+    "Unsupported required programs, indexed/dependent/generated and Memo/OLE targets retain refusals",
+    "Other-page owned placement, general allocation/INSERT/DELETE and native shared-file qualification remain open"
+  ]
+}
