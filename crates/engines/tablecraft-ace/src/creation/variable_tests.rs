@@ -7,6 +7,7 @@ use tablecraft_core::{
     values::{Decimal, Value},
 };
 use tablecraft_schema::{DecimalConstraints, ScalarType};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::canonical_variable_creation;
 
 fn budget() -> ResourceBudget {
@@ -26,7 +27,8 @@ fn columns() -> [CreateColumn<'static>; 5] {
 #[test]
 fn declared_variable_creation_matches_all_five_independent_complete_sources() {
     for case in canonical_variable_creation::CASES {
-        let source = canonical_variable_creation::source(case);
+        let mut source = canonical_variable_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let rows = source.rows.iter().map(Vec::as_slice).collect::<Vec<_>>();
         let created =
             create_ace16_database(source.table, &columns(), &rows, &mut budget(), &|| false)
@@ -122,7 +124,9 @@ fn declared_value_failures_precede_any_plan_or_image_allocation() {
 
 #[test]
 fn variable_payload_work_obeys_all_three_pools_and_late_cancellation() {
-    let source = canonical_variable_creation::source(canonical_variable_creation::Case::Unicode);
+    let mut source =
+        canonical_variable_creation::source(canonical_variable_creation::Case::Unicode);
+    source.bytes = native17::source(source.bytes);
     let rows = source.rows.iter().map(Vec::as_slice).collect::<Vec<_>>();
     for mut limited in [
         ResourceBudget::new(0, 100_000, 16_000_000),

@@ -10,10 +10,12 @@ use tablecraft_io::{
     publication::{PublicationError, RequiredOutput},
 };
 use tablecraft_testkit::access::canonical_creation::{self, Case};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 
 #[test]
 fn creation_receipt_retains_the_captured_parent_after_textual_path_retargeting() {
-    let source = canonical_creation::source(Case::One);
+    let mut source = canonical_creation::source(Case::One);
+    source.bytes = native17::source(source.bytes);
     let root = tempfile::tempdir().unwrap();
     let original_parent = root.path().join("original-parent");
     fs::create_dir(&original_parent).unwrap();
@@ -98,7 +100,8 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
         Refusal::Steps,
         Refusal::AfterPayloadWrite,
     ] {
-        let source = canonical_creation::source(Case::One);
+        let mut source = canonical_creation::source(Case::One);
+        source.bytes = native17::source(source.bytes);
         let root = tempfile::tempdir().unwrap();
         let output = root.path().join("new.accdb");
         let destination = CreationDestination::capture(&output, &mut budget(), &|| false).unwrap();

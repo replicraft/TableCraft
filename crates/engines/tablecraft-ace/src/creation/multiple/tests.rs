@@ -7,6 +7,7 @@ use crate::InspectError;
 use std::cell::Cell;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::{DecimalConstraints, ScalarType};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::{
     canonical_creation as fixed, canonical_multiple_creation as multiple,
     canonical_variable_creation as variable,
@@ -36,7 +37,8 @@ fn column(column: &multiple::Column) -> CreateColumn<'_> {
 #[test]
 fn four_multiple_table_original_images_match_all_explicit_roles_and_aggregate_counts() {
     for case in multiple::CASES {
-        let source = multiple::source(case);
+        let mut source = multiple::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .tables
             .iter()
@@ -97,7 +99,8 @@ fn compare_one(table: &str, columns: &[CreateColumn<'_>], rows: &[&[Value]], exp
 #[test]
 fn one_table_multiple_operation_preserves_existing_fixed_and_variable_source_images() {
     for case in fixed::CASES {
-        let source = fixed::source(case);
+        let mut source = fixed::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .columns
             .iter()
@@ -112,7 +115,8 @@ fn one_table_multiple_operation_preserves_existing_fixed_and_variable_source_ima
         compare_one(source.table, &columns, &rows, &source.bytes);
     }
     for case in variable::CASES {
-        let source = variable::source(case);
+        let mut source = variable::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = [
             CreateColumn::new("Id", ScalarType::Int32),
             CreateColumn::short_text("TextValue", 8).unwrap(),

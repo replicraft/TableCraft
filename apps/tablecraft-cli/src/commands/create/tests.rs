@@ -5,6 +5,7 @@ use std::{fs, io, path::Path};
 use tablecraft_access::creation::CreationError;
 use tablecraft_ace::CreateDatabaseError;
 use tablecraft_io::publication::PublicationError;
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::{
     canonical_catalog_names,
     canonical_creation::{self, Case},
@@ -48,7 +49,8 @@ fn data(columns: &[String], rows: &[Vec<i32>]) -> String {
 #[test]
 fn six_fresh_files_match_complete_independent_sources_and_prepared_reports() {
     for case in canonical_creation::CASES {
-        let source = canonical_creation::source(case);
+        let mut source = canonical_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let root = tempfile::tempdir().unwrap();
         let output = root.path().join("new.accdb");
         let input = root.path().join("rows.tsv");
@@ -127,7 +129,8 @@ fn invalid_headers_cells_shapes_and_passwords_publish_no_file() {
 #[test]
 fn quoted_tsv_and_header_only_empty_input_are_explicitly_supported() {
     let root = tempfile::tempdir().unwrap();
-    let source = canonical_creation::source(Case::Named);
+    let mut source = canonical_creation::source(Case::Named);
+    source.bytes = native17::source(source.bytes);
     let input = root.path().join("rows.tsv");
     fs::write(&input, "\"Person Id\"\t\"Score Δ\"\r\n\"7\"\t\"42\"\r\n").unwrap();
     let output = root.path().join("named.accdb");
@@ -138,7 +141,8 @@ fn quoted_tsv_and_header_only_empty_input_are_explicitly_supported() {
     )
     .unwrap();
     assert_eq!(fs::read(output).unwrap(), source.bytes);
-    let source = canonical_creation::source(Case::Empty);
+    let mut source = canonical_creation::source(Case::Empty);
+    source.bytes = native17::source(source.bytes);
     fs::write(&input, "Id\tScore\n").unwrap();
     let output = root.path().join("empty.accdb");
     execute(
@@ -153,7 +157,8 @@ fn quoted_tsv_and_header_only_empty_input_are_explicitly_supported() {
 #[test]
 fn existing_files_directories_and_symlinks_are_never_overwritten() {
     use std::os::unix::fs::symlink;
-    let source = canonical_creation::source(Case::Empty);
+    let mut source = canonical_creation::source(Case::Empty);
+    source.bytes = native17::source(source.bytes);
     for kind in 0..3 {
         let root = tempfile::tempdir().unwrap();
         let output = root.path().join("existing");
@@ -209,7 +214,8 @@ impl Write for FailedOutput {
 
 #[test]
 fn stdout_write_and_flush_failures_retain_acknowledged_publication() {
-    let source = canonical_creation::source(Case::Empty);
+    let mut source = canonical_creation::source(Case::Empty);
+    source.bytes = native17::source(source.bytes);
     for fail_write in [false, true] {
         let root = tempfile::tempdir().unwrap();
         let output = root.path().join("new.accdb");
@@ -235,7 +241,8 @@ fn stdout_write_and_flush_failures_retain_acknowledged_publication() {
 #[test]
 fn report_allocation_refusal_precedes_publication_and_resources_are_not_bad_input() {
     use tablecraft_ace::CreateDatabaseError;
-    let source = canonical_creation::source(Case::Empty);
+    let mut source = canonical_creation::source(Case::Empty);
+    source.bytes = native17::source(source.bytes);
     let root = tempfile::tempdir().unwrap();
     let output = root.path().join("new.accdb");
     let mut budget = ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000);
@@ -279,7 +286,8 @@ fn unrepresentable_catalog_text_is_invalid_input_and_publishes_nothing() {
 #[test]
 fn escaped_catalog_names_and_raw_definition_names_match_independent_sources() {
     for case in canonical_catalog_names::CASES {
-        let source = canonical_catalog_names::source(case);
+        let mut source = canonical_catalog_names::source(case);
+        source.bytes = native17::source(source.bytes);
         let root = tempfile::tempdir().unwrap();
         let output = root.path().join("new.accdb");
         let mut report = Vec::new();

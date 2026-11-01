@@ -4,7 +4,7 @@ use super::{
     profile::{self, Fields},
 };
 use crate::format::{
-    data_type::{OLE, SHORT_TEXT},
+    data_type::{LONG_TEXT, OLE, SHORT_TEXT},
     definition as native_definition, layout,
     page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
     row,
@@ -139,7 +139,7 @@ pub(super) fn write_role(
         put32(page, start + COLUMN_MAGIC, MAGIC)?;
         put16(page, start + COLUMN_NUMBER, index)?;
         put16(page, start + COLUMN_ID, index)?;
-        let variable = if field.offset.is_none() && field.kind == OLE {
+        let variable = if field.offset.is_none() && matches!(field.kind, OLE | LONG_TEXT) {
             let next = long_value;
             long_value += 1;
             next
@@ -148,7 +148,11 @@ pub(super) fn write_role(
             ordinary += usize::from(field.offset.is_none());
             next
         };
-        put16(page, start + COLUMN_VARIABLE, variable)?;
+        put16(
+            page,
+            start + COLUMN_VARIABLE,
+            field.native_variable.unwrap_or(variable),
+        )?;
         if field.kind == SHORT_TEXT {
             page[start + COLUMN_SORT..start + COLUMN_SORT + profile::GENERAL_SORT.len()]
                 .copy_from_slice(&profile::GENERAL_SORT);
@@ -156,12 +160,13 @@ pub(super) fn write_role(
             page[start + COLUMN_PRECISION] = constraints.precision();
             page[start + COLUMN_SCALE] = constraints.scale();
         }
-        page[start + COLUMN_FLAGS] = layout::UPDATABLE_FLAG
+        let ordinary_flags = layout::UPDATABLE_FLAG
             | if field.offset.is_some() {
                 layout::FIXED_FLAG
             } else {
                 0
             };
+        page[start + COLUMN_FLAGS] = field.native_flags.unwrap_or(ordinary_flags);
         put16(page, start + COLUMN_OFFSET, field.offset.unwrap_or(0))?;
         put16(page, start + COLUMN_WIDTH, field.width)?;
         let name_bytes = field.name.encode_utf16().count() * size_of::<u16>();

@@ -4,12 +4,14 @@ use crate::creation::CreationDestination;
 use std::fs;
 use tablecraft_ace::CreateColumn;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::canonical_variable_creation;
 
 #[test]
 fn typed_service_publishes_five_complete_variable_source_images() {
     for case in canonical_variable_creation::CASES {
-        let source = canonical_variable_creation::source(case);
+        let mut source = canonical_variable_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .columns
             .iter()

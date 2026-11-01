@@ -289,7 +289,8 @@ pub(super) fn catalog(
     position += name.byte_len();
     let eod = position;
     // Name is the only present variable carrier; all other ordinary and LVAL
-    // slots remain NULL at EOD. The actual SDK ordering puts LVAL slots last.
+    // slots remain NULL at EOD. Native17 declarations retain their interleaved
+    // variable numbers; no payload slot is synthesized for an absent carrier.
     put16(record, position, eod)?;
     position += size_of::<u16>();
     for slot in (0..fields.variable_count()).rev() {
