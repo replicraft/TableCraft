@@ -11,7 +11,7 @@ use crate::{
     table::mutation::{EditError, WriteBlocker},
 };
 use std::io::Cursor;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -30,7 +30,7 @@ pub(in crate::table) struct Census {
 }
 
 /// Requested original storage identity; constructing it grants no authority.
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) struct RecordIdentity {
     pub owner: Owner,
     pub reference: u32,
@@ -172,7 +172,7 @@ impl Census {
 
     /// Bind a complete original record to its canonical mutable owner.
     /// A requested identity alone does not prove role or storage exclusivity.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(in crate::table) fn require_record_rewrite(
         &self,
         selected: &[Owner],

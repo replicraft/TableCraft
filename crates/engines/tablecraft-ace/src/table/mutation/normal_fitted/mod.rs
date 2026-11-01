@@ -1,8 +1,8 @@
 //! Ordinary fitting records use fresh native admission and original requests.
-mod binding;
-mod owned_growth;
+pub(in crate::table::mutation) mod binding;
+pub(in crate::table::mutation) mod owned_growth;
 mod proof;
-mod stage;
+pub(in crate::table::mutation) mod stage;
 
 use crate::{
     EditError, FileFormat, FittedColumnUpdates, InspectError, NativeColumn, NativeEditPlan,
@@ -151,7 +151,7 @@ impl NativeImage {
 
 /// The immutable Source already owns exclusive resolved roots. Verify its exact
 /// raw record still belongs to this image before decoding selected real cells.
-fn original_values(
+pub(in crate::table::mutation) fn original_values(
     image: &NativeImage,
     source: &Source,
     ordinal: usize,

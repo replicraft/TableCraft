@@ -284,7 +284,7 @@ impl RepresentedMap {
 
     /// Locate an already represented cell for a page appended at/after the
     /// captured EOF. This does not allocate bitmap storage or expand a window.
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn future_cell<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,

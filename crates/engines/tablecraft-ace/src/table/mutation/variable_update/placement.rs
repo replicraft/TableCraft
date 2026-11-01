@@ -284,19 +284,8 @@ impl Plan {
         let number = self.append.next()?;
         self.maps
             .allocate(image, number, &mut self.append, budget, cancelled)?;
-        budget
-            .charge_allocation(PAGE_BYTES as u64, 1)
-            .map_err(InspectError::from)?;
-        let mut initial = Vec::new();
-        initial
-            .try_reserve_exact(PAGE_BYTES)
-            .map_err(|_| InspectError::Allocation)?;
-        initial.resize(PAGE_BYTES, 0);
-        initial[..DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
-        initial[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
-            .copy_from_slice(&(EMPTY_FREE as u16).to_le_bytes());
-        initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()]
-            .copy_from_slice(&self.append.owner.to_le_bytes());
+        let initial =
+            crate::table::mutation::record_placement::empty::data(self.append.owner, budget)?;
         self.push_page(number, &[], &initial, budget)?;
         Ok(self.pages.len() - 1)
     }

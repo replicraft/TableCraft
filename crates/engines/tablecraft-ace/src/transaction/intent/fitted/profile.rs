@@ -1,13 +1,16 @@
-//! Closed data-record choices; neither tag is a native allocation permission.
+//! Closed data-record choices; no tag is a native allocation permission.
 use super::codec::{MAGIC, PROFILE};
 
 pub(in crate::transaction::intent) const OWNED_GROWTH_MAGIC: &[u8; 8] = b"TCNI0006";
 const OWNED_GROWTH_PROFILE: u16 = 6;
+pub(in crate::transaction::intent) const EOF_ALLOCATION_MAGIC: &[u8; 8] = b"TCNI0007";
+const EOF_ALLOCATION_PROFILE: u16 = 7;
 
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
     OwnedOnly,
+    AllocateEof,
 }
 
 impl WireProfile {
@@ -15,6 +18,7 @@ impl WireProfile {
         match self {
             Self::Fitted => MAGIC,
             Self::OwnedOnly => OWNED_GROWTH_MAGIC,
+            Self::AllocateEof => EOF_ALLOCATION_MAGIC,
         }
     }
 
@@ -22,6 +26,7 @@ impl WireProfile {
         match self {
             Self::Fitted => PROFILE,
             Self::OwnedOnly => OWNED_GROWTH_PROFILE,
+            Self::AllocateEof => EOF_ALLOCATION_PROFILE,
         }
     }
 }

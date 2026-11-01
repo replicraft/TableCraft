@@ -13,7 +13,7 @@ use tablecraft_core::{
 use tablecraft_schema::ScalarType;
 
 #[derive(Clone, Copy)]
-pub(super) enum Target {
+pub(in crate::table::mutation) enum Target {
     Fixed {
         column: usize,
         kind: ScalarType,
@@ -25,33 +25,36 @@ pub(super) enum Target {
 }
 
 impl Target {
-    pub(super) fn column(self) -> usize {
+    pub(in crate::table::mutation) fn column(self) -> usize {
         match self {
             Self::Fixed { column, .. } | Self::Variable { column } => column,
         }
     }
 }
 
-pub(super) struct Assignment {
+pub(in crate::table::mutation) struct Assignment {
     pub group: usize,
     pub index: usize,
     ordinal: usize,
 }
 
-pub(super) struct Selected {
+pub(in crate::table::mutation) struct Selected {
     pub ordinal: usize,
     pub start: usize,
     pub end: usize,
 }
 
-pub(super) struct Bound {
+pub(in crate::table::mutation) struct Bound {
     pub targets: Vec<Target>,
     pub columns: Vec<usize>,
     pub assignments: Vec<Assignment>,
     pub rows: Vec<Selected>,
 }
 
-pub(super) fn vector<T>(count: usize, budget: &mut ResourceBudget) -> Result<Vec<T>, EditError> {
+pub(in crate::table::mutation) fn vector<T>(
+    count: usize,
+    budget: &mut ResourceBudget,
+) -> Result<Vec<T>, EditError> {
     budget
         .charge_allocation(count as u64, size_of::<T>() as u64)
         .map_err(InspectError::from)?;
@@ -62,7 +65,7 @@ pub(super) fn vector<T>(count: usize, budget: &mut ResourceBudget) -> Result<Vec
     Ok(result)
 }
 
-pub(super) fn all(
+pub(in crate::table::mutation) fn all(
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
     budget: &mut ResourceBudget,
@@ -210,7 +213,7 @@ pub(super) fn all(
     })
 }
 
-pub(super) fn equal(
+pub(in crate::table::mutation) fn equal(
     left: &Value,
     right: &Value,
     budget: &mut ResourceBudget,
@@ -231,7 +234,7 @@ pub(super) fn equal(
     Ok(left == right)
 }
 
-pub(super) fn equal_bytes(
+pub(in crate::table::mutation) fn equal_bytes(
     left: &[u8],
     right: &[u8],
     budget: &mut ResourceBudget,
@@ -250,7 +253,7 @@ pub(super) fn equal_bytes(
 
 /// The native selected decoder emits ascending schema positions. Resolve each
 /// original request group through that explicitly sorted projection.
-pub(super) fn value<'a>(
+pub(in crate::table::mutation) fn value<'a>(
     bound: &Bound,
     values: &'a [Value],
     group: usize,

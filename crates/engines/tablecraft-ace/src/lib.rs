@@ -160,7 +160,10 @@ pub use transaction::{
     NativeUpdateIntent, NativeUpdateProfile, RecoverableEditError, RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
-pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};
+pub use transaction::{
+    NativeRecoveryError, PreparedNativeEdit, PreparedNativeUpdate, PreparedResizableNativeEdit,
+    QualifiedNativeAllocationRecovery, qualify_native_allocation_recovery, recover_native_edit,
+};
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeRecoveryQualificationError, QualifiedJet4Recovery, QualifiedNativeRecovery,

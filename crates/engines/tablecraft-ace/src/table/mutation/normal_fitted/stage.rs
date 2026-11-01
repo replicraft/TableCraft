@@ -23,13 +23,13 @@ use tablecraft_core::{
 const INT32_BYTES: usize = size_of::<i32>();
 const WIDE_BYTES: usize = size_of::<i64>();
 
-pub(super) struct Patch {
+pub(in crate::table::mutation) struct Patch {
     pub offset: usize,
     pub before: Vec<u8>,
     pub after: Vec<u8>,
 }
 
-pub(super) fn prepare(
+pub(in crate::table::mutation) fn prepare(
     image: &NativeImage,
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
@@ -46,7 +46,7 @@ pub(super) fn prepare(
     )
 }
 
-pub(super) fn prepare_with(
+pub(in crate::table::mutation) fn prepare_with(
     image: &NativeImage,
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],

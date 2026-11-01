@@ -1,4 +1,4 @@
-//! Offline snapshots and optional journaled fixed-image native writes.
+//! Offline snapshots and optional journaled native writes.
 #[cfg(feature = "journal")]
 mod intent;
 #[cfg(feature = "journal")]
@@ -18,8 +18,18 @@ pub use qualified_recovery::{
     NativeRecoveryQualificationError, QualifiedJet4Recovery, qualify_jet4_int32_recovery,
 };
 #[cfg(feature = "journal")]
+mod resizable_write;
+#[cfg(feature = "journal")]
 mod write;
+#[cfg(feature = "journal")]
+pub use resizable_write::{PreparedNativeUpdate, PreparedResizableNativeEdit};
+#[cfg(feature = "journal")]
+mod allocation_recovery;
 use crate::{Header, InspectError, header, inspect_header};
+#[cfg(feature = "journal")]
+pub use allocation_recovery::{
+    QualifiedNativeAllocationRecovery, qualify_native_allocation_recovery,
+};
 use std::{
     io::{self, Cursor, Read, Seek, SeekFrom},
     path::Path,

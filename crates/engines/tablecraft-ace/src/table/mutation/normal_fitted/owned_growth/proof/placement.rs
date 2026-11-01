@@ -29,18 +29,24 @@ struct PageState {
     free: usize,
 }
 
-pub(super) struct Placement {
+pub(in crate::table::mutation) struct Placement {
     pages: Vec<PageState>,
 }
 
-pub(super) struct Choice {
+pub(in crate::table::mutation) struct Choice {
     page: u32,
     slot: Option<u8>,
     target: Range<usize>,
 }
 
+impl Choice {
+    pub(in crate::table::mutation) fn page_number(&self) -> u32 {
+        self.page
+    }
+}
+
 impl Placement {
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
         space: &Space,
         owned: &[u32],
@@ -95,24 +101,72 @@ impl Placement {
         Ok(Self { pages })
     }
 
-    pub(super) fn reserve(
+    pub(in crate::table::mutation) fn include_eof(
+        &mut self,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        if number & !PAGE_NUMBER_MASK != 0
+            || self.pages.last().is_some_and(|page| page.number >= number)
+        {
+            return Err(EditError::Preservation);
+        }
+        budget
+            .charge_allocation(1, size_of::<PageState>() as u64)
+            .map_err(InspectError::from)?;
+        budget
+            .charge(
+                Resource::Steps,
+                self.pages
+                    .len()
+                    .checked_mul(size_of::<PageState>())
+                    .ok_or(InspectError::StructureLimit)? as u64,
+            )
+            .map_err(InspectError::from)?;
+        self.pages
+            .try_reserve_exact(1)
+            .map_err(|_| InspectError::Allocation)?;
+        self.pages.push(PageState {
+            number,
+            eligible: true,
+            slots: 0,
+            boundary: PAGE_BYTES,
+            free: PAGE_BYTES - slot_offset(0),
+        });
+        Ok(())
+    }
+
+    pub(in crate::table::mutation) fn reserve(
         &mut self,
         root: &Root<'_, Selected>,
         row: &[u8],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Choice, EditError> {
+        self.try_reserve(root, row, budget, cancelled)?
+            .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))
+    }
+
+    pub(in crate::table::mutation) fn try_reserve(
+        &mut self,
+        root: &Root<'_, Selected>,
+        row: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<Choice>, EditError> {
         check(budget, cancelled)?;
         if row.len() < root.final_record.data.len() {
             return Err(EditError::Preservation);
         }
         if row.len() == root.final_record.data.len() {
-            return Ok(Choice {
+            return Ok(Some(Choice {
                 page: u32::try_from(root.final_record.offset / PAGE_BYTES)
                     .map_err(|_| EditError::Preservation)?,
                 slot: None,
                 target: root.final_record.offset..root.final_record.offset + row.len(),
-            });
+            }));
         }
         let root_page = reference_page(root.reference);
         let mut position = None;
@@ -138,9 +192,12 @@ impl Placement {
                 }
             }
         }
+        let Some(position) = position else {
+            return Ok(None);
+        };
         let page = self
             .pages
-            .get_mut(position.ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?)
+            .get_mut(position)
             .ok_or(EditError::Preservation)?;
         let slot = u8::try_from(page.slots).map_err(|_| EditError::Preservation)?;
         let end = page.boundary;
@@ -151,11 +208,11 @@ impl Placement {
             .ok_or(EditError::Preservation)?;
         page.slots += 1;
         let base = page.number as usize * PAGE_BYTES;
-        Ok(Choice {
+        Ok(Some(Choice {
             page: page.number,
             slot: Some(slot),
             target: base + page.boundary..base + end,
-        })
+        }))
     }
 }
 
@@ -176,12 +233,60 @@ fn available(page: &PageState, bytes: usize) -> Result<bool, EditError> {
     clippy::too_many_arguments,
     reason = "Keep the independent choice separate from original root and row bytes."
 )]
-pub(super) fn apply(
+pub(in crate::table::mutation) fn apply(
     image: &NativeImage,
     space: &Space,
     root: &Root<'_, Selected>,
     row: &[u8],
     choice: &Choice,
+    expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    apply_with(
+        image, space, root, row, choice, None, expected, budget, cancelled,
+    )
+}
+
+#[expect(
+    clippy::too_many_arguments,
+    reason = "Keep original proof state and allocation qualification distinct."
+)]
+pub(in crate::table::mutation) fn apply_eof(
+    image: &NativeImage,
+    space: &Space,
+    root: &Root<'_, Selected>,
+    row: &[u8],
+    choice: &Choice,
+    future: &crate::table::mutation::record_placement::future::Future,
+    expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    apply_with(
+        image,
+        space,
+        root,
+        row,
+        choice,
+        Some(future),
+        expected,
+        budget,
+        cancelled,
+    )
+}
+
+#[expect(
+    clippy::too_many_arguments,
+    reason = "Independent physical proof combines source, choice and optional fresh EOF qualification."
+)]
+fn apply_with(
+    image: &NativeImage,
+    space: &Space,
+    root: &Root<'_, Selected>,
+    row: &[u8],
+    choice: &Choice,
+    future: Option<&crate::table::mutation::record_placement::future::Future>,
     expected: &mut [u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -215,7 +320,14 @@ pub(super) fn apply(
     {
         return Err(EditError::Preservation);
     }
-    space.require_page(image, choice.page, true, budget, cancelled)?;
+    if let Some(future) = future.filter(|future| future.number() == choice.page) {
+        future.require(image, space.definition())?;
+        if expected.len() != image.as_bytes().len() + PAGE_BYTES {
+            return Err(EditError::Preservation);
+        }
+    } else {
+        space.require_page(image, choice.page, true, budget, cancelled)?;
+    }
     {
         let base = choice.page as usize * PAGE_BYTES;
         let page = expected

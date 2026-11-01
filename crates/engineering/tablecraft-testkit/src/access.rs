@@ -206,3 +206,9 @@ pub mod genuine_owned_growth_joint;
 
 /// Pinned pre-owned alternate-page growth and forwarded continuation images.
 pub mod genuine_alternate_owned;
+
+/// Pinned original-only first EOF DATA allocation inputs and expected images.
+pub mod genuine_eof_allocation;
+
+/// Pinned combined existing-owned and first EOF DATA allocation images.
+pub mod genuine_compound_eof;
