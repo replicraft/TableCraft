@@ -224,3 +224,6 @@ pub mod genuine_ordinary_insert;
 
 /// Independent escaped insertion text and separately classified reader aliases.
 pub mod genuine_ordinary_insert_feff;
+
+/// Frozen ordinary indexed DELETE originals and literal retained-tree results.
+pub mod genuine_indexed_delete;

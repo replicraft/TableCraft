@@ -1,0 +1,98 @@
+//! Root-leaf Int32 cardinality changes below normal admission and journal packaging.
+use super::{IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack};
+use crate::{
+    EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck, WriteBlocker,
+    format::{page::PAGE_BYTES, reader::Reader},
+    header::check,
+    table::indexes::page,
+};
+use tablecraft_core::limits::ResourceBudget;
+use tablecraft_schema::ScalarType;
+
+/// The caller already holds complete ordinary Source, checked single-I32
+/// declarations, catalog-wide exclusive INDEX ownership and live-LVAL exclusion.
+pub(in crate::table) fn patches(
+    image: &NativeImage,
+    checked: &TableCheck,
+    references: &[u32],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    let _span = tracing::debug_span!("native.ordinary.delete.index_patches").entered();
+    let mut result = Vec::new();
+    let schema = checked.schema();
+    let mut source = image.reader();
+    let mut reader = Reader {
+        source: &mut source,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    for (position, checked_index) in checked.indexes().iter().enumerate() {
+        reader.tick()?;
+        reader.work(position)?;
+        let index = checked_index.index();
+        if checked_index.status() != IndexCheckStatus::Checked {
+            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        }
+        if checked.indexes()[..position]
+            .iter()
+            .any(|prior| prior.index().data_number() == index.data_number())
+        {
+            continue;
+        }
+        let [key] = index.columns() else {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        };
+        reader.work(schema.columns().len())?;
+        let column = schema
+            .columns()
+            .iter()
+            .position(|field| field.number() == key.number())
+            .ok_or(InspectError::Malformed)?;
+        let profile = SingleProfile {
+            column,
+            kind: NumericKey::new(ScalarType::Int32)?,
+            descending: key.descending(),
+        };
+        let mut root = page::read_profile::<_, _, { encoding::MAX_ENTRY_BYTES }>(
+            &mut reader,
+            index.root_page(),
+            schema.definition_page(),
+            &profile,
+        )?;
+        let start = (index.root_page() as usize)
+            .checked_mul(PAGE_BYTES)
+            .ok_or(InspectError::StructureLimit)?;
+        let end = start
+            .checked_add(PAGE_BYTES)
+            .ok_or(InspectError::StructureLimit)?;
+        let original = image
+            .as_bytes()
+            .get(start..end)
+            .ok_or(InspectError::Truncated)?;
+        leaf_removal::require_root(&root, original)?;
+        leaf_removal::remove(&mut root.entries, references, reader.budget, cancelled)?;
+        if references.is_empty() {
+            continue;
+        }
+        let after = repack::page::<_, { encoding::MAX_ENTRY_BYTES }>(
+            original,
+            &root.entries,
+            &profile,
+            reader.budget,
+            cancelled,
+        )?;
+        repack::patches(
+            original,
+            &after,
+            index.root_page(),
+            &mut result,
+            reader.budget,
+            cancelled,
+        )?;
+    }
+    check(reader.budget, cancelled)?;
+    Ok(result)
+}

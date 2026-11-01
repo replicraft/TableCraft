@@ -100,6 +100,10 @@ pub(super) fn prove(
         .ok_or(EditError::Preservation)?
         .copy_from_slice(&remaining.to_le_bytes());
 
+    if !source.indexes.indexes().is_empty() {
+        super::indexed::reconstruct(&image, &source, deletes, &mut expected, budget, cancelled)?;
+    }
+
     // This is a new Source and complete final scalar constraint check, not the
     // UPDATE validator, whose invariant intentionally requires equal row counts.
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;

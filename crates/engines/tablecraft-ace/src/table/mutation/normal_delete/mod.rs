@@ -1,4 +1,5 @@
 //! Fixed-length ordinary DELETE with fresh program absence and raw-row proof.
+mod indexed;
 mod proof;
 mod selection;
 mod stage;
@@ -12,7 +13,7 @@ use crate::{
     inspect_table_schema,
     table::mutation::{fixed_records, normal_ordinary, preserved_source::Source, rows},
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const NATIVE_CATALOG_FIELDS: usize = 17;
 const CATALOG_NAME: &str = "MSysObjects";
@@ -37,8 +38,30 @@ impl NativeImage {
         }
 
         let staged = stage::prepare(&self, &source, deletes, budget, cancelled)?;
+        let indexes = if source.indexes.indexes().is_empty() {
+            Vec::new()
+        } else {
+            indexed::patches(&self, &source, deletes, budget, cancelled)?
+        };
         let mut after = fixed_records::copy(self.as_bytes(), budget, cancelled)?;
         staged.apply(&mut after, budget, cancelled)?;
+        for patch in indexes {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, patch.before.len() as u64)
+                .map_err(InspectError::from)?;
+            let end = patch
+                .offset
+                .checked_add(patch.before.len())
+                .ok_or(EditError::Preservation)?;
+            let output = after
+                .get_mut(patch.offset..end)
+                .ok_or(EditError::Preservation)?;
+            if output != patch.before {
+                return Err(EditError::Preservation);
+            }
+            output.copy_from_slice(&patch.after);
+        }
 
         let scope = self.catalog().catalog().scope();
         let plan = NativeEditPlan {
@@ -73,7 +96,7 @@ fn capture(
     }
     let source = normal_ordinary::capture(image, table, budget, cancelled)?;
     if !source.indexes.indexes().is_empty() {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        indexed::qualify(image, &source, budget, cancelled)?;
     }
     // Source capture already rejects every relationship involving this table.
     // Unrelated declarations remain protected and do not authorize cascades.

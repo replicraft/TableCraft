@@ -725,3 +725,6 @@ mod genuine_multirow_insert;
 
 #[path = "normal/genuine_ordinary_insert_feff.rs"]
 mod genuine_ordinary_insert_feff;
+
+#[path = "normal/genuine_indexed_delete.rs"]
+mod genuine_indexed_delete;
