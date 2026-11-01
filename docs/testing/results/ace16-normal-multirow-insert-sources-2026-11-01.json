@@ -1,0 +1,208 @@
+{
+  "date": "2026-11-01",
+  "scope": "original-only two-row INSERT sources, both written orders; no matching producer calls",
+  "source_precedes_producers": true,
+  "source_checkpoint": {
+    "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/first-private-checkpoint.json",
+    "bytes": 1962,
+    "sha256": "fb7d057de926ca31100e6aa598c7f7cb71874c21ec0d425d06a7f2ae47ad9481"
+  },
+  "input_first_freeze": {
+    "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/input-first-freeze.json",
+    "bytes": 1890,
+    "sha256": "28ebfdad3746fe8c4df8ce1eb53d07f375321dd3240e0bca5d254fee26195168"
+  },
+  "manifest": {
+    "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/expected-first/manifest.json",
+    "bytes": 4420,
+    "sha256": "43b601864e242652b2286de31e929cc9e4612439a8ed4971068e9a5a78ba1119"
+  },
+  "cases": [
+    {
+      "id": "h5-multirow-new-tail",
+      "header": 5,
+      "order": "new-tail",
+      "before": {
+        "file": "h5-multirow-new-tail-before.accdb",
+        "bytes": 458752,
+        "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+      },
+      "expected": {
+        "file": "h5-multirow-new-tail-inserted.accdb",
+        "bytes": 458752,
+        "sha256": "db9defca73f6013038d2608b9b8e62dd8355d1483039d3a46edad91612fa99ed"
+      },
+      "before_reader": {
+        "file": "h5-multirow-new-tail-before.reader.txt",
+        "bytes": 4318,
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "reader": {
+        "file": "h5-multirow-new-tail-inserted.reader.txt",
+        "bytes": 4396,
+        "sha256": "bdcc8cc5a3967a9414d1bf1f722a01600b3a9a17d915c8cd336a0d1cd7472b5e"
+      },
+      "proof": {
+        "file": "h5-multirow-new-tail.proof.json",
+        "bytes": 933,
+        "sha256": "ef228a33659b605162cabc1fbca7bae6b2894ac886c1b01ed0343d58f7f195ba"
+      }
+    },
+    {
+      "id": "h5-multirow-tail-new",
+      "header": 5,
+      "order": "tail-new",
+      "before": {
+        "file": "h5-multirow-tail-new-before.accdb",
+        "bytes": 458752,
+        "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+      },
+      "expected": {
+        "file": "h5-multirow-tail-new-inserted.accdb",
+        "bytes": 458752,
+        "sha256": "fa9eae3cbe20c9742c4f165ee84f510ff8e25b0437a76828bd95cd02b300d908"
+      },
+      "before_reader": {
+        "file": "h5-multirow-tail-new-before.reader.txt",
+        "bytes": 4318,
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "reader": {
+        "file": "h5-multirow-tail-new-inserted.reader.txt",
+        "bytes": 4396,
+        "sha256": "1cd63576dba952f29d098ffc3adef85e4d375529da32f902cce595e4ede8151f"
+      },
+      "proof": {
+        "file": "h5-multirow-tail-new.proof.json",
+        "bytes": 933,
+        "sha256": "2262610e44542b17d03bde3627576e96a128739580a0498c6c887f56228a34ae"
+      }
+    },
+    {
+      "id": "h6-multirow-new-tail",
+      "header": 6,
+      "order": "new-tail",
+      "before": {
+        "file": "h6-multirow-new-tail-before.accdb",
+        "bytes": 528384,
+        "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+      },
+      "expected": {
+        "file": "h6-multirow-new-tail-inserted.accdb",
+        "bytes": 528384,
+        "sha256": "48b1070f78f68007c50f1409d3b013cdb2140495b1117035be6b847eb3f3d150"
+      },
+      "before_reader": {
+        "file": "h6-multirow-new-tail-before.reader.txt",
+        "bytes": 4331,
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "reader": {
+        "file": "h6-multirow-new-tail-inserted.reader.txt",
+        "bytes": 4409,
+        "sha256": "d2a6dccc8f05443cc844193701a25eb0fb793666441ae6d0991407feed120cd4"
+      },
+      "proof": {
+        "file": "h6-multirow-new-tail.proof.json",
+        "bytes": 933,
+        "sha256": "5e1f3e870be1332f6a17ce06049468dd70eaeb640e5eef47483d1721e63a6a2b"
+      }
+    },
+    {
+      "id": "h6-multirow-tail-new",
+      "header": 6,
+      "order": "tail-new",
+      "before": {
+        "file": "h6-multirow-tail-new-before.accdb",
+        "bytes": 528384,
+        "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+      },
+      "expected": {
+        "file": "h6-multirow-tail-new-inserted.accdb",
+        "bytes": 528384,
+        "sha256": "a9a64d255718d89ea4c9ada2ce020984ee0742305a7f821c4dd805d19d4b3f32"
+      },
+      "before_reader": {
+        "file": "h6-multirow-tail-new-before.reader.txt",
+        "bytes": 4331,
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "reader": {
+        "file": "h6-multirow-tail-new-inserted.reader.txt",
+        "bytes": 4409,
+        "sha256": "1d24c04372f71aa778c0df6cf079e8fd49ef4793c1a22bd50e9be9b744cbe655"
+      },
+      "proof": {
+        "file": "h6-multirow-tail-new.proof.json",
+        "bytes": 933,
+        "sha256": "4285880fe8f8e4fc2d618f725a85488c33e80c90140ba419fca89361090ed7ed"
+      }
+    }
+  ],
+  "literal_law": "Explicit rows (24,new,NULL) and (25,tail,NULL), 21/23 bytes, both orders. New-tail slots4009/3986; tail-new slots4007/3986. TD/DATA counts1 to3; free4014 to3966. Full complement, original66B/OLE/properties/maps/EOF unchanged.",
+  "native": {
+    "passed": true,
+    "views": 8,
+    "functions": 1,
+    "seconds": 0.33,
+    "log": {
+      "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/native-reads-first.log",
+      "bytes": 656,
+      "sha256": "22715bb8f4ede409d07fbc0d2ecc5b4dbe71d9382d9ede10336ffb5a1a8bd01c"
+    }
+  },
+  "independent_sdk": {
+    "passed": true,
+    "read_count": 8,
+    "inputs_unchanged": true,
+    "result": {
+      "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/getter/reads-first/result.json",
+      "bytes": 2857,
+      "sha256": "c3ee3484668e405ce9f93cfbe8d54c101c5aa611e40a0f609eb746a70e1d63af"
+    },
+    "compile": {
+      "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/getter/compile-first/execution.json",
+      "bytes": 1179,
+      "sha256": "12c9fbe63157e8c6ab130e341001a4252aaa20264ac246ef460d00248b4b7d59"
+    },
+    "summary": {
+      "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/getter/root-first.log",
+      "bytes": 54,
+      "sha256": "9cbe520cd2506dc0b9c31c02d59bc2a7a51f108aabb127a35caca4e6d08336a9"
+    },
+    "class_count": 2,
+    "classes_record": {
+      "path": ".cache/ace16-normal-insert-next-20261101/multirow-source/getter/classes-first.json",
+      "bytes": 530,
+      "sha256": "209c7a4bd7bb8f95edc0f14bc011a2ef8bd4b7fdc8e6631459a2ac94780e0dc5"
+    }
+  },
+  "gate_review_correction": "Replaced undeclared serde_json draft reader with literal source image pins before first compilation, without dependency, source or expectation changes.",
+  "observer_delta": "Class/constructor name, explicit count-three selector and Sentinel expected row count only; original formatting, unrelated table checks and inert bounded channel unchanged.",
+  "maintained_artifacts": [
+    {
+      "path": "docs/testing/ordinary_insert_originals/multirow_model.py",
+      "bytes": 5378,
+      "sha256": "de0d4001167dc8555159dc9a504924c921d359c6cb038c61e76acd98c79f6100"
+    },
+    {
+      "path": "docs/testing/ordinary_insert_originals/multirow_requests.json",
+      "bytes": 2894,
+      "sha256": "41e5bc0dcbf6fc027817c3a4f32cafd2347fb726031632d9f970d09b25aa20a2"
+    },
+    {
+      "path": "docs/testing/preserved_fixed_scalars_genuine/OrdinaryMultirowInsertGetter.java",
+      "bytes": 11559,
+      "sha256": "99067ea769dcd73e3ac8b35a9794eb1b1653f8ff034ad8637a4e0798c503b320"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/insert_multirow.rs",
+      "bytes": 9468,
+      "sha256": "ea419303f996a58fd50296552218ccbcd85b40f139bb6627fd8c2785e46383f6"
+    }
+  ],
+  "limitations": [
+    "Source/read qualification only, not normal INSERT behavior.",
+    "Native Access save/reopen and Windows durability comparisons unrun."
+  ]
+}
