@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-31",
+  "scope": "Complete-content ordinary fixed updates through shared Access sessions and CLI",
+  "engine_commit": "e41acfc4",
+  "source_commit": "fb9ffa55",
+  "behavior": [
+    "Inert metadata supplies a routing hint only; complete native content/source/target checking grants the advertised profile",
+    "Private retained ordinary/existing route never retries a failed writer or falls through from blocked ordinary capability",
+    "Ordinary single present Int32, empty and batch requests retain TCNI0004; old Jet4/positive Int32/positive fixed retain 1/2/3",
+    "Existing staged apply, exclusive lease, journal retirement, receipts and recovery lifecycle unchanged"
+  ],
+  "verification": [
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/selection-first-root.log",
+        "bytes": 781,
+        "sha256": "9997239772669925ef7d0614ae131f3ec3eb3a042ddf48f4ceddc27896cb28b9"
+      },
+      "result": "3 selector/checker tests passed; 24 positive files/56 table capability checks plus misleading-hint and positive-program controls"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/adapter-first-root.log",
+        "bytes": 1078,
+        "sha256": "fc14d5b38fd7290fa2999908959d9a57f6bac87f8ded2871f3578e0637734fd0"
+      },
+      "result": "7 new adapter tests passed; 28 principal typed/SQL literal saves plus equal/zero-match, wide, empty-table, stale/receipt and old-record controls"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/cli-first-root.log",
+        "bytes": 12906,
+        "sha256": "3d5c1568db01141b3238ba51932c60c8e557feaa1e98ca9b07ef90060ba57599"
+      },
+      "result": "94 CLI unit tests, 8 old journal tests, 5 old fixed SQL tests and initial 3 ordinary SQL tests passed; 22 ordinary literal full-image saves plus four equal/empty retirements"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/cli-create-workflow-root.log",
+        "bytes": 700,
+        "sha256": "dcd09e273219912fd6b2f036e905839943476ef8a50e5c44ec030e2c6d261e56"
+      },
+      "result": "4 ordinary CLI tests passed including actual create/update/full-image/TSV workflow; original three tests retained"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/adapter-capability-refusal-root.log",
+        "bytes": 2317,
+        "sha256": "19ab61a81f1d80fd78d0d35ebfb7b40e81d53845b1fde237e924cbee140b8296"
+      },
+      "result": "All 15 offline-session regressions passed after exact earlier-capability refusal expectation update"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/strict-first-root.log",
+        "bytes": 580,
+        "sha256": "bc616e268bf2568465f3616917ca774a1cbe70dd3f621ec305251a4c5bf887ec"
+      },
+      "result": "Strict ACE/Access/CLI all-target/all-feature clippy passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/default-access-root.log",
+        "bytes": 301,
+        "sha256": "7ebbd42d94cb8f1647a485a44cc6bf4c2c3d5710f2c74ce80f72f662e51e2511"
+      },
+      "result": "Standalone Access no-default-feature check passed"
+    }
+  ],
+  "first_regression": {
+    "log": {
+      "path": ".cache/ace16-native-ordinary-fixed-host-next-20261031/adapter-regression-root.log",
+      "bytes": 3918,
+      "sha256": "46e64503474fc7a83d644fce81b90e57c65a898a4b3b0cfc72f69ddd09ae744a"
+    },
+    "result": "Old journal2, positive3 and fixed4 passed; offline sessions14 passed/1 exact error assertion failed",
+    "cause": "Readable indexed ordinary ACE remains unavailable, now refused at explicit capability boundary rather than later positive-program native planning",
+    "correction": "Existing input, snapshots, byte/lock/state/receipt assertions unchanged; exact cause now journal::Error::Native(NativeEditError::Unsupported), and test name describes closed-family boundary"
+  },
+  "limitations": [
+    "Initial unencoded known-header1252/General <=64-page inline-map data-only family",
+    "No ordinary indexes, counters, properties, generated/calculated/complex fields or user long values; no new allocation/growth or general CRUD",
+    "macOS/Linux retained filesystem host profile; native Access/Windows/power-loss/mixed-client qualification remains unrun"
+  ],
+  "dependency_changes": false,
+  "source_or_expected_write_goldens_retuned": false,
+  "push_performed": false
+}

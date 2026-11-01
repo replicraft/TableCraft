@@ -26,6 +26,15 @@ pub enum Error {
 pub struct NativeJournalEditor {
     editor: NativeEditor,
     profile: UpdateProfile,
+    route: JournalRoute,
+}
+
+/// A private routing choice over the same immutable image, never an absence
+/// certificate. Every successful native plan reconstructs its own admission.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum JournalRoute {
+    Existing,
+    Ordinary,
 }
 
 impl NativeJournalEditor {
@@ -39,8 +48,12 @@ impl NativeJournalEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeEditError> {
         let editor = NativeEditor::new_journal(image, table, budget, cancelled)?;
-        let profile = editor.journal_profile(budget, cancelled)?;
-        Ok(Self { editor, profile })
+        let (profile, route) = editor.journal_profile(budget, cancelled)?;
+        Ok(Self {
+            editor,
+            profile,
+            route,
+        })
     }
 }
 

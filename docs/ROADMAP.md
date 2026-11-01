@@ -2,6 +2,14 @@
 
 ## Current product priority
 
+The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
+now supports the initial closed data-only family through shared sessions and
+the CLI, including equal/empty requests and TCNI0004 recovery. Full content proof
+replaces neither native mutation proof nor qualification of arbitrary imported
+files. Next, broaden inline-map/file-size coverage, then preserved counters and
+existing indexes; wider headers, metadata, other actions and native Access
+qualification remain explicit work.
+
 The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)
 now admits qualified unindexed Boolean/Int32/Int64/Currency/DATE groups beside
 required native Int32 macro effects. It retains original typed intents for

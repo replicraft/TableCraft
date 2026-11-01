@@ -96,5 +96,10 @@ fn journal_help_distinguishes_fixed_groups_from_indexed_null_transitions() {
     assert!(help.contains("atomic unindexed fixed SET groups"));
     assert!(help.contains("Indexed NULL target transitions remain refused"));
     assert!(help.contains("all SET expressions read the same original snapshot"));
-    assert!(help.contains("does not enable general ACE saves or certify macro absence"));
+    assert!(help.contains("at most 64 pages, codepage 1252 and General sort metadata"));
+    assert!(help.contains("callers cannot supply absence flags"));
+    assert!(help.contains("Positive-program supplied equal assignments refuse with EventTiming"));
+    assert!(help.contains(
+        "does not enable general ACE saves or certify macro absence outside the closed family"
+    ));
 }

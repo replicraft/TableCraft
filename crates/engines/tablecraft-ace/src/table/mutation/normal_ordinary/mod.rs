@@ -1,8 +1,12 @@
 //! Ordinary fixed requests require fresh complete content ownership proof.
 mod proof;
+mod selection;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod selection_tests;
 
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,

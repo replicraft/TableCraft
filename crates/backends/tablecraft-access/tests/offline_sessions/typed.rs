@@ -4,7 +4,7 @@ use tablecraft_access::editing::{
     NativeEditError, NativeEditor, journal,
     offline::{Cause, Phase, SessionState},
 };
-use tablecraft_ace::{EditError, NativeImage, RecoverableEditError, WriteBlocker};
+use tablecraft_ace::NativeImage;
 use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{IoError, SharedFile, journal::RecoveryOutcome};
@@ -220,7 +220,7 @@ fn duplicate_and_foreign_typed_handles_refuse_before_creating_any_bundle() {
 }
 
 #[test]
-fn readable_ace_without_event_qualification_does_not_grant_typed_writes() {
+fn readable_ace_outside_closed_content_does_not_grant_typed_writes() {
     let root = tempfile::tempdir().unwrap();
     let case = tablecraft_testkit::access::secondary_index::source(
         6,
@@ -257,13 +257,11 @@ fn readable_ace_without_event_qualification_does_not_grant_typed_writes() {
             &|| false,
         )
         .err()
-        .expect("readable ACE rows do not qualify native event behavior");
+        .expect("readable indexed ACE rows do not qualify the closed ordinary family");
     assert_eq!(failure.phase(), Phase::Planning);
     assert!(matches!(
         failure.cause(),
-        Cause::Editing(journal::Error::Plan(RecoverableEditError::Edit(
-            EditError::Unsupported(WriteBlocker::ActiveContent)
-        )))
+        Cause::Editing(journal::Error::Native(NativeEditError::Unsupported))
     ));
     assert_eq!(failure.state(), SessionState::Ready);
     assert_eq!(failure.pair_state(), None);
