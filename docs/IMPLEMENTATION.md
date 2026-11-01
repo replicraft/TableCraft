@@ -12,6 +12,23 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal writes beside unchanged numeric indexes
+
+Native17 ordinary tables now accept unindexed fixed edits while retaining exact
+Byte/Int16/Int64/Currency indexes. Generic complete-owned tree checks compose with
+actual catalog member-role exclusion and live LVAL protection. Initial global
+closure remains Int32-only; wider indexed targets remain refused, including
+empty requests. Capability discovery prefers eligible unindexed fields instead
+of stopping at an indexed ID.
+
+Eight complete native outcomes, sixteen typed/SQL session saves and eight CLI
+saves/readbacks pass, along with repeated recovery, forgery, role-conflict and
+resource/cancellation controls. All 1,099 ACE units, 83 recovery regressions,
+79 adapter units and 94 CLI units pass; strict all-feature/journal-only/preview-only
+checks and minimal builds pass. See the [contract](access/writes/NORMAL_ACE_RETAINED_NUMERIC.md)
+and [write record](testing/results/ace16-retained-numeric-writes-2026-11-01.json).
+Native Access and broader mutation qualification remain separate.
+
 ## Genuine fitting writes with properties and readonly OLE
 
 Normal fitting saves now admit the original Sentinel.Marker table with its

@@ -134,7 +134,7 @@ pub(in crate::table::mutation) fn validate_user(
     {
         return Err(refused());
     }
-    let position = indexes::declaration::validate(
+    let position = indexes::declaration::validate_selected(
         image,
         inspection.schema(),
         inspection.indexes().iter(),

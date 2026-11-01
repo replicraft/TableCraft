@@ -26,8 +26,11 @@ indexes, allocation and EOF. Authored whole-image, retained-session, CLI and fau
 checks pass. Genuine originals now qualify supported nonempty property bags and readonly
 OLE siblings through strict framing, scoped catalog forwarding, exact selected
 LVAL declarations and complete Source protection. Twelve native/session/CLI
-outcomes retain byte-exact independent expectations and recovery checks. Next,
-broaden retained index profiles and normal physical actions. These are current admission gaps, not
+outcomes retain byte-exact independent expectations and recovery checks. Unindexed fixed edits now retain Byte/Int16/Int64/Currency indexes under
+complete-owned traversal and catalog member-role exclusion, with eight genuine
+native/session/CLI outcomes and fresh recovery proof. Wider indexed targets and
+the initial global family keep their existing limits. Next, promote normal record
+growth into already-owned DATA capacity, then allocation and general INSERT/DELETE. These are current admission gaps, not
 reasons to repeat completed fixed/fitted implementation work.
 
 

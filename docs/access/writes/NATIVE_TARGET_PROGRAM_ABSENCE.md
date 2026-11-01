@@ -106,6 +106,12 @@ These are readonly siblings; even empty fixed/fitted target groups refuse them.
 The original property/OLE corpus and normal fitting saves have separate
 [source evidence](../../testing/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md).
 
+Selected single-column Byte/Int16/Int64/Currency indexes can now remain unchanged
+beside unindexed fixed targets, under the
+[retained numeric-index contract](NORMAL_ACE_RETAINED_NUMERIC.md). Complete tree
+membership and distinct physical storage roles are separate required checks;
+this read qualification never grants wider indexed-target mutation.
+
 The existing fixed DATA and fitting manual-Int32 index rules remain those in
 [ordinary fixed writes](NORMAL_ACE_ORDINARY_FIXED.md). Independent proof freshly
 recaptures BEFORE, repeats the admission conjunction and compares the complete

@@ -9,6 +9,12 @@ mod tests;
 #[cfg(test)]
 mod selection_tests;
 
+#[cfg(test)]
+mod retained_numeric_sources;
+
+#[cfg(test)]
+mod retained_selection_tests;
+
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
     header::check,
