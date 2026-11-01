@@ -30,3 +30,19 @@ allocation producer or stored program.
 Normal allocation, V2 native-intent recovery and resized retained-session saves
 remain separate implementation work. Independent source reads do not establish
 Microsoft Access allocation choices or native save/reopen compatibility.
+
+## Combined owned and new-page reservations
+
+The [compound model](owned_growth_originals/compound_eof_model.py) and its
+[requests](owned_growth_originals/compound_eof_requests.json) reuse the earlier
+healthy [two-row no-capacity sources](ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md).
+The first owned destination has one slot available; the second is full. The
+literal AFTER puts one enlarged row in that last owned slot and the other in
+one newly claimed EOF page. It retains both logical roots, the full destination,
+and all unrelated bytes. Exactly the three EOF map bits change.
+
+Four native read views and four unchanged-formatter two-row SDK reports pass
+before their corresponding producer calls. See the
+[compound source record](results/ace16-compound-eof-sources-2026-11-01.json).
+The original owned-only capacity refusal remains its explicit fixed-length
+contract; successful automatic allocation has separate write acceptance.
