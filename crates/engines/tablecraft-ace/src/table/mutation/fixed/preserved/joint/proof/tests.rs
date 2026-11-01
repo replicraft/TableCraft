@@ -1,6 +1,6 @@
 //! Causal checks use the independently frozen joint source/expected owner.
-use super::super::super::{copy, joint_fixed_sources::model, source};
-use super::{Observed, Original, prove, prove_original};
+use super::{copy, joint_fixed_sources::model, source};
+use crate::table::mutation::fixed_records::proof::{Observed, Original, prove, prove_original};
 use crate::{
     ConstraintViolation, EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError,
     NativeImage, WriteBlocker,

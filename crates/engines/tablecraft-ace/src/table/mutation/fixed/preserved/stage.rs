@@ -1,5 +1,6 @@
 //! Fixed-profile dispatch retaining the established Boolean staging path.
-use super::{FixedColumnUpdates, int32, joint, name_work, scalar, source::Source, unique};
+use super::{FixedColumnUpdates, int32, name_work, scalar, source::Source, unique};
+use crate::table::mutation::fixed_records;
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -52,7 +53,7 @@ pub(super) fn prepare(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     if joint_fixed {
-        return joint::stage::prepare(image, source, groups, budget, cancelled);
+        return fixed_records::stage::prepare(image, source, groups, budget, cancelled);
     }
     // Original typed intent chooses this extra closed profile; the numeric
     // stage independently checks the actual native declaration and carriers.
@@ -131,7 +132,7 @@ pub(super) fn prepare(
             // Metadata selects this newly admitted profile before Boolean
             // qualification. Discard any paid prefix; no error is retried and
             // the joint owner plans every group against the original Source.
-            return joint::stage::prepare(image, source, groups, budget, cancelled);
+            return fixed_records::stage::prepare(image, source, groups, budget, cancelled);
         }
         if let Some((column, kind)) = empty_scalar {
             field::fixed_column_at(schema, column, kind, size_of::<i64>())?;

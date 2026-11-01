@@ -3,7 +3,9 @@ use super::{Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedUpda
 use crate::editing::journal::NativeJournalEditor;
 use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_db::{CellUpdate, EditableTable, Snapshot, UpdateProfile};
+use tablecraft_db::{
+    CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, UpdateProfile,
+};
 
 /// A real snapshot and normal journal editor, retaining the session's exclusive
 /// target while callers read rows and build snapshot-local typed replacements.
@@ -86,6 +88,22 @@ impl EditableTable for OfflineTableEditor {
 
         match editor.plan_updates(column, updates, budget, cancelled) {
             Ok(plan) => Ok(StagedUpdate::from_plan(session, plan, matched)),
+            Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
+        }
+    }
+}
+
+impl EditableBatch for OfflineTableEditor {
+    fn plan_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedUpdate, Failure> {
+        let _span = tracing::debug_span!("access.offline.plan_typed_columns").entered();
+        let Self { session, editor } = self;
+        match editor.plan_columns_with_count(columns, budget, cancelled) {
+            Ok((plan, matched)) => Ok(StagedUpdate::from_plan(session, plan, matched)),
             Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
         }
     }

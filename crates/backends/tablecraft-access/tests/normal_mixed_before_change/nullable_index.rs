@@ -2,10 +2,11 @@
 use super::{SCOPE, Transport, budget, locked};
 use std::fs;
 use tablecraft_access::editing::{
-    NativeEditError, journal,
+    journal,
     offline::{Cause, Failure, OfflineWriteSession, Phase, SessionState},
     sql,
 };
+use tablecraft_ace::{EditError, RecoverableEditError, WriteBlocker};
 use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
@@ -44,7 +45,7 @@ fn nullable_unchanged_index_keeps_four_typed_and_sql_unindexed_score_saves() {
                     let editor = session
                         .edit_table("Items", &mut budget(), &|| false)
                         .unwrap();
-                    assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+                    assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
                     assert_eq!(editor.snapshot().rows(), case.rows);
                     let handle = editor.snapshot().row_handle(0).unwrap();
                     editor
@@ -90,7 +91,7 @@ fn nullable_unchanged_index_keeps_four_typed_and_sql_unindexed_score_saves() {
             let editor = session
                 .edit_table("Items", &mut budget(), &|| false)
                 .unwrap();
-            assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+            assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
             assert_eq!(editor.snapshot().rows(), expected_rows);
             assert_eq!(editor.snapshot().rows()[2][0], Value::Null);
             editor.into_session().release().unwrap();
@@ -102,7 +103,7 @@ fn nullable_unchanged_index_keeps_four_typed_and_sql_unindexed_score_saves() {
     assert_eq!(saved, 4);
 }
 
-fn nonpresent_target_refusal(failure: &Failure) -> bool {
+fn indexed_null_target_refusal(failure: &Failure) -> bool {
     // Keep the root's typed retained-cause check: transparent wrappers may skip
     // intermediate errors in std::error::Error::source.
     let error = match failure.cause() {
@@ -110,11 +111,16 @@ fn nonpresent_target_refusal(failure: &Failure) -> bool {
         Cause::Planning(sql::RecoverableError::Plan(UpdateError::Backend(error))) => error,
         _ => return false,
     };
-    matches!(error, journal::Error::Native(NativeEditError::Unsupported))
+    matches!(
+        error,
+        journal::Error::Plan(RecoverableEditError::Edit(EditError::Unsupported(
+            WriteBlocker::IndexedColumn
+        )))
+    )
 }
 
 #[test]
-fn logical_null_id_never_becomes_an_int32_expected_value_or_creates_a_bundle() {
+fn nullable_indexed_id_still_refuses_transitions_without_creating_a_bundle() {
     for header in [5, 6] {
         let case = model::source(header);
         assert_eq!(case.rows[2][0], Value::Null);
@@ -129,7 +135,7 @@ fn logical_null_id_never_becomes_an_int32_expected_value_or_creates_a_bundle() {
                     let editor = session
                         .edit_table("Items", &mut budget(), &|| false)
                         .unwrap();
-                    assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+                    assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
                     let handle = editor.snapshot().row_handle(2).unwrap();
                     editor.plan_updates(
                         "Id",
@@ -149,11 +155,11 @@ fn logical_null_id_never_becomes_an_int32_expected_value_or_creates_a_bundle() {
             };
             let failure = result
                 .err()
-                .expect("logical NULL has no original Int32 expected carrier");
+                .expect("the fixed profile does not admit indexed NULL transitions");
             assert_eq!(failure.phase(), Phase::Planning);
             assert_eq!(failure.state(), SessionState::Ready);
             assert!(
-                nonpresent_target_refusal(&failure),
+                indexed_null_target_refusal(&failure),
                 "{transport:?}: {failure:?}"
             );
             assert_eq!(failure.current_outcome(), None);

@@ -1,14 +1,15 @@
-//! Explicit ACE16 preview access to exclusively owned resolved record payloads.
+//! Shared ACE16 access to exclusively owned resolved record payloads.
 use super::{Row, RowAssignment};
+#[cfg(feature = "ace16-write-preview")]
+use crate::format::{
+    page::PAGE_BYTES,
+    row::{reference_page, reference_slot, slot_offset},
+};
 use crate::{
     EditError, InspectError, NativeImage, TableSchema, WriteBlocker,
-    format::{
-        bytes::u16_at,
-        page::PAGE_BYTES,
-        row::{MASK_BITS, reference_page, reference_slot, slot_offset},
-    },
+    format::{bytes::u16_at, row::MASK_BITS},
     header::check,
-    table::mutation::page_update::roots,
+    table::mutation::record_roots as roots,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -41,8 +42,10 @@ pub(in crate::table::mutation) fn visit<'u, U: RowAssignment>(
                 mask,
                 // These are the logical root's directory fields, never the
                 // hidden target's. Fixed scalar callbacks do not patch them.
+                #[cfg(feature = "ace16-write-preview")]
                 slot_offset: reference_page(root.reference) as usize * PAGE_BYTES
                     + slot_offset(usize::from(reference_slot(root.reference))),
+                #[cfg(feature = "ace16-write-preview")]
                 slot_word: root.word,
             },
             root.update,

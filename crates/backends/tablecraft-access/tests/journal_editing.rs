@@ -100,9 +100,15 @@ fn sql_recoverable_plan_retains_resolved_requests_and_commits_exact_image() {
     assert_eq!(plain.into_backend().after_bytes(), recorded.after_bytes());
     assert_eq!(recorded.changed_rows(), 1);
     let intent = recorded.intent();
-    assert_eq!((intent.table(), intent.column()), ("Items", "Score"));
-    assert_eq!(intent.updates().len(), 1);
-    let update = &intent.updates()[0];
+    assert_eq!(
+        (
+            intent.table(),
+            intent.int32().expect("Int32 intent").column()
+        ),
+        ("Items", "Score")
+    );
+    assert_eq!(intent.int32().expect("Int32 intent").updates().len(), 1);
+    let update = &intent.int32().expect("Int32 intent").updates()[0];
     assert_eq!(
         (update.row(), update.expected(), update.value()),
         (1, 20, 27)
@@ -152,7 +158,15 @@ fn sql_recoverable_planning_keeps_noop_intent_and_native_refusals() {
         let native = plan.into_backend();
         assert_eq!(native.changed_rows(), 0);
         assert_eq!(native.before_bytes(), native.after_bytes());
-        assert_eq!(native.intent().updates().len(), count);
+        assert_eq!(
+            native
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .len(),
+            count
+        );
     }
 
     for statement in [

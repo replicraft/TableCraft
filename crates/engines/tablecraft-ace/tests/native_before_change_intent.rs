@@ -70,9 +70,12 @@ fn ace_original_request_record_matches_independent_literal_versioned_framing() {
             NativeUpdateProfile::Ace16BeforeChangeInt32
         );
         assert_eq!(decoded.table(), "Items");
-        assert_eq!(decoded.column(), "Score");
-        assert_eq!(decoded.updates().len(), 1);
-        assert_eq!(decoded.updates()[0].value(), 17);
+        assert_eq!(decoded.int32().expect("Int32 intent").column(), "Score");
+        assert_eq!(decoded.int32().expect("Int32 intent").updates().len(), 1);
+        assert_eq!(
+            decoded.int32().expect("Int32 intent").updates()[0].value(),
+            17
+        );
         decoded
             .verify_before(&case.before, &mut work, &|| false)
             .unwrap();
@@ -88,7 +91,7 @@ fn ace_original_request_record_matches_independent_literal_versioned_framing() {
             Err(NativeIntentError::UnsupportedProfile),
         ));
         let mut unknown = expected;
-        unknown[..8].copy_from_slice(b"TCNI0003");
+        unknown[..8].copy_from_slice(b"TCNI0004");
         assert!(matches!(
             NativeUpdateIntent::decode(&unknown, &mut work, &|| false),
             Err(NativeIntentError::UnsupportedVersion),

@@ -371,6 +371,13 @@ rewriting still refuses ignore-NULL membership; splits and map/storage growth
 remain outside both profiles. This
 introduces no general ACE save permission or macro-absence certificate.
 
+A separate [normal fixed-scalar batch route](NORMAL_ACE_FIXED_SCALARS.md) now
+uses shared physical staging and independent manual proof for admitted
+Boolean/Int32/Int64/Currency/DATE requests. Owned `TCNI0003` original requests,
+fresh recovery replay and real retained-session batches are implemented; the
+existing Int32 record formats and indexed path remain separate. Wider SQL/CLI
+qualification is recorded independently from this typed service.
+
 Original user requests retain exact row/expected/replacement values. Any supplied
 equal assignment refuses with `EventTiming`, including one within a mixed list,
 after native discovery and preflight. A truly empty request is distinct. A real

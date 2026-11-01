@@ -107,7 +107,15 @@ fn recorded_normal_plans_match_all_eight_original_images_and_keep_request_alloca
         assert_eq!(recorded.before_bytes(), case.before);
         assert_eq!(recorded.after_bytes(), case.after, "{shape:?}");
         assert_eq!(recorded.changed_rows(), usize::from(case.value != 10));
-        assert_eq!(recorded.intent().updates().as_ptr(), pointer);
+        assert_eq!(
+            recorded
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .as_ptr(),
+            pointer
+        );
         recorded
             .intent()
             .verify_before(&case.before, &mut work, &|| false)

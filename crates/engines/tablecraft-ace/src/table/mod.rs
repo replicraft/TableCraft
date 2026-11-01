@@ -41,11 +41,13 @@ mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub use mutation::FixedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, InsertFieldValue,
-    OmittedRowInsert, RowInsert, SlotScalarUpdate,
+    FittedColumnUpdates, IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
+    SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -124,5 +126,9 @@ pub use indexes::{
     read_table_index_projection, read_table_index_with_request,
 };
 
-#[cfg(any(feature = "ace16-write-preview", feature = "ace16-create"))]
+#[cfg(any(
+    feature = "ace16-write-preview",
+    feature = "ace16-create",
+    feature = "journal"
+))]
 pub(crate) mod scalar_encoding;

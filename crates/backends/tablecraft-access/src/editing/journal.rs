@@ -1,9 +1,12 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
+mod fixed;
 
 use super::{NativeEditError, NativeEditor};
 use tablecraft_ace::{NativeImage, RecoverableEditError, RecoverableNativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_db::{CellUpdate, EditableTable, Snapshot, UpdateProfile};
+use tablecraft_db::{
+    CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, UpdateProfile,
+};
 use thiserror::Error;
 
 /// No durable operation occurs while constructing either kind of plan.
@@ -60,11 +63,28 @@ impl EditableTable for NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
+        if !self.legacy_int32(column, updates, budget, cancelled)? {
+            return self
+                .plan_columns_with_count(&[ColumnUpdates { column, updates }], budget, cancelled)
+                .map(|(plan, _)| plan);
+        }
         let native = self
             .editor
             .int32_updates(column, updates, budget, cancelled)?;
         Ok(self
             .editor
             .plan_recoverable(column, native, budget, cancelled)?)
+    }
+}
+
+impl EditableBatch for NativeJournalEditor {
+    fn plan_columns(
+        self,
+        columns: &[ColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        self.plan_columns_with_count(columns, budget, cancelled)
+            .map(|(plan, _)| plan)
     }
 }

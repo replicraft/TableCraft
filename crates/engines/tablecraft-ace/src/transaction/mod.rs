@@ -3,8 +3,9 @@
 mod intent;
 #[cfg(feature = "journal")]
 pub use intent::{
-    NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
-    RecoverableEditError, RecoverableNativeEditPlan,
+    NativeFixedEditIntent, NativeFixedIntentGroup, NativeInt32EditIntent, NativeIntentError,
+    NativeUpdateBody, NativeUpdateIntent, NativeUpdateProfile, RecoverableEditError,
+    RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
 mod native_recovery;

@@ -59,6 +59,46 @@ impl OfflineWriteSession {
     }
 }
 
+impl OfflineWriteSession {
+    /// Plan one atomic local multi-target UPDATE from the SAME retained target.
+    /// Every expression reads the original snapshot; no journal exists until
+    /// the returned StagedUpdate is explicitly applied. Failures retain the lease.
+    pub fn plan_batch_update(
+        mut self,
+        query: &Query,
+        budget: &mut ResourceBudget,
+        collation: Option<&dyn Collation>,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedUpdate, Failure> {
+        let _span = tracing::debug_span!("access.offline.plan_batch_update").entered();
+        let result = (|| {
+            self.require_ready()?;
+            sql::local_batch_update_table(query)
+                .map_err(|error| Cause::Planning(sql::RecoverableError::Shape(error)))?;
+            let slot = self.slot_mut()?;
+            slot.current = None;
+            slot.state = SessionState::RefreshRequired;
+            let image = NativeImage::capture(
+                slot.target.as_mut().ok_or(Cause::InvalidState)?,
+                slot.scope,
+                budget,
+                cancelled,
+            )
+            .map_err(Cause::Native)?;
+            slot.state = SessionState::Ready;
+            let plan =
+                sql::plan_recoverable_batch_update(image, query, budget, collation, cancelled)
+                    .map_err(Cause::Planning)?;
+            let matched = plan.matched_rows();
+            Ok((plan.into_backend(), matched))
+        })();
+        match result {
+            Ok((plan, matched)) => Ok(StagedUpdate::from_plan(self, plan, matched)),
+            Err(cause) => Err(self.fail(Phase::Planning, cause)),
+        }
+    }
+}
+
 impl StagedUpdate {
     /// Shared internal constructor; callers cannot supply image bytes or invent
     /// changed counts. Both SQL and typed sources retain the normal native plan.

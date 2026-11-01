@@ -70,11 +70,13 @@ pub use preservation::{
     TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty, TableMacroCoverage,
     TableMacroInventory, XmlByteSpan,
 };
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub use table::FixedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, FixedColumnUpdates, IncrementingAutoNumber, InsertFieldValue,
-    OmittedRowInsert, RowInsert, SlotScalarUpdate,
+    FittedColumnUpdates, IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
+    SlotScalarUpdate,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -154,8 +156,9 @@ pub use table::{
 pub use transaction::OfflineReadTransaction;
 #[cfg(feature = "journal")]
 pub use transaction::{
-    NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
-    RecoverableEditError, RecoverableNativeEditPlan,
+    NativeFixedEditIntent, NativeFixedIntentGroup, NativeInt32EditIntent, NativeIntentError,
+    NativeUpdateBody, NativeUpdateIntent, NativeUpdateProfile, RecoverableEditError,
+    RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
 pub use transaction::{NativeRecoveryError, PreparedNativeEdit, recover_native_edit};

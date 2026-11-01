@@ -1,5 +1,6 @@
 //! Full-image authority independently reconstructed from original requests.
-use super::{FixedColumnUpdates, copy, int32, joint, name_work, scalar, source, unique};
+use super::{FixedColumnUpdates, copy, int32, name_work, scalar, source, unique};
+use crate::table::mutation::fixed_records;
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -26,7 +27,14 @@ pub(super) fn prove(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     if joint_fixed {
-        return joint::proof::prove(image, groups, after, returned_count, budget, cancelled);
+        return fixed_records::proof::prove(
+            image,
+            groups,
+            after,
+            returned_count,
+            budget,
+            cancelled,
+        );
     }
     if let [group] = groups
         && group
@@ -131,14 +139,14 @@ pub(super) fn prove(
             // This accumulator is owned by the independent auditor. Earlier
             // Boolean contributions came only from the same original requests;
             // reapplying their individual bits is idempotent.
-            return joint::proof::prove_original(
-                joint::proof::Original {
+            return fixed_records::proof::prove_original(
+                fixed_records::proof::Original {
                     image,
                     source: &original,
                 },
                 expected,
                 groups,
-                joint::proof::Observed {
+                fixed_records::proof::Observed {
                     bytes: after,
                     changed_rows: returned_count,
                 },

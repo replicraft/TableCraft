@@ -2,6 +2,15 @@
 
 ## Current product priority
 
+The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)
+now admits qualified unindexed Boolean/Int32/Int64/Currency/DATE groups beside
+required native Int32 macro effects. It retains original typed intents for
+recovery and uses the shared raw staging/manual proof through real Access
+sessions. Complex, long-value and partial declarations retain the prior service;
+this supplies no macro-absence certificate or general ACE save qualification.
+Typed source/commit/recovery evidence and broader SQL/CLI acceptance remain
+separate in the owning contract.
+
 The normal journal route now admits a narrow [ACE BeforeChange Int32 profile](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
 through the retained offline session. It derives required programs from native
 references, preserves original user intent and reconstructs both complete images

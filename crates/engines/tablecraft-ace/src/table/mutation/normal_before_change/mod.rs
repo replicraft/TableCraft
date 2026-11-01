@@ -1,5 +1,7 @@
 //! Normal positive-program ACE UPDATE, independent of engineering packaging.
+mod fixed;
 mod mixed;
+mod operands;
 mod proof;
 pub(in crate::table::mutation) mod protection;
 mod stage;

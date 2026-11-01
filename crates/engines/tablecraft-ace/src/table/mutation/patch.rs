@@ -1,4 +1,4 @@
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) mod spans;
 
 pub(super) trait BytePatch {

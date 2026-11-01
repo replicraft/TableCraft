@@ -55,7 +55,7 @@ fn mixed_handles_are_snapshot_local_after_commit_and_foreign_capture() {
             let editor = session
                 .edit_table("Items", &mut budget(), &|| false)
                 .unwrap();
-            assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+            assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
             assert_eq!(
                 editor.snapshot().resolve(handle),
                 Err(SnapshotError::StaleRow)
@@ -153,8 +153,14 @@ fn projected_journal_editor_uses_actual_rich_source_and_two_literal_full_images(
         assert_eq!(plan.before_bytes(), before);
         assert_eq!(plan.after_bytes(), expected);
         assert_eq!(plan.changed_rows(), 1);
-        assert_eq!(plan.intent().updates()[0].value(), 17);
-        assert_eq!(plan.intent().column(), "Large_Number");
+        assert_eq!(
+            plan.intent().int32().expect("Int32 intent").updates()[0].value(),
+            17
+        );
+        assert_eq!(
+            plan.intent().int32().expect("Int32 intent").column(),
+            "Large_Number"
+        );
         // Input artifacts are opened read-only and remain byte-exact.
         assert_eq!(fs::read(&before_path).unwrap(), before);
         assert_eq!(fs::read(&expected_path).unwrap(), expected);

@@ -66,15 +66,32 @@ fn indexed_mixed_commits_twelve_literal_images_and_keeps_exact_original_tcni2_re
                 plan.intent().profile(),
                 NativeUpdateProfile::Ace16BeforeChangeInt32
             );
-            assert_eq!(plan.intent().updates().as_ptr(), pointer);
-            assert_eq!(plan.intent().updates().len(), case.updates.len());
+            assert_eq!(
+                plan.intent()
+                    .int32()
+                    .expect("Int32 intent")
+                    .updates()
+                    .as_ptr(),
+                pointer
+            );
+            assert_eq!(
+                plan.intent().int32().expect("Int32 intent").updates().len(),
+                case.updates.len()
+            );
             assert_eq!(
                 plan.intent().encode(&mut budget(), &|| false).unwrap(),
                 intent(&case.before, requests(&case))
                     .encode(&mut budget(), &|| false)
                     .unwrap()
             );
-            for (actual, supplied) in plan.intent().updates().iter().zip(&case.updates) {
+            for (actual, supplied) in plan
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .iter()
+                .zip(&case.updates)
+            {
                 assert_eq!(
                     (actual.row(), actual.expected(), actual.value()),
                     (supplied.ordinal, supplied.expected, supplied.replacement)
@@ -89,7 +106,10 @@ fn indexed_mixed_commits_twelve_literal_images_and_keeps_exact_original_tcni2_re
             if recipe == Recipe::CounterTreeRetainedRestore {
                 assert_eq!(plan.after_bytes(), case.before);
                 assert_eq!(plan.changed_rows(), 0);
-                assert_eq!(plan.intent().updates()[0].value(), 2599);
+                assert_eq!(
+                    plan.intent().int32().expect("Int32 intent").updates()[0].value(),
+                    2599
+                );
             }
             if recipe == Recipe::CounterUniqueSwap {
                 let mut reversed = requests(&case);
@@ -108,6 +128,8 @@ fn indexed_mixed_commits_twelve_literal_images_and_keeps_exact_original_tcni2_re
                 assert_eq!(
                     reverse
                         .intent()
+                        .int32()
+                        .expect("Int32 intent")
                         .updates()
                         .iter()
                         .map(Int32Update::row)
@@ -196,7 +218,14 @@ fn indexed_mixed_unique_conflicts_stale_requests_and_generated_targets_refuse_at
             .unwrap();
         assert_eq!(empty.after_bytes(), case.before);
         assert_eq!(empty.changed_rows(), 0);
-        assert!(empty.intent().updates().is_empty());
+        assert!(
+            empty
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .is_empty()
+        );
     }
 }
 

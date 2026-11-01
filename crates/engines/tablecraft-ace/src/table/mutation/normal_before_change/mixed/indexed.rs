@@ -7,7 +7,7 @@ use super::super::super::{
     lval_ownership::Inventory,
     preserved_source::{self, Source, validation},
 };
-use super::super::event_error;
+use super::super::{event_error, operands::original_frames};
 use super::{prepare_with_indexes, proof, stage, validate_with_indexes};
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, TableSchema, check_table,
@@ -363,7 +363,7 @@ fn prove(
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let admission = capture(&image, table, budget, cancelled)?;
-    proof::original_frames(&admission.source, budget, cancelled)?;
+    original_frames(&admission.source, budget, cancelled)?;
     prepare_with_indexes(
         &image,
         &admission.source,
