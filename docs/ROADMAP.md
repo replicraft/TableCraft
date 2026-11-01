@@ -17,8 +17,11 @@ Eighteen native source views and 144 independent SDK observations preceded its
 write producers; native, typed/SQL and CLI acceptance now pass separately.
 The [Binary DELETE route](access/writes/NORMAL_BINARY_INDEX_DELETE.md) now also
 maintains qualified root leaves; focused native and retained-session checks pass.
-Binary indexed UPDATE, NODEs, allocation and splits remain work, with native
-Access save/reopen still unrun.
+The [indexed Binary UPDATE branch](access/writes/NORMAL_BINARY_INDEX_UPDATE.md)
+now passes fitting native/session/CLI acceptance. [Normal Int32 root splits](access/writes/NORMAL_ROOT_SPLIT.md)
+append two represented INDEX pages through TCNA4/V2. Compound DATA+INDEX allocation,
+recursive and wider-key splits, NODE retirement and native Access save/reopen
+remain work.
 
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and
@@ -75,7 +78,9 @@ Qualified [column-identity action profiles](access/writes/NORMAL_COLUMN_IDENTITI
 now cover stored-ID gaps and fixed native gaps, including two-byte presence masks.
 Fresh creation authors explicit Required/AllowZeroLength and typed Int32/NULL
 DefaultValue metadata, consumed by normal omitted-field INSERT.
-Next are broader dropped-column layouts, allocation and index splits/page retirement,
+Fresh manual Int64/Currency primary creation and the CLI explicit primary flag
+now pass independently sourced creator/session/CLI acceptance. Next are broader
+dropped-column layouts, compound allocation and recursive splits/page retirement,
 AutoNumber and broader relationship/program behavior. Native Access
 qualification remains open. Completed
 fixed/fitted implementation does not need repeating.

@@ -1,5 +1,28 @@
 # Implementation status
 
+## Indexed Binary updates, root splits and wider primary creation
+
+Normal fitting [Binary index UPDATE](access/writes/NORMAL_BINARY_INDEX_UPDATE.md)
+now reaches typed/SQL retained sessions and CLI saves with independent full-image
+proof and TCNI5 recovery. [Normal Int32 root promotion](access/writes/NORMAL_ROOT_SPLIT.md)
+now appends two explicitly represented INDEX pages through TCNA4/V2, with full
+resource/cancellation and same-lease session checks. Compound DATA+INDEX
+allocation and recursive/multiple splits remain separate work.
+
+Fresh creation now accepts manual Int64/Currency primary keys without carrier
+coercion or generated values. The CLI exposes caller-named keys through
+`create --primary-key COLUMN INDEX_NAME` in both existing schema modes. Twelve
+complete CLI source comparisons/readbacks, invalid-input/no-publication checks,
+old creation regressions and actual wider-key INSERT/DELETE sessions pass.
+
+The combined batch passes 1,165 ACE units, 79 adapter units, 104 CLI units and
+90 default recovery functions. All focused creator, index-update, split, native
+recovery, host and CLI tranches pass. Strict all-feature/all-target, minimal,
+journal-only and preview-only checks pass. The
+[execution record](testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+retains first compile/registration failures, peer accounting review and corrections.
+Native Access save/reopen and Windows qualification remain unrun.
+
 ## Manual primary creation and Binary deletion
 
 Fresh creation now authors explicit caller-named manual Int32 primary keys,
@@ -23,8 +46,8 @@ regression. Strict all-feature/all-target, minimal, journal-only and preview-onl
 checks pass. The [execution record](testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
 retains the first IsNull admission failure, obsolete empty-source refusal,
 sequential-tail test assumption and lint failures with their corrections.
-Native Access save/reopen and Windows durability remain unrun. Indexed Binary
-UPDATE, index splits/allocation, broader keys and AutoNumber remain work.
+Native Access save/reopen and Windows durability remain unrun. Compound
+allocation, recursive/wider-key splits, broader keys and AutoNumber remain work.
 
 ## Fitting Binary index insertion
 
