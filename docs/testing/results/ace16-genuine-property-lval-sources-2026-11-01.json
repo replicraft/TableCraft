@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "scope": "Original and independently modeled Sentinel.Marker reads before ordinary fitted producer calls",
+  "original_provenance": "ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json",
+  "originals": {
+    "5": {
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "bitmap": 111,
+      "sort": "09040001"
+    },
+    "6": {
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "bitmap": 128,
+      "sort": "09040000"
+    }
+  },
+  "expected_manifest_sha256": "2276969b3ae6c9090eb79c37ca6445021b8d0adf62be6c2fc8a0bee8967df3d1",
+  "input_freeze_sha256": "aa1858ffe31c789d3cc4bb0e3439a8e64bfaf7624a5fa2d31e63bff1ca5c9af8",
+  "native_read_views": 14,
+  "independent_sdk_expected_reads": 12,
+  "source_gate_log": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-5.log",
+  "sdk_result": ".cache/ace16-ordinary-property-lval-next-20261101/sdk-expected-first/result.json",
+  "independent_sdk": "Jackcess 5.0.4 public getter; existing pinned class and JAR reused",
+  "source_inputs_unchanged": true,
+  "expectations_from_native_producer": false,
+  "native_access": "Unrun; independent readers do not establish Microsoft Access conformance",
+  "model": {
+    "path": "docs/testing/genuine_property_lval/model.py",
+    "sha256": "389aec184cf9aa290058759d2eba0663416da23d9bad61557de81e888fea5ee4"
+  },
+  "requests": {
+    "path": "docs/testing/genuine_property_lval/requests.json",
+    "sha256": "974d85bdc509ce08bbfc47d790341bdca2b38913eadd324cef38f8fd87726741"
+  }
+}
