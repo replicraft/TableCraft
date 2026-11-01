@@ -1,6 +1,7 @@
 //! Original target metadata and paid request directory, never stage authority.
 use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeImage, WriteBlocker,
+    format::data_type::SHORT_BINARY,
     header::check,
     table::mutation::{
         fixed_records, preserved_source::Source, record_serialization::storage, rows,
@@ -68,6 +69,25 @@ pub(in crate::table::mutation) fn vector<T>(
 pub(in crate::table::mutation) fn all(
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    all_with(source, groups, false, budget, cancelled)
+}
+
+pub(super) fn all_indexed_binary(
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    all_with(source, groups, true, budget, cancelled)
+}
+
+fn all_with(
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    indexed_binary: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
@@ -148,7 +168,9 @@ pub(in crate::table::mutation) fn all(
                 for index in source.indexes.indexes() {
                     for key in index.columns() {
                         check(budget, cancelled)?;
-                        if key.number() == field.number() {
+                        if key.number() == field.number()
+                            && !(indexed_binary && field.native_type() == SHORT_BINARY)
+                        {
                             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
                         }
                     }

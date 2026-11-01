@@ -1,6 +1,8 @@
 #[cfg(feature = "ace16-write-preview")]
 mod combined;
 #[cfg(feature = "journal")]
+pub(in crate::table) mod normal_binary_update;
+#[cfg(feature = "journal")]
 pub(in crate::table) mod normal_fitting;
 #[cfg(feature = "journal")]
 pub(in crate::table) mod normal_index_audit;

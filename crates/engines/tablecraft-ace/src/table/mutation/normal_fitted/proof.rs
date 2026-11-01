@@ -9,9 +9,10 @@ use crate::{
     header::check,
     table::mutation::{
         normal_ordinary,
-        preserved_source::validation,
+        preserved_source::{Source, validation},
         record_serialization::{self, proof as variable_proof},
     },
+    table::record_layout,
 };
 use std::io::Cursor;
 use tablecraft_core::{
@@ -37,6 +38,35 @@ pub(super) fn prove(
     )?;
     let source = normal_ordinary::capture(&image, table, budget, cancelled)?;
     let bound = binding::all(&source, groups, budget, cancelled)?;
+    let (expected, changed_rows) = reconstruct(&image, &source, groups, bound, budget, cancelled)?;
+    if changed_rows != plan.changed_rows() {
+        return Err(EditError::Preservation);
+    }
+    validation::expected(&image, table, &source.table, &expected, budget, cancelled)?;
+    variable_proof::equal(&expected, plan.after_bytes(), budget, cancelled)?;
+    check(budget, cancelled)?;
+    Ok(())
+}
+
+pub(super) fn reconstruct_indexed_binary(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    let bound = binding::all_indexed_binary(source, groups, budget, cancelled)?;
+    reconstruct(image, source, groups, bound, budget, cancelled)
+}
+
+fn reconstruct(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    bound: binding::Bound,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
     let schema = source.table.schema();
     let mut expected = record_serialization::copy(image.as_bytes(), budget, cancelled)?;
     let mut changed_rows = 0_usize;
@@ -44,8 +74,8 @@ pub(super) fn prove(
         check(budget, cancelled)?;
         let original = &source.records[selected.ordinal];
         let values = original_values(
-            &image,
-            &source,
+            image,
+            source,
             selected.ordinal,
             &bound.columns,
             budget,
@@ -103,7 +133,7 @@ pub(super) fn prove(
         if row.len() != original.data.len() {
             return Err(EditError::Preservation);
         }
-        let layout = crate::table::record_layout::parse(&original.data, schema, budget)?;
+        let layout = record_layout::parse(&original.data, schema, budget)?;
         for assignment in &bound.assignments[selected.start..selected.end] {
             let Target::Fixed { column, width, .. } = bound.targets[assignment.group] else {
                 continue;
@@ -174,11 +204,5 @@ pub(super) fn prove(
             .copy_from_slice(&row);
         changed_rows += 1;
     }
-    if changed_rows != plan.changed_rows() {
-        return Err(EditError::Preservation);
-    }
-    validation::expected(&image, table, &source.table, &expected, budget, cancelled)?;
-    variable_proof::equal(&expected, plan.after_bytes(), budget, cancelled)?;
-    check(budget, cancelled)?;
-    Ok(())
+    Ok((expected, changed_rows))
 }

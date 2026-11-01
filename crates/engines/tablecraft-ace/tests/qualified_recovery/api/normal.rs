@@ -779,3 +779,6 @@ mod genuine_binary_indexed;
 
 #[path = "normal/genuine_binary_delete.rs"]
 mod genuine_binary_delete;
+
+#[path = "normal/genuine_binary_update.rs"]
+mod genuine_binary_update;

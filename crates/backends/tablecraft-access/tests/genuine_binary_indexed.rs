@@ -101,7 +101,7 @@ fn typed_binary_null_empty_segments_and_honest_sql_null_publish_literal_images()
                 .edit_table("BinaryKeys", &mut budget(), &|| false)
                 .unwrap();
             assert_eq!(EditableTable::snapshot(&editor).rows(), case.rows());
-            assert_eq!(editor.update_profile(), UpdateProfile::Unavailable);
+            assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
             editor.into_session().release().unwrap();
             ExclusiveFile::open(&path).unwrap().close().unwrap();
             assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 1);
@@ -131,7 +131,7 @@ fn binary_insert_refresh_rejects_stale_handles_and_admits_empty_delete() {
             EditableTable::snapshot(&editor).rows(),
             sources::original_rows()
         );
-        assert_eq!(editor.update_profile(), UpdateProfile::Unavailable);
+        assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
         let stale = EditableTable::snapshot(&editor).row_handle(0).unwrap();
         let session = editor.into_session();
 
@@ -168,7 +168,7 @@ fn binary_insert_refresh_rejects_stale_handles_and_admits_empty_delete() {
         let snapshot = EditableTable::snapshot(&editor);
         let fresh = snapshot.row_handle(0).unwrap();
         assert_eq!(snapshot.resolve(fresh).unwrap(), snapshot.rows()[0]);
-        assert_eq!(editor.update_profile(), UpdateProfile::Unavailable);
+        assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
 
         let staged = DeletableTable::plan_deletes(editor, &[], &mut budget(), &|| false).unwrap();
         assert_eq!((staged.matched_rows(), staged.deleted_rows()), (0, 0));

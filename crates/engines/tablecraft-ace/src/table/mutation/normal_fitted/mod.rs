@@ -1,5 +1,6 @@
 //! Ordinary fitting records use fresh native admission and original requests.
 pub(in crate::table::mutation) mod binding;
+pub(in crate::table::mutation) mod indexed;
 pub(in crate::table::mutation) mod owned_growth;
 mod proof;
 pub(in crate::table::mutation) mod stage;
@@ -60,7 +61,7 @@ impl NativeImage {
                     indexed |= key.number() == field.number();
                 }
             }
-            if !indexed {
+            if !indexed || field.native_type() == SHORT_BINARY {
                 return Ok(true);
             }
         }
@@ -77,6 +78,9 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         let _span = tracing::debug_span!("native.ordinary.fitted.table").entered();
+        if indexed::capability_selected(self, table, budget, cancelled)? {
+            return indexed::check_table(self, table, budget, cancelled);
+        }
         let source = normal_ordinary::capture(self, table, budget, cancelled)?;
         for (column, field) in source.table.schema().columns().iter().enumerate() {
             check(budget, cancelled)?;
@@ -116,6 +120,9 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.fitted.plan").entered();
         check(budget, cancelled)?;
+        if indexed::selected(&self, table, groups, budget, cancelled)? {
+            return indexed::plan(self, table, groups, budget, cancelled);
+        }
         let source = normal_ordinary::capture(&self, table, budget, cancelled)?;
         let (patches, changed_rows) = stage::prepare(&self, &source, groups, budget, cancelled)?;
         let mut after = record_serialization::copy(self.as_bytes(), budget, cancelled)?;
@@ -212,3 +219,6 @@ mod sentinel_source_controls;
 
 #[cfg(all(test, feature = "journal"))]
 mod binary_update_sources;
+
+#[cfg(test)]
+mod binary_tests;

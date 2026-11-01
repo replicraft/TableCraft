@@ -29,6 +29,14 @@ impl NativeImage {
     ) -> Result<OrdinaryVariablePlanKind, EditError> {
         let _span = tracing::debug_span!("native.ordinary.variable.select_plan").entered();
         check(budget, cancelled)?;
+        if crate::table::mutation::normal_fitted::indexed::selected(
+            self, table, groups, budget, cancelled,
+        )? {
+            crate::table::mutation::normal_fitted::indexed::preflight(
+                self, table, groups, budget, cancelled,
+            )?;
+            return Ok(OrdinaryVariablePlanKind::Fitted);
+        }
         let source = normal_ordinary::capture(self, table, budget, cancelled)?;
         // Complete old fitting preflight, including empty groups and stale
         // carriers, precedes native17/EOF qualification. Global15 stays fitted.

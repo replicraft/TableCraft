@@ -55,6 +55,37 @@ pub(in crate::table::mutation) fn prepare_with(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
     let bound = binding::all(source, groups, budget, cancelled)?;
+    prepare_bound(image, source, groups, policy, bound, budget, cancelled)
+}
+
+pub(super) fn prepare_indexed_binary(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Patch>, usize), EditError> {
+    let bound = binding::all_indexed_binary(source, groups, budget, cancelled)?;
+    prepare_bound(
+        image,
+        source,
+        groups,
+        RecordPolicy::FittedDeclared,
+        bound,
+        budget,
+        cancelled,
+    )
+}
+
+fn prepare_bound(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    policy: RecordPolicy,
+    bound: binding::Bound,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Patch>, usize), EditError> {
     let schema = source.table.schema();
     let mut patches = binding::vector(bound.rows.len(), budget)?;
     for selected in &bound.rows {
