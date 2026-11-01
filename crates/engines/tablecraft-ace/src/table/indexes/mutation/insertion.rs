@@ -2,6 +2,8 @@
 pub(in crate::table::indexes::mutation) mod binding;
 pub(in crate::table::indexes) mod membership;
 mod preparation;
+#[cfg(all(test, feature = "journal"))]
+mod primary_tests;
 #[cfg(feature = "ace16-write-preview")]
 mod profiles;
 #[cfg(all(test, feature = "ace16-write-preview"))]
@@ -255,9 +257,61 @@ pub(in crate::table) fn prepare<'a>(
     }
 }
 
+#[derive(Clone, Copy)]
+enum PrimaryProfile {
+    LegacyInt32,
+    #[cfg(feature = "journal")]
+    NormalIntegral,
+}
+
+impl PrimaryProfile {
+    fn permits(self, kind: Option<ScalarType>) -> bool {
+        match self {
+            Self::LegacyInt32 => kind == Some(ScalarType::Int32),
+            #[cfg(feature = "journal")]
+            Self::NormalIntegral => matches!(
+                kind,
+                Some(ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)
+            ),
+        }
+    }
+}
+
 pub(in crate::table) fn qualify<'a>(
     checked: &'a TableCheck,
     physical: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<&'a NativeIndex, EditError> {
+    qualify_primary(
+        checked,
+        physical,
+        PrimaryProfile::LegacyInt32,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table) fn qualify_actions<'a>(
+    checked: &'a TableCheck,
+    physical: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<&'a NativeIndex, EditError> {
+    qualify_primary(
+        checked,
+        physical,
+        PrimaryProfile::NormalIntegral,
+        budget,
+        cancelled,
+    )
+}
+
+fn qualify_primary<'a>(
+    checked: &'a TableCheck,
+    physical: u32,
+    profile: PrimaryProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a NativeIndex, EditError> {
@@ -304,7 +358,7 @@ pub(in crate::table) fn qualify<'a>(
                 }
             }
             if primary
-                || field.and_then(|column| column.scalar_type()) != Some(ScalarType::Int32)
+                || !profile.permits(field.and_then(|column| column.scalar_type()))
                 || key.descending()
                 || !constraints.unique()
                 || !constraints.required()
@@ -329,7 +383,7 @@ pub(in crate::table) fn prepare_existing(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<IndexInsertion, EditError> {
     check(budget, cancelled)?;
-    let index = qualify(checked, physical, budget, cancelled)?;
+    let index = qualify_actions(checked, physical, budget, cancelled)?;
     let [key] = index.columns() else {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     };

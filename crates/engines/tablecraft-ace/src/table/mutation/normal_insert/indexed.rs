@@ -105,7 +105,7 @@ pub(super) fn plan(
         {
             return Err(EditError::Preservation);
         }
-        let selected = insertion::qualify(facts.checked(), physical, budget, cancelled)?;
+        let selected = insertion::qualify_actions(facts.checked(), physical, budget, cancelled)?;
         if index.root() != selected.root_page()
             || index.usage() != selected.usage_map()
             || index.source_pages().first() != Some(&selected.root_page())
@@ -205,7 +205,7 @@ fn qualify<'image>(
     for physical in 0..schema.layout.physical_indexes {
         check(budget, cancelled)?;
         let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
-        let index = insertion::qualify(facts.checked(), physical, budget, cancelled)?;
+        let index = insertion::qualify_actions(facts.checked(), physical, budget, cancelled)?;
         let [key] = index.columns() else {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         };
