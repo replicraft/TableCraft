@@ -1,9 +1,9 @@
-//! Independent raw Int32+ROW reconstruction; no staged keys or index patches.
+//! Independent declining populations; no staged keys or index patches.
 use super::{Admission, references, vector};
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeIndex, RowDelete, TableSchema,
     format::{
-        data_type::{CURRENCY, INT64},
+        data_type::{CURRENCY, INT64, SHORT_BINARY},
         page::PAGE_BYTES,
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -312,18 +312,21 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
                 source.table.schema().columns().len() as u64,
             )
             .map_err(InspectError::from)?;
-        let integral = index
-            .columns()
-            .first()
-            .and_then(|key| {
-                source
-                    .table
-                    .schema()
-                    .columns()
-                    .iter()
-                    .find(|field| field.number() == key.number())
-            })
-            .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY));
+        let field = index.columns().first().and_then(|key| {
+            source
+                .table
+                .schema()
+                .columns()
+                .iter()
+                .find(|field| field.number() == key.number())
+        });
+        if field.is_some_and(|field| field.native_type() == SHORT_BINARY) {
+            super::binary::reconstruct(
+                image, source, index, &removed, expected, budget, cancelled,
+            )?;
+            continue;
+        }
+        let integral = field.is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY));
         if integral {
             super::integral::reconstruct(
                 image, source, index, &removed, expected, budget, cancelled,

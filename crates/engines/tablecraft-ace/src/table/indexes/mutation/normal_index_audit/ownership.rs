@@ -60,7 +60,7 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, false, false, budget, cancelled)
+        Self::capture_mode(image, checked, false, budget, cancelled)
     }
 
     /// Real action callers resolve native key numbers independently of dense
@@ -72,26 +72,13 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, true, false, budget, cancelled)
-    }
-
-    /// INSERT additionally qualifies bounded Binary root leaves. This does not
-    /// broaden numeric DELETE or any UPDATE target policy.
-    #[cfg(feature = "journal")]
-    pub(in crate::table) fn capture_insert(
-        image: &NativeImage,
-        checked: &TableCheck,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, true, true, budget, cancelled)
+        Self::capture_mode(image, checked, true, budget, cancelled)
     }
 
     fn capture_mode(
         image: &NativeImage,
         checked: &TableCheck,
         actions: bool,
-        binary: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -167,7 +154,7 @@ impl Ownership {
                         .find(|field| field.number() == key.number())
                         .filter(|field| {
                             matches!(field.native_type(), INT64 | CURRENCY)
-                                || binary && field.native_type() == SHORT_BINARY
+                                || field.native_type() == SHORT_BINARY
                         })
                 })
             } else {

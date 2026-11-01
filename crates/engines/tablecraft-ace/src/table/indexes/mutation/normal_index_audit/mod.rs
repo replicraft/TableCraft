@@ -1,5 +1,6 @@
-//! Original-only fitting INDEX tree reconstruction for normal BeforeChange.
+//! Original-bound INDEX ownership and independent normal mutation proof.
 mod atoms;
+pub(in crate::table) mod binary;
 mod deletion;
 mod insertion;
 mod ownership;

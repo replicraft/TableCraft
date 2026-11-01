@@ -1,11 +1,12 @@
-//! Original Int32 trees and numeric root leaves with exclusive mutation roles.
+//! Original Int32 trees and typed root leaves with exclusive mutation roles.
+mod binary;
 mod integral;
 mod proof;
 
 use crate::{
     EditError, InspectError, NativeImage, RowDelete, TableCheck, WriteBlocker,
     format::{
-        data_type::{CURRENCY, INT32, INT64},
+        data_type::{CURRENCY, INT32, INT64, SHORT_BINARY},
         page::PAGE_BYTES,
     },
     header::check,
@@ -81,7 +82,7 @@ impl<'image> Admission<'image> {
                 .find(|field| field.number() == key.number())
                 .ok_or(InspectError::Malformed)?;
             let integral = matches!(field.native_type(), INT64 | CURRENCY);
-            if field.native_type() != INT32 && !integral {
+            if field.native_type() != INT32 && !integral && field.native_type() != SHORT_BINARY {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             budget
@@ -112,7 +113,9 @@ impl<'image> Admission<'image> {
             {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            if integral && (header.kind != LEAF || header.prefix.get() != 0) {
+            if (integral || field.native_type() == SHORT_BINARY)
+                && (header.kind != LEAF || header.prefix.get() != 0)
+            {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             has_node |= header.kind == NODE;

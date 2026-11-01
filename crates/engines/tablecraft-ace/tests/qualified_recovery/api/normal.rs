@@ -776,3 +776,6 @@ mod sparse_numeric;
 
 #[path = "normal/genuine_binary_indexed.rs"]
 mod genuine_binary_indexed;
+
+#[path = "normal/genuine_binary_delete.rs"]
+mod genuine_binary_delete;

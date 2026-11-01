@@ -15,8 +15,10 @@ The [fitting Binary INSERT route](access/writes/NORMAL_BINARY_INDEX_INSERT.md)
 now maintains qualified nullable/directional Short Binary secondary root leaves.
 Eighteen native source views and 144 independent SDK observations preceded its
 write producers; native, typed/SQL and CLI acceptance now pass separately.
-Binary DELETE, NODEs, allocation and splits remain next, with native Access
-save/reopen still unrun.
+The [Binary DELETE route](access/writes/NORMAL_BINARY_INDEX_DELETE.md) now also
+maintains qualified root leaves; focused native and retained-session checks pass.
+Binary indexed UPDATE, NODEs, allocation and splits remain work, with native
+Access save/reopen still unrun.
 
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and

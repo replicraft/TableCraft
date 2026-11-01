@@ -25,27 +25,6 @@ impl<'image> CheckedIndexes<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_kind(image, table, false, budget, cancelled)
-    }
-
-    /// Complete INSERT facts additionally admit bounded Short Binary keys;
-    /// DELETE and UPDATE retain their existing independent policies.
-    pub(in crate::table::mutation) fn capture_insert(
-        image: &'image NativeImage,
-        table: &str,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
-        Self::capture_kind(image, table, true, budget, cancelled)
-    }
-
-    fn capture_kind(
-        image: &'image NativeImage,
-        table: &str,
-        binary: bool,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
         let checked = check_table(
             &mut image.reader(),
             image.catalog().catalog().scope(),
@@ -78,8 +57,7 @@ impl<'image> CheckedIndexes<'image> {
                     .iter()
                     .find(|field| field.number() == key.number())
                     .ok_or(EditError::Preservation)?;
-                if binary
-                    && field.native_type() == SHORT_BINARY
+                if field.native_type() == SHORT_BINARY
                     && field.scalar_type() == Some(ScalarType::Binary)
                 {
                     if field.fixed()
