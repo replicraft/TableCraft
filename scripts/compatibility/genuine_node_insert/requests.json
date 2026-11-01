@@ -1,0 +1,22 @@
+{
+  "state": "OBSERVED_ORIGINAL_AND_EXPLICIT_NODE_INSERT_PARTITION_LAW_BEFORE_MODEL",
+  "table": "Items",
+  "original_rows": 800,
+  "new_rows": [[801, 400, 1]],
+  "final_rows": 801,
+  "partition_law": "Sort complete original+requested key/ROW population per physical index. Each earlier original leaf keeps its ORIGINAL entry count; the last leaf absorbs the growth. Rebuild full child maxima in original NODE child order.",
+  "not_delete_law": "This intentionally redistributes surviving old entries; it does not retain per-leaf original membership.",
+  "data_law": "Actual candidate map selects only original final DATA page, slot80,15B new record2881..2896; slots80→81/free2722→2705; old records exact",
+  "metadata_law": "TDcount800→801, Primary history800→801, Guard history7 unchanged, LAST0 unchanged",
+  "profiles": [
+    {"header": 5, "definition": 89, "roots": [91, 92], "primary_children": [98, 97], "guard_children": [101, 100], "data_pages": [93, 95, 96, 99], "target_data": 99, "new_reference": 25424, "candidate_reference": 23041, "before_counts": [[302, 498], [395, 405]], "after_counts": [[302, 499], [395, 406]], "before_fences": [[302, 24381], [3, 24433]], "after_fences": [[302, 24381], [3, 24426]]},
+    {"header": 6, "definition": 106, "roots": [108, 109], "primary_children": [115, 114], "guard_children": [118, 117], "data_pages": [110, 112, 113, 116], "target_data": 116, "new_reference": 29776, "candidate_reference": 27393, "before_counts": [[302, 498], [395, 405]], "after_counts": [[302, 499], [395, 406]], "before_fences": [[302, 28733], [3, 28785]], "after_fences": [[302, 28733], [3, 28778]]}
+  ],
+  "old_membership_move": "Guard oldId354 moves from left leaf to right; newGuard1/Id801 enters left. Primary old partitions stay; newId801 enters right.",
+  "before_leaf_active_free": [[2718,898],[2991,625],[3555,61],[2029,1587]],
+  "after_leaf_active_free": [[2718,898],[2997,619],[3555,61],[2034,1582]],
+  "preservation": "Same six INDEX pages/roots/childorder/tails/links/heights; no map/EOF/index allocation/retirement; exact unused/vacated bytes and whole complement",
+  "empty_request": "Original image exact, not a source of canonicalization",
+  "native_producer_calls": 0,
+  "after_images_constructed": 0
+}

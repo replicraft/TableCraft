@@ -1,0 +1,164 @@
+{
+  "state": "ORIGINAL_GENERATION_AND_FUTURE_PRESENCE_REQUESTS_BEFORE_ORIGINAL_CREATION",
+  "formats": [
+    "V2016",
+    "V2019"
+  ],
+  "source_tables": {
+    "Defaults": {
+      "columns": [
+        "Id:LONG:manual",
+        "Score:LONG:DefaultValue=7",
+        "Caption:TEXT40:uncompressed:DefaultValue=\"seed\"",
+        "Flag:BOOLEAN:DefaultValue=True",
+        "Money:CURRENCY:DefaultValue=-1.0001",
+        "Optional:LONG:noDefault"
+      ],
+      "indexes": [
+        "PrimaryID(Id)",
+        "PrimaryAlias(Id)"
+      ],
+      "original_values": [
+        1,
+        -1,
+        "original",
+        false,
+        {
+          "currency_scaled": 25000
+        },
+        null
+      ]
+    },
+    "Numbered": {
+      "columns": [
+        "Earlier:LONG",
+        "Id:LONG:AutoNumber",
+        "Score:LONG"
+      ],
+      "create_rows": [
+        [
+          101,
+          "SDK_AUTO_NUMBER",
+          10
+        ],
+        [
+          102,
+          "SDK_AUTO_NUMBER",
+          20
+        ],
+        [
+          103,
+          "SDK_AUTO_NUMBER",
+          30
+        ]
+      ],
+      "delete_id": 3,
+      "observed_last_required": 3,
+      "expected_native_mode": "Unknown",
+      "indexes": [
+        "PrimaryID(Id)",
+        "PrimaryAlias(Id)"
+      ]
+    },
+    "NonPrimary": {
+      "columns": [
+        "Id:LONG:manual",
+        "Ticket:LONG:AutoNumber"
+      ],
+      "original_values": [
+        50,
+        "SDK_AUTO_NUMBER"
+      ],
+      "observed_last_required": 1,
+      "expected_native_mode": "Unknown",
+      "indexes": [
+        "PrimaryID(Id)",
+        "TicketUnique(Ticket)"
+      ]
+    },
+    "Sentinel": {
+      "columns": [
+        "Marker:LONG"
+      ],
+      "original_values": [
+        999
+      ]
+    }
+  },
+  "default_property_native_type": "MEMO, DDL=true as pinned5.0.4 PropertyMapImpl.addDefault; text payload observed, never evaluated",
+  "future_requests": [
+    {
+      "id": "omitted-constants",
+      "values": [
+        {
+          "supplied_i32": 24
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        }
+      ]
+    },
+    {
+      "id": "explicit-null",
+      "values": [
+        {
+          "supplied_i32": 25
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_bool": false
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_null": true
+        }
+      ]
+    },
+    {
+      "id": "all-overrides",
+      "values": [
+        {
+          "supplied_i32": 26
+        },
+        {
+          "supplied_i32": -9
+        },
+        {
+          "supplied_text": "override"
+        },
+        {
+          "supplied_bool": false
+        },
+        {
+          "supplied_currency_scaled": 12345
+        },
+        {
+          "supplied_i32": 99
+        }
+      ]
+    }
+  ],
+  "inert_expression_policy": false,
+  "generation": "exclusiveCREATE_NEW,bounded8MiB,explicitoriginalvaluesonly; NodefaultrequestsorAFTERs",
+  "planned_sdk_read_calls": 20,
+  "new_native_producer_calls": 0
+}
