@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-01",
+  "scope": "Current read/Source qualification of two genuine fitted Int32 root-split originals and two frozen independent model images",
+  "source_views": 4,
+  "original_views": 2,
+  "independent_after_views": 2,
+  "native_source_test_functions": 1,
+  "native_read_gate": {
+    "path": ".cache/ace16-next-source-qualification-20261101/root-split-native-first.log",
+    "bytes": 426,
+    "sha256": "3e7087ba96b488bad0505ef9e70c4b2cb85e531e0185b40fde4903268b5c4265",
+    "test_results": [
+      "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 509 filtered out; finished in 0.14s"
+    ]
+  },
+  "original_source_closure": {
+    "path": ".cache/ace16-normal-root-split-next-20261101/source/input-first-freeze.json",
+    "bytes": 6281,
+    "sha256": "b1a876362d6bacf7c554b2b37d03e541b209d3d7738179d220e897849c85bfdc"
+  },
+  "additive_provenance_closure": {
+    "path": ".cache/ace16-normal-root-split-next-20261101/source/provenance-successor-freeze.json",
+    "bytes": 32823,
+    "sha256": "3b1c18fd60c4ef6a84992d093f94e73d8b717f594e872bd05f807993b67d8274"
+  },
+  "global_polarity_audit": {
+    "path": ".cache/ace16-normal-root-split-next-20261101/source/GLOBAL_POLARITY.json",
+    "bytes": 4579,
+    "sha256": "79ca11054617f4d7002ce5a958bb404011448c1f35c0ca6e909489cf6c9fe876"
+  },
+  "current_native_sdk_calls": 0,
+  "historical_sdk_records_preserved": true,
+  "matching_native_producer_calls": 0,
+  "source_expectations_retuned_to_producers": false,
+  "source_laws": [
+    "Manual Int32 primary plus nullable Binary255 sibling, native17 catalog, Required=true metadata retained.",
+    "451 keys with shared prefix1 and seven free bytes; adding ID226/empty Binary needs a two-leaf root promotion.",
+    "Existing DATA capacity suffices; exactly two represented EOF INDEX pages are added by the frozen model.",
+    "Both new INDEX pages are explicitly GLOBAL_FREE1 and index-owned0 before, then GLOBAL_FREE0/index-owned1 after. DATA maps are unchanged."
+  ],
+  "scope_limits": [
+    "The four-view gate includes full current Source/NoRequired capture but invokes no mutation planner or preview.",
+    "This corpus establishes neither represented-zero nor unrepresented EOF authority.",
+    "The current fitting mutation prefix0 restriction remains distinct from readable prefix1 source qualification."
+  ],
+  "native_access_save_reopen": "unrun"
+}
