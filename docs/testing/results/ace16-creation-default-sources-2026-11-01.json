@@ -1,0 +1,94 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent native17 explicit Int32/NULL DefaultValue metadata and omitted/supplied-NULL action sources before matching creator",
+  "before_views": 12,
+  "after_views": 20,
+  "native_source_test_functions": 1,
+  "explicit_export_test_functions": 1,
+  "sdk_exact_reads": 32,
+  "sdk_writer_calls": 0,
+  "compiler_calls": 1,
+  "sdk_seconds": 5.3630700840149075,
+  "matching_creator_calls_in_source_phase": 0,
+  "matching_resolver_or_planner_calls_in_source_phase": 0,
+  "source_expectations_retuned_to_producers": false,
+  "provenance": "Independently authored derivatives of original two-Int32 native17 fixtures; no third-party fixtures added.",
+  "source_manifest": {
+    "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/source-export-first/manifest.tsv",
+    "bytes": 3120,
+    "sha256": "f595e0694e8ab0fec146d44e72630f27de8eba7f821cff6b782e6132a4a7b973"
+  },
+  "sdk_result": {
+    "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/observations-first/result.json",
+    "bytes": 409,
+    "sha256": "a1757a80f337a2e543df366565e92fb65c661d5273f97d3cc41688390b3f2bf9"
+  },
+  "receipts": [
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/source-receipts-first/export.json",
+      "bytes": 458,
+      "sha256": "02baff62054450a2ddcb7df260912547a8f73addc9b196d0fc3354ca5178bf12",
+      "returncode": 0,
+      "seconds": 0.26791516598314047
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/source-receipts-first/native-source.json",
+      "bytes": 483,
+      "sha256": "7fa95cbed5ea31b311ea91427b9884ade8ecd71123f55456d31e18d96faf57ac",
+      "returncode": 0,
+      "seconds": 19.00450662500225
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/source-receipts-first/terminal.json",
+      "bytes": 332,
+      "sha256": "b1f01285d032bfa1dc14c39117accc595e565d19ead42a8288620ac545d3cfa8"
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/class-pins.json",
+      "bytes": 290,
+      "sha256": "0f5ed4c435d3cb183f8f139f674edd8ae6f5188f5f0311464a89d3599970cd83"
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/compile.json",
+      "bytes": 694,
+      "sha256": "15d925a58625b97ef0053aa66b02da50635e17d57bb98fe00cf8893bc3ec0ef0",
+      "returncode": 0,
+      "seconds": 0.7138827920425683
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/prepare-inputs.json",
+      "bytes": 363,
+      "sha256": "31e9b99915588786614ef15839f173153dfb3488f9ff3ca4b0bec35143a1fa82",
+      "returncode": 0,
+      "seconds": 0.031849709106609225
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/prepare.json",
+      "bytes": 686,
+      "sha256": "9c1a102ce0538f55dc849e1de78b2f754a2a94219646a2cd7088d86d17a67003",
+      "returncode": 0,
+      "seconds": 0.0710401670075953
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/read.json",
+      "bytes": 688,
+      "sha256": "fe7838e176ed07bdb4aa3330ecdf133ffebf3ec4232e450067ba4f9324f81129",
+      "returncode": 0,
+      "seconds": 5.417287499993108
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/saved.json",
+      "bytes": 694,
+      "sha256": "be9a87d4723b3a6624b8d6924a6173e0f5c93f4a4a05a247604afde2727b1e86",
+      "returncode": 0,
+      "seconds": 0.058194000041112304
+    },
+    {
+      "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/sdk-receipts-first/terminal.json",
+      "bytes": 637,
+      "sha256": "49d47530ebea78f509ab0e2e213df10743ec147952ce3420d4d551431be66885"
+    }
+  ],
+  "qualification_limit": "Header6 source overlays are read evidence; the constructive creator emits header5.",
+  "native_access_save_reopen": "unrun"
+}

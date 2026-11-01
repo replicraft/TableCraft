@@ -170,3 +170,15 @@ and 90 default recovery functions. Strict all-feature, journal-only, preview-onl
 and minimal checks pass. Fixture-dependent ignored functions are covered only by
 the separately executed focused receipts. Native Access and Windows qualification
 remain unrun.
+
+
+## Explicit-default source qualification
+
+Twelve independent BEFORE views and twenty literal AFTER views now qualify
+ordinary Int32 constant/NULL DefaultValue metadata and distinguish omitted fields
+from explicitly supplied NULL. Native read/export gates, 32 exact SDK reads and
+saved verification pass before matching creator/resolver/planner calls.
+The Required-plus-NULL-default source has valid initial rows; unsupported future
+NULL requests have no invented successful AFTER. The
+[source record](../../testing/results/ace16-creation-default-sources-2026-11-01.json)
+retains receipts. This source phase supplies no native Access save/reopen claim.
