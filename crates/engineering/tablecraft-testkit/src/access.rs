@@ -257,3 +257,6 @@ pub mod canonical_native17_sessions;
 
 /// Independent batch and single-row page-growing INSERT views.
 pub mod genuine_eof_insert;
+
+/// Independent Int64/Currency index mutation views.
+pub mod genuine_integral_indexed;

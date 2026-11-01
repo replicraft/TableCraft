@@ -5,6 +5,7 @@ use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowInsert, WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
+        data_type::{CURRENCY, INT64},
         page::PAGE_BYTES,
     },
     header::check,
@@ -187,7 +188,7 @@ fn qualify<'image>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
-    let facts = CheckedIndexes::capture(image, table, budget, cancelled)?;
+    let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
     if facts.checked().schema().declared_rows() != schema.declared_rows()
@@ -248,19 +249,26 @@ fn qualify<'image>(
             }
         }
         let column = column.ok_or(EditError::Preservation)?;
+        let field = &schema.columns()[column];
+        let integral = matches!(field.native_type(), INT64 | CURRENCY);
+        if integral && (field.number() != column || !leaf) {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
         for row in source.table.rows() {
             check(budget, cancelled)?;
-            match row.get(column) {
-                Some(Value::Int32(_)) => {}
-                Some(Value::Null) => optional_wire = true,
+            match (field.native_type(), row.get(column)) {
+                (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
+                (_, Some(Value::Int32(_))) if !integral => {}
+                (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
         }
         for request in requests {
             check(budget, cancelled)?;
-            match request.values().get(column) {
-                Some(Value::Int32(_)) => {}
-                Some(Value::Null) => optional_wire = true,
+            match (field.native_type(), request.values().get(column)) {
+                (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
+                (_, Some(Value::Int32(_))) if !integral => {}
+                (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
         }

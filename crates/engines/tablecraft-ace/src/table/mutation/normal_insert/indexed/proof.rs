@@ -1,10 +1,12 @@
 //! Fresh original/request replay; no insertion patches or prepared keys enter.
+mod integral;
 mod optional;
 mod tree;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{
         bytes::{u16_at, u32_at},
+        data_type::{CURRENCY, INT64},
         page::PAGE_BYTES,
     },
     header::check,
@@ -92,6 +94,21 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                     index,
                     rows,
                 },
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        } else if index
+            .columns()
+            .first()
+            .and_then(|key| schema.columns().get(key.number()))
+            .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY))
+        {
+            integral::reconstruct(
+                &image,
+                &source,
+                index,
+                rows,
                 &mut expected,
                 budget,
                 cancelled,

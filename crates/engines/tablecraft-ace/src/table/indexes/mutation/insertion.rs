@@ -341,12 +341,13 @@ pub(in crate::table) fn prepare_existing(
         }
     }
     let (position, column) = field.ok_or(EditError::Preservation)?;
-    if column.scalar_type() != Some(ScalarType::Int32) {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
+    let kind = match column.scalar_type() {
+        Some(kind @ (ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)) => kind,
+        _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
+    };
     let profile = SingleProfile {
         column: position,
-        kind: NumericKey::new(ScalarType::Int32)?,
+        kind: NumericKey::new(kind)?,
         descending: key.descending(),
     };
     let prepared: Prepared<SingleProfile> = preparation::prepare::<_, ENTRY_BUFFER>(

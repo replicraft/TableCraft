@@ -27,6 +27,17 @@ pub(super) fn inspect(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
+    inspect_width(entry, index, leaf, size_of::<i32>(), budget, cancelled)
+}
+
+pub(super) fn inspect_width(
+    entry: &[u8],
+    index: &NativeIndex,
+    leaf: bool,
+    value_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Facts, EditError> {
     if index.columns().is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
@@ -50,7 +61,7 @@ pub(super) fn inspect(
             consume(entry, &mut cursor, size_of::<u8>())?;
             any_null = true;
         } else if marker == present {
-            consume(entry, &mut cursor, size_of::<u8>() + size_of::<i32>())?;
+            consume(entry, &mut cursor, size_of::<u8>() + value_bytes)?;
             all_null = false;
         } else {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));

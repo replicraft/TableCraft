@@ -1,8 +1,14 @@
 //! Original-only compressed page graph, partitions, bounds and sibling facts.
 use super::{atoms, vector};
 use crate::{
-    EditError, InspectError, NativeImage, NativeIndex, WriteBlocker,
-    format::{allocation, page::PAGE_BYTES, reader::Reader},
+    EditError, InspectError, NativeColumn, NativeImage, NativeIndex, WriteBlocker,
+    format::{
+        allocation,
+        data_type::{CURRENCY, INT64},
+        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+        page::PAGE_BYTES,
+        reader::Reader,
+    },
     header::check,
     limits::MAX_INDEX_DEPTH,
     table::indexes::{
@@ -39,6 +45,7 @@ struct Capture<'image, 'index, 'budget> {
     image: &'image NativeImage,
     index: &'index NativeIndex,
     owner: u32,
+    value_bytes: usize,
     owned: &'index [u32],
     visited: Vec<u32>,
     levels: Vec<Vec<Link>>,
@@ -51,6 +58,39 @@ impl Tree {
         image: &NativeImage,
         index: &NativeIndex,
         owner: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_width(image, index, owner, size_of::<i32>(), budget, cancelled)
+    }
+
+    pub(super) fn capture_integral(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        field: &NativeColumn,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        if !matches!(field.native_type(), INT64 | CURRENCY)
+            || !field.fixed()
+            || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+            || field.extended_flags() != 0
+            || field.storage_length() != size_of::<i64>()
+            || field.complex_type_id().is_some()
+            || index.columns().len() != 1
+            || index.columns()[0].number() != field.number()
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        Self::capture_width(image, index, owner, size_of::<i64>(), budget, cancelled)
+    }
+
+    fn capture_width(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        value_bytes: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -74,6 +114,7 @@ impl Tree {
             image,
             index,
             owner,
+            value_bytes,
             owned: &owned,
             visited,
             levels,
@@ -160,11 +201,18 @@ impl Capture<'_, '_, '_> {
         }
         let leaf = header.kind == LEAF;
         let prefix = usize::from(header.prefix.get());
+        if self.value_bytes == size_of::<i64>() && (!leaf || depth != 0 || prefix != 0) {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
         let key_bytes = self
             .index
             .columns()
             .len()
-            .checked_mul(COMPONENT_BYTES)
+            .checked_mul(if self.value_bytes == size_of::<i32>() {
+                COMPONENT_BYTES
+            } else {
+                size_of::<u8>() + self.value_bytes
+            })
             .and_then(|bytes| bytes.checked_add(REFERENCE_BYTES))
             .ok_or(InspectError::StructureLimit)?;
         let maximum_width = key_bytes
@@ -208,7 +256,18 @@ impl Capture<'_, '_, '_> {
                 entry.extend_from_slice(first.get(..shared).ok_or(EditError::Preservation)?);
             }
             entry.extend_from_slice(&raw[ENTRY_START + last..ENTRY_START + bit]);
-            let facts = atoms::inspect(&entry, self.index, leaf, self.budget, self.cancelled)?;
+            let facts = if self.value_bytes == size_of::<i32>() {
+                atoms::inspect(&entry, self.index, leaf, self.budget, self.cancelled)?
+            } else {
+                atoms::inspect_width(
+                    &entry,
+                    self.index,
+                    leaf,
+                    self.value_bytes,
+                    self.budget,
+                    self.cancelled,
+                )?
+            };
             if let Some(previous) = entries.last() {
                 self.budget
                     .charge(Resource::Steps, (previous_key_end + facts.key_end) as u64)

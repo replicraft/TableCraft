@@ -157,3 +157,6 @@ mod single_eof_sources;
 
 #[cfg(test)]
 mod inline_tests;
+
+#[cfg(test)]
+mod integral_tests;
