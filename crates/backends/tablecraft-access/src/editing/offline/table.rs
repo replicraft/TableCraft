@@ -13,8 +13,8 @@ use tablecraft_db::{
 /// program and physical admission remain in the planner. Hosts must not wait for
 /// an external approval while holding this offline lease.
 pub struct OfflineTableEditor {
-    session: OfflineWriteSession,
-    editor: NativeJournalEditor,
+    pub(super) session: OfflineWriteSession,
+    pub(super) editor: NativeJournalEditor,
 }
 
 impl OfflineWriteSession {

@@ -1,9 +1,10 @@
+use super::plan::MutationPlan;
 use super::{
     Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt, SessionState,
 };
 use crate::editing::sql;
 use std::path::Path;
-use tablecraft_ace::{NativeImage, RecoverableNativeEditPlan};
+use tablecraft_ace::{NativeImage, RecoverableNativeDeletePlan, RecoverableNativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
@@ -13,7 +14,7 @@ use tablecraft_sql::query::Query;
 /// may allocate their reports from these counts before calling apply.
 pub struct StagedUpdate {
     session: OfflineWriteSession,
-    plan: RecoverableNativeEditPlan,
+    plan: MutationPlan,
     matched: usize,
     changed: usize,
 }
@@ -107,6 +108,18 @@ impl StagedUpdate {
         plan: RecoverableNativeEditPlan,
         matched: usize,
     ) -> Self {
+        Self::from_mutation(session, MutationPlan::Update(plan), matched)
+    }
+
+    pub(super) fn from_delete(
+        session: OfflineWriteSession,
+        plan: RecoverableNativeDeletePlan,
+        matched: usize,
+    ) -> Self {
+        Self::from_mutation(session, MutationPlan::Delete(plan), matched)
+    }
+
+    fn from_mutation(session: OfflineWriteSession, plan: MutationPlan, matched: usize) -> Self {
         let changed = plan.changed_rows();
         Self {
             session,
@@ -147,7 +160,7 @@ impl StagedUpdate {
             matched,
             changed,
         } = self;
-        let intent = match plan.intent().encode(budget, cancelled) {
+        let intent = match plan.encode_intent(budget, cancelled) {
             Ok(intent) => intent,
             Err(error) => return Err(session.fail(Phase::Intent, Cause::Intent(error))),
         };
@@ -177,7 +190,7 @@ impl StagedUpdate {
             let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
             let (mut target, mut journal) = pair.resizable_storage().map_err(Cause::Pair)?;
             let prepared = plan
-                .prepare_update(&mut target, &mut journal, budget, cancelled)
+                .prepare(&mut target, &mut journal, budget, cancelled)
                 .map_err(Cause::Prepare)?;
             prepared.commit(budget, cancelled).map_err(Cause::Commit)?;
             Ok(())

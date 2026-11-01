@@ -1,7 +1,9 @@
 //! Explicit offline normal edits over one retained exclusive target descriptor.
 //! Hosts must exclude noncooperating writers and unresolved external journals.
 //! Native planners retain their own admission; shared-file coordination is separate.
+mod delete;
 mod error;
+mod plan;
 mod recovery;
 mod table;
 mod update;
@@ -9,6 +11,7 @@ mod update;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
 mod tests;
 
+pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
 pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;

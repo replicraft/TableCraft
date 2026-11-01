@@ -65,6 +65,9 @@ pub enum Cause {
     /// Closed shared SQL or normal native planning refused the request.
     #[error(transparent)]
     Planning(sql::RecoverableError),
+    /// Local DELETE shape, predicate evaluation or normal native planning refused.
+    #[error(transparent)]
+    DeletePlanning(sql::RecoverableDeleteError),
     /// Original typed intent framing/binding or encoding failed.
     #[error(transparent)]
     Intent(NativeIntentError),
@@ -214,10 +217,10 @@ impl fmt::Display for Failure {
 
         match self.phase {
             Phase::Prepare if matches!(self.cause, Cause::Prepare(_)) => {
-                f.write_str("; this prepare did not change target bytes; retain the journal for diagnosis; do not retry UPDATE")?;
+                f.write_str("; this prepare did not change target bytes; retain the journal for diagnosis; do not retry the mutation")?;
             }
             Phase::Commit | Phase::Recovery => {
-                f.write_str("; retain the target and journal; qualified recovery or diagnosis is required; do not retry UPDATE")?;
+                f.write_str("; retain the target and journal; qualified recovery or diagnosis is required; do not retry the mutation")?;
             }
             Phase::Confirmation => {
                 f.write_str("; retain the target and retired bundle; no active-recovery replay or fallback is authorized")?;
@@ -237,7 +240,9 @@ impl fmt::Display for Failure {
                 )?;
             }
             _ if self.pair_state().is_some() || self.setup_failure().is_some() => {
-                f.write_str("; retained journal state blocks normal access; do not retry UPDATE")?;
+                f.write_str(
+                    "; retained journal state blocks normal access; do not retry the mutation",
+                )?;
             }
             _ => {}
         }

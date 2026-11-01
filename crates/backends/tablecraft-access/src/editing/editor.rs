@@ -1,4 +1,7 @@
 #[cfg(feature = "journal")]
+mod deleting;
+
+#[cfg(feature = "journal")]
 use super::journal::JournalRoute;
 use super::{NativeEditError, snapshot};
 #[cfg(feature = "journal")]
