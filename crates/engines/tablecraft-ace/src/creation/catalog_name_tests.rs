@@ -11,6 +11,7 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_testkit::access::canonical_catalog_names;
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 16_000_000)
@@ -19,7 +20,8 @@ fn budget() -> ResourceBudget {
 #[test]
 fn catalog_names_match_four_complete_independent_sources_through_both_apis() {
     for case in canonical_catalog_names::CASES {
-        let source = canonical_catalog_names::source(case);
+        let mut source = canonical_catalog_names::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source.columns.each_ref().map(String::as_str);
         let declarations = columns.map(|name| CreateColumn::new(name, ScalarType::Int32));
         let typed =

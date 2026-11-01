@@ -38,8 +38,8 @@ observers and their original class/jar closure, with expressions disabled and
 links refused. Predictions changed only the declared catalog metadata/cells and
 complete-file digest bindings; every original user and unrelated observation
 remained exact. All62 complete reports matched on the first run in10.737 seconds,
-with0 compiler calls,0 writer calls and0 retries. Saved-report verification also
-passed with0 child calls. Every source, expected report and closed reader input
+with 0 compiler calls,0 writer calls and0 retries. Saved-report verification also
+passed with 0 child calls. Every source, expected report and closed reader input
 remained unchanged.
 
 The [result record](results/ace16-native17-creation-sources-2026-11-01.json)
@@ -54,3 +54,25 @@ The source grammar deliberately uses the existing authored minimal envelope,
 claim general imported-file compatibility. Future GLOBAL FREE bytes are retained
 unchanged; no EOF allocation authority, property/default/identity generation or
 new user scalar write carrier is introduced by this source qualification.
+
+
+## Literal normal-session companion
+
+A separate source owner,
+[canonical_native17_sessions](../../crates/engineering/tablecraft-testkit/src/access/canonical_native17_sessions.rs),
+authors the explicit `(1,10)`→INSERT `(2,20)`→DELETE row1 sequence before any
+creator or session producer runs. Its six header 5/6 views reuse the two exact
+original core source images and add four unique complete AFTER images.
+
+The new 11-byte row occupies DATA 8 slot 1 at 4074, with free space 4056 and TD 7 live
+count 2. Deletion changes only live count 1 and slot 1 word 0xcfea; original/new raw
+payloads, directory count, free space, maps, system/catalog bytes and EOF remain
+exact. The read-only companion gate passes 1 test over all six views, and its
+separate create-new exporter passes. The six unchanged-observer SDK reports match
+on their first run in 1.011 seconds; saved verification passes with 0 child calls.
+There are 0 compiler/writer/retry calls in the SDK phase and all input pins remain
+unchanged.
+
+These source/read results precede actual creator and normal-session acceptance.
+They qualify literal full-image expectations; they do not record a performed
+TableCraft create/INSERT/DELETE workflow or native Access save/reopen comparison.

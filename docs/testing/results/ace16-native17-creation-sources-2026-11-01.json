@@ -427,5 +427,124 @@
     "future GLOBAL FREE authority",
     "expanded scalar INSERT carriers",
     "property/default/AutoNumber generation"
-  ]
+  ],
+  "session_source_companion": {
+    "status": "SOURCE_ONLY_NATIVE6_SDK6_PASS_BEFORE_CREATOR",
+    "source_owner": "crates/engineering/tablecraft-testkit/src/access/canonical_native17_sessions.rs",
+    "native_gate": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/native17_sessions.rs",
+    "views": 6,
+    "additional_unique_images": 4,
+    "original_images_equal_core_i32_one": true,
+    "images": [
+      {
+        "name": "h5-session-before.accdb",
+        "bytes": 36864,
+        "sha256": "472a4472029ee3e8479d09b8eaed8c0c3a542b5d450d5c60e8a77bb6a31cb8a6"
+      },
+      {
+        "name": "h5-session-inserted.accdb",
+        "bytes": 36864,
+        "sha256": "af74a3ab2e35e570652ad48b7ae6dbfe7fc3f72d1b66916d3da529d2cf1fdc2b"
+      },
+      {
+        "name": "h5-session-deleted.accdb",
+        "bytes": 36864,
+        "sha256": "f7386164cc1cbad3a748b28f7e6f3ea3235beda6a3ee4d47306e50e46364456c"
+      },
+      {
+        "name": "h6-session-before.accdb",
+        "bytes": 36864,
+        "sha256": "8f5a393832d393a32ef7579eaf4730d097a71e3347f6dc8e8ab9eb7c92c7d964"
+      },
+      {
+        "name": "h6-session-inserted.accdb",
+        "bytes": 36864,
+        "sha256": "c0b8b672dd04062a5f62376f82bb88cc28c9a218c4f2f1372c1fdab91812123e"
+      },
+      {
+        "name": "h6-session-deleted.accdb",
+        "bytes": 36864,
+        "sha256": "5521fa0a63d262e82d40315dec2f8eccc0a5e26ee45a2152d63e46e2fb1ee1a4"
+      }
+    ],
+    "native_test_passed": 1,
+    "native_test_seconds": 0.02,
+    "source_export_passed": 1,
+    "sdk_calls": 6,
+    "sdk_exact_matches": 6,
+    "sdk_seconds": 1.0111731250071898,
+    "sdk_compiler_calls": 0,
+    "sdk_writer_calls": 0,
+    "sdk_retries": 0,
+    "sdk_inputs_unchanged": true,
+    "saved_verifier_child_calls": 0,
+    "request_law": {
+      "insert": [
+        2,
+        20
+      ],
+      "delete_original_ordinal": 1,
+      "new_record_hex": "0200020000001400000003",
+      "new_data_start": 4074,
+      "inserted_free_bytes": 4056,
+      "deleted_slot_word": "cfea",
+      "preserved": "all payload/directory count/free/maps/catalog/system/EOF bytes outside literal TDcount and tombstone word"
+    },
+    "receipts": [
+      {
+        "receipt": "native-source-gate",
+        "artifact": "native17-session-source-first.log",
+        "bytes": 653,
+        "sha256": "019ac1885ec35d1bc895aabdabd39916ffa4c1c01f1c433f569bf129d514c840"
+      },
+      {
+        "receipt": "pure-source-export",
+        "artifact": "native17-session-export-first.log",
+        "bytes": 387,
+        "sha256": "3b57552f8c82dd019539ecedb0880742d2f301ec2e23b9cfa31ed0cf75894501"
+      },
+      {
+        "receipt": "source-manifest",
+        "artifact": "manifest.tsv",
+        "bytes": 576,
+        "sha256": "cd6519de5afde1df8e65a477ebdb292659c7fe416dea00e6e2e64153fac2a427"
+      },
+      {
+        "receipt": "sdk-preflight",
+        "artifact": "session-execution-preflight-first.json",
+        "bytes": 273,
+        "sha256": "b2e97fc09788b150e8cbdbd1c20bc8a7f713c6b8d25c6d8afaea5512fd5a9630"
+      },
+      {
+        "receipt": "sdk-predictions",
+        "artifact": "session-prepare-first.log",
+        "bytes": 291,
+        "sha256": "7ac7e59014d513244e009cb9f3eeae70085df2c0680f294bc885690c1c8a2739"
+      },
+      {
+        "receipt": "sdk-first-run",
+        "artifact": "session-run-first.log",
+        "bytes": 4227,
+        "sha256": "57a3657012a9f9bade7ec35afa89a3d6fee864bc400a7ac100354722aabbe832"
+      },
+      {
+        "receipt": "sdk-saved-verification",
+        "artifact": "session-saved-first.log",
+        "bytes": 309,
+        "sha256": "cc4d79ca4ced80ed6d5a3c542fa0e883eb1ce40d5feabf646a667241cdf9c5f7"
+      },
+      {
+        "receipt": "sdk-terminal-result",
+        "artifact": "result.json",
+        "bytes": 402,
+        "sha256": "937b5344202f2d23ac5380b675f4c5bf58f06785a86c68f1f0815ab3dcc49123"
+      },
+      {
+        "receipt": "sdk-plan",
+        "artifact": "plan.json",
+        "bytes": 29625,
+        "sha256": "bbff9a7103a67102ff477bd6724b7c179c2a2d89a78b77d970ad3313487d2287"
+      }
+    ]
+  }
 }

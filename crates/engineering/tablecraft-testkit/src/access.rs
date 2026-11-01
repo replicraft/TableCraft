@@ -251,3 +251,6 @@ pub mod canonical_native17_creation;
 
 /// Independent inline Memo/OLE insertion views.
 pub mod genuine_inline_lval_insert;
+
+/// Independent native17 creation-to-write session images.
+pub mod canonical_native17_sessions;

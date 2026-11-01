@@ -9,6 +9,7 @@ use tablecraft_core::{
     values::{Double, Value},
 };
 use tablecraft_schema::ScalarType;
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::{
     canonical_creation, canonical_fixed_creation, canonical_fixed_float_creation,
 };
@@ -36,7 +37,8 @@ fn scalar(native: u8) -> ScalarType {
 #[test]
 fn generic_fixed_creation_matches_five_complete_independent_originals() {
     for case in canonical_fixed_creation::CASES {
-        let source = canonical_fixed_creation::source(case);
+        let mut source = canonical_fixed_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .columns
             .iter()
@@ -54,7 +56,8 @@ fn generic_fixed_creation_matches_five_complete_independent_originals() {
 #[test]
 fn generic_and_int32_convenience_retain_all_six_original_images() {
     for case in canonical_creation::CASES {
-        let source = canonical_creation::source(case);
+        let mut source = canonical_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let names = source
             .columns
             .iter()
@@ -137,7 +140,8 @@ fn unsupported_declarations_and_wrong_carriers_refuse_before_reservation() {
 
 #[test]
 fn generic_rows_retain_rectangular_and_actual_physical_fit_guards() {
-    let source = canonical_fixed_creation::source(canonical_fixed_creation::Case::Boundary);
+    let mut source = canonical_fixed_creation::source(canonical_fixed_creation::Case::Boundary);
+    source.bytes = native17::source(source.bytes);
     let columns = source
         .columns
         .iter()
@@ -157,7 +161,8 @@ fn generic_rows_retain_rectangular_and_actual_physical_fit_guards() {
 
 #[test]
 fn generic_fixed_creation_preserves_independent_pools_and_final_cancellation() {
-    let source = canonical_fixed_creation::source(canonical_fixed_creation::Case::Nullable);
+    let mut source = canonical_fixed_creation::source(canonical_fixed_creation::Case::Nullable);
+    source.bytes = native17::source(source.bytes);
     let columns = source
         .columns
         .iter()
@@ -216,7 +221,8 @@ fn generic_fixed_creation_preserves_independent_pools_and_final_cancellation() {
 #[test]
 fn generic_fixed_creation_retains_all_five_ieee_source_bit_patterns() {
     for case in canonical_fixed_float_creation::CASES {
-        let source = canonical_fixed_float_creation::source(case);
+        let mut source = canonical_fixed_float_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .columns
             .iter()

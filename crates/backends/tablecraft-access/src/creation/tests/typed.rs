@@ -4,6 +4,7 @@ use std::fs;
 use tablecraft_ace::{CreateColumn, CreateDatabaseError};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::{
     canonical_fixed_creation as fixed, canonical_fixed_float_creation as ieee,
 };
@@ -38,7 +39,8 @@ fn typed_service_publishes_ten_complete_fixed_and_ieee_source_images() {
         .map(fixed::source)
         .chain(ieee::CASES.into_iter().map(ieee::source));
     let mut observed = 0;
-    for source in sources {
+    for mut source in sources {
+        source.bytes = native17::source(source.bytes);
         let root = tempfile::tempdir().unwrap();
         let path = root.path().join("typed.accdb");
         let mut allowance = budget();
@@ -69,7 +71,8 @@ fn typed_service_publishes_ten_complete_fixed_and_ieee_source_images() {
 #[test]
 fn wrong_typed_carriers_and_empty_unsupported_declarations_create_no_output() {
     for invalid_boolean in [false, true] {
-        let source = fixed::source(fixed::Case::Endpoints);
+        let mut source = fixed::source(fixed::Case::Endpoints);
+        source.bytes = native17::source(source.bytes);
         let declarations = columns(&source);
         let mut rows = source.rows;
         if invalid_boolean {

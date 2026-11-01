@@ -2,6 +2,7 @@ use super::*;
 use std::fs;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_testkit::access::canonical_creation::{self, Case};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
@@ -10,7 +11,8 @@ fn budget() -> ResourceBudget {
 #[test]
 fn shared_creation_service_publishes_six_independently_qualified_complete_images() {
     for case in canonical_creation::CASES {
-        let source = canonical_creation::source(case);
+        let mut source = canonical_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let root = tempfile::tempdir().unwrap();
         let path = root.path().join("new.accdb");
         let destination = CreationDestination::capture(&path, &mut budget(), &|| false).unwrap();
@@ -37,7 +39,8 @@ fn shared_creation_service_publishes_six_independently_qualified_complete_images
 
 #[test]
 fn invalid_typed_rows_create_no_staging_or_final_entry() {
-    let source = canonical_creation::source(Case::One);
+    let mut source = canonical_creation::source(Case::One);
+    source.bytes = native17::source(source.bytes);
     for rows in [vec![vec![1]], vec![vec![1, 10]; 65]] {
         let root = tempfile::tempdir().unwrap();
         let path = root.path().join("new.accdb");

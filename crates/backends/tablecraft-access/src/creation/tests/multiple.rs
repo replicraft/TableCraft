@@ -6,6 +6,7 @@ use tablecraft_ace::{CreateColumn, CreateDatabaseError, CreateTable};
 use tablecraft_core::values::Value;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 use tablecraft_testkit::access::canonical_multiple_creation as source;
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 
 fn column(column: &source::Column) -> CreateColumn<'_> {
     match column.native_type {
@@ -27,7 +28,8 @@ fn column(column: &source::Column) -> CreateColumn<'_> {
 #[test]
 fn multiple_table_service_publishes_all_four_independent_complete_images() {
     for case in source::CASES {
-        let source = source::source(case);
+        let mut source = source::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns = source
             .tables
             .iter()

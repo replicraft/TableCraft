@@ -2,12 +2,14 @@
 use super::{CreateColumn, create_ace16_database};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::canonical_variable_capacity_creation;
 
 #[test]
 fn variable_creation_matches_both_independent_capacity_boundary_images() {
     for case in canonical_variable_capacity_creation::CASES {
-        let original = canonical_variable_capacity_creation::source(case);
+        let mut original = canonical_variable_capacity_creation::source(case);
+        original.source.bytes = native17::source(original.source.bytes);
         let source = &original.source;
         let columns = source
             .columns

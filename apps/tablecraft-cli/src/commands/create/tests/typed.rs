@@ -15,6 +15,7 @@ use tablecraft_core::{
     limits::ResourceBudget,
     values::{Decimal, Value},
 };
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 use tablecraft_testkit::access::{
     canonical_fixed_creation as fixed, canonical_fixed_float_creation as ieee,
     canonical_variable_creation as variable,
@@ -137,11 +138,12 @@ fn check_source(
 
 #[test]
 fn typed_create_matches_all_fifteen_fixed_ieee_and_variable_complete_sources() {
-    for source in fixed::CASES
+    for mut source in fixed::CASES
         .into_iter()
         .map(fixed::source)
         .chain(ieee::CASES.into_iter().map(ieee::source))
     {
+        source.bytes = native17::source(source.bytes);
         let declarations = source
             .columns
             .iter()
@@ -155,7 +157,8 @@ fn typed_create_matches_all_fifteen_fixed_ieee_and_variable_complete_sources() {
         check_source(source.table, &declarations, &source.rows, &source.bytes);
     }
     for case in variable::CASES {
-        let source = variable::source(case);
+        let mut source = variable::source(case);
+        source.bytes = native17::source(source.bytes);
         let declarations = source
             .columns
             .iter()
@@ -293,7 +296,8 @@ fn typed_prepublication_value_shape_and_encoding_refusals_create_nothing() {
 
 #[test]
 fn typed_empty_creation_keeps_publication_facts_through_stdout_failures() {
-    let source = variable::source(variable::Case::Empty);
+    let mut source = variable::source(variable::Case::Empty);
+    source.bytes = native17::source(source.bytes);
     let fields = source
         .columns
         .iter()
@@ -333,7 +337,8 @@ fn typed_empty_creation_keeps_publication_facts_through_stdout_failures() {
 
 #[test]
 fn typed_resource_limits_and_physical_overflow_do_not_publish() {
-    let source = variable::source(variable::Case::Unicode);
+    let mut source = variable::source(variable::Case::Unicode);
+    source.bytes = native17::source(source.bytes);
     let fields = source
         .columns
         .iter()

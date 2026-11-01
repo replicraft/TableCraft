@@ -4,6 +4,7 @@ use crate::InspectError;
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_testkit::access::canonical_creation::{self, CASES, Case};
+use tablecraft_testkit::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 16_000_000)
@@ -12,7 +13,8 @@ fn budget() -> ResourceBudget {
 #[test]
 fn creator_matches_all_six_complete_independent_sources() {
     for case in CASES {
-        let source = canonical_creation::source(case);
+        let mut source = canonical_creation::source(case);
+        source.bytes = native17::source(source.bytes);
         let columns: Vec<_> = source.columns.iter().map(String::as_str).collect();
         let rows: Vec<_> = source.rows.iter().map(Vec::as_slice).collect();
         let created =

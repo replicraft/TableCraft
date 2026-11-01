@@ -129,6 +129,8 @@ pub(super) fn validate<'a>(
         offset: None,
         width: 0,
         decimal: None,
+        native_flags: None,
+        native_variable: None,
     }; profile::MAX_COLUMNS];
     let mut fixed_bytes = 0_usize;
     for (position, field) in fields[..columns.count()].iter_mut().enumerate() {

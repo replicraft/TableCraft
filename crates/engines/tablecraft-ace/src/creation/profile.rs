@@ -3,7 +3,8 @@ use super::{CreateDatabaseError, column::Declaration};
 use crate::format::data_type::{
     BOOLEAN, BOOLEAN_BYTES, BYTE, BYTE_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES,
     DOUBLE, DOUBLE_BYTES, GUID, GUID_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES, INT64,
-    INT64_BYTES, NUMERIC, NUMERIC_BYTES, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE, SINGLE_BYTES,
+    INT64_BYTES, LONG_TEXT, NUMERIC, NUMERIC_BYTES, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE,
+    SINGLE_BYTES,
 };
 use crate::format::{allocation::INLINE_BITMAP_OFFSET, page::PAGE_BYTES};
 use tablecraft_schema::{DecimalConstraints, ScalarType};
@@ -33,7 +34,7 @@ pub(super) const USER_MAP_SLOT: usize = 3;
 pub(super) const TABLE_COUNT: usize = 4;
 pub(super) const CATALOG_OBJECT_COUNT: usize = 8;
 pub(super) const SYSTEM_OBJECT_COUNT: usize = CATALOG_OBJECT_COUNT - 1;
-pub(super) const LONG_VALUE_COLUMNS: [usize; 4] = [5, 6, 7, 8];
+pub(super) const LONG_VALUE_COLUMNS: [usize; 7] = [8, 9, 12, 13, 14, 15, 16];
 pub(super) const FIRST_LONG_VALUE_MAP_SLOT: usize = 2 * TABLE_COUNT;
 pub(super) const MAP_ROWS: usize = 2 * (TABLE_COUNT + LONG_VALUE_COLUMNS.len());
 pub(super) const USER_CANDIDATE_SLOT: usize = USER_MAP_SLOT + TABLE_COUNT;
@@ -42,9 +43,9 @@ pub(super) const CATALOG_ID: usize = 0;
 pub(super) const CATALOG_PARENT: usize = 1;
 pub(super) const CATALOG_NAME: usize = 2;
 pub(super) const CATALOG_TYPE: usize = 3;
-pub(super) const CATALOG_FLAGS: usize = 4;
-pub(super) const CATALOG_CREATED: usize = 13;
-pub(super) const CATALOG_UPDATED: usize = 14;
+pub(super) const CATALOG_FLAGS: usize = 7;
+pub(super) const CATALOG_CREATED: usize = 4;
+pub(super) const CATALOG_UPDATED: usize = 5;
 pub(super) const MAP_BITMAP_BYTES: usize = 8;
 pub(super) const MAP_RECORD_BYTES: usize = INLINE_BITMAP_OFFSET + MAP_BITMAP_BYTES;
 pub(super) const GENERAL_SORT: [u8; 4] = [9, 4, 0, 1];
@@ -57,6 +58,8 @@ pub(super) struct Field<'a> {
     pub offset: Option<usize>,
     pub width: usize,
     pub decimal: Option<DecimalConstraints>,
+    pub native_flags: Option<u8>,
+    pub native_variable: Option<usize>,
 }
 
 const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Field<'_> {
@@ -66,25 +69,96 @@ const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Fie
         offset,
         width,
         decimal: None,
+        native_flags: None,
+        native_variable: None,
     }
 }
 
-pub(super) const CATALOG_FIELDS: [Field<'static>; 15] = [
-    field("Id", INT32, Some(0), INT32_BYTES),
-    field("ParentId", INT32, Some(4), INT32_BYTES),
-    field("Name", SHORT_TEXT, None, 510),
-    field("Type", INT16, Some(8), INT16_BYTES),
-    field("Flags", INT32, Some(10), INT32_BYTES),
-    field("LvProp", OLE, None, 0),
-    field("Lv", OLE, None, 0),
-    field("LvExtra", OLE, None, 0),
-    field("LvModule", OLE, None, 0),
-    field("Database", SHORT_TEXT, None, 510),
-    field("ForeignName", SHORT_TEXT, None, 510),
-    field("Connect", SHORT_TEXT, None, 510),
-    field("Owner", SHORT_BINARY, None, 255),
-    field("DateCreate", DATE_TIME, Some(14), DATE_TIME_BYTES),
-    field("DateUpdate", DATE_TIME, Some(22), DATE_TIME_BYTES),
+const CATALOG_FIXED_FLAGS: u8 = 0x13;
+const CATALOG_VARIABLE_FLAGS: u8 = 0x12;
+const CATALOG_OWNER_FLAGS: u8 = 0x32;
+
+const fn catalog_field(
+    name: &str,
+    kind: u8,
+    offset: Option<usize>,
+    width: usize,
+    flags: u8,
+    variable: usize,
+) -> Field<'_> {
+    Field {
+        name,
+        kind,
+        offset,
+        width,
+        decimal: None,
+        native_flags: Some(flags),
+        native_variable: Some(variable),
+    }
+}
+
+// Native-number order and system flags are explicit metadata. The catalog's
+// Memo/OLE slots are interleaved with ordinary variable fields, not grouped last.
+pub(super) const CATALOG_FIELDS: [Field<'static>; 17] = [
+    catalog_field("Id", INT32, Some(0), INT32_BYTES, CATALOG_FIXED_FLAGS, 0),
+    catalog_field(
+        "ParentId",
+        INT32,
+        Some(4),
+        INT32_BYTES,
+        CATALOG_FIXED_FLAGS,
+        0,
+    ),
+    catalog_field("Name", SHORT_TEXT, None, 510, CATALOG_VARIABLE_FLAGS, 0),
+    catalog_field("Type", INT16, Some(8), INT16_BYTES, CATALOG_FIXED_FLAGS, 1),
+    catalog_field(
+        "DateCreate",
+        DATE_TIME,
+        Some(10),
+        DATE_TIME_BYTES,
+        CATALOG_FIXED_FLAGS,
+        1,
+    ),
+    catalog_field(
+        "DateUpdate",
+        DATE_TIME,
+        Some(18),
+        DATE_TIME_BYTES,
+        CATALOG_FIXED_FLAGS,
+        1,
+    ),
+    catalog_field("Owner", SHORT_BINARY, None, 510, CATALOG_OWNER_FLAGS, 1),
+    catalog_field(
+        "Flags",
+        INT32,
+        Some(26),
+        INT32_BYTES,
+        CATALOG_FIXED_FLAGS,
+        2,
+    ),
+    catalog_field("Database", LONG_TEXT, None, 0, CATALOG_VARIABLE_FLAGS, 2),
+    catalog_field("Connect", LONG_TEXT, None, 0, CATALOG_VARIABLE_FLAGS, 3),
+    catalog_field(
+        "ForeignName",
+        SHORT_TEXT,
+        None,
+        510,
+        CATALOG_VARIABLE_FLAGS,
+        4,
+    ),
+    catalog_field(
+        "RmtInfoShort",
+        SHORT_BINARY,
+        None,
+        510,
+        CATALOG_VARIABLE_FLAGS,
+        5,
+    ),
+    catalog_field("RmtInfoLong", OLE, None, 0, CATALOG_VARIABLE_FLAGS, 6),
+    catalog_field("Lv", OLE, None, 0, CATALOG_VARIABLE_FLAGS, 7),
+    catalog_field("LvProp", OLE, None, 0, CATALOG_VARIABLE_FLAGS, 8),
+    catalog_field("LvModule", OLE, None, 0, CATALOG_VARIABLE_FLAGS, 9),
+    catalog_field("LvExtra", OLE, None, 0, CATALOG_VARIABLE_FLAGS, 10),
 ];
 
 pub(super) const RELATIONSHIP_FIELDS: [Field<'static>; 8] = [
@@ -131,7 +205,7 @@ impl<'a> Fields<'a> {
         (0..self.count())
             .filter(|&index| {
                 let field = self.get(index);
-                field.offset.is_none() && field.kind != OLE
+                field.offset.is_none() && !matches!(field.kind, OLE | LONG_TEXT)
             })
             .count()
     }
@@ -208,5 +282,7 @@ pub(super) fn bind<'a>(
         offset,
         width,
         decimal,
+        native_flags: None,
+        native_variable: None,
     })
 }
