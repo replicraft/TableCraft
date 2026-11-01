@@ -1,0 +1,181 @@
+{
+  "date": "2026-11-01",
+  "scope": "independent escaped FEFF sources and separate unescaped reader-alias controls; before enabling the positive INSERT representation",
+  "checkpoint": {
+    "path": ".cache/ace16-normal-insert-next-20261101/feff-source/first-private-checkpoint.json",
+    "bytes": 4969,
+    "sha256": "5348883f42bb679d393fa719382beff47370fbea2566c2dd764c673e27887656"
+  },
+  "input_freeze": {
+    "path": ".cache/ace16-normal-insert-next-20261101/feff-source/input-freeze.json",
+    "bytes": 3092,
+    "sha256": "0eb80362c4afeb330889fb9a1ea166a7efbebdaed759d8e20d61a1d22a512395"
+  },
+  "manifest": {
+    "path": ".cache/ace16-normal-insert-next-20261101/feff-source/expected-first/manifest.json",
+    "bytes": 4144,
+    "sha256": "8564e8e2d63e9f7bbea5c9a4fc8d0d2d722ba0abdf76ab68ef6a87bee5eba075"
+  },
+  "cases": [
+    {
+      "id": "h5-insert-feff",
+      "header": 5,
+      "before": {
+        "file": "h5-insert-feff-before.accdb",
+        "bytes": 458752,
+        "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+      },
+      "before_reader": {
+        "file": "h5-insert-feff-before.reader.txt",
+        "bytes": 4318,
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "variants": [
+        {
+          "id": "escaped",
+          "kind": "positive_literal_insert",
+          "expected": {
+            "file": "h5-insert-feff-escaped.accdb",
+            "bytes": 458752,
+            "sha256": "a6dc745e868883362eec9aea04d84bc08e80265be2bebe67d43456808a16eb06"
+          },
+          "reader": {
+            "file": "h5-insert-feff-escaped.reader.txt",
+            "bytes": 4359,
+            "sha256": "e670726f34fca113c60319112a099b56b83db2ee76eb80bd65961ec44d16ccd3"
+          },
+          "proof": {
+            "file": "h5-insert-feff-escaped.proof.json",
+            "bytes": 636,
+            "sha256": "ac13e2c5e56dd7f07b3ca85b36ea541233471c543952fafc5869db3682fdc76b"
+          }
+        },
+        {
+          "id": "unescaped-alias",
+          "kind": "reader_alias_control_not_requested_insert_expected",
+          "expected": {
+            "file": "h5-insert-feff-unescaped-alias.accdb",
+            "bytes": 458752,
+            "sha256": "2d37ba1b723dea47464120cfc07e10b4153d5f416353fc8924df44d4bf457ff9"
+          },
+          "reader": {
+            "file": "h5-insert-feff-unescaped-alias.reader.txt",
+            "bytes": 4355,
+            "sha256": "c01a6395b5865f94f21e2552f7cc3a3de8b6e23e5b2d2db2a91a25f95e18bcbd"
+          },
+          "proof": {
+            "file": "h5-insert-feff-unescaped-alias.proof.json",
+            "bytes": 633,
+            "sha256": "6b714581ab50b2a95a0f0575ef25abae14b580b3fc595f73ecf53dd03a5c3219"
+          }
+        }
+      ]
+    },
+    {
+      "id": "h6-insert-feff",
+      "header": 6,
+      "before": {
+        "file": "h6-insert-feff-before.accdb",
+        "bytes": 528384,
+        "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+      },
+      "before_reader": {
+        "file": "h6-insert-feff-before.reader.txt",
+        "bytes": 4331,
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "variants": [
+        {
+          "id": "escaped",
+          "kind": "positive_literal_insert",
+          "expected": {
+            "file": "h6-insert-feff-escaped.accdb",
+            "bytes": 528384,
+            "sha256": "87a3062e2b8473407e8bd6be8997a0fa3c80094fd6adf80da784b8422f638fad"
+          },
+          "reader": {
+            "file": "h6-insert-feff-escaped.reader.txt",
+            "bytes": 4372,
+            "sha256": "6f95cb1f25874c6e3900d54c01e80bd3a1742ba471b119503e6e5801de6ee41e"
+          },
+          "proof": {
+            "file": "h6-insert-feff-escaped.proof.json",
+            "bytes": 636,
+            "sha256": "251d6d1f2c349629c4ca96e4a729c57f6fa295008e19ec7c9bd1201d3a5e65d9"
+          }
+        },
+        {
+          "id": "unescaped-alias",
+          "kind": "reader_alias_control_not_requested_insert_expected",
+          "expected": {
+            "file": "h6-insert-feff-unescaped-alias.accdb",
+            "bytes": 528384,
+            "sha256": "60a1b1c5ac1934d65f09cbf2c557ced29702f1e5ca9d7d748d3c979b546bd3bd"
+          },
+          "reader": {
+            "file": "h6-insert-feff-unescaped-alias.reader.txt",
+            "bytes": 4368,
+            "sha256": "5cfe581839bf83a8b3ad2bbbb47cfc19f01e908e924b6dc3c8d38d88b1a54a47"
+          },
+          "proof": {
+            "file": "h6-insert-feff-unescaped-alias.proof.json",
+            "bytes": 633,
+            "sha256": "8815eae118ad0c20804a74a96439923cc1d20d21cb13cfe9a194ce8bfa049d5f"
+          }
+        }
+      ]
+    }
+  ],
+  "positive_law": "Requested row (24,U+FEFF+new,NULL); literal payload FFFE00FFFE6E0065007700; row26B at4004, directory0fa4, free3986/count2/TD2.",
+  "alias_law": "Separate plain UTF16 alias FFFE6E0065007700; row23B at4007, free3989. Both readers observe new, not requested FEFFnew; alias is not a permitted request AFTER.",
+  "native": {
+    "passed": true,
+    "views": 6,
+    "functions": 1,
+    "seconds": 0.15,
+    "log": {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-source/native-first.log",
+      "bytes": 531,
+      "sha256": "8e4df5529a09c71371aebfcdb9613a08c9647dd7953e646f4741a22efeeda408"
+    }
+  },
+  "independent_sdk": {
+    "passed": true,
+    "read_count": 6,
+    "compiler_calls": 0,
+    "inputs_unchanged": true,
+    "record": {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-source/sdk-first/result.json",
+      "bytes": 2060,
+      "sha256": "a65a29507e91a595366454719afc010327bf0fde7776fa7c790370ac23ecb024"
+    },
+    "summary": {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-source/sdk-first.log",
+      "bytes": 61,
+      "sha256": "c199a235486e532a92061f3a4a4de46aa5222451f44b98a7e152a039ee345fb0"
+    }
+  },
+  "observer": "Unchanged existing original one-row and bounded two-row observers/classes; no new Java formatter, getter or compilation.",
+  "preservation": "Entire original66B row/OLE, properties, all maps, unrelated bytes and EOF stay exact outside the literal new-record/directory/counter spans.",
+  "maintained_artifacts": [
+    {
+      "path": "docs/testing/ordinary_insert_originals/feff_model.py",
+      "bytes": 4663,
+      "sha256": "33d149e8f41e3f6dafe44e41c46e7f12bda6779ce9cffcae672f68215ff8c0fe"
+    },
+    {
+      "path": "docs/testing/ordinary_insert_originals/feff_requests.json",
+      "bytes": 2163,
+      "sha256": "b9db318f43b808ff5ae9b2fefdb4eb0f973335cc4200ebfa539e634530c13c99"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/insert_feff.rs",
+      "bytes": 6186,
+      "sha256": "1429f9add6e5577657f1e04dd37dd0660f6f22e7bde67d546e57c2c135a540f9"
+    }
+  ],
+  "limitations": [
+    "Does not qualify all leading-FEFF strings, zero low UTF16 bytes at marked-wide boundaries or native Access save/reopen.",
+    "Current normal INSERT still rejects leading FEFF until separate independent proof correction is integrated."
+  ]
+}

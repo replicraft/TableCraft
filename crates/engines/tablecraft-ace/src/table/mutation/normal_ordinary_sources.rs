@@ -157,3 +157,5 @@ mod forwarded_delete;
 mod insert;
 
 mod insert_multirow;
+
+mod insert_feff;
