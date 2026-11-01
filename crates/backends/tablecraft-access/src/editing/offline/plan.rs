@@ -1,7 +1,8 @@
-//! Private normal mutation composition; UPDATE and DELETE keep distinct intents.
+//! Private normal mutation composition; UPDATE, DELETE and INSERT keep distinct intents.
 use tablecraft_ace::{
-    NativeDeleteIntent, NativeIntentError, NativeUpdateIntent, PreparedNativeUpdate,
-    RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    NativeDeleteIntent, NativeInsertIntent, NativeIntentError, NativeUpdateIntent,
+    PreparedNativeUpdate, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    RecoverableNativeInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
@@ -9,6 +10,7 @@ use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStora
 pub(super) enum MutationPlan {
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
+    Insert(RecoverableNativeInsertPlan),
 }
 
 impl MutationPlan {
@@ -16,6 +18,7 @@ impl MutationPlan {
         match self {
             Self::Update(plan) => plan.changed_rows(),
             Self::Delete(plan) => plan.deleted_rows(),
+            Self::Insert(plan) => plan.inserted_rows(),
         }
     }
 
@@ -27,6 +30,7 @@ impl MutationPlan {
         match self {
             Self::Update(plan) => plan.intent().encode(budget, cancelled),
             Self::Delete(plan) => plan.intent().encode(budget, cancelled),
+            Self::Insert(plan) => plan.intent().encode(budget, cancelled),
         }
     }
 
@@ -42,6 +46,9 @@ impl MutationPlan {
             Self::Delete(plan) => plan
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),
+            Self::Insert(plan) => plan
+                .prepare(target, journal, budget, cancelled)
+                .map(PreparedNativeUpdate::Fixed),
         }
     }
 }
@@ -49,6 +56,7 @@ impl MutationPlan {
 pub(super) enum MutationIntent {
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
+    Insert(NativeInsertIntent),
 }
 
 impl MutationIntent {
@@ -61,6 +69,8 @@ impl MutationIntent {
         // never retried as another action or promoted from its record prefix.
         if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
+        } else if raw.starts_with(b"TCNA") {
+            NativeInsertIntent::decode(raw, budget, cancelled).map(Self::Insert)
         } else {
             NativeUpdateIntent::decode(raw, budget, cancelled).map(Self::Update)
         }

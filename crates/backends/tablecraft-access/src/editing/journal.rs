@@ -1,6 +1,9 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
 mod deleting;
 mod fitted;
+mod inserting;
+
+pub use inserting::NativeJournalInserter;
 mod fixed;
 
 use super::{NativeEditError, NativeEditor};

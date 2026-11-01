@@ -68,6 +68,9 @@ pub enum Cause {
     /// Local DELETE shape, predicate evaluation or normal native planning refused.
     #[error(transparent)]
     DeletePlanning(sql::RecoverableDeleteError),
+    /// Closed local INSERT binding or normal native planning refused.
+    #[error(transparent)]
+    InsertPlanning(sql::RecoverableInsertError),
     /// Original typed intent framing/binding or encoding failed.
     #[error(transparent)]
     Intent(NativeIntentError),
