@@ -10757,3 +10757,15 @@ old leaf tail remain exact. Its
 [source record](results/ace16-nullable-id-companion-sources-2026-10-31.json) keeps
 independent observation and native Access qualification separate. These are
 repository-authored fixtures under the repository license.
+
+## Authored typed fixed-scalar BeforeChange sources
+
+The [fixed-scalar corpus](ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) consumes only the
+earlier mixed-schema originals, original rows and native program. Thirty-eight
+originals and 28 literal expected images freeze typed Boolean/Int64/Currency/DATE
+requests and macro-only Int32 outcomes. Raw overlays preserve inactive payloads
+and both mask bytes. Native/hash checks and 66 exact independent SDK inventories
+pass before normal typed producer calls. The first exporter formatting failure
+is retained; no expected bytes were changed. These are repository-authored
+fixtures under the repository license, with typed ordinal and native save
+qualification boundaries recorded separately.

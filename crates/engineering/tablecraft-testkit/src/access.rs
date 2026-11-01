@@ -164,3 +164,6 @@ pub mod canonical_nullable_key_before_change;
 
 /// Present Id updates beside an untouched nullable ordinary index key.
 pub mod canonical_nullable_index_id_before_change;
+
+/// Original typed fixed-scalar requests and literal BeforeChange source images.
+pub mod canonical_fixed_before_change;
