@@ -3,10 +3,12 @@ mod fixed;
 mod mixed;
 mod operands;
 mod proof;
-pub(in crate::table::mutation) mod protection;
 mod stage;
 
-use super::{EditError, Int32Update, NativeEditPlan, WriteBlocker, ace_profile, gates, rows};
+use super::{
+    EditError, Int32Update, NativeEditPlan, WriteBlocker, ace_profile, gates,
+    record_protection::Protection, rows,
+};
 use crate::{
     BeforeChangeFieldPreparation, BeforeEventGuardError, BeforeEventIntents, FixedScalarUpdate,
     InspectError, NativeImage, TableCheck, TableSchema, TableSnapshot, header::check,
@@ -271,7 +273,7 @@ pub(crate) fn plan(
     if let Some(rejection) = prepared.take_rejection() {
         return Err(EditError::BeforeChangeRejected(rejection));
     }
-    let protection = protection::Protection::capture(&image, checked.schema(), budget, cancelled)?;
+    let protection = Protection::capture(&image, checked.schema(), budget, cancelled)?;
     let staged = stage::derive(
         &image,
         &checked,

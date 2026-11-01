@@ -12,6 +12,17 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal ordinary-content fixed writes
+
+The native engine now has a distinct ordinary fixed-field planner and TCNI0004
+recovery route. Complete content ownership replaces neither source checks nor
+independent full-image proof. Three content tests, four planner/proof tests and
+five public recovery tests pass, including 22 complete-image commits. All 1,049
+ACE unit tests pass (29 ignored), and all 66 recovery integration tests pass.
+This is an initial bounded data-only family, not arbitrary database admission;
+shared-session and CLI wiring remain next. See the
+[contract](access/writes/NORMAL_ACE_ORDINARY_FIXED.md).
+
 ## Ordinary-content source qualification
 
 Independent authored inputs now cover twelve ordinary role layouts and seventeen

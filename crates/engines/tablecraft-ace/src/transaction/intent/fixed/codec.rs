@@ -8,6 +8,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(in crate::transaction::intent) const MAGIC: &[u8; 8] = b"TCNI0003";
 const PROFILE: u16 = 3;
+const ORDINARY_HEADER_MAGIC: &[u8; 8] = b"TCNI0004";
+const ORDINARY_PROFILE: u16 = 4;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -33,9 +35,30 @@ pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES
     + NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS * UPDATE_BYTES;
 
 impl NativeFixedEditIntent {
+    pub(in crate::transaction::intent) const ORDINARY_MAGIC: &'static [u8; 8] =
+        ORDINARY_HEADER_MAGIC;
+
     /// Encode the exact ordered original request data, with canonical carrier padding.
     pub fn encode(
         &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(MAGIC, PROFILE, budget, cancelled)
+    }
+
+    pub(in crate::transaction::intent) fn encode_ordinary(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(ORDINARY_HEADER_MAGIC, ORDINARY_PROFILE, budget, cancelled)
+    }
+
+    fn encode_profile(
+        &self,
+        magic: &[u8; 8],
+        profile: u16,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
@@ -62,9 +85,9 @@ impl NativeFixedEditIntent {
         output
             .try_reserve_exact(total)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(magic);
         output.extend_from_slice(&(total as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(&profile.to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -102,6 +125,30 @@ impl NativeFixedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(bytes, MAGIC, PROFILE, budget, cancelled)
+    }
+
+    pub(in crate::transaction::intent) fn decode_ordinary(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(
+            bytes,
+            ORDINARY_HEADER_MAGIC,
+            ORDINARY_PROFILE,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn decode_profile(
+        bytes: &[u8],
+        magic: &[u8; 8],
+        profile: u16,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.fixed_intent.decode").entered();
         check(budget, cancelled)?;
         if bytes.len() < HEADER_BYTES || bytes.len() > MAX_RECORD_BYTES {
@@ -110,14 +157,14 @@ impl NativeFixedEditIntent {
         budget
             .charge(Resource::Steps, HEADER_BYTES as u64)
             .map_err(InspectError::from)?;
-        if &bytes[..MAGIC.len()] != MAGIC {
+        if &bytes[..magic.len()] != magic {
             return Err(if bytes.starts_with(b"TCNI") {
                 NativeIntentError::UnsupportedVersion
             } else {
                 NativeIntentError::InvalidRecord
             });
         }
-        if u16::from_le_bytes(bytes[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != PROFILE {
+        if u16::from_le_bytes(bytes[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != profile {
             return Err(NativeIntentError::UnsupportedProfile);
         }
         if u32_at(bytes, TOTAL_AT) as usize != bytes.len()

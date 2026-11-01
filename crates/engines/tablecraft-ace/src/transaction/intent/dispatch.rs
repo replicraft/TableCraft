@@ -17,6 +17,8 @@ pub enum NativeUpdateProfile {
     Ace16BeforeChangeInt32,
     /// Positive source-derived pure BeforeChange ACE16 fixed-group UPDATE.
     Ace16BeforeChangeFixed,
+    /// Ordinary ACE16 fixed groups with complete content closure rederived natively.
+    Ace16OrdinaryFixed,
 }
 
 /// Immutable original user intent and BEFORE binding for one normal route.
@@ -31,7 +33,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed column groups for TCNI0003.
+    /// Original ordered fixed column groups for TCNI0003 or TCNI0004.
     Fixed(NativeFixedEditIntent),
 }
 
@@ -62,6 +64,13 @@ impl NativeUpdateIntent {
     pub(super) fn from_fixed(original: NativeFixedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16BeforeChangeFixed,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
+    pub(super) fn from_ordinary_fixed(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16OrdinaryFixed,
             body: NativeUpdateBody::Fixed(original),
         }
     }
@@ -132,6 +141,9 @@ impl NativeUpdateIntent {
             (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16BeforeChangeFixed) => {
                 original.encode(budget, cancelled)
             }
+            (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryFixed) => {
+                original.encode_ordinary(budget, cancelled)
+            }
             _ => Err(NativeIntentError::UnsupportedProfile),
         }
     }
@@ -142,6 +154,13 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..NativeFixedEditIntent::ORDINARY_MAGIC.len())
+            == Some(NativeFixedEditIntent::ORDINARY_MAGIC.as_slice())
+        {
+            return Ok(Self::from_ordinary_fixed(
+                NativeFixedEditIntent::decode_ordinary(bytes, budget, cancelled)?,
+            ));
+        }
         if bytes.get(..8) == Some(super::fixed::MAGIC.as_slice()) {
             return Ok(Self::from_fixed(NativeFixedEditIntent::decode(
                 bytes, budget, cancelled,

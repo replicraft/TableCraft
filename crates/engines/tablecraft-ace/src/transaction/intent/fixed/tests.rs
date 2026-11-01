@@ -198,7 +198,7 @@ fn malformed_fixed_records_never_alias_another_original_request() {
         Err(NativeIntentError::UnsupportedProfile)
     ));
     let mut unknown = raw;
-    unknown[..8].copy_from_slice(b"TCNI0004");
+    unknown[..8].copy_from_slice(b"TCNI9999");
     assert!(matches!(
         NativeUpdateIntent::decode(&unknown, &mut budget(), &|| false),
         Err(NativeIntentError::UnsupportedVersion)
