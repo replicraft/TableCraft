@@ -160,3 +160,6 @@ mod inline_tests;
 
 #[cfg(test)]
 mod integral_tests;
+
+#[cfg(test)]
+mod multipage_sources;

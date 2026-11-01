@@ -1,0 +1,56 @@
+{
+  "scope": "ACE16_SOURCE_ONLY_TWO_REPRESENTED_EOF_DATA_PAGES",
+  "source_checkpoint_sha256": "d3163c0c80c5d6779ceed8b910a52e2cdea67c8ee15fa409304d4dae5a95b72a",
+  "views": 4,
+  "inserted_rows": 600,
+  "final_rows": 601,
+  "growth_bytes": 8192,
+  "placements": {
+    "original_data_new_rows": 236,
+    "first_eof_new_rows": 240,
+    "second_eof_new_rows": 124
+  },
+  "map_bit_changes": 6,
+  "map_byte_changes": 3,
+  "h5_union_mask": "03",
+  "h6_union_mask": "06",
+  "pure_construction": "FIRST_PASS",
+  "sdk": {
+    "new_full_after_calls": 2,
+    "reused_unchanged_original_calls": 2,
+    "saved_verifier_children": 0,
+    "result": "FIRST_PASS"
+  },
+  "native": {
+    "functions": 1,
+    "views": 4,
+    "elapsed_seconds": 0.19,
+    "result": "FIRST_PASS"
+  },
+  "matching_native_producers": 0,
+  "recovery_qualification": "PENDING",
+  "host_qualification": "PENDING",
+  "native_access_save_conformance": "NOT_ESTABLISHED",
+  "images": [
+    {
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "filename": "h5-insert-multipage-before.accdb"
+    },
+    {
+      "bytes": 466944,
+      "sha256": "1f89ca37898bb5374331c673d633b70d06c9f2c75f3b4458a7647f743fb552db",
+      "filename": "h5-insert-multipage-after.accdb"
+    },
+    {
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "filename": "h6-insert-multipage-before.accdb"
+    },
+    {
+      "bytes": 536576,
+      "sha256": "d9ea6bfbea2b0d6dd0c95a4cfd543cda2ad4a2dd57523f5ff7c7c34847e544d0",
+      "filename": "h6-insert-multipage-after.accdb"
+    }
+  ]
+}
