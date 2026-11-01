@@ -206,3 +206,31 @@ mod tests;
 
 #[cfg(test)]
 mod selected_lval;
+
+/// Canonical UPDATE field identities and stored IDs, without widening the old
+/// selected-index family. The caller also performs complete action declaration
+/// validation through its fresh NoRequired certificate.
+pub(in crate::table::mutation) fn validate_binary_updates(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    raw::capture(
+        image,
+        schema.definition_page(),
+        Role::SelectedUser,
+        budget,
+        cancelled,
+    )?;
+    if schema.columns().len() != schema.layout.max_columns {
+        return Err(refused());
+    }
+    for (position, field) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        if field.number() != position {
+            return Err(refused());
+        }
+    }
+    Ok(())
+}

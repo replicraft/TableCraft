@@ -284,3 +284,6 @@ pub mod genuine_binary_delete;
 
 /// Independent manual Int64/Currency primary declarations and literal actions.
 pub mod canonical_creation_integral_primary;
+
+/// Frozen fitting Binary UPDATE sources and literal outcomes.
+pub mod genuine_binary_update;

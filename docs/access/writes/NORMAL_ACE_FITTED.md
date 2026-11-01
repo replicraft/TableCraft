@@ -6,8 +6,10 @@ and optional Boolean, Int32, Int64, Currency or legacy DATE groups. It uses the
 same fresh [ordinary admission](NORMAL_ACE_ORDINARY_FIXED.md), constraints and
 physical preservation checks as ordinary fixed writes. A metadata selection
 hint grants no permission; every plan and recovery checks the actual source.
-Indexed/dependent/generated targets and required programs remain outside this
-fitted route. Decimal can remain an unchanged sibling, not an update carrier.
+A separate [indexed Binary fitting branch](NORMAL_BINARY_INDEX_UPDATE.md) now
+maintains qualified Short Binary secondary root leaves. Other indexed targets,
+dependent/generated targets and required programs retain their existing limits.
+Decimal can remain an unchanged sibling, not an update carrier.
 
 ## Record-local fitting
 
@@ -21,9 +23,8 @@ raw representations. Empty groups still validate target metadata.
 
 Slot positions, record lengths, unrelated variable data, inactive slack, masks,
 footer framing and all bytes outside affected records remain protected. A request
-that exceeds aggregate record capacity refuses before journal publication. There
-is no record growth, page allocation, index maintenance for these targets or EOF
-change. Memo/OLE update targets, richer property profiles and broader macro
+that exceeds aggregate record capacity refuses before journal publication. For these unindexed targets there
+is no record growth, page allocation, index maintenance or EOF change. Memo/OLE update targets, richer property profiles and broader macro
 handling require separate qualification.
 
 ## Original intent and consumers
