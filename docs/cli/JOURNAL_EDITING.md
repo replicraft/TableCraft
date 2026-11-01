@@ -72,6 +72,21 @@ again for every native plan/recovery. There is no caller absence flag. Ordinary
 equal assignments and genuine empty selections retain bytes and complete the
 normal journal lifecycle. This is not admission for arbitrary imported databases.
 The earlier 64-page ceiling is removed; indirect maps remain outside this route.
+
+A distinct [native target-table profile](../access/writes/NATIVE_TARGET_PROGRAM_ABSENCE.md)
+also supports the exact seventeen-field catalog when the selected local table
+has four NULL OLE carriers (including LvProp), five NULL remote fields and no
+children or ambiguous identities. Shared TD/index declaration checks, all-local
+LVAL map declarations and full normal Source protection remain mandatory. Only
+bounded zero-length deleted catalog tombstones are exempt from flagged-slot
+refusal; unknown storage kinds and linked origins refuse. Known unrelated
+application objects are preserved without execution. This is a bounded inference
+backed by native locator evidence, not general macro-absence certification or
+Microsoft Access save/reopen conformance. Ten genuine CLI saves and exact TSV
+readbacks match frozen whole images; the CLI duplicate refusal asserts exit code
+2 and the exact constraint diagnostic. Native recovery and retained-session
+checks also pass; see the [write record](../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
+
 The indexed-target CLI checks pass 24 literal saves and exact row readbacks,
 including NULL transitions, swaps, tree fitting and noops, with eight refusal
 controls. See the
@@ -142,9 +157,12 @@ record-selected native plan and compares both complete images before a recovery
 write. A different target object with identical bytes does not satisfy
 association. Keep the selected namespace stable while an operation runs.
 
-SQL and its original filtering/SET expressions are never replayed. For ACE,
-qualification rediscovers and evaluates the admitted bounded pure stored programs
-against the recorded BEFORE image and original typed requests. No external
+SQL and its original filtering/SET expressions are never replayed. For the
+positive-program ACE routes, qualification rediscovers and evaluates the admitted
+bounded pure stored programs against the recorded BEFORE image and original typed
+requests. Ordinary TCNI0004 recovery instead freshly repeats the selected content
+or target-local absence profile and reconstructs the original fixed requests;
+no certificate is serialized. No external
 callback or effect is replayed. Closed intent version/profile dispatch refuses
 unknown records without trying another validator.
 

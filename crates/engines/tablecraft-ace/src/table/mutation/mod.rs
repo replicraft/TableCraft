@@ -145,3 +145,6 @@ mod ordinary_content;
 
 #[cfg(feature = "journal")]
 mod normal_ordinary;
+
+#[cfg(feature = "journal")]
+mod no_required_programs;

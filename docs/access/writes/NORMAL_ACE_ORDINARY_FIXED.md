@@ -1,12 +1,12 @@
 # Ordinary ACE fixed-field writes
 
 `NativeImage::plan_recoverable_ordinary_fixed_updates` accepts original fixed-field
-groups only after fresh, complete content validation. It is a separate normal
+groups only after fresh native content and physical preservation validation. It is a separate normal
 engine route from positive BeforeChange updates and engineering previews.
 `NativeJournalEditor`, the retained `OfflineWriteSession` and
 `query journal-update` now consume it through their existing lifecycle.
 
-## Current admitted family
+## Initial global data-only family
 
 The initial family is unencoded ACE header 5/6, with the known clear header
 fields, code page 1252 and General sort declaration. The standard 64 MiB captured
@@ -49,9 +49,30 @@ map growth or EOF change is added. A key rewrite that cannot fit refuses before
 journal setup. These limits describe this route,
 not the long-term compatibility target or the broader reader.
 
+## Native seventeen-field target family
+
+A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
+now admits the exact native seventeen-field catalog through a strict conjunction:
+four NULL OLE carriers including LvProp, five NULL remote carriers, complete raw
+catalog rows and child/identity census, shared selected TD/index declaration
+closure, all-local LVAL declaration bijection and full normal Source protection.
+Only bounded zero-length deleted catalog tombstones may be skipped; nonempty or
+unsupported flagged slots refuse. Unknown storage kinds and linked table origins
+refuse. Known unrelated application objects remain opaque and byte-preserved,
+without execution.
+
+This family is selected structurally before planning; a failed check never falls
+back to the initial global grammar. It retains the fixed-target, constraint,
+index fitting and no-growth limits below. The native VCS locator evidence supports
+an explicitly inferred profile, not universal macro absence or native Access
+save/reopen conformance. The [write record](../../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json)
+records genuine native recovery, twenty principal typed/SQL session saves, ten CLI
+saves/readbacks and full ACE unit/recovery regressions. Mixed DATA/INDEX rollback
+and exact refusal diagnostics are tested separately from source admission.
+
 ## Authority and physical proof
 
-`ordinary_content` accounts for the header, full catalog graph, declarations,
+For the initial global family, `ordinary_content` accounts for the header, full catalog graph, declarations,
 every live record, all referenced map cells and physical EOF. It rejects duplicate
 ownership and accounts for free pages. Actual scalar reads independently validate
 the admitted user records. XML-looking names, Text/Binary values and inactive

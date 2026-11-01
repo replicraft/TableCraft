@@ -1487,6 +1487,7 @@ dependencies = [
  "clap",
  "flate2",
  "proptest",
+ "sha2",
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",

@@ -29,7 +29,8 @@ impl Footprint {
             #[cfg(feature = "journal")]
             PayloadAdmission::NativeSelected(_)
             | PayloadAdmission::NativeChecked(_, _)
-            | PayloadAdmission::Closed(_) => Ok(Self::Normal(Protection::capture(
+            | PayloadAdmission::Closed(_)
+            | PayloadAdmission::NoRequired(_) => Ok(Self::Normal(Protection::capture(
                 image, schema, budget, cancelled,
             )?)),
             #[cfg(feature = "ace16-write-preview")]

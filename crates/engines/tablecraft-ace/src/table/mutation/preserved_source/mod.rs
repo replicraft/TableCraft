@@ -30,6 +30,8 @@ use tablecraft_core::{
 
 use crate::table::mutation::guards::fields::batch::SelectedPrograms;
 #[cfg(feature = "journal")]
+use crate::table::mutation::no_required_programs::NoRequiredTablePrograms;
+#[cfg(feature = "journal")]
 use crate::table::mutation::ordinary_content::ClosedContent;
 
 const CATALOG_HAS_COMPLEX: u32 = 0x0004_0000;
@@ -102,6 +104,8 @@ enum PayloadAdmission<'admission, 'image> {
     ),
     #[cfg(feature = "journal")]
     Closed(&'admission ClosedContent<'image>),
+    #[cfg(feature = "journal")]
+    NoRequired(&'admission NoRequiredTablePrograms<'image>),
 }
 
 fn capture_with_payload(
@@ -232,6 +236,10 @@ fn capture_with_payload(
         PayloadAdmission::NativeSelected(selected)
         | PayloadAdmission::NativeChecked(selected, _) => {
             selected.require_source(image, schema, budget, cancelled)?
+        }
+        #[cfg(feature = "journal")]
+        PayloadAdmission::NoRequired(certificate) => {
+            certificate.require_source(image, schema, budget, cancelled)?
         }
         #[cfg(feature = "journal")]
         PayloadAdmission::Closed(certificate) => {
@@ -517,7 +525,10 @@ impl PayloadAdmission<'_, '_> {
     fn allows_scalar(&self) -> bool {
         match self {
             #[cfg(feature = "journal")]
-            Self::NativeSelected(_) | Self::NativeChecked(_, _) | Self::Closed(_) => true,
+            Self::NativeSelected(_)
+            | Self::NativeChecked(_, _)
+            | Self::Closed(_)
+            | Self::NoRequired(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -580,6 +591,25 @@ pub(in crate::table::mutation) fn capture_closed_content(
         image,
         table,
         PayloadAdmission::Closed(certificate),
+        budget,
+        cancelled,
+    )
+}
+
+/// Bounded native target certification retains the complete normal Source
+/// protection, properties, dependencies, relationships and index checks.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_no_required_programs(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_with_payload(
+        image,
+        table,
+        PayloadAdmission::NoRequired(certificate),
         budget,
         cancelled,
     )

@@ -10,10 +10,13 @@ files. Variable inline-map windows now remove the initial 64-page ceiling, with
 qualified 96-page source/save/recovery/readback checks. Retained Int32 counters
 and local single-Int32 indexes now have ordinary content and fixed-write checks.
 Manual Int32 indexed updates now include fitting NULL transitions, atomic UNIQUE
-swaps and independent TCNI0004 reconstruction. Next, qualify genuine scalar-file
-bootstrap headers, catalog/property storage and indirect-map ownership. Wider
-metadata, other actions and native Access
-qualification remain explicit work.
+swaps and independent TCNI0004 reconstruction. Two genuine ACE 16 originals now
+also pass ten literal native/session/CLI save outcomes through a bounded,
+source-bound target certificate and the full preservation census. This uses
+strict selected catalog/LVAL/declaration checks rather than broad bootstrap-byte
+acceptance. Wider catalog/property profiles, indirect-map ownership, other
+actions and native Access save/reopen qualification remain explicit work. See
+the [genuine write record](testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
 
 The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)
 now admits qualified unindexed Boolean/Int32/Int64/Currency/DATE groups beside

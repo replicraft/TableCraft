@@ -680,3 +680,6 @@ mod ordinary_counter_index;
 
 #[path = "normal/ordinary_indexed_targets.rs"]
 mod ordinary_indexed_targets;
+
+#[path = "normal/genuine_ordinary.rs"]
+mod genuine_ordinary;
