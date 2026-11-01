@@ -13,7 +13,9 @@ The selected path freshly validates the native catalog, required-program absence
 constraints, complete source, canonical physical ownership and original key/ROW
 membership. The existing no-split and older fixed-intent paths remain separate.
 
-New records must fit existing owned DATA capacity. Exactly two INDEX pages append
+The fitting-only branch requires records to fit existing owned DATA capacity.
+The separate [compound branch](NORMAL_COMPOUND_ROOT_SPLIT.md) now appends one
+DATA page before its two INDEX pages under its own original-source checks. Exactly two INDEX pages append
 at the original EOF, with right and left roles derived from the source. Each page
 requires explicitly represented GLOBAL_FREE=1 and INDEX-owned=0 cells. Zero bytes,
 EOF position, a creator receipt or an absent map cell grant no allocation authority.
@@ -50,7 +52,7 @@ Retained sessions also pass split INSERT followed by an empty DELETE, with fresh
 snapshots, stale-handle refusal, primary cursor checks and namespace cleanup.
 
 The supplied row includes present-empty Binary. No SQL/CLI split save is claimed
-from a substituted NULL or an invented Binary literal. Compound DATA+INDEX
+from a substituted NULL or an invented Binary literal. Broader compound DATA+INDEX
 allocation, multiple physical splits, recursive growth, Binary splits and map
 expansion remain work. The [combined execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 retains focused and broader validation alongside failed first checks and their
