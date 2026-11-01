@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "independent_fixed_scalar_before_change_sources",
+  "status": "native_source_anchors_strict_and_66_independent_inventories_passed",
+  "normal_fixed_writer_calls": 0,
+  "native_access_qualification": "unrun",
+  "source_freeze": {
+    "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/source-first-private-freeze.sha256",
+    "bytes": 1393,
+    "sha256": "4e138cfd96dafc09654f8bc74e40d6464a1f1e00d32dfbd2cd5c0c5e9d00e3cf"
+  },
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "recipes_per_header": 19,
+    "originals": 38,
+    "literal_expected_images": 28,
+    "views": 66,
+    "image_bytes": 2433024,
+    "changed_roots": 28,
+    "image_aggregate_digest": "338148282c163fc11db5d155711eaa43716e5275864e505c02cd7e98d3ce09f1",
+    "typed_request_digest": "d094c38d4a992be20e5f1114910ce10089f15ecc8e893b35d2b58e8bf913a297",
+    "sql_single_ordinal_selection_qualified": false
+  },
+  "checks": {
+    "first_compile": {
+      "passed": false,
+      "exit_code": 101,
+      "reason": "Unmatched JSON closing brace in exporter format string; no constructor or writer execution",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/source-first-root.log",
+        "bytes": 697,
+        "sha256": "bb1818ac08048676cb9860b8186108117fb06b3db8c9c4a6233a22ff52409963"
+      }
+    },
+    "source_after_export_format_fix": {
+      "passed": 1,
+      "seconds": 0.19,
+      "model_or_expected_bytes_changed": false,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/source-after-export-format-fix-root.log",
+        "bytes": 515,
+        "sha256": "5ae06b43b357a1fbf01fccbce25046ec2f7bdaefcef2b3a8c572b77d4e6c562d"
+      }
+    },
+    "export": {
+      "passed": 1,
+      "seconds": 0.46,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/export-first-root.log",
+        "bytes": 9404,
+        "sha256": "bb26b7b2d92dade23105fe03e56b9da3bea562fd9cda82c4f8cc4a6b9a4592bd"
+      },
+      "inventory": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/originals-first/inventory.json",
+        "bytes": 9024,
+        "sha256": "451c0de26f30eee4bde8884b5e15233817f7e175c1b8c26ce50efa232478d07a"
+      },
+      "requests": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/originals-first/requests.json",
+        "bytes": 17742,
+        "sha256": "e5a7f1733526f4e413e1ab6508c853792c47282b8d4324d126334777a7c33794"
+      }
+    },
+    "source_and_anchors": {
+      "passed": 2,
+      "ignored": 1,
+      "seconds": 0.19,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/source-anchors-first-root.log",
+        "bytes": 836,
+        "sha256": "796ec042c5b94e3e94c710c211c18a9e71a253c2ab21e5dc46338c96d6fe67ea"
+      }
+    },
+    "strict": {
+      "passed": true,
+      "seconds": 17.66,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-testkit"
+      ],
+      "all_targets": true,
+      "features": "journal only",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/source-strict-first-root.log",
+        "bytes": 307,
+        "sha256": "7d9e7e13e520eac286b7f721ad65bc880c24b4874410257e619bb4a4bccba003"
+      }
+    },
+    "independent_sdk": {
+      "passed": true,
+      "full_inventories": 66,
+      "new_compile_calls": 0,
+      "authority": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/input-authority.json",
+        "bytes": 94121,
+        "sha256": "2abc385bd08af98c06535cb4d3d78769adb176401e19788d5005742d4a040293"
+      },
+      "freeze": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/code-and-source-first-freeze.json",
+        "bytes": 23724,
+        "sha256": "eb47baaec2c1949c8e9e5e125489d4885b74a9bc7454d13257c9b50e1ea3b43d"
+      },
+      "prepare": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/prepare-first-root.log",
+        "bytes": 82,
+        "sha256": "073b16a9bb440d8ef8f22c4248abdc72d4ff8a73be396078267e6db9d539a012"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/receipt-first-root.json",
+        "bytes": 71201,
+        "sha256": "c3cdb27a78768d13c26f6d1e98f6d54d8d816b1078e3166264a7358e51fa36f2"
+      },
+      "runner": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/runner-first-root.log",
+        "bytes": 292,
+        "sha256": "713ef5e33ec118987c9fd9fc1a3e3ff18218101e9905df8c436a04b398499338"
+      },
+      "saved_verifier": {
+        "passed": true,
+        "child_calls": 0,
+        "log": {
+          "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/saved-first-root.log",
+          "bytes": 276,
+          "sha256": "e0d7a353c4fbe278fe9648e7b6d72058e1928b3940dbaee31bf639971686a59f"
+        }
+      },
+      "expectations": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/getter/expected-first-root.json",
+        "bytes": 79113,
+        "sha256": "eae7a15a6b1fe56ce08f3829fd416574612f31627c9b98585cf09f46624dab70"
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6958,
+      "missing_targets": 0,
+      "dependency_packages": 15,
+      "diff_check": true
+    }
+  }
+}

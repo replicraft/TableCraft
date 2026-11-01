@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Typed fixed-scalar BeforeChange source qualification
+
+Thirty-eight independently authored originals and 28 literal expected images
+now qualify wide user requests beside Int32-only native macro effects. Two
+native source/anchor tests and 66 exact independent SDK inventories pass.
+Signed-zero and alias DATE bits, scaled Currency, Boolean masks and inactive
+NULL payloads retain explicit raw coverage. The first exporter compile correction
+is preserved separately. This is source qualification before normal typed saves,
+not SQL ordinal selection, macro-absence permission or native Access save evidence.
+See the [source contract](testing/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) and
+[record](testing/results/ace16-fixed-before-change-sources-2026-10-31.json).
+
 ## Normal updates beside untouched NULL index keys
 
 The normal ACE BeforeChange route now maintains qualified fixed-I32 indexes
