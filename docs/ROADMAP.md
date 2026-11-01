@@ -64,7 +64,8 @@ wider unindexed scalar carriers and source-derived represented EOF pages.
 Qualified numeric primary keys and dense empty/all-NULL sources pass separately.
 Qualified [column-identity action profiles](access/writes/NORMAL_COLUMN_IDENTITIES.md)
 now cover stored-ID gaps and fixed native gaps, including two-byte presence masks.
-Fresh creation authors explicit Required/AllowZeroLength metadata.
+Fresh creation authors explicit Required/AllowZeroLength and typed Int32/NULL
+DefaultValue metadata, consumed by normal omitted-field INSERT.
 Next are broader dropped-column layouts, allocation and index splits/page retirement,
 AutoNumber and broader relationship/program behavior. Native Access
 qualification remains open. Completed

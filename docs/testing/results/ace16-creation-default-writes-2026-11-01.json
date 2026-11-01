@@ -1,0 +1,239 @@
+{
+  "date": "2026-11-01",
+  "scope": "Explicit native Int32/NULL DefaultValue creation through shared creator metadata, then real typed/SQL omitted or supplied-NULL inserts",
+  "source_record": "ace16-creation-default-sources-2026-11-01.json",
+  "source_qualification_precedes_matching_producers": true,
+  "source_expectations_retuned_to_producers": false,
+  "native_complete_image_matches": 12,
+  "host_literal_saves": 20,
+  "host_required_refusals": 4,
+  "post_commit_failed_plan_contexts": 2,
+  "complete_creator_resource_contexts": 8,
+  "focused_checks": [
+    {
+      "name": "creator-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::default_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 2,
+      "minimum_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/creator-first.log",
+        "bytes": 623,
+        "sha256": "3aa82cba498775a82196d7f7ba7db3a252f6d3406911f78ba9a282d2cd17a87c",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1289 filtered out; finished in 0.01s"
+        ]
+      }
+    },
+    {
+      "name": "boolean-regression-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::property_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 5,
+      "minimum_passed": 5,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/boolean-regression-first.log",
+        "bytes": 880,
+        "sha256": "95a2ce6ba2b015f6f8c224303f0844136379874f69e43026bf9e4cfe83525a90",
+        "test_results": [
+          "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1286 filtered out; finished in 0.01s"
+        ]
+      }
+    },
+    {
+      "name": "host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "native_creation_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 2,
+      "minimum_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/host-first.log",
+        "bytes": 739,
+        "sha256": "b6c7c89d06950a1299f2623e4814a0e4aea81901f265982b568244c4fbe7512b",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.65s"
+        ]
+      }
+    },
+    {
+      "name": "creator-resources-second",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::default_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 4,
+      "minimum_passed": 4,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/creator-resources-second.log",
+        "bytes": 873,
+        "sha256": "0265d3e255eb1980e1cc39174b68b7010be973edb70bfabfc242b978a6eb23e4",
+        "test_results": [
+          "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1289 filtered out; finished in 0.02s"
+        ]
+      }
+    },
+    {
+      "name": "host-lease-second",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "native_creation_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 3,
+      "minimum_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/host-lease-second.log",
+        "bytes": 723,
+        "sha256": "a1c28f0efda35fea5d0d0e2502199daa33ccead665ea7c3449d6fc46aacdc403",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.73s"
+        ]
+      }
+    }
+  ],
+  "checks_state": "PASS",
+  "formatter_derivative": "Root named the Null token and derived its byte length; no source/output expectation changed.",
+  "boundaries": [
+    "Only exact ordinary Int32/NULL typed defaults are authored. No arbitrary expression, clock, entropy or AutoNumber mode is inferred.",
+    "No-policy and Boolean-property output bytes remain unchanged.",
+    "Initial creation rows remain explicit. Later omitted INSERT uses existing TCNA2; supplied NULL remains complete TCNA4 data.",
+    "Header6 source overlay qualification is not a second creator output mode."
+  ],
+  "native_access_save_reopen": "unrun",
+  "windows_durability": "unrun",
+  "checks": [
+    {
+      "name": "strict-all-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/strict-all-first.log",
+        "bytes": 526,
+        "sha256": "fc898cf76e55ea7d2db4cea847d1fcebd9382ae3d042b0cf13499b4b131d5d31",
+        "test_results": []
+      }
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/minimal-first.log",
+        "bytes": 72,
+        "sha256": "5604fc8f0c276397a55db4bd7008236712075c0ad37d3b3a0f1fe362b1b85a36",
+        "test_results": []
+      }
+    },
+    {
+      "name": "creation-regression-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::"
+      ],
+      "returncode": 0,
+      "receipt": {
+        "path": ".cache/ace16-creation-default-integration-20261101/creation-regression-first.log",
+        "bytes": 4359,
+        "sha256": "bd2be9fc59ae8b9a5eacb42436359908f4a2f6b170679c55594bcb17df104ea7",
+        "test_results": [
+          "ok. 35 passed; 0 failed; 1 ignored; 0 measured; 1257 filtered out; finished in 0.49s"
+        ]
+      }
+    }
+  ],
+  "documentation_links": {
+    "checked": 7261,
+    "missing": 0
+  },
+  "platform": "aarch64-apple-darwin",
+  "rustc": "1.99.0 (b940084d7 2026-09-28)"
+}

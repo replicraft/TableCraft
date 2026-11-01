@@ -1,5 +1,18 @@
 # Implementation status
 
+## Explicit creation defaults
+
+Fresh creation now authors exact Int32/NULL DefaultValue metadata. Twelve complete
+creator outputs match independent sources qualified before producer calls. Real
+typed/SQL sessions distinguish omitted fields from supplied NULL, preserving
+TCNA2/TCNA4 semantics and Required constraints. Four focused creator functions,
+five prior Boolean-policy functions and three host functions pass, including
+resource/cancellation and retained lease/receipt controls. See the
+[execution record](testing/results/ace16-creation-default-writes-2026-11-01.json).
+Strict all-feature/all-target and minimal checks pass; the creation regression
+filter passes 35 functions with one ignored exporter. AutoNumber mode detection,
+broader default families and native Access qualification remain open.
+
 ## Column identities and creation constraints
 
 Normal INSERT/DELETE now distinguish visible value positions, native column

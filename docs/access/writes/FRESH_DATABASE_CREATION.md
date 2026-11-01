@@ -161,7 +161,7 @@ filter passes 31 functions with one ignored exporter. The
 [batch record](../../testing/results/ace16-sparse-actions-and-creation-properties-2026-11-01.json)
 separates these from source qualification and broader regression. The two-table
 checks qualify independent catalog and user-page components, not whole-image
-source equality. The CLI currently has no field-policy flags. DefaultValue and
+source equality. The CLI currently has no field-policy flags. Broader defaults and
 AutoNumber creation remain separate work; native Access save/reopen is unrun.
 
 
@@ -182,3 +182,30 @@ The Required-plus-NULL-default source has valid initial rows; unsupported future
 NULL requests have no invented successful AFTER. The
 [source record](../../testing/results/ace16-creation-default-sources-2026-11-01.json)
 retains receipts. This source phase supplies no native Access save/reopen claim.
+
+
+## Explicit Int32/NULL defaults
+
+`CreateColumn::with_default_literal(&Value)` authors a typed ordinary Int32 or
+NULL DefaultValue. An absent option writes no default; supplied NULL writes the
+literal declaration `Null`. Other carriers/declarations refuse. The bounded
+shared MR2 writer emits canonical UTF-16 MEMO property text without evaluating
+expressions or filling initial rows. Both creator paths include exact property
+and catalog totals before image allocation.
+
+After publication, actual file content supplies normal write admission. Typed or
+SQL INSERT with an omitted field uses existing TCNA2 and fresh default resolution;
+supplying NULL uses complete TCNA4 and retains NULL. Required plus a NULL default
+can describe valid initial rows, but later omitted or supplied NULL refuses before
+a journal exists. No creator certificate passes into normal editing.
+
+Four focused creator functions pass, including twelve complete independent image
+comparisons and full public-call resource/cancellation controls. Five existing
+Boolean-property functions also pass. Three host functions pass twenty literal
+typed/SQL saves, four Required refusals and two committed-then-failed lease/receipt
+controls. The [execution record](../../testing/results/ace16-creation-default-writes-2026-11-01.json)
+separates focused results, source qualification and final feature checks. Strict
+all-feature/all-target checks, minimal ACE/adapter builds and the 35-function
+creation regression filter (one ignored exporter) pass. Broader
+constant carriers, arbitrary defaults and AutoNumber mode detection remain work.
+Native Access and Windows qualification remain unrun.
