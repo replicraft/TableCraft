@@ -242,3 +242,7 @@ undergo normal INSERT using fresh source qualification, with duplicate/NULL
 refusals retaining the same lease and completed receipt. Component checks do not
 claim independent whole-image qualification of every multiple-table combination.
 Native Access save/reopen remains unrun.
+
+The [combined execution record](../../testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+retains focused creator/host acceptance and the strict and broader regression
+results, including first failures and corrections.
