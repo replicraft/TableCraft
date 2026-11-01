@@ -246,6 +246,9 @@ page retirement, other indexes and target relationships refuse. The separate [ex
 uses `query journal-insert` for qualified unindexed targets and
 nullable/directional single-Int32 root-leaf indexes. Qualified Int64/Currency
 root leaves also support secondary and ascending required primary keys.
+Qualified [Short Binary secondary roots](../access/writes/NORMAL_BINARY_INDEX_INSERT.md)
+now fit normal INSERT too; current SQL/CLI positive coverage supplies NULL,
+while exact byte vectors use the typed library API.
 [Complete supplied rows](../access/writes/NORMAL_COMPLETE_INSERT.md) use TCNA4
 with source-derived represented EOF capacity; omitted/default rows stay fixed-length.
 These routes do not

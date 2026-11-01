@@ -315,3 +315,13 @@ The [execution record](../../testing/results/ace16-normal-integral-indexed-write
 retains the initial missed action-admission guard and its narrow correction,
 complete receipts and strict/broad regression results. Empty/all-NULL, stable-ID
 gaps and sparse native ordinals are separate follow-on source work.
+
+
+## Fitting Short Binary secondary indexes
+
+Complete normal insertion now maintains qualified nullable/directional Short
+Binary root leaves through the existing complete-row intent and offline host.
+The [Binary INSERT contract](NORMAL_BINARY_INDEX_INSERT.md) records independent
+source/proof/recovery, typed/SQL/CLI results and current fitting-only scope.
+Binary primary keys, NODEs, splits and Binary DELETE remain separate work;
+UPDATE admission is unchanged.
