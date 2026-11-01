@@ -118,3 +118,6 @@ mod sparse_numeric_tests;
 
 #[cfg(test)]
 mod binary_tests;
+
+#[cfg(test)]
+mod node_retirement_sources;

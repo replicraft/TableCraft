@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent normal node-retirement source/read qualification before matching producers",
+  "native_executed_functions": 1,
+  "native_views": 8,
+  "native_returncode": 0,
+  "native_receipt": {
+    "path": ".cache/ace16-node-retirement-source-gate-20261101/native-first.log",
+    "bytes": 538,
+    "sha256": "66923828973771d783405fd3166eb5ba06eb342251869bc50aaf8a668fc08684"
+  },
+  "new_sdk_read_calls": 48,
+  "matching_mutation_calls": 0,
+  "source_qualification_precedes_matching_producers": true,
+  "source_expected_images_changed": false,
+  "artifacts": [
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/native-first-private-checkpoint.json",
+      "bytes": 946,
+      "sha256": "dabc1e0cded87ed2850016c322ed2ad12975290bbff66e50680d9fb7c2dfdb1c"
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/first-private-checkpoint.json",
+      "bytes": 2033,
+      "sha256": "7deac2606ed66e4e167b258d1451830f4462da5f3f23414963d3b3d405d53d59"
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/input-first-freeze.json",
+      "bytes": 2503,
+      "sha256": "767e11adb7253961bf0a137d8a617735ef7a6151f0feb6298fd975a5085eb962"
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/code-first-freeze.json",
+      "bytes": 7402,
+      "sha256": "f99fd3b9748253d4f94741c4534e37e33d4e6837d186954eb4efacf33065a4ef"
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/qualification-first-result.json",
+      "bytes": 3012,
+      "sha256": "0777266ed678b5678ca5f32686294f2e0f7c935c45d68b020a5e4efbbe529b4b"
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/source/expected-first/manifest.json",
+      "bytes": 13741,
+      "sha256": "95d095e5e0b3ddf943c8e22a861ed01eb1ef6d32621e334e8408855037dd39fe"
+    }
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "laws": [
+    "Two originals and six literal AFTERs qualify with exact read-only SDK reports.",
+    "A sole-child NODE retains one bounded child entry and zero tail; all-empty roots become leaves.",
+    "Retired pages retain residual bodies with invalid headers; exact INDEX-owned/global-free changes.",
+    "All rows, aliases, original histories and complete Source/constraints remain checked."
+  ]
+}
