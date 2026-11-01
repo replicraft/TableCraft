@@ -11,6 +11,10 @@ external LVAL allocation, generated/clock defaults, relationships and positive
 INSERT programs remain work. Native Access save/reopen remains unrun. See the
 [normal INSERT contract](access/writes/NORMAL_ACE_INSERT.md).
 
+The next Binary-index insertion work now has [eighteen qualified source views](testing/ACE16_BINARY_INDEX_SOURCES.md)
+and 144 exact independent read observations before matching write producers.
+Normal Binary writes and native Access save/reopen remain separate acceptance.
+
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and
 the CLI, including equal/empty requests and TCNI0004 recovery. Full content proof

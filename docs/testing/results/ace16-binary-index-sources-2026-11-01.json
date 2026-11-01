@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent ordinary Short Binary secondary-index source views before native INSERT producers",
+  "views": 18,
+  "original_views": 2,
+  "literal_after_views": 16,
+  "physical_indexes_per_view": 3,
+  "logical_aliases_per_view": 6,
+  "native_read_gate_functions": 1,
+  "source_native_receipt": {
+    "path": ".cache/ace16-normal-binary-indexed-next-20261101/root-integration/source-native-first.log",
+    "bytes": 541,
+    "sha256": "8046fccec21345e54143e06d7877a471773f5139a4f1c93b5abb078e2c28f624"
+  },
+  "source_manifest": {
+    "path": ".cache/ace16-normal-binary-indexed-next-20261101/after-source/expected-first/manifest.json",
+    "bytes": 45822,
+    "sha256": "3f850ca34f51174507af991070525e89b8f73ce201c14c438d0117b1dfbbb920"
+  },
+  "source_model_freeze": {
+    "path": ".cache/ace16-normal-binary-indexed-next-20261101/after-source/code-first-freeze.json",
+    "bytes": 3512,
+    "sha256": "4c2e27ed2751236243b5dc12ef20094e298d4d60a513d8413b2aba403a893898"
+  },
+  "source_laws_freeze": {
+    "path": ".cache/ace16-normal-binary-indexed-next-20261101/after-source/input-first-freeze.json",
+    "bytes": 6261,
+    "sha256": "6023e72f102cb50b97f0a7e9bab84e2988f2dd7906924cffa3c40462dfe491ce"
+  },
+  "sdk": {
+    "read_only_calls": 144,
+    "full_inventories": 18,
+    "metadata_reports": 18,
+    "exact_cursors": 108,
+    "saved_verification": {
+      "path": ".cache/ace16-normal-binary-indexed-next-20261101/after-source/reads-first/saved-verification.json",
+      "bytes": 631,
+      "sha256": "1fbc12e078a8ed45d34d49c02214e49d85de70a27bcd2abd7d78bf4daf044a57"
+    },
+    "receipt": {
+      "path": ".cache/ace16-normal-binary-indexed-next-20261101/after-source/reads-first/receipt.json",
+      "bytes": 192473,
+      "sha256": "be387f8bb304acadfa4661aa8f773cceda2413d08a883b1d662001402ded03a6"
+    },
+    "frozen_pins_unchanged": true
+  },
+  "matching_native_producer_calls": 0,
+  "expected_bytes_retuned_to_producer": false,
+  "source_gate_successor": "Only logical whitespace changed before first native read; whitespace-stripped old and successor Rust sources match.",
+  "provenance": "SDK-generated private originals plus independently authored complete-image derivatives. No third-party code or fixture binary added to tracked sources.",
+  "scope_limits": [
+    "Existing manual Int32 primary key plus nullable Short Binary ASC/DESC secondary root leaves and exact aliases.",
+    "NULL, empty, zero/FF, prefixes, 7/8/9/16-byte boundaries, duplicates and both request orders.",
+    "Legacy ordinary fixed/UPDATE admission still refuses this Binary retained-index family; readable source qualification is not write authority."
+  ],
+  "native_access_save_reopen": "unrun"
+}
