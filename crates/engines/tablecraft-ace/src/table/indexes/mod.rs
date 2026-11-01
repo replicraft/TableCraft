@@ -33,6 +33,8 @@ mod catalog;
 mod links;
 pub use links::{ForeignIndexInspection, ForeignIndexLink, inspect_foreign_index_links};
 mod check;
+#[cfg(feature = "journal")]
+pub(in crate::table) use check::check_table_retained;
 pub use check::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 
 use super::schema::inspect_table_schema;

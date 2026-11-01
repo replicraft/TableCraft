@@ -69,6 +69,23 @@ profiles are explicitly reported; errors during a selected traversal propagate
 instead of becoming skips. Returned reports omit payload Debug/Serde. Trace spans
 record operation/counts only.
 
+## Retained-index ownership checks
+
+Normal ordinary-content admission uses the internal `check_table_retained`
+variant. It shares the existing key, row, count and constraint checks, and also
+requires every owned INDEX page to be reached exactly once by a complete tree
+traversal. The sorted visited set must equal actual owned membership; unreachable
+owned pages and incomplete leaf chains refuse. Sorting, membership work and
+cancellation are metered. Unsupported profiles remain explicitly unverified, and
+admission requires every inventoried index to be checked.
+
+Public `check_table` and ordinary index reads retain their existing behavior.
+These internal facts alone grant no mutation authority, program admission or
+exclusivity against other storage roles. The ordinary-content consumer retains
+its separate declaration, alias, role-ledger and physical framing checks. Three
+focused tests cover complete trees/aliases/NULL keys, an orphan-owned page that
+the default reader still accepts, exact resource pools and cancellation.
+
 ## Qualified index constraints
 
 Foreign logical indexes can now receive the same physical checks after complete
