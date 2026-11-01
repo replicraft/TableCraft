@@ -630,3 +630,9 @@ mod indexed_mixed;
 
 #[path = "normal/nullable_index.rs"]
 mod nullable_index;
+
+#[path = "normal/nullable_keys.rs"]
+mod nullable_keys;
+
+#[path = "normal/id_companion.rs"]
+mod id_companion;

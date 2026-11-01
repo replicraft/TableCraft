@@ -30,7 +30,7 @@ row must be ordinary non-NULL Int32, including unselected rows and non-key field
 
 Mixed schemas use real scalar projections, retaining unavailable declarations
 without inventing NULL cells. Ordinary complete scalar tables can now maintain
-checked indexes whose components are present fixed Int32 values. Readonly Int32
+checked fixed-Int32 indexes, including unchanged NULL components. Readonly Int32
 AutoNumber keys may participate, while user assignments and dormant SetField
 targets still cannot write generated fields. Final user and macro changes compose
 into one fitting key update, including descending composites, unique swaps and
@@ -38,12 +38,22 @@ retained compressed trees. Every affected INDEX page is excluded from declared
 and live long-value claims before staging.
 
 The unindexed route continues to preserve admitted scalar and rich siblings.
-Original key-presence facts select the route before new INDEX ownership parsing
-or event-row evaluation. An unchanged ordinary nullable I32 index selects the
-previous unindexed qualifier and default compiler policy; it grants no indexed
-NULL mutation permission. Neither route catches a failed planner or encoder and
-retries another implementation. Rich/calculated/unavailable siblings retain
+Original key-presence facts and the union of native static SetField targets plus
+the supplied user target select the route before new INDEX ownership parsing or
+event-row evaluation. A nullable I32 index with no potential indexed target keeps
+the previous unindexed qualifier and default compiler policy. Present indexed
+targets use the checked route, preserving untouched NULL components and their
+inactive payloads. Neither route grants NULL transitions, catches a failed
+planner or encoder, or retries another implementation.
+Rich/calculated/unavailable siblings retain
 unindexed admission only; header-5 native-20 siblings remain unsupported.
+
+The independent index proof reconstructs variable-width NULL/present components
+before checking exact ROW/child trailers, retained node bounds and final keys.
+All-NULL keys retain their physical ROW suffixes; partial-NULL tuples retain
+their non-NULL identity. The authored all-NULL unique pair is a read hypothesis,
+not native Access uniqueness or save qualification. See the
+[frozen source contract](../../testing/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md).
 
 Non-Int32 field operands refuse. Changed fields must remain outside calculation/
 collection dependencies and have present original/final Int32 values. Native

@@ -1,5 +1,6 @@
 //! Manual Int32 keys and source-partitioned fitting page reconstruction.
 use super::{
+    atoms,
     population::Row,
     tree::{Node, Tree},
     vector,
@@ -10,7 +11,7 @@ use crate::{
     header::check,
     table::indexes::{
         header::IndexHeader,
-        key::{ASC_VALUE, DESC_VALUE, INT32_SIGN_BIT},
+        key::{ASC_NULL, ASC_VALUE, DESC_NULL, DESC_VALUE, INT32_SIGN_BIT},
         page::ENTRY_START,
     },
 };
@@ -32,17 +33,38 @@ pub(super) enum Columns<'a> {
     Keys(&'a [usize]),
 }
 
+pub(super) enum Population<'a> {
+    Present(&'a [Row]),
+    Nullable(&'a [Row<Option<i32>>]),
+}
+
+trait Cell {
+    fn value(&self) -> Option<i32>;
+}
+
+impl Cell for i32 {
+    fn value(&self) -> Option<i32> {
+        Some(*self)
+    }
+}
+
+impl Cell for Option<i32> {
+    fn value(&self) -> Option<i32> {
+        *self
+    }
+}
+
 pub(super) struct Operation<'a> {
     pub image: &'a NativeImage,
     pub checked: &'a TableCheck,
     pub index: &'a NativeIndex,
-    pub population: &'a [Row],
+    pub population: Population<'a>,
     pub columns: Columns<'a>,
     pub tree: &'a Tree,
 }
 
-fn keys(
-    population: &[Row],
+fn keys<T: Cell>(
+    population: &[Row<T>],
     columns: &[(usize, bool)],
     after: bool,
     budget: &mut ResourceBudget,
@@ -60,18 +82,23 @@ fn keys(
         let mut wire = vector(width, budget, cancelled)?;
         for &(position, descending) in columns {
             check(budget, cancelled)?;
-            let value = *values.get(position).ok_or(EditError::Preservation)?;
-            let mut bytes = ((value as u32) ^ INT32_SIGN_BIT).to_be_bytes();
-            if descending {
-                for byte in &mut bytes {
-                    *byte = !*byte;
+            let value = values.get(position).ok_or(EditError::Preservation)?.value();
+            match value {
+                None => wire.push(if descending { DESC_NULL } else { ASC_NULL }),
+                Some(value) => {
+                    let mut bytes = ((value as u32) ^ INT32_SIGN_BIT).to_be_bytes();
+                    if descending {
+                        for byte in &mut bytes {
+                            *byte = !*byte;
+                        }
+                    }
+                    wire.push(if descending { DESC_VALUE } else { ASC_VALUE });
+                    wire.extend_from_slice(&bytes);
                 }
             }
-            wire.push(if descending { DESC_VALUE } else { ASC_VALUE });
-            wire.extend_from_slice(&bytes);
         }
         wire.extend_from_slice(&row.reference.to_be_bytes());
-        if wire.len() != width {
+        if wire.len() > width {
             return Err(EditError::Preservation);
         }
         keys.push(wire);
@@ -87,6 +114,19 @@ fn keys(
     keys.sort_unstable();
     check(budget, cancelled)?;
     Ok(keys)
+}
+
+fn population_keys(
+    population: &Population<'_>,
+    columns: &[(usize, bool)],
+    after: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<u8>>, EditError> {
+    match population {
+        Population::Present(rows) => keys(rows, columns, after, budget, cancelled),
+        Population::Nullable(rows) => keys(rows, columns, after, budget, cancelled),
+    }
 }
 
 struct Layout {
@@ -322,8 +362,8 @@ pub(super) fn reconstruct(
         };
         columns.push((dense, key.descending()));
     }
-    let original = keys(operation.population, &columns, false, budget, cancelled)?;
-    let final_keys = keys(operation.population, &columns, true, budget, cancelled)?;
+    let original = population_keys(&operation.population, &columns, false, budget, cancelled)?;
+    let final_keys = population_keys(&operation.population, &columns, true, budget, cancelled)?;
     operation.tree.original(&original, budget, cancelled)?;
     for alias in operation.checked.indexes() {
         check(budget, cancelled)?;
@@ -340,12 +380,17 @@ pub(super) fn reconstruct(
             budget
                 .charge(Resource::Steps, key.len() as u64)
                 .map_err(InspectError::from)?;
+            let facts = atoms::inspect(key, operation.index, true, budget, cancelled)?;
             let value = &key[..key
                 .len()
                 .checked_sub(REFERENCE_BYTES)
                 .ok_or(EditError::Preservation)?];
             constraints
-                .check_tuple(&mut previous, Some(value), false)
+                .check_tuple(
+                    &mut previous,
+                    if facts.all_null { None } else { Some(value) },
+                    facts.any_null,
+                )
                 .map_err(InspectError::from)?;
         }
     }

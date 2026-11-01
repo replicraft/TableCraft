@@ -75,8 +75,8 @@ fn capture<'image>(
         let tree = ownership.require(image, checked.schema(), index.index(), budget, cancelled)?;
         live.require_no_long_value_data_overlap(tree.pages(), budget, cancelled)?;
     }
-    // Full reader coverage does not make nullable keys writable by the current
-    // manual I32 tree codec. Refuse this shape before executing event rows.
+    // Qualify every original key location before event rows run. Stored NULL
+    // components are preserved; actual written cells still require Int32.
     for record in &source.records {
         let layout = record_layout::parse(&record.data, source.table.schema(), budget)?;
         for index in checked.indexes() {
@@ -103,13 +103,8 @@ fn capture<'image>(
                     .mask_start
                     .checked_add(field.number() / MASK_BITS)
                     .ok_or(EditError::Preservation)?;
-                if end > layout.mask_start
-                    || record
-                        .data
-                        .get(mask)
-                        .is_none_or(|byte| byte & (1 << (field.number() % MASK_BITS)) == 0)
-                {
-                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                if end > layout.mask_start || record.data.get(mask).is_none() {
+                    return Err(EditError::Preservation);
                 }
             }
         }
@@ -124,7 +119,7 @@ pub(super) fn preflight(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     if matches!(
-        selection::capture(image, table, budget, cancelled)?,
+        selection::capture(image, table, None, budget, cancelled)?,
         selection::Route::LegacyUnindexed
     ) {
         return super::preflight_unindexed(image, table, budget, cancelled);
@@ -252,7 +247,7 @@ pub(super) fn plan(
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.before_change.normal.indexed_mixed.plan").entered();
     if matches!(
-        selection::capture(&image, table, budget, cancelled)?,
+        selection::capture(&image, table, Some(column), budget, cancelled)?,
         selection::Route::LegacyUnindexed
     ) {
         return super::plan_unindexed(image, table, column, updates, budget, cancelled);
@@ -362,7 +357,7 @@ fn prove(
         cancelled,
     )?;
     if matches!(
-        selection::capture(&image, table, budget, cancelled)?,
+        selection::capture(&image, table, Some(column), budget, cancelled)?,
         selection::Route::LegacyUnindexed
     ) {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
@@ -472,3 +467,7 @@ mod proof_tests;
 #[cfg(test)]
 #[path = "indexed/nullable_tests.rs"]
 mod nullable_tests;
+
+#[cfg(test)]
+#[path = "indexed/nullable_proof_tests.rs"]
+mod nullable_proof_tests;

@@ -360,10 +360,12 @@ serialization is selected before preparation, without retrying a failed encoder.
 Original page identities, child topology and per-leaf entry counts remain fixed.
 A separate metadata-selected mixed-schema route preserves admitted scalar/rich
 siblings while modifying ordinary Int32 fields. Complete ordinary scalar tables
-can maintain checked non-NULL I32 indexes; rich/unavailable siblings retain
-unindexed admission. Readonly Int32 AutoNumber may supply operands/keys but never
-be assigned. Original nullable-key facts preserve the prior unindexed route
-before new tree decoding; indexed NULL mutation remains refused. Its targets
+can maintain checked I32 indexes beside untouched NULL components;
+rich/unavailable siblings retain unindexed admission. Readonly Int32 AutoNumber
+may supply operands/keys but never
+be assigned. Original nullable-key facts and potential targets select the prior
+unindexed route or checked indexed route before new tree decoding. NULL target
+transitions remain refused. Its targets
 remain non-NULL and outside calculation/collection dependencies. Int32 tree
 rewriting still refuses ignore-NULL membership; splits and map/storage growth
 remain outside both profiles. This

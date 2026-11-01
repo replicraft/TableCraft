@@ -1,0 +1,498 @@
+//! Child of qualified_recovery::api::normal; existing storage/framing reused.
+use super::{
+    Storage, budget, intent, model as journals, planning_inspection, recovery_inspection, scope,
+};
+use journals::Marker;
+use std::{cell::Cell, io::Cursor};
+use tablecraft_ace::{
+    EditError, IndexCheckStatus, IndexConstraintViolation, InspectError, Int32Update, NativeImage,
+    NativeRecoveryQualificationError, NativeUpdateProfile, RecoverableEditError,
+    RecoverableNativeEditPlan, WriteBlocker, check_table, qualify_native_update_recovery,
+};
+use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
+use tablecraft_testkit::access::canonical_nullable_key_before_change::{
+    self as model, Case, Recipe,
+};
+
+const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
+
+fn image(bytes: &[u8]) -> NativeImage {
+    NativeImage::capture(&mut Cursor::new(bytes), scope(), &mut budget(), &|| false).unwrap()
+}
+
+fn requests(case: &Case) -> Vec<Int32Update> {
+    vec![Int32Update::new(
+        case.update.ordinal,
+        case.update.expected,
+        case.update.replacement,
+    )]
+}
+
+fn record(
+    case: &Case,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+    image(&case.before).plan_recoverable_int32_updates(
+        "Items",
+        "Score",
+        requests(case),
+        work,
+        cancelled,
+    )
+}
+
+fn location(bytes: &[u8], ordinal: usize) -> (usize, usize) {
+    let at = 8 * 4096 + 14 + 2 * ordinal;
+    let start = u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap());
+    assert_eq!(start & 0xe000, 0);
+    let end = if ordinal == 0 {
+        9 * 4096
+    } else {
+        8 * 4096 + usize::from(u16::from_le_bytes(bytes[at - 2..at].try_into().unwrap()))
+    };
+    (8 * 4096 + usize::from(start), end)
+}
+
+fn retained_nulls(case: &Case, bytes: &[u8]) {
+    assert_eq!(bytes.len(), case.before.len());
+    assert_eq!(&bytes[3 * 4096..4 * 4096], &case.before[3 * 4096..4 * 4096]);
+    assert_eq!(
+        &bytes[9 * 4096..10 * 4096],
+        &case.before[9 * 4096..10 * 4096]
+    );
+    for &ordinal in &case.null_rows {
+        let (start, end) = location(&case.before, ordinal);
+        assert_eq!(&bytes[start..end], &case.before[start..end]);
+        assert_eq!(bytes[end - 1] & 0x20, 0);
+        assert_eq!(
+            &bytes[start + 6..start + 10],
+            &((ordinal as i32 + 1) * 1000).to_le_bytes()
+        );
+    }
+}
+
+#[test]
+fn nullable_key_normal_commits_twelve_literal_images_with_exact_original_intents() {
+    let mut count = 0;
+    for header in [5, 6] {
+        for recipe in model::RECIPES {
+            let case = model::source(header, recipe);
+            let supplied = requests(&case);
+            let pointer = supplied.as_ptr();
+            let plan = image(&case.before)
+                .plan_recoverable_int32_updates("Items", "Score", supplied, &mut budget(), &|| {
+                    false
+                })
+                .unwrap();
+            assert_eq!(plan.before_bytes(), case.before);
+            assert_eq!(plan.after_bytes(), case.expected);
+            assert_eq!(plan.changed_rows(), 1);
+            assert_eq!(
+                plan.intent().profile(),
+                NativeUpdateProfile::Ace16BeforeChangeInt32
+            );
+            assert_eq!(plan.intent().updates().as_ptr(), pointer);
+            assert_eq!(plan.intent().updates().len(), 1);
+            let actual = &plan.intent().updates()[0];
+            assert_eq!(
+                (actual.row(), actual.expected(), actual.value()),
+                (0, 1000, case.update.replacement)
+            );
+            let encoded = plan.intent().encode(&mut budget(), &|| false).unwrap();
+            assert_eq!(&encoded[..8], b"TCNI0002");
+            assert_eq!(
+                encoded,
+                intent(&case.before, requests(&case))
+                    .encode(&mut budget(), &|| false)
+                    .unwrap()
+            );
+            retained_nulls(&case, plan.after_bytes());
+            let mut target = Storage::new(case.before.clone());
+            let mut journal = Storage::new(Vec::new());
+            let prepared = plan
+                .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(prepared.commit(&mut budget(), &|| false).unwrap(), 1);
+            assert_eq!(target.bytes.get_ref(), &case.expected);
+            retained_nulls(&case, target.bytes.get_ref());
+            assert_eq!(
+                journal.bytes.get_ref(),
+                &journals::journal(&case.before, &case.expected, Marker::Committed)
+            );
+            count += 1;
+        }
+    }
+    assert_eq!(count, 12);
+}
+
+// Original-only derivative, not another expected pack or a writer result.
+// One existing NULL is legal in the ordinary UNIQUE declaration. The final
+// present key2000 would duplicate unchanged row1; no AFTER image is invented.
+fn unique_original() -> Vec<u8> {
+    let case = model::source(6, Recipe::ScalarAscending);
+    let mut before = case.before;
+    let td = &mut before[7 * 4096..8 * 4096];
+    let mut names_end = 63 + 2 * 12 + 6 * 25;
+    for _ in 0..6 {
+        names_end += 2 + usize::from(u16::from_le_bytes(
+            td[names_end..names_end + 2].try_into().unwrap(),
+        ));
+    }
+    let flags = names_end + 52 + 46;
+    assert_eq!(td[flags], 0x80);
+    td[flags] = 0x81;
+    let original = image(&before);
+    let checked = check_table(
+        &mut original.reader(),
+        scope(),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(checked.rows(), 3);
+    assert!(
+        checked
+            .indexes()
+            .iter()
+            .all(|index| index.status() == IndexCheckStatus::Checked)
+    );
+    assert!(checked.indexes()[1].index().constraints().unwrap().unique());
+    before
+}
+
+#[test]
+fn null_inactive_bytes_never_bind_requests_and_nullable_keys_do_not_enable_transitions() {
+    for header in [5, 6] {
+        for recipe in model::RECIPES {
+            let case = model::source(header, recipe);
+            for &ordinal in &case.null_rows {
+                // Public requests remain Int32Update. Claiming the inactive
+                // storage value cannot turn logical NULL into a present update.
+                assert!(matches!(
+                    image(&case.before).plan_recoverable_int32_updates(
+                        "Items",
+                        "Score",
+                        vec![Int32Update::new(ordinal, (ordinal as i32 + 1) * 1000, 17)],
+                        &mut budget(),
+                        &|| false
+                    ),
+                    Err(RecoverableEditError::Edit(EditError::Conflict))
+                ));
+            }
+            assert!(matches!(
+                image(&case.before).plan_recoverable_int32_updates(
+                    "Items",
+                    "Score",
+                    vec![Int32Update::new(0, 1000, 1000)],
+                    &mut budget(),
+                    &|| false
+                ),
+                Err(RecoverableEditError::Edit(EditError::Unsupported(
+                    WriteBlocker::EventTiming
+                )))
+            ));
+            assert!(matches!(
+                image(&case.before).plan_recoverable_int32_updates(
+                    "Items",
+                    "Id",
+                    vec![Int32Update::new(0, 1, 7)],
+                    &mut budget(),
+                    &|| false
+                ),
+                Err(RecoverableEditError::Edit(EditError::Unsupported(
+                    WriteBlocker::Column
+                )))
+            ));
+            let empty = image(&case.before)
+                .plan_recoverable_int32_updates(
+                    "Items",
+                    "Score",
+                    Vec::new(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+            assert_eq!(empty.after_bytes(), case.before);
+            assert_eq!(empty.changed_rows(), 0);
+        }
+    }
+    let before = unique_original();
+    assert!(matches!(
+        image(&before).plan_recoverable_int32_updates(
+            "Items",
+            "Score",
+            vec![Int32Update::new(0, 1000, 999)],
+            &mut budget(),
+            &|| false
+        ),
+        Err(RecoverableEditError::Edit(EditError::Inspect(
+            InspectError::IndexConstraint(IndexConstraintViolation::DuplicateKey)
+        )))
+    ));
+}
+
+#[test]
+fn nullable_key_planning_exact_pools_and_final_cancel_precede_publication() {
+    for recipe in [
+        Recipe::ScalarDescending,
+        Recipe::CompositePartialNull,
+        Recipe::TreeNullBound,
+    ] {
+        let case = model::source(6, recipe);
+        let mut measured = budget();
+        let initial = POOLS.map(|resource| measured.remaining(resource));
+        let polls = Cell::new(0);
+        drop(
+            record(&case, &mut measured, &|| {
+                polls.set(polls.get() + 1);
+                false
+            })
+            .unwrap(),
+        );
+        let used = std::array::from_fn::<_, 3, _>(|index| {
+            initial[index] - measured.remaining(POOLS[index])
+        });
+        assert!(used.iter().all(|count| *count > 0));
+        record(
+            &case,
+            &mut ResourceBudget::new(used[0], used[1], used[2]),
+            &|| false,
+        )
+        .unwrap();
+        for index in 0..3 {
+            let mut limits = used;
+            limits[index] -= 1;
+            let error = record(
+                &case,
+                &mut ResourceBudget::new(limits[0], limits[1], limits[2]),
+                &|| false,
+            )
+            .err()
+            .unwrap();
+            assert!(
+                matches!(planning_inspection(error), InspectError::Limit(error) if error.resource == POOLS[index])
+            );
+        }
+        let terminal = polls.get();
+        polls.set(0);
+        let error = record(&case, &mut budget(), &|| {
+            polls.set(polls.get() + 1);
+            polls.get() == terminal
+        })
+        .err()
+        .unwrap();
+        assert_eq!(planning_inspection(error), InspectError::Cancelled);
+        assert_eq!(
+            planning_inspection(record(&case, &mut budget(), &|| true).err().unwrap()),
+            InspectError::Cancelled
+        );
+    }
+}
+
+#[test]
+fn nullable_key_recovery_requalifies_all_twelve_original_intents_and_restarts() {
+    let mut images = 0;
+    for header in [5, 6] {
+        for recipe in model::RECIPES {
+            let case = model::source(header, recipe);
+            for marker in [Marker::Pending, Marker::Partial, Marker::Committed] {
+                let committed = matches!(marker, Marker::Committed);
+                let mut journal =
+                    Storage::new(journals::journal(&case.before, &case.expected, marker));
+                let saved = journal.bytes.get_ref().clone();
+                let mut target = Storage::new(case.expected.clone());
+                for _ in 0..2 {
+                    let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+                    let qualified = qualify_native_update_recovery(
+                        checked,
+                        intent(&case.before, requests(&case)),
+                        scope(),
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .unwrap();
+                    assert_eq!(
+                        qualified
+                            .recover(&mut target, &mut budget(), &|| false)
+                            .unwrap(),
+                        if committed {
+                            RecoveryOutcome::Committed
+                        } else {
+                            RecoveryOutcome::RolledBack
+                        }
+                    );
+                    assert_eq!(
+                        target.bytes.get_ref(),
+                        if committed {
+                            &case.expected
+                        } else {
+                            &case.before
+                        }
+                    );
+                    retained_nulls(&case, target.bytes.get_ref());
+                }
+                if committed {
+                    assert_eq!(target.writes, 0);
+                }
+                let writes = target.writes;
+                target.fail_prefix = Some(0);
+                let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+                let qualified = qualify_native_update_recovery(
+                    checked,
+                    intent(&case.before, requests(&case)),
+                    scope(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                assert_eq!(
+                    qualified
+                        .confirm_completed(&mut target, &mut budget(), &|| false)
+                        .unwrap(),
+                    if committed {
+                        RecoveryOutcome::Committed
+                    } else {
+                        RecoveryOutcome::RolledBack
+                    }
+                );
+                assert_eq!(target.writes, writes);
+                assert_eq!(journal.writes, 0);
+                assert_eq!(journal.bytes.get_ref(), &saved);
+            }
+            images += 1;
+        }
+    }
+    assert_eq!(images, 12);
+}
+
+#[test]
+fn recovery_rejects_changed_intent_primary_nullable_tree_and_inactive_payload_bytes() {
+    for header in [5, 6] {
+        let case = model::source(header, Recipe::TreeNullBound);
+        let (null, _) = location(&case.before, 2);
+        let (_, selected_end) = location(&case.before, 0);
+        for variant in 0..6 {
+            let mut candidate = case.expected.clone();
+            let mut original = requests(&case);
+            match variant {
+                0 => original = vec![Int32Update::new(0, 1000, 2601)],
+                1 => candidate[9 * 4096 + 700] ^= 1,
+                2 => candidate[10 * 4096 + 485] ^= 1,
+                3 => candidate[null + 6] ^= 1,
+                4 => candidate[selected_end - 1] &= !0x20,
+                _ => candidate[200] ^= 1,
+            }
+            let mut journal = Storage::new(journals::journal(
+                &case.before,
+                &candidate,
+                Marker::Committed,
+            ));
+            let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+            let error = qualify_native_update_recovery(
+                checked,
+                intent(&case.before, original),
+                scope(),
+                &mut budget(),
+                &|| false,
+            )
+            .err()
+            .unwrap();
+            assert!(matches!(
+                error,
+                NativeRecoveryQualificationError::ImageMismatch
+            ));
+            assert_eq!(journal.writes, 0);
+        }
+        let mut target = Storage::new(case.before.clone());
+        target.bytes.get_mut()[null + 6] ^= 1;
+        let saved = target.bytes.get_ref().clone();
+        let mut journal = Storage::new(Vec::new());
+        assert!(matches!(
+            record(&case, &mut budget(), &|| false).unwrap().prepare(
+                &mut target,
+                &mut journal,
+                &mut budget(),
+                &|| false
+            ),
+            Err(JournalError::TargetMismatch)
+        ));
+        assert_eq!((target.writes, journal.writes), (0, 0));
+        assert_eq!(target.bytes.get_ref(), &saved);
+        assert!(journal.bytes.get_ref().is_empty());
+    }
+}
+
+#[test]
+fn nullable_key_recovery_exact_pools_cancel_and_stale_target_precede_writes() {
+    let case = model::source(6, Recipe::TreeNullBound);
+    let mut journal = Storage::new(journals::journal(
+        &case.before,
+        &case.expected,
+        Marker::Pending,
+    ));
+    let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+    let mut measured = budget();
+    let initial = POOLS.map(|resource| measured.remaining(resource));
+    let polls = Cell::new(0);
+    drop(
+        qualify_native_update_recovery(
+            checked,
+            intent(&case.before, requests(&case)),
+            scope(),
+            &mut measured,
+            &|| {
+                polls.set(polls.get() + 1);
+                false
+            },
+        )
+        .unwrap(),
+    );
+    let used =
+        std::array::from_fn::<_, 3, _>(|index| initial[index] - measured.remaining(POOLS[index]));
+    assert!(used.iter().all(|count| *count > 0));
+    let terminal = polls.get();
+    for variant in 0..5 {
+        let mut limits = used;
+        if variant < 3 {
+            limits[variant] -= 1;
+        }
+        polls.set(0);
+        let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+        let result = qualify_native_update_recovery(
+            checked,
+            intent(&case.before, requests(&case)),
+            scope(),
+            &mut ResourceBudget::new(limits[0], limits[1], limits[2]),
+            &|| {
+                polls.set(polls.get() + 1);
+                variant == 4 && polls.get() == terminal
+            },
+        );
+        if variant == 3 {
+            let mut target = Storage::new(case.expected.clone());
+            target.bytes.get_mut()[200] ^= 1;
+            let saved = target.bytes.get_ref().clone();
+            assert_eq!(
+                result
+                    .unwrap()
+                    .recover(&mut target, &mut budget(), &|| false),
+                Err(JournalError::TargetMismatch)
+            );
+            assert_eq!(target.writes, 0);
+            assert_eq!(target.bytes.get_ref(), &saved);
+        } else {
+            let error = recovery_inspection(result.err().unwrap());
+            if variant < 3 {
+                assert!(
+                    matches!(error, InspectError::Limit(error) if error.resource == POOLS[variant])
+                );
+            } else {
+                assert_eq!(error, InspectError::Cancelled);
+            }
+        }
+        assert_eq!(journal.writes, 0);
+    }
+}

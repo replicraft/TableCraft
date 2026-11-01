@@ -24,7 +24,7 @@ mod presentation;
         "Create constructs a fresh unencrypted ACE 2016 database with ordinary Int32 columns. ",
         "Write preview-* commands create explicit experimental ACE copies, never qualified saves. ",
         "Inspect reports metadata or explicit checks without executing content. ",
-        "Query journal-update/recover-update explicitly edit or recover offline Jet 4 files with retained journals. GUI hosts are not implemented."
+        "Query journal-update/recover-update explicitly edit or recover offline Jet 4 and qualified ACE 16 files with retained journals. GUI hosts are not implemented."
     )
 )]
 struct Cli {

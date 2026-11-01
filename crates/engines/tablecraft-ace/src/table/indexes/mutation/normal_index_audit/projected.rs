@@ -111,13 +111,18 @@ where
                     .mask_start
                     .checked_add(field.number() / MASK_BITS)
                     .ok_or(EditError::Preservation)?;
-                if end > layout.mask_start
-                    || record
-                        .data
-                        .get(mask)
-                        .is_none_or(|byte| byte & (1 << (field.number() % MASK_BITS)) == 0)
-                {
-                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                if end > layout.mask_start {
+                    return Err(EditError::Preservation);
+                }
+                let present = record.data.get(mask).ok_or(EditError::Preservation)?
+                    & (1 << (field.number() % MASK_BITS))
+                    != 0;
+                if !present {
+                    // NULL is an actual indexed cell. Its inactive payload is
+                    // never decoded, and no callback may transition it.
+                    before.push(None);
+                    after.push(None);
+                    continue;
                 }
                 reader.work(size_of::<i32>())?;
                 let value = i32::from_le_bytes(
@@ -128,8 +133,8 @@ where
                         .try_into()
                         .map_err(|_| EditError::Preservation)?,
                 );
-                before.push(value);
-                after.push(final_value(ordinal, position, value, reader.budget)?);
+                before.push(Some(value));
+                after.push(Some(final_value(ordinal, position, value, reader.budget)?));
             }
             population.push(Row {
                 reference: reference(number, slot),
@@ -157,7 +162,7 @@ where
                 image,
                 checked,
                 index: native,
-                population: &population,
+                population: wire::Population::Nullable(&population),
                 columns: wire::Columns::Keys(&positions),
                 tree,
             },

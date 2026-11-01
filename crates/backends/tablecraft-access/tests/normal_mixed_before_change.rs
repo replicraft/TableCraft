@@ -149,3 +149,6 @@ mod indexed;
 
 #[path = "normal_mixed_before_change/nullable_index.rs"]
 mod nullable_index;
+
+#[path = "normal_mixed_before_change/nullable_keys.rs"]
+mod nullable_keys;

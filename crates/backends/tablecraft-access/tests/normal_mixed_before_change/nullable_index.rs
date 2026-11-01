@@ -2,11 +2,10 @@
 use super::{SCOPE, Transport, budget, locked};
 use std::fs;
 use tablecraft_access::editing::{
-    journal,
+    NativeEditError, journal,
     offline::{Cause, Failure, OfflineWriteSession, Phase, SessionState},
     sql,
 };
-use tablecraft_ace::{EditError, RecoverableEditError, WriteBlocker};
 use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
@@ -103,26 +102,22 @@ fn nullable_unchanged_index_keeps_four_typed_and_sql_unindexed_score_saves() {
     assert_eq!(saved, 4);
 }
 
-fn indexed_target_refusal(failure: &Failure) -> bool {
-    // Transparent wrappers can skip EditError in the std::error::Error chain.
-    // Inspect the retained typed adapter/query variants instead.
+fn nonpresent_target_refusal(failure: &Failure) -> bool {
+    // Keep the root's typed retained-cause check: transparent wrappers may skip
+    // intermediate errors in std::error::Error::source.
     let error = match failure.cause() {
         Cause::Editing(error) => error,
         Cause::Planning(sql::RecoverableError::Plan(UpdateError::Backend(error))) => error,
         _ => return false,
     };
-    matches!(
-        error,
-        journal::Error::Plan(RecoverableEditError::Edit(EditError::Unsupported(
-            WriteBlocker::IndexedColumn
-        )))
-    )
+    matches!(error, journal::Error::Native(NativeEditError::Unsupported))
 }
 
 #[test]
-fn nullable_classification_does_not_grant_indexed_id_updates_or_create_a_bundle() {
+fn logical_null_id_never_becomes_an_int32_expected_value_or_creates_a_bundle() {
     for header in [5, 6] {
         let case = model::source(header);
+        assert_eq!(case.rows[2][0], Value::Null);
         for transport in [Transport::Typed, Transport::Sql] {
             let root = tempfile::tempdir().unwrap();
             let database = root.path().join("target.accdb");
@@ -135,7 +130,7 @@ fn nullable_classification_does_not_grant_indexed_id_updates_or_create_a_bundle(
                         .edit_table("Items", &mut budget(), &|| false)
                         .unwrap();
                     assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
-                    let handle = editor.snapshot().row_handle(0).unwrap();
+                    let handle = editor.snapshot().row_handle(2).unwrap();
                     editor.plan_updates(
                         "Id",
                         &[CellUpdate::new(handle, Value::Int32(7))],
@@ -145,7 +140,7 @@ fn nullable_classification_does_not_grant_indexed_id_updates_or_create_a_bundle(
                 }
                 Transport::Sql => {
                     let query = parse_query(
-                        "UPDATE Items SET Id=7 WHERE Score=1000",
+                        "UPDATE Items SET Id=7 WHERE Score=3000",
                         ParseLimits::default(),
                     )
                     .unwrap();
@@ -154,11 +149,11 @@ fn nullable_classification_does_not_grant_indexed_id_updates_or_create_a_bundle(
             };
             let failure = result
                 .err()
-                .expect("legacy unindexed route cannot mutate an indexed nullable field");
+                .expect("logical NULL has no original Int32 expected carrier");
             assert_eq!(failure.phase(), Phase::Planning);
             assert_eq!(failure.state(), SessionState::Ready);
             assert!(
-                indexed_target_refusal(&failure),
+                nonpresent_target_refusal(&failure),
                 "{transport:?}: {failure:?}"
             );
             assert_eq!(failure.current_outcome(), None);

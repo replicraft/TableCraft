@@ -12,7 +12,9 @@ interior nodes and atomic unique swaps. Fitting retains original page topology
 and leaf entry counts. Normal Int32 updates now also preserve admitted mixed scalar/rich siblings and
 readonly AutoNumber operands through real projected snapshots and independent
 whole-image proof. Complete ordinary scalar tables can maintain checked non-NULL
-I32 indexes; rich and nullable-key preservation retains the unindexed route. Broader target carriers, allocation/
+I32 indexes, including untouched NULL components beside present targets. Rich
+siblings retain the unindexed route, as do nullable indexes without potential
+indexed targets. Broader target carriers, allocation/
 splits, relationships, macro coverage and native Access qualification remain next.
 
 [Native-owned event selection](access/schema/NATIVE_MACRO_COVERAGE.md#native-owned-event-selection)
