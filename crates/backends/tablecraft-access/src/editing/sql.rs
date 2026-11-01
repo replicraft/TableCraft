@@ -1,4 +1,8 @@
 //! Shared normal UPDATE planning; file ownership and publication stay with hosts.
+#[cfg(feature = "journal")]
+mod deleting;
+#[cfg(feature = "journal")]
+pub use deleting::{RecoverableDeleteError, local_delete_table, plan_recoverable_delete};
 
 #[cfg(feature = "journal")]
 use super::journal::{self, NativeJournalEditor};

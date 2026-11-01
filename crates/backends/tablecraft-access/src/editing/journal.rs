@@ -1,4 +1,5 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
+mod deleting;
 mod fitted;
 mod fixed;
 
