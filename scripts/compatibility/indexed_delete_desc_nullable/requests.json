@@ -1,0 +1,166 @@
+{
+  "state": "ORIGINAL_INPUTS_AND_LITERAL_LAWS_FROZEN_BEFORE_AFTER_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h5-desc-null-original.accdb",
+      "before_report": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/receipts/h5-inventory.stdout",
+      "bytes": 389120,
+      "sha256": "f8f4b039d9a692a0e1f9b0ef9ee38201f60508d654705c125275a7a169ae414b",
+      "definition": 89,
+      "data": 93,
+      "map_page": 90,
+      "roots": [
+        91,
+        92
+      ]
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h6-desc-null-original.accdb",
+      "before_report": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/receipts/h6-inventory.stdout",
+      "bytes": 458752,
+      "sha256": "c6d5f83770a25c8b6d0f34bdaab729d4d181f37fc738c47f5db9339d895fddae",
+      "definition": 106,
+      "data": 110,
+      "map_page": 107,
+      "roots": [
+        108,
+        109
+      ]
+    }
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      null
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "recipes": [
+    {
+      "id": "null-first",
+      "selected": [
+        0
+      ],
+      "request_orders": [
+        [
+          0
+        ]
+      ],
+      "remaining": [
+        1,
+        2
+      ],
+      "rows": 2,
+      "primary_active_bytes": 18,
+      "guard_active_bytes": 18,
+      "primary_free": 3598,
+      "guard_free": 3598
+    },
+    {
+      "id": "present-middle",
+      "selected": [
+        1
+      ],
+      "request_orders": [
+        [
+          1
+        ]
+      ],
+      "remaining": [
+        0,
+        2
+      ],
+      "rows": 2,
+      "primary_active_bytes": 18,
+      "guard_active_bytes": 14,
+      "primary_free": 3598,
+      "guard_free": 3602
+    },
+    {
+      "id": "exterior",
+      "selected": [
+        0,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "remaining": [
+        1
+      ],
+      "rows": 1,
+      "primary_active_bytes": 9,
+      "guard_active_bytes": 9,
+      "primary_free": 3607,
+      "guard_free": 3607
+    },
+    {
+      "id": "all",
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "remaining": [],
+      "rows": 0,
+      "primary_active_bytes": 0,
+      "guard_active_bytes": 0,
+      "primary_free": 3616,
+      "guard_free": 3616
+    }
+  ],
+  "original_records": [
+    "030001000000ffffffff0000000003",
+    "030002000000000000000100000007",
+    "030003000000010000000200000007"
+  ],
+  "original_guard_order": [
+    2,
+    1,
+    0
+  ],
+  "original_guard_ends": [
+    9,
+    18,
+    23
+  ],
+  "original_primary_order": [
+    0,
+    1,
+    2
+  ],
+  "original_primary_ends": [
+    9,
+    18,
+    27
+  ],
+  "laws": "Only TDlivecount16/rootwordC000 and both leaf free/complete bitmap/survivor active prefix. Preserve prefix0, every vacated byte, DATA masks/inactive payloads/history3/maps/EOF. Optional DESC NULL FF+ROW, present80+complemented biasedBEI32+ROW.",
+  "after_constructor_calls": 0,
+  "producer_calls": 0
+}

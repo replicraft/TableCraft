@@ -164,3 +164,6 @@ mod indexed_delete;
 mod indexed_insert;
 
 mod indexed_association_originals;
+
+mod indexed_delete_desc_nullable;
+mod indexed_insert_association;

@@ -1,0 +1,121 @@
+{
+  "date": "2026-11-01",
+  "scope": "Additional source-bound root-leaf mutation acceptance; no wider native profile admitted",
+  "baseline_engine_commits": [
+    "2ed5b6ce",
+    "565e7562"
+  ],
+  "source_before_producer": {
+    "passed": true,
+    "desc_nullable_delete": {
+      "native_views": 16,
+      "sdk_reports": 80,
+      "native_log": {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/desc-null-source-first.log",
+        "bytes": 445,
+        "sha256": "c5e97a91abee9fe6758693bba0dc636a86c374df0b6ea5d6adf9409991dabf9e"
+      }
+    },
+    "cross_page_insert": {
+      "native_views": 4,
+      "sdk_reports": 24,
+      "native_log": {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/association-source-first.log",
+        "bytes": 427,
+        "sha256": "59e4b7f0f4fa997760cefae09173cabcef614ceb770ae6c54067acb47aeb2766"
+      }
+    },
+    "healthy_node_originals": {
+      "native_functions": 2,
+      "sdk_reports": 12,
+      "normal_insert_delete": "Precisely refused for empty and nonempty requests; no NODE mutation claimed",
+      "logs": [
+        {
+          "path": ".cache/ace16-normal-indexed-writes-next-20261101/node-original-gate-second.log",
+          "bytes": 530,
+          "sha256": "26b888cb1bd70b710eeedbefd8088d1442132a1c1d312a3053d8641be17b0533"
+        },
+        {
+          "path": ".cache/ace16-normal-indexed-writes-next-20261101/node-refusal-first.log",
+          "bytes": 415,
+          "sha256": "bedf63d3c6838a9df50c310791cebaf18cf54d6388fd45740af83bb12bc6e8eb"
+        }
+      ]
+    }
+  },
+  "desc_nullable_delete": {
+    "passed": true,
+    "native_functions": 3,
+    "complete_image_commits": 10,
+    "empty_plans": 2,
+    "stale_inactive_null_witness_plans": 2,
+    "recovery_contexts": 40,
+    "committed_mixed_target_refusals": 8,
+    "protected_after_forgery_refusals": 44,
+    "original_null_witness_recovery_refusals": 2,
+    "log": {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/desc-null-producer-first.log",
+      "bytes": 940,
+      "sha256": "cf1d526d24a8b1a165329a6fe1bca594dde1ad78405053a79c32dc7052c08dc1"
+    }
+  },
+  "cross_page_insert": {
+    "passed": true,
+    "native_functions": 3,
+    "atomic_batch_commits": 2,
+    "request_order": [
+      "long to later DATA page slot1",
+      "short to earlier DATA page slot8"
+    ],
+    "physical_table_order": "1..8,11,9,10",
+    "secondary_tie_order": [
+      11,
+      10
+    ],
+    "authored_mixed_targets": 6,
+    "pending_partial_rollback_contexts": 4,
+    "committed_mixed_target_refusals": 2,
+    "swapped_row_self_consistent_journal_refusals": 6,
+    "retained_typed_sql_successive_saves": 8,
+    "host_qualification": "Single-row host API; final joint images match literal batch source. Intermediate first-row state checks its actual rows and receipt, without claiming an independent first-row golden.",
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/association-producer-first.log",
+        "bytes": 684,
+        "sha256": "b87eb5bc2eacf2c21d1516b135668a1121fd45a2974d2d9c5daab6ecdfbbccc1"
+      },
+      {
+        "path": ".cache/ace16-normal-indexed-writes-next-20261101/association-host-first.log",
+        "bytes": 634,
+        "sha256": "2c75fbbdc0ffdf0b26d32498286292f192b87ae381c30118d5537822d5aebb66"
+      }
+    ],
+    "pre_runtime_review_correction": "Frozen private draft expected committed mixed-target repair. Root corrected to TargetMismatch and zero writes before producer runtime, preserving draft. Pending/partial rollback remains repeatable with write-free confirmation."
+  },
+  "preserved_compile_only_failure": {
+    "log": {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/node-original-gate-first.log",
+      "bytes": 1212,
+      "sha256": "f480a6415a1e0f20a7e4c24fc500c4ea64784de6ef37b6b0acaac572ae3423bc"
+    },
+    "cause": "Unrelated DESC/NULL source gate imported undeclared serde_json; no native gate or producer ran in failed compilation.",
+    "resolution": "Literal eight-case pins and pinned complete manifest replace JSON parsing; no dependency, image or law change."
+  },
+  "strict_followon": {
+    "passed": true,
+    "log": {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/strict-followon-final.log",
+      "bytes": 526,
+      "sha256": "b80f9d252629990281e5e5f74de323b343b27c2f94d59fc224bef09a9b72a03b"
+    }
+  },
+  "native_access_save_reopen": "UNRUN",
+  "windows_locking_durability": "UNRUN",
+  "remaining": [
+    "NODE tree mutation",
+    "wider indexed key families",
+    "nullable/descending normal INSERT",
+    "generation/defaults",
+    "relationships/programs/allocation"
+  ]
+}
