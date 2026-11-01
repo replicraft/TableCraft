@@ -707,3 +707,6 @@ mod genuine_mixed_owned;
 
 #[path = "normal/genuine_owned_growth_multirow.rs"]
 mod genuine_owned_growth_multirow;
+
+#[path = "normal/genuine_eof_allocation.rs"]
+mod genuine_eof_allocation;

@@ -25,6 +25,8 @@ pub enum NativeUpdateProfile {
     Ace16OrdinaryFitted,
     /// Explicit ordinary growth within existing owned DATA capacity; no EOF growth.
     Ace16OrdinaryOwnedGrowth,
+    /// Original ordinary requests requiring one supported EOF DATA page.
+    Ace16OrdinaryEofAllocation,
 }
 
 /// Immutable original user intent and BEFORE binding for one normal route.
@@ -45,6 +47,8 @@ pub enum NativeUpdateBody {
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
+    /// Original fixed/variable groups for TCNI0007 one-page EOF allocation.
+    EofAllocation(NativeFittedEditIntent),
 }
 
 impl NativeUpdateIntent {
@@ -103,6 +107,13 @@ impl NativeUpdateIntent {
         }
     }
 
+    pub(super) fn from_eof_allocation(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16OrdinaryEofAllocation,
+            body: NativeUpdateBody::EofAllocation(original),
+        }
+    }
+
     /// Closed original body, requiring consumers to inspect its actual family.
     pub fn body(&self) -> &NativeUpdateBody {
         &self.body
@@ -114,7 +125,8 @@ impl NativeUpdateIntent {
             NativeUpdateBody::Int32(original) => Some(original),
             NativeUpdateBody::Fixed(_)
             | NativeUpdateBody::Fitted(_)
-            | NativeUpdateBody::OwnedGrowth(_) => None,
+            | NativeUpdateBody::OwnedGrowth(_)
+            | NativeUpdateBody::EofAllocation(_) => None,
         }
     }
 
@@ -124,7 +136,8 @@ impl NativeUpdateIntent {
             NativeUpdateBody::Fixed(original) => Some(original),
             NativeUpdateBody::Int32(_)
             | NativeUpdateBody::Fitted(_)
-            | NativeUpdateBody::OwnedGrowth(_) => None,
+            | NativeUpdateBody::OwnedGrowth(_)
+            | NativeUpdateBody::EofAllocation(_) => None,
         }
     }
 
@@ -134,7 +147,8 @@ impl NativeUpdateIntent {
             NativeUpdateBody::Fitted(original) => Some(original),
             NativeUpdateBody::Int32(_)
             | NativeUpdateBody::Fixed(_)
-            | NativeUpdateBody::OwnedGrowth(_) => None,
+            | NativeUpdateBody::OwnedGrowth(_)
+            | NativeUpdateBody::EofAllocation(_) => None,
         }
     }
 
@@ -144,7 +158,19 @@ impl NativeUpdateIntent {
             NativeUpdateBody::OwnedGrowth(original) => Some(original),
             NativeUpdateBody::Int32(_)
             | NativeUpdateBody::Fixed(_)
-            | NativeUpdateBody::Fitted(_) => None,
+            | NativeUpdateBody::Fitted(_)
+            | NativeUpdateBody::EofAllocation(_) => None,
+        }
+    }
+
+    /// Original allocation data; no chosen page, map claim or permission is stored.
+    pub fn eof_allocation(&self) -> Option<&NativeFittedEditIntent> {
+        match &self.body {
+            NativeUpdateBody::EofAllocation(original) => Some(original),
+            NativeUpdateBody::Int32(_)
+            | NativeUpdateBody::Fixed(_)
+            | NativeUpdateBody::Fitted(_)
+            | NativeUpdateBody::OwnedGrowth(_) => None,
         }
     }
 
@@ -153,9 +179,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.table(),
             NativeUpdateBody::Fixed(original) => original.table(),
-            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
-                original.table()
-            }
+            NativeUpdateBody::Fitted(original)
+            | NativeUpdateBody::OwnedGrowth(original)
+            | NativeUpdateBody::EofAllocation(original) => original.table(),
         }
     }
 
@@ -164,9 +190,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.before_length(),
             NativeUpdateBody::Fixed(original) => original.before_length(),
-            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
-                original.before_length()
-            }
+            NativeUpdateBody::Fitted(original)
+            | NativeUpdateBody::OwnedGrowth(original)
+            | NativeUpdateBody::EofAllocation(original) => original.before_length(),
         }
     }
 
@@ -180,7 +206,9 @@ impl NativeUpdateIntent {
         match &self.body {
             NativeUpdateBody::Int32(original) => original.verify_before(before, budget, cancelled),
             NativeUpdateBody::Fixed(original) => original.verify_before(before, budget, cancelled),
-            NativeUpdateBody::Fitted(original) | NativeUpdateBody::OwnedGrowth(original) => {
+            NativeUpdateBody::Fitted(original)
+            | NativeUpdateBody::OwnedGrowth(original)
+            | NativeUpdateBody::EofAllocation(original) => {
                 original.verify_before(before, budget, cancelled)
             }
         }
@@ -212,6 +240,12 @@ impl NativeUpdateIntent {
                 NativeUpdateBody::OwnedGrowth(original),
                 NativeUpdateProfile::Ace16OrdinaryOwnedGrowth,
             ) => original.encode_profile(super::fitted::WireProfile::OwnedOnly, budget, cancelled),
+            (
+                NativeUpdateBody::EofAllocation(original),
+                NativeUpdateProfile::Ace16OrdinaryEofAllocation,
+            ) => {
+                original.encode_profile(super::fitted::WireProfile::AllocateEof, budget, cancelled)
+            }
             _ => Err(NativeIntentError::UnsupportedProfile),
         }
     }
@@ -222,6 +256,18 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::EOF_ALLOCATION_MAGIC.len())
+            == Some(super::fitted::EOF_ALLOCATION_MAGIC.as_slice())
+        {
+            return Ok(Self::from_eof_allocation(
+                NativeFittedEditIntent::decode_profile(
+                    bytes,
+                    super::fitted::WireProfile::AllocateEof,
+                    budget,
+                    cancelled,
+                )?,
+            ));
+        }
         if bytes.get(..super::fitted::OWNED_GROWTH_MAGIC.len())
             == Some(super::fitted::OWNED_GROWTH_MAGIC.as_slice())
         {

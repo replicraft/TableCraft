@@ -2,9 +2,12 @@ use super::{
     NativeFittedEditIntent, NativeFittedIntentGroup, NativeFixedEditIntent, NativeFixedIntentGroup,
     NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
 };
-use crate::{EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit};
+use crate::{
+    EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit, PreparedNativeUpdate,
+    format::page::PAGE_BYTES, limits::MAX_IMAGE_BYTES, table::OrdinaryVariablePlanKind,
+};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_io::journal::{DurableStorage, JournalError};
+use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
 use thiserror::Error;
 
 /// Existing native qualification or additional intent-binding failure.
@@ -151,10 +154,44 @@ impl NativeImage {
 }
 
 impl NativeImage {
-    /// Choose fitting or supported owned-page growth from complete original
-    /// requests and qualified native encoding sizes, before staging either plan.
-    /// No failed fitting plan selects another route. Explicit fitted-only APIs
-    /// and their TCNI0005 reconstruction contract remain unchanged.
+    /// Bind original requests and qualify exactly one appended EOF DATA page.
+    /// No final page, map claim or allocation permission enters the intent.
+    pub fn plan_recoverable_ordinary_eof_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.ordinary_eof.plan_recoverable").entered();
+        let original =
+            NativeFittedEditIntent::new(table, groups, self.as_bytes(), budget, cancelled)?;
+        let borrowed = original.borrowed_groups(budget, cancelled)?;
+        let plan = self.plan_ordinary_eof_updates(table, &borrowed, budget, cancelled)?;
+        validate_eof_length(&plan)?;
+        drop(borrowed);
+        let intent = NativeUpdateIntent::from_eof_allocation(original);
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
+}
+
+fn validate_eof_length(plan: &NativeEditPlan) -> Result<(), EditError> {
+    let expected = plan
+        .before_bytes()
+        .len()
+        .checked_add(PAGE_BYTES)
+        .ok_or(EditError::Preservation)?;
+    if plan.after_bytes().len() != expected || expected as u64 > MAX_IMAGE_BYTES {
+        return Err(EditError::Preservation);
+    }
+    Ok(())
+}
+
+impl NativeImage {
+    /// Choose fitting, owned-page growth or one supported EOF allocation from
+    /// complete original requests and native capacity facts before any staging.
+    /// A capacity decision never catches a failed physical planner. Explicit
+    /// fitted-only and owned-only operations retain their existing contracts.
     pub fn plan_recoverable_ordinary_variable_updates(
         self,
         table: &str,
@@ -166,21 +203,30 @@ impl NativeImage {
         let original =
             NativeFittedEditIntent::new(table, groups, self.as_bytes(), budget, cancelled)?;
         let borrowed = original.borrowed_groups(budget, cancelled)?;
-        let growing =
-            self.ordinary_variable_requires_growth(table, &borrowed, budget, cancelled)?;
-        let plan = if growing {
-            self.plan_ordinary_owned_growth_updates(table, &borrowed, budget, cancelled)?
-        } else {
-            self.plan_ordinary_fitted_updates(table, &borrowed, budget, cancelled)?
+        let kind = self.ordinary_variable_plan_kind(table, &borrowed, budget, cancelled)?;
+        let plan = match &kind {
+            OrdinaryVariablePlanKind::Fitted => {
+                self.plan_ordinary_fitted_updates(table, &borrowed, budget, cancelled)?
+            }
+            OrdinaryVariablePlanKind::Owned => {
+                self.plan_ordinary_owned_growth_updates(table, &borrowed, budget, cancelled)?
+            }
+            OrdinaryVariablePlanKind::AllocateEof => {
+                self.plan_ordinary_eof_updates(table, &borrowed, budget, cancelled)?
+            }
         };
-        if plan.after_bytes().len() != plan.before_bytes().len() {
+        if matches!(&kind, OrdinaryVariablePlanKind::AllocateEof) {
+            validate_eof_length(&plan)?;
+        } else if plan.after_bytes().len() != plan.before_bytes().len() {
             return Err(EditError::Preservation.into());
         }
         drop(borrowed);
-        let intent = if growing {
-            NativeUpdateIntent::from_owned_growth(original)
-        } else {
-            NativeUpdateIntent::from_fitted(original)
+        let intent = match kind {
+            OrdinaryVariablePlanKind::Fitted => NativeUpdateIntent::from_fitted(original),
+            OrdinaryVariablePlanKind::Owned => NativeUpdateIntent::from_owned_growth(original),
+            OrdinaryVariablePlanKind::AllocateEof => {
+                NativeUpdateIntent::from_eof_allocation(original)
+            }
         };
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
@@ -210,6 +256,7 @@ impl RecoverableNativeEditPlan {
     /// Delegate existing expected-image journal preparation. Hosts still own
     /// correct distinct pairing, durable namespace setup and retained resources.
     /// Dropping/interruption retains the journal; every commit error needs recovery.
+    /// EOF allocation requires prepare_update and is rejected here before effects.
     pub fn prepare<'a, D: DurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -217,6 +264,30 @@ impl RecoverableNativeEditPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeEdit<'a, D, J>, JournalError> {
+        if self.intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+            return Err(JournalError::ImageSize);
+        }
         self.plan.prepare(target, journal, budget, cancelled)
+    }
+
+    /// Prepare the record-selected journal with an explicit resizable target.
+    /// EOF allocation uses V2; existing profiles use the unchanged V1 path.
+    /// Both branches retain the same target/journal resources and host duties.
+    pub fn prepare_update<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
+        if self.intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+            self.plan
+                .prepare_resizable(target, journal, budget, cancelled)
+                .map(PreparedNativeUpdate::Resizable)
+        } else {
+            self.plan
+                .prepare(target, journal, budget, cancelled)
+                .map(PreparedNativeUpdate::Fixed)
+        }
     }
 }

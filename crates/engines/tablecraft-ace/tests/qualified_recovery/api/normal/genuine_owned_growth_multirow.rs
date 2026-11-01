@@ -128,7 +128,7 @@ fn two_original_rows_reserve_distinct_pages_in_native_order_and_commit_exact_ima
 
 #[test]
 #[ignore = "requires all six source-qualified multirow owned images"]
-fn healthy_no_capacity_source_refuses_second_reservation_without_external_effects() {
+fn explicit_owned_growth_refuses_second_reservation_without_external_effects() {
     for case in cases() {
         let source = image(&case.no_capacity);
         source
@@ -143,12 +143,15 @@ fn healthy_no_capacity_source_refuses_second_reservation_without_external_effect
         for reverse in [false, true] {
             let target = Storage::new(case.no_capacity.clone());
             let journal = Storage::new(Vec::new());
-            let result = image(target.bytes.get_ref()).plan_recoverable_ordinary_variable_updates(
-                "Sentinel",
-                groups(reverse),
-                &mut budget(),
-                &|| false,
-            );
+            // The explicit owned-only contract still cannot allocate. Auto's
+            // new EOF route has a separate compound source corpus.
+            let result = image(target.bytes.get_ref())
+                .plan_recoverable_ordinary_owned_growth_updates(
+                    "Sentinel",
+                    groups(reverse),
+                    &mut budget(),
+                    &|| false,
+                );
             assert!(matches!(
                 result,
                 Err(RecoverableEditError::Edit(EditError::Unsupported(

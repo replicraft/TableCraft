@@ -1,6 +1,6 @@
 //! Normal complete-row growth within the table's existing owned DATA pages.
-mod proof;
-mod selection;
+pub(in crate::table::mutation) mod proof;
+pub(in crate::table::mutation) mod selection;
 mod stage;
 
 #[cfg(test)]

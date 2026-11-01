@@ -40,7 +40,7 @@ pub(super) fn range(page: &[u8], slot: usize) -> Result<(u16, usize, usize), Ins
 }
 
 /// Check every physical slot before choosing a placement frontier.
-pub(super) fn frontier(
+pub(in crate::table::mutation) fn frontier(
     page: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

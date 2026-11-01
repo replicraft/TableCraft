@@ -7,7 +7,7 @@ pub(in crate::table) use catalog::capture_catalog;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use catalog::capture_catalog_for_initialization;
 pub(in crate::table) use claims::Census;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) use claims::RecordIdentity;
 
 #[derive(Clone, Copy, PartialEq, Eq)]

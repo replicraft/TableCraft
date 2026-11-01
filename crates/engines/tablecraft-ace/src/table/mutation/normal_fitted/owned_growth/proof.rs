@@ -1,5 +1,5 @@
 //! Fresh original requests independently reconstruct records and complete pages.
-mod placement;
+pub(in crate::table::mutation) mod placement;
 use super::super::{
     binding::{self, Target},
     original_values,
@@ -107,7 +107,7 @@ pub(super) fn prove(
     Ok(())
 }
 
-fn reconstruct(
+pub(in crate::table::mutation) fn reconstruct(
     image: &NativeImage,
     source: &Source,
     bound: &binding::Bound,

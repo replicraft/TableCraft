@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-independent-native-engineering",
+  "scope": "Normal native17 one-page represented EOF DATA allocation, original TCNI7 and native-qualified V2 preparation/recovery",
+  "source_records": [
+    "ace16-eof-allocation-sources-2026-11-01.json",
+    "ace16-compound-eof-sources-2026-11-01.json"
+  ],
+  "source_evidence_commits": [
+    "f961f6d1",
+    "cf596f20"
+  ],
+  "io_foundation_commit": "f803d688",
+  "source_reads_before_corresponding_producers": true,
+  "counts": {
+    "unique_source_images_in_this_checkpoint": 8,
+    "native_source_read_views": 8,
+    "independent_sdk_reads": 8,
+    "direct_physical_functions": 4,
+    "codec_functions": 3,
+    "native_acceptance_functions": 4,
+    "native_commits": 6,
+    "pending_recovery_contexts": 16,
+    "committed_target_mismatches_refused": 4,
+    "self_consistent_native_forgeries_refused": 8,
+    "ace_unit_passed": 1108,
+    "ace_unit_ignored": 78,
+    "recovery_regression_passed": 83,
+    "recovery_regression_ignored": 28,
+    "joint_worktree_adapter_unit_passed": 79,
+    "joint_worktree_cli_unit_passed": 94,
+    "old_owned_joint_multirow_regression_functions": 8,
+    "old_alternate_regression_functions": 3,
+    "old_mixed_regression_functions": 1
+  },
+  "operation": "Every original group is bound and serialized before pure capacity selection. Existing fitting5 and owned6 succeed unchanged; only actual use of a single admitted EOF page selects7. No failed physical planner is caught/retried.",
+  "physical_scope": "Three represented and exclusive original EOF cells (GLOBAL free1, owned0, candidate0), exactly4096 appended bytes, stable roots, readonly payload/property preservation, no map storage/window or index allocation. AFTER remains<=64MiB.",
+  "recovery": "CheckedV2 same journal loan and immutable loaded images; original BEFORE binding plus fresh native full-image reconstruction before effects. Fixed-onlyprepare rejects7. Pending restores original bytes/length, committed requires exact AFTER, settled confirmation has no write/resize capability.",
+  "feature_checks": [
+    "strict combined all-targets/all-features engine/adapter/CLI",
+    "strict journal-only all-targets",
+    "strict preview-only all-targets",
+    "minimal native reader and adapter",
+    "format and dependency/documentation guards"
+  ],
+  "first_failures": [
+    {
+      "kind": "compile",
+      "detail": "New owned reservation step charge needed Resource import; Future had unused Resource import. Corrected imports only."
+    },
+    {
+      "kind": "old negative codec fixture",
+      "detail": "Version7 became recognized. Unknown8 still refuses UnsupportedVersion; added explicit7/profile6 mismatch UnsupportedProfile before allocation. All valid old5/6 and source goldens unchanged."
+    },
+    {
+      "kind": "compound source gate compile",
+      "detail": "Removed undeclared serde_json use in favor of literal filenames and source hash pins. No new dependency."
+    }
+  ],
+  "old_refusal_boundary": "Healthy no-capacity owned-only regression now calls explicit6. Automatic7 allocation on those same BEFORE bytes is qualified separately by compound sources and exact commits.",
+  "logs": [
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-planner-draft/compile-first.log",
+      "bytes": 1007,
+      "sha256": "737928727994bf51c01b9068566739cdf57b66c5894545d26a630d2ee1036bbe"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-direct-tests/runtime-first.log",
+      "bytes": 1119,
+      "sha256": "0de910338ffb61bac614ced4f2edc580ccdeda98ec85d08c9a28afc3489bd212"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-intent-draft/runtime-first.log",
+      "bytes": 661,
+      "sha256": "88af9b3a55ee9203559b9cc58338f3629773aa1056afb14d35fffcacd9c740a1"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/native-recovery-first.log",
+      "bytes": 799,
+      "sha256": "adb098a6808e15c5e69614ccdcb9719fbb2a5b2877f1fe38139aba0b004810bb"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-eof-source/native-acceptance/runtime-first.log",
+      "bytes": 654,
+      "sha256": "0bd0da03643c2dfac22922412cd9faefa6cb492263977cb23bea17e8a69f906c"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/units-first.log",
+      "bytes": 171613,
+      "sha256": "da05932e814f70fda59ac2f280c157511a509a9e2efbf47cb6624ab1d8654f90"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/units-second.log",
+      "bytes": 181217,
+      "sha256": "773417daf3b141900c841c695b9cefd22d54deed7de2001605b460179269284b"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/recovery-regression-first.log",
+      "bytes": 15149,
+      "sha256": "9e9fedfe51cc9bbad033fdd324230206d0ae0eeeb5be9215955ef39b4718b40c"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/strict-first.log",
+      "bytes": 755,
+      "sha256": "58ba025979f8fd5d45b74f49c0aa878625d3693e4fef03bab5843e7edfde1518"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/journal-only-first.log",
+      "bytes": 417,
+      "sha256": "c434592717ea7114f57062de08f3b4b2728131cee5d84feb02a3f569d295415b"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/preview-only-first.log",
+      "bytes": 184,
+      "sha256": "1cb04c5595ef957ff2f700bff98ff5f646824e7169cb5cb195cfde84d5398a34"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/minimal-first.log",
+      "bytes": 301,
+      "sha256": "4fce82c5414c7b6b0510c4378fc1b1c42aa719c0e9b486f880aa3e58cc5d564e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/owned-regression-first.log",
+      "bytes": 1341,
+      "sha256": "4239b0579995d9f7a1aaf28b962997a4ad381f61eece124f41f03932c6d4741e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/alternate-regression-first.log",
+      "bytes": 682,
+      "sha256": "5431b4f39f7de149dafa6896eea3f88c94f655fe13b56ac21ca1c9da634596c9"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/mixed-regression-first.log",
+      "bytes": 405,
+      "sha256": "21538bd1f022ce02f64443379194e0bace117489ccc370ce875057cec2b4867d"
+    }
+  ],
+  "limitations": [
+    "Native Access save/reopen and mixed-client/Windows qualification unrun.",
+    "Normal INSERT/DELETE, wider allocation/maps and broader index mutation remain work.",
+    "Access/CLI retained adoption is recorded separately from the native engine commit."
+  ]
+}
