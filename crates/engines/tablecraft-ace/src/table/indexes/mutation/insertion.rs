@@ -352,5 +352,5 @@ pub(in crate::table) fn prepare_existing(
     let prepared: Prepared<SingleProfile> = preparation::prepare::<_, ENTRY_BUFFER>(
         image, checked, index, profile, requests, budget, cancelled,
     )?;
-    prepared.finish_existing::<ENTRY_BUFFER>(budget, cancelled)
+    prepared.finish_existing::<ENTRY_BUFFER>(image, checked, budget, cancelled)
 }

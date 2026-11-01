@@ -187,7 +187,7 @@ pub(super) fn reconstruct(
     )
 }
 
-fn original_value(
+pub(super) fn original_value(
     raw: &[u8],
     schema: &TableSchema,
     field: &NativeColumn,
@@ -236,7 +236,7 @@ fn original_value(
     Ok(Some(value))
 }
 
-fn sort(
+pub(super) fn sort(
     values: &mut [Key],
     descending: bool,
     budget: &mut ResourceBudget,
@@ -261,7 +261,7 @@ fn sort(
     Ok(())
 }
 
-fn distinct(
+pub(super) fn distinct(
     values: &[Key],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -278,7 +278,7 @@ fn distinct(
     Ok(distinct)
 }
 
-fn wire((value, reference): Key, descending: bool) -> ([u8; MAX_WIRE_BYTES], usize) {
+pub(super) fn wire((value, reference): Key, descending: bool) -> ([u8; MAX_WIRE_BYTES], usize) {
     let mut raw = [0; MAX_WIRE_BYTES];
     let key_end = if let Some(value) = value {
         raw[0] = if descending {

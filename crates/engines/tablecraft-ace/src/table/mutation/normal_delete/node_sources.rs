@@ -1,8 +1,5 @@
-//! Original-only NODE qualification and separate current normal-action refusals.
-use crate::{
-    EditError, IndexCheckStatus, NativeImage, RecoverableEditError, RowInsert, WriteBlocker,
-    read_table, read_table_index,
-};
+//! Original NODE qualification and byte-exact empty-operation admission.
+use crate::{IndexCheckStatus, NativeImage, read_table, read_table_index};
 use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -166,30 +163,15 @@ fn sdk_node_originals_have_complete_native_source_rows_aliases_and_owned_tree_me
 
 #[test]
 #[ignore = "requires the separate native NODE source qualification gate to pass first"]
-fn healthy_node_insert_profiles_refuse_including_empty_requests() {
+fn healthy_node_empty_insert_preserves_every_original_byte_after_qualification() {
     for case in cases() {
         qualify(&case);
-        for count in [0, 1] {
-            let inserts = if count == 0 {
-                vec![]
-            } else {
-                vec![RowInsert::new(vec![
-                    Value::Int32(801),
-                    Value::Int32(400),
-                    Value::Int32(2),
-                ])]
-            };
-            assert!(matches!(
-                image(&case).plan_recoverable_ordinary_row_inserts(
-                    "Items",
-                    inserts,
-                    &mut budget(),
-                    &|| false,
-                ),
-                Err(RecoverableEditError::Edit(EditError::Unsupported(
-                    WriteBlocker::IndexedColumn
-                )))
-            ));
-        }
+        let plan = image(&case)
+            .plan_recoverable_ordinary_row_inserts("Items", vec![], &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(plan.before_bytes(), case.before);
+        assert_eq!(plan.after_bytes(), case.before);
+        assert_eq!(plan.inserted_rows(), 0);
+        assert!(plan.intent().rows().is_empty());
     }
 }

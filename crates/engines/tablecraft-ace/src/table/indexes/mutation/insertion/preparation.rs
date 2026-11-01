@@ -1,5 +1,7 @@
 //! Fixed typed membership survives until physical continuation has completed.
 use super::{ExpectedKey, IndexInsertion, InsertRow, binding::InsertProfile, membership};
+#[cfg(feature = "journal")]
+use crate::table::indexes::mutation::{profile::WriteProfile, tree::population::Population};
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::{
     indexes::mutation::split::{self, insert::Operation},
@@ -226,13 +228,67 @@ impl<P: InsertProfile> Prepared<P> {
 
     #[cfg(feature = "journal")]
     pub(super) fn finish_existing<const N: usize>(
-        self,
+        mut self,
+        image: &NativeImage,
+        checked: &TableCheck,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<IndexInsertion, EditError> {
+    ) -> Result<IndexInsertion, EditError>
+    where
+        P: WriteProfile,
+    {
         check(budget, cancelled)?;
         if self.requires_continuation {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            let index = super::qualify(checked, self.result.physical, budget, cancelled)?;
+            if index.root_page() != self.result.root || index.usage_map() != self.result.usage {
+                return Err(EditError::Preservation);
+            }
+            let original = image
+                .as_bytes()
+                .get(self.result.root as usize * PAGE_BYTES..)
+                .and_then(|bytes| bytes.get(..PAGE_BYTES))
+                .ok_or(InspectError::Truncated)?;
+            if IndexHeader::read(original)?.kind != NODE {
+                // A full root leaf still needs an unqualified split. This
+                // operation can only redistribute within an existing tree.
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            let mut input = image.reader();
+            let mut reader = Reader {
+                source: &mut input,
+                header: image.catalog().header(),
+                budget,
+                cancelled,
+                reads: 0,
+            };
+            let mut original_keys = Vec::new();
+            let tree = Tree::read::<_, N>(
+                image,
+                &mut reader,
+                checked.schema().definition_page(),
+                self.result.root,
+                &self.profile,
+                0,
+                &mut original_keys,
+            )?;
+            if tree.is_leaf() || original_keys.len() != self.result.original_count {
+                return Err(EditError::Preservation);
+            }
+            let mut population = Population {
+                keys: &self.keys,
+                leaves: tree.leaf_count(reader.budget, cancelled)?,
+            };
+            let maximum = tree.rewrite_population::<_, N>(
+                image,
+                &mut population,
+                &self.profile,
+                &mut self.result.patches,
+                reader.budget,
+                cancelled,
+            )?;
+            if !population.keys.is_empty() || population.leaves != 0 || maximum.is_none() {
+                return Err(EditError::Preservation);
+            }
         }
         self.finish_keys::<N>(budget, cancelled)
     }

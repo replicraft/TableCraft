@@ -1,5 +1,6 @@
 //! Fresh original/request replay; no insertion patches or prepared keys enter.
 mod optional;
+mod tree;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{
@@ -30,7 +31,7 @@ struct RequestedRows<'a> {
     references: &'a [u32],
 }
 
-pub(super) fn prove(
+pub(in crate::table::mutation::normal_insert) fn prove(
     plan: &NativeEditPlan,
     scope: CatalogScope,
     table: &str,
@@ -81,7 +82,21 @@ pub(super) fn prove(
             requests,
             references: &references,
         };
-        if optional_wire {
+        let root_at = index.root_page() as usize * PAGE_BYTES;
+        if image.as_bytes().get(root_at) == Some(&super::NODE_KIND) {
+            tree::reconstruct(
+                tree::Operation {
+                    image: &image,
+                    source: &source,
+                    checked: facts.checked(),
+                    index,
+                    rows,
+                },
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        } else if optional_wire {
             optional::reconstruct(
                 &image,
                 &source,

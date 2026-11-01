@@ -1,5 +1,5 @@
 //! Original-derived fitting manual INSERT, grouped by physical index owner.
-mod proof;
+pub(super) mod proof;
 
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowInsert, WriteBlocker,
@@ -29,6 +29,7 @@ use tablecraft_core::{
 };
 
 const LEAF_KIND: u8 = 4;
+const NODE_KIND: u8 = 3;
 const PAGE_VERSION: u8 = 1;
 const OWNER_AT: usize = 4;
 const PREVIOUS_AT: usize = 12;
@@ -106,7 +107,7 @@ pub(super) fn plan(
         let selected = insertion::qualify(facts.checked(), physical, budget, cancelled)?;
         if index.root() != selected.root_page()
             || index.usage() != selected.usage_map()
-            || index.source_pages() != [selected.root_page()]
+            || index.source_pages().first() != Some(&selected.root_page())
         {
             return Err(EditError::Preservation);
         }
@@ -139,7 +140,8 @@ pub(super) fn plan(
     }
 
     // All rows, indexes, final uniqueness and historical arithmetic are checked
-    // before the first candidate bytes exist. There is no split continuation.
+    // before the first candidate bytes exist. Existing NODE partitions may
+    // be repacked; splits and allocation remain unavailable.
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     placement.apply(&image, &records, &mut after, budget, cancelled)?;
     for index in &indexes {
@@ -217,23 +219,23 @@ fn qualify<'image>(
         }
         let tree = ownership.require(image, schema, index, budget, cancelled)?;
         live.require_no_long_value_data_overlap(tree.pages(), budget, cancelled)?;
-        if tree.pages() != [index.root_page()] {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        }
         let base = index.root_page() as usize * PAGE_BYTES;
         let raw = image
             .as_bytes()
             .get(base..base + PAGE_BYTES)
             .ok_or(EditError::Preservation)?;
-        if raw[0] != LEAF_KIND
+        let leaf = raw[0] == LEAF_KIND;
+        if (!leaf && raw[0] != NODE_KIND)
             || raw[1] != PAGE_VERSION
             || raw[STAMP_START..STAMP_END] != [0; STAMP_END - STAMP_START]
-            || raw[LEVEL_AT] != 0
+            || (leaf && raw[LEVEL_AT] != 0)
             || u32_at(raw, OWNER_AT)? != schema.definition_page()
             || u32_at(raw, PREVIOUS_AT)? != 0
             || u32_at(raw, NEXT_AT)? != 0
-            || u16_at(raw, PREFIX_AT)? != 0
-            || u32_at(raw, TAIL_AT)? != 0
+            || (leaf
+                && (tree.pages() != [index.root_page()]
+                    || u16_at(raw, PREFIX_AT)? != 0
+                    || u32_at(raw, TAIL_AT)? != 0))
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }

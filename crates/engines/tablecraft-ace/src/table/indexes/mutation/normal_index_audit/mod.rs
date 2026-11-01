@@ -1,6 +1,7 @@
 //! Original-only fitting INDEX tree reconstruction for normal BeforeChange.
 mod atoms;
 mod deletion;
+mod insertion;
 mod ownership;
 mod population;
 mod projected;
