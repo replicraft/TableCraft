@@ -1,0 +1,113 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent manual Int32 primary-key creation and normal INSERT sources",
+  "before_views": 12,
+  "healthy_before_views": 8,
+  "native_constraint_negative_before_views": 4,
+  "literal_insert_after_views": 8,
+  "native_source_test_functions": 1,
+  "native_export_test_functions": 1,
+  "sdk_healthy_read_only_calls": 16,
+  "sdk_native_negatives_explicitly_excluded": 4,
+  "compiler_calls": 1,
+  "sdk_seconds": 2.7250698750140145,
+  "source_manifest": {
+    "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/source-export-first/manifest.tsv",
+    "bytes": 1926,
+    "sha256": "d2b870d8efc3558b9cc55b43b573fc4e044edf968cbd73733b5df5f6624582be"
+  },
+  "sdk_result": {
+    "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/observations-first/result.json",
+    "bytes": 414,
+    "sha256": "97c06b2ea8baeb9152acb6408da878df5d1232be01f781904ed02bfaf610d406"
+  },
+  "saved_receipt_controls": {
+    "receipt_rejections": 26,
+    "summary_rejections": 10,
+    "plan_rejections": 6,
+    "sdk_calls": 0,
+    "compiler_calls": 0,
+    "native_writer_calls": 0,
+    "originals_unchanged": true,
+    "schema_fixtures_are_not_observations": true,
+    "receipt": {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/saved-controls-first/result.json",
+      "bytes": 2003,
+      "sha256": "c5f96035d95e316c0f89850e1eb41a4c5b9d12d9e4b9cc0beb38edf1e70578fe"
+    }
+  },
+  "receipts": [
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/source-receipts-first/export.json",
+      "bytes": 464,
+      "sha256": "abe9e50e6ea7789f9354d980c0071d95b07c25fe92b7188ab27a40900a762ba6",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/source-receipts-first/native-source.json",
+      "bytes": 488,
+      "sha256": "b4fdda56525064e319b35d5e046c791cde5352455017cf850f5c6e2c00c536b8",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/source-receipts-first/terminal.json",
+      "bytes": 337,
+      "sha256": "ad16415c6eac64073a915d82e429e2eb7a935d9ed42784639d392129903c2cb6"
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/class-pins.json",
+      "bytes": 297,
+      "sha256": "9ac1dc141cba7e388df4e4713d1f7641ca3f3030e036da252b6ad0df54a5aa86"
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/compile.json",
+      "bytes": 709,
+      "sha256": "a272ad87a146d5b434d1e786baa8e566026843a32a4e30eede93db9e9dd79da8",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/prepare-inputs.json",
+      "bytes": 370,
+      "sha256": "8dca4169e1dbb78725f3a40e19483cde4f949fcdbb27f4c5c81a659d9f84775c",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/prepare.json",
+      "bytes": 705,
+      "sha256": "caae7dccd62841e34bf758fbb7d0a612704b1b737acad9aeada1a417c2a93d58",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/read.json",
+      "bytes": 706,
+      "sha256": "bb3a2fde1d55fdf35d2e1b1aaf51b297a6f987bc3fa61d0906cd8bf7468fd9c6",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/saved-controls.json",
+      "bytes": 537,
+      "sha256": "a88591f92ed0987029ff996fa50514ca584c32df0b5758a0838acb9e522728f7",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/saved.json",
+      "bytes": 710,
+      "sha256": "0b5744375b1778408ba213e3e2c6222fe12875bb1ee14f5ce83db5d2b626667a",
+      "returncode": 0
+    },
+    {
+      "path": ".cache/ace16-native-creation-primary-next-20261101/qualification-saved-first/sdk-receipts-first/terminal.json",
+      "bytes": 700,
+      "sha256": "55406d6308a103de5613b519f1bd75c8d2d709e5869c6cbca914364045692e5f"
+    }
+  ],
+  "matching_creator_calls": 0,
+  "matching_insert_planner_calls": 0,
+  "source_expectations_retuned_to_producers": false,
+  "scope_limits": [
+    "Ordinary Int32 fields, explicit ascending required unique primary root9/map3:22; no AutoNumber mode inference.",
+    "One-table creation source coverage; no multiple-primary Cartesian claim.",
+    "The 65-row INSERT AFTER does not expand the 64-row constructive creator limit."
+  ],
+  "native_access_save_reopen": "unrun"
+}

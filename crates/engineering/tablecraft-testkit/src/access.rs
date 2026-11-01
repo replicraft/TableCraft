@@ -275,3 +275,6 @@ pub mod canonical_creation_defaults;
 
 /// Independent complete-image ordinary Binary index insertion witnesses.
 pub mod genuine_binary_indexed;
+
+/// Independent manual primary-key creation and insertion sources.
+pub mod canonical_creation_primary;

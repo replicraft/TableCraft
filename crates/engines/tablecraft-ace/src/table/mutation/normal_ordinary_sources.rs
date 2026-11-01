@@ -196,3 +196,4 @@ mod creation_defaults;
 mod binary_indexed;
 
 mod binary_delete;
+mod creation_primary;
