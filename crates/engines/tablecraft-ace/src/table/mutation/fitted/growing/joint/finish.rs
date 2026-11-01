@@ -1,6 +1,6 @@
 //! Independently establish both phases before returning any candidate.
-use super::super::super::request::FittedColumnUpdates;
 use super::{Staged, certified};
+use crate::FittedColumnUpdates;
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, NativeImage, WriteBlocker, check_table,
     check_table_constraints,

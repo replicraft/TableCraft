@@ -17,6 +17,7 @@ use tablecraft_core::{
 };
 
 const MARKER: usize = 2;
+const ESCAPE_PREFIX_BYTES: usize = 3;
 const WORD: usize = size_of::<u16>();
 
 pub(in crate::table::mutation) struct Requested<'a> {
@@ -27,6 +28,7 @@ pub(in crate::table::mutation) struct Requested<'a> {
 #[derive(Clone, Copy)]
 pub(in crate::table::mutation) enum Encoding {
     Fitted,
+    #[cfg(feature = "ace16-write-preview")]
     Growing,
 }
 
@@ -85,6 +87,7 @@ pub(in crate::table::mutation) fn reconstruct(
         let (preferred, minimum) = measure(field, request.value, budget, cancelled)?;
         let length = match encoding {
             Encoding::Fitted => preferred,
+            #[cfg(feature = "ace16-write-preview")]
             Encoding::Growing => minimum,
         };
         planned = planned.checked_add(length).ok_or(EditError::Preservation)?;
@@ -141,6 +144,7 @@ pub(in crate::table::mutation) fn reconstruct(
             Encoding::Fitted => {
                 payload::encode_declared(item.field, item.value, item.length, budget, cancelled)?
             }
+            #[cfg(feature = "ace16-write-preview")]
             Encoding::Growing => payload::encode(item.field, item.value, budget, cancelled)?,
         };
         if item.bytes.len() != item.length {
@@ -281,7 +285,16 @@ fn measure(
                 units = units.checked_add(1).ok_or(EditError::Preservation)?;
                 compact &= unit != 0 && unit <= u16::from(u8::MAX);
             }
-            let raw = units.checked_mul(WORD).ok_or(EditError::Preservation)?;
+            let raw = units
+                .checked_mul(WORD)
+                .and_then(|bytes| {
+                    bytes.checked_add(if text.starts_with('\u{feff}') {
+                        ESCAPE_PREFIX_BYTES
+                    } else {
+                        0
+                    })
+                })
+                .ok_or(EditError::Preservation)?;
             if compact {
                 let preferred = units.checked_add(MARKER).ok_or(EditError::Preservation)?;
                 Ok((preferred, preferred.min(raw)))

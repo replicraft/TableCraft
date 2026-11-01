@@ -67,7 +67,8 @@ provide ACE 16 UPDATE, INSERT and DELETE previews on fresh files. General native
 saves remain in development; a separate [journaled BeforeChange profile](docs/access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
 supports restricted Int32 and [fixed-scalar updates](docs/access/writes/NORMAL_ACE_FIXED_SCALARS.md).
 The [ordinary-content route](docs/access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
-also supports fixed updates to a qualified initial data-only family.
+also supports fixed updates to qualified tables, with a separate
+[fitting Text/Binary route](docs/access/writes/NORMAL_ACE_FITTED.md).
 
 ## Documentation
 

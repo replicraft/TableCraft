@@ -12,12 +12,15 @@ use tablecraft_core::{
 
 const MARKER: [u8; 2] = [0xff, 0xfe];
 const UNIT_BYTES: usize = size_of::<u16>();
+const ESCAPED_PREFIX: [u8; 3] = [0xff, 0xfe, 0];
 
 enum Compression {
+    #[cfg(feature = "ace16-write-preview")]
     MinimumSize,
     DeclaredPreference(usize),
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn encode(
     field: &NativeColumn,
     value: &Value,
@@ -68,6 +71,7 @@ fn encode_with(
                 narrow &= unit != 0 && unit <= u16::from(u8::MAX);
             }
             let compression_fits = match policy {
+                #[cfg(feature = "ace16-write-preview")]
                 Compression::MinimumSize => count > MARKER.len(),
                 Compression::DeclaredPreference(capacity) => MARKER.len() + count <= capacity,
             };
@@ -78,6 +82,11 @@ fn encode_with(
                 MARKER.len() + count
             } else {
                 UNIT_BYTES * count
+                    + if value.starts_with('\u{feff}') {
+                        ESCAPED_PREFIX.len()
+                    } else {
+                        0
+                    }
             };
             (length, compressed)
         }
@@ -103,15 +112,22 @@ fn encode_with(
     match value {
         Value::Binary(value) => bytes.extend_from_slice(value),
         Value::Text(value) => {
+            let escaped = !compressed && value.starts_with('\u{feff}');
             if compressed {
                 bytes.extend_from_slice(&MARKER);
+            } else if escaped {
+                bytes.extend_from_slice(&ESCAPED_PREFIX);
             }
             for unit in value.encode_utf16() {
                 check(budget, cancelled)?;
                 if compressed {
                     bytes.push(unit as u8);
                 } else {
-                    bytes.extend_from_slice(&unit.to_le_bytes());
+                    let pair = unit.to_le_bytes();
+                    if escaped && pair[0] == 0 {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                    bytes.extend_from_slice(&pair);
                 }
             }
             if text::decode(&bytes, true, budget)? != *value {

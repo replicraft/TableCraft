@@ -1,7 +1,8 @@
 //! Prefrozen original images, joint updates and actual authority forgeries.
+use crate::FittedColumnUpdates;
 mod boundary;
 
-use super::super::{record_proof, request::FittedColumnUpdates, stage as record_stage};
+use super::super::{record_proof, stage as record_stage};
 use super::{finish, stage};
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{

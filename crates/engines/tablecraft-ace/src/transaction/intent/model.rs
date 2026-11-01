@@ -163,7 +163,10 @@ pub(super) fn validate_name(
     Ok(())
 }
 
-fn copy_name(name: &str, budget: &mut ResourceBudget) -> Result<SchemaName, NativeIntentError> {
+pub(super) fn copy_name(
+    name: &str,
+    budget: &mut ResourceBudget,
+) -> Result<SchemaName, NativeIntentError> {
     budget
         .charge_allocation(name.len() as u64, 1)
         .map_err(InspectError::from)?;

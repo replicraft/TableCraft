@@ -1,4 +1,10 @@
 //! Exact source-local requests shared below engineering and normal packaging.
+mod fitted;
+mod slot;
+
+pub use fitted::FittedColumnUpdates;
+pub use slot::SlotScalarUpdate;
+
 use super::rows::RowAssignment;
 #[cfg(feature = "journal")]
 use crate::{EditError, header::check};

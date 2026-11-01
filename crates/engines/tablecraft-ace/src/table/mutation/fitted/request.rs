@@ -1,65 +1,11 @@
 //! Borrowed typed cells, resolved against one immutable original definition.
-use super::super::{EditError, FixedScalarUpdate, SlotScalarUpdate, WriteBlocker, field, rows};
-use crate::{InspectError, NativeColumn, NativeImage, TableSchema};
+use super::super::{EditError, WriteBlocker, field, rows};
+use crate::{FittedColumnUpdates, InspectError, NativeColumn, NativeImage, TableSchema};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
 use tablecraft_schema::ScalarType;
-
-/// One selected fitted-record column, with explicit original-value expectations.
-pub enum FittedColumnUpdates<'a> {
-    /// Existing fixed scalar payload/presence changes.
-    Fixed {
-        /// Exact native column name.
-        column: &'a str,
-        /// Complete original-row fixed replacements.
-        updates: &'a [FixedScalarUpdate],
-    },
-    /// One ordinary Short Text/Binary field using original record capacity.
-    Variable {
-        /// Exact native column name.
-        column: &'a str,
-        /// Complete original-row variable replacements.
-        updates: &'a [SlotScalarUpdate],
-    },
-}
-
-pub(super) struct Cell<'a> {
-    pub row: usize,
-    pub expected: &'a Value,
-    pub value: &'a Value,
-}
-
-impl FittedColumnUpdates<'_> {
-    pub(super) fn name(&self) -> &str {
-        match self {
-            Self::Fixed { column, .. } | Self::Variable { column, .. } => column,
-        }
-    }
-
-    pub(super) fn len(&self) -> usize {
-        match self {
-            Self::Fixed { updates, .. } => updates.len(),
-            Self::Variable { updates, .. } => updates.len(),
-        }
-    }
-
-    pub(super) fn cell(&self, position: usize) -> Option<Cell<'_>> {
-        match self {
-            Self::Fixed { updates, .. } => updates.get(position).map(|cell| Cell {
-                row: cell.row(),
-                expected: cell.expected(),
-                value: cell.value(),
-            }),
-            Self::Variable { updates, .. } => updates.get(position).map(|cell| Cell {
-                row: cell.row(),
-                expected: cell.expected(),
-                value: cell.value(),
-            }),
-        }
-    }
-}
 
 pub(super) struct Ordinal(pub usize);
 

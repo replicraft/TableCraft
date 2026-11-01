@@ -186,6 +186,11 @@ fn canonical_text_preserves_ties_markers_null_and_empty_without_coercion() {
             ("ABC", vec![65, 0, 66, 0, 67, 0], vec![255, 254, 65, 66, 67]),
             ("\0A", vec![0, 0, 65, 0], vec![0, 0, 65, 0]),
             ("\u{fffe}A", vec![254, 255, 65, 0], vec![254, 255, 65, 0]),
+            (
+                "\u{feff}A",
+                vec![255, 254, 0, 255, 254, 65, 0],
+                vec![255, 254, 0, 255, 254, 65, 0],
+            ),
         ] {
             let payload = if compressed { narrow } else { raw };
             let mut expected = vec![2, 0, 1, 0, 0, 0];
@@ -203,7 +208,7 @@ fn canonical_text_preserves_ties_markers_null_and_empty_without_coercion() {
         assert_eq!(absent, vec![2, 0, 1, 0, 0, 0, 6, 0, 6, 0, 1, 0, 1]);
         assert_eq!(
             profile.build(
-                &[Value::Int32(1), Value::Text("\u{feff}A".into())],
+                &[Value::Int32(1), Value::Text("\u{feff}\u{100}".into())],
                 &mut budget(),
                 &|| false
             ),

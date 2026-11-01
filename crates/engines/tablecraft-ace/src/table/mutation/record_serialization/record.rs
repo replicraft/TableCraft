@@ -1,17 +1,19 @@
 //! Original single-field builders and separate joint variable composition.
 pub(in crate::table::mutation) mod multiple;
-use super::super::{EditError, WriteBlocker, record_serialization::storage};
+use super::super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use super::storage;
 use crate::{
     InspectError, TableSchema,
     format::row::{MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
     header::check,
     table::record_layout,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
+#[cfg(feature = "ace16-write-preview")]
+use tablecraft_core::values::Value;
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) fn build(
     schema: &TableSchema,
     column: usize,

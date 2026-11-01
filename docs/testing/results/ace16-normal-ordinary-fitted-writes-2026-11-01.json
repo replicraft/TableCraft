@@ -1,0 +1,303 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal ordinary record-local Short Text/Binary and optional fixed-family fitting",
+  "source_record": "docs/testing/results/ace16-ordinary-fitted-sources-2026-10-31.json",
+  "profile": "TCNI0005/profile5 original requests only, no authority or final records",
+  "old_wire_profiles_unchanged": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "limits": {
+    "carrier_bytes": 8192,
+    "intent_bytes": 67108864,
+    "record_growth": false,
+    "allocation_or_EOF_change": false,
+    "indexed_targets": false,
+    "Memo_OLE_targets": false,
+    "required_program_route": false
+  },
+  "native_recovery": {
+    "status": "PASS",
+    "tests_passed": 4,
+    "runtime_seconds": 0.86,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/native-fitted-first.log",
+      "bytes": 824,
+      "sha256": "e81e4cf5212c828317e445c9fd52e028c7f54bf32460f68917ee7eb8585146b4"
+    },
+    "literal_commits": 30,
+    "representative_pending_partial_committed_contexts": 36,
+    "truly_mixed_partial_target_contexts": 12,
+    "self_consistent_forgeries": 12,
+    "repeated_recovery_and_write_free_confirmation": true
+  },
+  "planner_and_proof": {
+    "status": "PASS",
+    "tests_passed": 6,
+    "runtime_seconds": 0.18,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/planner-tests-counter.log",
+      "bytes": 1206,
+      "sha256": "ead0fac92cfc9d56259897d8bec78c02d1220e5be7f31ddd3606e98fc929d479"
+    },
+    "literal_plans": 30,
+    "fresh_independent_proof": true,
+    "capacity_and_stale_refusals": true,
+    "causal_full_image_controls": true,
+    "exact_Bytes_Rows_Steps_and_cancellation": true,
+    "earlier_log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/planner-tests-first.log",
+      "bytes": 1063,
+      "sha256": "c5f961f8577eb5accf2f844562e52dc4027de2f213eea892b7bd406602e728e2"
+    },
+    "tests_ignored": 0,
+    "test_binaries": 1,
+    "readonly_counter_without_fixed_target_capability": true
+  },
+  "intent": {
+    "status": "PASS",
+    "tests_passed": 4,
+    "runtime_seconds": 0.0,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/intent-tests-first.log",
+      "bytes": 871,
+      "sha256": "26c0f930bed9b33393a0c36b0fbeef916cf2ede70fba154dcb1b40c59c5044a3"
+    },
+    "literal_record_bytes": 587,
+    "framing_padding_tag_UTF8_excess_and_duplicate_controls": true,
+    "family_and_request_order_retained": true
+  },
+  "recovery_regression": {
+    "status": "PASS",
+    "tests_passed": 83,
+    "tests_ignored": 5,
+    "test_binaries": 1,
+    "runtime_seconds": 12.3,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/recovery-final-second.log",
+      "bytes": 10557,
+      "sha256": "c0570d4399258ae1cf38d948a724706cd6aa883c416c84b194b2302b0886391c"
+    }
+  },
+  "working_owners": [
+    "crates/engines/tablecraft-ace/src/table/mutation/normal_fitted",
+    "crates/engines/tablecraft-ace/src/transaction/intent/fitted",
+    "crates/backends/tablecraft-access/src/editing/journal/fitted.rs",
+    "crates/engines/tablecraft-ace/tests/qualified_recovery/api/normal/fitted.rs",
+    "crates/backends/tablecraft-access/tests/normal_ordinary_fitted.rs",
+    "apps/tablecraft-cli/tests/normal_ordinary_fitted_sql.rs"
+  ],
+  "evidence_boundary": [
+    "All expected images are original-only authored literals, never producer output",
+    "Current source evidence covers authored schemas; genuine native-created fitted schema qualification remains future",
+    "Independent SDK and native Microsoft Access save/reopen not run",
+    "SQL subset does not invent Binary literals, DATE signed-zero coercion or stale-expected controls"
+  ],
+  "ACE_units": {
+    "status": "PASS",
+    "tests_passed": 1093,
+    "tests_ignored": 37,
+    "test_binaries": 1,
+    "runtime_seconds": 187.18,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/ace-unit-final-second.log",
+      "bytes": 150523,
+      "sha256": "2da4d3b6dd0925f26afc67cf46bd824a47e7f27734e3e29db6906aac6f99f841"
+    }
+  },
+  "Access_host": {
+    "status": "PASS",
+    "tests_passed": 2,
+    "tests_ignored": 0,
+    "test_binaries": 1,
+    "runtime_seconds": 3.08,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/access-fitted-batch.log",
+      "bytes": 707,
+      "sha256": "4d951477ffa538bc6a480eea13cdc3fd234943283b4a3d9486fbf0426a397cb3"
+    },
+    "typed_saves": 30,
+    "SQL_saves": 18,
+    "capacity_refusals": 4,
+    "stale_handle_controls": 2,
+    "source_EXPECTED_images_unchanged": true
+  },
+  "CLI": {
+    "status": "PASS",
+    "tests_passed": 2,
+    "tests_ignored": 0,
+    "test_binaries": 1,
+    "runtime_seconds": 1.97,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/cli-fitted-second.log",
+      "bytes": 605,
+      "sha256": "f41b35296c3790c8edca441684f41463def943deebd77f948046a26accc200e2"
+    },
+    "SQL_saves": 18,
+    "exact_TSV_readbacks": 18,
+    "capacity_refusals": 2,
+    "specific_exit_code_and_diagnostic": true
+  },
+  "host_regressions": {
+    "Access_units": {
+      "status": "PASS",
+      "tests_passed": 79,
+      "tests_ignored": 0,
+      "test_binaries": 1,
+      "runtime_seconds": 2.79,
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/access-unit-regression.log",
+        "bytes": 9690,
+        "sha256": "e4ec3147d005bcd4fd0cf4df2bbbdfb393111e99029a9c468cca56f1268f3bd2"
+      }
+    },
+    "CLI_units_and_journal_integrations": {
+      "status": "PASS",
+      "tests_passed": 117,
+      "tests_ignored": 0,
+      "test_binaries": 7,
+      "runtime_seconds": 9.59,
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/cli-regression.log",
+        "bytes": 14120,
+        "sha256": "aaa9c2f22714617c7724011e6461cf5d88479b1848b5bc9395e6b3049c40ba03"
+      }
+    }
+  },
+  "strict": {
+    "all_features": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/clippy-final-second.log",
+        "bytes": 457,
+        "sha256": "6d22870a9ce91d9aee03ef9417a734ad73df7c8333d338ee745bdf1755c45cc8"
+      }
+    },
+    "journal_only": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/clippy-journal-final.log",
+        "bytes": 361,
+        "sha256": "a1eb3aadb3feeb53e1e2ce968910fdecde6a04fb6bc2ab863df3cd1cca0a081e"
+      }
+    },
+    "preview_only": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/clippy-preview-final.log",
+        "bytes": 238,
+        "sha256": "0182c1718f56a62750d8ff97c860a11f829530e80ad392e4141ac98e7d7b63cc"
+      }
+    },
+    "CLI_current_all_targets": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/clippy-cli-precommit.log",
+        "bytes": 174,
+        "sha256": "40e8d9b7527b71e339e0f4337da516f04299ccf5bc1548ce141a247c8079805c"
+      }
+    },
+    "adapter_minimal": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/access-minimal-final.log",
+        "bytes": 355,
+        "sha256": "cca83105a868fb946d6b8ea5360185bc3fc1a9538a6904bafebf0892fc562cdc"
+      }
+    }
+  },
+  "retained_first_attempts": [
+    {
+      "phase": "full ACE unit batch",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/ace-unit-final-first.log",
+        "bytes": 151892,
+        "sha256": "9ad77bbbe094e0f331f6a261ae60c5b01827e6eb3a58727644feb4eadb1ef6b6"
+      },
+      "result": "1090 passed, 2 old leading-BOM refusal assertions failed, 37 ignored",
+      "resolution": "Added independently specified FF FE 00 escape goldens for now-supported values; retained explicit low-byte-zero escape refusals. No source outcome retuned."
+    },
+    {
+      "phase": "Access integration",
+      "logs": [
+        {
+          "path": ".cache/ace16-normal-fitted-next-20261031/access-fitted-first.log",
+          "bytes": 1486,
+          "sha256": "fcb0b69600790c74f85c3e34735279084ba72bd3e3c8689f6172d19cb49a08fa"
+        },
+        {
+          "path": ".cache/ace16-normal-fitted-next-20261031/access-fitted-context.log",
+          "bytes": 1295,
+          "sha256": "ec013ea899f85de62edf22ae4d177211e04b6dd1ff9300f94902ebfb86ded851"
+        }
+      ],
+      "result": "Single-target API rejected multi-target SQL",
+      "resolution": "The multi-target tests now invoke the existing explicit plan_batch_update API; database goldens unchanged"
+    },
+    {
+      "phase": "CLI readback",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/cli-fitted-first.log",
+        "bytes": 2103,
+        "sha256": "2c7a2b8d30a26a4a56fbe069c3106d4b6d46e91b3cb88bc1355d373faa9453a2"
+      },
+      "result": "Expected TSV omitted CSV escaping of display quotes",
+      "resolution": "Finite expected transport quotes follow CSV double-quote grammar; source rows and full images unchanged"
+    },
+    {
+      "phase": "strict all-features",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/clippy-final-first.log",
+        "bytes": 1252,
+        "sha256": "3645107a9794f485aa4002d7428c09fd9daeed51293e223fab72be6f7f8e05c8"
+      },
+      "result": "Redundant usize conversion in source gate",
+      "resolution": "Removed identity conversion"
+    },
+    {
+      "phase": "legacy intent maximum assertion",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/intent-regression-first.log",
+        "bytes": 3387,
+        "sha256": "a1a3fc7abc887a6da0b57f2e47a7ce5a1874cc26ae130b034bd067f1791b8669"
+      },
+      "result": "19 passed, one old dispatcher maximum assertion failed",
+      "resolution": "Dispatcher maximum now includes TCNI5; all TCNI1-4 literal encodings remain unchanged"
+    },
+    {
+      "phase": "CLI help assertions",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/cli-help-regression.log",
+        "bytes": 11316,
+        "sha256": "423d4c442faf80e5c060735c7444ce77362f0874bb2b2cf222cdc1dbcd4a4142"
+      },
+      "result": "93 passed; one old help assertion failed",
+      "resolution": "Replaced obsolete assertions that indexed NULL transitions and all indirect maps were refused; current help describes fitting Text/Binary and qualified ordinary Int32 support"
+    }
+  ],
+  "scope_notes": [
+    "Shared Short Text serializers now emit a qualified leading-BOM escape for normal and existing preview consumers; unsupported marked-wide low-byte-zero values still refuse",
+    "Complete proof-row copies pay their own byte-work charge; exact resource and cancellation tests include that pass",
+    "Missing AllowZeroLength physical-property behavior is a documented independent-reference assumption; no native Access conformance claim"
+  ],
+  "CLI_help_regression": {
+    "status": "PASS",
+    "tests_passed": 94,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/cli-help-regression-second.log",
+      "bytes": 10616,
+      "sha256": "80db8c6306c277eda749f112e76f134f847f9a33a8a2f7651cc6870e691601c1"
+    }
+  },
+  "format": {
+    "status": "PASS",
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/format-precommit.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_fixture_unchanged_after_first_qualification": true
+}

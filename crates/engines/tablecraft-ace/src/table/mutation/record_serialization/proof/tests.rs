@@ -156,8 +156,18 @@ fn preferred_text_is_exact_not_any_semantically_equivalent_slot_encoding() {
             &Value::Text("\u{feff}A".into()),
             &mut budget(),
             &|| false
+        )
+        .unwrap(),
+        vec![0xff, 0xfe, 0, 0xff, 0xfe, 0x41, 0]
+    );
+    assert_eq!(
+        payload::encode(
+            &raw.columns[1],
+            &Value::Text("\u{feff}\u{100}".into()),
+            &mut budget(),
+            &|| false,
         ),
-        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+        Err(EditError::Unsupported(WriteBlocker::RowLayout)),
     );
 }
 

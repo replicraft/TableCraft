@@ -1,9 +1,7 @@
 //! Reacquire original-request authority before granting DATA or INDEX spans.
-use super::super::{
-    record_proof,
-    request::{self, FittedColumnUpdates},
-};
+use super::super::{record_proof, request};
 use super::stage::Prepared;
+use crate::FittedColumnUpdates;
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     Ace16WritePreview, EditError, NativeImage,

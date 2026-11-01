@@ -41,13 +41,10 @@ mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
-#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
-pub use mutation::FixedColumnUpdates;
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    FittedColumnUpdates, IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
-    SlotScalarUpdate,
+    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -64,6 +61,8 @@ pub use mutation::{
     FixedScalarUpdate,
 };
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;

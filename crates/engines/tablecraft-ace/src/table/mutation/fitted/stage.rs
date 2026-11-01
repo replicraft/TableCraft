@@ -1,5 +1,6 @@
 //! One original record becomes one complete fitted record and joint key cache.
-use super::request::{self, FittedColumnUpdates};
+use super::request;
+use crate::FittedColumnUpdates;
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::table::mutation::record_serialization::variables;
 use crate::{

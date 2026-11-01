@@ -43,7 +43,9 @@ read-only, including supplied empty groups.
 
 Ordinary stored scalars, Short Text/Binary and Decimal can be preserved. Writable
 targets are the existing Boolean, Int32, Int64, Currency and legacy DATE fixed
-carriers; numeric NULL transitions retain inactive bytes. Indexed targets use
+carriers; numeric NULL transitions retain inactive bytes. Ordinary fitting
+[Short Text/Binary batches](NORMAL_ACE_FITTED.md) use their own TCNI0005 route.
+Indexed targets use
 the manual Int32 profile above. No record resizing, page allocation, index split,
 map growth or EOF change is added. A key rewrite that cannot fit refuses before
 journal setup. These limits describe this route,

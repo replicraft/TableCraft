@@ -1,4 +1,8 @@
 use super::super::rows::RowAssignment;
+#[cfg(feature = "journal")]
+use crate::{EditError, header::check};
+#[cfg(feature = "journal")]
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
 
 /// One exact expected-value assignment to an existing variable-field slot.
@@ -23,6 +27,19 @@ impl SlotScalarUpdate {
     /// Snapshot-local ordinal in the complete captured table's live row order.
     pub fn row(&self) -> usize {
         self.row
+    }
+
+    /// Validate snapshot-local intent metadata without granting native authority.
+    #[cfg(feature = "journal")]
+    pub(crate) fn validate_intent_requests(
+        updates: &[Self],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        super::super::rows::unique(updates, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(())
     }
 
     /// Exact representational value required in the original captured row.

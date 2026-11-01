@@ -17,6 +17,24 @@ use tablecraft_core::{
 
 const COMPRESSED_MARKER: [u8; 2] = [0xff, 0xfe];
 const UTF16_BYTES: usize = size_of::<u16>();
+const WIDE_SWITCH: u8 = 0;
+const ESCAPE_PREFIX: [u8; 3] = [0xff, 0xfe, WIDE_SWITCH];
+
+pub(in crate::table::mutation) fn raw_text_length(
+    text: &str,
+    units: usize,
+) -> Result<usize, EditError> {
+    units
+        .checked_mul(UTF16_BYTES)
+        .and_then(|bytes| {
+            bytes.checked_add(if text.starts_with('\u{feff}') {
+                ESCAPE_PREFIX.len()
+            } else {
+                0
+            })
+        })
+        .ok_or_else(|| InspectError::StructureLimit.into())
+}
 
 pub(in crate::table::mutation) fn validate(
     column: &NativeColumn,
@@ -81,7 +99,7 @@ pub(in crate::table::mutation) fn encode_for_span(
         Value::Binary(bytes) if bytes.len() == span => false,
         Value::Text(text) => {
             let count = text.encode_utf16().count();
-            let raw_fits = count * UTF16_BYTES == span;
+            let raw_fits = raw_text_length(text, count)? == span;
             // The marker alone is an observed empty native representation.
             let compressed_fits = COMPRESSED_MARKER.len() + count == span
                 && text
@@ -116,8 +134,17 @@ pub(in crate::table::mutation) fn encode_for_span(
                     bytes.push(unit as u8);
                 }
             } else {
+                let escaped = value.starts_with('\u{feff}');
+                if escaped {
+                    bytes.extend_from_slice(&ESCAPE_PREFIX);
+                }
                 for unit in value.encode_utf16() {
                     check(budget, cancelled)?;
+                    // In the marked wide mode, a zero low byte is a mode
+                    // switch. Refuse values outside this qualified escape form.
+                    if escaped && unit.to_le_bytes()[0] == WIDE_SWITCH {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
                     bytes.extend_from_slice(&unit.to_le_bytes());
                 }
             }
@@ -175,9 +202,7 @@ pub(in crate::table::mutation) fn encode_declared(
         .len()
         .checked_add(units)
         .ok_or(InspectError::StructureLimit)?;
-    let raw_length = units
-        .checked_mul(UTF16_BYTES)
-        .ok_or(InspectError::StructureLimit)?;
+    let raw_length = raw_text_length(value_text, units)?;
     let length = if field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
         && narrow
         && declared_length <= capacity
@@ -215,7 +240,7 @@ pub(in crate::table::mutation) fn encode_preferred(
             if compact {
                 COMPRESSED_MARKER.len() + count
             } else {
-                UTF16_BYTES * count
+                raw_text_length(value, count)?
             }
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
@@ -228,6 +253,7 @@ pub(in crate::table::mutation) fn encode_preferred(
         && field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
         && let Value::Text(value) = value
         && value.encode_utf16().count() == COMPRESSED_MARKER.len()
+        && !value.starts_with('\u{feff}')
     {
         budget
             .charge_allocation(length as u64, 1)

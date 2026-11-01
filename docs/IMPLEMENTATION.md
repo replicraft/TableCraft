@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal ordinary fitting Text/Binary saves
+
+Qualified ordinary ACE 16 tables now support unindexed Short Text/Binary batches
+with optional Boolean/Int32/Int64/Currency/DATE siblings in their existing record
+capacity. Shared capacity, NULL/empty distinctions, raw noops and readonly
+counters remain explicit. TCNI0005 retains original typed groups; recovery
+requalifies the complete source and independently reconstructs both images.
+
+Thirty literal native commits, thirty typed and eighteen SQL session saves,
+eighteen CLI saves/readbacks, causal forgery controls and exact resource tests
+pass. All 1,093 ACE unit tests (37 ignored), 83 recovery tests (five ignored),
+79 adapter units and 117 CLI regression tests pass. Strict all-feature,
+journal-only and preview-only checks pass. The [write record](testing/results/ace16-normal-ordinary-fitted-writes-2026-11-01.json)
+retains first failures and corrections. Evidence covers authored schemas;
+genuine fitted-schema and native Microsoft Access qualification remain unrun.
+Nonempty target property bags, richer retained indexes, record growth and general
+INSERT/DELETE remain active work. See the [contract](access/writes/NORMAL_ACE_FITTED.md).
+
 ## Shared native record serialization
 
 Existing fitted, placement, INSERT, long-value and preserved-text consumers now

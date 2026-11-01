@@ -1,9 +1,9 @@
 //! Fresh original authority precedes the shared physical placement consumer.
 use super::super::{
     record_proof::{self, verified::Verified},
-    request::{self, FittedColumnUpdates},
-    stage,
+    request, stage,
 };
+use crate::FittedColumnUpdates;
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, InspectError, NativeImage,

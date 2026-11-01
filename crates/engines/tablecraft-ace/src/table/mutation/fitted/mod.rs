@@ -4,11 +4,9 @@ mod record_proof;
 mod request;
 mod stage;
 
-pub use request::FittedColumnUpdates;
-
 use super::{Ace16WritePreview, EditError, gates, preview};
 use crate::{
-    InspectError, NativeImage, inspect_table_schema,
+    FittedColumnUpdates, InspectError, NativeImage, inspect_table_schema,
     table::{indexes::index_row_patches, mutation::fixed::preserved},
 };
 use tablecraft_core::limits::ResourceBudget;
