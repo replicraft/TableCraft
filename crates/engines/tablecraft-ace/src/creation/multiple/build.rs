@@ -108,9 +108,12 @@ pub(in crate::creation) fn build(
                 name: request.catalog_name,
                 system: false,
             };
-            record::catalog(
-                catalog.append(record::catalog_length(object.name), budget, cancelled)?,
+            let properties = request.properties.as_ref();
+            let length = record::catalog_length_with_properties(object.name, properties)?;
+            record::catalog_with_properties(
+                catalog.append(length, budget, cancelled)?,
                 &object,
+                properties,
                 budget,
                 cancelled,
             )?;

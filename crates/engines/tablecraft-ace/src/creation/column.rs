@@ -7,11 +7,14 @@ const SHORT_LIMIT: usize = 255;
 /// One borrowed native declaration for fresh database creation.
 ///
 /// Names and complete row/declaration compatibility are validated per operation.
-/// No Required property, native flags, offsets or mutation authority are supplied.
+/// Only explicit supported Boolean field policies are optional; native flags,
+/// offsets and mutation authority are not supplied.
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
     name: &'a str,
     declaration: Declaration,
+    required: Option<bool>,
+    allow_zero_length: Option<bool>,
 }
 
 #[derive(Clone, Copy)]
@@ -52,6 +55,8 @@ impl<'a> CreateColumn<'a> {
         Self {
             name,
             declaration: Declaration::Fixed(scalar),
+            required: None,
+            allow_zero_length: None,
         }
     }
 
@@ -63,7 +68,12 @@ impl<'a> CreateColumn<'a> {
             units: max_utf16_units,
         };
         declaration.validate()?;
-        Ok(Self { name, declaration })
+        Ok(Self {
+            name,
+            declaration,
+            required: None,
+            allow_zero_length: None,
+        })
     }
 
     /// Declare a positive Short Binary limit of 1..=255 bytes, independently of
@@ -71,7 +81,12 @@ impl<'a> CreateColumn<'a> {
     pub fn short_binary(name: &'a str, max_bytes: usize) -> Result<Self, CreateDatabaseError> {
         let declaration = Declaration::ShortBinary { bytes: max_bytes };
         declaration.validate()?;
-        Ok(Self { name, declaration })
+        Ok(Self {
+            name,
+            declaration,
+            required: None,
+            allow_zero_length: None,
+        })
     }
 
     /// Reuse validated native Decimal precision and exact retained scale.
@@ -79,7 +94,35 @@ impl<'a> CreateColumn<'a> {
         Self {
             name,
             declaration: Declaration::Decimal(constraints),
+            required: None,
+            allow_zero_length: None,
         }
+    }
+
+    /// Author the exact Boolean Required policy; omission stays distinct from false.
+    pub const fn with_required(mut self, required: bool) -> Self {
+        self.required = Some(required);
+        self
+    }
+
+    /// Author AllowZeroLength only on an explicitly sized native Short Text.
+    /// This does not alter Binary, infer defaults or add Memo creation support.
+    pub fn with_allow_zero_length(mut self, allow: bool) -> Result<Self, CreateDatabaseError> {
+        if !matches!(self.declaration, Declaration::ShortText { .. }) {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        self.allow_zero_length = Some(allow);
+        Ok(self)
+    }
+
+    /// Actual explicitly supplied Required policy, without inferred false.
+    pub const fn required(self) -> Option<bool> {
+        self.required
+    }
+
+    /// Actual explicitly supplied empty Text policy, without inferred true.
+    pub const fn allow_zero_length(self) -> Option<bool> {
+        self.allow_zero_length
     }
 
     /// Original spelling without trimming, normalization or encoding conversion.

@@ -9,7 +9,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{FieldConstraintViolation, ScalarType};
 use thiserror::Error;
 
 /// Payload-free input, resource or serialization failure for fresh creation.
@@ -60,6 +60,9 @@ pub enum CreateDatabaseError {
     /// Text is valid but has no representation in the qualified stored-text profile.
     #[error("creation text has no qualified reversible native encoding")]
     TextEncoding,
+    /// An initial value violates an explicitly declared Required/empty Text rule.
+    #[error(transparent)]
+    FieldConstraint(#[from] FieldConstraintViolation),
     /// Cancellation, allocation or a shared resource limit rejected the operation.
     #[error(transparent)]
     Inspect(#[from] InspectError),
@@ -73,6 +76,7 @@ pub(super) struct Request<'a> {
     pub free_bytes: usize,
     pub minimum_row_bytes: usize,
     pub variable: Option<variable::Prepared<'a>>,
+    pub properties: Option<super::properties::Prepared<'a>>,
     fields: [Field<'a>; profile::MAX_COLUMNS],
 }
 
@@ -104,19 +108,6 @@ pub(super) fn validate<'a>(
         }
     }
     let catalog_name = stored_text::Plan::capture(table, budget, cancelled)?;
-    // Every authored ASCII system name is shorter than a maximum-size user
-    // name. Bound all eight rows by the larger row, including directory bytes.
-    let largest_name = stored_text::Plan::ascii_literal("MSysRelationships");
-    let largest_row = super::record::catalog_length(catalog_name)
-        .max(super::record::catalog_length(largest_name));
-    let catalog_used = largest_row
-        .checked_add(size_of::<u16>())
-        .and_then(|bytes| bytes.checked_mul(profile::CATALOG_OBJECT_COUNT))
-        .and_then(|bytes| bytes.checked_add(super::record::DATA_HEADER_BYTES))
-        .ok_or(CreateDatabaseError::PageCapacity)?;
-    if catalog_used > PAGE_BYTES {
-        return Err(CreateDatabaseError::PageCapacity);
-    }
     if columns.count() == 0 || columns.count() > profile::MAX_COLUMNS {
         return Err(CreateDatabaseError::ColumnLimit);
     }
@@ -179,6 +170,25 @@ pub(super) fn validate<'a>(
         }
     }
 
+    let properties = super::properties::capture(columns, rows, budget, cancelled)?;
+    let mut catalog_bytes = super::record::DATA_HEADER_BYTES;
+    for object in super::build::systems() {
+        check(budget, cancelled)?;
+        catalog_bytes = catalog_bytes
+            .checked_add(super::record::catalog_length(object.name))
+            .and_then(|bytes| bytes.checked_add(size_of::<u16>()))
+            .ok_or(CreateDatabaseError::PageCapacity)?;
+    }
+    let user_catalog_bytes =
+        super::record::catalog_length_with_properties(catalog_name, properties.as_ref())?;
+    catalog_bytes = catalog_bytes
+        .checked_add(user_catalog_bytes)
+        .and_then(|bytes| bytes.checked_add(size_of::<u16>()))
+        .ok_or(CreateDatabaseError::PageCapacity)?;
+    if catalog_bytes > PAGE_BYTES {
+        return Err(CreateDatabaseError::PageCapacity);
+    }
+
     let row_bytes = size_of::<u16>()
         .checked_add(fixed_bytes)
         .and_then(|length| length.checked_add(columns.count().div_ceil(u8::BITS as usize)))
@@ -222,6 +232,7 @@ pub(super) fn validate<'a>(
         free_bytes,
         minimum_row_bytes,
         variable,
+        properties,
         fields,
     })
 }

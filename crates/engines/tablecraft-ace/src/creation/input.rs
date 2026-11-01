@@ -28,6 +28,16 @@ impl<'a> Columns<'a> {
         self.declaration(position).scalar()
     }
 
+    pub fn policies(self, position: usize) -> (Option<bool>, Option<bool>) {
+        match self {
+            Self::Int32(_) => (None, None),
+            Self::Values(columns) => (
+                columns[position].required(),
+                columns[position].allow_zero_length(),
+            ),
+        }
+    }
+
     pub fn declaration(self, position: usize) -> Declaration {
         match self {
             Self::Int32(_) => Declaration::Fixed(ScalarType::Int32),

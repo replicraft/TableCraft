@@ -81,7 +81,8 @@ pub fn create_ace16_int32_database(
 /// explicit precision and exact retained scale; values are never rescaled.
 /// Scalar-only variable declarations and extended families refuse even for
 /// empty or all-NULL input. No coercion, generated identity,
-/// Required declaration, existing-file edit or journal authority is inferred.
+/// implicit Required declaration, existing-file edit or journal authority is inferred.
+/// Explicit CreateColumn Boolean policies are validated and serialized as field properties.
 /// The same name, count and physical-fit bounds as the Int32 convenience apply.
 pub fn create_ace16_database(
     table: &str,
@@ -126,7 +127,7 @@ fn create<'a>(
 /// bounds. Every table must independently fit its one DATA page with at most
 /// sixteen columns and sixty-four rows. All tables and actual catalog/map layout
 /// bounds are validated before image allocation, under one cumulative budget.
-/// No relationship, generated field, constraint property, existing-file edit,
+/// No relationship, generated field, implicit constraint property, existing-file edit,
 /// required-event absence or native Access save permission is inferred.
 /// Artifact row/column counts are totals; table_count reports the user count.
 pub fn create_ace16_database_tables(
