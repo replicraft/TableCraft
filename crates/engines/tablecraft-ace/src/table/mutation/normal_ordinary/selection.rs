@@ -2,7 +2,10 @@
 use super::{capture, preflight};
 use crate::{
     EditError, FileFormat, FixedColumnUpdates, NativeImage, PayloadPresence, WriteBlocker,
-    format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64},
+    format::{
+        data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64},
+        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+    },
     header::check,
     inspect_table_schema,
 };
@@ -67,7 +70,25 @@ impl NativeImage {
                     | (CURRENCY, Some(ScalarType::Currency))
                     | (DATE_TIME, Some(ScalarType::DateTime))
             );
-            if !supported {
+            if !supported
+                || !field.fixed()
+                || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+                || field.extended_flags() != 0
+            {
+                continue;
+            }
+            let mut unavailable = false;
+            for dependency in &source.dependencies {
+                check(budget, cancelled)?;
+                unavailable |= *dependency == field.number();
+            }
+            for index in source.indexes.indexes() {
+                for key in index.columns() {
+                    check(budget, cancelled)?;
+                    unavailable |= key.number() == field.number();
+                }
+            }
+            if unavailable {
                 continue;
             }
             let groups = [FixedColumnUpdates::new(

@@ -111,3 +111,6 @@ fn preflight(
     check(budget, cancelled)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod counter_index_tests;

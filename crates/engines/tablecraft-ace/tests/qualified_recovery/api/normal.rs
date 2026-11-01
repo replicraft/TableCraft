@@ -674,3 +674,6 @@ mod native_ordinary;
 
 #[path = "normal/ordinary_inline.rs"]
 mod ordinary_inline;
+
+#[path = "normal/ordinary_counter_index.rs"]
+mod ordinary_counter_index;

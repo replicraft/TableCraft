@@ -230,6 +230,10 @@ fn index_page(entries: &[Vec<u8>], node: bool, links: [u32; 3], prefix: usize) -
     bytes
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "Keep independent raw fixture declaration inputs explicit."
+)]
 fn definition(
     original: &[u8],
     columns: usize,

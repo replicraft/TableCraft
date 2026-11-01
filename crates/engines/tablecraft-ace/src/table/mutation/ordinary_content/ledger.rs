@@ -22,6 +22,7 @@ pub(super) enum Role {
     Header,
     Definition,
     Data,
+    Index,
     Maps,
 }
 

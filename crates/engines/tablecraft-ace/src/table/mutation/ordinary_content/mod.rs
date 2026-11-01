@@ -3,6 +3,7 @@ mod catalog;
 mod data;
 mod definition;
 mod header;
+mod indexes;
 mod inline;
 mod ledger;
 mod records;
@@ -110,3 +111,9 @@ mod tests;
 
 #[cfg(test)]
 mod dynamic_tests;
+
+#[cfg(test)]
+mod counter_index_tests;
+
+#[cfg(test)]
+mod counter_index_resource_tests;

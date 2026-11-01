@@ -60,7 +60,9 @@ The [ordinary-content ACE route](../access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 also admits the initial complete data-only family: known unencoded header 5/6,
 1252/General declarations, variable inline-map windows under the captured-image
 and cumulative work/read limits, closed ordinary metadata and no
-indexes, relationships or program/property carriers. Metadata is only a routing
+relationships or program/property carriers. A qualified Int32 AutoNumber and
+existing local single-Int32 indexes may remain unchanged; generated and indexed
+fields are not update targets in this route. Metadata is only a routing
 hint; complete content validation must pass before capability is advertised and
 again for every native plan/recovery. There is no caller absence flag. Ordinary
 equal assignments and genuine empty selections retain bytes and complete the
