@@ -12,6 +12,27 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal alternate-owned-page record growth
+
+Normal TCNI6 growth now tries the original root page and then other eligible
+already-owned DATA pages in ascending order. It serializes and reserves every
+changed row before staging, retaining separate original-image ownership/LVAL
+protection and fresh complete-image reconstruction. A separate destination
+changes only its new hidden record, directory and counters; root identity,
+existing maps and EOF remain unchanged. Existing preview placement remains
+same-root, and the normal Auto/TCNI5 continuation APIs retain their contracts.
+
+Sixteen source-derived images pass native reads and sixteen independent SDK
+observations before their corresponding producers. Ten native commits, eight
+typed/SQL session saves and four CLI saves/readbacks match the complete images.
+Two-row checks cover competing last-slot reservations, both request orders,
+healthy second-reservation exhaustion and mixed same-page/cross-page events. Causal partial recovery,
+committed mixed-target refusals, protected-content forgeries, exact resource
+limits, cancellation, unavailable destinations and root-first preference pass.
+Allocation, general normal INSERT/DELETE and Microsoft Access save/reopen
+qualification remain open. See the [growth contract](access/writes/NORMAL_ACE_OWNED_GROWTH.md)
+and [write record](testing/results/ace16-normal-alternate-owned-writes-2026-11-01.json).
+
 ## Normal same-page record growth
 
 Ordinary variable requests now select fitted TCNI5 or owned-page-growth TCNI6

@@ -203,3 +203,6 @@ pub mod genuine_owned_growth;
 
 /// Pinned joint growth and fixed-field NULL/present-mask outcomes.
 pub mod genuine_owned_growth_joint;
+
+/// Pinned pre-owned alternate-page growth and forwarded continuation images.
+pub mod genuine_alternate_owned;

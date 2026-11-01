@@ -698,3 +698,12 @@ mod genuine_owned_growth;
 
 #[path = "normal/genuine_owned_growth_joint.rs"]
 mod genuine_owned_growth_joint;
+
+#[path = "normal/genuine_alternate_owned.rs"]
+mod genuine_alternate_owned;
+
+#[path = "normal/genuine_mixed_owned.rs"]
+mod genuine_mixed_owned;
+
+#[path = "normal/genuine_owned_growth_multirow.rs"]
+mod genuine_owned_growth_multirow;

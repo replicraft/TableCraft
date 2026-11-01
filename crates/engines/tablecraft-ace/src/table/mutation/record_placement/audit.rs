@@ -1,6 +1,6 @@
 //! Exact page events and unchanged complements for same-root placement.
 use super::{
-    forward::{FREE_OFFSET, POINTER_BYTES, Plan},
+    forward::{EventKind, FREE_OFFSET, POINTER_BYTES, Plan},
     slots,
 };
 use crate::{
@@ -24,6 +24,12 @@ pub(in crate::table::mutation) fn pages(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if plan.cross_page {
+        #[cfg(feature = "journal")]
+        return super::owned_audit::pages(plan, budget, cancelled);
+        #[cfg(not(feature = "journal"))]
+        return Err(EditError::Preservation);
+    }
     for page in &plan.pages {
         check(budget, cancelled)?;
         let count = row_count(&page.before)?;
@@ -51,6 +57,9 @@ pub(in crate::table::mutation) fn pages(
         };
         for event in &page.events {
             check(budget, cancelled)?;
+            if event.kind != EventKind::SamePage {
+                return Err(EditError::Preservation);
+            }
             let target = event
                 .target
                 .start

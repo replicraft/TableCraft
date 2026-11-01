@@ -1,0 +1,171 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-independent-engineering",
+  "scope": "Normal native17 pre-owned alternate DATA placement with all-row reservations, root-first/ascending choice, unchanged maps/EOF and TCNI6 recovery",
+  "source_records": [
+    "ace16-alternate-owned-sources-2026-11-01.json",
+    "ace16-multirow-owned-sources-2026-11-01.json"
+  ],
+  "source_evidence_commits": [
+    "a74fc273",
+    "170e7be2"
+  ],
+  "source_reads_before_corresponding_producers": true,
+  "counts": {
+    "unique_independent_images": 16,
+    "independent_sdk_reads": 16,
+    "native_commits": 10,
+    "typed_session_saves": 4,
+    "sql_session_saves": 4,
+    "cli_saves": 4,
+    "cli_complete_readbacks": 4,
+    "accepted_recovery_contexts": 28,
+    "causal_mixed_partial_contexts": 16,
+    "committed_mixed_target_refusals": 8,
+    "protected_after_forgeries_refused": 12,
+    "new_physical_control_functions": 4,
+    "new_native_acceptance_functions": 7,
+    "ace_unit_passed": 1105,
+    "ace_unit_ignored_at_batch": 70,
+    "recovery_regression_passed": 83,
+    "recovery_regression_ignored_at_batch": 20,
+    "adapter_unit_passed": 79,
+    "cli_unit_passed": 94
+  },
+  "verification_scope": "The full unit/recovery batch preceded the additive two-row source/acceptance tests. Those tests ran separately after source qualification; final strict all-targets checks include them. Production placement was unchanged throughout those additive checks.",
+  "source_cases": "Two headers each: one-row alternate plus separate fitting continuation; competing two-row last-slot destinations and healthy no-capacity sources; one destination combining SamePage and AppendTarget events.",
+  "physical_contract": "Encode all original requests and reserve every row before candidate page staging; roots first, otherwise ascending actual owned pages with original hint and exclusive protection; no caught planner failure or silent fallback. Fresh proof reconstructs all complete bytes independently.",
+  "feature_checks": [
+    "strict all-feature engine/adapter/CLI all-targets",
+    "strict journal-only all-targets",
+    "strict preview-only all-targets",
+    "minimal engine and adapter",
+    "format and documentation/dependency guards"
+  ],
+  "retained_first_failures": [
+    {
+      "kind": "strict lint",
+      "detail": "Constant chunks_exact in source/native tests replaced by fixed array views; first/second/final failure logs retained."
+    },
+    {
+      "kind": "multirow test compile",
+      "detail": "Explicit parent path requires explicit child path attributes; three registrations corrected, source/expectations unchanged."
+    },
+    {
+      "kind": "independent SDK observer",
+      "detail": "Old one-row observer refused before Sentinel output. Separate explicit two-row successor matched all unchanged expectations; source record retains the first rejection and exact inverse."
+    }
+  ],
+  "logs": [
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/native-first.log",
+      "bytes": 917,
+      "sha256": "d0b0ed317bf9e42db54e5fc73168ff95e193d13efddf613fe117d90bcccac508"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-controls/runtime-first.log",
+      "bytes": 959,
+      "sha256": "70aec85962b0050d17625706ecc3732c772a15ed9f881df9263307b4f5c95c3c"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/access-first.log",
+      "bytes": 622,
+      "sha256": "04b3de2a418953facfcc66f9f018fc236cfcf0c1f6b157a92116e82db9540238"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/cli-first.log",
+      "bytes": 843,
+      "sha256": "9fc59e10e89c4a6d6ead412a91a2014c5c43d950949f54ce3f0498aaf1df7136"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/mixed-event-source/producer-first.log",
+      "bytes": 516,
+      "sha256": "b96df1433677145055bdda12f0461a864b6a757720b02c83d6c59d1e93f7050f"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/multirow-tests/runtime-first.log",
+      "bytes": 1857,
+      "sha256": "ab634a0c2c5dd70e67bbe641a631a19d2030f345576f2faecb43cabeec07b146"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/multirow-tests/runtime-second.log",
+      "bytes": 818,
+      "sha256": "d2edff9cc44cfd72465e8f32bbf181c194fca4e9126d25f9f946b940087e9492"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/units-first.log",
+      "bytes": 179857,
+      "sha256": "dd515b0ccd01801b247346ab8b869cc0287e817059abf9c393bb224b6e5e1846"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/recovery-regression-first.log",
+      "bytes": 13418,
+      "sha256": "948237720ce9bb3d5cbff869772e3e9f30a0d4933e2ece0d5f9de14f7ddbb59b"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/strict-first.log",
+      "bytes": 1252,
+      "sha256": "075bb2ac3f79e9f95cfc928ae4a9ddde295eb077b30fa641e9192779d833aede"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/strict-second.log",
+      "bytes": 1787,
+      "sha256": "d35ca1ad5433ce80766e8c9ea77a465712ab6d7be9644dcc9e99203c1e97c56a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/strict-third.log",
+      "bytes": 302,
+      "sha256": "dee8815951ab6a9105ceefc7c7cc2cde23fb7971adf980da03363c1685f8ec30"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/strict-final.log",
+      "bytes": 1530,
+      "sha256": "250c4b68221e3224e2d22dbb34018fdaab3a2f644bc2c02b03607402f53f5b7f"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/strict-final-second.log",
+      "bytes": 183,
+      "sha256": "e32d48c193dd8716b857113d13be0028a69f4465eb63c407d6aca37e4e6fae85"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/journal-only-first.log",
+      "bytes": 307,
+      "sha256": "00cb8318f6490c29f4c046bd5350806ff2f7e05d79c6802a9d59d8a1c190f397"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/preview-only-first.log",
+      "bytes": 184,
+      "sha256": "a9ce6b0b2069f118548c39552e8e44ea0eae966c6e77df69da6ad131996dc02f"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/minimal-first.log",
+      "bytes": 72,
+      "sha256": "f591e097f22f91dd5c31fbbf7e587d80c0a4e0ed594f9c9012a544f38c52d926"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/original-slot-regression-first.log",
+      "bytes": 697,
+      "sha256": "02e7723f08b378716389ff9564ced6febd7f7d9e2e39fbe61bf59197b5571549"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/original-native-regression-first.log",
+      "bytes": 664,
+      "sha256": "e9ed735d9849b13ae7020cb09c62d2d43290cda44e666633e37e9f1ff001a1ae"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/original-access-regression-first.log",
+      "bytes": 612,
+      "sha256": "fe00ac948ef28dd03bdb7a85a116f5933932cce8aa6a72eb15ce217411b27834"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-host-tests/original-cli-regression-first.log",
+      "bytes": 710,
+      "sha256": "c6acd5eb86781dbef6d1d4e97d4ae8dd20215307a0983a0b3c0ef3f744304fa2"
+    }
+  ],
+  "limitations": [
+    "No write-time allocation, map growth or EOF extension.",
+    "No general normal INSERT/DELETE or broader indexed/macro authorization.",
+    "Offline exclusive cooperating resources only; Microsoft Access save/reopen and mixed-client qualification remain unrun."
+  ]
+}

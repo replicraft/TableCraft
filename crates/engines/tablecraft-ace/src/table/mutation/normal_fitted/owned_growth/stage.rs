@@ -1,11 +1,11 @@
-//! Actual Source records feed shared serialization and same-root placement once.
+//! Source records feed shared serialization and reserved owned-page placement.
 use super::super::{binding, stage as records};
 use crate::{
     EditError, FittedColumnUpdates, NativeImage,
     header::check,
     table::mutation::{
         preserved_source::Source,
-        record_placement::{audit, forward::Plan, space::Space},
+        record_placement::{audit, forward::Plan, owned::Reservations, space::Space},
         record_roots,
         record_serialization::policy::RecordPolicy,
         rows::RowAssignment,
@@ -44,8 +44,9 @@ pub(super) fn prepare(
         budget,
         cancelled,
     )?;
-    let mut plan = Plan::new();
-    let mut applied = 0_usize;
+    let mut reservations =
+        Reservations::capture(image, &space, &captured.owned, budget, cancelled)?;
+    let mut operations = binding::vector(records.len(), budget)?;
     for root in &captured.selected {
         check(budget, cancelled)?;
         for record in &records {
@@ -56,12 +57,27 @@ pub(super) fn prepare(
             if !binding::equal_bytes(&root.final_record.data, &record.before, budget, cancelled)? {
                 return Err(EditError::Preservation);
             }
-            plan.apply(image, root, &record.after, &space, budget, cancelled)?;
-            applied += 1;
+            let reservation =
+                reservations.reserve(image, root, record.after.len(), budget, cancelled)?;
+            operations.push((root, record, reservation));
         }
     }
-    if applied != changed_rows {
+    if operations.len() != changed_rows {
         return Err(EditError::Preservation);
+    }
+    // Every row now has a complete reservation. Only this loop copies/mutates
+    // candidate page images; no failed placement can trigger another planner.
+    let mut plan = Plan::new();
+    for (root, record, reservation) in operations {
+        plan.apply_reserved(
+            image,
+            root,
+            &record.after,
+            &space,
+            &reservation,
+            budget,
+            cancelled,
+        )?;
     }
     audit::pages(&plan, budget, cancelled)?;
     check(budget, cancelled)?;
