@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-retained-access-and-cli",
+  "scope": "Retained session and CLI adoption of normal TCNI7/V2 EOF allocation, active recovery and retired confirmation",
+  "native_engine_commit": "f9d5c1a1",
+  "native_record": "ace16-normal-eof-allocation-writes-2026-11-01.json",
+  "source_records": [
+    "ace16-eof-allocation-sources-2026-11-01.json",
+    "ace16-compound-eof-sources-2026-11-01.json"
+  ],
+  "source_reads_before_corresponding_producers": true,
+  "counts": {
+    "typed_session_saves": 2,
+    "sql_session_saves": 4,
+    "cli_saves": 4,
+    "cli_complete_readbacks": 4,
+    "restart_active_retired_outcome_contexts": 8,
+    "same_session_interrupted_extension_rollbacks": 2,
+    "intent6_v2_mismatch_refusals": 2,
+    "adapter_unit_passed": 79,
+    "cli_unit_passed": 94,
+    "old_adapter_growth_regression_functions": 3,
+    "old_cli_growth_regression_functions": 3
+  },
+  "session_scope": "The same held target descriptor issues a narrow resizable capability. Apply selects native prepared family from original intent. Active7 inspectsV2 then native qualifies before effects; retired7 uses write-denied ordinary views and confirms complete current bytes. Profiles1\u20136 retain V1, with no error fallback.",
+  "recovery_scope": "Real active and retired bundles cover pending/committed outcomes for both headers. Actual commit cancellation occurs only after observed EOF extension; same-session recovery restores exact BEFORE and original length. Receipts retain known versus verified facts, namespace cleanup and uninterrupted lease.",
+  "compound_scope": "IIf chooses original ID23/24 replacements; matched/changed2, exact complete images and read-only OLE are checked in actual SQL session/CLI.",
+  "logs": [
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-host-tests/access-first.log",
+      "bytes": 842,
+      "sha256": "30e9e7a1d57c4285fc1fa691e4999d851dc0f8d0c68f765721abf4b9db43588d"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-host-tests/cli-first.log",
+      "bytes": 1056,
+      "sha256": "b51b21114e5da75326d19fc8148feb98a53055558f2c8ac1e0501cab3e2dad6e"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-host-tests/access-first.log",
+      "bytes": 600,
+      "sha256": "bc843d11f60873dad65be885e0cdddfa3bc2406e8b4c1dcb44bfd3063b3c748a"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/compound-host-tests/cli-first.log",
+      "bytes": 828,
+      "sha256": "c484cb7775effeea9dbf1e692a42be08b426eb437ccd938b50a77be61e750f5f"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-host-tests/recovery-first.log",
+      "bytes": 665,
+      "sha256": "f56487f04bf04581a5e22f6fc29899bb61c5260a67ea05f5e807d2c7bb9e340f"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-host-tests/strict-final.log",
+      "bytes": 531,
+      "sha256": "1652810d7298c58f270b62398fd3414dd1c33a49068917b3fe93e28db63f7899"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/access-regression-first.log",
+      "bytes": 1121,
+      "sha256": "024c530cecc0b2bd41467d6437572261eeab6913a11a898bbf0414baeca891ca"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/cli-regression-first.log",
+      "bytes": 1104,
+      "sha256": "69dbdfceaaf87fa748e39289b01052a8c4334f65f416ce4c5b810ce13620fe98"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/units-second.log",
+      "bytes": 181217,
+      "sha256": "773417daf3b141900c841c695b9cefd22d54deed7de2001605b460179269284b"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/eof-acceptance/strict-first.log",
+      "bytes": 755,
+      "sha256": "58ba025979f8fd5d45b74f49c0aa878625d3693e4fef03bab5843e7edfde1518"
+    }
+  ],
+  "limitations": [
+    "Offline cooperating exclusive access only.",
+    "macOS runtime evidence; native Access/Windows save, mixed-client and power-loss qualification unrun.",
+    "General map/index allocation, normal INSERT/DELETE and broader write carriers remain unfinished."
+  ]
+}

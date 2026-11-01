@@ -12,6 +12,32 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal first EOF DATA allocation and retained saves
+
+Qualified native17 variable updates now select fitting5, owned6 or one represented
+EOF allocation7 from original metadata and complete requests before staging.
+The single new DATA page uses exactly three exclusive original map cells; roots,
+readonly OLE/properties, other hints and unrelated bytes remain protected.
+Independent complete-image proof and original TCNI7 replay qualify the same
+loaded V2 journal before effects. AFTER retains the 64 MiB native image ceiling.
+
+Six native commits, six typed/SQL session saves and four CLI saves/readbacks
+match eight independently read source images, including mixed owned/new-page
+reservations and both request orders. Native partial-tail recovery, four committed
+mismatches and eight self-consistent forgeries pass. Eight real Access restart
+contexts, two same-session interrupted extensions and two intent6/V2 mismatches
+cover active/retired dispatch, rollback truncation and continuous lease.
+
+The batch passes 1,108 ACE units, 83 recovery functions, 79 adapter units and
+94 CLI units. Prior owned/joint/multirow/alternate images and host saves remain
+qualified. Strict all-feature, journal-only, preview-only and minimal checks pass.
+Source goldens are unchanged; first compile/negative-fixture failures remain in
+the [native record](testing/results/ace16-normal-eof-allocation-writes-2026-11-01.json).
+See the [contract](access/writes/NORMAL_ACE_EOF_ALLOCATION.md) and
+[host record](testing/results/ace16-retained-eof-allocation-2026-11-01.json).
+Normal DELETE/INSERT, wider allocation/indexes and native Access qualification
+remain ongoing.
+
 ## Normal alternate-owned-page record growth
 
 Normal TCNI6 growth now tries the original root page and then other eligible
@@ -26,10 +52,10 @@ Sixteen source-derived images pass native reads and sixteen independent SDK
 observations before their corresponding producers. Ten native commits, eight
 typed/SQL session saves and four CLI saves/readbacks match the complete images.
 Two-row checks cover competing last-slot reservations, both request orders,
-healthy second-reservation exhaustion and mixed same-page/cross-page events. Causal partial recovery,
+owned-only second-reservation exhaustion and mixed same-page/cross-page events. Causal partial recovery,
 committed mixed-target refusals, protected-content forgeries, exact resource
 limits, cancellation, unavailable destinations and root-first preference pass.
-Allocation, general normal INSERT/DELETE and Microsoft Access save/reopen
+Broader allocation, general normal INSERT/DELETE and Microsoft Access save/reopen
 qualification remain open. See the [growth contract](access/writes/NORMAL_ACE_OWNED_GROWTH.md)
 and [write record](testing/results/ace16-normal-alternate-owned-writes-2026-11-01.json).
 

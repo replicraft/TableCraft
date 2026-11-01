@@ -40,8 +40,9 @@ images before allowing recovery or write-free confirmation.
 `NativeJournalEditor` and retained `OfflineWriteSession` select ordinary variable
 planning when a request includes a Text/Binary target, even with zero matches.
 Original encoded capacity chooses fitting or qualified
-[owned-page growth](NORMAL_ACE_OWNED_GROWTH.md) before staging; the explicit fitted
-native API remains fitting-only.
+[owned-page growth](NORMAL_ACE_OWNED_GROWTH.md), then qualified
+[first EOF allocation](NORMAL_ACE_EOF_ALLOCATION.md), before staging. The explicit
+fitted native API remains fitting-only.
 Typed column batches retain exact snapshot handles/carriers. Fixed-only requests
 keep TCNI4; positive-program and Jet4 routes keep their existing families.
 The existing SQL/session and `query journal-update` consumers share this planning

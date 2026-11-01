@@ -35,8 +35,12 @@ session/CLI consumers. Independent first/second/joint images, causal partial
 recovery and slot-boundary controls pass. Alternate-page placement now reserves all changed rows before staging,
 tries the root first and then other eligible owned DATA pages in ascending order.
 Native first/second commits, retained-session saves, CLI readbacks, recovery and
-capacity/protection controls pass against independent source images. Allocation
-and general normal INSERT/DELETE remain current admission gaps; completed
+capacity/protection controls pass against independent source images. The
+[first represented EOF allocation](access/writes/NORMAL_ACE_EOF_ALLOCATION.md)
+now adds one DATA page under original three-map-cell authority, original TCNI7
+and native-qualified V2 recovery. Actual typed/SQL/CLI saves, compound two-row
+placement and active/retired recovery pass. Next are normal DELETE and INSERT;
+wider map/index allocation and native Access qualification remain open. Completed
 fixed/fitted implementation does not need repeating.
 
 

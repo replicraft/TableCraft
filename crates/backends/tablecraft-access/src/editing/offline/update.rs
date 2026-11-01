@@ -175,9 +175,9 @@ impl StagedUpdate {
         let result = (|| {
             let slot = session.slot_mut()?;
             let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
-            let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+            let (mut target, mut journal) = pair.resizable_storage().map_err(Cause::Pair)?;
             let prepared = plan
-                .prepare(&mut target, &mut journal, budget, cancelled)
+                .prepare_update(&mut target, &mut journal, budget, cancelled)
                 .map_err(Cause::Prepare)?;
             prepared.commit(budget, cancelled).map_err(Cause::Commit)?;
             Ok(())
