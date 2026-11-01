@@ -246,3 +246,16 @@ Native Access save/reopen remains unrun.
 The [combined execution record](../../testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
 retains focused creator/host acceptance and the strict and broader regression
 results, including first failures and corrections.
+
+## Wider manual-primary source qualification
+
+Thirty-two independent Int64/Currency primary views now pass native read and
+constraint checks before matching creators run. Twenty-four healthy views pass
+exact read-only SDK comparisons; eight duplicate/NULL constraint negatives remain
+explicit exclusions. Literal subsequent INSERT/DELETE views retain signed key
+units, exact Currency carriers, tombstoned physical records and inactive tails.
+
+The [source record](../../testing/results/ace16-integral-primary-creation-sources-2026-11-01.json)
+retains receipt tamper controls separately from the actual observations. This is
+read/source qualification only; the wider creator and actual write lifecycle
+require their own acceptance. No AutoNumber behavior is inferred.
