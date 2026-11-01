@@ -82,7 +82,7 @@ pub use insert::{
 pub(in crate::table) use variable_update::map_audit::CertifiedData;
 
 #[cfg(feature = "ace16-write-preview")]
-pub use delete::{Ace16DeletePreview, RowDelete, TableRowDeletes};
+pub use delete::Ace16DeletePreview;
 pub use error::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
 pub use guards::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -152,3 +152,9 @@ mod normal_ordinary;
 
 #[cfg(feature = "journal")]
 mod no_required_programs;
+
+#[cfg(feature = "journal")]
+mod normal_delete;
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub use requests::{RowDelete, TableRowDeletes};

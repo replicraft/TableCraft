@@ -118,3 +118,9 @@ impl Seek for OfflineReadTransaction {
         self.image.seek(position)
     }
 }
+
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
+    qualify_native_delete_recovery,
+};

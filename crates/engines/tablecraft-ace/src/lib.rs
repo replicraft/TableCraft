@@ -78,7 +78,7 @@ pub use table::{
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(feature = "ace16-write-preview")]
-pub use table::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
+pub use table::{Ace16DeletePreview, Ace16WritePreview};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 pub use table::{
@@ -142,6 +142,8 @@ pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
     read_multivalue_table_page_with_request,
 };
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub use table::{RowDelete, TableRowDeletes};
 pub use table::{StoredTablePage, read_stored_table_page};
 pub use table::{
     StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
@@ -194,4 +196,10 @@ pub use table::{
 pub use table::{
     LongValueCheck, LongValueCheckStatus, LongValueCounts, LongValueMapReferences,
     TableLongValueCheck, check_table_long_values,
+};
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
+    qualify_native_delete_recovery,
 };

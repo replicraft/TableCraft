@@ -1,7 +1,9 @@
 //! Exact source-local requests shared below engineering and normal packaging.
+mod delete;
 mod fitted;
 mod slot;
 
+pub use delete::{RowDelete, TableRowDeletes};
 pub use fitted::FittedColumnUpdates;
 pub use slot::SlotScalarUpdate;
 

@@ -710,3 +710,9 @@ mod genuine_owned_growth_multirow;
 
 #[path = "normal/genuine_eof_allocation.rs"]
 mod genuine_eof_allocation;
+
+#[path = "normal/genuine_ordinary_delete.rs"]
+mod genuine_ordinary_delete;
+
+#[path = "normal/genuine_forwarded_delete.rs"]
+mod genuine_forwarded_delete;

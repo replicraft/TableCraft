@@ -212,3 +212,9 @@ pub mod genuine_eof_allocation;
 
 /// Pinned combined existing-owned and first EOF DATA allocation images.
 pub mod genuine_compound_eof;
+
+/// Frozen ordinary DELETE originals and exact payload-preserving outcomes.
+pub mod genuine_ordinary_delete;
+
+/// Pinned growth followed by payload-preserving logical-root deletion.
+pub mod genuine_forwarded_delete;

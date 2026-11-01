@@ -1,0 +1,277 @@
+{
+  "date": "2026-11-01",
+  "branch": "main",
+  "qualification": "portable engineering evidence; Microsoft Access and Windows comparisons unrun",
+  "source_records": [
+    "ace16-normal-delete-sources-2026-11-01.json",
+    "ace16-forwarded-delete-sources-2026-11-01.json"
+  ],
+  "source_expectations_unchanged": true,
+  "broad_checks": [
+    {
+      "name": "units-batch-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-units-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "recovery-regression-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-all-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-journal-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-preview-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal-first",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    }
+  ],
+  "broad_logs": [
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/units-batch-first.log",
+      "sha256": "d228462b0e30c55bb48d71fa885e75d72a453c14b872e3da158586a3beed8310",
+      "bytes": 172023,
+      "test_results": [
+        "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s",
+        "test result: ok. 1114 passed; 0 failed; 81 ignored; 0 measured; 0 filtered out; finished in 111.76s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/cli-units-first.log",
+      "sha256": "581d69a3d33feafebb87a611d5d2822daa58931b70b8528801b17327529409b5",
+      "bytes": 11330,
+      "test_results": [
+        "test result: ok. 98 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/recovery-regression-first.log",
+      "sha256": "99f683e75b7388ee1d8c869d36566ac37dc66b5ffad5141bfe75c23f0f9682f1",
+      "bytes": 16184,
+      "test_results": [
+        "test result: ok. 83 passed; 0 failed; 33 ignored; 0 measured; 0 filtered out; finished in 4.39s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-all-first.log",
+      "sha256": "865b18e07cecfea71031ee544bc33fab9871d31b827838132ccc1616092b8bf3",
+      "bytes": 526,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-journal-first.log",
+      "sha256": "6bf18eb0d798fad29979b94988ee46643638cf0a674d455eee94ff64bee94993",
+      "bytes": 307,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-preview-first.log",
+      "sha256": "1750469320c448073f8b83cbe9de765a125679de810addcb07e1fb7ba7c5d791",
+      "bytes": 184,
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/minimal-first.log",
+      "sha256": "ba966ff523d1f0de5b8d23fc0b6a30d67178a30074c22ac08fa5b60cc64b488d",
+      "bytes": 301,
+      "test_results": []
+    }
+  ],
+  "remaining": [
+    "normal INSERT",
+    "selected-index DELETE",
+    "target relationships and cascades",
+    "required DELETE data-program execution",
+    "reclamation and compaction",
+    "broader allocation",
+    "native Access save/reopen and Windows qualification"
+  ],
+  "feature": "normal original-row DELETE; direct and qualified resolved roots",
+  "intent": "TCND0001 profile 1; original table/ordered ordinals/raw witnesses/complete BEFORE binding; existing UPDATE TCNI1-7 unchanged",
+  "journal": "same checked fixed-length V1; fresh original source replay and complete BEFORE/AFTER comparison before effects",
+  "observations": {
+    "direct_native_functions": 5,
+    "forwarded_native_functions": 4,
+    "native_commits": 4,
+    "settled_and_causal_partial_recovery_contexts": 28,
+    "committed_mixed_refusals": 8,
+    "protected_after_forgeries": 24,
+    "stale_recovery_intents": 4,
+    "forwarded_stale_plan_controls": 6
+  },
+  "focused_logs": [
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/native-tests/runtime-third.log",
+      "sha256": "bbf65dc3c1ec24c5d2d0149095f349cfe28fe9b6d2d82257be6e06a8714c306b",
+      "bytes": 1200,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 111 filtered out; finished in 4.74s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/native-delete-resolved-first.log",
+      "sha256": "b00460a072f7863c4c9faf60fdfe24063861d261867ab2514a6669b5d2b515ff",
+      "bytes": 1200,
+      "test_results": [
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 111 filtered out; finished in 4.78s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/forwarded-native-first.log",
+      "sha256": "10b98651cd4ca2862890bdf7f7a44ba79a843ff34eddd760e9c05a370d9814ee",
+      "bytes": 909,
+      "test_results": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 116 filtered out; finished in 4.44s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-delete-next-20261101/strict-native-added.log",
+      "sha256": "53fee159431d0dc9eb03cfd1f897197cdc4a0f83683c5690e43a17d40c303b7a",
+      "bytes": 183,
+      "test_results": []
+    }
+  ],
+  "preserved_first_failures": [
+    {
+      "artifact": {
+        "path": ".cache/ace16-normal-delete-next-20261101/source/native-reads-first.log",
+        "sha256": "407f3fa6cdc2d274a690500ef842be2c828c8f6120358c0df03c4c4364d92f9b",
+        "bytes": 1182
+      },
+      "resolution": "Removed undeclared JSON parsing from source gate; literal hashes retained."
+    },
+    {
+      "artifact": {
+        "path": ".cache/ace16-normal-delete-next-20261101/physical-draft/tests-first.log",
+        "sha256": "82d5b5e5b4a20e7de0e29ae9a2b5b96a11d9588e46fabd57c8edba04c9fa285b",
+        "bytes": 1283
+      },
+      "resolution": "Removed redundant all-database relationship refusal; existing complete Source still rejects every relationship involving target."
+    },
+    {
+      "artifact": {
+        "path": ".cache/ace16-normal-delete-next-20261101/native-tests/runtime-first.log",
+        "sha256": "2c7cc944b0eec662619d73102942597d87afca657c56fa66d7f40ef4b5d2e6bf",
+        "bytes": 4335
+      },
+      "resolution": "Moved request fields remain private; old preview tests/batch use public accessors and constructors."
+    },
+    {
+      "artifact": {
+        "path": ".cache/ace16-normal-delete-next-20261101/native-tests/runtime-second.log",
+        "sha256": "af12d660c34105434e558d16f8ed055e5471a985fe9e97855e1e12fa7865b713",
+        "bytes": 741
+      },
+      "resolution": "Corrected remaining prior table accessor; no visibility widening."
+    },
+    {
+      "artifact": {
+        "path": ".cache/ace16-normal-delete-next-20261101/forwarded-source/native-reads-first.log",
+        "sha256": "610cf52a6e3465387fe3678244988b181ab115a1abb781269196d0c546dc7c6e",
+        "bytes": 501
+      },
+      "resolution": "Corrected preview stale-witness test to use constructor/accessors, preserving raw mutation input."
+    }
+  ],
+  "implementation_note": "Resolved-root normal staging supersedes initial direct shared-patch draft. Preview patch helper and original Row feature gates remain at their prior owners."
+}
