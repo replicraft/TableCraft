@@ -173,3 +173,6 @@ pub mod canonical_nullable_fixed_int32_before_change;
 
 /// SQL-addressable original fixed-scalar requests and literal BeforeChange outcomes.
 pub mod canonical_fixed_sql_before_change;
+
+/// Independent ordinary-content inputs and adversarial ownership/framing cases.
+pub mod canonical_ordinary_content;

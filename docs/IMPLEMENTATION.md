@@ -12,6 +12,16 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary-content source qualification
+
+Independent authored inputs now cover twelve ordinary role layouts and seventeen
+adversarial layouts under both ACE header selectors. Two native source tests
+pass, including all 56 expected user-table snapshots and constraint checks.
+Twenty-four exact independent SDK observations pass with unchanged inputs before
+new ordinary mutation calls. This qualifies source reads, not general native
+write admission or Microsoft Access saves. See the
+[source contract](testing/ACE16_ORDINARY_CONTENT_SOURCES.md).
+
 ## Fixed-intent request identity validation
 
 Fixed request groups now reject repeated row ordinals, and complete intent

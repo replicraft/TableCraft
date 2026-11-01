@@ -10786,3 +10786,14 @@ original-RHS recipe. Native/hash checks and 20 independent SDK inventories pass
 before SQL/CLI producers run. Repository-authored raw overlays protect all other
 bytes; no prior writer result is an oracle. These fixtures use the repository
 license and do not copy third-party database bytes.
+
+## Authored ordinary-content source corpus
+
+The [ordinary-content corpus](ACE16_ORDINARY_CONTENT_SOURCES.md) derives inputs
+only from earlier qualified repository encoders. Twelve ordinary recipes and
+seventeen adversaries retain explicit source values and raw role mutations.
+Native read checks pass for 24 header-selected ordinary views and all 56 expected
+user tables; 24 exact independent SDK observations pass before ordinary mutation
+producers run. All 58 exported inputs remain unchanged. The source and its
+literal protocol expectations use the repository license; no third-party
+database bytes, JARs or class files are tracked.
