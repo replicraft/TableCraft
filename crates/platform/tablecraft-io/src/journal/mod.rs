@@ -11,7 +11,10 @@ pub use error::{CommitError, JournalError};
 mod storage;
 pub use storage::{DurableStorage, ResizableDurableStorage};
 mod resizable;
-pub use resizable::{PreparedResizableImage, prepare_resizable_expected, recover_resizable};
+pub use resizable::{
+    CheckedV2, PreparedResizableImage, V2State, inspect_v2, prepare_resizable_expected,
+    recover_resizable,
+};
 mod format;
 mod recovery;
 pub use recovery::{RecoveryOutcome, recover};

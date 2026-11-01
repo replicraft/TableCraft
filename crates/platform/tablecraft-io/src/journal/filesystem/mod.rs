@@ -16,7 +16,7 @@ mod target;
 pub use binding::BindingError;
 pub use pair::{OfflineJournalPair, PairError, PairSetupFailure, PairState, TargetTransferFailure};
 pub use retirement::{FinalizationError, FinalizationPhase};
-pub use storage::PairedStorage;
+pub use storage::{PairedStorage, ResizablePairedTarget};
 pub use target::{OfflineTarget, TargetLockState};
 
 use crate::IoError;

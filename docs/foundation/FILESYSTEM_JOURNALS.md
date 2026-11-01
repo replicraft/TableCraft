@@ -141,3 +141,25 @@ functions, 16 integration functions and two doctests (103 total). This transfer 
 Access locking, journal discovery or normal ACE save permission.
 
 See the [target-transfer record](../testing/results/offline-journal-target-transfer-2026-10-31.json).
+
+## Explicit retained-target resize capability
+
+An active pair can issue `resizable_storage()`: its target view is a private
+`ResizablePairedTarget` borrowing the same locked descriptor, while its journal
+retains the ordinary bounded storage view. Issuance uses the existing state guard
+and recovery-required transition. It does not open, clone, unlock or replace a
+resource. Existing `storage()` behavior is unchanged; ordinary Write continues
+to rely on the trusted protocol.
+
+Retired confirmation still receives write-denied ordinary views and cannot
+obtain the resize factory. V2 completion uses the same inspected journal and
+requires complete settled bytes; namespace retirement and cleanup remain explicit.
+Known outcomes survive finalization failures, and retained ownership prevents
+normal access until the required cleanup is finished.
+
+Five filesystem functions cover grow/shrink commit and rollback, path retargeting,
+retired write-free confirmation, resize failures before/partway/after their real
+effect, target/journal sync failures and retired garbage cleanup failure. They
+retain the same lease throughout. Local runtime evidence is macOS; generic
+protocol checks do not establish native Access or other-platform qualification.
+See the [V2 verification record](../testing/results/checked-v2-retained-targets-2026-11-01.json).

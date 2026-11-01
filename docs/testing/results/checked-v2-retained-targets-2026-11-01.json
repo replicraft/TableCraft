@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-01",
+  "status": "passed-generic-io-and-local-filesystem",
+  "scope": "Sealed existing-V2 inspection, same-loaded-record recovery, write-free settled confirmation and narrow same-pair resizable target",
+  "counts": {
+    "checked_v2_functions": 6,
+    "paired_filesystem_functions": 5,
+    "paired_resize_and_sync_fault_transactions": 10,
+    "io_unit_passed": 99,
+    "io_integration_passed": 16,
+    "compile_fail_doctests_passed": 3
+  },
+  "wire_boundary": "Existing V1/V2 grammar, digests, markers and V1 recovery behavior unchanged. CheckedV2 reuses the existing loader; loaded recovery body extracted without changing effects.",
+  "capability_boundary": "Only active target borrow receives ResizableDurableStorage; journal and retired confirmation remain ordinary views. Same retained descriptor and loaned journal, with no reopen/reload/replacement.",
+  "failure_scope": "Resize failure before/partial/after effects, target sync, final marker sync and retired garbage cleanup retain lease and correctly qualified known or unknown outcomes.",
+  "checks": [
+    "99 I/O units",
+    "16 I/O integration functions",
+    "3 compile-fail doctests",
+    "strict all-target/all-feature I/O",
+    "minimal I/O",
+    "format and local documentation targets"
+  ],
+  "logs": [
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/runtime-first.log",
+      "bytes": 1108,
+      "sha256": "c47f6b34cd6d99c88f24f3cb8cddcfc6f942d13a64ec5fff22b555015cb46067"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/retained-v2-draft/runtime-first.log",
+      "bytes": 652,
+      "sha256": "0528c3b417af0375dc26ac8ce8534ea7de12bf3d1e26f314c5c5f3d48e7c69dc"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/retained-v2-failure-tests/runtime-first.log",
+      "bytes": 676,
+      "sha256": "16d1792612806e20fd4f4e90531217f4dd53d923d3d0fce7c03168bb8abb8ae8"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/all-units-second.log",
+      "bytes": 11275,
+      "sha256": "91ba6c6d9478c9e23ee7e31df424e35bea0643494e950d18308341b90c1d4ee0"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/integrations-first.log",
+      "bytes": 2213,
+      "sha256": "ab0bf6660a68f09d890ea166c00eb13237ff633de3fea73b3602716c606f7b2c"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/doc-first.log",
+      "bytes": 756,
+      "sha256": "61539b4b3c61a7ef6669160a39589a830afb9eed90b986f7927c37007abdd901"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/strict-second.log",
+      "bytes": 182,
+      "sha256": "0d436e1eb93c7c5130314ebbc96ec2aec17bbc991ecc34bc852b0af619118ca2"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/io-checked-v2-draft/minimal-first.log",
+      "bytes": 182,
+      "sha256": "72fec0facaa9b7915d573bc824b08103a09ec3bfc51961adb43c55a0798a3bfc"
+    }
+  ],
+  "limits": [
+    "macOS filesystem runtime only; Linux and Windows runtime not established.",
+    "Generic image integrity and namespace handling supply no native Access mutation authority.",
+    "Native allocation intent, full-image reconstruction and actual native host saves require separate acceptance.",
+    "No physical power-loss or native Access mixed-client qualification."
+  ]
+}
