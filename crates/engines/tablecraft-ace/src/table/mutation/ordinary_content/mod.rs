@@ -3,6 +3,7 @@ mod catalog;
 mod data;
 mod definition;
 mod header;
+mod inline;
 mod ledger;
 mod records;
 
@@ -53,7 +54,7 @@ pub(in crate::table::mutation) fn capture<'image>(
     let objects = catalog::capture(image, &mut ledger, budget, cancelled)?;
     for (number, role) in objects.systems {
         let table = definition::capture(image, &mut ledger, number, role, budget, cancelled)?;
-        if table.layout.records != 0 || table.owned != 0 {
+        if table.layout.records != 0 || !table.owned.is_empty(budget, cancelled)? {
             return Err(refused());
         }
     }
@@ -106,3 +107,6 @@ fn refused() -> EditError {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod dynamic_tests;

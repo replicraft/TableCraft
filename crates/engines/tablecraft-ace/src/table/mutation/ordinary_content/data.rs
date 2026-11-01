@@ -23,7 +23,7 @@ const MASK_BITS: usize = u8::BITS as usize;
 pub(super) fn validate(
     ledger: &mut Ledger<'_>,
     definition: u32,
-    table: &Table,
+    table: &Table<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {

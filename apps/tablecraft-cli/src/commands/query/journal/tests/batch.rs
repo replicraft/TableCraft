@@ -96,7 +96,10 @@ fn journal_help_distinguishes_fixed_groups_from_indexed_null_transitions() {
     assert!(help.contains("atomic unindexed fixed SET groups"));
     assert!(help.contains("Indexed NULL target transitions remain refused"));
     assert!(help.contains("all SET expressions read the same original snapshot"));
-    assert!(help.contains("at most 64 pages, codepage 1252 and General sort metadata"));
+    assert!(help.contains("codepage 1252 and General sort metadata"));
+    assert!(help.contains("Variable-length inline allocation windows are bounded by the captured image and cumulative work limits"));
+    assert!(help.contains("indirect maps remain refused"));
+    assert!(!help.contains("at most 64 pages"));
     assert!(help.contains("callers cannot supply absence flags"));
     assert!(help.contains("Positive-program supplied equal assignments refuse with EventTiming"));
     assert!(help.contains(

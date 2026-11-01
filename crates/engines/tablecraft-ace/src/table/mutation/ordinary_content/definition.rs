@@ -1,5 +1,6 @@
 //! Exhaustive single-page declarations and exact catalog LVAL tail coverage.
 use super::{
+    inline::InlineBitmap,
     ledger::{Ledger, Role as PageRole},
     refused,
 };
@@ -65,19 +66,19 @@ pub(super) enum Role {
     User,
 }
 
-pub(super) struct Table {
+pub(super) struct Table<'image> {
     pub layout: Layout,
-    pub owned: u64,
+    pub owned: InlineBitmap<'image>,
 }
 
-pub(super) fn capture(
-    image: &NativeImage,
-    ledger: &mut Ledger<'_>,
+pub(super) fn capture<'image>(
+    image: &'image NativeImage,
+    ledger: &mut Ledger<'image>,
     number: u32,
     role: Role,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Table, EditError> {
+) -> Result<Table<'image>, EditError> {
     check(budget, cancelled)?;
     ledger.claim(number, PageRole::Definition, budget, cancelled)?;
     let page = ledger.page(number)?;
@@ -264,7 +265,7 @@ pub(super) fn capture(
                 budget,
                 cancelled,
             )?;
-            if owned != 0 || candidate != 0 {
+            if !owned.is_empty(budget, cancelled)? || !candidate.is_empty(budget, cancelled)? {
                 return Err(refused());
             }
             position += LVAL_BYTES;
@@ -275,7 +276,7 @@ pub(super) fn capture(
     }
     let owned = ledger.map(layout.usage, budget, cancelled)?;
     let candidates = ledger.map(candidate, budget, cancelled)?;
-    if candidates & !owned != 0 {
+    if !candidates.is_subset_of(owned, budget, cancelled)? {
         return Err(refused());
     }
     Ok(Table { layout, owned })
