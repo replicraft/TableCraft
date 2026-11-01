@@ -8,13 +8,15 @@ use super::{
     refused,
 };
 use crate::{
-    EditError, NativeImage, TableSchema,
+    EditError, InspectError, NativeImage, TableSchema,
     format::{
         bytes::{u16_at, u32_at},
         layout::Layout,
+        reader::Reader,
     },
     header::check,
     inspect_table_indexes,
+    table::long_value::maps,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -32,6 +34,9 @@ pub(super) enum Role {
     Relationships,
     Aces,
     User,
+    // Target-local declaration closure; the global closed-content family keeps
+    // its existing no-user-LVAL role policy.
+    SelectedUser,
 }
 
 pub(super) struct Table<'image> {
@@ -112,7 +117,7 @@ pub(in crate::table::mutation) fn validate_user(
     let declaration = raw::capture(
         image,
         schema.definition_page(),
-        Role::User,
+        Role::SelectedUser,
         budget,
         cancelled,
     )?;
@@ -136,16 +141,34 @@ pub(in crate::table::mutation) fn validate_user(
         budget,
         cancelled,
     )?;
-    if position
-        != declaration
-            .length
-            .checked_sub(size_of::<u16>())
-            .ok_or_else(refused)?
-    {
+    let mut reader_source = image.reader();
+    let mut reader = Reader {
+        source: &mut reader_source,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let declarations = maps::declarations(&mut reader, schema)?;
+    super::super::no_required_programs::declarations::validate(
+        schema,
+        &declarations,
+        reader.budget,
+        reader.cancelled,
+    )?;
+    // The shared reader may stop at the first terminator. Exact declared tail
+    // size additionally refuses omitted pairs, early FFFF and trailing bytes.
+    let terminal = declarations
+        .entries
+        .len()
+        .checked_mul(LVAL_BYTES)
+        .and_then(|bytes| position.checked_add(bytes))
+        .ok_or(InspectError::StructureLimit)?;
+    if terminal.checked_add(size_of::<u16>()) != Some(declaration.length) {
         return Err(refused());
     }
     let page = raw::page(image, schema.definition_page())?;
-    if u16_at(page, position)? != TERMINATOR {
+    if u16_at(page, terminal)? != TERMINATOR {
         return Err(refused());
     }
     check(budget, cancelled)?;
@@ -154,3 +177,6 @@ pub(in crate::table::mutation) fn validate_user(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod selected_lval;

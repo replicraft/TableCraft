@@ -10,7 +10,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const DDL_FLAG: u8 = 1;
 const MAX_NAME_MAP_BYTES: usize = 1024 * 1024;
 
-pub(super) fn qualify(
+pub(in crate::table::mutation) fn qualify(
     schema: &TableSchema,
     properties: &TableProperties,
     budget: &mut ResourceBudget,

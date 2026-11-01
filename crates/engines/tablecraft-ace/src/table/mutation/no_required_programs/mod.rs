@@ -1,7 +1,8 @@
 //! Source-bound admission for the strict native target program-storage profile.
 //! Inferred bounded profile; native Access save/reopen conformance remains pending.
 mod catalog;
-mod declarations;
+pub(in crate::table::mutation) mod declarations;
+mod properties;
 
 #[cfg(test)]
 mod tests;
@@ -38,13 +39,17 @@ impl<'image> NoRequiredTablePrograms<'image> {
         {
             return Err(refused());
         }
-        let catalog_reference = catalog::validate(image, schema, budget, cancelled)?;
+        let selected = catalog::validate(image, schema, budget, cancelled)?;
+        if selected.properties_present {
+            properties::capture(image, schema, budget, cancelled)?;
+        }
+        let catalog_reference = selected.reference;
         declarations::capture(image, budget, cancelled)?;
         super::ordinary_content::definition::validate_user(image, schema, budget, cancelled)?;
 
-        // Public coverage is only a corroborating observation after the raw
-        // four-carrier row check and physical catalog census above. Its three
-        // payload slots alone cannot establish LvProp absence or row completeness.
+        // Public coverage corroborates the raw code-carrier NULL checks,
+        // strict property qualification and physical catalog census. Its three
+        // slots alone establish neither property completeness nor row closure.
         let coverage = image.inspect_table_macro_coverage(schema.object_id(), budget, cancelled)?;
         if coverage.table_origin().object_id() != schema.object_id()
             || coverage.table_origin().native_id() <= 0

@@ -19,8 +19,11 @@ subversion zero. `NoRequiredTablePrograms` then requires:
 - A local Type=1/Flags=0 target with its full native identity, actual TD page and
   Tables parent. All direct children refuse. Cross-kind object-ID aliases and
   ambiguous parent references sharing the selected TD's low24 bits refuse.
-- Four physically present OLE declarations, `Lv`, `LvProp`, `LvModule` and
-  `LvExtra`, whose target cells are NULL with empty raw spans. The five remote
+- The physically present OLE code declarations, `Lv`, `LvModule` and `LvExtra`,
+  whose target cells are NULL with empty raw spans. `LvProp` is either NULL with
+  an empty span or a nonempty bag with complete MR2 framing, exact decoded
+  agreement and shared supported-property qualification. Present-empty bags,
+  unknown keys/types/flags/values and unused dictionary names refuse. The five remote
   fields, `Database`, `Connect`, `ForeignName`, `RmtInfoShort` and `RmtInfoLong`,
   must satisfy the same NULL/empty-span condition. Present-empty, opaque,
   omitted and short carriers do not count as absence.
@@ -34,13 +37,20 @@ subversion zero. `NoRequiredTablePrograms` then requires:
   ownership, live LVAL references and physical overlap protection. Relationships
   involving the selected table and unsupported target constraints still refuse.
 
-Catalog slots with flags normally refuse. The sole exception is a bounded
-zero-length deleted tombstone, optionally also carrying the relocated bit. Its
-start and end must coincide outside the complete slot directory and within the
-page; it contains no record or payload reference. Unsupported flag bits,
-relocated-only slots and every nonempty flagged catalog record refuse. This
-exception preserves the observed native empty slot; it does not skip deleted
-record contents when establishing child coverage.
+The catalog census classifies every physical slot before resolving live roots.
+Each forwarding hop must remain within sorted catalog-owned DATA pages with the
+correct native owner. Every non-root hop must be a nonempty hidden record claimed
+by exactly one logical root; orphaned/shared hidden records, cycles and unknown
+flag bits refuse. Existing bounded reader hop limits remain authoritative. The
+resolved body receives complete semantic checks while catalog identity retains
+the original live root. Hidden bodies never count as additional logical objects.
+Forwarding roots retain their original inactive capacity.
+
+A bounded zero-length deleted tombstone, optionally also relocated, remains inert.
+Its start and end must coincide outside the complete slot directory and within
+the page. It contains no record or payload reference. Nonempty deleted records
+are accepted only as uniquely owned forwarding intermediates or terminals; they
+are never silently skipped when establishing child coverage.
 
 Unknown object storage kinds refuse, except the explicitly recognized native
 database/property record kinds. Linked and ODBC table origins also refuse until
@@ -90,6 +100,12 @@ certificate borrows the exact image/table/origin, has no public constructor and
 uses a distinct normal Source payload-admission case. It is neither an empty
 program selection nor an engineering-preview conversion.
 
+Selected ordinary Memo/OLE declarations now retain exact widths, flags, variable
+ordering, one owned/candidate pair per LVAL field and an exact final terminator.
+These are readonly siblings; even empty fixed/fitted target groups refuse them.
+The original property/OLE corpus and normal fitting saves have separate
+[source evidence](../../testing/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md).
+
 The existing fixed DATA and fitting manual-Int32 index rules remain those in
 [ordinary fixed writes](NORMAL_ACE_ORDINARY_FIXED.md). Independent proof freshly
 recaptures BEFORE, repeats the admission conjunction and compares the complete
@@ -97,7 +113,7 @@ expected image and changed-row count. All bytes outside qualified changes remain
 exact, including unrelated object payloads and empty tombstone directory words.
 No allocation, split, record growth or EOF change is introduced.
 
-`TCNI0004` retains original typed requests and the BEFORE digest, never an absence
+`TCNI0004` (fixed) and `TCNI0005` (fitted) retain original typed requests and the BEFORE digest, never an absence
 flag or serialized certificate. Recovery uses the same fresh native admission
 and complete-image reconstruction before effects. The genuine recovery checks exercise this contract independently of the earlier
 source-only observations.

@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "status": "passed-independent-engineering",
+  "scope": "Normal fitting Sentinel.Marker updates on unchanged genuine ACE16-family originals with supported nonempty PublishToWeb property and readonly OLE",
+  "source_record": "ace16-genuine-property-lval-sources-2026-11-01.json",
+  "source_admission_before_producer": true,
+  "native_access": "Unrun",
+  "counts": {
+    "explicit_source_tests": 13,
+    "native_test_functions": 4,
+    "native_commits": 12,
+    "repeated_recovery_contexts": 36,
+    "mixed_partial_contexts": 12,
+    "forgeries_refused": 12,
+    "typed_session_saves": 12,
+    "sql_session_saves": 12,
+    "stale_handle_predecessor_saves": 2,
+    "cli_saves": 12,
+    "cli_exact_readbacks": 12,
+    "cli_capacity_refusals": 2,
+    "ace_unit_passed": 1093,
+    "ace_unit_ignored": 50,
+    "recovery_regression_passed": 83,
+    "recovery_regression_ignored": 9,
+    "adapter_unit_passed": 79,
+    "cli_unit_passed": 94
+  },
+  "logs": [
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/full-admission-third.log",
+      "bytes": 549,
+      "sha256": "f0f2565becfdc098c2bc99f80c6ce8c39cc6fb6efaad9eef0af2fdeb15cffa45"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-0.log",
+      "bytes": 628,
+      "sha256": "379bfdff6589f08afcd02f204b00fb8df356ff0e5d45a5604680c6b4f2c2bbbe"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-1.log",
+      "bytes": 742,
+      "sha256": "96b80ce1d73f4ba42b4772c7709bbf5377b57067cb143005cd423c86b2ff8f35"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-2.log",
+      "bytes": 695,
+      "sha256": "b024884e71468a664b2db8c7e154b8a7dab485f37f44c67382e5bf23a62f02ed"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-3.log",
+      "bytes": 694,
+      "sha256": "a589f31e4937b5254f3cde059ab9aabcd37435b9431b98e37b19520cf076825b"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-4.log",
+      "bytes": 437,
+      "sha256": "26626cd4d34497af76ae08c25fb16e5991815f1a7bb616dfcd7c9605efc11d59"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/source-batch-5.log",
+      "bytes": 416,
+      "sha256": "91fbfbd3c398a68cdce73ff3b47592d58b6c9aa3abc5b6a9d13e720daa2d8967"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/native-saves-second.log",
+      "bytes": 792,
+      "sha256": "c881ca72a34748281206d6dcc3b442e12673a5996d1e28c1db327f5d85ce30a2"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/access-saves-first.log",
+      "bytes": 694,
+      "sha256": "03d36a112641eac1f0f374cca651a42740da69fcca858cf16b16228b443e0f3c"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/cli-saves-first.log",
+      "bytes": 914,
+      "sha256": "469054465f44dfa2b9d0c303dbcefa6dcf92114921e9bac0d477c9087e376613"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/ace-unit-batch.log",
+      "bytes": 153023,
+      "sha256": "0368a488e066995b46247f986ae4747ccf97732be0c4c6974908e5e93179efb3"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/recovery-regression-batch.log",
+      "bytes": 11205,
+      "sha256": "2809eb26e00360003dda74f9947a957472ffcb4a4a0fcf27b9b1375ba6ff5d4b"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/access-unit-batch.log",
+      "bytes": 9690,
+      "sha256": "a24f07cff15736b9b3ee4a35193fa6655e0b3099951f954cf5a57f906a1c05ba"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/cli-unit-continuation.log",
+      "bytes": 10616,
+      "sha256": "93442bebfe550d109467ccff963c505e5836febed6066b00621a0ec21053ce79"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/strict-continuation.log",
+      "bytes": 526,
+      "sha256": "865b18e07cecfea71031ee544bc33fab9871d31b827838132ccc1616092b8bf3"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/journal-only-continuation.log",
+      "bytes": 307,
+      "sha256": "60b18025d3b43f639006fbeaa7b28a456c92cf7e2bd8e7849a296d62a2b5a674"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/doc-links-first.log",
+      "bytes": 53,
+      "sha256": "a0122a0feba39f9558a3f45c8b6a124f55e3e6c21bb29be0f8e26495add1256a"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/dependency-first.log",
+      "bytes": 56,
+      "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/preview-only-continuation.log",
+      "bytes": 184,
+      "sha256": "c8d4461f9997079b3c0b2a63ae023c1f66eb3bc2a167ad3ddbe78b63af9d9029"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/minimal-reader-continuation.log",
+      "bytes": 183,
+      "sha256": "e3a4323f03a327130a3c964001f438dfc828b2dbb2ca4ed278684dba67b10e67"
+    },
+    {
+      "path": ".cache/ace16-ordinary-property-lval-next-20261101/minimal-adapter-continuation.log",
+      "bytes": 301,
+      "sha256": "d1d4950773413cf6311445610f8e2b1dbd7cffc8d282e7f28fe2a5e26df41233"
+    }
+  ],
+  "retained_first_attempts": [
+    {
+      "log": "production-check-first.log",
+      "result": "missing u32_at import and unused Resource after catalog extraction; corrected imports"
+    },
+    {
+      "log": "full-admission-second.log",
+      "result": "same compile error retained; no source-admission result"
+    },
+    {
+      "log": "source-batch-0-first-failure.log",
+      "result": "unknown non-table group lacked required name and failed inert decode before intended strict-framing guard; corrected only synthetic negative framing"
+    },
+    {
+      "log": "native-saves-first.log",
+      "result": "overqualified selector matched zero tests; corrected to api::normal::genuine_property_lval::; four tests then passed"
+    },
+    {
+      "log": "cli-unit-batch.log",
+      "result": "CLI has no library target; corrected command to --bins; 94 passed"
+    }
+  ],
+  "expected_images_modified_after_producer": false,
+  "limitations": [
+    "No new Memo/OLE authoring",
+    "No record growth, allocation or EOF change",
+    "No native Access or mixed-client qualification",
+    "Broader retained indexes and general INSERT/DELETE remain open"
+  ],
+  "feature_checks": [
+    "all-feature strict engine/adapter/CLI all-targets",
+    "journal-only strict all-targets",
+    "preview-only strict all-targets",
+    "minimal reader",
+    "minimal adapter"
+  ],
+  "review": {
+    "property_and_selected_lval": "No actionable findings",
+    "catalog_forwarding_and_reader_scope": "No actionable findings"
+  }
+}
