@@ -230,3 +230,6 @@ pub mod genuine_indexed_delete;
 
 /// Frozen complete manual indexed INSERT originals and literal results.
 pub mod genuine_indexed_insert;
+
+/// Independent varying-width INSERT sources with request-aligned physical ROWs.
+pub mod genuine_indexed_insert_association;

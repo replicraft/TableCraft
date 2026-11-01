@@ -32,8 +32,8 @@ without reading inactive numeric payloads; required/unique constraints retain
 their existing checks. Ignored-NULL indexes, composite/non-I32 keys, interior
 nodes, foreign index references and unqualified table/field shapes refuse.
 This operation removes whole rows and introduces no NULL assignment or generation
-policy. The new literal DELETE source tranche covers ascending present keys;
-directional/NULL DELETE comparisons are not claimed as new runtime evidence.
+policy. The initial literal tranche covers ascending present keys. A separate follow-on
+now qualifies descending Guard keys with an actual stored NULL member.
 
 The indexed path proves catalog-wide member and map-storage ownership, excludes
 other DATA/INDEX/metadata roles and all live or declared LVAL references, and
@@ -143,3 +143,15 @@ Microsoft Access save/reopen and Windows locking/durability comparisons remain
 unrun. Broader trees, key families, relationships/programs and reclamation remain
 separate work toward ACE16 compatibility. The separate
 [normal explicit-row INSERT route](NORMAL_ACE_INSERT.md) retains its own policy.
+
+## Descending and stored-NULL follow-on
+
+Sixteen independent native source views and 80 SDK reports now cover actual
+DESC Int32 leaves containing a five-byte NULL entry beside present nine-byte
+entries. Ten normal commits match the literal full images, including both
+exterior request orders and empty resulting roots. Forty recovery contexts,
+eight committed mixed-target refusals, 44 protected-AFTER forgeries and two
+original inactive-NULL witness recovery refusals pass. Logical NULL does not
+authorize changes to inactive payloads, original masks or vacated entry bytes.
+See the [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
+No interior-tree or wider-key mutation is established by these results.
