@@ -3,6 +3,8 @@
 Normal INSERT has a separate original-request intent, native planner, retained
 session and CLI consumer. It uses the shared record serializer and an independent
 manual proof; engineering candidates retain their separate admission policies.
+The retained-tree, original-omission and inline Memo/OLE sections below extend
+the initial complete scalar profile; their remaining limits stay explicit.
 
 ```sh
 tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES (24, 'new', NULL)" \
@@ -179,3 +181,62 @@ Four directly constructed literal plans also prove without planner authority;
 full budget/cancellation controls and typed/SQL/CLI NULL readbacks pass. See the
 [source contract](../../testing/ACE16_NORMAL_INDEXED_DESC_NULL_INSERT_SOURCES.md)
 and [write record](../../testing/results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
+
+
+## Retained interior trees
+
+Normal insertion now retains qualified single-Int32 interior trees when all
+resulting entries fit the existing topology. Earlier leaves retain their original
+entry counts; the last leaf absorbs growth. Parent fences include both the full
+key and physical row reference. Physical ownership and live long-value exclusions
+cover every descendant. Splits, new index pages and page retirement remain open.
+
+The independent proof reconstructs original membership, DATA placement, final
+leaf partitions, fences and historical distinct-key deltas without using staged
+keys or patches. Four literal source views and 24 independent reader observations
+preceded producer execution. Native commits, mixed-target recovery, forgery and
+resource checks pass; typed and SQL sessions preserve the same complete images.
+
+## Original omitted fields and constant defaults
+
+`plan_recoverable_ordinary_omitted_row_inserts` retains original field presence.
+Supplied NULL remains supplied data. Only an omitted field selects its fresh
+DefaultValue declaration or the existing NULL fallback. Constant-literal assignment
+is bounded; clock, random, identity generation and arbitrary stored expressions
+remain unsupported here. Complete declarations and target eligibility still
+qualify for an empty batch. Required fields without usable values and Boolean
+NULL refuse.
+
+TCNA0002/profile2 stores full-width original presence rows and the exact BEFORE
+binding. Tag8 with zero payload means omitted; tag0 means supplied NULL. Framing,
+UTF8, carriers and bounds validate before decoded allocation. Recovery consumes
+the same checked V1 session, resolves declarations afresh and independently
+reconstructs complete DATA/index results before any target effects. Expanded rows,
+SQL and cached defaults never become replay authority.
+
+The Access adapter retains the complete or omitted native plan explicitly.
+Typed `OmittingInsertableTable` and SQL partial field lists use the presence route;
+complete-field SQL retains TCNA0001. Selection occurs before expression evaluation
+and does not retry failed planning under another policy. Native codec, complete
+image, recovery, refusal and resource tests pass, as do typed and SQL session
+checks. This does not establish native Access default execution equivalence.
+
+## Inline Memo and OLE values
+
+Qualified ordinary Memo/OLE insertion now accepts NULL and matching Text/Binary
+carriers whose encoded payload fits the existing inline profile, at most 64
+bytes. Empty values retain present descriptors and remain distinct from NULL.
+The shared physical encoder has real preview and journal consumers; independent
+proof reconstructs descriptor framing and record bytes separately. External
+payload allocation remains outside this normal route.
+
+Eighteen independent source views passed native reads and independent reader
+comparisons before producer calls. Sixteen complete-image insertions and separate
+proof, recovery, forgery, capacity and resource controls pass. Typed sessions cover
+binary and Unicode values; SQL covers representable Memo/NULL cases. The CLI does
+not invent binary literal syntax. Native Access save/reopen remains unrun.
+
+
+The [combined execution record](../../testing/results/ace16-normal-insert-expansion-2026-11-01.json)
+retains focused receipts, strict feature builds, the broad regression batch and
+first failures for these three additions.

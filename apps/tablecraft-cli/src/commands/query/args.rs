@@ -19,7 +19,7 @@ pub(crate) enum Command {
     JournalUpdate(Box<super::journal::UpdateArguments>),
     /// Delete qualified original rows in place with a retained normal journal.
     JournalDelete(Box<super::journal::DeleteArguments>),
-    /// Insert one complete VALUES row with a retained normal journal.
+    /// Insert one VALUES row with qualified defaults and a retained normal journal.
     JournalInsert(Box<super::journal::InsertArguments>),
     /// Recover one paired native edit without replaying SQL.
     RecoverUpdate(Box<super::journal::RecoveryArguments>),

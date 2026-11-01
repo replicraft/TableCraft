@@ -1,5 +1,22 @@
 # Implementation status
 
+## Retained-tree, default and inline-value insertion
+
+Normal INSERT now maintains fitting single-Int32 interior trees, preserving
+existing topology and rebuilding full key/ROW fences. Original omitted fields
+use TCNA0002 with fresh constant-default resolution and independent replay;
+supplied NULL remains distinct. Qualified inline Memo/OLE values now share the
+physical encoder with preview consumers, retaining separate manual proof.
+Native, typed/SQL session and CLI checks pass against frozen independent images.
+Strict all-feature, journal-only, preview-only and minimal builds pass. The broad
+batch passes 1,129 ACE units, 79 adapter units, 102 CLI units and 83 default
+recovery functions. Exact receipts and first failures remain in the
+[execution record](testing/results/ace16-normal-insert-expansion-2026-11-01.json).
+Native Access save/reopen remains unrun; splits, allocation, broader keys and
+identity/clock defaults remain unfinished. See the
+[normal INSERT contract](access/writes/NORMAL_ACE_INSERT.md).
+
+
 ## Retained-tree deletion and optional indexed insertion
 
 Normal DELETE now retains qualified single-Int32 NODE trees without contraction,

@@ -2,6 +2,15 @@
 
 ## Current product priority
 
+Normal INSERT now also fits retained single-Int32 interior trees, resolves
+qualified constant defaults from original omitted-field requests, and stores
+qualified inline Memo/OLE values through the existing offline sessions and CLI.
+Independent complete-image sources preceded producer tests; native recovery,
+forgery, resource, typed/SQL and CLI checks pass. Splits, broader indexed keys,
+external LVAL allocation, generated/clock defaults, relationships and positive
+INSERT programs remain work. Native Access save/reopen remains unrun. See the
+[normal INSERT contract](access/writes/NORMAL_ACE_INSERT.md).
+
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and
 the CLI, including equal/empty requests and TCNI0004 recovery. Full content proof
