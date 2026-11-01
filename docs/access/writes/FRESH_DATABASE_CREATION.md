@@ -130,3 +130,14 @@ and publication. A malformed late table produces no staging or final entry.
 The CLI remains a single-table consumer: `--column` and exclusive typed `--field`
 continue to call their existing preparation methods. This API grants no normal
 editing, journal or macro-absence permission for imported ACE files.
+
+
+## Required and empty-Text source qualification
+
+Eighteen independent native17 source views now qualify explicit Required and
+AllowZeroLength Boolean properties: fourteen healthy sources and four readable
+constraint violations. Native declaration/constraint reads, an explicit export,
+eighteen exact read-only SDK reports and saved verification pass before any
+matching creator is run. The [source record](../../testing/results/ace16-creation-property-sources-2026-11-01.json)
+retains receipts. These are authored metadata sources, not native Access creation
+or save/reopen qualification. Creator support is tested separately.

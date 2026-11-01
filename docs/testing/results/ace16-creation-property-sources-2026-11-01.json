@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent native17 Required/AllowZeroLength metadata sources before matching creator",
+  "views": 18,
+  "healthy_views": 14,
+  "readable_constraint_negative_views": 4,
+  "native_source_test_functions": 1,
+  "explicit_export_test_functions": 1,
+  "sdk_exact_reads": 18,
+  "sdk_writer_calls": 0,
+  "compiler_calls": 1,
+  "sdk_read_seconds": 2.940377457998693,
+  "creator_calls_during_source_phase": 0,
+  "expected_bytes_retuned_to_producer": false,
+  "source_manifest": {
+    "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/source-export-first/manifest.tsv",
+    "bytes": 1732,
+    "sha256": "39915febf9e675c2883bfa7e595984f941a516afcf9fe0f9d6db3455c74beeb0"
+  },
+  "sdk_result": {
+    "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/observations-first/result.json",
+    "bytes": 410,
+    "sha256": "c996c7c2fc3e22d537c46c04044300b63993e7048aa06913cb55b68fd48cf4fc"
+  },
+  "receipts": [
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/source-receipts-first/export.json",
+      "bytes": 460,
+      "sha256": "b70896e364ecacc03008da4c53655bcd4b347b1850f601363d1222a028596784",
+      "returncode": 0,
+      "seconds": 0.2778227919479832
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/source-receipts-first/native-source.json",
+      "bytes": 484,
+      "sha256": "1e9658b4d02355140906eb636302157c8d48187cbdeb81ed26399313ea6f92e6",
+      "returncode": 0,
+      "seconds": 19.70911570894532
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/source-receipts-first/terminal.json",
+      "bytes": 334,
+      "sha256": "10fac3fb801d84aae4418c3646734b4744966ab1c88a0c5fc7111080d70101dd"
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/class-pins.json",
+      "bytes": 585,
+      "sha256": "5b0eb882903ec650e2a087ddc705e9208368517545a13e7fbca0bffba2d1d3b8"
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/compile.json",
+      "bytes": 700,
+      "sha256": "fe04fc41b09657255c0f7b41260f9f0e53979fda0b4b24cdc903c3280731d8ee",
+      "returncode": 0,
+      "seconds": 0.9064037499483675
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/prepare-inputs.json",
+      "bytes": 364,
+      "sha256": "db53dc7b486c0df29103415e977d9931b439f60e8af0aeb4864adb8edd128aa5",
+      "returncode": 0,
+      "seconds": 0.03161833307240158
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/prepare.json",
+      "bytes": 693,
+      "sha256": "e102d008f9ad86d718b45904d7c1c6db19165b9e766a01ffd4890adc4c0db5e1",
+      "returncode": 0,
+      "seconds": 0.06506837508641183
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/read.json",
+      "bytes": 695,
+      "sha256": "3212f031e31a1a1259977ceb12b5d64a11ae05a6c69e9a1b0dd323c271672644",
+      "returncode": 0,
+      "seconds": 2.9911004580790177
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/saved.json",
+      "bytes": 699,
+      "sha256": "0cd1a0f9755d28b08f2d1ec531e5858afc453edae0b1053df3344480776a0f32",
+      "returncode": 0,
+      "seconds": 0.05647908407263458
+    },
+    {
+      "path": ".cache/ace16-native-creation-properties-next-20261101/qualification-first/sdk-receipts-first/terminal.json",
+      "bytes": 641,
+      "sha256": "ea3442e39732728b997229ab1e13b211777f6c20144918833dee775617ca4fce"
+    }
+  ],
+  "native_access_qualification": "unrun",
+  "provenance": "Independently authored derivatives of existing original creation fixtures; no third-party fixtures added."
+}
