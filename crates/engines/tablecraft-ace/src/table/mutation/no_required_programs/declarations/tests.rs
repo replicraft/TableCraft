@@ -196,3 +196,65 @@ fn framing_complete_terminator_cannot_hide_missing_catalog_map_roles() {
         assert_eq!(image.as_bytes(), source.bytes);
     }
 }
+
+#[test]
+fn complete_field_coverage_does_not_authorize_shared_lval_or_ordinary_map_storage() {
+    for header in [5, 6] {
+        for alias in 0..3 {
+            let mut source = sources::source(sources::Case::One);
+            source.bytes[20] = header;
+            let definition = 2 * 4096;
+            let length = u32::from_le_bytes(
+                source.bytes[definition + 8..definition + 12]
+                    .try_into()
+                    .unwrap(),
+            ) as usize;
+            let first = definition + length - 42;
+            let (destination, reference) = match alias {
+                // Different declared fields retain distinct numbers while
+                // sharing exactly the first field's owned map cell.
+                0 => (first + 12, 0x308_u32),
+                // Owned and candidate roles of one field cannot share a cell.
+                1 => (first + 6, 0x308),
+                // A catalog LVAL cannot reuse the user table's ordinary map.
+                2 => (first + 2, 0x303),
+                _ => unreachable!(),
+            };
+            source.bytes[destination..destination + 4].copy_from_slice(&reference.to_le_bytes());
+            let image = NativeImage::capture(
+                &mut Cursor::new(source.bytes),
+                SCOPE,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let table = schema(&image, "MSysObjects");
+            let mut input = image.reader();
+            let mut work = budget();
+            let mut reader = Reader {
+                source: &mut input,
+                header: image.catalog().header(),
+                budget: &mut work,
+                cancelled: &|| false,
+                reads: 0,
+            };
+            let declarations = maps::declarations(&mut reader, &table).unwrap();
+            assert!(declarations.complete);
+            assert_eq!(declarations.entries.len(), 4);
+            assert_eq!(
+                declarations
+                    .entries
+                    .iter()
+                    .map(|entry| entry.number)
+                    .collect::<Vec<_>>(),
+                [5, 6, 7, 8]
+            );
+            // This helper validates declaration bijection, not storage roles.
+            validate(&table, &declarations, &mut budget(), &|| false).unwrap();
+            assert!(matches!(
+                capture(&image, &mut budget(), &|| false),
+                Err(EditError::Unsupported(crate::WriteBlocker::RowLayout))
+            ));
+        }
+    }
+}

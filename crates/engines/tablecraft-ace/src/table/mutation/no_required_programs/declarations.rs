@@ -26,7 +26,10 @@ pub(super) fn capture(
             validate(schema, declarations, reader.budget, reader.cancelled)
         },
     )?;
-    drop(census);
+    // Field-number coverage alone does not exclude different fields/tables
+    // sharing a physical map cell or bitmap page. Check every actual column
+    // owner against the complete census before issuing normal admission.
+    census.require_column_storage_exclusive(budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(())
 }
