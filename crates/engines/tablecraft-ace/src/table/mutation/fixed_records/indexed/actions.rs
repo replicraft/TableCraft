@@ -3,7 +3,7 @@ use super::CheckedIndexes;
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, WriteBlocker, check_table,
     format::{
-        data_type::{CURRENCY, INT32, INT64},
+        data_type::{CURRENCY, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
         layout::CALCULATED_EXT_MASK,
     },
     header::check,
@@ -22,6 +22,27 @@ impl<'image> CheckedIndexes<'image> {
     pub(in crate::table::mutation) fn capture_actions(
         image: &'image NativeImage,
         table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_kind(image, table, false, budget, cancelled)
+    }
+
+    /// Complete INSERT facts additionally admit bounded Short Binary keys;
+    /// DELETE and UPDATE retain their existing independent policies.
+    pub(in crate::table::mutation) fn capture_insert(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_kind(image, table, true, budget, cancelled)
+    }
+
+    fn capture_kind(
+        image: &'image NativeImage,
+        table: &str,
+        binary: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -57,6 +78,18 @@ impl<'image> CheckedIndexes<'image> {
                     .iter()
                     .find(|field| field.number() == key.number())
                     .ok_or(EditError::Preservation)?;
+                if binary
+                    && field.native_type() == SHORT_BINARY
+                    && field.scalar_type() == Some(ScalarType::Binary)
+                {
+                    if field.fixed()
+                        || field.extended_flags() != 0
+                        || !(1..=MAX_SHORT_BINARY_BYTES).contains(&field.storage_length())
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
+                    continue;
+                }
                 let width = match (field.native_type(), field.scalar_type()) {
                     (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
                     (INT64, Some(ScalarType::Int64)) | (CURRENCY, Some(ScalarType::Currency)) => {

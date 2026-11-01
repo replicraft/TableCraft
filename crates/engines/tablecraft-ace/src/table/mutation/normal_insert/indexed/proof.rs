@@ -1,4 +1,5 @@
 //! Fresh original/request replay; no insertion patches or prepared keys enter.
+mod binary;
 mod integral;
 mod optional;
 mod tree;
@@ -6,7 +7,7 @@ use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{CURRENCY, INT64},
+        data_type::{CURRENCY, INT64, SHORT_BINARY},
         page::PAGE_BYTES,
     },
     header::check,
@@ -87,6 +88,12 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         budget
             .charge(Resource::Steps, schema.columns().len() as u64)
             .map_err(InspectError::from)?;
+        let field = index.columns().first().and_then(|key| {
+            schema
+                .columns()
+                .iter()
+                .find(|field| field.number() == key.number())
+        });
         let root_at = index.root_page() as usize * PAGE_BYTES;
         if image.as_bytes().get(root_at) == Some(&super::NODE_KIND) {
             tree::reconstruct(
@@ -101,17 +108,17 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                 budget,
                 cancelled,
             )?;
-        } else if index
-            .columns()
-            .first()
-            .and_then(|key| {
-                schema
-                    .columns()
-                    .iter()
-                    .find(|field| field.number() == key.number())
-            })
-            .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY))
-        {
+        } else if field.is_some_and(|field| field.native_type() == SHORT_BINARY) {
+            binary::reconstruct(
+                &image,
+                &source,
+                index,
+                rows,
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        } else if field.is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY)) {
             integral::reconstruct(
                 &image,
                 &source,

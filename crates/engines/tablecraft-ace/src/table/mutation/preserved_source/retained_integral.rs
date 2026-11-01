@@ -1,4 +1,4 @@
-//! Read-only ordinary integral-index qualification; no key mutation authority.
+//! Read-only ordinary integral and action Binary indexes; no mutation authority.
 mod ownership;
 use super::ColumnFraming;
 use crate::{
@@ -6,7 +6,7 @@ use crate::{
     NativeIndex, TableSnapshot, WriteBlocker,
     format::{
         allocation,
-        data_type::{BYTE, CURRENCY, INT16, INT32, INT64},
+        data_type::{BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
         reader::Reader,
     },
     header::check,
@@ -15,7 +15,16 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
-fn supported(field: &NativeColumn) -> bool {
+fn supported(field: &NativeColumn, framing: ColumnFraming) -> bool {
+    if matches!(framing, ColumnFraming::Actions)
+        && field.native_type() == SHORT_BINARY
+        && field.scalar_type() == Some(ScalarType::Binary)
+    {
+        return !field.fixed()
+            && field.extended_flags() == 0
+            && (1..=MAX_SHORT_BINARY_BYTES).contains(&field.storage_length());
+    }
+
     let width = match (field.native_type(), field.scalar_type()) {
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
         (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
@@ -61,7 +70,8 @@ pub(super) fn qualify(
                 }
             }
             .ok_or(InspectError::Malformed)?;
-            wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY);
+            wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
+                || matches!(framing, ColumnFraming::Actions) && field.native_type() == SHORT_BINARY;
         }
     }
     if !wide {
@@ -91,7 +101,7 @@ pub(super) fn qualify(
                 .constraints()
                 .is_some_and(|constraints| !constraints.ignore_nulls())
             || field.number() != key.number()
-            || !supported(field)
+            || !supported(field, framing)
         {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }

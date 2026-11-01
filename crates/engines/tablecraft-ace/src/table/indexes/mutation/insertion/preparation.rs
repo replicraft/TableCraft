@@ -226,6 +226,21 @@ impl<P: InsertProfile> Prepared<P> {
         Ok((result, append))
     }
 
+    /// Complete an already-fitting root leaf without NODE redistribution or
+    /// allocation capability. The shared prepare phase retained exact keys.
+    #[cfg(feature = "journal")]
+    pub(super) fn finish_fitting<const N: usize>(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<IndexInsertion, EditError> {
+        check(budget, cancelled)?;
+        if self.requires_continuation {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        self.finish_keys::<N>(budget, cancelled)
+    }
+
     #[cfg(feature = "journal")]
     pub(super) fn finish_existing<const N: usize>(
         mut self,

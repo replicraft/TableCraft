@@ -5,7 +5,7 @@ use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowInsert, WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{CURRENCY, INT64},
+        data_type::{CURRENCY, INT64, SHORT_BINARY},
         page::PAGE_BYTES,
     },
     header::check,
@@ -188,7 +188,7 @@ fn qualify<'image>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
-    let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;
+    let facts = CheckedIndexes::capture_insert(image, table, budget, cancelled)?;
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
     if facts.checked().schema().declared_rows() != schema.declared_rows()
@@ -196,7 +196,7 @@ fn qualify<'image>(
     {
         return Err(EditError::Preservation);
     }
-    let ownership = Ownership::capture_actions(image, facts.checked(), budget, cancelled)?;
+    let ownership = Ownership::capture_insert(image, facts.checked(), budget, cancelled)?;
     let live = Inventory::capture(image, budget, cancelled)?;
     // A proof-wire choice derived from already-paid native checks, never caller
     // authority. Keep the existing ASC/present reconstruction and its resource
@@ -258,7 +258,9 @@ fn qualify<'image>(
             check(budget, cancelled)?;
             match (field.native_type(), row.get(column)) {
                 (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
-                (_, Some(Value::Int32(_))) if !integral => {}
+                (SHORT_BINARY, Some(Value::Binary(value)))
+                    if value.len() <= field.storage_length() => {}
+                (_, Some(Value::Int32(_))) if !integral && field.native_type() != SHORT_BINARY => {}
                 (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
@@ -267,7 +269,9 @@ fn qualify<'image>(
             check(budget, cancelled)?;
             match (field.native_type(), request.values().get(column)) {
                 (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
-                (_, Some(Value::Int32(_))) if !integral => {}
+                (SHORT_BINARY, Some(Value::Binary(value)))
+                    if value.len() <= field.storage_length() => {}
+                (_, Some(Value::Int32(_))) if !integral && field.native_type() != SHORT_BINARY => {}
                 (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }

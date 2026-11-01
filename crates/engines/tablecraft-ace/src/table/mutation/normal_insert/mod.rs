@@ -200,3 +200,6 @@ mod wide_primary_tests;
 
 #[cfg(test)]
 mod sparse_numeric_tests;
+
+#[cfg(test)]
+mod binary_proof_tests;
