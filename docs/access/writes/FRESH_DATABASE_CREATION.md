@@ -209,3 +209,14 @@ all-feature/all-target checks, minimal ACE/adapter builds and the 35-function
 creation regression filter (one ignored exporter) pass. Broader
 constant carriers, arbitrary defaults and AutoNumber mode detection remain work.
 Native Access and Windows qualification remain unrun.
+
+
+## Manual primary-key source qualification
+
+Twenty independent views now qualify ordinary Int32 primary metadata, valid
+initial rows, explicit duplicate/NULL constraint controls and eight literal normal
+INSERT AFTERs. Native read/export checks and sixteen healthy SDK observations
+pass before matching creators; four native constraint negatives remain explicit
+SDK exclusions. The [source record](../../testing/results/ace16-manual-primary-creation-sources-2026-11-01.json)
+separates real observations from copied-receipt tamper controls. Constructive
+primary-key support and native Access saves require separate acceptance.
