@@ -1,12 +1,27 @@
 # Implementation status
 
+## Compound DATA and INDEX allocation
+
+Normal complete-row INSERT now composes one EOF DATA reservation with two INDEX
+reservations and manual primary root promotion under one original source.
+Independent whole-image proof, two V2 commits, twenty pending recovery contexts,
+full public resource/cancellation controls and four retained-session commits pass.
+Earlier fitting split native/session checks also pass. See the
+[compound contract](access/writes/NORMAL_COMPOUND_ROOT_SPLIT.md).
+
+Strict all-feature/all-target, minimal, journal-only and preview-only profiles
+pass. The [execution record](testing/results/ace16-normal-compound-root-split-writes-2026-11-01.json)
+records this focused batch separately from the preceding full-suite run.
+Multiple-row/multiple-hint placement, recursive/wider splits, map expansion and
+native Access save/reopen remain work.
+
 ## Indexed Binary updates, root splits and wider primary creation
 
 Normal fitting [Binary index UPDATE](access/writes/NORMAL_BINARY_INDEX_UPDATE.md)
 now reaches typed/SQL retained sessions and CLI saves with independent full-image
 proof and TCNI5 recovery. [Normal Int32 root promotion](access/writes/NORMAL_ROOT_SPLIT.md)
 now appends two explicitly represented INDEX pages through TCNA4/V2, with full
-resource/cancellation and same-lease session checks. Compound DATA+INDEX
+resource/cancellation and same-lease session checks. Broader compound DATA+INDEX
 allocation and recursive/multiple splits remain separate work.
 
 Fresh creation now accepts manual Int64/Currency primary keys without carrier

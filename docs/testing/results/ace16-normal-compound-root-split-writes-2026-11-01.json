@@ -1,0 +1,368 @@
+{
+  "date": "2026-11-01",
+  "scope": "One complete-row normal INSERT requiring one DATA and two INDEX EOF pages through existing TCNA4/V2 and actual retained sessions",
+  "source_record": "ace16-compound-root-split-sources-2026-11-01.json",
+  "source_qualification_precedes_matching_producers": true,
+  "source_expected_images_changed": false,
+  "direct_literal_proofs": 2,
+  "direct_forgery_refusals": 30,
+  "native_v2_commits": 2,
+  "pending_recovery_contexts": 20,
+  "full_public_resource_header_contexts": 2,
+  "typed_principal_saves": 2,
+  "same_lease_empty_delete_saves": 2,
+  "prior_root_native_functions": 3,
+  "prior_root_host_functions": 1,
+  "checks": [
+    {
+      "name": "compound-and-root-proofs-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::root_split::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/compound-and-root-proofs-first.log",
+        "bytes": 959,
+        "sha256": "247099430e33d3ca275db0c933be0e8ed1fe34fd578a0a8a5cc5874fc6c7cf3f",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1324 filtered out; finished in 2.09s"
+        ]
+      }
+    },
+    {
+      "name": "compound-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::compound_root_split::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/compound-native-first.log",
+        "bytes": 832,
+        "sha256": "f2b5e127162e884cfcc671f0d4e42eb6e43fcade0f8577cff750944231e01e13",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 213 filtered out; finished in 13.02s"
+        ]
+      }
+    },
+    {
+      "name": "compound-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_compound_root_split",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/compound-host-first.log",
+        "bytes": 638,
+        "sha256": "397f8edd5cb2cb5e6bcf1e74a4fd50f2f9c9409e13f90d40ad70c5d1625832f8",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s"
+        ]
+      }
+    },
+    {
+      "name": "prior-root-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::root_split::",
+        "--",
+        "--include-ignored"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/prior-root-native-first.log",
+        "bytes": 664,
+        "sha256": "93c1903a0cdc8d115b36a3e473c10ecfef1a4a024a89b4837b3b59c0abf0bd5f",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 213 filtered out; finished in 8.55s"
+        ]
+      }
+    },
+    {
+      "name": "prior-root-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_root_split",
+        "--",
+        "--include-ignored"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/prior-root-host-first.log",
+        "bytes": 506,
+        "sha256": "e1617c385d95ee1cabdd5fdc9ee2c2c90ef5043155e2dc2c9d6b3e2b55e62782",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s"
+        ]
+      }
+    },
+    {
+      "name": "strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 101,
+      "accepted": false,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/strict-first.log",
+        "bytes": 1254,
+        "sha256": "c14865f305c23ef32fdd8ecb10479c2bd7bf596685d21ec98dbfdc2b67ae2892",
+        "test_results": []
+      }
+    },
+    {
+      "name": "strict-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/strict-second.log",
+        "bytes": 403,
+        "sha256": "bb2ea7780dc22c1c3a4150902f41666bd5067150f734e8b00cdaa70ee536c8cb",
+        "test_results": []
+      }
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/minimal-first.log",
+        "bytes": 525,
+        "sha256": "3b3a0d9b0a929f40c4e8a1912ec8d201368d4e1d117d7dd25fe0f757bedaedc1",
+        "test_results": []
+      }
+    },
+    {
+      "name": "journal-only-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/journal-only-first.log",
+        "bytes": 183,
+        "sha256": "d1e57505b2bb111afe1b3025ca41429efbf882ef9e800edd2207775f808e9b91",
+        "test_results": []
+      }
+    },
+    {
+      "name": "preview-only-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/preview-only-first.log",
+        "bytes": 183,
+        "sha256": "6a7166e1dfee160ca19daa1d5cca48d55baf13266459352316cf700e4481b2e2",
+        "test_results": []
+      }
+    },
+    {
+      "name": "post-import-proofs-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::root_split::",
+        "--",
+        "--include-ignored"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/post-import-proofs-first.log",
+        "bytes": 836,
+        "sha256": "d01ef58b41ff6e949dc7246f59040bdf29ab13acf0d9e99b3ac6a34d546a371a",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1324 filtered out; finished in 2.12s"
+        ]
+      }
+    },
+    {
+      "name": "node-source-modern-slices-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_delete::node_retirement_sources::node_child_retirement_sources_preserve_residuals_maps_history_aliases_and_full_rows",
+        "--",
+        "--exact",
+        "--ignored"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-compound-write-integration-20261101/node-source-modern-slices-first.log",
+        "bytes": 427,
+        "sha256": "891bc8c1e0f6044bcc9799ad42bf41889beda7992968c8a3320b982957c9bf2b",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1326 filtered out; finished in 0.39s"
+        ]
+      }
+    }
+  ],
+  "peer_review": {
+    "path": ".cache/ace16-normal-compound-root-split-next-20261101/query-composition-static-review.json",
+    "bytes": 1827,
+    "sha256": "fa60cde8443ac5258ee21caf43f7f6821211bea3ef9f02477e7aadd9bf2e2710",
+    "test_results": []
+  },
+  "review_corrections": [
+    "Added the integration resource child explicit path and natural function spacing before first compile.",
+    "Strict first stopped on a fixed-size chunks_exact use in the earlier node-retirement source audit. Changed to as_chunks and replayed all eight source views; source expectations unchanged.",
+    "Removed an unnecessary insertion helper re-export. Both real callers now import directly from the owning root_split module; three root/compound proof functions passed afterward."
+  ],
+  "full_suite_rerun": false,
+  "verification_scope": "Focused new compound acceptance and directly affected prior root regressions, plus strict feature profiles. The preceding full batch is recorded separately.",
+  "preceding_full_batch": "ace16-index-updates-splits-and-primary-creation-2026-11-01.json",
+  "native_access_save_reopen": "UNRUN",
+  "windows_durability": "UNRUN",
+  "sql_cli_compound_save": "Not claimed: exact supplied Binary84 has no qualified SQL literal.",
+  "remaining": [
+    "Multiple-row compound placement and multiple exhausted hints",
+    "Recursive/multiple and wider-codec splits",
+    "Map expansion and native Access qualification"
+  ]
+}
