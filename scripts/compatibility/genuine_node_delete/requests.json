@@ -1,0 +1,26 @@
+{
+  "state": "OBSERVED_ORIGINAL_INPUTS_AND_DELETE_LAW_BEFORE_MODEL",
+  "table": "Items",
+  "original_rows": 800,
+  "selected_ids": [302, 354],
+  "selected_ordinals": [301, 353],
+  "original_requests_in_written_order": [[301, 353], [353, 301]],
+  "expected_rows": 798,
+  "empty_request": {"ordinals": [], "expected": "byte-identical original"},
+  "laws": {
+    "records": "Only selected logical DATA directory words become original|0xc000; raw15B records, counts/free/payloads remain exact",
+    "table": "Only TD+16 live count800 becomes798; LAST and history800/7 remain exact",
+    "leafs": "Filter selected original ROWs within each ORIGINAL leaf partition, stable key+ROW order; every leaf stays nonempty",
+    "nodes": "Keep exact original child order/tail/links/height; each stored bound becomes retained child's maximum fullI32+ROW, preserving original child pointer",
+    "encoding": "Manual marker7f+signedBE32 xor80000000+ROWBE32, childBE32 forNODE; prefix=min(originalprefix,common retained fullwire); exact endbitmap/free; preserve unused/vacated tail",
+    "preservation": "No page/root/map/EOF allocation or retirement; every byte outside exact TDword/DATAwords/INDEXframing+active regions stays original"
+  },
+  "profiles": [
+    {"header": 5, "definition": 89, "roots": [91, 92], "primary_children": [98, 97], "guard_children": [101, 100], "selected_refs": [24381, 24433], "primary_before_counts": [302, 498], "primary_after_counts": [301, 497], "guard_before_counts": [395, 405], "guard_after_counts": [393, 405], "primary_fence_before": [302, 24381], "primary_fence_after": [301, 24380], "guard_fence_before": [3, 24433], "guard_fence_after": [3, 24426]},
+    {"header": 6, "definition": 106, "roots": [108, 109], "primary_children": [115, 114], "guard_children": [118, 117], "selected_refs": [28733, 28785], "primary_before_counts": [302, 498], "primary_after_counts": [301, 497], "guard_before_counts": [395, 405], "guard_after_counts": [393, 405], "primary_fence_before": [302, 28733], "primary_fence_after": [301, 28732], "guard_fence_before": [3, 28785], "guard_fence_after": [3, 28778]}
+  ],
+  "original_leaf_active_free": {"primary_left": [2718, 898], "primary_right": [2991, 625], "guard_left": [3555, 61], "guard_right": [2029, 1587]},
+  "expected_leaf_active_free": {"primary_left": [2709, 907], "primary_right": [2985, 631], "guard_left": [3537, 79], "guard_right": [2029, 1587]},
+  "native_producer_calls": 0,
+  "after_images_constructed": 0
+}

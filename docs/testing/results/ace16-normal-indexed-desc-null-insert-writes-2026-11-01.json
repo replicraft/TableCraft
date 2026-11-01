@@ -1,0 +1,170 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal explicit complete-row root-leaf INSERT with nullable and directional single-Int32 keys",
+  "source_before_producer": {
+    "native_views": 6,
+    "sdk_observations": 36,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-insert-source-first.log",
+      "bytes": 543,
+      "sha256": "7f9a454269c6e877c2e14cad5a318b2107e85d05b24ef286922ce6b06dfb5e1f"
+    }
+  },
+  "producer": {
+    "passed": true,
+    "native_functions": 5,
+    "complete_image_commits": 8,
+    "unique_literal_after_images": 4,
+    "empty_plans": 2,
+    "precise_primary_null_duplicate_refusals": 4,
+    "recovery_contexts": 20,
+    "committed_guard_only_mixed_refusals": 4,
+    "protected_after_forgery_refusals": 24,
+    "full_planner_resource_contexts": 4,
+    "exact_and_one_less_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "cancellation": [
+      "entry",
+      "middle",
+      "last"
+    ],
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-producer-first.log",
+      "bytes": 1110,
+      "sha256": "680034f11f2fd6b4e84f30822eace54c20b530186e3c7548f65ba35ae3cae999"
+    }
+  },
+  "direct_proof": {
+    "passed": true,
+    "functions": 2,
+    "literal_plans_without_staging": 4,
+    "wrong_after_or_request_refusals": 36,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-direct-proof-first.log",
+      "bytes": 597,
+      "sha256": "7c84e1cc8abc928473f85c58a4603b280d1e408448ffd86f9f8253bd34fa9c9a"
+    }
+  },
+  "host": {
+    "passed": true,
+    "functions": 2,
+    "typed_sql_sequential_saves": 8,
+    "refusal_seed_saves": 4,
+    "precise_primary_refusals": 8,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-host-first.log",
+      "bytes": 699,
+      "sha256": "5a58ee0af1c31b562f6c82b01da8904a178f800bef3f07cd3c2ab9832be727d3"
+    }
+  },
+  "cli": {
+    "passed": true,
+    "sequential_saves": 4,
+    "exact_null_tsv_readbacks": 4,
+    "precise_exit2_primary_refusals": 4,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-cli-first.log",
+      "bytes": 856,
+      "sha256": "d9bafa17d526fa2df050eb5ce9fc8bf61d48f51727ee15c19fe09fe72317cdf6"
+    }
+  },
+  "mechanics": [
+    "Actual SingleProfile and prepare_existing remain the sole stage consumer",
+    "Independent optional key and raw presence-mask proof reconstructs 5/9-byte directional entries and full bitmap/free framing",
+    "NULL is one distinct history family and is excluded from UNIQUE identity; Required remains enforced",
+    "Original complete TCNA0001 and V1 lifecycle unchanged"
+  ],
+  "legacy_regressions": {
+    "passed": true,
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/legacy-insert-first.log",
+        "bytes": 1072,
+        "sha256": "b4074b92b6ef2bae4f1a4961d2cabd50fcd4566d3c77b3cdeb9a9d51886d60a1"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/legacy-delete-first.log",
+        "bytes": 1254,
+        "sha256": "3e742ef56db8cc1a88dd62e50f30da12ef0e03cb94b1f6767551d851cf658492"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/legacy-null-delete-first.log",
+        "bytes": 706,
+        "sha256": "8b2eb347976538f3ed3b6d9e406cca0b33fbefe2afb5f2f949884fb70cd68e33"
+      }
+    ]
+  },
+  "broad_checks": {
+    "passed": true,
+    "ace_units": {
+      "passed": 1121,
+      "ignored": 107
+    },
+    "access_units": 79,
+    "cli_units": 102,
+    "recovery_functions": {
+      "passed": 83,
+      "ignored": 77
+    },
+    "feature_profiles": [
+      "all-features/all-targets strict ACE/Access/CLI/testkit",
+      "journal-only strict",
+      "preview-only strict",
+      "minimal ACE/Access"
+    ],
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/journal-first.log",
+        "bytes": 307,
+        "sha256": "f9cfbe76418e65305ebabf1eea1b0074cee45df14e638b4d06dce74648e7c8f8"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "2d305bfd04f1e4109e0eaccab1c1f5262d5872a700fbbc9cf8def1c04287ba39"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/strict-all-second.log",
+        "bytes": 526,
+        "sha256": "8bf3d3b01aaf0e3be17d24f52eab5302d9cafaa5425f6f178a32b51930a0b98e"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/units-first.log",
+        "bytes": 178459,
+        "sha256": "1a7af0649832b0bb089e5057d72537e6d114da51e27591d00edd9c738353ef97"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/cli-units-first.log",
+        "bytes": 11586,
+        "sha256": "d5efe51b98c716e5ba113e10be6ec9a29405ffd10ac498a40575a040a306b92a"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/recovery-first.log",
+        "bytes": 25403,
+        "sha256": "36e7ddcf91244bebd467970dca399ad9b5b2e904607e8fd0d5c058e54788297c"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "77e90f53993b62fae83cf4828ebd7b404e3e92239ec82667c0e42c5cb3b18332"
+      }
+    ],
+    "scope_note": "Broad batch predates the later source-only NODE INSERT gate and CLI help text update; those have separate focused verification."
+  },
+  "remaining": [
+    "NODE insertion and broader index keys",
+    "defaults/generation, relationships/programs and new LVAL payloads"
+  ],
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "engine_commit": "2747a124",
+  "cli_help_follow_on": {
+    "passed": true,
+    "functions": 2,
+    "command": "cargo test --locked -p tablecraft-cli --all-features --bin tablecraft normal_action_boundary_explicit",
+    "scope": "Updated help strings only, after the full 102-test CLI batch"
+  }
+}

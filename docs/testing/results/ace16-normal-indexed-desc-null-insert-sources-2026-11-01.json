@@ -1,0 +1,80 @@
+{
+  "scope": "Nullable/DESC manual Int32 root-leaf INSERT source evidence only",
+  "manifest": {
+    "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/expected-first/manifest.json",
+    "bytes": 13671,
+    "sha256": "29766255e68f64a0ea63f3ca562d4ba916600fe29eb393020380179faa0d5432"
+  },
+  "input_request_laws": {
+    "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/input-first-freeze.json",
+    "bytes": 5693,
+    "sha256": "fe28a3fe31ef47094d90037e365194b64bc27a4e75184be8b8538671c16de64f"
+  },
+  "code_before_constructor": {
+    "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/code-first-freeze.json",
+    "bytes": 10177,
+    "sha256": "dd68f3d99d2358c020500623646731a1ebf2d1980e11a61b01608bf32e5558e0"
+  },
+  "constructor": {
+    "status": "PASS_FIRST",
+    "views": 6,
+    "afters": 4,
+    "stdout": {
+      "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/constructor-first.stdout",
+      "bytes": 181,
+      "sha256": "77321a876abb0e17eba9fc8fcd134f5d6413fddb12b0afbc21811edb070c265f"
+    },
+    "stderr": {
+      "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/constructor-first.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native_producer_calls": 0
+  },
+  "sdk": {
+    "status": "PASS_FIRST",
+    "inventories": 6,
+    "metadata": 6,
+    "alias_cursors": 24,
+    "receipt": {
+      "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/reads-first/receipt.json",
+      "bytes": 50229,
+      "sha256": "71d63b4bcc06a967ba64ec579f799e1d9613e4c6daacce6799e8f21fb064da8e"
+    },
+    "saved": {
+      "path": ".cache/ace16-normal-indexed-insert-desc-null-next-20261101/source/reads-first/saved-verification.json",
+      "bytes": 594,
+      "sha256": "cc90fb8c245b64138acf61e0a46f9d5beba6974fcd013c0ea38d049ac9ef693e"
+    },
+    "frozen_pins_unchanged": true,
+    "native_producer_calls": 0
+  },
+  "native_source": {
+    "status": "PASS_FIRST",
+    "functions": 1,
+    "views": 6,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/nullable-insert-source-first.log",
+      "bytes": 543,
+      "sha256": "7f9a454269c6e877c2e14cad5a318b2107e85d05b24ef286922ce6b06dfb5e1f"
+    },
+    "root_pre_runtime_adaptation": "Equivalent inactive-payload match->unwrap_or(0) for lint only; private frozen draft preserved, no source/law change"
+  },
+  "history_law": "Primary4/5 and Guard3; frozen from pinned original reference before modeling, no retune",
+  "normal_writes": {
+    "status": "PASS",
+    "record": "ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json"
+  },
+  "public_replay": {
+    "status": "PASS",
+    "historical_artifacts_identical": 47,
+    "new_sdk_native_calls": 0,
+    "verification": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/public-replay-first-result.json",
+      "bytes": 263,
+      "sha256": "96f69582fe50b82296dd6fec177ff2436322c06ec3299b6d60cb3d2583884546"
+    }
+  },
+  "native_access": "UNRUN",
+  "windows": "UNRUN"
+}

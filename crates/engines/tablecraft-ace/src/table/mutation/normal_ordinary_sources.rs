@@ -167,3 +167,5 @@ mod indexed_association_originals;
 
 mod indexed_delete_desc_nullable;
 mod indexed_insert_association;
+
+mod indexed_insert_desc_nullable;

@@ -1,0 +1,150 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal native17 single-Int32 retained-tree DELETE without page retirement or allocation",
+  "source_before_producer": {
+    "native_views": 4,
+    "sdk_observations": 24,
+    "new_sdk_after_reads": 12,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-delete-source-first.log",
+      "bytes": 416,
+      "sha256": "82be6a2e69660431c980b5bfac9aeb283f0cfa3a7bec192ab71cae84283efcab"
+    }
+  },
+  "producer": {
+    "passed": true,
+    "native_functions": 6,
+    "complete_image_commits": 4,
+    "both_request_orders": true,
+    "empty_identity_plans": 2,
+    "recovery_contexts": 12,
+    "pending_partial_rollback_contexts": 8,
+    "committed_exact_after_contexts": 2,
+    "committed_mixed_target_refusals": 2,
+    "protected_after_forgery_refusals": 42,
+    "stale_raw_witness_refusals": 2,
+    "full_planner_resource_contexts": 4,
+    "exact_and_one_less_pools": [
+      "Bytes",
+      "Rows",
+      "Steps"
+    ],
+    "cancellation": [
+      "entry",
+      "middle",
+      "last"
+    ],
+    "empty_child_retirement_refusals": 4,
+    "readable_root_child_stamp_refusals": 8,
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-producer-first.log",
+        "bytes": 1071,
+        "sha256": "38a99d2c30e53df458283a82d4335e435cc3e5aea6ea784bf0141b967526c5f1"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-scope-first.log",
+        "bytes": 582,
+        "sha256": "900a10f12d94f357584f88d50151bb90bd1d7129b377c888a683cae4ef8d7932"
+      }
+    ]
+  },
+  "host": {
+    "passed": true,
+    "typed_sql_principal_saves": 6,
+    "empty_follow_on_saves": 6,
+    "stale_handle_refusals": 6,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-host-first.log",
+      "bytes": 626,
+      "sha256": "793de459b57498158f731f64f0bfdaedfa498d57baa6c6871f73694673f54a4e"
+    }
+  },
+  "cli": {
+    "passed": true,
+    "principal_saves": 2,
+    "empty_follow_on_saves": 2,
+    "exact_tsv_readbacks": 4,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-cli-first.log",
+      "bytes": 862,
+      "sha256": "839db5678bdf391bccff89f208624af8a4c58c78dd0142df2ab53f2d89468bc9"
+    }
+  },
+  "mechanics": [
+    "Actual shared preview Tree::delete kernel and moved original no-contraction preflight",
+    "Independent original graph proof consumes original leaf partitions and rebuilds full key plus ROW fences",
+    "All INDEX roots and descendants receive catalog ownership and live LVAL exclusion checks",
+    "Original TCND0001 and fixed-length checked V1 recovery unchanged"
+  ],
+  "broad_checks": {
+    "passed": true,
+    "ace_units": {
+      "passed": 1121,
+      "ignored": 107
+    },
+    "access_units": 79,
+    "cli_units": 102,
+    "recovery_functions": {
+      "passed": 83,
+      "ignored": 77
+    },
+    "feature_profiles": [
+      "all-features/all-targets strict ACE/Access/CLI/testkit",
+      "journal-only strict",
+      "preview-only strict",
+      "minimal ACE/Access"
+    ],
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/journal-first.log",
+        "bytes": 307,
+        "sha256": "f9cfbe76418e65305ebabf1eea1b0074cee45df14e638b4d06dce74648e7c8f8"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "2d305bfd04f1e4109e0eaccab1c1f5262d5872a700fbbc9cf8def1c04287ba39"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/strict-all-second.log",
+        "bytes": 526,
+        "sha256": "8bf3d3b01aaf0e3be17d24f52eab5302d9cafaa5425f6f178a32b51930a0b98e"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/units-first.log",
+        "bytes": 178459,
+        "sha256": "1a7af0649832b0bb089e5057d72537e6d114da51e27591d00edd9c738353ef97"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/cli-units-first.log",
+        "bytes": 11586,
+        "sha256": "d5efe51b98c716e5ba113e10be6ec9a29405ffd10ac498a40575a040a306b92a"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/recovery-first.log",
+        "bytes": 25403,
+        "sha256": "36e7ddcf91244bebd467970dca399ad9b5b2e904607e8fd0d5c058e54788297c"
+      },
+      {
+        "path": ".cache/ace16-normal-node-and-nullable-next-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "77e90f53993b62fae83cf4828ebd7b404e3e92239ec82667c0e42c5cb3b18332"
+      }
+    ],
+    "scope_note": "Broad batch predates the later source-only NODE INSERT gate and CLI help text update; those have separate focused verification."
+  },
+  "remaining": [
+    "page contraction/retirement and broader key families",
+    "broader native tree fixtures and native Access save/reopen qualification"
+  ],
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "engine_commit": "7b53e996",
+  "cli_help_follow_on": {
+    "passed": true,
+    "functions": 2,
+    "command": "cargo test --locked -p tablecraft-cli --all-features --bin tablecraft normal_action_boundary_explicit",
+    "scope": "Updated help strings only, after the full 102-test CLI batch"
+  }
+}
