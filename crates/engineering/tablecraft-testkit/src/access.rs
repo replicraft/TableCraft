@@ -170,3 +170,6 @@ pub mod canonical_fixed_before_change;
 
 /// Original nullable Int32 requests and literal native macro NULL effects.
 pub mod canonical_nullable_fixed_int32_before_change;
+
+/// SQL-addressable original fixed-scalar requests and literal BeforeChange outcomes.
+pub mod canonical_fixed_sql_before_change;

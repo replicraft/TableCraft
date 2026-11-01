@@ -10776,3 +10776,13 @@ four literal outcomes preserve inactive Id/Score payloads during NULL changes.
 Native/hash checks and eight independent SDK inventories pass before new normal
 writer calls. Its observer is a separately named successor to the present-Score
 reader; the predecessor and all first 66 views remain unchanged.
+
+## Authored SQL discriminator sources
+
+The [SQL-addressable corpus](ACE16_FIXED_SQL_SOURCES.md) consumes original fixed
+rows and native programs only. Ten original contexts and ten literal expected
+images establish a row-one discriminator, four single-target recipes and a joint
+original-RHS recipe. Native/hash checks and 20 independent SDK inventories pass
+before SQL/CLI producers run. Repository-authored raw overlays protect all other
+bytes; no prior writer result is an oracle. These fixtures use the repository
+license and do not copy third-party database bytes.
