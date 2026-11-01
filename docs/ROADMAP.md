@@ -55,8 +55,11 @@ now supplies typed, SQL and CLI saves using existing owned capacity. Both routes
 now maintain qualified nullable/directional single-Int32 root leaves. DELETE
 also supports retained NODE trees whose children remain nonempty. Whole-image source, recovery and host checks are in the
 [indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json).
-Next are NODE insertion, page retirement, broader keys, defaults and AutoNumber,
-broader relationship/program behavior and wider allocation. Native Access
+NODE insertion and qualified constant defaults now work, and complete supplied
+rows can add one represented EOF DATA page through TCNA3/V2. Fresh creation now
+emits catalogs admitted by normal content checks. Next are broader numeric keys
+and scalar INSERT carriers, multiple-page allocation, index splits/page retirement,
+AutoNumber and broader relationship/program behavior. Native Access
 qualification remains open. Completed
 fixed/fitted implementation does not need repeating.
 

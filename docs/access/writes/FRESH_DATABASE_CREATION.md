@@ -1,5 +1,28 @@
 # Fresh native database creation
 
+## Current catalog and normal-session consumption
+
+The native artifact now contains the seventeen-field catalog used by existing
+ordinary source admission, including eleven variable slots and seven distinct
+catalog Memo/OLE map pairs. Required publication, public APIs, user declarations,
+counts and failure ownership are unchanged. The artifact and publication receipt
+still grant no mutation permission.
+
+After publication, eligible files can be opened by the real retained
+`OfflineWriteSession` and freshly qualified for normal INSERT/DELETE. The session
+receives current file bytes, not a creator certificate. Typed and SQL acceptance
+publishes two fresh files and performs four normal transactions under retained
+leases, matching independently authored complete images. The separate CLI
+workflow adds one publication, two normal transactions and two exact row
+readbacks. Focused tests and the strict/broad regression batch pass; exact receipts are
+in the [execution record](../../testing/results/ace16-native17-creation-writes-2026-11-01.json).
+
+The [source qualification](../../testing/ACE16_NATIVE17_CREATION_SOURCES.md)
+precedes these producers. Scalar INSERT limits, missing AllowZeroLength metadata
+for requested empty Text, generated/default policies and represented future FREE
+requirements remain explicit normal gates. No future GLOBAL bits are changed by
+this upgrade, and native Access/Windows conformance is not inferred.
+
 The optional `tablecraft-access/ace16-create` feature composes the
 [native creator](../../testing/ACE16_DATABASE_CREATION.md) with required
 fresh-file publication. The Int32 convenience and typed scalar path accept

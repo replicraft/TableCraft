@@ -1,4 +1,4 @@
-# Normal fitted ordinary INSERT
+# Normal ordinary INSERT
 
 Normal INSERT has a separate original-request intent, native planner, retained
 session and CLI consumer. It uses the shared record serializer and an independent
@@ -240,3 +240,40 @@ not invent binary literal syntax. Native Access save/reopen remains unrun.
 The [combined execution record](../../testing/results/ace16-normal-insert-expansion-2026-11-01.json)
 retains focused receipts, strict feature builds, the broad regression batch and
 first failures for these three additions.
+
+
+## Represented EOF allocation
+
+Complete supplied rows now use a metadata-derived choice between the existing
+capacity route and one represented EOF DATA page. TCNA0003/profile3 retains the
+original complete rows and BEFORE binding. It grants no allocation authority:
+the native planner derives capacity and the three exact map claims from fresh
+source bytes. Existing pages fill in request order before the one new page is
+used. Every reservation completes before candidate bytes exist. Indexed growth,
+additional EOF pages and growing original-omission/default operations remain open.
+
+The explicit fixed planner and TCNA0001 retain their existing V1 semantics.
+TCNA0002 stays fixed-length and preserves original field presence. Auto selection
+does not retry a failed planner under another policy. The shared complete-row
+codec has real TCNA1 and TCNA3 consumers, each selecting its closed protocol.
+
+EOF recovery consumes the same checked V2 session, checks the exact source-bound
+size increase, independently replans allocation and compares both whole images.
+Pending rollback restores and truncates; a committed mismatched target refuses
+without repair. Retired completion confirmation cannot write or resize. The
+actual shared editing service selects resizable preparation and exact action
+family recovery, retaining its target lease, receipts and namespace lifecycle.
+
+Eight independent source views and exact SDK reports preceded producer calls.
+Four native complete-image commits, 48 interrupted-target recovery contexts,
+28 forged-image refusals and separate physical/proof/resource controls pass.
+Four typed/SQL saves, eight cold restart contexts and two CLI saves with complete
+238-row TSV readbacks also pass. Omitted growing requests refuse before journal
+setup. These portable results do not establish native Access save/reopen or
+Windows durability qualification. Source pins are in the
+[EOF source contract](../../testing/ACE16_EOF_INSERT_SOURCES.md).
+
+
+The [EOF execution record](../../testing/results/ace16-normal-eof-insert-writes-2026-11-01.json)
+retains native, host, CLI and broad regression receipts, including the shared
+recovery-fixture move and corrected help/source-directory test invocations.

@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-01",
+  "feature": "represented_eof_insert",
+  "scope": "Normal complete-row single-page represented EOF INSERT with TCNA3/V2",
+  "source_qualification_before_producers": true,
+  "expected_bytes_retuned_to_producers": false,
+  "focused_receipts": [
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/eof-codec-first.log",
+      "bytes": 1012,
+      "sha256": "3a596bb22ef8dd4d2695927b6163528bd19376ebdcfb8193062370172460eb11",
+      "test_result": [
+        "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/legacy-insert-codec-first.log",
+      "bytes": 757,
+      "sha256": "d00a410ad2d9a7d1cb8064a47779ca18ad979de0460d031162d9122c479288da",
+      "test_result": [
+        "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/eof-direct-first.log",
+      "bytes": 706,
+      "sha256": "77ac84a53ed901095ad14661bb3fda6d85419d15b4c98c0647567cd2a7a08202",
+      "test_result": [
+        "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1251 filtered out; finished in 3.32s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/eof-native-first.log",
+      "bytes": 784,
+      "sha256": "35562cf4a7abeaf7abff69bd02377b50e3e4f041470b89fe2864b5bbe037acf6",
+      "test_result": [
+        "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 173 filtered out; finished in 21.92s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/genuine_eof_insert-first.log",
+      "bytes": 695,
+      "sha256": "5717eec8700cf4795d23105cd105f0d0c420ab2c680236ed6c48559b6d0da287",
+      "test_result": [
+        "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.54s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/genuine_eof_insert_sql-first.log",
+      "bytes": 841,
+      "sha256": "b32bf8e2ea7ebaa852979919a3fc250427691ea3b83c28dab96be1a779f4b023",
+      "test_result": [
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.52s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/old-eof-helper-second.log",
+      "bytes": 823,
+      "sha256": "f28e04d5336ca7ef9ca596b61450a55f927fbe51b6013140207282b2438b9bac",
+      "test_result": [
+        "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 172 filtered out; finished in 8.07s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/insert-help-first.log",
+      "bytes": 3041,
+      "sha256": "16452b0db8f4caa37f60d52bf7aad35d5d0bfd25c2d13b6dcdc693042ee06db3",
+      "test_result": []
+    }
+  ],
+  "broad_checks": {
+    "passed": true,
+    "ace_units": 1134,
+    "access_units": 79,
+    "cli_units": 102,
+    "default_recovery_functions": 83,
+    "receipts": [
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/strict-all-second.log",
+        "bytes": 183,
+        "sha256": "68d89c71aa6aa2d7db301547bed5affd4d1b116a51b652dbf322d2ac0d4fae47",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/journal-first.log",
+        "bytes": 307,
+        "sha256": "ae1b79901122debc20c086149bc322e751fc4c451dee732bbc194706ef17df9d",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "30be7bc8f8c21b0ab4ce9aa7eda55b13231101245a40d07e5d9f6048680a2c0b",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "e448afda7c7e90464b3b874ed4244c066cde65314509d441c26ee57125caf2de",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/ace-units-first.log",
+        "bytes": 173332,
+        "sha256": "0d5ea330a4c2dcc79eb0700106b82af851d3e7cf4b2fbc9e973d007939d5f893",
+        "test_result": [
+          "ok. 1134 passed; 0 failed; 120 ignored; 0 measured; 0 filtered out; finished in 118.24s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/access-units-first.log",
+        "bytes": 9690,
+        "sha256": "8225cb551830ba1f761135d457c9c7189b4665dbb15e7cacbdd37b42ec7c5586",
+        "test_result": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.59s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/cli-units-second.log",
+        "bytes": 11586,
+        "sha256": "8311f7fce6423e879323ccee7f392be3e8e200fd2f5a7cb46db368ec27847a8f",
+        "test_result": [
+          "ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-eof-native17-integration-20261101/recovery-default-first.log",
+        "bytes": 28878,
+        "sha256": "00f4db18681bb6714803885cb8e66abad0993049f283b0567b487a5efc08fb15",
+        "test_result": [
+          "ok. 83 passed; 0 failed; 93 ignored; 0 measured; 0 filtered out; finished in 4.16s"
+        ]
+      }
+    ]
+  },
+  "remaining": [
+    "multiple EOF pages and map growth",
+    "growing original omitted/default requests",
+    "indexed allocation",
+    "native Access save/reopen"
+  ],
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "first_failures_preserved": [
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/strict-all-first.log",
+      "bytes": 1074,
+      "sha256": "90970fa20420a9a6a540075506e5b39a8e141ec8d8fc19093053f9917bbc0461",
+      "test_result": []
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/cli-units-first.log",
+      "bytes": 12263,
+      "sha256": "b603c8c1067f32d7f7092ef002d0e8729615306a6ccc3fefe5cd03ce77486b52",
+      "test_result": [
+        "FAILED. 101 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-eof-native17-integration-20261101/eof-helper-followon.log",
+      "bytes": 3040,
+      "sha256": "144d034c0555c3becd0562e3fc1c3022e73e2b1c9d8171452ef14e14a877b42c",
+      "test_result": [
+        "FAILED. 3 passed; 4 failed; 0 ignored; 0 measured; 169 filtered out; finished in 22.19s"
+      ]
+    }
+  ],
+  "first_failure_explanations": [
+    "Strict lint rejected compiling one recovery storage fixture through two modules. Its exact body now has one shared owner and direct consumers.",
+    "CLI unit asserted the former insertion help limits. Updated the asserted supported/refused boundaries; all 102 CLI units subsequently passed.",
+    "Combined helper follow-on executed three new EOF tests successfully, but four old allocation tests lacked their required source-directory environment variables. Corrected invocation only; the four old tests passed afterward."
+  ],
+  "complete_image_commits": 4,
+  "native_interrupted_recovery_contexts": 48,
+  "forged_after_refusals": 28,
+  "host_cold_restart_contexts": 8,
+  "host_saves": 4,
+  "cli_saves": 2
+}

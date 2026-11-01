@@ -1,5 +1,34 @@
 # Implementation status
 
+## Represented EOF insertion
+
+Complete supplied-row insertion now selects existing DATA capacity or one
+qualified represented EOF page through original TCNA0003 requests and checked
+V2 recovery. Four native complete-image commits, interrupted recovery and
+forgery checks, typed/SQL sessions, cold restarts and CLI saves/readbacks pass.
+Omitted/default requests stay fixed-length; indexed allocation and multiple EOF
+pages remain open. The [execution record](testing/results/ace16-normal-eof-insert-writes-2026-11-01.json)
+separates these results from native Access and Windows qualification, both unrun.
+
+## Fresh creation and ordinary sessions
+
+Fresh ACE 16 creation now emits the seventeen-field catalog, eleven variable slots
+and seven catalog Memo/OLE map pairs required by existing normal source gates.
+Source qualification covers 62 core native/SDK views and a separate six-view
+literal session companion before producers. The focused creation filter passes 26
+tests with 1 ignored exporter; one Access typed/SQL test and one CLI test publish
+fresh files then perform normal INSERT/DELETE with whole-image/readback checks.
+Strict all-feature, journal-only, preview-only and minimal builds pass. The
+current broad batch passes 1,134 ACE units, 79 adapter units, 102 CLI units and
+83 default recovery functions. The [creation execution record](testing/results/ace16-native17-creation-writes-2026-11-01.json)
+retains focused and broad receipts.
+
+Every session rederives content-based NoRequired and physical/constraint proof;
+creator provenance grants no write permission. Normal scalar and empty-Text policy expansion, creation of AutoNumber/default/property
+metadata and represented future FREE requirements remain open work. The creator preserves its prior future GLOBAL zero choice.
+Native Access creation/save/reopen and Windows conformance remain unrun. See the
+[owning creation contract](access/writes/FRESH_DATABASE_CREATION.md#current-catalog-and-normal-session-consumption).
+
 ## Retained-tree, default and inline-value insertion
 
 Normal INSERT now maintains fitting single-Int32 interior trees, preserving

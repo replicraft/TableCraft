@@ -1,5 +1,46 @@
 # Fresh ACE 16 scalar construction
 
+## Seventeen-field catalog and ordinary sessions
+
+Fresh ACE 16 output now uses the seventeen-field `MSysObjects` declaration
+consumed by normal target-local source admission. Header code 5 emission and the
+public creation APIs remain unchanged. Explicit system descriptor flags and
+variable numbers preserve a fixed prefix of 32 bytes, eleven variable slots and genuinely
+NULL remote/code/property carriers. Seven distinct Memo/OLE declaration pairs
+cover Database, Connect, RmtInfoLong, Lv, LvProp, LvModule and LvExtra; the base
+map container has 22 records. User schema/row policies, original first-user map
+references and single/multiple-table capacity preflight remain intact.
+
+The [independent source family](ACE16_NATIVE17_CREATION_SOURCES.md) qualifies 31
+original-derived recipes under header codes 5 and 6, 62 exact SDK reports and a separate
+six-view literal INSERT/DELETE companion before creator execution. It retains the
+first admitted duplicate-LVAL alias and its real complete-census guard fix.
+Previous fifteen-field source/golden owners remain unchanged.
+
+The focused creation filter passes 26 tests with 1 ignored exporter, including
+complete source comparisons and malformed-source controls. Actual Access
+creation/publication followed by typed and SQL normal INSERT/DELETE passes one
+session test; the CLI create→journal-insert→journal-delete test also passes with
+exact whole images and row readbacks. Strict all-feature, journal-only, preview-only and minimal builds pass, with
+1,134 ACE units, 79 adapter units, 102 CLI units and 83 default recovery functions.
+The [execution record](results/ace16-native17-creation-writes-2026-11-01.json)
+retains these portable results separately from native Access qualification.
+
+No creator provenance, serialized permission or special write bypass is issued.
+A normal session opens current bytes and freshly derives NoRequired, declarations,
+ownership, constraints and recovery intent. Eligible created schemas now use the
+ordinary route because their bytes satisfy it. Normal complete-row INSERT still
+has its own carrier/declaration limits: Byte, Int16, Single, Double, GUID and Decimal
+creation support does not yet authorize their INSERT carriers. Empty Text needs
+qualified AllowZeroLength metadata; this first upgrade leaves LvProp NULL.
+Creation of AutoNumber, default, property and index metadata remains separate work.
+
+GLOBAL future FREE bits remain the previous explicit zero choice. Existing owned
+capacity is usable, while EOF allocation still requires independently valid free
+future cells. This catalog change grants no future allocation authority. Unknown
+header fields remain authored choices rather than universal reserved-byte claims.
+Native Access creation/save/reopen and Windows conformance remain unrun.
+
 The optional standalone `ace16-create` feature constructs a complete header-5
 database in memory, with single-table and multiple-table operations. `create_ace16_database` accepts named
 `CreateColumn` declarations and borrowed `Value` rows. It supports Boolean, Byte,
