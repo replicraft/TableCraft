@@ -115,3 +115,6 @@ mod integral_tests;
 
 #[cfg(test)]
 mod sparse_numeric_tests;
+
+#[cfg(test)]
+mod binary_tests;

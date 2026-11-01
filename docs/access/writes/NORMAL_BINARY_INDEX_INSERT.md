@@ -11,8 +11,9 @@ and Windows durability remain unrun.
 Fresh native17 catalog, required-program absence, constraints, all-local ownership
 and preserved Source checks remain mandatory. Selected native declarations must
 admit the actual Short Binary width and exact flags. Complete checked index facts
-and raw root-leaf ownership have a separate INSERT entry; existing UPDATE and
-DELETE admission remain unchanged.
+and raw root-leaf ownership are shared by qualified INSERT and
+[DELETE](NORMAL_BINARY_INDEX_DELETE.md) actions; indexed Binary UPDATE remains
+outside this profile.
 
 The qualified source family has a manual Int32 primary key and nullable Short
 Binary ascending/descending secondaries, each with an exact logical alias.
@@ -45,8 +46,8 @@ is introduced.
 
 The SQL/CLI positive profile supplies NULL for Binary. Exact empty/nonempty byte
 values use the existing typed native or adapter API; no Binary literal syntax is
-invented for SQL. Stale handles refuse after successful INSERT, and the prior
-UPDATE/DELETE limits remain explicit.
+invented for SQL. Stale handles refuse after successful INSERT. Fresh snapshots admit qualified
+Binary DELETE; indexed Binary UPDATE retains its existing limits.
 
 ## Evidence
 

@@ -1,4 +1,5 @@
-//! Existing-page Int32 deletions below normal admission and journal packaging.
+//! Existing-page typed deletions below normal admission and journal packaging.
+mod binary;
 mod tree;
 use super::{IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack};
 use crate::{
@@ -10,8 +11,9 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
-/// The caller already holds complete ordinary Source, checked single-I32
-/// declarations, catalog-wide exclusive INDEX ownership and live-LVAL exclusion.
+/// The caller holds complete ordinary Source, checked typed declarations,
+/// catalog-wide exclusive INDEX ownership and live-LVAL exclusion. Only the
+/// existing Int32 path can redistribute an already owned NODE topology.
 pub(in crate::table) fn patches(
     image: &NativeImage,
     checked: &TableCheck,
@@ -52,6 +54,18 @@ pub(in crate::table) fn patches(
             .iter()
             .position(|field| field.number() == key.number())
             .ok_or(InspectError::Malformed)?;
+        if schema.columns()[column].scalar_type() == Some(ScalarType::Binary) {
+            binary::patches(
+                image,
+                &mut reader,
+                index,
+                schema,
+                column,
+                references,
+                &mut result,
+            )?;
+            continue;
+        }
         let kind = match schema.columns()[column].scalar_type() {
             Some(kind @ (ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)) => kind,
             _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),

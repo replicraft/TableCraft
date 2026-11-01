@@ -9,7 +9,6 @@ use tablecraft_access::editing::{
     NativeEditError, journal,
     offline::{Cause, Failure, OfflineWriteSession, SessionState},
 };
-use tablecraft_ace::{EditError, WriteBlocker};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::{DeletableTable, EditableTable, InsertableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
@@ -114,7 +113,7 @@ fn typed_binary_null_empty_segments_and_honest_sql_null_publish_literal_images()
 
 #[test]
 #[ignore = "requires18 independently native/SDK-qualified Binary source views"]
-fn binary_insert_refresh_rejects_stale_handles_and_keeps_numeric_only_delete_boundary() {
+fn binary_insert_refresh_rejects_stale_handles_and_admits_empty_delete() {
     let mut saves = 0;
     for case in singles()
         .into_iter()
@@ -166,21 +165,22 @@ fn binary_insert_refresh_rejects_stale_handles_and_keeps_numeric_only_delete_bou
             .into_session()
             .edit_table("BinaryKeys", &mut budget(), &|| false)
             .unwrap();
-        let fresh = EditableTable::snapshot(&editor).row_handle(0).unwrap();
-        let failure = DeletableTable::plan_deletes(editor, &[fresh], &mut budget(), &|| false)
-            .err()
-            .unwrap();
-        assert!(matches!(
-            editing_error(&failure),
-            journal::Error::Native(NativeEditError::Edit(EditError::Unsupported(
-                WriteBlocker::IndexedColumn
-            )))
-        ));
-        assert_eq!(failure.state(), SessionState::Ready);
-        assert_eq!(failure.last_completed(), Some(receipt));
-        assert_eq!(failure.current_outcome(), None);
+        let snapshot = EditableTable::snapshot(&editor);
+        let fresh = snapshot.row_handle(0).unwrap();
+        assert_eq!(snapshot.resolve(fresh).unwrap(), snapshot.rows()[0]);
+        assert_eq!(editor.update_profile(), UpdateProfile::Unavailable);
+
+        let staged = DeletableTable::plan_deletes(editor, &[], &mut budget(), &|| false).unwrap();
+        assert_eq!((staged.matched_rows(), staged.deleted_rows()), (0, 0));
         unchanged(&path, &bundle, &case.after);
-        failure.into_session().release().unwrap();
+
+        let (session, empty_receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
+        assert_eq!(empty_receipt.outcome(), Some(RecoveryOutcome::Committed));
+        assert_eq!(empty_receipt.matched_rows(), Some(0));
+        assert_eq!(empty_receipt.changed_rows(), Some(0));
+        assert_eq!(session.last_completed(), Some(empty_receipt));
+        unchanged(&path, &bundle, &case.after);
+        session.release().unwrap();
         ExclusiveFile::open(&path).unwrap().close().unwrap();
         assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 1);
         saves += 1;

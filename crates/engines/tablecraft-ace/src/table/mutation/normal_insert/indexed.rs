@@ -188,7 +188,7 @@ fn qualify<'image>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
-    let facts = CheckedIndexes::capture_insert(image, table, budget, cancelled)?;
+    let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
     if facts.checked().schema().declared_rows() != schema.declared_rows()
@@ -196,7 +196,7 @@ fn qualify<'image>(
     {
         return Err(EditError::Preservation);
     }
-    let ownership = Ownership::capture_insert(image, facts.checked(), budget, cancelled)?;
+    let ownership = Ownership::capture_actions(image, facts.checked(), budget, cancelled)?;
     let live = Inventory::capture(image, budget, cancelled)?;
     // A proof-wire choice derived from already-paid native checks, never caller
     // authority. Keep the existing ASC/present reconstruction and its resource

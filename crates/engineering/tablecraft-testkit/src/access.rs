@@ -278,3 +278,6 @@ pub mod genuine_binary_indexed;
 
 /// Independent manual primary-key creation and insertion sources.
 pub mod canonical_creation_primary;
+
+/// Independent complete Binary deletion images and raw witnesses.
+pub mod genuine_binary_delete;

@@ -330,7 +330,7 @@ fn binary_original_wire_recovery_handles_true_mixed_targets_and_protected_forger
 
 #[test]
 #[ignore = "requires eighteen native/SDK-qualified Binary source views"]
-fn binary_empty_inserts_still_qualify_and_do_not_widen_delete_or_update() {
+fn binary_empty_inserts_and_original_delete_witnesses_keep_update_closed() {
     for case in cases()
         .into_iter()
         .filter(|case| case.recipe == "insert-null")
@@ -346,15 +346,19 @@ fn binary_empty_inserts_still_qualify_and_do_not_widen_delete_or_update() {
         assert_eq!(empty.after_bytes(), case.before);
         assert_eq!(empty.inserted_rows(), 0);
         for selected in [vec![], vec![0]] {
-            assert!(matches!(
-                image(&case.before).prepare_ordinary_row_deletes(
-                    "BinaryKeys",
-                    &selected,
-                    &mut budget(),
-                    &|| false,
-                ),
-                Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
-            ));
+            let witnesses = image(&case.before)
+                .prepare_ordinary_row_deletes("BinaryKeys", &selected, &mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(witnesses.len(), selected.len());
+            if let Some(witness) = witnesses.first() {
+                assert_eq!(witness.row(), 0);
+                // Original slot0: count3, Id1, Marker17, absent Binary at10,
+                // stationary variable footer and mask5. No producer is used.
+                assert_eq!(
+                    witness.expected_bytes(),
+                    &[3, 0, 1, 0, 0, 0, 17, 0, 0, 0, 10, 0, 10, 0, 1, 0, 5,]
+                );
+            }
         }
         assert!(
             image(&case.before)
