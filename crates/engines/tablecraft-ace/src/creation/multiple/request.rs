@@ -101,7 +101,10 @@ pub(in crate::creation) fn capture<'a>(
             .checked_add(table.columns.len())
             .ok_or(CreateDatabaseError::Layout)?;
         catalog_bytes = catalog_bytes
-            .checked_add(record::catalog_length(request.catalog_name))
+            .checked_add(record::catalog_length_with_properties(
+                request.catalog_name,
+                request.properties.as_ref(),
+            )?)
             .and_then(|bytes| bytes.checked_add(row::SLOT_BYTES))
             .ok_or(CreateDatabaseError::Layout)?;
         if catalog_bytes > PAGE_BYTES {

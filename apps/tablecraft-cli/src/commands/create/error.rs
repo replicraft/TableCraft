@@ -34,6 +34,7 @@ impl Error {
                         | CreateDatabaseError::Declaration
                         | CreateDatabaseError::DeclaredValue
                         | CreateDatabaseError::Carrier
+                        | CreateDatabaseError::FieldConstraint(_)
                         | CreateDatabaseError::UnsupportedType
                 ))
         )

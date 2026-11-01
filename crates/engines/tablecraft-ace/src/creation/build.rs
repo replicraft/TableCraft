@@ -96,7 +96,7 @@ pub(super) fn build(
             name: request.catalog_name,
             system: false,
         };
-        for object in systems().into_iter().chain(std::iter::once(user)) {
+        for object in systems() {
             record::catalog(
                 catalog.append(record::catalog_length(object.name), budget, cancelled)?,
                 &object,
@@ -104,6 +104,15 @@ pub(super) fn build(
                 cancelled,
             )?;
         }
+        let properties = request.properties.as_ref();
+        let length = record::catalog_length_with_properties(user.name, properties)?;
+        record::catalog_with_properties(
+            catalog.append(length, budget, cancelled)?,
+            &user,
+            properties,
+            budget,
+            cancelled,
+        )?;
         catalog.finish()?;
     }
     {

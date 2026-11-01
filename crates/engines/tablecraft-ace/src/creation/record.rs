@@ -31,6 +31,8 @@ const BYTE_WIDTH: usize = size_of::<u8>();
 const SHORT_WIDTH: usize = size_of::<i16>();
 const LONG_WIDTH: usize = size_of::<i32>();
 const WIDE_WIDTH: usize = size_of::<i64>();
+const CATALOG_PROPERTY_FIELD: usize = 14;
+const CATALOG_PROPERTY_VARIABLE: usize = 8;
 
 pub(super) struct DataPage<'a> {
     bytes: &'a mut [u8],
@@ -244,9 +246,28 @@ pub(super) fn catalog_length(name: stored_text::Plan<'_>) -> usize {
         + fields.count().div_ceil(u8::BITS as usize)
 }
 
+pub(super) fn catalog_length_with_properties(
+    name: stored_text::Plan<'_>,
+    properties: Option<&super::properties::Prepared<'_>>,
+) -> Result<usize, CreateDatabaseError> {
+    catalog_length(name)
+        .checked_add(properties.map_or(0, |properties| properties.inline_length()))
+        .ok_or(CreateDatabaseError::PageCapacity)
+}
+
 pub(super) fn catalog(
     record: &mut [u8],
     object: &profile::CatalogObject<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    catalog_with_properties(record, object, None, budget, cancelled)
+}
+
+pub(super) fn catalog_with_properties(
+    record: &mut [u8],
+    object: &profile::CatalogObject<'_>,
+    properties: Option<&super::properties::Prepared<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
@@ -256,7 +277,7 @@ pub(super) fn catalog(
         name,
         system,
     } = *object;
-    if record.len() != catalog_length(name) {
+    if record.len() != catalog_length_with_properties(name, properties)? {
         return Err(CreateDatabaseError::Layout);
     }
     let fields = profile::Fields::new(&profile::CATALOG_FIELDS);
@@ -287,14 +308,37 @@ pub(super) fn catalog(
         cancelled,
     )?;
     position += name.byte_len();
+    let name_end = position;
+    if let Some(properties) = properties {
+        let end = position
+            .checked_add(properties.inline_length())
+            .ok_or(CreateDatabaseError::Layout)?;
+        properties.write_inline(
+            record
+                .get_mut(position..end)
+                .ok_or(CreateDatabaseError::Layout)?,
+            budget,
+            cancelled,
+        )?;
+        position = end;
+    }
     let eod = position;
-    // Name is the only present variable carrier; all other ordinary and LVAL
-    // slots remain NULL at EOD. Native17 declarations retain their interleaved
-    // variable numbers; no payload slot is synthesized for an absent carrier.
+    // Name and an explicitly selected inline LvProp are the only variable carriers;
+    // the None branch retains the original all-other-NULL spans byte-exact.
+    // NULL spans before LvProp stay at Name's end; later NULL spans stay at
+    // EOD. Native17 declarations retain their interleaved variable numbers;
+    // no payload slot is synthesized for an absent carrier.
     put16(record, position, eod)?;
     position += size_of::<u16>();
     for slot in (0..fields.variable_count()).rev() {
-        put16(record, position, if slot == 0 { fixed_end } else { eod })?;
+        let start = if slot == 0 {
+            fixed_end
+        } else if properties.is_some() && slot <= CATALOG_PROPERTY_VARIABLE {
+            name_end
+        } else {
+            eod
+        };
+        put16(record, position, start)?;
         position += size_of::<u16>();
     }
     put16(record, position, fields.variable_count())?;
@@ -310,8 +354,12 @@ pub(super) fn catalog(
     ] {
         record[position + field / u8::BITS as usize] |= 1 << (field % u8::BITS as usize);
     }
+    if properties.is_some() {
+        record[position + CATALOG_PROPERTY_FIELD / u8::BITS as usize] |=
+            1 << (CATALOG_PROPERTY_FIELD % u8::BITS as usize);
+    }
     // Present creation/update DATE values are explicit +0 bits already in the
-    // fixed prefix. All payload/link/owner carriers remain genuinely absent.
+    // fixed prefix. All unselected payload/link/owner carriers remain genuinely absent.
     if position + fields.count().div_ceil(u8::BITS as usize) != record.len() {
         return Err(CreateDatabaseError::Layout);
     }

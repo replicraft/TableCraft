@@ -6,6 +6,7 @@ mod definition;
 mod input;
 mod multiple;
 mod profile;
+mod properties;
 mod record;
 mod request;
 mod stored_text;
@@ -33,3 +34,6 @@ mod variable_tests;
 
 #[cfg(test)]
 mod capacity_tests;
+
+#[cfg(test)]
+mod property_tests;
