@@ -728,3 +728,6 @@ mod genuine_ordinary_insert_feff;
 
 #[path = "normal/genuine_indexed_delete.rs"]
 mod genuine_indexed_delete;
+
+#[path = "normal/genuine_indexed_insert.rs"]
+mod genuine_indexed_insert;

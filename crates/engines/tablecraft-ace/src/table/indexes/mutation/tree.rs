@@ -49,7 +49,7 @@ pub(super) struct Tree {
 }
 
 impl Tree {
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(super) fn number(&self) -> u32 {
         self.number
     }
@@ -64,12 +64,12 @@ impl Tree {
         self.height
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(super) fn children(&self) -> &[Self] {
         &self.children
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(super) fn is_leaf(&self) -> bool {
         self.children.is_empty() && self.height == 0
     }

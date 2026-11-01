@@ -2,7 +2,7 @@ mod variable;
 
 use super::*;
 use crate::{
-    IndexConstraintViolation, check_table, check_table_constraints,
+    IndexConstraintViolation, InspectError, check_table, check_table_constraints,
     test_support::{index_fixture, split_model},
 };
 use std::{cell::Cell, io::Cursor};

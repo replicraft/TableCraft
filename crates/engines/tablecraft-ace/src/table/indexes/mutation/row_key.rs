@@ -1,9 +1,7 @@
 //! Paid owned row-key encoding shared by native mutation consumers.
-use super::super::{
-    binary, encoded_tuple,
-    key::{KeyProfile, KeyRow, KeyWork},
-    text,
-};
+use super::super::key::{KeyProfile, KeyRow, KeyWork};
+#[cfg(feature = "ace16-write-preview")]
+use super::super::{binary, encoded_tuple, text};
 use super::profile::WriteProfile;
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::Resource;
@@ -41,6 +39,7 @@ impl<P: WriteProfile> RowKeyProfile for P {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
 impl RowKeyProfile for text::TextProfile {
     fn encoded_row(
         &self,
@@ -51,6 +50,7 @@ impl RowKeyProfile for text::TextProfile {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
 impl RowKeyProfile for encoded_tuple::EncodedTupleProfile<'_> {
     fn encoded_row(
         &self,
@@ -61,6 +61,7 @@ impl RowKeyProfile for encoded_tuple::EncodedTupleProfile<'_> {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
 impl RowKeyProfile for binary::BinaryProfile<'_> {
     fn encoded_row(
         &self,

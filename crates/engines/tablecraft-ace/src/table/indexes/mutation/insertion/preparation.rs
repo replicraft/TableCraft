@@ -1,5 +1,10 @@
 //! Fixed typed membership survives until physical continuation has completed.
 use super::{ExpectedKey, IndexInsertion, InsertRow, binding::InsertProfile, membership};
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::{
+    indexes::mutation::split::{self, insert::Operation},
+    mutation::append::State,
+};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{
@@ -9,19 +14,11 @@ use crate::{
     },
     header::check,
     limits::{MAX_IMAGE_BYTES, MAX_LIVE_ROWS},
-    table::{
-        indexes::{
-            header::IndexHeader,
-            key::KeyWork,
-            mutation::{
-                repack,
-                retained::RetainedProfile,
-                split::{self, insert::Operation},
-                tree::Tree,
-            },
-            page::{KeyRef, LEAF, NODE},
-        },
-        mutation::append::State,
+    table::indexes::{
+        header::IndexHeader,
+        key::KeyWork,
+        mutation::{repack, retained::RetainedProfile, tree::Tree},
+        page::{KeyRef, LEAF, NODE},
     },
 };
 use std::io::Cursor;
@@ -144,7 +141,7 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
     let mut patches = Vec::new();
     let mut requires_continuation = source_node && changed;
     if source_leaf && changed {
-        let entries = split::leaf_entries(&keys, reader.budget, cancelled)?;
+        let entries = repack::leaf_entries(&keys, reader.budget, cancelled)?;
         if repack::borrowed_fits::<_, N>(original, &entries, &profile, reader.budget, cancelled)? {
             let after = repack::borrowed_page::<_, N>(
                 original,
@@ -169,8 +166,11 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
     Ok(Prepared {
         result: IndexInsertion {
             patches,
+            #[cfg(feature = "ace16-write-preview")]
             added: Vec::new(),
+            #[cfg(feature = "ace16-write-preview")]
             promotions: Vec::new(),
+            #[cfg(feature = "ace16-write-preview")]
             rebases: Vec::new(),
             physical: index.data_number(),
             root: index.root_page(),
@@ -187,6 +187,7 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
 }
 
 impl<P: InsertProfile> Prepared<P> {
+    #[cfg(feature = "ace16-write-preview")]
     pub(super) fn finish<const N: usize>(
         mut self,
         image: &NativeImage,
@@ -219,6 +220,28 @@ impl<P: InsertProfile> Prepared<P> {
             self.result.rebases = plan.rebases;
             append = plan.append;
         }
+        let result = self.finish_keys::<N>(budget, cancelled)?;
+        Ok((result, append))
+    }
+
+    #[cfg(feature = "journal")]
+    pub(super) fn finish_existing<const N: usize>(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<IndexInsertion, EditError> {
+        check(budget, cancelled)?;
+        if self.requires_continuation {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        self.finish_keys::<N>(budget, cancelled)
+    }
+
+    fn finish_keys<const N: usize>(
+        mut self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<IndexInsertion, EditError> {
         // Typed keys remain available through continuation. Only completed
         // comparison facts enter the heterogeneous final plan collection.
         budget
@@ -249,7 +272,7 @@ impl<P: InsertProfile> Prepared<P> {
             });
         }
         check(budget, cancelled)?;
-        Ok((self.result, append))
+        Ok(self.result)
     }
 }
 

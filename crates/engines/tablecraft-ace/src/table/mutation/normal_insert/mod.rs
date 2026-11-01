@@ -1,4 +1,5 @@
 //! Normal complete-row INSERT into protected, already-owned DATA capacity.
+mod indexed;
 mod placement;
 mod proof;
 mod records;
@@ -31,7 +32,10 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.insert.plan").entered();
-        let source = capture(&self, table, budget, cancelled)?;
+        let source = capture_source(&self, table, budget, cancelled)?;
+        if !source.indexes.indexes().is_empty() {
+            return indexed::plan(self, source, table, requests, budget, cancelled);
+        }
 
         source
             .records
@@ -69,7 +73,7 @@ impl NativeImage {
     }
 }
 
-fn capture(
+fn capture_source(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
@@ -87,9 +91,6 @@ fn capture(
     }
     let source = normal_ordinary::capture(image, table, budget, cancelled)?;
 
-    if !source.indexes.indexes().is_empty() {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
     // Source already refuses any relationship involving this target and owns
     // complete properties, dependencies, catalog and LVAL preservation.
     if source.records.len() != source.table.rows().len()
@@ -98,6 +99,19 @@ fn capture(
         return Err(EditError::Preservation);
     }
     check(budget, cancelled)?;
+    Ok(source)
+}
+
+fn capture(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let source = capture_source(image, table, budget, cancelled)?;
+    if !source.indexes.indexes().is_empty() {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
     Ok(source)
 }
 

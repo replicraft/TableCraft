@@ -13,6 +13,7 @@ pub(in crate::table) use slot::{
     continue_patches as continue_slot_patches, patches as slot_patches, qualify as qualify_slot,
 };
 
+use super::repack::leaf_entries;
 use super::{
     IndexDataPatch, IndexKeyUpdate, encoding, pages, plan::keys, profile::SingleProfile, repack,
     replacement::SlotKeyChanges, retained::RetainedProfile, tree::Tree,
@@ -20,9 +21,8 @@ use super::{
 use crate::{
     EditError, IndexCheck, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
-    header::check,
     table::{
-        indexes::page::{Entry, KeyRef},
+        indexes::page::KeyRef,
         mutation::{
             CertifiedData,
             append::{State, owners::OwnerContext},
@@ -346,28 +346,6 @@ fn borrowed_reference<K>(key: &KeyRef<K>) -> KeyRef<&K> {
         key: &key.key,
         row: key.row,
     }
-}
-
-pub(super) fn leaf_entries<'a, K>(
-    keys: &'a [KeyRef<K>],
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<Entry<&'a K>>, EditError> {
-    budget
-        .charge_allocation(keys.len() as u64, size_of::<Entry<&K>>() as u64)
-        .map_err(InspectError::from)?;
-    let mut entries = Vec::new();
-    entries
-        .try_reserve_exact(keys.len())
-        .map_err(|_| InspectError::Allocation)?;
-    for value in keys {
-        check(budget, cancelled)?;
-        entries.push(Entry {
-            value: borrowed_reference(value),
-            child: 0,
-        });
-    }
-    Ok(entries)
 }
 
 pub(super) fn seal(
