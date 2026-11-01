@@ -10,7 +10,7 @@ use crate::{
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_schema::ScalarType;
 
-pub(super) fn width(field: &NativeColumn) -> Option<usize> {
+pub(in crate::table::mutation) fn width(field: &NativeColumn) -> Option<usize> {
     match (field.native_type(), field.scalar_type()) {
         (BOOLEAN, Some(ScalarType::Boolean)) => Some(0),
         (BYTE, Some(ScalarType::Byte)) => Some(size_of::<u8>()),
@@ -27,7 +27,7 @@ pub(super) fn width(field: &NativeColumn) -> Option<usize> {
     }
 }
 
-pub(super) fn write(
+pub(in crate::table::mutation) fn write(
     field: &NativeColumn,
     value: &Value,
     target: &mut [u8],

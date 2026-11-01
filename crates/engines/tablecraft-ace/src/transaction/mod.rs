@@ -124,3 +124,9 @@ pub use intent::{
     NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
     qualify_native_delete_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeInsertIntent, QualifiedNativeInsertRecovery, RecoverableNativeInsertPlan,
+    qualify_native_insert_recovery,
+};

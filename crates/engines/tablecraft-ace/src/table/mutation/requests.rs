@@ -1,10 +1,12 @@
 //! Exact source-local requests shared below engineering and normal packaging.
 mod delete;
 mod fitted;
+mod insert;
 mod slot;
 
 pub use delete::{RowDelete, TableRowDeletes};
 pub use fitted::FittedColumnUpdates;
+pub use insert::RowInsert;
 pub use slot::SlotScalarUpdate;
 
 use super::rows::RowAssignment;

@@ -15,13 +15,13 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
-pub(in crate::table::mutation::insert::audit) struct Shape {
+pub(in crate::table::mutation) struct Shape {
     pub fixed_end: usize,
     pub mask_bytes: usize,
     pub variables: Vec<usize>,
 }
 
-pub(in crate::table::mutation::insert::audit) fn capture(
+pub(in crate::table::mutation) fn capture(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -29,7 +29,8 @@ pub(in crate::table::mutation::insert::audit) fn capture(
     capture_with_generated(schema, None, budget, cancelled)
 }
 
-pub(in crate::table::mutation::insert::audit) fn capture_incrementing(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn capture_incrementing(
     schema: &TableSchema,
     column: usize,
     budget: &mut ResourceBudget,

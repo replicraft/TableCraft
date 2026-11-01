@@ -6,8 +6,8 @@ mod maps;
 mod tail;
 
 use self::{choice::Storage, cursor::Cursor as Placement};
-use super::records::payload::long_value::Payload;
 use super::{ImageProof, reserve};
+use crate::table::mutation::record_insertion::proof::payload::long_value::Payload;
 use crate::{
     EditError, InspectError, LongValueCheckStatus, LongValueMapReferences, NativeImage, TableCheck,
     format::{

@@ -21,3 +21,9 @@ pub use delete::{
     NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
     qualify_native_delete_recovery,
 };
+
+mod insert;
+pub use insert::{
+    NativeInsertIntent, QualifiedNativeInsertRecovery, RecoverableNativeInsertPlan,
+    qualify_native_insert_recovery,
+};

@@ -193,7 +193,9 @@ pub(super) fn prove_with_clock(
         _ => None,
     };
     let generation = if let Some((requests, policy)) = generation_input {
-        records::layout::capture_incrementing(schema, id, budget, cancelled)?;
+        crate::table::mutation::record_insertion::proof::layout::capture_incrementing(
+            schema, id, budget, cancelled,
+        )?;
         let plan = staged.autonumber.as_ref().ok_or(EditError::Preservation)?;
         Some(autonumber::audit::Operation {
             image,

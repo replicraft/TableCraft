@@ -6,10 +6,10 @@ use tablecraft_core::{
     values::{Currency, LegacyDateTime, Value},
 };
 
-pub(super) const MAX_VARIABLE_BYTES: usize =
+pub(in crate::transaction::intent) const MAX_VARIABLE_BYTES: usize =
     crate::limits::MAX_ENCODED_TEXT_BYTES * char::MAX.len_utf8();
-pub(super) const HEADER_BYTES: usize = 8;
-pub(super) const COPY_BYTES: usize = 4096;
+pub(in crate::transaction::intent) const HEADER_BYTES: usize = 8;
+pub(in crate::transaction::intent) const COPY_BYTES: usize = 4096;
 const NULL: u8 = 0;
 const BOOLEAN: u8 = 1;
 const INT32: u8 = 2;
@@ -19,12 +19,12 @@ const DATE: u8 = 5;
 const TEXT: u8 = 6;
 const BINARY: u8 = 7;
 
-pub(super) enum Payload<'a> {
+pub(in crate::transaction::intent) enum Payload<'a> {
     Fixed { bytes: [u8; 8], length: usize },
     Borrowed(&'a [u8]),
 }
 
-pub(super) struct Encoded<'a> {
+pub(in crate::transaction::intent) struct Encoded<'a> {
     pub tag: u8,
     pub payload: Payload<'a>,
 }
@@ -94,7 +94,7 @@ pub(super) fn view(value: &Value, family: Family) -> Result<Encoded<'_>, NativeI
     Ok(result)
 }
 
-pub(super) fn pay_scan(
+pub(in crate::transaction::intent) fn pay_scan(
     bytes: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -119,7 +119,7 @@ pub(super) fn validate(
     pay_scan(encoded.bytes(), budget, cancelled)
 }
 
-pub(super) enum Borrowed<'a> {
+pub(in crate::transaction::intent) enum Borrowed<'a> {
     Scalar(Value),
     Text(&'a str),
     Binary(&'a [u8]),
@@ -159,7 +159,7 @@ pub(super) fn parse<'a>(
     Ok(Borrowed::Scalar(scalar))
 }
 
-pub(super) fn owned(
+pub(in crate::transaction::intent) fn owned(
     value: Borrowed<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -210,4 +210,31 @@ pub(super) fn owned(
             Ok(Value::Binary(result))
         }
     }
+}
+
+/// Original complete-row carriers use the union of the existing two families.
+/// This chooses only wire grammar; native target admission remains separate.
+pub(in crate::transaction::intent) fn row_view(
+    value: &Value,
+) -> Result<Encoded<'_>, NativeIntentError> {
+    let family = if matches!(value, Value::Text(_) | Value::Binary(_)) {
+        Family::Variable
+    } else {
+        Family::Fixed
+    };
+    view(value, family)
+}
+
+pub(in crate::transaction::intent) fn row_parse<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
+    let family = if matches!(tag, TEXT | BINARY) {
+        Family::Variable
+    } else {
+        Family::Fixed
+    };
+    parse(tag, bytes, family, budget, cancelled)
 }

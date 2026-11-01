@@ -9,14 +9,14 @@ mod indexes;
 mod long_values;
 mod omitted;
 mod placement;
-mod policies;
+use crate::table::mutation::record_insertion::properties as policies;
 pub(super) mod primary_column;
 mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
 mod values;
 
-use super::{gates, preview};
+use super::{gates, preview, requests::RowInsert};
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck,
     WriteBlocker, check_table, check_table_constraints,
@@ -36,25 +36,6 @@ pub use autonumber::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
     IncrementingAutoNumber,
 };
-
-/// One complete new row in the captured native column order.
-/// Values are neither defaulted nor coerced; the selected insertion profile
-/// validates every carrier against the actual table before constructing bytes.
-pub struct RowInsert {
-    values: Vec<Value>,
-}
-
-impl RowInsert {
-    /// Capture all explicit field values. Table-dependent admission happens later.
-    pub fn new(values: Vec<Value>) -> Self {
-        Self { values }
-    }
-
-    /// Explicit requested values, in native column order.
-    pub fn values(&self) -> &[Value] {
-        &self.values
-    }
-}
 
 pub use omitted::{InsertFieldValue, OmittedRowInsert};
 

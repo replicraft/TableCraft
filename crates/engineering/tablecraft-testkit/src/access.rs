@@ -218,3 +218,6 @@ pub mod genuine_ordinary_delete;
 
 /// Pinned growth followed by payload-preserving logical-root deletion.
 pub mod genuine_forwarded_delete;
+
+/// Pinned genuine originals and independently specified explicit-row INSERT images.
+pub mod genuine_ordinary_insert;

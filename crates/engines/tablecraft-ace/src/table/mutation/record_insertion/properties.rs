@@ -1,5 +1,5 @@
 //! INSERT-only declaration coverage for explicitly requested empty Text.
-use super::RowInsert;
+use crate::RowInsert;
 use crate::{
     EditError, NativeImage, PropertyGroupKind, TableProperties, TableSchema, WriteBlocker,
     header::check, inspect_table_properties,
@@ -12,7 +12,7 @@ const ALLOW_ZERO_LENGTH: &str = "AllowZeroLength";
 /// The before-INSERT gate must already have qualified stored property types.
 /// Presence is required here, not a true value: an explicit false remains the
 /// existing final field-constraint violation rather than an inferred default.
-pub(super) fn require_text_declarations(
+pub(in crate::table::mutation) fn require_text_declarations(
     image: &NativeImage,
     schema: &TableSchema,
     requests: &[RowInsert],

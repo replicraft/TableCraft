@@ -12,7 +12,7 @@ const WIRE_BYTES: usize = SIGN_BYTES + LIMBS * LIMB_BYTES;
 const LIMB_RADIX: u128 = 1_u128 << u32::BITS;
 const NEGATIVE: u8 = 0x80;
 
-pub(super) fn encode(
+pub(in crate::table::mutation) fn encode(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,
