@@ -236,3 +236,6 @@ pub mod genuine_indexed_insert_association;
 
 /// Independent retained-NODE row-removal originals and literal complete results.
 pub mod genuine_retained_node_delete;
+
+/// Literal optional and descending Int32 root-leaf insertion views.
+pub mod genuine_desc_nullable_insert;
