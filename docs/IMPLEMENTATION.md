@@ -1,13 +1,39 @@
 # Implementation status
 
+## Manual primary creation and Binary deletion
+
+Fresh creation now authors explicit caller-named manual Int32 primary keys,
+including empty and signed initial populations. Complete independent source
+comparisons, uniqueness/NULL failures, resource/cancellation controls and real
+create→normal INSERT sessions pass. Multiple-table component checks remain
+separate from whole-image source qualification. See the
+[creation contract](access/writes/FRESH_DATABASE_CREATION.md#explicit-manual-int32-primary-keys).
+
+Normal [Binary root-leaf DELETE](access/writes/NORMAL_BINARY_INDEX_DELETE.md)
+now composes original physical references, directional/nullable secondary keys,
+independent complete-image proof and existing checked recovery through retained
+sessions and CLI SQL. Stale handles refuse and fresh snapshots support subsequent
+commits. Sequential deletions preserve each intermediate source's inactive index
+tails; their complete image need not equal an atomic deletion's image.
+
+The combined batch passes 1,160 ACE units, 79 adapter units, 102 CLI units and
+90 default recovery functions, plus 84 query units, eight editing functions,
+actual DELETE CLI acceptance and the five-function prior Binary INSERT native
+regression. Strict all-feature/all-target, minimal, journal-only and preview-only
+checks pass. The [execution record](testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+retains the first IsNull admission failure, obsolete empty-source refusal,
+sequential-tail test assumption and lint failures with their corrections.
+Native Access save/reopen and Windows durability remain unrun. Indexed Binary
+UPDATE, index splits/allocation, broader keys and AutoNumber remain work.
+
 ## Fitting Binary index insertion
 
 Normal complete-row INSERT now maintains qualified nullable ascending/descending
 Short Binary secondary root leaves beside manual Int32 primary keys. Sixteen
 literal native commits and independent proofs, interrupted recovery, protected
 bytes, resource controls, typed/SQL saves and CLI readbacks pass against sources
-qualified before producers. The existing UPDATE and DELETE profiles remain
-unchanged; Binary NODEs, allocation and splits remain work.
+qualified before producers. Indexed Binary UPDATE, NODEs, allocation and splits remain work; qualified
+Binary DELETE is described above.
 
 Strict feature checks and all sixteen prior write-profile regression commands
 pass. The combined batch passes 1,153 ACE units, 79 adapter units, 102 CLI units

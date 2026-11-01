@@ -54,4 +54,7 @@ refresh. The two-commit control derives its expected inactive tails from the
 frozen intermediate source; it does not equate sequential and atomic images.
 
 These are local engineering checks, separate from native Microsoft Access
-qualification. Broader regression results are recorded after the combined batch.
+qualification. The combined batch passes 1,160 ACE units, 79 adapter units, 102 CLI units
+and 90 default recovery functions, plus query, CLI and prior Binary INSERT
+regressions. Strict feature checks pass. The [execution record](../../testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+retains failed checks and corrections alongside successful observations.
