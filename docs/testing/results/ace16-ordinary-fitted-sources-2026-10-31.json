@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-31",
+  "scope": "Independent authored ordinary fitting sources, read qualification before normal fitted producers",
+  "source": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_ordinary_fitted.rs",
+    "bytes": 18113,
+    "sha256": "9e2b54b70ad32615406ab8e7dfa177b104e600f94515743c481b3e709ce4426c"
+  },
+  "gate": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/fitted_sources.rs",
+    "bytes": 6201,
+    "sha256": "9375bc064ed3697f4e91ed793ffb218d5cefb37cab84b0a9d91f98e3ab485549"
+  },
+  "frozen_successor": {
+    "path": ".cache/ace16-normal-fitted-next-20261031/SOURCE_SUCCESSOR_FREEZE.json",
+    "bytes": 2130,
+    "sha256": "9d0de14c450c7d97c6b24385b33075c8700480bab7d1465c7d806f95028482b5"
+  },
+  "retained_predecessor": {
+    "path": ".cache/ace16-normal-fitted-next-20261031/first-draft/FIRST_DRAFT_FREEZE.json",
+    "bytes": 1400,
+    "sha256": "d10c098899be397b63ae55bad7a653ab21781d2b06fc7292b2bd86cd63280c78"
+  },
+  "before_views": 38,
+  "literal_after_views": 30,
+  "requests_per_header": 19,
+  "positive_per_header": 15,
+  "intended_refusals_per_header": 4,
+  "selected_LvProp": "NULL with empty span, retained canonical catalog",
+  "qualification": {
+    "status": "PASS",
+    "tests_passed": 1,
+    "runtime_seconds": 0.18,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-next-20261031/source-gate-third.log",
+      "bytes": 1015,
+      "sha256": "fbce6566ab8c1b8c72d60c060fe75b78a83504d352372336c7d729ed8ca05a6c"
+    }
+  },
+  "retained_attempts": [
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/source-gate-first.log",
+        "bytes": 1290,
+        "sha256": "83b04721375ee19a763dd84610d3e976eb4156e78a34d469e31ab466b780437c"
+      },
+      "status": "compile_failed_before_tests",
+      "diagnostic": "E0252 duplicate FittedColumnUpdates import in existing refactor owner"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fitted-next-20261031/source-gate-second.log",
+        "bytes": 1790,
+        "sha256": "e46dffa3b910a994bbf8698cfa5121b72e6fd3fd2fd8a9aa93536150c4c63674"
+      },
+      "status": "read_failed",
+      "diagnostic": "Unsupported(ActiveContent) from strict active-EOD equality; corrected admission accepts EOD <= actual footer while preserving inactive slack"
+    }
+  ],
+  "source_expectations_retuned_from_producer": false,
+  "source_phase_new_normal_fitted_producer_calls": 0,
+  "independent_SDK_status": "not_run",
+  "native_Microsoft_Access_status": "not_run",
+  "limits": [
+    "Authored eight-field schema only; no genuine fitted-schema qualification",
+    "Nonempty native property bags are not stripped or implicitly admitted",
+    "Capacity/stale contexts have healthy originals and no fabricated AFTER"
+  ],
+  "gate_at_first_qualification": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/fitted_sources.rs",
+    "bytes": 6214,
+    "sha256": "d6ae797ae6a3db3724f8914a47cfdaddca60bee914a59397cdaaf598fe028189"
+  }
+}

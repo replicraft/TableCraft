@@ -127,3 +127,5 @@ mod indexed_sources;
 mod indexed_targets;
 
 mod genuine_targets;
+
+mod fitted_sources;

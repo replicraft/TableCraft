@@ -108,9 +108,13 @@ fn row(
             offsets.push(offset);
             previous = offset;
         }
-        if offsets[0] != layout.fixed_end || previous != end {
+        if offsets[0] != layout.fixed_end {
             return Err(refused());
         }
+        // The final offset ends active variable payloads. The independently
+        // bounded gap before the footer is inactive record capacity, preserved
+        // as data rather than interpreted as another field or payload reference.
+        // Each offset was checked against the physical footer boundary above.
         end
     };
     if layout.fixed_end > data_end {
