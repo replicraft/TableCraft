@@ -1,0 +1,199 @@
+{
+  "state": "OBSERVED_DEFAULTS_ORIGINALS_AND_PRESENCE_LAW_BEFORE_AFTER_MODEL",
+  "table": "Defaults",
+  "columns": [
+    "Id",
+    "Score",
+    "Caption",
+    "Flag",
+    "Money",
+    "Optional"
+  ],
+  "default_declarations": {
+    "Score": {
+      "native": 12,
+      "flags": 1,
+      "text": "7",
+      "literal": {
+        "i32": 7
+      }
+    },
+    "Caption": {
+      "native": 12,
+      "flags": 1,
+      "text": "\"seed\"",
+      "literal": {
+        "text": "seed"
+      }
+    },
+    "Flag": {
+      "native": 12,
+      "flags": 1,
+      "text": "True",
+      "literal": {
+        "bool": true
+      }
+    },
+    "Money": {
+      "native": 12,
+      "flags": 1,
+      "text": "-1.0001",
+      "literal": {
+        "currency_scaled": -10001
+      }
+    },
+    "Optional": {
+      "absent": true,
+      "literal": {
+        "null": true
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "omitted-constants",
+      "values": [
+        {
+          "supplied_i32": 24
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        }
+      ]
+    },
+    {
+      "id": "explicit-null",
+      "values": [
+        {
+          "supplied_i32": 25
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_bool": false
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "supplied_null": true
+        }
+      ]
+    },
+    {
+      "id": "all-overrides",
+      "values": [
+        {
+          "supplied_i32": 26
+        },
+        {
+          "supplied_i32": -9
+        },
+        {
+          "supplied_text": "override"
+        },
+        {
+          "supplied_bool": false
+        },
+        {
+          "supplied_currency_scaled": 12345
+        },
+        {
+          "supplied_i32": 99
+        }
+      ]
+    },
+    {
+      "id": "explicit-null-boolean",
+      "values": [
+        {
+          "supplied_i32": 27
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "supplied_null": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        }
+      ],
+      "outcome": "refuse",
+      "reason": "SuppliedNULLBoolean is not omission or false; no storedNULLBoolean carrier"
+    },
+    {
+      "id": "missing-required-id",
+      "values": [
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        },
+        {
+          "omitted": true
+        }
+      ],
+      "outcome": "refuse",
+      "reason": "Missing ordinary requiredprimaryId has no default; NULL cannot satisfyactualprimary"
+    }
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "bytes": 446464,
+      "sha256": "c6dc5d36f35335ea2d9cafbc5cf6500dc135ea41a4d3f60d9241ac9e55714d12",
+      "definition": 89,
+      "data": 92,
+      "root": 91
+    },
+    {
+      "header": 6,
+      "bytes": 520192,
+      "sha256": "c6aae0208a2dfbd0b77f8867f49700718880ee761c7881df6ec5789843a8b456",
+      "definition": 106,
+      "data": 109,
+      "root": 108
+    }
+  ],
+  "original_record_hex": "060001000000ffffffffa861000000000000000000006f0072006900670069006e0061006c0026001600010017",
+  "original_frontier": 4051,
+  "original_free": 4035,
+  "fixed_prefix": 22,
+  "variable_slots": 1,
+  "footer_bytes": 7,
+  "normal_autonumber_mode": "Unknown",
+  "writer_calls": 0
+}

@@ -1,0 +1,164 @@
+{
+  "date": "2026-11-01",
+  "scope": "Ordinary constant-default original/presence/literal AFTER source qualification; no normal default producer execution",
+  "maintained_source": [
+    {
+      "path": "docs/testing/default_insert_originals/BuildDefaultOriginal.java",
+      "bytes": 5812,
+      "sha256": "898a5ad5fdc4a1a88674c44a03f6bfa0d23046c72d397e12f28d613ad2145a36"
+    },
+    {
+      "path": "docs/testing/default_insert_originals/model.py",
+      "bytes": 5897,
+      "sha256": "3bc6e9032b0a309e377970ec64c4d7d8e2f72afb844d2957a176c175c8b02e23"
+    },
+    {
+      "path": "docs/testing/default_insert_originals/recipe.json",
+      "bytes": 3244,
+      "sha256": "d9e6b1e8f52ddb8b94d5430286e97df578f0fe1471e5c72e1586edf384a41906"
+    },
+    {
+      "path": "docs/testing/default_insert_originals/requests.json",
+      "bytes": 3706,
+      "sha256": "0ceace45b32973b1204139a1ec2752c2ce1717695dff61830eb17305de3e0e55"
+    }
+  ],
+  "original_generation": {
+    "checkpoint": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/first-private-checkpoint.json",
+      "bytes": 4274,
+      "sha256": "e34ed994e926d2753af44118ac6fbaa2af7991dd609744296deea0479a152577"
+    },
+    "result": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/original-first/result.json",
+      "bytes": 1809,
+      "sha256": "07801894cb75f0bddffda4bcf036cc4dffb56cd883d41d3bc0fcb10507e67557"
+    },
+    "receipt": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/execution-first.json",
+      "bytes": 1428,
+      "sha256": "9fa470223d25c3c555b8006b843d14e33b9c9edebb342594894371cdd228bec4"
+    },
+    "compiler_calls": 1,
+    "sdk_original_creations": 2,
+    "sdk_readonly_calls": 20,
+    "all_first_pass": true,
+    "inputs_unchanged": true
+  },
+  "after_inputs_before_model": {
+    "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-input-first-freeze.json",
+    "bytes": 28849,
+    "sha256": "78dca5ffc789563d82496d009df0faf9cd14e22e5fb10be75fa44539d162df55"
+  },
+  "after_code_before_constructor": {
+    "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-first-private-checkpoint.json",
+    "bytes": 2714,
+    "sha256": "16b27223860b89a1b3ffb8dc5b4a45a6d6bfe694f7f4cec109d8198e7d42c4b6"
+  },
+  "constructed_manifest": {
+    "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/manifest.json",
+    "bytes": 58954,
+    "sha256": "1b12bd2ef9cf5d8ce2ebfc4172bf95a71f6e9d4caf8dcb15c3bb6c440b7d86a4"
+  },
+  "views": [
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h5-default-original.accdb",
+      "bytes": 446464,
+      "sha256": "c6dc5d36f35335ea2d9cafbc5cf6500dc135ea41a4d3f60d9241ac9e55714d12"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h5-default-omitted-constants.accdb",
+      "bytes": 446464,
+      "sha256": "33c0ee28d7fcfb7cf9379efb9c89b2e2f261f00f17eba12f78eb179841a3c850"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h5-default-explicit-null.accdb",
+      "bytes": 446464,
+      "sha256": "99fae1edfabe1f593fce28db48a28ab7818679fb6f9cdcbbfe586c8954ebf153"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h5-default-all-overrides.accdb",
+      "bytes": 446464,
+      "sha256": "d1e45700af63d9ca71e84bcd7346028ddfd1b50c1a1c0f7ace321ab2cd9454da"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h6-default-original.accdb",
+      "bytes": 520192,
+      "sha256": "c6aae0208a2dfbd0b77f8867f49700718880ee761c7881df6ec5789843a8b456"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h6-default-omitted-constants.accdb",
+      "bytes": 520192,
+      "sha256": "4d46f78ba407c6b62314656d2688f9652de2afb4cb4eb1461b5a759991352bdd"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h6-default-explicit-null.accdb",
+      "bytes": 520192,
+      "sha256": "7af984c59831f415f42626432bbe9762136a55373431fb423c9d5c467d346ac1"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/expected-first/h6-default-all-overrides.accdb",
+      "bytes": 520192,
+      "sha256": "1c42c8d5e8bf2c672822a354b12120f57a319e8ee9722535eacedf22076220be"
+    }
+  ],
+  "requests": {
+    "positive_after_views": 6,
+    "original_views": 2,
+    "refusal_requests_without_after": 4,
+    "semantics": "SuppliedNULL remains supplied; only Omitted reads actual source default or nullableNULL fallback; all-supplied overrides stay inert",
+    "native_autonumber_mode": "Unknown"
+  },
+  "sdk_after_source": {
+    "calls": 32,
+    "full_inventories": 8,
+    "full_metadata": 8,
+    "alias_cursor_reads": 16,
+    "first_pass": true,
+    "inputs_unchanged": true,
+    "new_compiler_calls": 0,
+    "precall": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-observations-first/precall-freeze.json",
+      "bytes": 82305,
+      "sha256": "e882a8b7afad2f1a952bfd7551a56f78d356f42fc5c2fb0b31022336c8c249a8"
+    },
+    "result": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-observations-first/result.json",
+      "bytes": 100,
+      "sha256": "08da261451e6b40df9606387fc37169c3dca4ef303fdf2f6eadc54ff1eeed270"
+    },
+    "execution": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-execution-first.json",
+      "bytes": 3624,
+      "sha256": "56be94c2d6245773c1db07bb9047542f8f7ebfd3965fd544c34e4c425ef3377f"
+    },
+    "saved_verifier": {
+      "path": ".cache/ace16-normal-generated-insert-next-20261101/source/after-saved-first.log",
+      "bytes": 76,
+      "sha256": "3942dbcba0d829c3ad8e6975c1ea7353f4b9ff27e4889eb4ade1e463d44ed63b"
+    },
+    "saved_verifier_child_calls": 0
+  },
+  "native_source": {
+    "original_gate": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/defaults-original-source-first.log",
+      "bytes": 541,
+      "sha256": "7a3aff5b613e351ce6ac295f2b98617f01938b9762a1b95041c69e6f361f6dda"
+    },
+    "after_gate": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/default-after-source-first.log",
+      "bytes": 678,
+      "sha256": "3e39120021cd56b6b25263c0617cc1e7333d60e2ac14854dd71837d22b3ac334"
+    },
+    "both_first_pass": true,
+    "unique_views": 8,
+    "producer_calls": 0
+  },
+  "normal_default_producer_and_host_acceptance": "pending",
+  "limitations": [
+    "SDK and native read qualification does not establish native Access save/reopen behavior.",
+    "No default expression was evaluated by the source SDK generator/readers. Literal AFTERs use source/request-derived independent bytes.",
+    "Flags07, LASTsign/sequence and missingNewValues do not identify native Increment/Random. Numbered/NonPrimary remain read-only metadata evidence.",
+    "No clock/random/GenUniqueID/queryUDF/AutoNumber default generation is qualified."
+  ]
+}

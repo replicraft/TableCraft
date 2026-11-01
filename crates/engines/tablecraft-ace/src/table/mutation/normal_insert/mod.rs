@@ -142,3 +142,6 @@ mod review_tests;
 
 #[cfg(test)]
 mod feff_tests;
+
+#[cfg(test)]
+mod node_sources;

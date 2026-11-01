@@ -1,0 +1,172 @@
+{
+  "scope": "source_only_retained_height_node_insert",
+  "original_builder_commit": "c60cdc4d",
+  "source_views": 4,
+  "original_views": 2,
+  "literal_after_views": 2,
+  "request_rows": [
+    [
+      801,
+      400,
+      1
+    ]
+  ],
+  "original_rows": 800,
+  "final_rows": 801,
+  "source_model_and_request_frozen_before_construction": true,
+  "pure_constructor": {
+    "first_attempt": "PASS",
+    "manifest": {
+      "file": "manifest.json",
+      "bytes": 9633,
+      "sha256": "680fc960346752336ce5362a3037e690b74babfcd819d6670a48b4f87f9d51a2"
+    }
+  },
+  "sdk_after": {
+    "first_attempt": "PASS",
+    "observations": 12,
+    "full_inventory": 2,
+    "complete_index_metadata": 2,
+    "alias_cursors": 8,
+    "failure": null,
+    "first_result": {
+      "file": "result.json",
+      "bytes": 7736,
+      "sha256": "d0baded4770ebe06fff194eb55fdcc58c6a9a4210ef5db9ea9d6d5d010d3c0b1"
+    },
+    "saved_verifier": "PASS_ZERO_CHILDREN",
+    "original_observations_previously_passed": 12,
+    "closure_observations": 24,
+    "receipts": [
+      {
+        "file": "h5-retained-node-insert-cursor-GroupAlias.receipt.json",
+        "bytes": 583,
+        "sha256": "ddc89dc8e966246be6a4e11785ee700717c1a308a3ffec6f82ea2043e8d12000"
+      },
+      {
+        "file": "h5-retained-node-insert-cursor-GroupOrder.receipt.json",
+        "bytes": 583,
+        "sha256": "ccb0d446efd6060034940c26881086b3119fb4274fec5fb24fad6dd7336dc3f8"
+      },
+      {
+        "file": "h5-retained-node-insert-cursor-PrimaryAlias.receipt.json",
+        "bytes": 589,
+        "sha256": "2539394ed9f99730e3c26802f3d4f79792f471d1717cf32ffd0c7400cff206aa"
+      },
+      {
+        "file": "h5-retained-node-insert-cursor-PrimaryID.receipt.json",
+        "bytes": 580,
+        "sha256": "eed447cf00d60c8729de7511b6b2adaa97a1ee95438176465a1f72003f5fee6c"
+      },
+      {
+        "file": "h5-retained-node-insert-inventory.receipt.json",
+        "bytes": 562,
+        "sha256": "701a2ee40978f79a3f48fabf3744babe7891c00cb570414bceed3a608aab1016"
+      },
+      {
+        "file": "h5-retained-node-insert-metadata.receipt.json",
+        "bytes": 555,
+        "sha256": "640cd8cb1a4e67ca67964dbef771a809843920c42d0db50785cdaff5c6824ef1"
+      },
+      {
+        "file": "h6-retained-node-insert-cursor-GroupAlias.receipt.json",
+        "bytes": 583,
+        "sha256": "f4fb1227eab7459524d18d45d65b354de6c3d9312d732f53b19f2b69f3a81887"
+      },
+      {
+        "file": "h6-retained-node-insert-cursor-GroupOrder.receipt.json",
+        "bytes": 583,
+        "sha256": "f2fcbae1364dc994cfd11b7d79415343437e9abb0bcbdde0ef23623dc3702d0e"
+      },
+      {
+        "file": "h6-retained-node-insert-cursor-PrimaryAlias.receipt.json",
+        "bytes": 589,
+        "sha256": "8642672cb270e32ad5d57180a76cc681f57ddeeb53ec4d1484f04811918a8253"
+      },
+      {
+        "file": "h6-retained-node-insert-cursor-PrimaryID.receipt.json",
+        "bytes": 580,
+        "sha256": "24628a7226e071a32bca6a82e2cb2f9828c1660db55cff7bcd869fbe8b13f6a4"
+      },
+      {
+        "file": "h6-retained-node-insert-inventory.receipt.json",
+        "bytes": 562,
+        "sha256": "b4347f6b18ac2e17240fc1f4cf17962eae4c9ba4b5a81e8cc18de8e833b2443d"
+      },
+      {
+        "file": "h6-retained-node-insert-metadata.receipt.json",
+        "bytes": 555,
+        "sha256": "13ae2d045cb6c9a167d49d483d5a19eec0718787be3bf55e893727b0a94830ff"
+      }
+    ]
+  },
+  "images": [
+    {
+      "file": "h5-retained-node-insert-after.accdb",
+      "bytes": 434176,
+      "sha256": "38f15336e6810158e6fd6b67b5cf1d12ab1c4869fc7d233becc13a12097e1320"
+    },
+    {
+      "file": "h5-retained-node-insert-before.accdb",
+      "bytes": 434176,
+      "sha256": "0d9cf91fff6c9153c628bf5cd54dc39a9420b18f4fad669fca8e9a3c8a92694b"
+    },
+    {
+      "file": "h6-retained-node-insert-after.accdb",
+      "bytes": 503808,
+      "sha256": "d71fe690d393d1f0a5f5d2256976b452e408cc93cbbbf760fe46c83f2a97144a"
+    },
+    {
+      "file": "h6-retained-node-insert-before.accdb",
+      "bytes": 503808,
+      "sha256": "18eff74333ed55f4bfef879d6a2530fab8031aaef6a07895f50aec13fdf079ae"
+    }
+  ],
+  "qualified_oracle_owners": [
+    {
+      "file": "requests-first.json",
+      "bytes": 2253,
+      "sha256": "063fb0786694533506d64e930ad4ca6bbc4c96fcd38f81ad5732caece10bf658"
+    },
+    {
+      "file": "model.py",
+      "bytes": 11124,
+      "sha256": "95b105538b39fd0e9cbb143f8d91c8da1115a8482cfb8ada54e99dcc4086f89c"
+    },
+    {
+      "file": "reports.py",
+      "bytes": 6842,
+      "sha256": "6a46624cced19cbe862658e3488ee0c9a9d3b41c92434d3ef5befd33d3db02ff"
+    },
+    {
+      "file": "input-first-freeze.json",
+      "bytes": 4483,
+      "sha256": "f73e4009ee081e11d1374abd1b765c6da647560920f78dd14e82cd3a46b33822"
+    },
+    {
+      "file": "code-first-freeze.json",
+      "bytes": 5176,
+      "sha256": "7ae9aef1060292f76a020a9f13e474c5cc0402d99d7767a1b38e8ff46ac5f220"
+    }
+  ],
+  "native_source_gate": {
+    "passed": true,
+    "views": 4,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/node-insert-source-first.log",
+      "bytes": 523,
+      "sha256": "82c96fbd30c22270a45730e2152e1467c7c01b7b807ec6918512ba7315cbb095"
+    }
+  },
+  "native_insert_producer": "PENDING_ROOT_EXECUTION",
+  "normal_host_cli_recovery": "PENDING_ROOT_EXECUTION",
+  "native_access_save_conformance": "PENDING",
+  "source_author_native_producer_calls": 0,
+  "source_author_compiler_calls": 0,
+  "notes": [
+    "Earlier leaf counts fixed; tail absorbs growth; complete fences derived from final partition maxima.",
+    "Guard old Id354 moves right and bound ROW becomes Id347.",
+    "No producer result used as expected bytes; all first attempts retained.",
+    "Maintained wrapper composition unexecuted; copied qualified model/requests/report bytes are exact."
+  ]
+}
