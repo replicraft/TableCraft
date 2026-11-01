@@ -25,6 +25,7 @@ pub(super) struct Authority {
     definition: u32,
     physical: u32,
     cells: [[MapCell; 2]; 2],
+    leading_data: bool,
 }
 
 impl Authority {
@@ -35,18 +36,42 @@ impl Authority {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_with(image, schema, index, false, budget, cancelled)
+    }
+
+    pub(super) fn capture_after_data(
+        image: &NativeImage,
+        schema: &TableSchema,
+        index: &NativeIndex,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with(image, schema, index, true, budget, cancelled)
+    }
+
+    fn capture_with(
+        image: &NativeImage,
+        schema: &TableSchema,
+        index: &NativeIndex,
+        leading_data: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let _span = tracing::debug_span!("native.ordinary.insert.root_split.authority").entered();
         check(budget, cancelled)?;
         let length = image.as_bytes().len();
         let final_length = length
-            .checked_add(2 * PAGE_BYTES)
+            .checked_add((2 + usize::from(leading_data)) * PAGE_BYTES)
             .ok_or(InspectError::StructureLimit)?;
         if !length.is_multiple_of(PAGE_BYTES) || final_length as u64 > MAX_IMAGE_BYTES {
             return Err(InspectError::StructureLimit.into());
         }
-        let right = u32::try_from(length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
+        let first = u32::try_from(length / PAGE_BYTES).map_err(|_| InspectError::StructureLimit)?;
+        let right = first
+            .checked_add(u32::from(leading_data))
+            .ok_or(InspectError::StructureLimit)?;
         let left = right.checked_add(1).ok_or(InspectError::StructureLimit)?;
-        if right != image.catalog().header().page_count() || left & !PAGE_NUMBER_MASK != 0 {
+        if first != image.catalog().header().page_count() || left & !PAGE_NUMBER_MASK != 0 {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         let definition = schema.definition_page();
@@ -144,7 +169,7 @@ impl Authority {
                     }
                     Ok(())
                 })?;
-                for number in [right, left] {
+                for number in first..=left {
                     check_role(local.layout.usage, MapRole::Owned, number, &storage, reader)?;
                     let raw = definition::read(reader, local.definition_page())?;
                     let hint = u32_at(&raw, TABLE_FREE_MAP_OFFSET)?;
@@ -192,6 +217,7 @@ impl Authority {
             definition,
             physical: index.data_number(),
             cells,
+            leading_data,
         })
     }
 
@@ -211,6 +237,59 @@ impl Authority {
         Ok(())
     }
 
+    pub(super) fn apply_after_data(
+        &self,
+        image: &NativeImage,
+        after: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if !self.leading_data
+            || self.address != image.as_bytes().as_ptr() as usize
+            || self.length != image.as_bytes().len()
+            || after.len() != self.length + 3 * PAGE_BYTES
+        {
+            return Err(EditError::Preservation);
+        }
+        let mut input = image.reader();
+        let mut reader = Reader {
+            source: &mut input,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
+        let data = global.future_cell(&mut reader, image.catalog().header().page_count())?;
+        if data.before & data.mask == 0 {
+            return Err(EditError::Preservation);
+        }
+        for pair in &self.cells {
+            for (role, cell) in pair.iter().enumerate() {
+                reader.tick()?;
+                let expected = if role == 0 && cell.offset == data.offset {
+                    cell.before & !data.mask
+                } else {
+                    cell.before
+                };
+                if after.get(cell.offset) != Some(&expected) {
+                    return Err(EditError::Preservation);
+                }
+            }
+        }
+        for pair in &self.cells {
+            for (role, cell) in pair.iter().enumerate() {
+                reader.tick()?;
+                if role == 0 {
+                    after[cell.offset] &= !cell.mask;
+                } else {
+                    after[cell.offset] |= cell.mask;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn apply(
         &self,
         image: &NativeImage,
@@ -220,6 +299,7 @@ impl Authority {
     ) -> Result<(), EditError> {
         if self.address != image.as_bytes().as_ptr() as usize
             || self.length != image.as_bytes().len()
+            || self.leading_data
             || after.len() != self.length + 2 * PAGE_BYTES
         {
             return Err(EditError::Preservation);

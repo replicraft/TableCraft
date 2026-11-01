@@ -290,3 +290,6 @@ pub mod genuine_binary_update;
 
 /// Frozen normal root-split source pairs shared by actual consumers.
 pub mod genuine_root_split;
+
+/// Frozen compound DATA and INDEX source pairs for actual consumers.
+pub mod genuine_compound_root_split;

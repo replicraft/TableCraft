@@ -785,3 +785,6 @@ mod root_split;
 
 #[path = "normal/genuine_binary_update.rs"]
 mod genuine_binary_update;
+
+#[path = "normal/compound_root_split.rs"]
+mod compound_root_split;
