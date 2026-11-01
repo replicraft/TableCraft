@@ -147,12 +147,15 @@ impl<'a> CreateColumn<'a> {
         self.default_literal
     }
 
-    /// Declare one manual ascending Int32 primary key, named by the caller.
+    /// Declare one manual ascending Int32, Int64 or Currency primary key.
     ///
     /// The operation validates the identifier, uniqueness, non-NULL initial keys
     /// and physical fit. No page, map, native flags or generated values are supplied.
     pub fn with_primary_key(mut self, name: &'a str) -> Result<Self, CreateDatabaseError> {
-        if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32)) {
+        if !matches!(
+            self.declaration,
+            Declaration::Fixed(ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)
+        ) {
             return Err(CreateDatabaseError::Declaration);
         }
         self.primary_key_name = Some(name);

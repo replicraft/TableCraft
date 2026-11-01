@@ -39,22 +39,63 @@ const FREE_AT: usize = 2;
 const MASK_AT: usize = 27;
 const ENTRY_AT: usize = 480;
 const MARKER_BYTES: usize = size_of::<u8>();
-const ORDERED_BYTES: usize = size_of::<i32>();
-const ROW_AT: usize = MARKER_BYTES + ORDERED_BYTES;
-const ENTRY_BYTES: usize = ROW_AT + size_of::<u32>();
+const ROW_BYTES: usize = size_of::<u32>();
 const VALUE_MARKER: u8 = 0x7f;
-const SIGN_BIT: u32 = 0x8000_0000;
+const INT32_SIGN_BIT: u32 = 0x8000_0000;
+const INT64_SIGN_BIT: u64 = 0x8000_0000_0000_0000;
 
 #[derive(Clone, Copy)]
 struct Entry {
-    value: i32,
+    value: i64,
     slot: u8,
+}
+
+/// Original declared key family, never inferred from a row or LAST value.
+#[derive(Clone, Copy)]
+enum Kind {
+    Int32,
+    Int64,
+    Currency,
+}
+
+impl Kind {
+    fn capture(scalar: ScalarType) -> Result<Self, CreateDatabaseError> {
+        match scalar {
+            ScalarType::Int32 => Ok(Self::Int32),
+            ScalarType::Int64 => Ok(Self::Int64),
+            ScalarType::Currency => Ok(Self::Currency),
+            _ => Err(CreateDatabaseError::Declaration),
+        }
+    }
+
+    fn ordered_bytes(self) -> usize {
+        match self {
+            Self::Int32 => size_of::<i32>(),
+            Self::Int64 | Self::Currency => size_of::<i64>(),
+        }
+    }
+
+    fn entry_bytes(self) -> usize {
+        MARKER_BYTES + self.ordered_bytes() + ROW_BYTES
+    }
+
+    fn value(self, cell: Cell<'_>) -> Result<i64, CreateDatabaseError> {
+        match (self, cell) {
+            (Self::Int32, Cell::Int32(value)) => Ok(i64::from(value)),
+            (Self::Int32, Cell::Value(Value::Int32(value))) => Ok(i64::from(*value)),
+            (Self::Int64, Cell::Value(Value::Int64(value))) => Ok(*value),
+            (Self::Currency, Cell::Value(Value::Currency(value))) => Ok(value.scaled()),
+            (_, Cell::Value(Value::Null)) => Err(IndexConstraintViolation::NullKey.into()),
+            _ => Err(CreateDatabaseError::Carrier),
+        }
+    }
 }
 
 pub(super) struct Prepared<'a> {
     name: &'a str,
     name_bytes: usize,
     column: usize,
+    kind: Kind,
     entries: [Entry; profile::MAX_ROWS],
     count: usize,
 }
@@ -70,13 +111,14 @@ pub(super) fn capture<'a>(
     for column in 0..columns.count() {
         check(budget, cancelled)?;
         if let Some(name) = columns.primary_key_name(column) {
-            if selected.is_some() || columns.scalar(column) != ScalarType::Int32 {
+            if selected.is_some() {
                 return Err(CreateDatabaseError::Declaration);
             }
-            selected = Some((column, name));
+            let kind = Kind::capture(columns.scalar(column))?;
+            selected = Some((column, name, kind));
         }
     }
-    let Some((column, name)) = selected else {
+    let Some((column, name, kind)) = selected else {
         return Ok(None);
     };
     request::name(name, budget, cancelled)?;
@@ -85,7 +127,7 @@ pub(super) fn capture<'a>(
     }
     let active = rows
         .count()
-        .checked_mul(ENTRY_BYTES)
+        .checked_mul(kind.entry_bytes())
         .ok_or(CreateDatabaseError::PageCapacity)?;
     if active > PAGE_BYTES - ENTRY_AT {
         return Err(CreateDatabaseError::PageCapacity);
@@ -99,17 +141,13 @@ pub(super) fn capture<'a>(
         name,
         name_bytes,
         column,
+        kind,
         entries: [Entry { value: 0, slot: 0 }; profile::MAX_ROWS],
         count: rows.count(),
     };
     for ordinal in 0..rows.count() {
         check(budget, cancelled)?;
-        let value = match rows.cell(ordinal, column) {
-            Cell::Int32(value) => value,
-            Cell::Value(Value::Int32(value)) => *value,
-            Cell::Value(Value::Null) => return Err(IndexConstraintViolation::NullKey.into()),
-            _ => return Err(CreateDatabaseError::Carrier),
-        };
+        let value = kind.value(rows.cell(ordinal, column))?;
         prepared.entries[ordinal] = Entry {
             value,
             slot: u8::try_from(ordinal).map_err(|_| CreateDatabaseError::Layout)?,
@@ -211,22 +249,34 @@ impl Prepared<'_> {
             OWNER_AT,
             u32::try_from(definition).map_err(|_| CreateDatabaseError::Layout)?,
         )?;
+        let entry_bytes = self.kind.entry_bytes();
+        let row_at = MARKER_BYTES + self.kind.ordered_bytes();
         let mut active = 0;
         for entry in &self.entries[..self.count] {
             check(budget, cancelled)?;
             budget
-                .charge(Resource::Steps, ENTRY_BYTES as u64)
+                .charge(Resource::Steps, entry_bytes as u64)
                 .map_err(InspectError::from)?;
             let at = ENTRY_AT + active;
             page[at] = VALUE_MARKER;
-            let ordered = u32::from_le_bytes(entry.value.to_le_bytes()) ^ SIGN_BIT;
-            page[at + MARKER_BYTES..at + ROW_AT].copy_from_slice(&ordered.to_be_bytes());
+            match self.kind {
+                Kind::Int32 => {
+                    let value =
+                        i32::try_from(entry.value).map_err(|_| CreateDatabaseError::Layout)?;
+                    let ordered = u32::from_le_bytes(value.to_le_bytes()) ^ INT32_SIGN_BIT;
+                    page[at + MARKER_BYTES..at + row_at].copy_from_slice(&ordered.to_be_bytes());
+                }
+                Kind::Int64 | Kind::Currency => {
+                    let ordered = u64::from_le_bytes(entry.value.to_le_bytes()) ^ INT64_SIGN_BIT;
+                    page[at + MARKER_BYTES..at + row_at].copy_from_slice(&ordered.to_be_bytes());
+                }
+            }
             let reference = row::reference(
                 u32::try_from(data).map_err(|_| CreateDatabaseError::Layout)?,
                 entry.slot,
             );
-            page[at + ROW_AT..at + ENTRY_BYTES].copy_from_slice(&reference.to_be_bytes());
-            active += ENTRY_BYTES;
+            page[at + row_at..at + entry_bytes].copy_from_slice(&reference.to_be_bytes());
+            active += entry_bytes;
             page[MASK_AT + active / u8::BITS as usize] |= 1 << (active % u8::BITS as usize);
         }
         put16(page, FREE_AT, PAGE_BYTES - ENTRY_AT - active)?;

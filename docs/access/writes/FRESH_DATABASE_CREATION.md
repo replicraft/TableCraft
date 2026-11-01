@@ -259,3 +259,19 @@ The [source record](../../testing/results/ace16-integral-primary-creation-source
 retains receipt tamper controls separately from the actual observations. This is
 read/source qualification only; the wider creator and actual write lifecycle
 require their own acceptance. No AutoNumber behavior is inferred.
+
+## Explicit manual Int64/Currency primary keys
+
+The same caller-named primary declaration now accepts exact Int64 and Currency
+carriers. Currency uses signed scaled units without floating conversion or an
+Int64-carrier substitute. Initial NULL/duplicate keys refuse before image
+allocation; generated values and wider defaults remain outside this extension.
+
+Ten old/new creator functions pass, including eight complete wider source
+comparisons and measured resource/cancellation controls. The real host publishes
+four source-complete files, performs eight normal typed INSERT/DELETE commits,
+and retains its lease/receipt across eight duplicate/NULL refusals. Existing
+Int32 wire images and constraints pass unchanged; conservative resource totals
+reflect the wider private key representation. Native Access qualification remains
+unrun. The CLI's explicit [primary flag](../../cli/NATIVE_CREATION.md) forwards
+these declarations through the same shared creation service.
