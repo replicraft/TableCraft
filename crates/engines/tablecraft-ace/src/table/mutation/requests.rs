@@ -1,5 +1,9 @@
 //! Exact source-local requests shared below engineering and normal packaging.
 use super::rows::RowAssignment;
+#[cfg(feature = "journal")]
+use crate::{EditError, header::check};
+#[cfg(feature = "journal")]
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
 
 /// An exact expected/replacement carrier for one snapshot-local live row.
@@ -33,6 +37,20 @@ impl FixedScalarUpdate {
     /// Replacement carrier; it must exactly match the qualified field type.
     pub fn value(&self) -> &Value {
         &self.value
+    }
+
+    /// Request metadata only: preserve written order while refusing duplicate
+    /// ordinals with the same bounded directory used by Int32 intents.
+    #[cfg(feature = "journal")]
+    pub(crate) fn validate_intent_requests(
+        updates: &[Self],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        super::rows::unique(updates, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(())
     }
 }
 

@@ -4,7 +4,7 @@ use crate::{FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, he
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
 
-/// One original column's owned requests, including empty groups and no-ops.
+/// One original column's owned, row-unique requests, including empty groups and no-ops.
 /// Construction does not resolve native metadata or grant write permission.
 pub struct NativeFixedIntentGroup {
     column: SchemaName,
@@ -24,6 +24,7 @@ impl NativeFixedIntentGroup {
         if updates.len() > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
             return Err(InspectError::StructureLimit.into());
         }
+        FixedScalarUpdate::validate_intent_requests(&updates, budget, cancelled)?;
         for update in &updates {
             check(budget, cancelled)?;
             if update.row() >= crate::limits::MAX_LIVE_ROWS {
@@ -51,7 +52,8 @@ impl NativeFixedIntentGroup {
     }
 }
 
-/// Ordered original fixed requests bound to one complete BEFORE image.
+/// Ordered original fixed requests with ASCII-insensitive unique column names,
+/// bound to one complete BEFORE image.
 /// No program selectors, final rows, permission flags or candidate bytes occur here.
 pub struct NativeFixedEditIntent {
     table: SchemaName,
@@ -97,6 +99,7 @@ impl NativeFixedEditIntent {
         binding::length(before_length)?;
         model::validate_name(table, budget, cancelled)?;
         assignment_count(&groups, budget, cancelled)?;
+        unique_columns(&groups, budget, cancelled)?;
         let table = copy_name(table, budget)?;
         check(budget, cancelled)?;
         Ok(Self {
@@ -216,4 +219,29 @@ fn copy_name(name: &str, budget: &mut ResourceBudget) -> Result<SchemaName, Nati
     SchemaName::new(owned)
         .map_err(InspectError::from)
         .map_err(Into::into)
+}
+
+/// Metadata identity only. Do not call this from borrow_groups: the normal
+/// planner must retain its existing complete-preflight duplicate error order.
+fn unique_columns(
+    groups: &[NativeFixedIntentGroup],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), NativeIntentError> {
+    for (position, group) in groups.iter().enumerate() {
+        check(budget, cancelled)?;
+        for previous in &groups[..position] {
+            check(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    previous.column().len().max(group.column().len()) as u64,
+                )
+                .map_err(InspectError::from)?;
+            if previous.column().eq_ignore_ascii_case(group.column()) {
+                return Err(crate::EditError::Conflict.into());
+            }
+        }
+    }
+    Ok(())
 }
