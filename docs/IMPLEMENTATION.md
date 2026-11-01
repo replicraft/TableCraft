@@ -1,5 +1,17 @@
 # Implementation status
 
+## Numeric index insertion and deletion
+
+Normal INSERT/DELETE now maintain qualified manual Int64/Currency secondary
+root leaves alongside Int32 indexes. Thirty-six literal native commits,
+independent raw proofs, typed/SQL saves and restarts, CLI saves/readbacks and
+resource/forgery controls pass. UPDATE keeps its prior Int32 admission. The
+[execution record](testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
+records the first missed capture guard, correction and passing strict/broad batch.
+Wide primary keys, additional ordinal/ID profiles and wider tree shapes remain
+work; native Access qualification remains unrun.
+
+
 ## Represented EOF insertion
 
 Complete supplied-row insertion now selects existing DATA capacity or one

@@ -277,3 +277,32 @@ Windows durability qualification. Source pins are in the
 The [EOF execution record](../../testing/results/ace16-normal-eof-insert-writes-2026-11-01.json)
 retains native, host, CLI and broad regression receipts, including the shared
 recovery-fixture move and corrected help/source-directory test invocations.
+
+
+## Int64 and Currency secondary root leaves
+
+Qualified manual Int64 and Currency secondary indexes now compose with normal
+INSERT and DELETE. Exact native/scalar declarations, eight-byte storage, dense
+field ordinals, nullable/directional wire grammar and complete physical aliases
+are checked. Wide keys retain one root leaf; primary-key insertion keeps its
+Int32 profile. Ownership, live LVAL exclusions, original row witnesses and full
+source/protected-byte proofs remain mandatory. Existing Int32 tree behavior and
+UPDATE admission are unchanged.
+
+The action-specific read-fact capture accepts only the checked numeric key
+families. It grants no writable-field or journal permission. Independent proofs
+reconstruct raw masks, signed key bytes, request-aligned ROW references and
+historical distinct-key changes without producer keys or staged patches.
+
+Thirty-four literal source views and 284 exact SDK reports preceded producers.
+Thirty-six native whole-image commits, separate direct INSERT/DELETE proofs,
+recovery, forged-image and resource controls pass. Typed/SQL sessions preserve
+48 literal results and 32 restart contexts; CLI checks cover 20 saves/readbacks
+and eight refusals. SQL positives use source-qualified NULL keys; non-NULL wide
+values are covered through exact typed/native carriers. These results do not
+establish implicit SQL numeric coercions or native Access save conformance.
+
+The [execution record](../../testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
+retains the initial missed action-admission guard and its narrow correction,
+complete receipts and strict/broad regression results. Empty/all-NULL, stable-ID
+gaps and sparse native ordinals are separate follow-on source work.

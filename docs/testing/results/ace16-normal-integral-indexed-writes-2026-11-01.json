@@ -1,0 +1,150 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal manual Int64/Currency secondary root-leaf INSERT and DELETE with original requests",
+  "source_views": 34,
+  "independent_sdk_source_observations": 284,
+  "sources_before_producers": true,
+  "expected_bytes_retuned_to_producers": false,
+  "focused_receipts": [
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/action-admission-first.log",
+      "bytes": 521,
+      "sha256": "4be7e9edb623611716e778ac917dce822962aaaee96848eb59ed833bfcfce0ab",
+      "test_result": [
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1256 filtered out; finished in 0.20s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/native-second.log",
+      "bytes": 970,
+      "sha256": "d3fc6f9071cbbe2dcf37dcec9ed06c5aa4844e7bfb48d93f0def8a2634c996df",
+      "test_result": [
+        "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 176 filtered out; finished in 18.03s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/direct-first.log",
+      "bytes": 571,
+      "sha256": "03db66189633985d6a606e4b93a9671078c52425ace66c53072843c3e78e96b2",
+      "test_result": [
+        "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1255 filtered out; finished in 8.45s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/host-first.log",
+      "bytes": 710,
+      "sha256": "dae61762c6e58a5ccca021afc8113e5f7abb64fd6c4cc011e7e84777c4122df7",
+      "test_result": [
+        "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.90s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/cli-first.log",
+      "bytes": 930,
+      "sha256": "0af8fb487591d92ef7ef587149a4ae259135e26dea8a88f2304c289166574b7d",
+      "test_result": [
+        "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.63s"
+      ]
+    }
+  ],
+  "native_complete_image_commits": 36,
+  "independent_direct_insert_images": 16,
+  "independent_direct_delete_images": 16,
+  "native_recovery_contexts": 24,
+  "forged_after_refusals": 32,
+  "full_action_empty_resource_contexts": 16,
+  "host_literal_saves": 48,
+  "host_restart_contexts": 32,
+  "cli_literal_saves": 20,
+  "cli_exact_readbacks": 20,
+  "cli_refusal_contexts": 8,
+  "broad_checks": {
+    "passed": true,
+    "ace_units": 1134,
+    "access_units": 79,
+    "cli_units": 102,
+    "default_recovery_functions": 83,
+    "receipts": [
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/strict-all-first.log",
+        "bytes": 526,
+        "sha256": "1cc5dfc7fde9ac8e315bb713c5c4297e5783460429fcc268a46a45adeb007c58",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/journal-first.log",
+        "bytes": 307,
+        "sha256": "d60ebaccec702e15288d5725377e1c7f1e4f471bc3f8e3f6c10971b8a13747c0",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/preview-first.log",
+        "bytes": 184,
+        "sha256": "adeba474be68befd9bb283ce13aa8e02979d4362d1e12b9aa57fb2c9ccb61135",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/minimal-first.log",
+        "bytes": 72,
+        "sha256": "8a2933ae25e59188be988ea6218274cb341f13d8bc4b533f57b12ececd4be8b3",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/ace-units-first.log",
+        "bytes": 174180,
+        "sha256": "6797057a65e54b1b21bf3dc7d6a5658ab2a7888e4d356a4ac917d45c5a195987",
+        "test_result": [
+          "ok. 1134 passed; 0 failed; 124 ignored; 0 measured; 0 filtered out; finished in 113.20s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/access-units-first.log",
+        "bytes": 9801,
+        "sha256": "144647b3daacbc98afab1b16ec0c1a7a59da63fde4e6b1de5051e0643d9d916d",
+        "test_result": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.61s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/cli-units-first.log",
+        "bytes": 11816,
+        "sha256": "7b2c0df36bf6167e171199ea304111f496c75f2d4f9fdc6db2a009a071a1e82a",
+        "test_result": [
+          "ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/recovery-default-first.log",
+        "bytes": 29695,
+        "sha256": "418e7121bca7e37adaca5bc4fced9428f973b4b9e144334dec66f5c6ba33c478",
+        "test_result": [
+          "ok. 83 passed; 0 failed; 97 ignored; 0 measured; 0 filtered out; finished in 4.03s"
+        ]
+      }
+    ],
+    "scope_note": "Predates the later source-only wider scalar fixture addition; no wider scalar mutation producer is included."
+  },
+  "first_failure": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/native-first.log",
+    "bytes": 3291,
+    "sha256": "7ca1867c09779e9c6288ccb564c3dfbbe5f235e743a655812cc90b2b5cc164e5",
+    "test_result": [
+      "FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 176 filtered out; finished in 0.23s"
+    ]
+  },
+  "correction": "All four initial native tests stopped at the old Int32-only CheckedIndexes capture. Added a source-bound numeric capture used only by INSERT/DELETE; existing UPDATE capture/targets and primary-only Int32 qualification remain unchanged. Source and expected images were not changed.",
+  "current_limits": [
+    "manual native fixed Int64/Currency declarations with exact carriers and dense field ordinals",
+    "wide keys remain root-leaf only; primary-key insertion remains Int32",
+    "no index splits/allocation, relationships or required DELETE/INSERT programs",
+    "additional empty/all-NULL, stable-ID and native-ordinal source families require separate qualification"
+  ],
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "help_followon": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/help-followon-first.log",
+    "bytes": 2711,
+    "sha256": "c4119393fff77b216cda41e231501549875748742eece0f0d318df655837e58a",
+    "passed_functions": 17
+  }
+}

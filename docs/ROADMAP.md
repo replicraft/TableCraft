@@ -57,8 +57,10 @@ also supports retained NODE trees whose children remain nonempty. Whole-image so
 [indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json).
 NODE insertion and qualified constant defaults now work, and complete supplied
 rows can add one represented EOF DATA page through TCNA3/V2. Fresh creation now
-emits catalogs admitted by normal content checks. Next are broader numeric keys
-and scalar INSERT carriers, multiple-page allocation, index splits/page retirement,
+emits catalogs admitted by normal content checks. Manual Int64/Currency secondary
+root-leaf INSERT/DELETE now pass separately.
+Next are remaining numeric key/ordinal profiles and scalar INSERT carriers,
+multiple-page allocation, index splits/page retirement,
 AutoNumber and broader relationship/program behavior. Native Access
 qualification remains open. Completed
 fixed/fitted implementation does not need repeating.
