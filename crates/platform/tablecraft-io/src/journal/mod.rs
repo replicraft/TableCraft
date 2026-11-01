@@ -28,3 +28,6 @@ mod tests;
 /// Explicit retained Unix filesystem pairing; native permission stays with its consumer.
 #[cfg(all(unix, feature = "filesystem-journal"))]
 pub mod filesystem;
+
+mod checked_image;
+pub use checked_image::{CheckedImage, inspect_image};
