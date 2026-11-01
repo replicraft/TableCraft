@@ -1,0 +1,29 @@
+{
+  "state": "ORIGINAL_RECIPE_BEFORE_SDK_CREATION_NO_AFTER",
+  "profiles": [{"header": 5, "format": "V2016"}, {"header": 6, "format": "V2019"}],
+  "file_ceiling_bytes": 8388608,
+  "Items": {
+    "columns": [["Id", "LONG", "manual"], ["Score", "LONG", "manual"], ["Guard", "LONG", "manual"]],
+    "rows": 800,
+    "position": "0 through 799 inclusive",
+    "values": ["position + 1", "position - 400", "position % 7"],
+    "indexes": [
+      ["PrimaryID", "Id", "ASC", "primary"],
+      ["PrimaryAlias", "Id", "ASC", "unique|required"],
+      ["GroupOrder", "Guard", "ASC", "ordinary"],
+      ["GroupAlias", "Guard", "ASC", "ordinary"]
+    ],
+    "required_observed_physical_indexes": 2,
+    "required_observed_logical_indexes": 4,
+    "required_observed_roots": "Both actual physical roots must be native kind3 NODE; never infer from row count",
+    "cursor_expected": "Primary aliases sort literal Id; Guard aliases sort literal Guard then original native ROW derived from raw DATA directories"
+  },
+  "Sentinel": {"columns": [["Marker", "LONG", "manual"]], "rows": [[999]]},
+  "creation_policy": "Public pinned SDK TableBuilder/ColumnBuilder/IndexBuilder only, fresh exclusive bounded channel, expression evaluation false, external resolver denied",
+  "observation_policy": "Unchanged complete bootstrap observer + one all-index metadata oracle + four named alias cursor reads per header; pin complete original before reads and recheck after each child",
+  "success_conditions": ["All 800 rows and 2400 exact carriers", "All four alias metadata/cursors", "Actual root pointers agree with raw TD descriptors", "Both observed root pages kind3 owner selectedTD", "Complete PAGE hashes and raw rows match immutable original"],
+  "if_shape_differs": "Retain first source and outputs as failed geometry hypothesis; do not increase rows or alter the source in place",
+  "expected_after_images": 0,
+  "tablecraft_producer_calls": 0,
+  "native_access_conformance": "pending; SDK-created original and independent native reads only"
+}
