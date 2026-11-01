@@ -1,0 +1,56 @@
+# Native17 creation source qualification
+
+The native17 source family defines the catalog upgrade independently of the
+TableCraft creator. All31 recipes start with immutable, independently authored
+canonical originals: six Int32, five fixed, five IEEE, five variable, two capacity,
+four catalog-name and four multiple-table cases. Original source owners and
+previous fifteen-field goldens remain unchanged.
+
+The [new source owner](../../crates/engineering/tablecraft-testkit/src/access/canonical_native17_creation.rs)
+reconstructs the catalog declaration, catalog DATA and map container from literal
+seventeen-field laws. It retains native fixed prefix32, eleven variable slots,
+bf0000 presence, seven distinct Memo/OLE declaration pairs and22 initial map cells.
+Appended user-map references shift by six; all other original user/header/system
+bytes remain exact. Raw leading-FEFF catalog names, unaligned fixed values,
+nonfinite IEEE payloads, Decimal scale, NULL/empty values and multiple-table role
+placement stay source facts rather than inferred writer output.
+
+Both header codes5 and6 produce62 complete source images. The
+[read-only native gate](../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/native17_creation.rs)
+checks98 complete user reads, native table checks and Source snapshots. Its six malformed
+controls cover shortened catalog footer, missing Memo pair, duplicated physical
+pair, present-empty Extra, wrong descriptor flags and a distinct live object
+aliasing one TD. The corrected source gate passes2 tests with1 explicit exporter
+ignored; the create-new exporter separately passes.
+
+The first source run passed the positive62-view check but failed the malformed
+control test. Diagnostic index2 was a real duplicate-LVAL-map alias: field-number
+bijection alone did not establish physical map ownership. The strict target-local
+declaration consumer now checks every actual column-owned/candidate storage role
+against the complete captured census. Distinct records may share an ordinary map
+container, but different owners cannot share a cell, record span or bitmap page.
+The reader's general framing and explicit initialization policies are unchanged.
+Guard commit `9ce5b171` retains the failure and passes the corrected six controls
+plus five declaration/resource regressions. No expected bytes were retuned.
+
+Independent SDK qualification reused the four unchanged bounded read-only Java
+observers and their original class/jar closure, with expressions disabled and
+links refused. Predictions changed only the declared catalog metadata/cells and
+complete-file digest bindings; every original user and unrelated observation
+remained exact. All62 complete reports matched on the first run in10.737 seconds,
+with0 compiler calls,0 writer calls and0 retries. Saved-report verification also
+passed with0 child calls. Every source, expected report and closed reader input
+remained unchanged.
+
+The [result record](results/ace16-native17-creation-sources-2026-11-01.json)
+pins all62 images and terminal receipts. These are source/read qualifications.
+The actual creator upgrade, newly created normal-session INSERT/DELETE and their
+independent session-image companion remain pending separate execution. No
+creator provenance or stored permission grants write admission. Native Access
+creation/save/reopen and Windows conformance remain unrun.
+
+The source grammar deliberately uses the existing authored minimal envelope,
+13-byte base0 inline maps and already qualified direct user records. It does not
+claim general imported-file compatibility. Future GLOBAL FREE bytes are retained
+unchanged; no EOF allocation authority, property/default/identity generation or
+new user scalar write carrier is introduced by this source qualification.

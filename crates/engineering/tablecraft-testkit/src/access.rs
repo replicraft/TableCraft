@@ -246,5 +246,8 @@ pub mod genuine_retained_node_insert;
 /// Independent constant-default and supplied-NULL INSERT views.
 pub mod genuine_default_insert;
 
+/// Independent native17 projection of immutable authored creation sources.
+pub mod canonical_native17_creation;
+
 /// Independent inline Memo/OLE insertion views.
 pub mod genuine_inline_lval_insert;
