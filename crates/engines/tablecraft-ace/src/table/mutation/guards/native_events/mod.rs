@@ -105,6 +105,7 @@ fn with_selection<'image, T>(
 
 /// Resolve every observed native reference before constructing private
 /// projected compiler admission. No caller-selected list enters this route.
+#[cfg(feature = "journal")]
 pub(in crate::table::mutation) fn programs<'image>(
     image: &'image NativeImage,
     schema: &crate::TableSchema,
