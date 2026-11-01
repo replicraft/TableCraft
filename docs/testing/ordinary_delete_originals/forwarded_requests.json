@@ -1,0 +1,38 @@
+{
+  "state": "INDEPENDENT_FIRST_EOF_EXPECTED_INPUTS_AND_DELETE_LAW_BEFORE_MODEL",
+  "table": "Sentinel",
+  "ordinal": 0,
+  "identity": 23,
+  "marker": "aaaaaaaaaaaaaaaaaaa",
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/owned-growth-next-20261101/eof-source/expected-first/h5-eof-allocation-growth.accdb",
+      "before_reader": ".cache/owned-growth-next-20261101/eof-source/expected-first/h5-eof-allocation-growth.reader.txt",
+      "bytes": 462848,
+      "sha256": "3a95a4ecc876ea3cc88990cd83309a051515ddad1b698414cb6c51b53d5841db",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "target": 112
+    },
+    {
+      "header": 6,
+      "before": ".cache/owned-growth-next-20261101/eof-source/expected-first/h6-eof-allocation-growth.accdb",
+      "before_reader": ".cache/owned-growth-next-20261101/eof-source/expected-first/h6-eof-allocation-growth.reader.txt",
+      "bytes": 532480,
+      "sha256": "0db9f897700066ef36bf9acfc90f3f29eda234012ee09515a876bdea3f698b50",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "target": 129
+    }
+  ],
+  "law": {
+    "count": "TD+16 u32 1->0",
+    "slot": "logical root DATA+14 word4fbe->cfbe",
+    "preserve": "root pointer and zero capsule, EOF hidden68B terminal/OLE, allmaps, filelength and every other byte",
+    "scope": "independently authored EOF model outputs, never native writer outputs"
+  },
+  "producer_calls": 0
+}

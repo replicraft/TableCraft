@@ -151,3 +151,5 @@ mod eof_allocation;
 mod compound_eof;
 
 mod normal_delete;
+
+mod forwarded_delete;

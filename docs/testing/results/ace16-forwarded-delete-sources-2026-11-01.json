@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "scope": "Source-only forwarded logical-root DELETE, two ACE16 headers/four views",
+  "input_freeze_sha256": "85f2684f4fed34576b485d163d0024f90b83708dda9fdcfab52de4731b35bacb",
+  "manifest_sha256": "adfa137b15a9ac9577eb502b3778048ae7513110a689685b20226cd317d44c86",
+  "cases": [
+    {
+      "id": "h5-forwarded-delete",
+      "header": 5,
+      "before": {
+        "file": "h5-forwarded-delete-before.accdb",
+        "bytes": 462848,
+        "sha256": "3a95a4ecc876ea3cc88990cd83309a051515ddad1b698414cb6c51b53d5841db"
+      },
+      "expected": {
+        "file": "h5-forwarded-delete-deleted.accdb",
+        "bytes": 462848,
+        "sha256": "c7fad5fe062f7e99478b02e92d6ff6526aeaca66d052b896ea22cf2c410a120f"
+      },
+      "before_reader": {
+        "file": "h5-forwarded-delete-before.reader.txt",
+        "bytes": 4322,
+        "sha256": "9959e3c3df264a038f094f80b8c412b2d5c68d2ecb0835bdb5fe31c5b2240973"
+      },
+      "reader": {
+        "file": "h5-forwarded-delete-deleted.reader.txt",
+        "bytes": 4194,
+        "sha256": "b9f6f90980de9ee6654197a7fe7f99aeb4939b7b94b0b78b1f99d5e713681098"
+      },
+      "proof": {
+        "file": "h5-forwarded-delete.proof.json",
+        "bytes": 242,
+        "sha256": "29dcbcff56e6d03d56ee324d78f1105d0e500e0a126e1ed00563b53414dc9b19"
+      }
+    },
+    {
+      "id": "h6-forwarded-delete",
+      "header": 6,
+      "before": {
+        "file": "h6-forwarded-delete-before.accdb",
+        "bytes": 532480,
+        "sha256": "0db9f897700066ef36bf9acfc90f3f29eda234012ee09515a876bdea3f698b50"
+      },
+      "expected": {
+        "file": "h6-forwarded-delete-deleted.accdb",
+        "bytes": 532480,
+        "sha256": "d18dd7c25e7f6aae4a7ed8715e18928bf7beb9bec96acb547cbb109026d65c9d"
+      },
+      "before_reader": {
+        "file": "h6-forwarded-delete-before.reader.txt",
+        "bytes": 4335,
+        "sha256": "4c3a89416d322696a549460e6d0228d389ba2bd5d07d142b3ae7780f1f719a32"
+      },
+      "reader": {
+        "file": "h6-forwarded-delete-deleted.reader.txt",
+        "bytes": 4207,
+        "sha256": "820ecb3a5a525612ea5aaba9cbec61447c10c1be5216b8eb92d1b50379da5588"
+      },
+      "proof": {
+        "file": "h6-forwarded-delete.proof.json",
+        "bytes": 242,
+        "sha256": "92c369396bde208afdd140a83a7d17a6d61abe638e14b1004f9ddc4d19f8192c"
+      }
+    }
+  ],
+  "construction": {
+    "status": "passed",
+    "log": ".cache/ace16-normal-delete-next-20261101/forwarded-source/construct-first.log",
+    "native_producer_calls": 0
+  },
+  "native": {
+    "status": "passed",
+    "functions": 1,
+    "views": 4,
+    "seconds": 0.13,
+    "log": ".cache/ace16-normal-delete-next-20261101/forwarded-source/native-reads-second.log",
+    "writer_calls": 0,
+    "stored_program_calls": 0
+  },
+  "sdk": {
+    "status": "passed",
+    "observations": 4,
+    "inputs_unchanged": true,
+    "result_sha256": "9e857a19e5c809116cb847b38459933a777230c62809b5cd1cc6949f54edbdd1",
+    "results": [
+      {
+        "id": "h5-forwarded-delete-before",
+        "stdout": {
+          "path": ".cache/ace16-normal-delete-next-20261101/forwarded-source/sdk-first/h5-forwarded-delete-before/stdout.log",
+          "bytes": 4322,
+          "sha256": "9959e3c3df264a038f094f80b8c412b2d5c68d2ecb0835bdb5fe31c5b2240973"
+        },
+        "matches": true
+      },
+      {
+        "id": "h5-forwarded-delete-expected",
+        "stdout": {
+          "path": ".cache/ace16-normal-delete-next-20261101/forwarded-source/sdk-first/h5-forwarded-delete-expected/stdout.log",
+          "bytes": 4194,
+          "sha256": "b9f6f90980de9ee6654197a7fe7f99aeb4939b7b94b0b78b1f99d5e713681098"
+        },
+        "matches": true
+      },
+      {
+        "id": "h6-forwarded-delete-before",
+        "stdout": {
+          "path": ".cache/ace16-normal-delete-next-20261101/forwarded-source/sdk-first/h6-forwarded-delete-before/stdout.log",
+          "bytes": 4335,
+          "sha256": "4c3a89416d322696a549460e6d0228d389ba2bd5d07d142b3ae7780f1f719a32"
+        },
+        "matches": true
+      },
+      {
+        "id": "h6-forwarded-delete-expected",
+        "stdout": {
+          "path": ".cache/ace16-normal-delete-next-20261101/forwarded-source/sdk-first/h6-forwarded-delete-expected/stdout.log",
+          "bytes": 4207,
+          "sha256": "820ecb3a5a525612ea5aaba9cbec61447c10c1be5216b8eb92d1b50379da5588"
+        },
+        "matches": true
+      }
+    ],
+    "log": ".cache/ace16-normal-delete-next-20261101/forwarded-source/sdk-first.log"
+  },
+  "retained_first_failure": {
+    "log": ".cache/ace16-normal-delete-next-20261101/forwarded-source/native-reads-first.log",
+    "cause": "Preview selection test accessed newly private RowDelete.expected; corrected through public constructor/accessor before source gate runtime",
+    "source_or_golden_bytes_changed": false
+  },
+  "getter": {
+    "source_sha256": "1e27ab7a081627c1fbee73f5a8c91b34de88a711cd4bbb7a9909b485b94c3935",
+    "original_source_sha256": "9d660176d8915ae8dd2102e570b0b48870d29cf420d384373a7240008d6e4ee6",
+    "jar_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "source_inverse": "Only class/constructor, explicit zero-Sentinel flag and Sentinel count1->0; formatter/other table count3/inert channel unchanged"
+  },
+  "native_gate": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/forwarded_delete.rs",
+    "sha256": "229e45b55b7ac753a53981eff66cde3b7ea8bedd4f9401bbcef7ffcc8855207f"
+  },
+  "boundaries": [
+    "Source qualification only; normal DELETE behavior recorded separately",
+    "One qualified EOF forwarding witness, not all historical layouts",
+    "Microsoft Access save/reopen and Windows durability conformance unrun"
+  ]
+}
