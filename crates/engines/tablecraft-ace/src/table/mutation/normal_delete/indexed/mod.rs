@@ -84,14 +84,6 @@ impl<'image> Admission<'image> {
             if field.native_type() != INT32 && !integral {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            if integral
-                && schema
-                    .columns()
-                    .get(field.number())
-                    .is_none_or(|dense| dense.number() != field.number())
-            {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-            }
             budget
                 .charge(Resource::Steps, position as u64)
                 .map_err(InspectError::from)?;
@@ -127,7 +119,7 @@ impl<'image> Admission<'image> {
             pages.push(index.root_page());
         }
         // This is actual catalog-wide ownership, not a selected map-only test.
-        let ownership = Ownership::capture(image, checked, budget, cancelled)?;
+        let ownership = Ownership::capture_actions(image, checked, budget, cancelled)?;
         for check_index in checked.indexes() {
             ownership.require(image, schema, check_index.index(), budget, cancelled)?;
         }

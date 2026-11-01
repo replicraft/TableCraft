@@ -196,7 +196,7 @@ fn qualify<'image>(
     {
         return Err(EditError::Preservation);
     }
-    let ownership = Ownership::capture(image, facts.checked(), budget, cancelled)?;
+    let ownership = Ownership::capture_actions(image, facts.checked(), budget, cancelled)?;
     let live = Inventory::capture(image, budget, cancelled)?;
     // A proof-wire choice derived from already-paid native checks, never caller
     // authority. Keep the existing ASC/present reconstruction and its resource
@@ -251,7 +251,7 @@ fn qualify<'image>(
         let column = column.ok_or(EditError::Preservation)?;
         let field = &schema.columns()[column];
         let integral = matches!(field.native_type(), INT64 | CURRENCY);
-        if integral && (field.number() != column || !leaf) {
+        if integral && !leaf {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         for row in source.table.rows() {

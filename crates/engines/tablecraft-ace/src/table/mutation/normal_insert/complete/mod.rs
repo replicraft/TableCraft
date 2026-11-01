@@ -21,7 +21,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.complete_insert.plan").entered();
-        let source = super::capture_source(&self, table, budget, cancelled)?;
+        let source = super::capture_action_source(&self, table, budget, cancelled)?;
         if !source.indexes.indexes().is_empty() {
             // Existing indexed insertion retains its own physical admission.
             // This does not provide index allocation or split authority.

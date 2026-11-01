@@ -60,6 +60,28 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, false, budget, cancelled)
+    }
+
+    /// Real action callers resolve native key numbers independently of dense
+    /// UPDATE vectors. All physical alias and catalog/LVAL checks stay shared.
+    #[cfg(feature = "journal")]
+    pub(in crate::table) fn capture_actions(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, true, budget, cancelled)
+    }
+
+    fn capture_mode(
+        image: &NativeImage,
+        checked: &TableCheck,
+        actions: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         let schema = checked.schema();
         let selected = schema.definition_page();
@@ -121,15 +143,25 @@ impl Ownership {
             }
             let map = RepresentedMap::read(&mut reader, index.usage_map(), MapRole::Owned)?;
             map.require_allocated_storage(&mut reader, &global)?;
-            // Dense native keys have an O(1) original-schema discriminator.
-            // Sparse I32/composite/NODE paths keep the existing capture and
-            // exact charged loops. Wide sparse keys are not newly admitted.
-            let integral = index.columns().first().and_then(|key| {
-                schema.columns().get(key.number()).filter(|field| {
-                    field.number() == key.number()
-                        && matches!(field.native_type(), INT64 | CURRENCY)
+            // Retain the old dense discriminator and charged UPDATE trace.
+            // Actions explicitly resolve actual native numbers, never stored IDs.
+            let integral = if actions {
+                reader.work(schema.columns().len())?;
+                index.columns().first().and_then(|key| {
+                    schema
+                        .columns()
+                        .iter()
+                        .find(|field| field.number() == key.number())
+                        .filter(|field| matches!(field.native_type(), INT64 | CURRENCY))
                 })
-            });
+            } else {
+                index.columns().first().and_then(|key| {
+                    schema.columns().get(key.number()).filter(|field| {
+                        field.number() == key.number()
+                            && matches!(field.native_type(), INT64 | CURRENCY)
+                    })
+                })
+            };
             let tree = if let Some(field) = integral {
                 Tree::capture_integral(image, index, selected, field, reader.budget, cancelled)?
             } else {

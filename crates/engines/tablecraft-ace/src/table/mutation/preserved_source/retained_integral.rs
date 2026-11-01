@@ -1,6 +1,6 @@
 //! Read-only ordinary integral-index qualification; no key mutation authority.
 mod ownership;
-use super::PayloadAdmission;
+use super::ColumnFraming;
 use crate::{
     EditError, IndexCheckStatus, IndexInspection, InspectError, NativeColumn, NativeImage,
     NativeIndex, TableSnapshot, WriteBlocker,
@@ -12,7 +12,7 @@ use crate::{
     header::check,
     table::{indexes::check_table_retained, mutation::lval_ownership::Inventory},
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
 fn supported(field: &NativeColumn) -> bool {
@@ -34,27 +34,33 @@ pub(super) fn qualify(
     image: &NativeImage,
     indexes: &IndexInspection,
     projected: &TableSnapshot,
-    payload: &PayloadAdmission<'_, '_>,
+    admission: Option<ColumnFraming>,
     long_values: &Inventory,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
-    if !matches!(
-        payload,
-        PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_)
-    ) {
+    let Some(framing) = admission else {
         return Ok(false);
-    }
+    };
     let schema = indexes.schema();
     let mut wide = false;
     for index in indexes.indexes() {
         check(budget, cancelled)?;
         for key in index.columns() {
             check(budget, cancelled)?;
-            let field = schema
-                .columns()
-                .get(key.number())
-                .ok_or(InspectError::Malformed)?;
+            let field = match framing {
+                ColumnFraming::Dense => schema.columns().get(key.number()),
+                ColumnFraming::Actions => {
+                    budget
+                        .charge(Resource::Steps, schema.columns().len() as u64)
+                        .map_err(InspectError::from)?;
+                    schema
+                        .columns()
+                        .iter()
+                        .find(|field| field.number() == key.number())
+                }
+            }
+            .ok_or(InspectError::Malformed)?;
             wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY);
         }
     }
@@ -66,10 +72,19 @@ pub(super) fn qualify(
         let [key] = index.columns() else {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         };
-        let field = schema
-            .columns()
-            .get(key.number())
-            .ok_or(InspectError::Malformed)?;
+        let field = match framing {
+            ColumnFraming::Dense => schema.columns().get(key.number()),
+            ColumnFraming::Actions => {
+                budget
+                    .charge(Resource::Steps, schema.columns().len() as u64)
+                    .map_err(InspectError::from)?;
+                schema
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+            }
+        }
+        .ok_or(InspectError::Malformed)?;
         if index.native_type() > 1
             || index.foreign_reference().is_some()
             || !index

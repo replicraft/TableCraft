@@ -306,10 +306,23 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
         {
             continue;
         }
+        budget
+            .charge(
+                Resource::Steps,
+                source.table.schema().columns().len() as u64,
+            )
+            .map_err(InspectError::from)?;
         let integral = index
             .columns()
             .first()
-            .and_then(|key| source.table.schema().columns().get(key.number()))
+            .and_then(|key| {
+                source
+                    .table
+                    .schema()
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+            })
             .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY));
         if integral {
             super::integral::reconstruct(

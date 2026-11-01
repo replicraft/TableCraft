@@ -770,3 +770,6 @@ mod wide_primary_numeric;
 
 #[path = "normal/dense_numeric.rs"]
 mod dense_numeric;
+
+#[path = "normal/sparse_numeric.rs"]
+mod sparse_numeric;

@@ -39,7 +39,7 @@ fn qualify_with(
 ) -> Result<(), EditError> {
     // Complete declaration validation also runs for an empty batch. Generated
     // fields cannot become explicit manual targets through supplied NULL values.
-    record_insertion::layout::variables(schema, budget, cancelled)?;
+    record_insertion::layout::variables_actions(schema, budget, cancelled)?;
     for field in schema.columns() {
         check(budget, cancelled)?;
         let wider = complete
@@ -99,7 +99,7 @@ pub(super) fn encode(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<u8>>, EditError> {
-    let variables = record_insertion::layout::variables(schema, budget, cancelled)?;
+    let variables = record_insertion::layout::variables_actions(schema, budget, cancelled)?;
     budget
         .charge_allocation(requests.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;

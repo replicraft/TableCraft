@@ -27,7 +27,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<OrdinaryInsertPlanKind, EditError> {
         let _span = tracing::debug_span!("native.ordinary.insert.select_plan").entered();
-        let source = super::capture_source(self, table, budget, cancelled)?;
+        let source = super::capture_action_source(self, table, budget, cancelled)?;
         if !source.indexes.indexes().is_empty() {
             // This selector grants no indexed admission. The unchanged existing
             // planner still owns complete tree qualification and final proof.
