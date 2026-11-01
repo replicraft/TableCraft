@@ -28,7 +28,7 @@ number or independently decoded fixture does not qualify every stored feature.
 
 | Family | Current status |
 | --- | --- |
-| ACE 16 — Access 2016 and later releases | Bounded 2016/2019-family metadata, local records and queries, qualified indexes/relationships and explicit advanced-field services. General ACE 16 table editing remains unavailable. |
+| ACE 16 — Access 2016 and later releases | Bounded 2016/2019-family metadata, local records and queries, qualified indexes/relationships and explicit advanced-field services. Restricted journaled UPDATE/INSERT/DELETE and scalar creation work; general ACE 16 editing remains incomplete. |
 | Jet 4 — Access 2000–2003 | Bounded metadata, local records, queries and qualified indexes/relationships; restricted fresh-copy fixed Int32 UPDATEs. |
 | ACE 12 — Access 2007 | Bounded metadata, local records, queries and qualified indexes, with qualified complex links, multivalues and stored attachment/history reads. |
 | ACE 14 — Access 2010 | Bounded ordinary table reads, including independently checked qualified Agile inputs. Advanced field/index variants need separate qualification. |
