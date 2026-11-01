@@ -105,5 +105,8 @@ and [retained host record](../../testing/results/ace16-retained-normal-delete-20
 for the exact scope and preserved first failures.
 
 Microsoft Access save/reopen and Windows locking/durability conformance remain
-unrun. Normal INSERT, indexed DELETE, cascades, reclamation and general
+unrun. Broader INSERT, indexed DELETE, cascades, reclamation and general
 program-bearing DELETE remain separate work.
+
+The separate [normal explicit-row INSERT route](NORMAL_ACE_INSERT.md) now uses
+the same session lifecycle with distinct original typed requests.

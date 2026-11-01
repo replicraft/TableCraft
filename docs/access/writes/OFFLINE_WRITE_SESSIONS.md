@@ -184,3 +184,14 @@ lifecycle. TCND recovery reconstructs original DELETE from the same checked V1
 journal, preserving existing TCNI1–7 UPDATE dispatch. Refreshed snapshots issue
 new handles; live ordinals are not persistent identities. The initial route
 refuses selected indexes and relationships involving the target.
+
+## Normal insertion
+
+The [normal INSERT service](NORMAL_ACE_INSERT.md) supplies metadata-only
+`NativeJournalInserter` and `OfflineWriteSession::insert_table` typed preparation.
+`plan_insert` binds a complete SQL VALUES row through the shared query service.
+The consuming finish performs full original-source admission and returns
+`StagedInsert`; counts are available before journal setup. INSERT receipts retain
+`matched_rows=None` and the actual inserted count. The common apply lifecycle
+preserves UPDATE/DELETE counts and the same target/pair through failures,
+retirement and release. TCNA recovery consumes the same checked V1 journal.

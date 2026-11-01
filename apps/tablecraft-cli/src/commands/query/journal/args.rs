@@ -71,6 +71,34 @@ pub(crate) struct DeleteArguments {
 
 #[derive(Args)]
 #[command(
+    after_help = concat!(
+        "Offline normal INSERT VALUES for the qualified native ACE2016/2019 profile. ",
+        "Supply every declared field exactly once, positionally or with a complete field list. ",
+        "Omissions, generated values, defaults, INSERT SELECT, parameters and external sources refuse. ",
+        "The native planner rechecks required programs, constraints and preservation before any journal exists. ",
+        "Initial placement uses existing qualified owned DATA space without file or map growth; selected indexes and relationships refuse. ",
+        "Non-NULL Memo/OLE authoring is unsupported. Existing readonly content remains preserved. ",
+        "Keep other applications closed until completion or explicit recovery. The journal directory must be fresh. ",
+        "Interrupted journals use recover-update or finalize-update, which validate original typed INSERT intent without replaying SQL. ",
+        "This does not establish general ACE saves or native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
+    )
+)]
+pub(crate) struct InsertArguments {
+    /// One local INSERT with one complete VALUES row.
+    #[arg(allow_hyphen_values = true)]
+    pub(super) sql: String,
+    /// Existing offline target retained under one exclusive lock.
+    #[arg(long, value_name = "PATH")]
+    pub(super) database: PathBuf,
+    /// Fresh journal bundle directory; existing entries are never replaced.
+    #[arg(long, value_name = "DIRECTORY")]
+    pub(super) journal: PathBuf,
+    #[command(flatten)]
+    pub(super) work: Work,
+}
+
+#[derive(Args)]
+#[command(
     after_help = "Explicit offline recovery of a paired Jet4 or admitted ACE journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write; ACE recovery rederives its bounded pure required programs or closed data-only admission from BEFORE. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS and Linux."
 )]
 pub(crate) struct RecoveryArguments {

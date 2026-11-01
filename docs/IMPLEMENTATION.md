@@ -1,5 +1,22 @@
 # Implementation status
 
+## Normal explicit-row INSERT
+
+Qualified native17 ordinary tables now accept complete explicitly supplied rows
+through a separate TCNA0001 intent and V1 recovery. The shared session and
+`query journal-insert` retain metadata-only preparation, honest inserted counts,
+continuous exclusivity and known outcomes through cleanup. Actual indexes,
+target relationships, defaults/generation, new LVAL payloads and allocation stay
+outside this initial normal route.
+
+Single-row and two-row batches in both orders match six independent whole-image
+expectations. Native recovery, protected-byte forgeries, capacity, resource and
+cancellation controls pass. Typed/SQL and CLI saves retain the original row/OLE,
+properties, maps and EOF. All 1,118 ACE units, 79 adapter units, 102 CLI units and
+83 recovery functions pass, with strict feature builds and prior DELETE/EOF host
+workflows intact. See the [INSERT contract](access/writes/NORMAL_ACE_INSERT.md)
+and [native record](testing/results/ace16-normal-insert-writes-2026-11-01.json).
+
 ## Normal ordinary-row deletion
 
 Normal DELETE now has a separate TCND0001 original-request intent and V1 recovery
@@ -11,7 +28,7 @@ Retained payloads, forwarding storage, properties, maps and EOF remain exact.
 
 Five direct-root and four forwarded-root native functions pass. Four typed/SQL growth-then-delete workflows
 perform eight exact commits; two CLI workflows perform four commits and four
-readbacks. All complete images match frozen expectations. Normal INSERT,
+readbacks. All complete images match frozen expectations. Broader INSERT,
 indexed DELETE, cascades and Microsoft Access save/reopen conformance remain
 open. The batch passes 1,114 ACE units, 79 adapter units, 98 CLI units and
 83 recovery functions, with strict feature checks and prior EOF workflows intact.
@@ -53,7 +70,7 @@ Source goldens are unchanged; first compile/negative-fixture failures remain in
 the [native record](testing/results/ace16-normal-eof-allocation-writes-2026-11-01.json).
 See the [contract](access/writes/NORMAL_ACE_EOF_ALLOCATION.md) and
 [host record](testing/results/ace16-retained-eof-allocation-2026-11-01.json).
-Normal INSERT, broader DELETE, wider allocation/indexes and native Access
+Broader INSERT/DELETE, wider allocation/indexes and native Access
 qualification remain ongoing.
 
 ## Normal alternate-owned-page record growth

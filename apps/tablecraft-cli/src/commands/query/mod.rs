@@ -108,6 +108,7 @@ pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Er
     match command {
         Command::PreviewBeforeChange(_) => Err(Error::BeforeChangeDispatch),
         Command::JournalUpdate(_)
+        | Command::JournalInsert(_)
         | Command::JournalDelete(_)
         | Command::RecoverUpdate(_)
         | Command::FinalizeUpdate(_) => Err(Error::JournalDispatch),
