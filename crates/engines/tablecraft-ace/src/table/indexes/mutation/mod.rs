@@ -19,7 +19,7 @@ mod ignored;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod insertion;
 mod kind;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod pages;
 #[cfg(feature = "ace16-write-preview")]
 mod population;

@@ -287,3 +287,6 @@ pub mod canonical_creation_integral_primary;
 
 /// Frozen fitting Binary UPDATE sources and literal outcomes.
 pub mod genuine_binary_update;
+
+/// Frozen normal root-split source pairs shared by actual consumers.
+pub mod genuine_root_split;

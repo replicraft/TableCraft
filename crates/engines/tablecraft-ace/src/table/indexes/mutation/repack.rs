@@ -84,7 +84,7 @@ pub(super) fn borrowed_fits<P: RetainedProfile, const N: usize>(
     )
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) fn borrowed_fits_fresh<P: RetainedProfile, const N: usize>(
     entries: &[Entry<&P::Key>],
     profile: &P,

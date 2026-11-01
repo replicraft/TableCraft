@@ -6,6 +6,7 @@ mod omitted;
 mod placement;
 mod proof;
 mod records;
+mod root_split;
 
 #[cfg(test)]
 mod tests;
