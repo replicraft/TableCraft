@@ -205,3 +205,6 @@ fn variable_shape(field: &NativeColumn) -> bool {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod sentinel_source_controls;

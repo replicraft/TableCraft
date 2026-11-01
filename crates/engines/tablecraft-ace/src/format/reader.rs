@@ -12,6 +12,12 @@ pub(crate) struct PhysicalRow {
     pub offset: usize,
 }
 
+// Optional row traversal authority is caller-owned and allocation-free here.
+struct RowScope<'a> {
+    owned: &'a [u32],
+    visit: &'a mut dyn FnMut(u32, &mut ResourceBudget) -> Result<(), InspectError>,
+}
+
 pub(crate) struct Reader<'a, R> {
     pub source: &'a mut R,
     pub header: Header,
@@ -63,7 +69,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         slot: u8,
         owner: Option<u32>,
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, owner, false, None)
+        self.row_impl(page_number, slot, owner, false, None, None)
             .map(|row| row.data)
     }
     /// Reuse a caller's current data page only for its live root. Relocation targets
@@ -75,7 +81,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: u32,
         page: &[u8; PAGE_BYTES],
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true, Some(page))
+        self.row_impl(page_number, slot, Some(owner), true, Some(page), None)
             .map(|row| row.data)
     }
     pub fn row_location(
@@ -85,8 +91,32 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: u32,
         page: &[u8; PAGE_BYTES],
     ) -> Result<PhysicalRow, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true, Some(page))
+        self.row_impl(page_number, slot, Some(owner), true, Some(page), None)
     }
+    /// Resolve one live row with caller-owned page scope and per-hop claims.
+    /// The existing pointer, owner, cycle and hop grammar remains authoritative.
+    /// No trace vector or additional page buffer is allocated by this context.
+    #[cfg(feature = "journal")]
+    pub(crate) fn row_location_scoped(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+        page: &[u8; PAGE_BYTES],
+        owned: &[u32],
+        visit: &mut dyn FnMut(u32, &mut ResourceBudget) -> Result<(), InspectError>,
+    ) -> Result<PhysicalRow, InspectError> {
+        let mut scope = RowScope { owned, visit };
+        self.row_impl(
+            page_number,
+            slot,
+            Some(owner),
+            true,
+            Some(page),
+            Some(&mut scope),
+        )
+    }
+
     fn row_impl(
         &mut self,
         mut page_number: u32,
@@ -94,11 +124,19 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: Option<u32>,
         live_root: bool,
         initial_page: Option<&[u8; PAGE_BYTES]>,
+        mut scope: Option<&mut RowScope<'_>>,
     ) -> Result<PhysicalRow, InspectError> {
         let mut visited = [0_u32; MAX_RELOCATION_HOPS];
         for depth in 0..MAX_RELOCATION_HOPS {
             self.tick()?;
             let key = reference(page_number, slot);
+            if let Some(scope) = scope.as_deref_mut() {
+                let levels = scope.owned.len().checked_ilog2().unwrap_or(0) as usize + 1;
+                self.work(levels)?;
+                if scope.owned.binary_search(&page_number).is_err() {
+                    return Err(InspectError::Malformed);
+                }
+            }
             if visited[..depth].contains(&key) {
                 return Err(InspectError::Malformed);
             }
@@ -119,6 +157,9 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
             let (flags, start, end) = row_range(page, usize::from(slot))?;
             if depth == 0 && live_root && flags & DELETED_MASK != 0 {
                 return Err(InspectError::Malformed);
+            }
+            if let Some(scope) = scope.as_deref_mut() {
+                (scope.visit)(key, self.budget)?;
             }
             if flags & RELOCATED_MASK != 0 {
                 let reference = u32_at(&page[start..end], 0)?;

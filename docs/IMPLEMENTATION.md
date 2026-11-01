@@ -12,6 +12,24 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Genuine fitting writes with properties and readonly OLE
+
+Normal fitting saves now admit the original Sentinel.Marker table with its
+supported nonempty PublishToWeb property and readonly OLE sibling. Strict raw
+property framing, uniquely owned catalog forwarding, exact selected LVAL
+declarations and the complete Source census compose with existing independent
+whole-image proof. Memo/OLE remain refused update targets, including empty groups.
+
+Thirteen source/framing/admission test functions, twelve native commits, twelve
+typed and twelve SQL session saves, and twelve CLI saves/readbacks pass. Recovery
+covers repeated and genuinely mixed partial states plus protected-content
+forgeries. Twelve independent SDK inventories match the modeled outcomes; inputs
+remain unchanged. General LVAL authoring and native Access save/reopen remain
+unqualified. All 1,093 ACE units, 83 recovery regressions, 79 adapter units and
+94 CLI units pass, alongside strict all-feature/journal-only/preview-only checks
+and minimal builds. See the [fitting contract](access/writes/NORMAL_ACE_FITTED.md)
+and [write record](testing/results/ace16-genuine-property-lval-writes-2026-11-01.json).
+
 ## Normal ordinary fitting Text/Binary saves
 
 Qualified ordinary ACE 16 tables now support unindexed Short Text/Binary batches
@@ -27,7 +45,7 @@ pass. All 1,093 ACE unit tests (37 ignored), 83 recovery tests (five ignored),
 journal-only and preview-only checks pass. The [write record](testing/results/ace16-normal-ordinary-fitted-writes-2026-11-01.json)
 retains first failures and corrections. Evidence covers authored schemas;
 genuine fitted-schema and native Microsoft Access qualification remain unrun.
-Nonempty target property bags, richer retained indexes, record growth and general
+Broader property profiles, richer retained indexes, record growth and general
 INSERT/DELETE remain active work. See the [contract](access/writes/NORMAL_ACE_FITTED.md).
 
 ## Shared native record serialization

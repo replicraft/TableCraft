@@ -23,9 +23,11 @@ composes multiple unindexed variable fields and optional fixed siblings through
 shared sessions and the CLI. TCNI0005 preserves original requests for independent
 recovery; fitting retains existing record capacity, offsets outside the row,
 indexes, allocation and EOF. Authored whole-image, retained-session, CLI and fault
-checks pass. Next, qualify ordinary nonempty native property bags and readonly
-Memo/OLE siblings on existing genuine originals, then broaden retained index
-profiles and normal physical actions. These are current admission gaps, not
+checks pass. Genuine originals now qualify supported nonempty property bags and readonly
+OLE siblings through strict framing, scoped catalog forwarding, exact selected
+LVAL declarations and complete Source protection. Twelve native/session/CLI
+outcomes retain byte-exact independent expectations and recovery checks. Next,
+broaden retained index profiles and normal physical actions. These are current admission gaps, not
 reasons to repeat completed fixed/fitted implementation work.
 
 

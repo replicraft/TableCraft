@@ -1,4 +1,5 @@
 //! Physical catalog completeness and exact seventeen-field native row shape.
+mod roots;
 use super::refused;
 use crate::{
     EditError, InspectError, NativeImage, NativeTableStorage, TableSchema,
@@ -7,22 +8,16 @@ use crate::{
         bytes::{u16_at, u32_at},
         data_type::{DATE_TIME, INT16, INT32, LONG_TEXT, OLE, SHORT_BINARY, SHORT_TEXT},
         layout::{self, Field, Layout},
-        page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES, PAGE_NUMBER_MASK},
-        reader::{Reader, row_count, row_range},
-        row::{
-            COLUMN_COUNT_BYTES, DELETED_MASK, MASK_BITS, OFFSET_MASK, RELOCATED_MASK, reference,
-            slot_offset,
-        },
+        page::PAGE_NUMBER_MASK,
+        reader::Reader,
+        row::{COLUMN_COUNT_BYTES, MASK_BITS, reference},
         text,
     },
     header::check,
     inspect_table_schema,
     table::record_layout,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::LegacyDateTime,
-};
+use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
 use tablecraft_model::ObjectKind;
 
 const CATALOG: &str = "MSysObjects";
@@ -70,12 +65,19 @@ const FIELDS: [(&str, u8, u8, usize, usize, usize); FIELD_COUNT] = [
     ("LvExtra", OLE, 0x12, 0, 0, 10),
 ];
 
+/// Exact raw origin and physical presence of the selected LvProp cell.
+#[derive(Debug)]
+pub(super) struct Selected {
+    pub reference: u32,
+    pub properties_present: bool,
+}
+
 pub(super) fn validate(
     image: &NativeImage,
     target: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<u32, EditError> {
+) -> Result<Selected, EditError> {
     let scope = image.catalog().catalog().scope();
     let schema = inspect_table_schema(&mut image.reader(), scope, CATALOG, budget, cancelled)?;
     if schema.definition_page() != CATALOG_DEFINITION {
@@ -97,150 +99,128 @@ pub(super) fn validate(
     let mut count = 0_usize;
     let mut selected = None;
     let mut selected_parent = None;
-    for number in allocation::pages(&mut reader, raw_layout.usage)? {
-        let page = reader.page(number)?;
-        if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
-            || u32_at(&page, OWNER_OFFSET)? != CATALOG_DEFINITION
+    let mut properties_present = false;
+    let owned = allocation::pages(&mut reader, raw_layout.usage)?;
+    let logical = roots::capture(&mut reader, &owned, CATALOG_DEFINITION)?;
+    for row in logical {
+        let number = row.page;
+        let native_slot = row.slot;
+        let raw = row.physical.data.as_slice();
+        let layout = record_layout::parse(raw, &schema, reader.budget)?;
+        if layout.count != FIELD_COUNT
+            || layout.offsets.len() != VARIABLE_COUNT + 1
+            || layout.offsets.first() != Some(&FIXED_END)
+            || layout.offsets.last() != Some(&layout.data_end)
+            || raw.len() - layout.mask_start != FIELD_COUNT.div_ceil(MASK_BITS)
+            || raw[raw.len() - 1] & !1 != 0
         {
             return Err(refused());
         }
-        let slots = row_count(&page)?;
-        for slot in 0..slots {
-            reader.tick()?;
-            reader
-                .budget
-                .charge(Resource::Rows, 1)
-                .map_err(InspectError::from)?;
-            let word = u16_at(&page, slot_offset(slot))?;
-            let flags = word & !OFFSET_MASK;
-            if flags & DELETED_MASK != 0 && flags & !(DELETED_MASK | RELOCATED_MASK) == 0 {
-                let start = usize::from(word & OFFSET_MASK);
-                let end = if slot == 0 {
-                    PAGE_BYTES
-                } else {
-                    usize::from(u16_at(&page, slot_offset(slot - 1))? & OFFSET_MASK)
-                };
-                // Native catalogs can retain an empty deleted directory slot.
-                // It has no record bytes or payload references to omit. Retain
-                // its exact word and require every nonempty row to be live.
-                if start == end && start >= slot_offset(slots) && end <= PAGE_BYTES {
-                    continue;
-                }
+        for field in [ID, PARENT, NAME, KIND, FLAGS] {
+            if !present(raw, layout.mask_start, field)? {
                 return Err(refused());
             }
-            if flags != 0 {
-                return Err(refused());
-            }
-            let (_, start, end) = row_range(&page, slot)?;
-            let raw = &page[start..end];
-            let layout = record_layout::parse(raw, &schema, reader.budget)?;
-            if layout.count != FIELD_COUNT
-                || layout.offsets.len() != VARIABLE_COUNT + 1
-                || layout.offsets.first() != Some(&FIXED_END)
-                || layout.offsets.last() != Some(&layout.data_end)
-                || raw.len() - layout.mask_start != FIELD_COUNT.div_ceil(MASK_BITS)
-                || raw[raw.len() - 1] & !1 != 0
-            {
-                return Err(refused());
-            }
-            for field in [ID, PARENT, NAME, KIND, FLAGS] {
-                if !present(raw, layout.mask_start, field)? {
-                    return Err(refused());
-                }
-            }
-            let id = integer(raw, fields[ID])?;
-            let parent = integer(raw, fields[PARENT])?;
-            let flags = integer(raw, fields[FLAGS])? as u32;
-            let kind = u16_at(raw, COLUMN_COUNT_BYTES + fields[KIND].offset)? as i16;
-            let native_slot = u8::try_from(slot).map_err(|_| InspectError::StructureLimit)?;
-            let mut native = None;
-            for origin in image.catalog().origins() {
-                reader.tick()?;
-                if origin.page() == number
-                    && origin.slot() == native_slot
-                    && native.replace(origin).is_some()
-                {
-                    return Err(refused());
-                }
-            }
-            let native = native.ok_or_else(refused)?;
-            if native.native_id() != id
-                || native.parent_id() != parent
-                || native.type_code() != kind
-                || native.flags() != flags
-            {
-                return Err(refused());
-            }
-            let mut descriptor = None;
-            for object in image.catalog().catalog().objects() {
-                reader.tick()?;
-                if object.id() == native.object_id() && descriptor.replace(object).is_some() {
-                    return Err(refused());
-                }
-            }
-            let descriptor = descriptor.ok_or_else(refused)?;
-            // Catalog LVAL tracing preserves recognized application objects,
-            // database records and property records without executing them.
-            // Unknown storage kinds and linked TD ownership need their own
-            // complete physical contract before this profile can admit them.
-            if (descriptor.kind() == ObjectKind::Unknown
-                && !matches!(kind, DATABASE_OBJECT | PROPERTY_OBJECT))
-                || native
-                    .table_storage()
-                    .is_some_and(|storage| storage != NativeTableStorage::Local)
-            {
-                return Err(refused());
-            }
-            let name = variable(raw, &layout.offsets, fields[NAME])?;
-            let name = text::decode(name, true, reader.budget)?;
-            reader.work(name.len().max(descriptor.name().as_str().len()))?;
-            if name != descriptor.name().as_str() {
-                return Err(refused());
-            }
-            if parent != 0
-                && native.object_id() != target.object_id()
-                && parent as u32 & PAGE_NUMBER_MASK == target.definition_page()
-            {
-                return Err(refused());
-            }
-            if id as u32 & PAGE_NUMBER_MASK == target.definition_page()
-                && native.object_id() != target.object_id()
-            {
-                return Err(refused());
-            }
-            if native.object_id() == target.object_id() {
-                if id <= 0
-                    || id as u32 != target.definition_page()
-                    || kind != LOCAL_TABLE
-                    || native.table_storage() != Some(NativeTableStorage::Local)
-                    || flags != 0
-                    || name != target.name()
-                {
-                    return Err(refused());
-                }
-                // Four actual OLE payload fields, including LvProp: public
-                // ObjectPayloads/coverage intentionally expose only the other3.
-                for field in &fields[REMOTE_FIRST..=REMOTE_LAST] {
-                    absent(raw, layout.mask_start, &layout.offsets, field)?;
-                }
-                for field in [BODY, PROPERTIES, MODULE, EXTRA] {
-                    absent(raw, layout.mask_start, &layout.offsets, fields[field])?;
-                }
-                for field in [CREATED, UPDATED] {
-                    if present(raw, layout.mask_start, field)? {
-                        let at = COLUMN_COUNT_BYTES + fields[field].offset;
-                        let bits = raw.get(at..at + size_of::<u64>()).ok_or_else(refused)?;
-                        LegacyDateTime::from_bits(u64::from_le_bytes(bits.try_into().unwrap()))
-                            .map_err(|_| refused())?;
-                    }
-                }
-                if selected.replace(reference(number, native_slot)).is_some() {
-                    return Err(refused());
-                }
-                selected_parent = Some(parent);
-            }
-            count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
         }
+        let id = integer(raw, fields[ID])?;
+        let parent = integer(raw, fields[PARENT])?;
+        let flags = integer(raw, fields[FLAGS])? as u32;
+        let kind = u16_at(raw, COLUMN_COUNT_BYTES + fields[KIND].offset)? as i16;
+        let mut native = None;
+        for origin in image.catalog().origins() {
+            reader.tick()?;
+            if origin.page() == number
+                && origin.slot() == native_slot
+                && native.replace(origin).is_some()
+            {
+                return Err(refused());
+            }
+        }
+        let native = native.ok_or_else(refused)?;
+        if native.native_id() != id
+            || native.parent_id() != parent
+            || native.type_code() != kind
+            || native.flags() != flags
+        {
+            return Err(refused());
+        }
+        let mut descriptor = None;
+        for object in image.catalog().catalog().objects() {
+            reader.tick()?;
+            if object.id() == native.object_id() && descriptor.replace(object).is_some() {
+                return Err(refused());
+            }
+        }
+        let descriptor = descriptor.ok_or_else(refused)?;
+        // Catalog LVAL tracing preserves recognized application objects,
+        // database records and property records without executing them.
+        // Unknown storage kinds and linked TD ownership need their own
+        // complete physical contract before this profile can admit them.
+        if (descriptor.kind() == ObjectKind::Unknown
+            && !matches!(kind, DATABASE_OBJECT | PROPERTY_OBJECT))
+            || native
+                .table_storage()
+                .is_some_and(|storage| storage != NativeTableStorage::Local)
+        {
+            return Err(refused());
+        }
+        let name = variable(raw, &layout.offsets, fields[NAME])?;
+        let name = text::decode(name, true, reader.budget)?;
+        reader.work(name.len().max(descriptor.name().as_str().len()))?;
+        if name != descriptor.name().as_str() {
+            return Err(refused());
+        }
+        if parent != 0
+            && native.object_id() != target.object_id()
+            && parent as u32 & PAGE_NUMBER_MASK == target.definition_page()
+        {
+            return Err(refused());
+        }
+        if id as u32 & PAGE_NUMBER_MASK == target.definition_page()
+            && native.object_id() != target.object_id()
+        {
+            return Err(refused());
+        }
+        if native.object_id() == target.object_id() {
+            if id <= 0
+                || id as u32 != target.definition_page()
+                || kind != LOCAL_TABLE
+                || native.table_storage() != Some(NativeTableStorage::Local)
+                || flags != 0
+                || name != target.name()
+            {
+                return Err(refused());
+            }
+            // Required code carriers stay strictly absent. The separate
+            // original LvProp cell may enter complete framing and recognized
+            // property qualification; mere presence never grants permission.
+            for field in &fields[REMOTE_FIRST..=REMOTE_LAST] {
+                absent(raw, layout.mask_start, &layout.offsets, field)?;
+            }
+            for field in [BODY, MODULE, EXTRA] {
+                absent(raw, layout.mask_start, &layout.offsets, fields[field])?;
+            }
+            properties_present = present(raw, layout.mask_start, PROPERTIES)?;
+            if properties_present {
+                if variable(raw, &layout.offsets, fields[PROPERTIES])?.is_empty() {
+                    return Err(refused());
+                }
+            } else {
+                absent(raw, layout.mask_start, &layout.offsets, fields[PROPERTIES])?;
+            }
+            for field in [CREATED, UPDATED] {
+                if present(raw, layout.mask_start, field)? {
+                    let at = COLUMN_COUNT_BYTES + fields[field].offset;
+                    let bits = raw.get(at..at + size_of::<u64>()).ok_or_else(refused)?;
+                    LegacyDateTime::from_bits(u64::from_le_bytes(bits.try_into().unwrap()))
+                        .map_err(|_| refused())?;
+                }
+            }
+            if selected.replace(reference(number, native_slot)).is_some() {
+                return Err(refused());
+            }
+            selected_parent = Some(parent);
+        }
+        count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
     }
     if count != schema.declared_rows() as usize || count != image.catalog().origins().len() {
         return Err(refused());
@@ -269,7 +249,10 @@ pub(super) fn validate(
         return Err(refused());
     }
     reader.tick()?;
-    selected.ok_or_else(refused)
+    Ok(Selected {
+        reference: selected.ok_or_else(refused)?,
+        properties_present,
+    })
 }
 
 fn declaration<'layout>(

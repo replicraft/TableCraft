@@ -1,4 +1,6 @@
 mod decode;
+#[cfg(feature = "journal")]
+pub(crate) mod framing;
 mod inspect;
 mod metadata;
 

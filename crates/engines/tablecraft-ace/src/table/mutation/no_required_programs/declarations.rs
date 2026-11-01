@@ -34,7 +34,7 @@ pub(super) fn capture(
 /// `complete` describes framing in the shared reader. This caller additionally
 /// requires a bijection with every actual native Memo/OLE field declaration.
 /// Initialization's absent/zero-pair policies are deliberately not used here.
-pub(super) fn validate(
+pub(in crate::table::mutation) fn validate(
     schema: &TableSchema,
     declarations: &Declarations,
     budget: &mut ResourceBudget,

@@ -2,7 +2,7 @@
 mod dependencies;
 mod footprint;
 mod namemap;
-mod properties;
+pub(in crate::table::mutation) mod properties;
 pub(in crate::table::mutation) mod validation;
 
 use crate::{

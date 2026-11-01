@@ -5,8 +5,8 @@ use crate::{
     format::{
         bytes::{u16_at, u32_at},
         data_type::{
-            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC, OLE,
-            SHORT_BINARY, SHORT_TEXT, SINGLE,
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, LONG_TEXT,
+            NUMERIC, OLE, SHORT_BINARY, SHORT_TEXT, SINGLE,
         },
         definition as native_definition,
         layout::{
@@ -25,6 +25,7 @@ const HEADER_BYTES: usize = layout::COLUMN_BLOCK_OFFSET;
 const COLUMN_BYTES: usize = 25;
 const MAGIC: u32 = 1625;
 const GENERAL_SORT: [u8; 4] = [9, 4, 0, 1];
+const GENERAL_LEGACY_SORT: [u8; 4] = [9, 4, 0, 0];
 const FREE_OFFSET: usize = TABLE_DEFINITION_SIGNATURE.len();
 const MAGIC_OFFSET: usize = native_definition::LENGTH_OFFSET + size_of::<u32>();
 const LAST_ISSUED_OFFSET: usize = 20;
@@ -79,7 +80,8 @@ pub(super) fn capture(
         };
         layout::read(&mut reader, number)?
     };
-    if (role != Role::User && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
+    if (!matches!(role, Role::User | Role::SelectedUser)
+        && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
         || layout.fields.len() != layout.max_columns
         || layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count()
@@ -105,7 +107,7 @@ pub(super) fn capture(
     expected[layout::RECORD_COUNT_OFFSET..layout::RECORD_COUNT_OFFSET + size_of::<u32>()]
         .copy_from_slice(&layout.records.to_le_bytes());
     expected[AUTO_SUPPORT_OFFSET] = AUTO_SUPPORT;
-    expected[TABLE_ROLE_OFFSET] = if role == Role::User {
+    expected[TABLE_ROLE_OFFSET] = if matches!(role, Role::User | Role::SelectedUser) {
         USER_TABLE_ROLE
     } else {
         SYSTEM_TABLE_ROLE
@@ -141,7 +143,7 @@ pub(super) fn capture(
     let mut long_variable = layout
         .fields
         .iter()
-        .filter(|field| !field.fixed && field.kind != OLE)
+        .filter(|field| !field.fixed && !matches!(field.kind, OLE | LONG_TEXT))
         .count();
     for (index, field) in layout.fields.iter().enumerate() {
         check(budget, cancelled)?;
@@ -172,7 +174,7 @@ pub(super) fn capture(
             .copy_from_slice(&MAGIC.to_le_bytes());
         descriptor[COLUMN_NUMBER_OFFSET..COLUMN_NUMBER_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(index as u16).to_le_bytes());
-        let variable = if !field.fixed && field.kind == OLE {
+        let variable = if !field.fixed && matches!(field.kind, OLE | LONG_TEXT) {
             let variable = long_variable;
             long_variable += 1;
             variable
@@ -185,16 +187,22 @@ pub(super) fn capture(
             .copy_from_slice(&(variable as u16).to_le_bytes());
         descriptor[COLUMN_ID_OFFSET..COLUMN_ID_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(index as u16).to_le_bytes());
-        if field.kind == SHORT_TEXT {
+        if matches!(field.kind, SHORT_TEXT | LONG_TEXT) {
+            let sort = &raw[COLUMN_SORT_OFFSET..COLUMN_SORT_OFFSET + GENERAL_SORT.len()];
+            let expected_sort = if role == Role::SelectedUser && sort == GENERAL_LEGACY_SORT {
+                GENERAL_LEGACY_SORT
+            } else {
+                GENERAL_SORT
+            };
             descriptor[COLUMN_SORT_OFFSET..COLUMN_SORT_OFFSET + GENERAL_SORT.len()]
-                .copy_from_slice(&GENERAL_SORT);
+                .copy_from_slice(&expected_sort);
         } else if field.kind == NUMERIC {
             descriptor[COLUMN_PRECISION_OFFSET] = field.precision;
             descriptor[COLUMN_SCALE_OFFSET] = field.scale;
         }
         let generator_flags = field.flags & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG);
         descriptor[COLUMN_FLAGS_OFFSET] = if generator_flags != 0 {
-            if role != Role::User
+            if !matches!(role, Role::User | Role::SelectedUser)
                 || has_counter
                 || field.kind != INT32
                 || !field.fixed
@@ -286,12 +294,14 @@ fn field_profile(field: &Field, role: Role) -> Result<(), EditError> {
         (NUMERIC, 17, false) => {
             (1..=28).contains(&field.precision) && field.scale <= field.precision
         }
-        (OLE, 0, false) => role == Role::Catalog,
+        (OLE, 0, false) => matches!(role, Role::Catalog | Role::SelectedUser),
+        (LONG_TEXT, 0, false) => role == Role::SelectedUser,
         _ => false,
     };
     if !valid
         || (field.extended_flags != 0
-            && !(field.kind == SHORT_TEXT && field.extended_flags == UNICODE_COMPRESSION_FLAG))
+            && !(matches!(field.kind, SHORT_TEXT | LONG_TEXT)
+                && field.extended_flags == UNICODE_COMPRESSION_FLAG))
     {
         return Err(refused());
     }
@@ -333,7 +343,7 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
             ("ObjectId", INT32, Some(4), 4),
             ("SID", SHORT_BINARY, None, 255),
         ],
-        Role::User => return Ok(()),
+        Role::User | Role::SelectedUser => return Ok(()),
     };
     if layout.fields.len() != expected.len() {
         return Err(refused());

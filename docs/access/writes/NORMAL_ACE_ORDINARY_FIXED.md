@@ -55,11 +55,14 @@ not the long-term compatibility target or the broader reader.
 
 A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
 now admits the exact native seventeen-field catalog through a strict conjunction:
-four NULL OLE carriers including LvProp, five NULL remote carriers, complete raw
-catalog rows and child/identity census, shared selected TD/index declaration
-closure, all-local LVAL declaration bijection and full normal Source protection.
-Only bounded zero-length deleted catalog tombstones may be skipped; nonempty or
-unsupported flagged slots refuse. Unknown storage kinds and linked table origins
+three NULL code carriers and either NULL/empty or strictly qualified nonempty
+LvProp, five NULL remote carriers, complete resolved catalog rows and
+child/identity census, shared selected TD/index declaration closure, all-local
+LVAL declaration bijection and full normal Source protection. Catalog forwarding
+requires owned pages, unique hidden-slot ownership and complete resolved bodies;
+orphan/shared hidden records and unsupported flag bits refuse. Bounded empty
+deleted tombstones remain inert. Selected readonly Memo/OLE declarations now
+qualify under exact tail/map checks; those fields are never fixed/fitted targets. Unknown storage kinds and linked table origins
 refuse. Known unrelated application objects remain opaque and byte-preserved,
 without execution.
 
