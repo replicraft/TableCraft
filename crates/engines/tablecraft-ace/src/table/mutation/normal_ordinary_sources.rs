@@ -182,3 +182,9 @@ mod native17_sessions;
 mod integral_indexed;
 
 mod wide_scalar;
+
+mod integral_extra_followons;
+mod integral_extra_originals;
+mod integral_followons;
+
+mod integral_cross_byte;
