@@ -50,3 +50,22 @@ The [execution record](results/ace16-nullable-key-before-change-sources-2026-10-
 retains actual pins and phase outcomes. Generated images, Java classes and raw
 reports remain ignored. No NULL transition, ignore-NULL flag, allocation, new
 intent version, normal write authority or macro-absence certificate is supplied.
+
+## Present Id companion
+
+A separate two-header companion reuses only the original ordinary nullable-Id
+compatibility image. Its original request is Id 1 to 7 on row zero. The stored
+BeforeChange statements independently imply macro-only Score 2007. The literal
+outcome reorders the existing leaf to NULL/ROW 8:2, Id 2/ROW 8:1 and Id 7/ROW 8:0.
+Only the two four-byte row fields and the active 23-byte leaf span may differ.
+The actual retained leaf tail, NULL row's inactive Id 3, presence mask, variable
+payloads, maps and native program remain exact.
+
+All four views pass the native read/index/constraint and public macro inspection
+gate. Two source/anchor tests pass, with the exclusive exporter ignored in normal
+runs. Image hashes and the original Id request digest are frozen before producer
+execution. Independent SDK observations and normal nullable-index writer tests
+remain pending for this companion; its read success supplies no new write permit
+or native Access save qualification.
+The [companion record](results/ace16-nullable-id-companion-sources-2026-10-31.json)
+retains first source/export pins and checks.

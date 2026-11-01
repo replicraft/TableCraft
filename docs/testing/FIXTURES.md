@@ -10748,3 +10748,12 @@ PrimaryId storage remain exact. Native/hash checks precede producer execution;
 independent reader observations and native Access behavior remain separate.
 The unique all-NULL pair is explicitly an authored read hypothesis. No copied
 third-party database bytes or production writer outputs supply these fixtures.
+
+The separate `canonical_nullable_index_id_before_change` companion consumes only
+the original nullable-Id control and original row facts. Its four complete views
+freeze a present Id 1 to 7 request and macro-only Score 2007. Native read/hash
+checks pass before nullable-index producer execution; the retained NULL row and
+old leaf tail remain exact. Its
+[source record](results/ace16-nullable-id-companion-sources-2026-10-31.json) keeps
+independent observation and native Access qualification separate. These are
+repository-authored fixtures under the repository license.
