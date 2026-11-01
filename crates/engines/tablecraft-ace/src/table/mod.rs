@@ -51,7 +51,7 @@ pub use mutation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(feature = "ace16-write-preview")]
-pub use mutation::{Ace16DeletePreview, Ace16WritePreview, RowDelete, TableRowDeletes};
+pub use mutation::{Ace16DeletePreview, Ace16WritePreview};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
@@ -65,6 +65,8 @@ pub use mutation::{
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub use mutation::{RowDelete, TableRowDeletes};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;

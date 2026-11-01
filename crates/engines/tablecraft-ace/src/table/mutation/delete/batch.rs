@@ -89,7 +89,7 @@ pub(super) fn run(
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
         removed = removed
-            .checked_add(group.deletes.len())
+            .checked_add(group.deletes().len())
             .filter(|count| *count <= NativeImage::MAX_DELETE_BATCH_ROWS)
             .ok_or(InspectError::StructureLimit)?;
         budget
@@ -97,7 +97,7 @@ pub(super) fn run(
             .map_err(InspectError::from)?;
         if groups[..position]
             .iter()
-            .any(|prior| prior.table.eq_ignore_ascii_case(group.table))
+            .any(|prior| prior.table().eq_ignore_ascii_case(group.table()))
         {
             return Err(EditError::Conflict);
         }
@@ -107,16 +107,16 @@ pub(super) fn run(
                 (table.before, table.fields, table.keys)
             }
             None => {
-                let before = gates::before_delete(&image, group.table, budget, cancelled)?;
+                let before = gates::before_delete(&image, group.table(), budget, cancelled)?;
                 relationships::qualify(&image, before.schema().name(), budget, cancelled)?;
                 (before, Vec::new(), Vec::new())
             }
         };
-        if !before.schema().name().eq_ignore_ascii_case(group.table) {
+        if !before.schema().name().eq_ignore_ascii_case(group.table()) {
             return Err(InspectError::Malformed.into());
         }
-        rows::unique(group.deletes, budget, cancelled)?;
-        for request in group.deletes {
+        rows::unique(group.deletes(), budget, cancelled)?;
+        for request in group.deletes() {
             check(budget, cancelled)?;
             if request.expected_bytes().len() > PAGE_BYTES {
                 return Err(InspectError::StructureLimit.into());
@@ -152,7 +152,7 @@ pub(super) fn run(
             reads: 0,
         };
         let (staged, references) =
-            patches::records(&mut reader, table.before.schema(), group.deletes)?;
+            patches::records(&mut reader, table.before.schema(), group.deletes())?;
         for patch in &staged {
             spans::push(&mut records, patch, budget, cancelled)?;
         }

@@ -120,7 +120,9 @@ fn duplicates_missing_ordinals_and_stale_payloads_refuse_without_partial_request
     let mut requests = image
         .prepare_ace16_row_deletes("Items", &[0], &mut budget(), &|| false)
         .unwrap();
-    requests[0].expected[2] ^= 1;
+    let mut stale = requests[0].expected_bytes().to_vec();
+    stale[2] ^= 1;
+    requests[0] = RowDelete::new(requests[0].row(), stale);
     assert!(matches!(
         image.preview_ace16_deletes("Items", &requests, &mut budget(), &|| false),
         Err(EditError::Conflict)

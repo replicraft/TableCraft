@@ -15,3 +15,9 @@ pub use planning::{RecoverableEditError, RecoverableNativeEditPlan};
 
 #[cfg(test)]
 mod tests;
+
+mod delete;
+pub use delete::{
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
+    qualify_native_delete_recovery,
+};
