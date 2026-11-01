@@ -17,6 +17,7 @@ pub struct CreateColumn<'a> {
     required: Option<bool>,
     allow_zero_length: Option<bool>,
     default_literal: Option<&'a Value>,
+    primary_key_name: Option<&'a str>,
 }
 
 #[derive(Clone, Copy)]
@@ -60,6 +61,7 @@ impl<'a> CreateColumn<'a> {
             required: None,
             allow_zero_length: None,
             default_literal: None,
+            primary_key_name: None,
         }
     }
 
@@ -77,6 +79,7 @@ impl<'a> CreateColumn<'a> {
             required: None,
             allow_zero_length: None,
             default_literal: None,
+            primary_key_name: None,
         })
     }
 
@@ -91,6 +94,7 @@ impl<'a> CreateColumn<'a> {
             required: None,
             allow_zero_length: None,
             default_literal: None,
+            primary_key_name: None,
         })
     }
 
@@ -102,6 +106,7 @@ impl<'a> CreateColumn<'a> {
             required: None,
             allow_zero_length: None,
             default_literal: None,
+            primary_key_name: None,
         }
     }
 
@@ -140,6 +145,23 @@ impl<'a> CreateColumn<'a> {
     /// Original typed default, with absent declaration distinct from explicit NULL.
     pub const fn default_literal(self) -> Option<&'a Value> {
         self.default_literal
+    }
+
+    /// Declare one manual ascending Int32 primary key, named by the caller.
+    ///
+    /// The operation validates the identifier, uniqueness, non-NULL initial keys
+    /// and physical fit. No page, map, native flags or generated values are supplied.
+    pub fn with_primary_key(mut self, name: &'a str) -> Result<Self, CreateDatabaseError> {
+        if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32)) {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        self.primary_key_name = Some(name);
+        Ok(self)
+    }
+
+    /// Original explicit primary identifier; absence creates no index.
+    pub const fn primary_key_name(self) -> Option<&'a str> {
+        self.primary_key_name
     }
 
     /// Actual explicitly supplied Required policy, without inferred false.

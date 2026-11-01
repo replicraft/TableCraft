@@ -219,4 +219,26 @@ INSERT AFTERs. Native read/export checks and sixteen healthy SDK observations
 pass before matching creators; four native constraint negatives remain explicit
 SDK exclusions. The [source record](../../testing/results/ace16-manual-primary-creation-sources-2026-11-01.json)
 separates real observations from copied-receipt tamper controls. Constructive
-primary-key support and native Access saves require separate acceptance.
+primary-key acceptance is described below; native Access saves remain unrun.
+
+## Explicit manual Int32 primary keys
+
+`CreateColumn::with_primary_key(name)` declares a caller-named ascending manual
+Int32 primary key. Preparation validates the name, permits one primary column per
+table, and refuses NULL or duplicate initial keys before allocating the output
+image. It authors the native physical/logical declaration, retained row references,
+owned root leaf and usage-map cell. It does not infer AutoNumber or generate values.
+
+Single-table and multiple-table creation derive physical roles from the complete
+request. Existing no-primary outputs remain byte exact. Existing table, column,
+row, catalog, definition and map-window limits remain mandatory; aggregate
+multiple-table capacity is checked before image construction.
+
+The [independent primary source phase](../../testing/results/ace16-manual-primary-creation-sources-2026-11-01.json)
+preceded creator calls. Focused creator tests cover complete single-table and
+one-table-multiple outputs, duplicate/NULL failures, exact resource limits,
+cancellation and multiple-table component checks. Actual published files then
+undergo normal INSERT using fresh source qualification, with duplicate/NULL
+refusals retaining the same lease and completed receipt. Component checks do not
+claim independent whole-image qualification of every multiple-table combination.
+Native Access save/reopen remains unrun.

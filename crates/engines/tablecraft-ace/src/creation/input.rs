@@ -45,6 +45,13 @@ impl<'a> Columns<'a> {
         }
     }
 
+    pub fn primary_key_name(self, position: usize) -> Option<&'a str> {
+        match self {
+            Self::Int32(_) => None,
+            Self::Values(columns) => columns[position].primary_key_name(),
+        }
+    }
+
     pub fn declaration(self, position: usize) -> Declaration {
         match self {
             Self::Int32(_) => Declaration::Fixed(ScalarType::Int32),

@@ -4,7 +4,7 @@ use super::{
     profile::{self, Field, Fields},
     stored_text, variable,
 };
-use crate::{InspectError, format::page::PAGE_BYTES, header::check};
+use crate::{IndexConstraintViolation, InspectError, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -63,6 +63,9 @@ pub enum CreateDatabaseError {
     /// An initial value violates an explicitly declared Required/empty Text rule.
     #[error(transparent)]
     FieldConstraint(#[from] FieldConstraintViolation),
+    /// Explicit manual-primary initial keys violate uniqueness or non-NULL policy.
+    #[error(transparent)]
+    IndexConstraint(#[from] IndexConstraintViolation),
     /// Cancellation, allocation or a shared resource limit rejected the operation.
     #[error(transparent)]
     Inspect(#[from] InspectError),
@@ -77,6 +80,7 @@ pub(super) struct Request<'a> {
     pub minimum_row_bytes: usize,
     pub variable: Option<variable::Prepared<'a>>,
     pub properties: Option<super::properties::Prepared<'a>>,
+    pub primary: Option<super::primary::Prepared<'a>>,
     fields: [Field<'a>; profile::MAX_COLUMNS],
 }
 
@@ -170,6 +174,7 @@ pub(super) fn validate<'a>(
         }
     }
 
+    let primary = super::primary::capture(columns, rows, budget, cancelled)?;
     let properties = super::properties::capture(columns, rows, budget, cancelled)?;
     let mut catalog_bytes = super::record::DATA_HEADER_BYTES;
     for object in super::build::systems() {
@@ -219,7 +224,12 @@ pub(super) fn validate<'a>(
             .ok_or(CreateDatabaseError::PageCapacity)?;
         (free_bytes, row_bytes)
     };
-    if super::definition::length(Fields::new(&fields[..columns.count()]), false)? > PAGE_BYTES {
+    if super::definition::length_with_primary(
+        Fields::new(&fields[..columns.count()]),
+        false,
+        primary.as_ref(),
+    )? > PAGE_BYTES
+    {
         return Err(CreateDatabaseError::PageCapacity);
     }
     check(budget, cancelled)?;
@@ -233,11 +243,12 @@ pub(super) fn validate<'a>(
         minimum_row_bytes,
         variable,
         properties,
+        primary,
         fields,
     })
 }
 
-fn name(
+pub(super) fn name(
     value: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

@@ -8,7 +8,7 @@ use super::{
 };
 use crate::{
     InspectError,
-    format::{header_mask, page::PAGE_BYTES},
+    format::{header_mask, page::PAGE_BYTES, row},
     header::{self, check},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -25,21 +25,32 @@ pub(super) fn build(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, CreateDatabaseError> {
-    let mut bytes = initialize(profile::IMAGE_BYTES, budget, cancelled)?;
+    let extra = usize::from(request.primary.is_some());
+    if profile::PAGE_COUNT + extra > profile::MAP_BITMAP_BYTES * u8::BITS as usize {
+        return Err(CreateDatabaseError::PageCapacity);
+    }
+    let image_bytes = profile::IMAGE_BYTES + extra * PAGE_BYTES;
+    let index_root = profile::PAGE_COUNT;
+    let index_slot = profile::MAP_ROWS;
+    let mut bytes = initialize(image_bytes, budget, cancelled)?;
     {
         let mut maps = DataPage::new(page(&mut bytes, profile::MAP_PAGE)?, 0)?;
-        for slot in 0..profile::MAP_ROWS {
-            let member = match slot {
-                profile::CATALOG_MAP_SLOT | profile::CATALOG_CANDIDATE_SLOT => {
-                    Some(profile::CATALOG_DATA)
+        for slot in 0..profile::MAP_ROWS + extra {
+            let member = if slot == index_slot {
+                Some(index_root)
+            } else {
+                match slot {
+                    profile::CATALOG_MAP_SLOT | profile::CATALOG_CANDIDATE_SLOT => {
+                        Some(profile::CATALOG_DATA)
+                    }
+                    profile::USER_MAP_SLOT => Some(profile::USER_DATA),
+                    profile::USER_CANDIDATE_SLOT
+                        if request.free_bytes >= request.minimum_row_bytes + size_of::<u16>() =>
+                    {
+                        Some(profile::USER_DATA)
+                    }
+                    _ => None,
                 }
-                profile::USER_MAP_SLOT => Some(profile::USER_DATA),
-                profile::USER_CANDIDATE_SLOT
-                    if request.free_bytes >= request.minimum_row_bytes + size_of::<u16>() =>
-                {
-                    Some(profile::USER_DATA)
-                }
-                _ => None,
             };
             record::inline_map(
                 maps.append(profile::MAP_RECORD_BYTES, budget, cancelled)?,
@@ -76,6 +87,32 @@ pub(super) fn build(
         ),
     ] {
         check(budget, cancelled)?;
+        if number == profile::USER_DEFINITION
+            && let Some(primary) = request.primary.as_ref()
+        {
+            definition::write_role_with_primary(
+                page(&mut bytes, number)?,
+                fields,
+                rows,
+                definition::Role {
+                    user: true,
+                    catalog: false,
+                    owned: row::reference(profile::MAP_PAGE as u32, profile::USER_MAP_SLOT as u8),
+                    candidate: row::reference(
+                        profile::MAP_PAGE as u32,
+                        profile::USER_CANDIDATE_SLOT as u8,
+                    ),
+                },
+                Some(definition::PrimaryRole {
+                    prepared: primary,
+                    root: index_root,
+                    map: row::reference(profile::MAP_PAGE as u32, index_slot as u8),
+                }),
+                budget,
+                cancelled,
+            )?;
+            continue;
+        }
         definition::write(
             page(&mut bytes, number)?,
             fields,
@@ -130,6 +167,15 @@ pub(super) fn build(
             )?;
         }
         users.finish()?;
+    }
+    if let Some(primary) = request.primary.as_ref() {
+        primary.write_leaf(
+            page(&mut bytes, index_root)?,
+            profile::USER_DEFINITION,
+            profile::USER_DATA,
+            budget,
+            cancelled,
+        )?;
     }
     check(budget, cancelled)?;
     Ok(bytes)
