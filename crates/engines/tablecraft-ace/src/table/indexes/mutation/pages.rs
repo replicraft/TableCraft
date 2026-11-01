@@ -19,6 +19,7 @@ const NEXT_OFFSET: usize = std::mem::offset_of!(IndexHeader, next);
 const TAIL_OFFSET: usize = std::mem::offset_of!(IndexHeader, tail);
 const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 
+#[cfg(feature = "ace16-write-preview")]
 pub(super) struct NodeHeader {
     pub owner: u32,
     pub height: u8,
@@ -26,6 +27,7 @@ pub(super) struct NodeHeader {
     pub tail: u32,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn node<P: RetainedProfile, const N: usize>(
     header: &NodeHeader,
     entries: &[Entry<&P::Key>],

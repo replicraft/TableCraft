@@ -20,7 +20,7 @@ pub(in crate::table) struct IndexHeader {
     _level: u8,
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) const LEVEL_OFFSET: usize = std::mem::offset_of!(IndexHeader, _level);
 
 impl IndexHeader {

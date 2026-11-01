@@ -780,5 +780,8 @@ mod genuine_binary_indexed;
 #[path = "normal/genuine_binary_delete.rs"]
 mod genuine_binary_delete;
 
+#[path = "normal/root_split.rs"]
+mod root_split;
+
 #[path = "normal/genuine_binary_update.rs"]
 mod genuine_binary_update;

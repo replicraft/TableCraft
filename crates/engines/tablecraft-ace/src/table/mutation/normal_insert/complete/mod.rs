@@ -23,8 +23,11 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.ordinary.complete_insert.plan").entered();
         let source = super::capture_action_source(&self, table, budget, cancelled)?;
         if !source.indexes.indexes().is_empty() {
-            // Existing indexed insertion retains its own physical admission.
-            // This does not provide index allocation or split authority.
+            // Derive an unavoidable root split from original metadata before
+            // selecting one planner. Existing fitting paths remain unchanged.
+            if super::root_split::selected(&self, &source, requests)? {
+                return super::root_split::plan(self, source, table, requests, budget, cancelled);
+            }
             return super::indexed::plan(self, source, table, requests, budget, cancelled);
         }
 
