@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-10-31",
   "kind": "present_id_untouched_nullable_index_source_companion",
-  "status": "native_source_and_anchors_passed_sdk_and_writer_pending",
+  "status": "native_sources_anchors_strict_and_eight_independent_index_reads_passed",
   "native_access_qualification": "unrun",
   "writer_calls": 0,
   "source_freeze_sha256": "a4a521e74c72eb0f3a3dcbb6f3441cebb8391b7733900a4bb234dd6b56dffab7",
@@ -80,6 +80,48 @@
       "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/source-strict-first-root.log",
       "bytes": 306,
       "sha256": "bc3c62765a092a46d13bd3bbd0a48b38b89ddc4adc83f24be6782a3aa0513198"
+    }
+  },
+  "independent_sdk": {
+    "passed": true,
+    "calls": 8,
+    "metadata": 4,
+    "ordered_cursors": 4,
+    "full_inventory": false,
+    "new_compiler_calls": 0,
+    "authority": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/input-authority.json",
+      "bytes": 15344,
+      "sha256": "6629dc79b0902ffc1c267171c686840f59390aaf132aab77cb48612c703fe3fc"
+    },
+    "code_and_source_freeze": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/code-and-source-first-freeze.json",
+      "bytes": 2493,
+      "sha256": "4c3bbf870913b60e263c93dc3161419a85ceb1d3b8768942beebf12661efe59b"
+    },
+    "expected": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/expected-first-root.json",
+      "bytes": 7889,
+      "sha256": "f9d3024dfc98f19efa40cd20204154b92efa2730455ce1dd36fc8f06e3b7dad5"
+    },
+    "receipt": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/receipt-first-root.json",
+      "bytes": 9093,
+      "sha256": "1ec692b2ea1620631a059b843cd9d966a342eacf52e7abae731b0553067dfeba"
+    },
+    "runner_log": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/runner-first-root.log",
+      "bytes": 95,
+      "sha256": "fab8c7d8f4a66572c3f0ea71d9092d68f6f8d683b1a4bebd839d352bfa9b4d08"
+    },
+    "saved_only_verifier": {
+      "passed": true,
+      "child_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/getter/saved-first-root.log",
+        "bytes": 325,
+        "sha256": "97385b02c2e28e677aa9b38654698eda37d25ed8c49e9979c7b2ab69cfa19011"
+      }
     }
   }
 }
