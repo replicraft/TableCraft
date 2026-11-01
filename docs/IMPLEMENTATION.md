@@ -3,9 +3,9 @@
 ## Indexed ordinary INSERT and DELETE
 
 The normal journal routes now maintain qualified single-Int32 root-leaf indexes.
-INSERT currently requires ascending present keys; DELETE retains the shared
-nullable/directional key grammar, with the new write evidence covering ascending
-present keys. Each physical index changes once across compatible logical aliases.
+INSERT currently requires ascending present keys. DELETE now has independently
+qualified write evidence for both ascending present keys and descending keys
+with stored NULL members. Each physical index changes once across compatible logical aliases.
 Original intents, complete ownership, independent whole-image reconstruction,
 historical counters, protected tails and the existing V1 lifecycle remain intact.
 
@@ -15,6 +15,9 @@ sessions and CLI saves match independently authored full images. See the
 [indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json)
 for exact scope, broader checks and retained first failures. Broader trees,
 generation/defaults, relationships and native Access save/reopen remain open.
+The [follow-on record](testing/results/ace16-indexed-write-followons-2026-11-01.json)
+also qualifies cross-page INSERT request association, descending/NULL deletion
+and healthy NODE source reads with precise current mutation refusals.
 
 ## Leading U+FEFF INSERT preservation
 

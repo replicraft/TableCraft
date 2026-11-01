@@ -150,3 +150,16 @@ refusals retain exact typed errors and CLI exit status. See the
 [source contract](../../testing/ACE16_NORMAL_INDEXED_INSERT_SOURCES.md) and
 [indexed write record](../../testing/results/ace16-normal-indexed-writes-2026-11-01.json).
 These checks do not establish native Microsoft Access save/reopen compatibility.
+
+## Cross-page request association
+
+The source-qualified varying-width case places a long request on a later DATA
+page and a following short request on an earlier page. Independent proof retains
+the request-to-ROW mapping through this reordered physical traversal. Four
+native source views and 24 SDK reports precede two literal batch commits. Six
+self-consistent journals with swapped new primary ROW suffixes refuse before
+effects. Four authored pending/partial mixed targets roll back; two committed
+mixed targets refuse without writes. Eight successive typed/SQL single-row
+saves reach the same independently authored joint images under retained leases.
+See the [source contract](../../testing/ACE16_INDEXED_INSERT_ASSOCIATION_SOURCES.md)
+and [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
