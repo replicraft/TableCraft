@@ -761,3 +761,9 @@ mod resizable_storage;
 
 #[path = "normal/genuine_integral_indexed.rs"]
 mod genuine_integral_indexed;
+
+#[path = "normal/wide_primary_numeric.rs"]
+mod wide_primary_numeric;
+
+#[path = "normal/dense_numeric.rs"]
+mod dense_numeric;

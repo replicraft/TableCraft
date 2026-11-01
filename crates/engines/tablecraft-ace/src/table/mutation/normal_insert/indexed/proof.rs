@@ -74,7 +74,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     for physical in 0..schema.layout.physical_indexes {
         check(budget, cancelled)?;
         let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
-        let index = crate::table::indexes::mutation::insertion::qualify(
+        let index = crate::table::indexes::mutation::insertion::qualify_actions(
             facts.checked(),
             physical,
             budget,

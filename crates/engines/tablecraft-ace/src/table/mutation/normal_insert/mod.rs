@@ -163,3 +163,6 @@ mod integral_tests;
 
 #[cfg(test)]
 mod multipage_sources;
+
+#[cfg(all(test, feature = "journal"))]
+mod wide_primary_tests;
