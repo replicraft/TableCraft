@@ -136,3 +136,9 @@ pub use intent::{
     NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
     RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeEofInsertIntent, QualifiedNativeEofInsertRecovery, RecoverableNativeEofInsertPlan,
+    RecoverableNativeInsertOperation, qualify_native_eof_insert_recovery,
+};

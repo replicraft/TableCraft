@@ -120,10 +120,14 @@ fn insertion_help_keeps_the_normal_action_boundary_explicit() {
         .to_string();
     let help = help.split_whitespace().collect::<Vec<_>>().join(" ");
     for expected in [
-        "root-leaf indexes support nullable and descending keys",
+        "root leaves and retained trees support nullable and descending keys",
         "other indexes and relationships refuse",
-        "Supply every declared field exactly once",
-        "Non-NULL Memo/OLE authoring is unsupported",
+        "qualified constant defaults for omitted fields",
+        "Supplied NULL remains explicit NULL",
+        "Complete supplied rows may add one qualified EOF DATA page",
+        "omitted/default rows retain existing capacity",
+        "at most 64 encoded payload bytes inline",
+        "external payload allocation refuses",
         "recover-update or finalize-update",
         "does not establish general ACE saves",
     ] {

@@ -1,5 +1,5 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
-use super::{NativeInsertIntent, NativeIntentError, binding, names};
+use super::{CompleteRows, NativeIntentError, Protocol, binding, names};
 use crate::{
     InspectError, RowInsert,
     header::check,
@@ -11,10 +11,9 @@ use tablecraft_core::{
     values::Value,
 };
 
-const MAGIC: &[u8; 8] = b"TCNA0001";
 const PREFIX: &[u8; 4] = b"TCNA";
-const PROFILE: u16 = 1;
-const TOTAL_AT: usize = MAGIC.len();
+const MAGIC_BYTES: usize = size_of::<[u8; 8]>();
+const TOTAL_AT: usize = MAGIC_BYTES;
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
 const BEFORE_LENGTH_AT: usize = FLAGS_AT + size_of::<u16>();
@@ -141,6 +140,7 @@ struct Framing<'a> {
 
 fn preflight<'a>(
     raw: &'a [u8],
+    protocol: Protocol,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Framing<'a>, NativeIntentError> {
@@ -148,7 +148,7 @@ fn preflight<'a>(
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&raw.len()) {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if &raw[..MAGIC.len()] != MAGIC {
+    if &raw[..MAGIC_BYTES] != protocol.magic() {
         return Err(if raw.starts_with(PREFIX) {
             NativeIntentError::UnsupportedVersion
         } else {
@@ -165,7 +165,7 @@ fn preflight<'a>(
     {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != PROFILE {
+    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != protocol.number() {
         return Err(NativeIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
@@ -231,10 +231,11 @@ fn copy(
     Ok(())
 }
 
-impl NativeInsertIntent {
+impl CompleteRows {
     /// Serialize exact supplied carriers; native encoding and admission are absent.
     pub fn encode(
         &self,
+        protocol: Protocol,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
@@ -249,9 +250,9 @@ impl NativeInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(protocol.magic());
         output.extend_from_slice(&(length as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(&protocol.number().to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -285,10 +286,11 @@ impl NativeInsertIntent {
     /// Validate complete framing and every carrier before any decoded heap copy.
     pub fn decode(
         raw: &[u8],
+        protocol: Protocol,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        let frame = preflight(raw, budget, cancelled)?;
+        let frame = preflight(raw, protocol, budget, cancelled)?;
         let table = names::copy_name(frame.table, budget)?;
         budget
             .charge_allocation(frame.count as u64, size_of::<RowInsert>() as u64)

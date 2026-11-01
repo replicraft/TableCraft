@@ -752,3 +752,9 @@ mod genuine_default_insert;
 
 #[path = "normal/genuine_inline_lval_insert.rs"]
 mod genuine_inline_lval_insert;
+
+#[path = "normal/genuine_eof_insert.rs"]
+mod genuine_eof_insert;
+
+#[path = "normal/resizable_storage.rs"]
+mod resizable_storage;

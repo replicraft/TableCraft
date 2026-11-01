@@ -1,14 +1,10 @@
 //! Real normal EOF allocation and V2 commit, using separately qualified images.
-#[path = "genuine_eof_allocation/storage.rs"]
-mod storage;
-
 #[path = "genuine_eof_allocation/recovery.rs"]
 mod recovery;
 
-use super::{Storage, budget, scope};
+use super::{Storage, budget, resizable_storage::Target, scope};
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
-use storage::Target;
 use tablecraft_ace::{
     NativeFittedIntentGroup, NativeFittedUpdates, NativeImage, NativeUpdateIntent,
     NativeUpdateProfile, SlotScalarUpdate, qualify_native_allocation_recovery,

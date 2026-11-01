@@ -5,7 +5,8 @@ use super::Error;
 use crate::editing::NativeEditError;
 pub use plan::NativeJournalInsertPlan;
 use tablecraft_ace::{
-    InsertFieldValue, InspectError, NativeImage, OmittedRowInsert, RowInsert, inspect_table_schema,
+    InsertFieldValue, InspectError, NativeImage, OmittedRowInsert,
+    RecoverableNativeInsertOperation, RowInsert, inspect_table_schema,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -113,8 +114,15 @@ impl InsertableTable for NativeJournalInserter {
             .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
         rows.push(RowInsert::new(values));
         self.image
-            .plan_recoverable_ordinary_row_inserts(&self.name, rows, budget, cancelled)
-            .map(NativeJournalInsertPlan::Complete)
+            .plan_recoverable_ordinary_auto_row_inserts(&self.name, rows, budget, cancelled)
+            .map(|plan| match plan {
+                RecoverableNativeInsertOperation::Existing(plan) => {
+                    NativeJournalInsertPlan::Complete(plan)
+                }
+                RecoverableNativeInsertOperation::AllocateEof(plan) => {
+                    NativeJournalInsertPlan::AllocateEof(plan)
+                }
+            })
             .map_err(Error::from)
     }
 }

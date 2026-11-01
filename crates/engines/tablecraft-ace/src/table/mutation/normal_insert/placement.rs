@@ -12,7 +12,7 @@ use crate::{
     header::check,
     table::mutation::{
         preserved_source::Source,
-        record_placement::{slots, space::Space},
+        record_placement::{future::Future, slots, space::Space},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -38,6 +38,7 @@ struct Reservation {
 
 pub(super) struct Staged {
     space: Space,
+    future: Option<Future>,
     rows: Vec<Reservation>,
     count_offset: usize,
     original_count: u32,
@@ -48,6 +49,27 @@ pub(super) fn reserve(
     image: &NativeImage,
     source: &Source,
     records: &[Vec<u8>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
+    reserve_with(image, source, records, false, budget, cancelled)
+}
+
+pub(super) fn reserve_growing(
+    image: &NativeImage,
+    source: &Source,
+    records: &[Vec<u8>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
+    reserve_with(image, source, records, true, budget, cancelled)
+}
+
+fn reserve_with(
+    image: &NativeImage,
+    source: &Source,
+    records: &[Vec<u8>],
+    allow_eof: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -121,6 +143,7 @@ pub(super) fn reserve(
     rows.try_reserve_exact(records.len())
         .map_err(|_| InspectError::Allocation)?;
 
+    let mut future = None;
     for record in records {
         check(budget, cancelled)?;
         let needed = record
@@ -155,7 +178,40 @@ pub(super) fn reserve(
             break;
         }
         if selected.is_none() {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            if !allow_eof || future.is_some() || needed > PAGE_BYTES - slot_offset(0) {
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            }
+            // Owned metadata reservations have no eligible destination. Only
+            // now qualify one represented future page, before any bytes stage.
+            let captured = Future::capture(image, schema, budget, cancelled)?;
+            let end = PAGE_BYTES;
+            let start = end
+                .checked_sub(record.len())
+                .ok_or(EditError::Preservation)?;
+            let free = PAGE_BYTES - slot_offset(0);
+            rows.push(Reservation {
+                number: captured.number(),
+                count: 0,
+                free,
+                start,
+                end,
+            });
+            budget
+                .charge_allocation(1, size_of::<Capacity>() as u64)
+                .map_err(InspectError::from)?;
+            capacities
+                .try_reserve_exact(1)
+                .map_err(|_| InspectError::Allocation)?;
+            capacities.push(Capacity {
+                number: captured.number(),
+                count: 1,
+                frontier: start,
+                free: start
+                    .checked_sub(slot_offset(1))
+                    .ok_or(EditError::Preservation)?,
+                eligible: true,
+            });
+            future = Some(captured);
         }
     }
 
@@ -171,6 +227,7 @@ pub(super) fn reserve(
     check(budget, cancelled)?;
     Ok(Staged {
         space,
+        future,
         rows,
         count_offset,
         original_count,
@@ -179,6 +236,45 @@ pub(super) fn reserve(
 }
 
 impl Staged {
+    pub(super) fn uses_eof(&self) -> bool {
+        self.future.is_some()
+    }
+
+    pub(super) fn extend_image(
+        &self,
+        image: &NativeImage,
+        after: &mut Vec<u8>,
+        definition: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let future = self.future.as_ref().ok_or(EditError::Preservation)?;
+        future.require(image, definition)?;
+        if after.len() != image.as_bytes().len() {
+            return Err(EditError::Preservation);
+        }
+        budget
+            .charge_allocation(PAGE_BYTES as u64, 1)
+            .map_err(InspectError::from)?;
+        after
+            .try_reserve_exact(PAGE_BYTES)
+            .map_err(|_| InspectError::Allocation)?;
+        budget
+            .charge(Resource::Steps, PAGE_BYTES as u64)
+            .map_err(InspectError::from)?;
+        check(budget, cancelled)?;
+        let start = after.len();
+        after.resize(start + PAGE_BYTES, 0);
+        after[start..start + DATA_SIGNATURE.len()].copy_from_slice(&DATA_SIGNATURE);
+        after[start + OWNER_OFFSET..start + OWNER_OFFSET + size_of::<u32>()]
+            .copy_from_slice(&definition.to_le_bytes());
+        let free =
+            u16::try_from(PAGE_BYTES - slot_offset(0)).map_err(|_| InspectError::StructureLimit)?;
+        after[start + FREE_OFFSET..start + FREE_OFFSET + size_of::<u16>()]
+            .copy_from_slice(&free.to_le_bytes());
+        Ok(())
+    }
+
     pub(super) fn references(&self) -> impl ExactSizeIterator<Item = u32> + '_ {
         self.rows
             .iter()
@@ -193,13 +289,32 @@ impl Staged {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        if records.len() != self.rows.len() || after.len() != image.as_bytes().len() {
+        let length = image
+            .as_bytes()
+            .len()
+            .checked_add(if self.future.is_some() { PAGE_BYTES } else { 0 })
+            .ok_or(InspectError::StructureLimit)?;
+        if records.len() != self.rows.len() || after.len() != length {
             return Err(EditError::Preservation);
         }
 
         for (reservation, record) in self.rows.iter().zip(records) {
-            self.space
-                .require_page(image, reservation.number, true, budget, cancelled)?;
+            if let Some(future) = self
+                .future
+                .as_ref()
+                .filter(|future| future.number() == reservation.number)
+            {
+                future.require(
+                    image,
+                    u32_at(
+                        after,
+                        reservation.number as usize * PAGE_BYTES + OWNER_OFFSET,
+                    )?,
+                )?;
+            } else {
+                self.space
+                    .require_page(image, reservation.number, true, budget, cancelled)?;
+            }
             let base = reservation.number as usize * PAGE_BYTES;
             let page = after
                 .get_mut(base..base + PAGE_BYTES)
@@ -231,8 +346,15 @@ impl Staged {
 
         // The only allowed metadata edit follows protection audit, just as
         // qualified allocation applies explicit map cells after its DATA audit.
-        self.space
-            .audit(image.as_bytes(), after, budget, cancelled)?;
+        self.space.audit(
+            image.as_bytes(),
+            &after[..image.as_bytes().len()],
+            budget,
+            cancelled,
+        )?;
+        if let Some(future) = &self.future {
+            future.apply(image, after, budget, cancelled)?;
+        }
         if u32_at(after, self.count_offset)? != self.original_count {
             return Err(EditError::Preservation);
         }

@@ -5,8 +5,9 @@ use super::{
 };
 use std::path::Path;
 use tablecraft_ace::{
-    NativeDeleteIntent, NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent,
-    NativeUpdateProfile, qualify_native_allocation_recovery, qualify_native_delete_recovery,
+    NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent, NativeOmittedInsertIntent,
+    NativeUpdateIntent, NativeUpdateProfile, qualify_native_allocation_recovery,
+    qualify_native_delete_recovery, qualify_native_eof_insert_recovery,
     qualify_native_insert_recovery, qualify_native_omitted_insert_recovery,
     qualify_native_update_recovery,
 };
@@ -51,6 +52,19 @@ impl OfflineWriteSession {
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)
                 .map_err(Cause::Intent)?;
             match intent {
+                MutationIntent::EofInsert(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_eof_insert_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::OmittedInsert(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -151,6 +165,17 @@ impl OfflineWriteSession {
                 .map_err(Cause::Intent)?;
             let (mut target, mut journal) = pair.confirmation_storage().map_err(Cause::Pair)?;
             match intent {
+                MutationIntent::EofInsert(intent) => {
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_eof_insert_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::OmittedInsert(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -245,7 +270,8 @@ impl OfflineWriteSession {
         let limit = NativeUpdateIntent::MAX_ENCODED_BYTES
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)
-            .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES) as u64;
+            .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES)
+            .max(NativeEofInsertIntent::MAX_ENCODED_BYTES) as u64;
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

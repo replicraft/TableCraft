@@ -218,3 +218,9 @@ pub use transaction::{
     NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
     RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeEofInsertIntent, QualifiedNativeEofInsertRecovery, RecoverableNativeEofInsertPlan,
+    RecoverableNativeInsertOperation, qualify_native_eof_insert_recovery,
+};
