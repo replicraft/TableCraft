@@ -740,3 +740,6 @@ mod genuine_indexed_insert_association;
 
 #[path = "normal/genuine_retained_node_delete.rs"]
 mod genuine_retained_node_delete;
+
+#[path = "normal/genuine_desc_nullable_insert.rs"]
+mod genuine_desc_nullable_insert;

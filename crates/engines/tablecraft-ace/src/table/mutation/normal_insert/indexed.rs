@@ -55,7 +55,7 @@ pub(super) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.ordinary.insert.indexed").entered();
-    let facts = qualify(&image, &source, table, requests, budget, cancelled)?;
+    let (facts, _) = qualify(&image, &source, table, requests, budget, cancelled)?;
     properties::require_text_declarations(
         &image,
         source.table.schema(),
@@ -184,7 +184,7 @@ fn qualify<'image>(
     requests: &[RowInsert],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<CheckedIndexes<'image>, EditError> {
+) -> Result<(CheckedIndexes<'image>, bool), EditError> {
     let facts = CheckedIndexes::capture(image, table, budget, cancelled)?;
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
@@ -195,6 +195,10 @@ fn qualify<'image>(
     }
     let ownership = Ownership::capture(image, facts.checked(), budget, cancelled)?;
     let live = Inventory::capture(image, budget, cancelled)?;
+    // A proof-wire choice derived from already-paid native checks, never caller
+    // authority. Keep the existing ASC/present reconstruction and its resource
+    // and cancellation trace unchanged for that established family.
+    let mut optional_wire = false;
     for physical in 0..schema.layout.physical_indexes {
         check(budget, cancelled)?;
         let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
@@ -202,8 +206,8 @@ fn qualify<'image>(
         let [key] = index.columns() else {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         };
-        if key.descending()
-            || index.native_type() > LOCAL_INDEX_KIND_MAX
+        optional_wire |= key.descending();
+        if index.native_type() > LOCAL_INDEX_KIND_MAX
             || index
                 .constraints()
                 .ok_or(InspectError::Unsupported)?
@@ -244,19 +248,23 @@ fn qualify<'image>(
         let column = column.ok_or(EditError::Preservation)?;
         for row in source.table.rows() {
             check(budget, cancelled)?;
-            if !matches!(row.get(column), Some(Value::Int32(_))) {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            match row.get(column) {
+                Some(Value::Int32(_)) => {}
+                Some(Value::Null) => optional_wire = true,
+                _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
         }
         for request in requests {
             check(budget, cancelled)?;
-            if !matches!(request.values().get(column), Some(Value::Int32(_))) {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            match request.values().get(column) {
+                Some(Value::Int32(_)) => {}
+                Some(Value::Null) => optional_wire = true,
+                _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
         }
     }
     check(budget, cancelled)?;
-    Ok(facts)
+    Ok((facts, optional_wire))
 }
 
 fn apply(

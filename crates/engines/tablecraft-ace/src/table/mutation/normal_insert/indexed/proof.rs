@@ -1,4 +1,5 @@
 //! Fresh original/request replay; no insertion patches or prepared keys enter.
+mod optional;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{
@@ -50,7 +51,8 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
-    let facts = super::qualify(&image, &source, table, requests, budget, cancelled)?;
+    let (facts, optional_wire) =
+        super::qualify(&image, &source, table, requests, budget, cancelled)?;
     crate::table::mutation::record_insertion::properties::require_text_declarations(
         &image,
         source.table.schema(),
@@ -75,18 +77,31 @@ pub(super) fn prove(
             budget,
             cancelled,
         )?;
-        reconstruct_index(
-            &image,
-            &source,
-            index,
-            RequestedRows {
-                requests,
-                references: &references,
-            },
-            &mut expected,
-            budget,
-            cancelled,
-        )?;
+        let rows = RequestedRows {
+            requests,
+            references: &references,
+        };
+        if optional_wire {
+            optional::reconstruct(
+                &image,
+                &source,
+                index,
+                rows,
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        } else {
+            reconstruct_index(
+                &image,
+                &source,
+                index,
+                rows,
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        }
     }
     super::super::compare(&expected, plan.after_bytes(), budget, cancelled)?;
 
@@ -94,7 +109,7 @@ pub(super) fn prove(
     // alias from the independently reconstructed full image, without effects.
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
     let final_source = super::super::capture_source(&after, table, budget, cancelled)?;
-    let final_facts = super::qualify(&after, &final_source, table, &[], budget, cancelled)?;
+    let (final_facts, _) = super::qualify(&after, &final_source, table, &[], budget, cancelled)?;
     if final_source.records.len() != source.records.len() + requests.len()
         || final_source.table.schema().object_id() != schema.object_id()
         || final_source.table.schema().definition_page() != schema.definition_page()
@@ -232,6 +247,27 @@ fn reconstruct_index(
     expected[base + FREE_AT..base + FREE_AT + size_of::<u16>()]
         .copy_from_slice(&free.to_le_bytes());
 
+    reconstruct_history(
+        image,
+        source,
+        index,
+        (before_distinct, after_distinct),
+        expected,
+        budget,
+        cancelled,
+    )
+}
+
+fn reconstruct_history(
+    image: &NativeImage,
+    source: &Source,
+    index: &NativeIndex,
+    distinct: (usize, usize),
+    expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let (before_distinct, after_distinct) = distinct;
     let original = inspect_table_index_counter(
         &mut image.reader(),
         image.catalog().catalog().scope(),
