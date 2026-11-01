@@ -13,7 +13,7 @@ fn budget() -> ResourceBudget {
 }
 
 #[test]
-fn primary_request_is_one_explicit_manual_int32_identifier_without_page_authority() {
+fn primary_request_is_one_explicit_manual_integral_identifier_without_page_authority() {
     let ordinary = CreateColumn::new("Id", ScalarType::Int32);
     assert_eq!(ordinary.primary_key_name(), None);
     let primary = ordinary.with_primary_key("PrimaryId").unwrap();
@@ -24,8 +24,6 @@ fn primary_request_is_one_explicit_manual_int32_identifier_without_page_authorit
         ScalarType::Boolean,
         ScalarType::Byte,
         ScalarType::Int16,
-        ScalarType::Int64,
-        ScalarType::Currency,
         ScalarType::Single,
         ScalarType::Double,
         ScalarType::Guid,
@@ -123,3 +121,6 @@ mod resources;
 
 #[path = "primary_tests/components.rs"]
 mod components;
+
+#[path = "primary_tests/integral.rs"]
+mod integral;
