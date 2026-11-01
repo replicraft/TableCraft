@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-01",
+  "scope": "Source qualification only; native mutation and native Access are separate",
+  "native_source_gates": {
+    "status": "PASS",
+    "selected_contexts": 120,
+    "functions": 4,
+    "selected_full_source_accepted": 68,
+    "selected_full_source_unable_to_qualify": 52,
+    "logs": [
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/extra-originals-native-first.log",
+        "bytes": 546,
+        "sha256": "883e8a0a61b31b4ee5db0e4cee881f659c8ed444ea1d617a2191796f185b1cba"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/followon-native-first.log",
+        "bytes": 431,
+        "sha256": "4f1a3f4ae0ba10e8df67d911bc50467ad3d995a2bce5208583d05cce6861e9ca"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/extra-followon-native-first.log",
+        "bytes": 429,
+        "sha256": "6078e14279c7aec9077c17a7fe2d2fa8d91962f9d90018fd985ce145c0ac936e"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/root-integration/cross-byte-source-native-first.log",
+        "bytes": 534,
+        "sha256": "dee726c47411d4db31e21378b4eaf365eb3bfac72716f86b2a283b3dafb1a9a7"
+      }
+    ]
+  },
+  "sdk": {
+    "status": "PASS",
+    "original_contexts": 12,
+    "original_databases": 2,
+    "original_read_calls": 76,
+    "generation_calls": 3,
+    "derivative_views": 44,
+    "derivative_calls": 352,
+    "fresh_followon_views": 48,
+    "fresh_followon_calls": 384,
+    "saved_verifications": [
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/original-first/saved-verification.json",
+        "bytes": 9552,
+        "sha256": "6dae0685ae41000be55dddd4e5e878da68a1eaad7316754010db2169545ce5e2"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/followon-source/reads-first/saved-verification.json",
+        "bytes": 641,
+        "sha256": "b076729123af5b8b165dec43f635ac20b3e38a3b4dd08c092f4d15537a8d613f"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/after-source/reads-first/saved-verification.json",
+        "bytes": 667,
+        "sha256": "a708d74c6da5f2ff157f210e1d68213042407453d0e4209adea4fcf08aad862b"
+      },
+      {
+        "path": ".cache/ace16-normal-integral-indexed-next-20261101/crossing-byte-source/reads-first/saved-verification.json",
+        "bytes": 650,
+        "sha256": "b09a9ca36dfd7a7b6e515bb27d1285d1b1b0f48df574115f0d74abc5e38f0e5c"
+      }
+    ],
+    "crossing_byte_views": 16,
+    "crossing_byte_calls": 128,
+    "total_read_calls": 940
+  },
+  "source_models": [
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/followon-source/input-first-freeze.json",
+      "bytes": 4321,
+      "sha256": "4e38abaf99079c27a280f47004a260fde910d8b8589f020ca4b94afa835fbd31"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/followon-source/code-first-freeze.json",
+      "bytes": 7354,
+      "sha256": "44adab5ca1b518780b8581c3f4fbb2e1b6828e091609d88229318778a2eebf2e"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/followon-source/expected-first/manifest.json",
+      "bytes": 106198,
+      "sha256": "5b6364e5546cec155a3a886d414d1fe7061abb1ec3607a5cfba1fcd84c810725"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/after-source/input-first-freeze.json",
+      "bytes": 1287,
+      "sha256": "89330cd898b5661365b59a0b37497921a146574b7c3f03aeceda13c5db00d4ec"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/after-source/code-first-freeze.json",
+      "bytes": 23760,
+      "sha256": "d09b3bf1234dbb80c96e96c3b26a67f9f86c183847795f9998884513b5f32622"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/after-source/expected-first/manifest.json",
+      "bytes": 110934,
+      "sha256": "70cc4a5675eeddb6559c35a18767cdcccbb4d54401c3c0c525bd7e9fcad74bb4"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/crossing-byte-source/input-first-freeze.json",
+      "bytes": 1987,
+      "sha256": "864216fea10525d1b4d7bc20f9318bcf929c472ab7f70dc10e32f872c8f27147"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/crossing-byte-source/code-first-freeze.json",
+      "bytes": 3334,
+      "sha256": "0fa9536ab989600077564789ffa6cb49293ef16270b9ccc4d55c269a1037d12d"
+    },
+    {
+      "path": ".cache/ace16-normal-integral-indexed-next-20261101/crossing-byte-source/expected-first/manifest.json",
+      "bytes": 43336,
+      "sha256": "b920105bb4221aa84a578c8e922baa9ee2463820e89201a0f6be0052232af5c3"
+    }
+  ],
+  "qualification_boundaries": {
+    "generic_native_read": "PASS120 selected contexts",
+    "dense_ordinary_source": "PASS68 selected dense contexts",
+    "native_sparse_ordinals": "Generic reads PASS, closed Source unable to qualify; true crossing-byte0/8/9 observed separately",
+    "stored_id_gaps": "Generic reads PASS, closed Source unable to qualify; native0/1/2 and stored0/3/4 are not sparse ordinals",
+    "ActiveContent": "Inability to qualify current Source contract, not a finding of malicious content",
+    "native_access": "NOT_RUN",
+    "matching_mutations": "PENDING_SEPARATE_PRODUCER_EVIDENCE"
+  },
+  "preserved_summary_successor": {
+    "path": ".cache/ace16-normal-integral-indexed-next-20261101/extra-originals/after-source/verifier-successor-freeze.json",
+    "bytes": 482,
+    "sha256": "92fe1d68ae200932fbdab153e1124173c8e6ebb243a35a5f7e0c0588098355c8"
+  },
+  "source_phase_native_producer_calls": 0
+}
