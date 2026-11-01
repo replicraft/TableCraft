@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-31",
+  "scope": "Independent ordinary-content source qualification before new mutation producers",
+  "source_owner": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_ordinary_content.rs",
+    "bytes": 23402,
+    "sha256": "58410466c957b05e5f877ade88cd3819ce7b325336291e92a26127c35177f880"
+  },
+  "recipes": 29,
+  "header_selectors": [
+    5,
+    6
+  ],
+  "ordinary_views": 24,
+  "adversarial_views": 34,
+  "native_table_snapshots": 56,
+  "first_source_freeze": {
+    "path": ".cache/ace16-ordinary-content-sources-next-20261031/source-first-freeze.json",
+    "bytes": 1890,
+    "sha256": "b0b883de936a4b5a1e6b68bfc124440a7c9e9c64d9c7d1576518eb85fa217d9b"
+  },
+  "native_source_tests": {
+    "result": "2 passed, first attempt",
+    "log": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/source-first-root.log",
+      "bytes": 757,
+      "sha256": "911966b8e88525ca33bb14925329ea0b5e4db73646a32d83dcdf5f4c1d17f22c"
+    }
+  },
+  "explicit_export": {
+    "result": "1 passed, first attempt",
+    "log": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/export-first-root.log",
+      "bytes": 503,
+      "sha256": "df7f8760be8b79c64bb0765828c4c99e44e8ea12988f564093e3d1544450a40e"
+    },
+    "inventory": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/originals-first/inventory.tsv",
+      "bytes": 5555,
+      "sha256": "f47d84f94b320773a7ea238a8ecaf440f30af84adc1823c69029f4c1e8a93e38"
+    }
+  },
+  "independent_sdk": {
+    "result": "24 exact observations passed, first attempt",
+    "compile_log": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/sdk-first/compile-first-root.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile_preflight": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/sdk-first/compile-precall.json",
+      "bytes": 19828,
+      "sha256": "da6a143012a7d1451db87879eb34b91962d97572c8bbbb5877c7eb1d1b749184"
+    },
+    "class_files": 3,
+    "plan": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/sdk-first/plan-before-calls.json",
+      "bytes": 45506,
+      "sha256": "28a9f59597390b1054310d4ce27e2f0b3c04797685a9e83d644683a904ecad43"
+    },
+    "receipt": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/sdk-first/reports-first/receipt.json",
+      "bytes": 26967,
+      "sha256": "65e9de185affe5c73708045449a696e7de845f2c793501277cd8ffed102606ea"
+    },
+    "log": {
+      "path": ".cache/ace16-ordinary-content-sources-next-20261031/sdk-first/run-first-root.log",
+      "bytes": 76,
+      "sha256": "2ac6f12fef2eb428e8f7a25c81601fc5df20190264fa32c1106265c2074c3099"
+    },
+    "inputs_unchanged": 58,
+    "protocol": "File metadata and system summaries; user declarations, exact typed carriers, raw DATE bits plus SDK calendar, physical page/slot identities and full records"
+  },
+  "limitations": [
+    "Source read evidence does not grant macro-absence or normal write permission",
+    "Adversarial refusal belongs to separate complete-content validator",
+    "Native Microsoft Access, Windows, event/save/reopen and mixed-client qualification remain unrun"
+  ],
+  "fixtures_license": "Repository-authored source encoders and literals; no third-party database bytes copied"
+}

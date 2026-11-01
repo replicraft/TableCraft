@@ -134,3 +134,6 @@ mod normal_nullable_fixed_int32_anchors;
 
 #[cfg(all(test, feature = "journal"))]
 mod normal_fixed_sql_sources;
+
+#[cfg(all(test, feature = "journal"))]
+mod normal_ordinary_sources;
