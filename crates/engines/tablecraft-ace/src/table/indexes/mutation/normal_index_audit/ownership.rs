@@ -5,7 +5,7 @@ use crate::{
     WriteBlocker,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
-        data_type::{CURRENCY, INT64},
+        data_type::{CURRENCY, INT64, SHORT_BINARY},
         definition,
         page::PAGE_BYTES,
         reader::Reader,
@@ -60,7 +60,7 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, false, budget, cancelled)
+        Self::capture_mode(image, checked, false, false, budget, cancelled)
     }
 
     /// Real action callers resolve native key numbers independently of dense
@@ -72,13 +72,26 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, true, budget, cancelled)
+        Self::capture_mode(image, checked, true, false, budget, cancelled)
+    }
+
+    /// INSERT additionally qualifies bounded Binary root leaves. This does not
+    /// broaden numeric DELETE or any UPDATE target policy.
+    #[cfg(feature = "journal")]
+    pub(in crate::table) fn capture_insert(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, true, true, budget, cancelled)
     }
 
     fn capture_mode(
         image: &NativeImage,
         checked: &TableCheck,
         actions: bool,
+        binary: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -145,14 +158,17 @@ impl Ownership {
             map.require_allocated_storage(&mut reader, &global)?;
             // Retain the old dense discriminator and charged UPDATE trace.
             // Actions explicitly resolve actual native numbers, never stored IDs.
-            let integral = if actions {
+            let typed = if actions {
                 reader.work(schema.columns().len())?;
                 index.columns().first().and_then(|key| {
                     schema
                         .columns()
                         .iter()
                         .find(|field| field.number() == key.number())
-                        .filter(|field| matches!(field.native_type(), INT64 | CURRENCY))
+                        .filter(|field| {
+                            matches!(field.native_type(), INT64 | CURRENCY)
+                                || binary && field.native_type() == SHORT_BINARY
+                        })
                 })
             } else {
                 index.columns().first().and_then(|key| {
@@ -162,8 +178,26 @@ impl Ownership {
                     })
                 })
             };
-            let tree = if let Some(field) = integral {
-                Tree::capture_integral(image, index, selected, field, reader.budget, cancelled)?
+            let tree = if let Some(field) = typed {
+                if field.native_type() == SHORT_BINARY {
+                    #[cfg(feature = "journal")]
+                    {
+                        Tree::capture_binary(
+                            image,
+                            index,
+                            selected,
+                            field,
+                            reader.budget,
+                            cancelled,
+                        )?
+                    }
+                    #[cfg(not(feature = "journal"))]
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
+                } else {
+                    Tree::capture_integral(image, index, selected, field, reader.budget, cancelled)?
+                }
             } else {
                 Tree::capture(image, index, selected, reader.budget, cancelled)?
             };

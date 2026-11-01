@@ -2,17 +2,17 @@
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use super::super::key::KeyRow;
 use super::super::key::KeyWork;
 use super::super::page::KeyRef;
 use super::{super::key::KeyProfile, profile::WriteProfile};
 use crate::InspectError;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use crate::{header::check, table::indexes::mutation::row_key::RowKeyProfile};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use std::cmp::Ordering;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use tablecraft_core::limits::Resource;
 
 pub(super) trait RetainedProfile: KeyProfile {
@@ -41,10 +41,10 @@ pub(super) fn reference<P: RetainedProfile>(
     })
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) struct Preserved<P>(pub P);
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) struct PreservedKey<K> {
     semantic: K,
     wire: Vec<u8>,
@@ -52,16 +52,16 @@ pub(super) struct PreservedKey<K> {
 }
 
 // Constraint facts do not alter physical key identity or separator comparison.
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<K: Eq> PartialEq for PreservedKey<K> {
     fn eq(&self, other: &Self) -> bool {
         self.semantic == other.semantic && self.wire == other.wire
     }
 }
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<K: Eq> Eq for PreservedKey<K> {}
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<P: KeyProfile> KeyProfile for Preserved<P> {
     type Key = PreservedKey<P::Key>;
 
@@ -130,7 +130,7 @@ impl<P: KeyProfile> KeyProfile for Preserved<P> {
     }
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<P: KeyProfile> RetainedProfile for Preserved<P> {
     fn retain(&self, key: &Self::Key, work: &mut KeyWork<'_>) -> Result<Self::Key, InspectError> {
         // Re-decode and copy the original bytes under the same paid decoder.
@@ -152,7 +152,7 @@ impl<P: KeyProfile> RetainedProfile for Preserved<P> {
     }
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<P: RowKeyProfile> Preserved<P> {
     /// Bind a complete INSERT row, retaining NULL facts independently of any
     /// whole-key truncation or digest. Separator decoding never calls this.

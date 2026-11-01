@@ -9,13 +9,13 @@ use crate::{
         page::KeyRef,
     },
 };
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use crate::{
     format::row::{reference_page, reference_slot},
     table::{indexes::mutation::retained::Preserved, record},
 };
 use std::io::Cursor;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use tablecraft_core::{limits::Resource, values::Value};
 
 pub(in crate::table::indexes::mutation) trait InsertProfile:
@@ -62,7 +62,7 @@ impl<P: WriteProfile> InsertProfile for P {
     }
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl<P: RowKeyProfile> InsertProfile for Preserved<P> {
     fn request_key(
         &self,

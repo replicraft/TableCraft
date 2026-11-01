@@ -272,3 +272,6 @@ pub mod qualified_sparse_numeric;
 
 /// Independent ordinary Int32 creation-default sources and literal action views.
 pub mod canonical_creation_defaults;
+
+/// Independent complete-image ordinary Binary index insertion witnesses.
+pub mod genuine_binary_indexed;

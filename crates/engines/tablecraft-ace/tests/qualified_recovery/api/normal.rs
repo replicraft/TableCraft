@@ -773,3 +773,6 @@ mod dense_numeric;
 
 #[path = "normal/sparse_numeric.rs"]
 mod sparse_numeric;
+
+#[path = "normal/genuine_binary_indexed.rs"]
+mod genuine_binary_indexed;

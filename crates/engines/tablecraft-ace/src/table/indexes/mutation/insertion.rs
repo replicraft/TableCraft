@@ -11,7 +11,7 @@ mod tests;
 
 #[cfg(feature = "ace16-write-preview")]
 use super::composite::TupleProfile;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use super::retained::Preserved;
 #[cfg(feature = "ace16-write-preview")]
 use super::split::{
@@ -19,9 +19,12 @@ use super::split::{
     allocation::{Promotion, Rebase},
 };
 use super::{IndexDataPatch, NumericKey, profile::SingleProfile};
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+use crate::table::indexes::binary::BinaryProfile;
+#[cfg(feature = "journal")]
+use crate::table::indexes::binary::{self, BinaryIndexSelection};
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::indexes::{
-    binary::BinaryProfile,
     composite::{DecimalColumns, DecimalValue, MixedValue},
     decimal::DecimalProfile,
     encoded_tuple::EncodedTupleProfile,
@@ -395,6 +398,18 @@ pub(in crate::table) fn prepare_existing(
         }
     }
     let (position, column) = field.ok_or(EditError::Preservation)?;
+    if column.scalar_type() == Some(ScalarType::Binary) {
+        let profile = Preserved(BinaryProfile {
+            column: position,
+            descending: key.descending(),
+            maximum: column.storage_length(),
+            selection: BinaryIndexSelection::All,
+        });
+        let prepared = preparation::prepare::<_, { binary::MAX_ENTRY_BYTES }>(
+            image, checked, index, profile, requests, budget, cancelled,
+        )?;
+        return prepared.finish_fitting::<{ binary::MAX_ENTRY_BYTES }>(budget, cancelled);
+    }
     let kind = match column.scalar_type() {
         Some(kind @ (ScalarType::Int32 | ScalarType::Int64 | ScalarType::Currency)) => kind,
         _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),

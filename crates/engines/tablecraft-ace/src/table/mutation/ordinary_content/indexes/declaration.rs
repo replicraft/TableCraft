@@ -4,7 +4,7 @@ use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema,
     format::{
         bytes::u16_at,
-        data_type::{BYTE, CURRENCY, INT16, INT32, INT64},
+        data_type::{BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
         layout,
         page::PAGE_BYTES,
     },
@@ -282,12 +282,16 @@ fn qualify_for(
     {
         return Err(refused());
     }
+    let binary = matches!(family, KeyFamily::ActionIntegral)
+        && field.native_type() == SHORT_BINARY
+        && field.scalar_type() == Some(ScalarType::Binary);
     let width = match (field.native_type(), field.scalar_type()) {
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
         (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
         (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
         (INT64, Some(ScalarType::Int64)) => size_of::<i64>(),
         (CURRENCY, Some(ScalarType::Currency)) => size_of::<i64>(),
+        (SHORT_BINARY, Some(ScalarType::Binary)) if binary => field.storage_length(),
         _ => return Err(refused()),
     };
     if index.native_type() > 1
@@ -295,7 +299,9 @@ fn qualify_for(
         || constraints.ignore_nulls()
         || field.number() != key.number()
         || field.storage_length() != width
-        || !field.fixed()
+        || binary && field.fixed()
+        || !binary && !field.fixed()
+        || binary && !(1..=MAX_SHORT_BINARY_BYTES).contains(&width)
         || field.extended_flags() != 0
     {
         return Err(refused());
