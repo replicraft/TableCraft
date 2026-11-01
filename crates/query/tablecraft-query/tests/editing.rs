@@ -111,6 +111,14 @@ fn null_where_and_in_membership_keep_three_valued_query_behavior() {
         ),
         ("UPDATE Items SET Score=7 WHERE NULL=1", vec![]),
         (
+            "UPDATE Items SET Score=7 WHERE IsNull(Score)",
+            vec![(2, Value::Int32(7))],
+        ),
+        (
+            "UPDATE Items SET Score=7 WHERE NOT IsNull(Score)",
+            vec![(0, Value::Int32(7)), (1, Value::Int32(7))],
+        ),
+        (
             "UPDATE Items SET Score=7 WHERE Score IS NULL",
             vec![(2, Value::Int32(7))],
         ),

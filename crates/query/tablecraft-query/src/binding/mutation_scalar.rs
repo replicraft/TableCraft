@@ -27,6 +27,10 @@ pub(super) fn bind_call(
     }
 
     match (Builtin::resolve(name.as_str()), arguments) {
+        (Some(Builtin::IsNull), [FunctionArgument::Expression(value)]) => Ok(Expr::IsNull(
+            Box::new(binder.expression(value, scopes, false, depth + 1)?),
+            false,
+        )),
         (Some(Builtin::Convert(conversion)), [FunctionArgument::Expression(value)]) => {
             Ok(Expr::Convert(
                 conversion,
