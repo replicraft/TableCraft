@@ -108,6 +108,28 @@ impl Census {
         Ok(())
     }
 
+    /// The strict normal declaration consumer requires every actual column's
+    /// map storage to be exclusive against the complete captured owner census.
+    /// Distinct empty maps are still distinct roles, never shared authority.
+    #[cfg(feature = "journal")]
+    pub(in crate::table) fn require_column_storage_exclusive(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        for claim in &self.claims {
+            check(budget, cancelled)?;
+            if matches!(
+                claim.owner,
+                Owner::ColumnOwned { .. } | Owner::ColumnCandidate { .. }
+            ) {
+                self.require_exclusive(&[claim.owner], budget, cancelled)?;
+            }
+        }
+        check(budget, cancelled)?;
+        Ok(())
+    }
+
     pub fn require_exclusive(
         &self,
         selected: &[Owner],
