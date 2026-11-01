@@ -1,4 +1,5 @@
 use super::*;
+use crate::WriteBlocker;
 use crate::format::reader::Reader;
 use crate::inspect_table_schema;
 use crate::read_table;

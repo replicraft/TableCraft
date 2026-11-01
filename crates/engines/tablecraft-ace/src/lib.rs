@@ -73,7 +73,7 @@ pub use preservation::{
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
+    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -202,4 +202,13 @@ pub use table::{
 pub use transaction::{
     NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
     qualify_native_delete_recovery,
+};
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub use table::RowInsert;
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeInsertIntent, QualifiedNativeInsertRecovery, RecoverableNativeInsertPlan,
+    qualify_native_insert_recovery,
 };

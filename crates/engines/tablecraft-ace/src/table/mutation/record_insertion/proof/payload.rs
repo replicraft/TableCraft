@@ -1,6 +1,7 @@
 //! Requested preferred variable wires; no builder serializer supplies proof.
 mod decimal;
-pub(in crate::table::mutation::insert::audit) mod long_value;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) mod long_value;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{
@@ -18,7 +19,7 @@ use tablecraft_core::{
 const MARKER: [u8; 2] = [0xff, 0xfe];
 const UNIT_BYTES: usize = size_of::<u16>();
 
-pub(in crate::table::mutation::insert::audit) fn encode(
+pub(in crate::table::mutation) fn encode(
     field: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,
@@ -26,7 +27,18 @@ pub(in crate::table::mutation::insert::audit) fn encode(
 ) -> Result<Vec<u8>, EditError> {
     check(budget, cancelled)?;
     if matches!(field.native_type(), LONG_TEXT | OLE) {
-        return long_value::encode_inline(field, value, budget, cancelled);
+        #[cfg(feature = "ace16-write-preview")]
+        {
+            return long_value::encode_inline(field, value, budget, cancelled);
+        }
+        #[cfg(not(feature = "ace16-write-preview"))]
+        {
+            return if matches!(value, Value::Null) {
+                Ok(Vec::new())
+            } else {
+                Err(EditError::Unsupported(WriteBlocker::Column))
+            };
+        }
     }
     if field.native_type() == NUMERIC {
         return decimal::encode(field, value, budget, cancelled);

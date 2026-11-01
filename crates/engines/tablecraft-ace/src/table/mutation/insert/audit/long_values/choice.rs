@@ -2,10 +2,13 @@
 #[cfg(test)]
 mod tests;
 
-use super::super::records::payload::long_value::{self, Payload};
-use super::super::{
-    records::{layout, payload},
-    reserve,
+use super::super::reserve;
+use crate::table::mutation::record_insertion::proof::{
+    layout,
+    payload::{
+        self,
+        long_value::{self, Payload},
+    },
 };
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,

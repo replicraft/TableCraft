@@ -40,7 +40,12 @@ pub(super) fn decode(bytes: &[u8], precision: u8, scale: u8) -> Result<Decimal, 
         .map_err(|_| InspectError::Malformed)
 }
 
-#[cfg(any(test, feature = "ace16-write-preview", feature = "ace16-create"))]
+#[cfg(any(
+    test,
+    feature = "journal",
+    feature = "ace16-write-preview",
+    feature = "ace16-create"
+))]
 pub(crate) fn encode(value: Decimal) -> [u8; NUMERIC_BYTES] {
     let mut bytes = [0; NUMERIC_BYTES];
     if value.coefficient() < 0 {

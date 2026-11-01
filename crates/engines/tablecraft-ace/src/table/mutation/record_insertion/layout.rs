@@ -1,5 +1,5 @@
 //! Complete declared field coverage, fixed-span exclusivity and variable order.
-use super::{field, payload};
+use super::{fixed as field, payload};
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker, format::row::COLUMN_COUNT_BYTES,
     header::check, table::long_value::profile as long_profile,
@@ -8,7 +8,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 const UNASSIGNED_FIELD: usize = usize::MAX;
 
-pub(super) fn variables(
+pub(in crate::table::mutation) fn variables(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -16,7 +16,8 @@ pub(super) fn variables(
     variables_with_generated(schema, None, budget, cancelled)
 }
 
-pub(super) fn incrementing_variables(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn incrementing_variables(
     schema: &TableSchema,
     column: usize,
     budget: &mut ResourceBudget,

@@ -21,7 +21,10 @@ const MINUTES_PER_HOUR: u32 = 60;
 const SECONDS_PER_MINUTE: u32 = 60;
 const RADIX: u32 = 10;
 
-pub(super) fn write(target: &mut [u8], value: &ExtendedDateTime) -> Result<(), EditError> {
+pub(in crate::table::mutation) fn write(
+    target: &mut [u8],
+    value: &ExtendedDateTime,
+) -> Result<(), EditError> {
     if target.len() != FIELD_BYTES {
         return Err(EditError::Preservation);
     }

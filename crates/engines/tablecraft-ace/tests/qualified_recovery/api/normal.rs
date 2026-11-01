@@ -716,3 +716,9 @@ mod genuine_ordinary_delete;
 
 #[path = "normal/genuine_forwarded_delete.rs"]
 mod genuine_forwarded_delete;
+
+#[path = "normal/genuine_ordinary_insert.rs"]
+mod genuine_ordinary_insert;
+
+#[path = "normal/genuine_multirow_insert.rs"]
+mod genuine_multirow_insert;

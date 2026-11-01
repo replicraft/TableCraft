@@ -46,7 +46,7 @@ pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
-    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert, RowInsert,
+    IncrementingAutoNumber, InsertFieldValue, OmittedRowInsert,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16BeforeChangePreview, BeforeChangePreviewError};
@@ -135,3 +135,6 @@ pub use indexes::{
     feature = "journal"
 ))]
 pub(crate) mod scalar_encoding;
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub use mutation::RowInsert;

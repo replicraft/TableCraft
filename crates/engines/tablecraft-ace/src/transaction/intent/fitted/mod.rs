@@ -1,5 +1,5 @@
 //! Original fitted requests and a distinct closed data record, never permission.
-mod carrier;
+pub(super) mod carrier;
 mod codec;
 mod model;
 mod profile;

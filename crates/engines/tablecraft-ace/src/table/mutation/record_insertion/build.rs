@@ -1,0 +1,152 @@
+//! Shared complete ordinary-record serialization; callers own admission.
+use super::{fixed as field, payload};
+use crate::{
+    EditError, InspectError, TableSchema, WriteBlocker,
+    format::{
+        page::PAGE_BYTES,
+        row::{
+            COLUMN_COUNT_BYTES, MASK_BITS, SLOT_BYTES, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES,
+            slot_offset,
+        },
+    },
+    header::check,
+    table::record_layout,
+};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
+
+pub(in crate::table::mutation) fn build_with(
+    schema: &TableSchema,
+    variables: &[usize],
+    values: &[Value],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    check(budget, cancelled)?;
+    if values.len() != schema.columns().len() {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    budget
+        .charge_allocation(variables.len() as u64, size_of::<Vec<u8>>() as u64)
+        .map_err(InspectError::from)?;
+    let mut payloads = Vec::new();
+    payloads
+        .try_reserve_exact(variables.len())
+        .map_err(|_| InspectError::Allocation)?;
+    for &position in variables {
+        check(budget, cancelled)?;
+        payloads.push(payload::encode(
+            &schema.columns()[position],
+            &values[position],
+            budget,
+            cancelled,
+        )?);
+    }
+    assemble(schema, variables, values, payloads, budget, cancelled)
+}
+
+pub(in crate::table::mutation) fn assemble(
+    schema: &TableSchema,
+    variables: &[usize],
+    values: &[Value],
+    payloads: Vec<Vec<u8>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    check(budget, cancelled)?;
+    if values.len() != schema.columns().len() || payloads.len() != variables.len() {
+        return Err(EditError::Preservation);
+    }
+    let mut payload_end = schema.layout.fixed_end;
+    for payload in &payloads {
+        payload_end = payload_end
+            .checked_add(payload.len())
+            .ok_or(InspectError::StructureLimit)?;
+    }
+    let mask_bytes = schema.layout.max_columns.div_ceil(MASK_BITS);
+    let variable_footer = if variables.is_empty() {
+        0
+    } else {
+        VARIABLE_OFFSET_BYTES
+            .checked_mul(variables.len() + 1)
+            .and_then(|bytes| bytes.checked_add(VARIABLE_COUNT_BYTES))
+            .ok_or(InspectError::StructureLimit)?
+    };
+    let length = payload_end
+        .checked_add(variable_footer)
+        .and_then(|bytes| bytes.checked_add(mask_bytes))
+        .ok_or(InspectError::StructureLimit)?;
+    if length
+        .checked_add(SLOT_BYTES)
+        .is_none_or(|needed| needed > PAGE_BYTES - slot_offset(0))
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    let count =
+        u16::try_from(schema.layout.max_columns).map_err(|_| InspectError::StructureLimit)?;
+    budget
+        .charge_allocation(length as u64, 1)
+        .map_err(InspectError::from)?;
+    budget
+        .charge(Resource::Steps, length as u64)
+        .map_err(InspectError::from)?;
+    check(budget, cancelled)?;
+    let mut row = Vec::new();
+    row.try_reserve_exact(length)
+        .map_err(|_| InspectError::Allocation)?;
+    row.resize(length, 0);
+    row[..COLUMN_COUNT_BYTES].copy_from_slice(&count.to_le_bytes());
+    let mask = length - mask_bytes;
+    for (position, column) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        let present = if column.fixed() {
+            let width = column.storage_length();
+            // Boolean has no payload; its unused offset is not an address.
+            let start = if width == 0 {
+                COLUMN_COUNT_BYTES
+            } else {
+                COLUMN_COUNT_BYTES + column.field.offset
+            };
+            field::write(column, &values[position], &mut row[start..start + width])?
+        } else {
+            !matches!(values[position], Value::Null)
+        };
+        if present {
+            row[mask + column.number() / MASK_BITS] |= 1 << (column.number() % MASK_BITS);
+        }
+    }
+    if !variables.is_empty() {
+        let count_start = mask - VARIABLE_COUNT_BYTES;
+        let encoded_variable_count =
+            u16::try_from(variables.len()).map_err(|_| InspectError::StructureLimit)?;
+        row[count_start..mask].copy_from_slice(&encoded_variable_count.to_le_bytes());
+        let mut cursor = schema.layout.fixed_end;
+        for (ordinal, payload) in payloads.into_iter().enumerate() {
+            check(budget, cancelled)?;
+            write_offset(&mut row, count_start, ordinal, cursor)?;
+            let end = cursor + payload.len();
+            row[cursor..end].copy_from_slice(&payload);
+            cursor = end;
+        }
+        write_offset(&mut row, count_start, variables.len(), cursor)?;
+    }
+    record_layout::parse(&row, schema, budget)?;
+    check(budget, cancelled)?;
+    Ok(row)
+}
+
+fn write_offset(
+    row: &mut [u8],
+    count_start: usize,
+    ordinal: usize,
+    offset: usize,
+) -> Result<(), EditError> {
+    let encoded = u16::try_from(offset).map_err(|_| InspectError::StructureLimit)?;
+    let position = count_start
+        .checked_sub(VARIABLE_OFFSET_BYTES * (ordinal + 1))
+        .ok_or(InspectError::Malformed)?;
+    row[position..position + VARIABLE_OFFSET_BYTES].copy_from_slice(&encoded.to_le_bytes());
+    Ok(())
+}

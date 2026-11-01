@@ -1,12 +1,12 @@
 //! INSERT variable carriers; existing-slot update eligibility remains separate.
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::mutation::long_value::encode as long_encode;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{data_type::NUMERIC_BYTES, layout::UPDATABLE_FLAG},
     header::check,
     table::{
-        decimal,
-        long_value::profile as long_profile,
-        mutation::{long_value::encode as long_encode, record_serialization::storage},
+        decimal, long_value::profile as long_profile, mutation::record_serialization::storage,
     },
 };
 use tablecraft_core::{
@@ -15,7 +15,7 @@ use tablecraft_core::{
 };
 use tablecraft_schema::ScalarType;
 
-pub(super) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
+pub(in crate::table::mutation) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
     if long_profile::ordinary(column) {
         return Ok(());
     }
@@ -33,7 +33,7 @@ pub(super) fn qualify(column: &NativeColumn) -> Result<(), EditError> {
     Ok(())
 }
 
-pub(super) fn encode(
+pub(in crate::table::mutation) fn encode(
     column: &NativeColumn,
     value: &Value,
     budget: &mut ResourceBudget,
@@ -42,11 +42,22 @@ pub(super) fn encode(
     check(budget, cancelled)?;
     qualify(column)?;
     if long_profile::ordinary(column) {
-        let encoded = long_encode::encode(column, value, budget, cancelled)?;
-        if encoded.preferred() != long_encode::StorageChoice::Inline {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
+        #[cfg(feature = "ace16-write-preview")]
+        {
+            let encoded = long_encode::encode(column, value, budget, cancelled)?;
+            if encoded.preferred() != long_encode::StorageChoice::Inline {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+            return encoded.descriptor(long_encode::StorageChoice::Inline, None, budget, cancelled);
         }
-        return encoded.descriptor(long_encode::StorageChoice::Inline, None, budget, cancelled);
+        #[cfg(not(feature = "ace16-write-preview"))]
+        {
+            return if matches!(value, Value::Null) {
+                Ok(Vec::new())
+            } else {
+                Err(EditError::Unsupported(WriteBlocker::Column))
+            };
+        }
     }
     if column.scalar_type() != Some(ScalarType::Decimal) {
         return storage::encode_preferred(column, value, budget, cancelled);

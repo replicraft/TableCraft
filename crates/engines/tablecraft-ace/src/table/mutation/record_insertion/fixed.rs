@@ -1,11 +1,13 @@
 //! Exact fixed carriers and Boolean mask semantics for new ordinary records.
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::extended_datetime;
 use crate::{
     EditError, NativeColumn, WriteBlocker,
     format::{
         data_type::EXTENDED_DATE_TIME_BYTES,
         layout::{AUTO_NUMBER_FLAG, FIXED_FLAG, UPDATABLE_FLAG},
     },
-    table::{extended_datetime, mutation::fixed::encode_fixed},
+    table::scalar_encoding,
 };
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_schema::ScalarType;
@@ -15,9 +17,12 @@ const SHORT_WIDTH: usize = size_of::<i16>();
 const LONG_WIDTH: usize = size_of::<i32>();
 const WIDE_WIDTH: usize = size_of::<i64>();
 // Largest fixed declaration currently admitted by this writer.
-pub(super) const MAX_FIXED_BYTES: usize = EXTENDED_DATE_TIME_BYTES;
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) const MAX_FIXED_BYTES: usize = EXTENDED_DATE_TIME_BYTES;
 
-pub(super) fn incrementing_width(column: &NativeColumn) -> Result<usize, EditError> {
+pub(in crate::table::mutation) fn incrementing_width(
+    column: &NativeColumn,
+) -> Result<usize, EditError> {
     if column.scalar_type() != Some(ScalarType::Int32)
         || !column.fixed()
         || column.storage_length() != LONG_WIDTH
@@ -30,7 +35,7 @@ pub(super) fn incrementing_width(column: &NativeColumn) -> Result<usize, EditErr
     Ok(LONG_WIDTH)
 }
 
-pub(super) fn width(column: &NativeColumn) -> Result<usize, EditError> {
+pub(in crate::table::mutation) fn width(column: &NativeColumn) -> Result<usize, EditError> {
     let length = match column.scalar_type() {
         Some(ScalarType::Boolean) => 0,
         Some(ScalarType::Byte) => size_of::<u8>(),
@@ -55,7 +60,7 @@ pub(super) fn width(column: &NativeColumn) -> Result<usize, EditError> {
 }
 
 /// Return the native presence/value bit. Boolean has no nullable payload cell.
-pub(super) fn write(
+pub(in crate::table::mutation) fn write(
     column: &NativeColumn,
     value: &Value,
     destination: &mut [u8],
@@ -80,8 +85,16 @@ pub(super) fn write(
         if destination.len() != EXTENDED_DATE_TIME_BYTES {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
-        destination.copy_from_slice(&extended_datetime::encode(value)?);
-        return Ok(true);
+        #[cfg(feature = "ace16-write-preview")]
+        {
+            destination.copy_from_slice(&extended_datetime::encode(value)?);
+            return Ok(true);
+        }
+        #[cfg(not(feature = "ace16-write-preview"))]
+        {
+            let _ = value;
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
     }
     match destination.len() {
         BYTE_WIDTH => {
@@ -102,4 +115,11 @@ pub(super) fn write(
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
     Ok(true)
+}
+
+fn encode_fixed<const WIDTH: usize>(
+    kind: ScalarType,
+    value: &Value,
+) -> Result<[u8; WIDTH], EditError> {
+    scalar_encoding::encode(kind, value).ok_or(EditError::Unsupported(WriteBlocker::Column))
 }
