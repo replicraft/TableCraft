@@ -191,3 +191,6 @@ pub mod genuine_ordinary_targets;
 
 /// Independent original-record fitting sources and literal outcomes.
 pub mod canonical_ordinary_fitted;
+
+/// Frozen genuine Marker requests and explicitly supplied property/OLE artifacts.
+pub mod genuine_property_lval;

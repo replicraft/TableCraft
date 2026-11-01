@@ -1,0 +1,19 @@
+{
+  "state": "LITERAL_ORIGINAL_REQUESTS_FROZEN_BEFORE_CONSTRUCTION",
+  "table": "Sentinel",
+  "column": "Marker",
+  "original_id": 23,
+  "original_marker": "unchanged sentinel",
+  "profiles": [5, 6],
+  "recipes": [
+    {"id":"same","replacement":{"kind":"Text","value":"qualified sentinel"},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"candidate","changed_rows":1},
+    {"id":"shorter","replacement":{"kind":"Text","value":"changed sentinel"},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"candidate","changed_rows":1},
+    {"id":"empty","replacement":{"kind":"Text","value":""},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"candidate","changed_rows":1},
+    {"id":"clear","replacement":{"kind":"Null"},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"candidate","changed_rows":1},
+    {"id":"noop","replacement":{"kind":"Text","value":"unchanged sentinel"},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"candidate","changed_rows":0},
+    {"id":"empty-group","empty":true,"outcome":"candidate","changed_rows":0},
+    {"id":"overflow","replacement":{"kind":"Text","value":"aaaaaaaaaaaaaaaaaaa"},"expected":{"kind":"Text","value":"unchanged sentinel"},"outcome":"intended-refusal","reason":"physical-record-capacity"},
+    {"id":"stale","replacement":{"kind":"Text","value":"qualified sentinel"},"expected":{"kind":"Text","value":"changed sentinel"},"outcome":"intended-refusal","reason":"original-value-conflict"}
+  ],
+  "notes": ["No native producer result determines these requests or expected bytes.","Refusal labels describe original-only request/capacity facts, not executed writer evidence.","All cases preserve nonempty PublishToWeb property, inline OLE Bytes, maps, index/system/header/advanced sibling bytes."]
+}
