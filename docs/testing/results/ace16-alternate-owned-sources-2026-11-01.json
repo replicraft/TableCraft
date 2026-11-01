@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-01",
+  "scope": "Authored already-owned alternate DATA placement and separate forwarded second edit; source reads before corresponding producers",
+  "original_provenance": "ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json",
+  "source_character": "Original SDK-created databases are immutable. Authored BEFORE derivatives add a pre-owned DATA page and saturate the original root directory; no production writer constructs expected images.",
+  "counts": {
+    "immutable_originals": 2,
+    "authored_before_images": 2,
+    "first_expected_images": 2,
+    "second_expected_images": 2,
+    "native_source_test_functions": 2,
+    "native_read_views": 8,
+    "independent_sdk_reads": 6
+  },
+  "input_freezes": [
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-source/input-freeze.json",
+      "bytes": 4987,
+      "sha256": "5c4da36c5af69f6bbd5def6c8028e644d1e88e6cc4b1dbbf1bac5dc72b713019"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-second-source/input-freeze.json",
+      "bytes": 2759,
+      "sha256": "3fd5f24bf595742c974edf944fd5e97fcfe4396b520681aa1c67531af0fda0c4"
+    }
+  ],
+  "manifests": [
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-source/expected-first/manifest.json",
+      "bytes": 2361,
+      "sha256": "93dda9d98f4be7a357d889ad9ccf6483e2073489867b9b9752ed1395bfd78408"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-second-source/expected-first/manifest.json",
+      "bytes": 1660,
+      "sha256": "858053ef2740c48cd9b6bcd549390890e75a636b5f2b489bb0d6bbe1d0ea5004"
+    }
+  ],
+  "public_models": [
+    {
+      "path": "docs/testing/owned_growth_originals/alternate_model.py",
+      "bytes": 6897,
+      "sha256": "f93edff3d3b9ecf2663760b104cb91f83d6b59034efa7b602d66eb770eed5a30"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/alternate_requests.json",
+      "bytes": 1722,
+      "sha256": "df51d948fe0bfbf6be1265cf3197f8ab3b1da6d53c67694a0d5286e0defd5519"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/alternate_second_model.py",
+      "bytes": 2722,
+      "sha256": "acac4e216b12b35f22a9e92af2bb2fedaa97a1ac70a621b9704a50de17686d17"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/alternate_second_requests.json",
+      "bytes": 967,
+      "sha256": "3ded0e52fadbd422503c8fbd1777d95b131c6f3403660fb1a70486a9faf41a43"
+    }
+  ],
+  "execution": [
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-source/native-reads-first.log",
+      "bytes": 654,
+      "sha256": "53950c52d5b0ed16194a099e296bd77f29d9d5843a4fd2855ac2a6b37a3ac8c7"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-second-source/native-reads-first.log",
+      "bytes": 518,
+      "sha256": "9f9a5089b0a4f695270659d90cb8d1390994046483933d16070b8b180d96f282"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-source/sdk-expected-first/result.json",
+      "bytes": 1421,
+      "sha256": "3c1c67447c333e4ca0728821da3127593aec943d29de0771d4655e16eaedbe10"
+    },
+    {
+      "path": ".cache/owned-growth-next-20261101/alternate-second-source/sdk-expected-first/result.json",
+      "bytes": 789,
+      "sha256": "350b3a9e8db0eb5635db3cb9d0e560735e1f413a993c08e7f7785b34d03b03bd"
+    }
+  ],
+  "inputs_unchanged": true,
+  "write_boundary": "During the later write, maps and EOF must remain unchanged. Source construction appended a page before any edit; this is not write-time allocation evidence.",
+  "native_access": "Unrun; independent reads do not qualify Microsoft Access native save/reopen."
+}

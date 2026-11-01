@@ -1,0 +1,69 @@
+{
+  "state": "ALTERNATE_SOURCE_LAWS_AND_REQUEST_BEFORE_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "new_data": 112,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "new_data": 129,
+      "bitmap": 128
+    }
+  ],
+  "table": "Sentinel",
+  "column": "Marker",
+  "ordinal": 0,
+  "identity": 23,
+  "expected": "unchanged sentinel",
+  "replacement": "aaaaaaaaaaaaaaaaaaa",
+  "source_changes": {
+    "append_pages": 1,
+    "root_slots": 255,
+    "empty_deleted_words": 254,
+    "empty_deleted_word": 36798,
+    "root_free": 3506,
+    "global_reference": 256,
+    "global_record_start": 4027,
+    "global_kind": 0,
+    "global_base": 0,
+    "global_bytes": 69,
+    "owned_kind": 1,
+    "candidate_kind": 0,
+    "candidate_base": 0,
+    "map_bytes": 69,
+    "candidate_members": "new DATA only; remove saturated root and set newpage",
+    "new_data_owner": "original Sentinel TD",
+    "new_data_slots": 0,
+    "new_data_free": 4082,
+    "declared_rows": 1
+  },
+  "after_law": {
+    "root_slots": 255,
+    "root_free": 3506,
+    "hidden_slot": 0,
+    "hidden_start": 4028,
+    "hidden_end": 4096,
+    "new_data_slots": 1,
+    "new_data_free": 4012,
+    "record_bytes": 68,
+    "offsets": [
+      6,
+      44,
+      59
+    ],
+    "mask": 7,
+    "writer_changes_only": "original root word/capsule and pre-owned new DATA record/header/directory; allmaps/EOF retained"
+  }
+}
