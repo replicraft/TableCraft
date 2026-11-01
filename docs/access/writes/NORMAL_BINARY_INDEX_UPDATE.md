@@ -53,5 +53,7 @@ functions pass actual commits and interrupted/forged recovery. Actual retained
 sessions and CLI saves/readbacks match complete independent images. Prior Binary
 INSERT host tests pass with the newly qualified update capability.
 
-Combined regression and strict-feature results are recorded separately after the
-current implementation batch. These checks do not qualify native Access saves.
+The [combined execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+records 1,165 ACE units, 79 adapter units, 104 CLI units and 90 default recovery
+functions, plus strict feature checks and the focused tranches. These checks do
+not qualify native Access saves.

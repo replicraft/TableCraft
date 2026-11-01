@@ -275,3 +275,7 @@ Int32 wire images and constraints pass unchanged; conservative resource totals
 reflect the wider private key representation. Native Access qualification remains
 unrun. The CLI's explicit [primary flag](../../cli/NATIVE_CREATION.md) forwards
 these declarations through the same shared creation service.
+
+The [wider-key and CLI execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+records the complete focused and broader verification batch separately from
+native Access qualification.

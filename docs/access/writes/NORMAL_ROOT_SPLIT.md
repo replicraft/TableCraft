@@ -52,4 +52,6 @@ snapshots, stale-handle refusal, primary cursor checks and namespace cleanup.
 The supplied row includes present-empty Binary. No SQL/CLI split save is claimed
 from a substituted NULL or an invented Binary literal. Compound DATA+INDEX
 allocation, multiple physical splits, recursive growth, Binary splits and map
-expansion remain work. Broader validation is recorded after the combined batch.
+expansion remain work. The [combined execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+retains focused and broader validation alongside failed first checks and their
+corrections; native Access qualification remains unrun.

@@ -323,5 +323,7 @@ Complete normal insertion now maintains qualified nullable/directional Short
 Binary root leaves through the existing complete-row intent and offline host.
 The [Binary INSERT contract](NORMAL_BINARY_INDEX_INSERT.md) records independent
 source/proof/recovery, typed/SQL/CLI results and current fitting-only scope.
-Binary primary keys, NODEs, splits and Binary DELETE remain separate work;
+Binary primary keys, NODEs and Binary splits remain separate work; qualified
+[Binary DELETE](NORMAL_BINARY_INDEX_DELETE.md) and
+[Binary UPDATE](NORMAL_BINARY_INDEX_UPDATE.md) now have their own normal routes;
 UPDATE admission is unchanged.
