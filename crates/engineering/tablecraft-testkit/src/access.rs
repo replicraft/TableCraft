@@ -182,3 +182,6 @@ pub mod canonical_ordinary_inline;
 
 /// Independent ordinary counter and retained-index inputs.
 pub mod canonical_ordinary_indexed;
+
+/// Independent original requests and literal ordinary indexed update outcomes.
+pub mod canonical_ordinary_indexed_targets;

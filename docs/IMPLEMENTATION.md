@@ -12,6 +12,15 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary indexed-target source qualification
+
+Thirty-two original views and 24 literal outcomes now pass native table/index
+and constraint checks plus 56 exact independent SDK observations. Requests cover
+manual Int32 key changes, NULL transitions, atomic UNIQUE swaps, aliases, fitting
+trees and prefix loss. Four refusal contexts per header retain healthy originals
+without manufactured outcomes. This is source evidence before indexed mutation;
+see the [source contract](testing/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md).
+
 ## Ordinary writes preserving counters and indexes
 
 Ordinary fixed-field saves now retain one qualified Int32 AutoNumber and existing
