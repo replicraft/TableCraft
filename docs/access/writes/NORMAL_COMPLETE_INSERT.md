@@ -16,7 +16,8 @@ length and digest. `NativeCompleteInsertIntent` is data, not a write capability.
 Decode/new validates framing and carriers; every plan and recovery separately
 captures fresh native content and proves the complete candidate.
 
-The ordinary route requires the existing native seventeen-field catalog admission,
+The ordinary route uses the [action column-identity profile](NORMAL_COLUMN_IDENTITIES.md)
+and requires the existing native seventeen-field catalog admission,
 selected-table `NoRequiredTablePrograms`, full Source/ownership and applicable
 constraint checks. No creator provenance, empty inventory, caller absence flag,
 fake event program or preview candidate conversion supplies permission. Generated,

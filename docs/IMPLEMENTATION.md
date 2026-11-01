@@ -1,5 +1,26 @@
 # Implementation status
 
+## Column identities and creation constraints
+
+Normal INSERT/DELETE now distinguish visible value positions, native column
+numbers and stored column IDs. Qualified fixed sparse layouts and genuine
+stored-ID gaps retain exact index/mask interpretation, original request framing
+and fresh recovery proof. Canonical UPDATE and omitted/default admission retain
+their previous boundaries. Independent direct proofs, native commits/recovery,
+forgery/resource controls and typed/SQL saves pass against unchanged expected files.
+The [identity contract](access/writes/NORMAL_COLUMN_IDENTITIES.md) records scope.
+
+Fresh single/multiple-table creation also authors explicit Required and
+AllowZeroLength policies. Eighteen independent source views passed native reads
+and exact SDK comparisons before creator tests. Fourteen complete creator outputs
+match independent sources; initial-row violations refuse before image allocation.
+Five focused property functions and the 31-function creation regression filter
+pass. Broader results and preserved first failures are in the
+[batch record](testing/results/ace16-sparse-actions-and-creation-properties-2026-11-01.json).
+The combined batch passes 1,148 ACE units, 79 adapter units, 102 CLI units and
+90 default recovery functions, plus strict feature checks. These additions do not
+qualify native Access saves or Windows durability.
+
 ## Complete-row insertion and numeric primary keys
 
 Complete supplied rows now use TCNA4 through native planning, typed/SQL sessions
@@ -17,7 +38,7 @@ pass. The broad batch passes 1,142 ACE units, 104 I/O units, 79 adapter units,
 The [execution record](testing/results/ace16-complete-insert-writes-2026-11-01.json)
 retains failed lint receipts and exact passing results. Wider-carrier witnesses
 cover existing capacity/one EOF page; multi-page witnesses use I32/NULL rows.
-Their Cartesian composition, index allocation/splits, sparse stable-ID writes,
+Their Cartesian composition, index allocation/splits, broader column-identity profiles,
 generation, broader constraints/required programs and native Access save/reopen
 remain open. See the [complete INSERT contract](access/writes/NORMAL_COMPLETE_INSERT.md).
 
@@ -58,8 +79,8 @@ current broad batch passes 1,134 ACE units, 79 adapter units, 102 CLI units and
 retains focused and broad receipts.
 
 Every session rederives content-based NoRequired and physical/constraint proof;
-creator provenance grants no write permission. Normal scalar and empty-Text policy expansion, creation of AutoNumber/default/property
-metadata and represented future FREE requirements remain open work. The creator preserves its prior future GLOBAL zero choice.
+creator provenance grants no write permission. Broader scalar policies, creation of AutoNumber/default and additional property
+metadata, and represented future FREE requirements remain open work. The creator preserves its prior future GLOBAL zero choice.
 Native Access creation/save/reopen and Windows conformance remain unrun. See the
 [owning creation contract](access/writes/FRESH_DATABASE_CREATION.md#current-catalog-and-normal-session-consumption).
 

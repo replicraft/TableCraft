@@ -62,7 +62,10 @@ root-leaf INSERT/DELETE now pass separately.
 [Complete TCNA4 insertion](access/writes/NORMAL_COMPLETE_INSERT.md) now adds
 wider unindexed scalar carriers and source-derived represented EOF pages.
 Qualified numeric primary keys and dense empty/all-NULL sources pass separately.
-Next are sparse stable-ID profiles, broader allocation and index splits/page retirement,
+Qualified [column-identity action profiles](access/writes/NORMAL_COLUMN_IDENTITIES.md)
+now cover stored-ID gaps and fixed native gaps, including two-byte presence masks.
+Fresh creation authors explicit Required/AllowZeroLength metadata.
+Next are broader dropped-column layouts, allocation and index splits/page retirement,
 AutoNumber and broader relationship/program behavior. Native Access
 qualification remains open. Completed
 fixed/fitted implementation does not need repeating.
