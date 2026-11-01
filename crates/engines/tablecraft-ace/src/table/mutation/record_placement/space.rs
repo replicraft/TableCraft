@@ -170,6 +170,36 @@ impl Space {
         Ok(())
     }
 
+    /// Original hint membership is selection data, never ownership authority.
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn append_eligible(
+        &self,
+        image: &NativeImage,
+        number: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, EditError> {
+        if self.normal.is_none() {
+            return Err(EditError::Preservation);
+        }
+        self.require_page(image, number, false, budget, cancelled)?;
+        let mut source = image.reader();
+        let mut reader = Reader {
+            source: &mut source,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        match self.hint.cell(&mut reader, number) {
+            Ok(cell) => Ok(cell.before & cell.mask != 0),
+            // The map grammar was qualified on capture. An absent represented
+            // hint cell cannot authorize an append, but does not invent a page.
+            Err(InspectError::Unsupported) => Ok(false),
+            Err(error) => Err(error.into()),
+        }
+    }
+
     pub(in crate::table::mutation) fn require_page(
         &self,
         image: &NativeImage,

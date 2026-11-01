@@ -1,4 +1,4 @@
-//! Normal complete-row growth within the original logical root's owned DATA page.
+//! Normal complete-row growth within the table's existing owned DATA pages.
 mod proof;
 mod selection;
 mod stage;
@@ -100,6 +100,9 @@ fn capture(
     require_native_catalog(image, budget, cancelled)?;
     normal_ordinary::capture(image, table, budget, cancelled)
 }
+
+#[cfg(test)]
+mod alternate_tests;
 
 #[cfg(test)]
 mod mixed_event_sources;

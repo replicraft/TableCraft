@@ -21,7 +21,17 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 pub(in crate::table::mutation) const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 pub(in crate::table::mutation) const POINTER_BYTES: usize = size_of::<u32>();
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(in crate::table::mutation) enum EventKind {
+    SamePage,
+    #[cfg(feature = "journal")]
+    AppendTarget,
+    #[cfg(feature = "journal")]
+    ForwardRoot,
+}
+
 pub(in crate::table::mutation) struct Event {
+    pub kind: EventKind,
     pub root: u32,
     pub root_word: u16,
     pub root_range: Range<usize>,
@@ -56,11 +66,15 @@ impl BytePatch for Page {
 
 pub(in crate::table::mutation) struct Plan {
     pub pages: Vec<Page>,
+    pub(super) cross_page: bool,
 }
 
 impl Plan {
     pub(in crate::table::mutation) fn new() -> Self {
-        Self { pages: Vec::new() }
+        Self {
+            pages: Vec::new(),
+            cross_page: false,
+        }
     }
 
     fn page(
@@ -243,6 +257,7 @@ impl Plan {
         };
 
         page.events.push(Event {
+            kind: EventKind::SamePage,
             root: root.reference,
             root_word: root.word,
             root_range: root.range.clone(),
@@ -251,5 +266,161 @@ impl Plan {
         });
         check(budget, cancelled)?;
         Ok(target)
+    }
+
+    /// Consume a private original-image reservation; legacy apply stays same-root.
+    #[cfg(feature = "journal")]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep original root, bytes, protection and opaque reservation distinct."
+    )]
+    pub(in crate::table::mutation) fn apply_reserved<U: RowAssignment>(
+        &mut self,
+        image: &NativeImage,
+        root: &Root<'_, U>,
+        record: &[u8],
+        space: &Space,
+        reservation: &super::owned::Reservation,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Range<usize>, EditError> {
+        reservation.require(image, space.definition(), root, record.len())?;
+        let Some(destination) = reservation.destination() else {
+            return self.apply(image, root, record, space, budget, cancelled);
+        };
+        let root_page = reference_page(root.reference);
+        if destination.page == root_page {
+            let target = self.apply(image, root, record, space, budget, cancelled)?;
+            if target != destination.range {
+                return Err(EditError::Preservation);
+            }
+            return Ok(target);
+        }
+        let final_page = u32::try_from(root.final_record.offset / PAGE_BYTES)
+            .map_err(|_| EditError::Preservation)?;
+        space.require_page(image, root_page, false, budget, cancelled)?;
+        space.require_page(image, final_page, false, budget, cancelled)?;
+        space.require_page(image, destination.page, true, budget, cancelled)?;
+        if record.len() <= root.final_record.data.len()
+            || root.range.len() < POINTER_BYTES
+            || root.word & !(OFFSET_MASK | RELOCATED_MASK) != 0
+        {
+            return Err(EditError::Preservation);
+        }
+        {
+            let page = self.page(
+                image,
+                space.definition(),
+                destination.page,
+                budget,
+                cancelled,
+            )?;
+            let count = row_count(&page.after)?;
+            let end = slots::frontier(&page.after, budget, cancelled)?;
+            let free = usize::from(u16_at(&page.after, FREE_OFFSET)?);
+            let base = destination.page as usize * PAGE_BYTES;
+            let start = destination
+                .range
+                .start
+                .checked_sub(base)
+                .ok_or(EditError::Preservation)?;
+            let stop = destination
+                .range
+                .end
+                .checked_sub(base)
+                .ok_or(EditError::Preservation)?;
+            if count != usize::from(destination.slot)
+                || count >= MAX_SLOTS
+                || stop != end
+                || stop.checked_sub(start) != Some(record.len())
+                || start < slot_offset(count + 1)
+                || free != end - slot_offset(count)
+                || free < record.len() + SLOT_BYTES
+            {
+                return Err(EditError::Preservation);
+            }
+            budget
+                .charge(Resource::Steps, record.len() as u64)
+                .map_err(InspectError::from)?;
+            page.after
+                .get_mut(start..stop)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(record);
+            page.after[slot_offset(count)..slot_offset(count + 1)].copy_from_slice(
+                &(u16::try_from(start).map_err(|_| EditError::Preservation)? | DELETED_MASK)
+                    .to_le_bytes(),
+            );
+            page.after[ROW_COUNT_OFFSET..ROW_COUNT_OFFSET + size_of::<u16>()].copy_from_slice(
+                &u16::try_from(count + 1)
+                    .map_err(|_| EditError::Preservation)?
+                    .to_le_bytes(),
+            );
+            page.after[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()].copy_from_slice(
+                &u16::try_from(free - record.len() - SLOT_BYTES)
+                    .map_err(|_| EditError::Preservation)?
+                    .to_le_bytes(),
+            );
+            budget
+                .charge_allocation(1, size_of::<Event>() as u64)
+                .map_err(InspectError::from)?;
+            page.events
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            page.events.push(Event {
+                kind: EventKind::AppendTarget,
+                root: root.reference,
+                root_word: root.word,
+                root_range: root.range.clone(),
+                target: destination.range.clone(),
+                appended: Some(destination.slot),
+            });
+        }
+        {
+            let page = self.page(image, space.definition(), root_page, budget, cancelled)?;
+            let base = root_page as usize * PAGE_BYTES;
+            let start = root
+                .range
+                .start
+                .checked_sub(base)
+                .ok_or(EditError::Preservation)?;
+            let end = root
+                .range
+                .end
+                .checked_sub(base)
+                .ok_or(EditError::Preservation)?;
+            let word_at = slot_offset(usize::from(reference_slot(root.reference)));
+            budget
+                .charge(Resource::Steps, root.range.len() as u64)
+                .map_err(InspectError::from)?;
+            if u16_at(&page.after, word_at)? != root.word
+                || page.after.get(start..end) != image.as_bytes().get(root.range.clone())
+            {
+                return Err(EditError::Preservation);
+            }
+            if root.word & RELOCATED_MASK == 0 {
+                page.after[start..end].fill(0);
+            }
+            page.after[start..start + POINTER_BYTES]
+                .copy_from_slice(&reference(destination.page, destination.slot).to_le_bytes());
+            page.after[word_at..word_at + SLOT_BYTES]
+                .copy_from_slice(&(root.word | RELOCATED_MASK).to_le_bytes());
+            budget
+                .charge_allocation(1, size_of::<Event>() as u64)
+                .map_err(InspectError::from)?;
+            page.events
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            page.events.push(Event {
+                kind: EventKind::ForwardRoot,
+                root: root.reference,
+                root_word: root.word,
+                root_range: root.range.clone(),
+                target: destination.range.clone(),
+                appended: Some(destination.slot),
+            });
+        }
+        self.cross_page = true;
+        check(budget, cancelled)?;
+        Ok(destination.range)
     }
 }

@@ -32,9 +32,12 @@ native/session/CLI outcomes and fresh recovery proof. Wider indexed targets and
 the initial global family keep their existing limits. Normal record growth now appends a hidden terminal on the original owned DATA
 page, with capacity selection before staging, TCNI6 recovery and actual retained
 session/CLI consumers. Independent first/second/joint images, causal partial
-recovery and slot-boundary controls pass. Next, use other already-owned DATA
-pages when the root page cannot fit, then allocation and general INSERT/DELETE. These are current admission gaps, not
-reasons to repeat completed fixed/fitted implementation work.
+recovery and slot-boundary controls pass. Alternate-page placement now reserves all changed rows before staging,
+tries the root first and then other eligible owned DATA pages in ascending order.
+Native first/second commits, retained-session saves, CLI readbacks, recovery and
+capacity/protection controls pass against independent source images. Allocation
+and general normal INSERT/DELETE remain current admission gaps; completed
+fixed/fitted implementation does not need repeating.
 
 
 The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)
