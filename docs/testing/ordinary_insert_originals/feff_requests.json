@@ -1,0 +1,82 @@
+{
+  "state": "ORIGINAL_REQUEST_AND_LITERAL_TEXT_WIRES_FROZEN_BEFORE_MODEL",
+  "table": "Sentinel",
+  "requested_values": [
+    {
+      "Int32": 24
+    },
+    {
+      "Text": "\ufeffnew"
+    },
+    {
+      "Null": true
+    }
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h5.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h5/stdout.log",
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h6.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h6/stdout.log",
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "bitmap": 128
+    }
+  ],
+  "variants": [
+    {
+      "id": "escaped",
+      "kind": "positive_literal_insert",
+      "observed_text": "\ufeffnew",
+      "sdk_text_token": "T:77u/bmV3",
+      "payload_hex": "fffe00fffe6e0065007700",
+      "record_hex": "030018000000fffe00fffe6e0065007700110011000600020003",
+      "bytes": 26,
+      "start": 4004,
+      "free": 3986
+    },
+    {
+      "id": "unescaped-alias",
+      "kind": "reader_alias_control_not_requested_insert_expected",
+      "observed_text": "new",
+      "sdk_text_token": "T:bmV3",
+      "payload_hex": "fffe6e0065007700",
+      "record_hex": "030018000000fffe6e00650077000e000e000600020003",
+      "bytes": 23,
+      "start": 4007,
+      "free": 3989
+    }
+  ],
+  "shared_laws": {
+    "source_root_word": "0x0fbe",
+    "new_slot": 1,
+    "source_row_span": [
+      4030,
+      4096
+    ],
+    "definition_count": [
+      1,
+      2
+    ],
+    "data_count": [
+      1,
+      2
+    ],
+    "NULL_OLE_empty_span": true,
+    "complete_unknown_system_maps_property_OLE_complement": "unchanged"
+  },
+  "producer_calls": 0
+}
