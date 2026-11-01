@@ -1,0 +1,348 @@
+{
+  "date": "2026-11-01",
+  "scope": "original-only indexed INSERT source qualification; no matching normal producer execution",
+  "source_checkpoint": {
+    "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/first-private-checkpoint.json",
+    "bytes": 1422,
+    "sha256": "e98fd3374af8fd54bb3b9f9609a77e29da4104d6e19b6138d0265ecc5452f6d1"
+  },
+  "input_first_freeze": {
+    "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/input-first-freeze.json",
+    "bytes": 1674,
+    "sha256": "b3beb355642490ca62a44de39923bcde45bb813de47c95f9c991f5b6078cea6a"
+  },
+  "constructed_manifest": {
+    "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/expected-first/manifest.json",
+    "bytes": 7299,
+    "sha256": "065b10cf7aeedc9439f62f59091ab2eb354f9c4938704aad4fa615917091f574"
+  },
+  "cases": [
+    {
+      "id": "h5-indexed-insert-single",
+      "header": 5,
+      "request": {
+        "id": "single",
+        "rows": [
+          [
+            4,
+            17,
+            3
+          ]
+        ],
+        "outcome": "image",
+        "live_added": 1,
+        "distinct_added": [
+          1,
+          1
+        ]
+      },
+      "before": {
+        "file": "h5-indexed-insert-original.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-insert-single.accdb",
+        "bytes": 405504,
+        "sha256": "92606a16843f6abdc8c1bd286029f24b315e032a2008d657521e12cc5cfb1d77"
+      },
+      "proof": {
+        "file": "h5-indexed-insert-single.proof.json",
+        "bytes": 828,
+        "sha256": "84dc7cbd1a11ab9345b3e044db431540d7d5635b9842e9ce2e6c0ec51ae3ab26"
+      }
+    },
+    {
+      "id": "h5-indexed-insert-shared-secondary-batch",
+      "header": 5,
+      "request": {
+        "id": "shared-secondary-batch",
+        "rows": [
+          [
+            4,
+            17,
+            3
+          ],
+          [
+            5,
+            18,
+            3
+          ]
+        ],
+        "outcome": "image",
+        "live_added": 2,
+        "distinct_added": [
+          2,
+          1
+        ]
+      },
+      "before": {
+        "file": "h5-indexed-insert-original.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-insert-shared-secondary-batch.accdb",
+        "bytes": 405504,
+        "sha256": "6a8b5ed907e34714c15cbf4b42521906badfb6492b23f749766e6067201b33e9"
+      },
+      "proof": {
+        "file": "h5-indexed-insert-shared-secondary-batch.proof.json",
+        "bytes": 948,
+        "sha256": "b2bafd294c1741b03743110616c338075138ad646cda9d37bd12c6094ed0001f"
+      }
+    },
+    {
+      "id": "h5-indexed-insert-empty",
+      "header": 5,
+      "request": {
+        "id": "empty",
+        "rows": [],
+        "outcome": "original",
+        "live_added": 0,
+        "distinct_added": [
+          0,
+          0
+        ]
+      },
+      "before": {
+        "file": "h5-indexed-insert-original.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": {
+        "file": "h5-indexed-insert-original.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "proof": {
+        "file": "h5-indexed-insert-empty.proof.json",
+        "bytes": 48,
+        "sha256": "58b03389881b2645e370ba1f956ed914d87f83fa93c93749afe56da4fedf9147"
+      }
+    },
+    {
+      "id": "h5-indexed-insert-duplicate-primary",
+      "header": 5,
+      "request": {
+        "id": "duplicate-primary",
+        "rows": [
+          [
+            1,
+            17,
+            3
+          ]
+        ],
+        "outcome": "refuse",
+        "reason": "existing primary/compatible unique alias key duplicate",
+        "after": null
+      },
+      "before": {
+        "file": "h5-indexed-insert-original.accdb",
+        "bytes": 405504,
+        "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+      },
+      "expected": null,
+      "proof": {
+        "file": "h5-indexed-insert-duplicate-primary.proof.json",
+        "bytes": 65,
+        "sha256": "38f614666d2e45400cb52e7a591738dfa0ee4a05e58d169fba96ee372410d4bb"
+      }
+    },
+    {
+      "id": "h6-indexed-insert-single",
+      "header": 6,
+      "request": {
+        "id": "single",
+        "rows": [
+          [
+            4,
+            17,
+            3
+          ]
+        ],
+        "outcome": "image",
+        "live_added": 1,
+        "distinct_added": [
+          1,
+          1
+        ]
+      },
+      "before": {
+        "file": "h6-indexed-insert-original.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-insert-single.accdb",
+        "bytes": 475136,
+        "sha256": "95774f6b7b566ece2b7273f506ccfe9a68d22f4d2069f60dc01871c0a6ad15ae"
+      },
+      "proof": {
+        "file": "h6-indexed-insert-single.proof.json",
+        "bytes": 828,
+        "sha256": "50492a31d2ad75ede417113991b390b1837405ade1f6422ba27a05ebb1d522c2"
+      }
+    },
+    {
+      "id": "h6-indexed-insert-shared-secondary-batch",
+      "header": 6,
+      "request": {
+        "id": "shared-secondary-batch",
+        "rows": [
+          [
+            4,
+            17,
+            3
+          ],
+          [
+            5,
+            18,
+            3
+          ]
+        ],
+        "outcome": "image",
+        "live_added": 2,
+        "distinct_added": [
+          2,
+          1
+        ]
+      },
+      "before": {
+        "file": "h6-indexed-insert-original.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-insert-shared-secondary-batch.accdb",
+        "bytes": 475136,
+        "sha256": "08d29f4c29ebb086989440a23051890520c85a09c82b52faf2d3db27503030bb"
+      },
+      "proof": {
+        "file": "h6-indexed-insert-shared-secondary-batch.proof.json",
+        "bytes": 948,
+        "sha256": "6b8d7bcec9686062e4fd132e4c1d1d9fa69ce2e2b7fd0e6ab551b7f6cc91fc01"
+      }
+    },
+    {
+      "id": "h6-indexed-insert-empty",
+      "header": 6,
+      "request": {
+        "id": "empty",
+        "rows": [],
+        "outcome": "original",
+        "live_added": 0,
+        "distinct_added": [
+          0,
+          0
+        ]
+      },
+      "before": {
+        "file": "h6-indexed-insert-original.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": {
+        "file": "h6-indexed-insert-original.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "proof": {
+        "file": "h6-indexed-insert-empty.proof.json",
+        "bytes": 48,
+        "sha256": "58b03389881b2645e370ba1f956ed914d87f83fa93c93749afe56da4fedf9147"
+      }
+    },
+    {
+      "id": "h6-indexed-insert-duplicate-primary",
+      "header": 6,
+      "request": {
+        "id": "duplicate-primary",
+        "rows": [
+          [
+            1,
+            17,
+            3
+          ]
+        ],
+        "outcome": "refuse",
+        "reason": "existing primary/compatible unique alias key duplicate",
+        "after": null
+      },
+      "before": {
+        "file": "h6-indexed-insert-original.accdb",
+        "bytes": 475136,
+        "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+      },
+      "expected": null,
+      "proof": {
+        "file": "h6-indexed-insert-duplicate-primary.proof.json",
+        "bytes": 65,
+        "sha256": "38f614666d2e45400cb52e7a591738dfa0ee4a05e58d169fba96ee372410d4bb"
+      }
+    }
+  ],
+  "native": {
+    "passed": true,
+    "views": 6,
+    "functions": 1,
+    "seconds": 0.17,
+    "log": {
+      "path": ".cache/ace16-indexed-write-sources-next-20261101/insert-exact-first.log",
+      "bytes": 417,
+      "sha256": "cb1a944fa1984dc7cedd71c13ef7061236c7d6d2bd2a844d81bdb68a1b040015"
+    }
+  },
+  "independent_sdk": {
+    "passed": true,
+    "calls": 36,
+    "new_compiler_calls": 0,
+    "inputs_unchanged": true,
+    "execution_receipt": {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/qualification-first-result.json",
+      "bytes": 2212,
+      "sha256": "ee3f0d3829241884102db2d9f3d229f4f52831a90162ecf0c90cc3a22ab1e1ce"
+    },
+    "commands": {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/commands-first.json",
+      "bytes": 1575,
+      "sha256": "9cea6bc3a038c89f43d9eac716bb0aae66dcb80301584d9b6bb1f3cc03c8472b"
+    },
+    "precall": {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/getter/observations-first/precall-freeze.json",
+      "bytes": 64795,
+      "sha256": "3e6a3ddff9c4abc7082730e77dac0e5ffbcf38cef6742ce666564e10f4fa2988"
+    },
+    "result": {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/source/getter/observations-first/result.json",
+      "bytes": 108,
+      "sha256": "b7bc35ff23d58b7f860d4ecb120f2310d089232b50bcea7b939b6e1a1e855b89"
+    }
+  },
+  "preserved_first_selection_failure": {
+    "log": {
+      "path": ".cache/ace16-indexed-write-sources-next-20261101/native-first.log",
+      "bytes": 2164,
+      "sha256": "e5e3ae60e13ec2ba902664c0f07b3ad2ee2c13e0f7896c8c6740d7703ce99ae5"
+    },
+    "resolution": "All three intended gates passed. Broad indexed prefix also selected two unrelated legacy exporters without fresh-output environment, which refused. Exact individual selectors pass; no fixture/golden/code admission change."
+  },
+  "maintained_artifacts": [
+    {
+      "path": "docs/testing/indexed_insert_originals/model.py",
+      "bytes": 5259,
+      "sha256": "eff2b3db100696b1cb1fdd3768a45ed6bded14368595b9b5466542dfef9d73e8"
+    },
+    {
+      "path": "docs/testing/indexed_insert_originals/requests.json",
+      "bytes": 2866,
+      "sha256": "8c3f3f94f422c5dc7af89775e5ca4ef239287a7179f1dc53bd4c2e57be2d1f31"
+    }
+  ],
+  "limitations": [
+    "Independent/native reader evidence only; no mutation qualification or native Access save/reopen claim.",
+    "Generated databases/classes/JARs remain outside Git."
+  ],
+  "literal_law": "Complete manual rows [4,17,3] and [5,18,3]; visible owned-DATA appends, both physical leaves once/four aliases, distinct historical deltas batch(+2,+1), maps/LAST/inactive tails/EOF unchanged.",
+  "original_fact_owner": "scripts/compatibility/genuine_ordinary_targets/model.py::qualify and entry only, no old UPDATE constructor/AFTER"
+}

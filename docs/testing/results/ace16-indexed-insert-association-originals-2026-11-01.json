@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-01",
+  "scope": "independent SDK original creation and native source admission; no AFTER model or producer",
+  "generation_freeze": {
+    "path": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/generation-first-freeze.json",
+    "bytes": 4588,
+    "sha256": "6c53fe14e85d8e9bde30e6602730504aa890a552b7c92317ab2d54eecf7e79fd"
+  },
+  "execution": {
+    "path": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/execution-first.json",
+    "bytes": 1698,
+    "sha256": "d04ee6ae52f97dbfd042eabbb3a494aafc2e673f2b10572ace3f15852d876028"
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/original-first/originals/h5-association-original.accdb",
+      "bytes": 409600,
+      "sha256": "0356754e5fa7ea5ea9040e5112b17c6cec46faff388bda9f65d92d34a4864df5"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/original-first/originals/h6-association-original.accdb",
+      "bytes": 479232,
+      "sha256": "abf41a6e18375c84e0f812d682f26ed903145f586a2ee82b6311a215bf2d95d9"
+    }
+  ],
+  "sdk": {
+    "compiler_calls": 1,
+    "original_creation_calls": 2,
+    "readonly_calls": 12,
+    "all_first_pass": true,
+    "inputs_unchanged": true
+  },
+  "native": {
+    "passed": true,
+    "views": 2,
+    "functions": 1,
+    "log": {
+      "path": ".cache/ace16-indexed-write-sources-next-20261101/association-original-exact-first.log",
+      "bytes": 429,
+      "sha256": "e6a542cb180ea194b8d0a2f74cac99b4561833c7a284da723f781ab60ea640b2"
+    }
+  },
+  "geometry": "Two owned DATA pages: earlier8slots/free218, later1slot/free3599; both candidates. SDK explicitly re-added earlier candidate hint after its natural failed-fit removal, preserving ownership/GLOBAL/rows.",
+  "future_requests": "Long row10 needs423 bytes and chooses later B:1; short row11 needs29 and chooses earlier A:8. No AFTER/model execution in this source-original record.",
+  "maintained_generator": {
+    "path": "docs/testing/indexed_insert_association/BuildAssociationOriginal.java",
+    "bytes": 8582,
+    "sha256": "f8408a9c934f0b660da5e5d7d957bafef5241d30e868a5fa766d4e9a401e6a59"
+  },
+  "recipe": {
+    "path": "docs/testing/indexed_insert_association/recipe.json",
+    "bytes": 5144,
+    "sha256": "157c5c63a3c7e8bbc96ddd08270da04b177306459c45ee163514b33476a570c6"
+  },
+  "limitations": [
+    "SDK-authored original, not Access-authored/native save qualification.",
+    "Page order must not substitute request-to-ROW association in indexed proof."
+  ]
+}

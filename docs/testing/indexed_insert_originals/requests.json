@@ -1,0 +1,131 @@
+{
+  "state": "ORIGINAL_INPUTS_AND_LITERAL_MANUAL_INDEXED_INSERT_REQUESTS_BEFORE_MODEL",
+  "table": "Items",
+  "columns": [
+    "Id",
+    "Score",
+    "Guard"
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      0
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "original": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-distinct.accdb",
+      "bytes": 405504,
+      "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d",
+      "definition": 89,
+      "data": 93,
+      "id_root": 91,
+      "guard_root": 92,
+      "map_page": 90
+    },
+    {
+      "header": 6,
+      "original": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-distinct.accdb",
+      "bytes": 475136,
+      "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5",
+      "definition": 106,
+      "data": 110,
+      "id_root": 108,
+      "guard_root": 109,
+      "map_page": 107
+    }
+  ],
+  "cases": [
+    {
+      "id": "single",
+      "rows": [
+        [
+          4,
+          17,
+          3
+        ]
+      ],
+      "outcome": "image",
+      "live_added": 1,
+      "distinct_added": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "shared-secondary-batch",
+      "rows": [
+        [
+          4,
+          17,
+          3
+        ],
+        [
+          5,
+          18,
+          3
+        ]
+      ],
+      "outcome": "image",
+      "live_added": 2,
+      "distinct_added": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "empty",
+      "rows": [],
+      "outcome": "original",
+      "live_added": 0,
+      "distinct_added": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "duplicate-primary",
+      "rows": [
+        [
+          1,
+          17,
+          3
+        ]
+      ],
+      "outcome": "refuse",
+      "reason": "existing primary/compatible unique alias key duplicate",
+      "after": null
+    }
+  ],
+  "raw_law": {
+    "original_leaf": "prefix0/3x9B entries480..507; bitmap453B@27 ends9,18,27; free3589",
+    "logical_aliases": [
+      [
+        "PrimaryID",
+        "PrimaryAlias"
+      ],
+      [
+        "GroupOrder",
+        "GroupAlias"
+      ]
+    ],
+    "history": "TD physical history u32@67 and79 initial3; add actual distinct deltas once per physical",
+    "data": "three15B originals at4081/4066/4051; append15B complete rows at4036 then4021; directslots3/4; oldpayload unchanged",
+    "leaf_changes": "free, exact end bitmap and active signed-I32+BE ROW tuples; all remaining bytes original",
+    "preservation": "maps, LAST0, readonly other objects, file length and complete complement exact",
+    "authority": "only maintained genuine_ordinary_targets.model.qualify/entry original facts, never its construct or prior AFTERs"
+  },
+  "producer_calls": 0
+}

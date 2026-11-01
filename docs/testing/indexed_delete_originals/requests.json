@@ -1,0 +1,196 @@
+{
+  "state": "ORIGINAL_INPUTS_AND_LITERAL_DELETE_LAWS_FROZEN_BEFORE_CONSTRUCTOR_AUTHORING",
+  "table": "Items",
+  "columns": [
+    "Id",
+    "Score",
+    "Guard"
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      0
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "original_records_hex": [
+    "030001000000ffffffff0000000007",
+    "030002000000000000000100000007",
+    "030003000000010000000200000007"
+  ],
+  "record_starts": [
+    4081,
+    4066,
+    4051
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-distinct.accdb",
+      "before_report": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/observer/carrier-third/reports-first/h5-distinct.stdout",
+      "bytes": 405504,
+      "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d",
+      "definition": 89,
+      "data": 93,
+      "map_page": 90,
+      "roots": [
+        91,
+        92
+      ]
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-distinct.accdb",
+      "before_report": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/observer/carrier-third/reports-first/h6-distinct.stdout",
+      "bytes": 475136,
+      "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5",
+      "definition": 106,
+      "data": 110,
+      "map_page": 107,
+      "roots": [
+        108,
+        109
+      ]
+    }
+  ],
+  "recipes": [
+    {
+      "id": "first",
+      "selected": [
+        0
+      ],
+      "request_orders": [
+        [
+          0
+        ]
+      ],
+      "remaining": [
+        1,
+        2
+      ],
+      "rows": 2,
+      "leaf_free": 3598
+    },
+    {
+      "id": "middle",
+      "selected": [
+        1
+      ],
+      "request_orders": [
+        [
+          1
+        ]
+      ],
+      "remaining": [
+        0,
+        2
+      ],
+      "rows": 2,
+      "leaf_free": 3598
+    },
+    {
+      "id": "exterior",
+      "selected": [
+        0,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "remaining": [
+        1
+      ],
+      "rows": 1,
+      "leaf_free": 3607
+    },
+    {
+      "id": "all",
+      "selected": [
+        0,
+        1,
+        2
+      ],
+      "request_orders": [
+        [
+          0,
+          1,
+          2
+        ]
+      ],
+      "remaining": [],
+      "rows": 0,
+      "leaf_free": 3616
+    }
+  ],
+  "physical": [
+    {
+      "number": 0,
+      "column": 0,
+      "flags": 137,
+      "aliases": [
+        "PrimaryID",
+        "PrimaryAlias"
+      ]
+    },
+    {
+      "number": 1,
+      "column": 2,
+      "flags": 128,
+      "aliases": [
+        "GroupOrder",
+        "GroupAlias"
+      ]
+    }
+  ],
+  "law": {
+    "data_word_tombstone_mask": 49152,
+    "data_slot_count": 3,
+    "data_payloads_free_bytes_and_boundaries": "unchanged",
+    "td_only_change": "u32 at16:3 minus selected count",
+    "leaf_original": {
+      "kind": 4,
+      "version": 1,
+      "free": 3589,
+      "owner": "selected TD",
+      "bytes8_to27": "all zero",
+      "prefix": 0,
+      "bitmap_span": [
+        27,
+        480
+      ],
+      "entry_span": [
+        480,
+        507
+      ],
+      "entry_width": 9,
+      "original_ends": [
+        9,
+        18,
+        27
+      ]
+    },
+    "key": "7f || BE32(i32 XOR80000000) || BE32(original DATApage<<8|slot)",
+    "leaf_after": "clear bitmap; append retained original key+ROW in signed key+ROW order; set ends; update free; preserve header otherwise and every byte after retained active end",
+    "empty_tree": "retain original allocated root as empty leaf; no map retirement",
+    "entire_complement": "unchanged, including TD historical counts at67/79, alias declarations, map bytes, original DATA payloads, vacated INDEX bytes and EOF"
+  },
+  "author_producer_calls": 0,
+  "author_constructor_calls": 0
+}
