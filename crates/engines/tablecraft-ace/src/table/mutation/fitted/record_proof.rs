@@ -1,10 +1,8 @@
 //! Fresh original requests/records authorize rows and joint key maintenance.
+use crate::FittedColumnUpdates;
 pub(super) mod verified;
 
-use super::{
-    request::{self, FittedColumnUpdates},
-    stage::Staged,
-};
+use super::{request, stage::Staged};
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, InspectError, NativeImage,

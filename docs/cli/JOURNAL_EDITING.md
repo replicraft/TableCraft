@@ -87,6 +87,21 @@ readbacks match frozen whole images; the CLI duplicate refusal asserts exit code
 2 and the exact constraint diagnostic. Native recovery and retained-session
 checks also pass; see the [write record](../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
 
+Qualified ordinary ACE 16 tables also support [fitting Text/Binary batches](../access/writes/NORMAL_ACE_FITTED.md),
+with optional unindexed fixed siblings and shared original-record capacity.
+For an eligible source, the existing command is:
+
+```sh
+tablecraft query journal-update "UPDATE Items SET TextValue='beta' WHERE Id=1" \
+  --database example.accdb --journal example-update
+```
+
+Fitted requests retain TCNI0005; fixed-only requests retain their prior profiles.
+The adapter validates every target even for zero matches. This route allocates
+no DATA/index pages and rejects indexed variable targets, unsupported properties
+and required programs. Typed/native Binary writes have broader coverage than
+SQL literal assignment; the CLI does not invent a Binary literal dialect.
+
 The indexed-target CLI checks pass 24 literal saves and exact row readbacks,
 including NULL transitions, swaps, tree fitting and noops, with eight refusal
 controls. See the

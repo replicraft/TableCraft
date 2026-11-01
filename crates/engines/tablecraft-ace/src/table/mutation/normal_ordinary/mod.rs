@@ -78,7 +78,7 @@ impl NativeImage {
     }
 }
 
-fn capture(
+pub(in crate::table::mutation) fn capture(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,

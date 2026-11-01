@@ -1,0 +1,401 @@
+//! Complete bounded framing and identity preflight before any decoded allocation.
+use super::{
+    carrier::{self, Borrowed},
+    codec,
+    model::{Family, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates},
+};
+use crate::{
+    EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
+    header::check,
+    limits::MAX_LIVE_ROWS,
+    transaction::intent::{NativeIntentError, binding, model as names},
+};
+use tablecraft_core::limits::{Resource, ResourceBudget};
+
+const ROW_WORD_BITS: usize = u64::BITS as usize;
+const ROW_WORDS: usize = MAX_LIVE_ROWS.div_ceil(ROW_WORD_BITS);
+const UPDATE_TOTAL_AT: usize = 0;
+const UPDATE_ROW_AT: usize = UPDATE_TOTAL_AT + size_of::<u32>();
+
+fn u32_at(bytes: &[u8], at: usize) -> u32 {
+    u32::from_le_bytes(bytes[at..at + size_of::<u32>()].try_into().unwrap())
+}
+
+struct Cursor<'a> {
+    bytes: &'a [u8],
+    at: usize,
+}
+
+struct Group<'a> {
+    name: &'a str,
+    count: usize,
+    family: Family,
+    cells: &'a [u8],
+}
+
+struct Update<'a> {
+    row: usize,
+    expected: Borrowed<'a>,
+    value: Borrowed<'a>,
+}
+
+impl<'a> Cursor<'a> {
+    fn take(&mut self, count: usize) -> Result<&'a [u8], NativeIntentError> {
+        let end = self
+            .at
+            .checked_add(count)
+            .ok_or(NativeIntentError::InvalidRecord)?;
+        let result = self
+            .bytes
+            .get(self.at..end)
+            .ok_or(NativeIntentError::InvalidRecord)?;
+        self.at = end;
+        Ok(result)
+    }
+
+    fn name(
+        &mut self,
+        count: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<&'a str, NativeIntentError> {
+        if count == 0 || count > names::MAX_NAME_BYTES {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        let bytes = self.take(count)?;
+        carrier::pay_scan(bytes, budget, cancelled)?;
+        let value = std::str::from_utf8(bytes).map_err(|_| NativeIntentError::InvalidRecord)?;
+        names::validate_name(value, budget, cancelled)?;
+        Ok(value)
+    }
+
+    fn group(
+        &mut self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Group<'a>, NativeIntentError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, codec::GROUP_HEADER_BYTES as u64)
+            .map_err(InspectError::from)?;
+        let header = self.take(codec::GROUP_HEADER_BYTES)?;
+        let total = u32_at(header, codec::GROUP_TOTAL_AT) as usize;
+        let count = u32_at(header, codec::GROUP_COUNT_AT_IN_GROUP) as usize;
+        if header[codec::GROUP_PADDING_AT..codec::GROUP_RESERVED_AT]
+            .iter()
+            .any(|byte| *byte != 0)
+            || u32_at(header, codec::GROUP_RESERVED_AT) != 0
+        {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        let family = match header[codec::GROUP_FAMILY_AT] {
+            0 => Family::Fixed,
+            1 => Family::Variable,
+            _ => return Err(NativeIntentError::InvalidRecord),
+        };
+        if count > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
+            return Err(InspectError::StructureLimit.into());
+        }
+        let rest = total
+            .checked_sub(codec::GROUP_HEADER_BYTES)
+            .ok_or(NativeIntentError::InvalidRecord)?;
+        let mut body = Cursor {
+            bytes: self.take(rest)?,
+            at: 0,
+        };
+        let name = body.name(
+            u32_at(header, codec::GROUP_NAME_AT) as usize,
+            budget,
+            cancelled,
+        )?;
+        let cells = &body.bytes[body.at..];
+        let minimum = count
+            .checked_mul(codec::MIN_UPDATE_BYTES)
+            .ok_or(InspectError::StructureLimit)?;
+        if cells.len() < minimum {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        Ok(Group {
+            name,
+            count,
+            family,
+            cells,
+        })
+    }
+
+    fn carrier(
+        &mut self,
+        family: Family,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Borrowed<'a>, NativeIntentError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, carrier::HEADER_BYTES as u64)
+            .map_err(InspectError::from)?;
+        let header = self.take(carrier::HEADER_BYTES)?;
+        if header[codec::CARRIER_PADDING_AT..codec::CARRIER_LENGTH_AT]
+            .iter()
+            .any(|byte| *byte != 0)
+        {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        let length = u32_at(header, codec::CARRIER_LENGTH_AT) as usize;
+        if length > carrier::MAX_VARIABLE_BYTES {
+            return Err(InspectError::StructureLimit.into());
+        }
+        carrier::parse(
+            header[codec::CARRIER_TAG_AT],
+            self.take(length)?,
+            family,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn update(
+        &mut self,
+        family: Family,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Update<'a>, NativeIntentError> {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, codec::UPDATE_HEADER_BYTES as u64)
+            .map_err(InspectError::from)?;
+        let header = self.take(codec::UPDATE_HEADER_BYTES)?;
+        let total = u32_at(header, UPDATE_TOTAL_AT) as usize;
+        if total < codec::MIN_UPDATE_BYTES {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        let row = u64::from_le_bytes(header[UPDATE_ROW_AT..].try_into().unwrap());
+        let row = usize::try_from(row).map_err(|_| InspectError::StructureLimit)?;
+        if row >= MAX_LIVE_ROWS {
+            return Err(InspectError::StructureLimit.into());
+        }
+        let rest = total
+            .checked_sub(codec::UPDATE_HEADER_BYTES)
+            .ok_or(NativeIntentError::InvalidRecord)?;
+        let mut body = Cursor {
+            bytes: self.take(rest)?,
+            at: 0,
+        };
+        let expected = body.carrier(family, budget, cancelled)?;
+        let value = body.carrier(family, budget, cancelled)?;
+        if body.at != body.bytes.len() {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        Ok(Update {
+            row,
+            expected,
+            value,
+        })
+    }
+}
+
+struct Header<'a> {
+    table: &'a str,
+    groups_start: usize,
+    groups: usize,
+    before_length: u64,
+    before_binding: [u8; codec::BINDING_BYTES],
+}
+
+fn scan<'a>(
+    bytes: &'a [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Header<'a>, NativeIntentError> {
+    check(budget, cancelled)?;
+    if bytes.len() < codec::HEADER_BYTES || bytes.len() > codec::MAX_RECORD_BYTES {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    budget
+        .charge(Resource::Steps, codec::HEADER_BYTES as u64)
+        .map_err(InspectError::from)?;
+    if &bytes[..codec::MAGIC.len()] != codec::MAGIC {
+        return Err(if bytes.starts_with(b"TCNI") {
+            NativeIntentError::UnsupportedVersion
+        } else {
+            NativeIntentError::InvalidRecord
+        });
+    }
+    if u16::from_le_bytes(
+        bytes[codec::PROFILE_AT..codec::FLAGS_AT]
+            .try_into()
+            .unwrap(),
+    ) != codec::PROFILE
+    {
+        return Err(NativeIntentError::UnsupportedProfile);
+    }
+    if u32_at(bytes, codec::TOTAL_AT) as usize != bytes.len()
+        || bytes[codec::FLAGS_AT..codec::BEFORE_LENGTH_AT] != [0; 2]
+        || u32_at(bytes, codec::RESERVED_AT) != 0
+    {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    let before_length = u64::from_le_bytes(
+        bytes[codec::BEFORE_LENGTH_AT..codec::BINDING_AT]
+            .try_into()
+            .unwrap(),
+    );
+    binding::length(before_length)?;
+    let groups = u32_at(bytes, codec::GROUP_COUNT_AT) as usize;
+    let assignments = u32_at(bytes, codec::ASSIGNMENT_COUNT_AT) as usize;
+    if groups == 0
+        || groups > NativeImage::MAX_FIXED_BATCH_GROUPS
+        || assignments > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS
+    {
+        return Err(InspectError::StructureLimit.into());
+    }
+    let mut cursor = Cursor {
+        bytes,
+        at: codec::HEADER_BYTES,
+    };
+    let table = cursor.name(
+        u32_at(bytes, codec::TABLE_LENGTH_AT) as usize,
+        budget,
+        cancelled,
+    )?;
+    let groups_start = cursor.at;
+    let mut total = 0_usize;
+    for position in 0..groups {
+        let group = cursor.group(budget, cancelled)?;
+        total = total
+            .checked_add(group.count)
+            .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
+            .ok_or(InspectError::StructureLimit)?;
+        // Revisit only bounded preceding headers/names; no decoded allocation
+        // is necessary to reject duplicate column identities before reserve.
+        let mut previous = Cursor {
+            bytes,
+            at: groups_start,
+        };
+        for _ in 0..position {
+            let prior = previous.group(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    prior.name.len().max(group.name.len()) as u64,
+                )
+                .map_err(InspectError::from)?;
+            if prior.name.eq_ignore_ascii_case(group.name) {
+                return Err(EditError::Conflict.into());
+            }
+        }
+        // Fixed-size workspace, bounded by the existing native row ceiling.
+        // It never grows from untrusted counts and every cleared word is paid.
+        budget
+            .charge(Resource::Steps, ROW_WORDS as u64)
+            .map_err(InspectError::from)?;
+        let mut seen = [0_u64; ROW_WORDS];
+        let mut cells = Cursor {
+            bytes: group.cells,
+            at: 0,
+        };
+        for _ in 0..group.count {
+            let update = cells.update(group.family, budget, cancelled)?;
+            let word = update.row / ROW_WORD_BITS;
+            let bit = 1_u64 << (update.row % ROW_WORD_BITS);
+            if seen[word] & bit != 0 {
+                return Err(EditError::Conflict.into());
+            }
+            seen[word] |= bit;
+        }
+        if cells.at != group.cells.len() {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+    }
+    if total != assignments || cursor.at != bytes.len() {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    check(budget, cancelled)?;
+    Ok(Header {
+        table,
+        groups_start,
+        groups,
+        before_length,
+        before_binding: bytes[codec::BINDING_AT..codec::TABLE_LENGTH_AT]
+            .try_into()
+            .unwrap(),
+    })
+}
+
+pub(super) fn decode(
+    bytes: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeFittedEditIntent, NativeIntentError> {
+    let _span = tracing::debug_span!("native.fitted_intent.decode").entered();
+    let header = scan(bytes, budget, cancelled)?;
+    budget
+        .charge_allocation(
+            header.groups as u64,
+            size_of::<NativeFittedIntentGroup>() as u64,
+        )
+        .map_err(InspectError::from)?;
+    let mut groups = Vec::new();
+    groups
+        .try_reserve_exact(header.groups)
+        .map_err(|_| InspectError::Allocation)?;
+    let mut cursor = Cursor {
+        bytes,
+        at: header.groups_start,
+    };
+    for _ in 0..header.groups {
+        let group = cursor.group(budget, cancelled)?;
+        let mut cells = Cursor {
+            bytes: group.cells,
+            at: 0,
+        };
+        let updates = match group.family {
+            Family::Fixed => {
+                budget
+                    .charge_allocation(group.count as u64, size_of::<FixedScalarUpdate>() as u64)
+                    .map_err(InspectError::from)?;
+                let mut result = Vec::new();
+                result
+                    .try_reserve_exact(group.count)
+                    .map_err(|_| InspectError::Allocation)?;
+                for _ in 0..group.count {
+                    let update = cells.update(group.family, budget, cancelled)?;
+                    result.push(FixedScalarUpdate::new(
+                        update.row,
+                        carrier::owned(update.expected, budget, cancelled)?,
+                        carrier::owned(update.value, budget, cancelled)?,
+                    ));
+                }
+                NativeFittedUpdates::Fixed(result)
+            }
+            Family::Variable => {
+                budget
+                    .charge_allocation(group.count as u64, size_of::<SlotScalarUpdate>() as u64)
+                    .map_err(InspectError::from)?;
+                let mut result = Vec::new();
+                result
+                    .try_reserve_exact(group.count)
+                    .map_err(|_| InspectError::Allocation)?;
+                for _ in 0..group.count {
+                    let update = cells.update(group.family, budget, cancelled)?;
+                    result.push(SlotScalarUpdate::new(
+                        update.row,
+                        carrier::owned(update.expected, budget, cancelled)?,
+                        carrier::owned(update.value, budget, cancelled)?,
+                    ));
+                }
+                NativeFittedUpdates::Variable(result)
+            }
+        };
+        groups.push(NativeFittedIntentGroup::new(
+            group.name, updates, budget, cancelled,
+        )?);
+    }
+    NativeFittedEditIntent::from_decoded(
+        header.table,
+        groups,
+        header.before_length,
+        header.before_binding,
+        budget,
+        cancelled,
+    )
+}

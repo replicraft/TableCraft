@@ -84,7 +84,7 @@ fn journal_batch_password_refusal_still_precedes_preflight_and_open() {
 }
 
 #[test]
-fn journal_help_distinguishes_fixed_groups_from_indexed_null_transitions() {
+fn journal_help_describes_fixed_and_fitted_updates_without_obsolete_limits() {
     let error = crate::Cli::try_parse_from(["tablecraft", "query", "journal-update", "--help"])
         .err()
         .expect("help is a display request");
@@ -93,16 +93,13 @@ fn journal_help_distinguishes_fixed_groups_from_indexed_null_transitions() {
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ");
-    assert!(help.contains("atomic unindexed fixed SET groups"));
-    assert!(help.contains("Indexed NULL target transitions remain refused"));
-    assert!(help.contains("all SET expressions read the same original snapshot"));
-    assert!(help.contains("codepage 1252 and General sort metadata"));
-    assert!(help.contains("Variable-length inline allocation windows are bounded by the captured image and cumulative work limits"));
-    assert!(help.contains("indirect maps remain refused"));
+
+    assert!(help.contains("Short Text/Binary batches"));
+    assert!(help.contains("fitting NULL-key transitions"));
+    assert!(help.contains("AutoNumber fields remain read-only"));
+    assert!(help.contains("All SET expressions read one original snapshot"));
+    assert!(help.contains("does not enable general ACE saves"));
+    assert!(!help.contains("Indexed NULL target transitions remain refused"));
+    assert!(!help.contains("indirect maps remain refused"));
     assert!(!help.contains("at most 64 pages"));
-    assert!(help.contains("callers cannot supply absence flags"));
-    assert!(help.contains("Positive-program supplied equal assignments refuse with EventTiming"));
-    assert!(help.contains(
-        "does not enable general ACE saves or certify macro absence outside the closed family"
-    ));
 }

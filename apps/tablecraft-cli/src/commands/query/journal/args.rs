@@ -11,19 +11,14 @@ const WORK_STEPS: u64 = 100_000_000;
 #[derive(Args)]
 #[command(
     after_help = concat!(
-        "Explicit offline normal UPDATE for Jet4 or admitted ACE positive-program and closed data-only profiles. Jet4 retains one Int32 SET target. ",
+        "Offline UPDATE for qualified Jet4 and ACE16 profiles. Jet4 supports one Int32 SET target. ",
         "Keep other applications and ordinary readers closed until this command or explicit recovery finishes. ",
-        "The journal directory must be fresh. Planning precedes journal creation; every commit error requires explicit recovery, never automatic SQL retry. ",
-        "ACE requires unencoded ACE2016/2019 subversion zero and no relationships. The positive-program route requires complete source-bound pure BeforeChange coverage. ",
-        "Tables containing only ordinary updatable Int32 fields support checked non-NULL indexes with compressed prefixes, retained interior nodes, composites, aliases and final unique-key swaps. ",
-        "Complete mixed scalar tables may maintain checked fixed-Int32 indexes beside untouched NULL components; rich/unavailable siblings retain the existing unindexed Int32 edits. Int32 AutoNumber values may be operands/key components, but their fields cannot be assigned. ",
-        "Original NULL-key facts and potential targets select the previous unindexed qualifier or checked indexed route before indexed planning. Indexed NULL target transitions remain refused. ",
-        "Existing indexed Int32 targets remain non-NULL and outside calculation/collection dependencies. Fitting retains page identities, topology and leaf entry counts. ",
-        "Complete ordinary scalar ACE tables additionally support atomic unindexed fixed SET groups over Boolean, Int32, Int64, Currency and legacy DATE. Numeric NULL transitions retain inactive payload bytes; Boolean is nonnullable. ",
-        "All SET expressions read one original snapshot before native programs run. Wide fields are user targets only; macro operands and writes retain the Int32/NULL language. ",
-        "A closed data-only family supports the same five fixed target carriers without programs: codepage 1252 and General sort metadata, complete catalog/page ownership, no indexes or stored properties. Variable-length inline allocation windows are bounded by the captured image and cumulative work limits; indirect maps remain refused. Native inspection proves closure again for planning and recovery; callers cannot supply absence flags. Equal assignments and empty selections can retire normally in this family. ",
-        "Ignore-NULL index rewriting, splits and map/storage growth refuse. Positive-program supplied equal assignments refuse with EventTiming; unknown required content cannot be skipped. ",
-        "This does not enable general ACE saves or certify macro absence outside the closed family. Supported filesystem lifecycle: macOS and Linux.",
+        "The journal directory must be fresh. Planning precedes journal creation; commit failures require explicit recovery rather than automatic SQL retry. ",
+        "ACE requires an unencoded ACE2016/2019 subversion-zero file without relationships. Supported fixed targets are Boolean, Int32, Int64, Currency and legacy DATE; numeric NULL transitions preserve inactive bytes and Boolean is nonnullable. ",
+        "Qualified ordinary tables also support unindexed Short Text/Binary batches and optional fixed siblings within existing record capacity. Raw noops and empty selections remain distinct from NULL and present-empty values. ",
+        "The ordinary fixed route supports qualified retained Int32 indexes, including fitting NULL-key transitions and atomic unique-key swaps. AutoNumber fields remain read-only. ",
+        "All SET expressions read one original snapshot. Required programs need supported native coverage; macro assignments retain the Int32/NULL language. Unsupported targets, properties, required programs and allocation changes refuse, including empty operations. ",
+        "This command does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
     )
 )]
 pub(crate) struct UpdateArguments {

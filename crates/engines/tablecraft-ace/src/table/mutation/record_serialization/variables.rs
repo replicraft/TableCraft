@@ -10,7 +10,6 @@ use tablecraft_core::{
 };
 
 const MARKER_BYTES: usize = 2;
-const UTF16_BYTES: usize = size_of::<u16>();
 
 pub(in crate::table::mutation) struct Cell<'a> {
     pub column: usize,
@@ -125,9 +124,7 @@ pub(in crate::table::mutation) fn rebuild(
         check(budget, cancelled)?;
         let cell = &cells[choice.selected];
         let field = &schema.columns()[cell.column];
-        let bytes = if matches!(policy, RecordPolicy::GrowingPreferred)
-            || matches!(cell.value, Value::Null)
-        {
+        let bytes = if policy.prefers_growth() || matches!(cell.value, Value::Null) {
             storage::encode_preferred(field, cell.value, budget, cancelled)?
         } else {
             storage::encode_for_span(field, cell.value, choice.length, budget, cancelled)?
@@ -161,9 +158,7 @@ fn lengths(
                 count = count.checked_add(1).ok_or(InspectError::StructureLimit)?;
                 narrow &= unit > 0 && unit <= u16::from(u8::MAX);
             }
-            let raw = count
-                .checked_mul(UTF16_BYTES)
-                .ok_or(InspectError::StructureLimit)?;
+            let raw = storage::raw_text_length(text, count)?;
             if narrow && field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0 {
                 let declared = count
                     .checked_add(MARKER_BYTES)
@@ -186,8 +181,12 @@ fn single(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
-    if matches!(policy, RecordPolicy::GrowingPreferred) {
-        return record::build(schema, cell.column, before, cell.value, budget, cancelled);
+    match policy {
+        #[cfg(feature = "ace16-write-preview")]
+        RecordPolicy::GrowingPreferred => {
+            return record::build(schema, cell.column, before, cell.value, budget, cancelled);
+        }
+        RecordPolicy::FittedDeclared => {}
     }
     let variable = schema.columns()[cell.column].field.variable;
     let start = *layout

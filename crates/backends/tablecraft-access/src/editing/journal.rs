@@ -1,4 +1,5 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
+mod fitted;
 mod fixed;
 
 use super::{NativeEditError, NativeEditor};

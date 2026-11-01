@@ -3,7 +3,8 @@ use super::journal::JournalRoute;
 use super::{NativeEditError, snapshot};
 #[cfg(feature = "journal")]
 use tablecraft_ace::{
-    EditError, NativeFixedIntentGroup, RecoverableEditError, RecoverableNativeEditPlan,
+    EditError, NativeFittedIntentGroup, NativeFixedIntentGroup, RecoverableEditError,
+    RecoverableNativeEditPlan,
 };
 use tablecraft_ace::{FileFormat, InspectError, Int32Update, NativeEditPlan, NativeImage};
 use tablecraft_core::{
@@ -37,11 +38,31 @@ impl NativeEditor {
             Err(error) => return Err(error.into()),
         };
         if ordinary {
-            return match self.image.check_native_ordinary_fixed_table(
+            let fitted = match self.image.select_native_ordinary_fitted_table(
                 self.snapshot.name(),
                 budget,
                 cancelled,
             ) {
+                Ok(selected) => selected,
+                Err(EditError::Unsupported(_)) => {
+                    return Ok((UpdateProfile::Unavailable, JournalRoute::Ordinary));
+                }
+                Err(error) => return Err(error.into()),
+            };
+            let checked = if fitted {
+                self.image.check_native_ordinary_fitted_table(
+                    self.snapshot.name(),
+                    budget,
+                    cancelled,
+                )
+            } else {
+                self.image.check_native_ordinary_fixed_table(
+                    self.snapshot.name(),
+                    budget,
+                    cancelled,
+                )
+            };
+            return match checked {
                 Ok(()) => Ok((UpdateProfile::StoredScalar, JournalRoute::Ordinary)),
                 Err(EditError::Unsupported(_)) => {
                     Ok((UpdateProfile::Unavailable, JournalRoute::Ordinary))
@@ -260,6 +281,23 @@ impl NativeEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         self.image.plan_recoverable_ordinary_fixed_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
+    }
+}
+
+#[cfg(feature = "journal")]
+impl NativeEditor {
+    pub(super) fn plan_recoverable_ordinary_fitted(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_ordinary_fitted_updates(
             self.snapshot.name(),
             groups,
             budget,

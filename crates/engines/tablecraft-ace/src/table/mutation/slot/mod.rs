@@ -1,8 +1,7 @@
 //! Existing-slot Text/Binary changes with mandatory index and constraint proof.
 pub(super) mod stage;
-mod update;
 
-use super::{Ace16WritePreview, EditError, WriteBlocker, gates, preview};
+use super::{Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview};
 use crate::table::mutation::record_serialization::storage;
 use crate::{
     InspectError, NativeImage, TableSchema,
@@ -11,7 +10,6 @@ use crate::{
     table::indexes::{index_slot_patches, qualify_slot_indexes},
 };
 use tablecraft_core::limits::ResourceBudget;
-pub use update::SlotScalarUpdate;
 
 impl NativeImage {
     /// Preview exact expected-value Short Text/Binary changes within each

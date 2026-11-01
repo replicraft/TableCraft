@@ -1,8 +1,9 @@
 //! One original mixed record operation continues through DATA and INDEX growth.
+use crate::FittedColumnUpdates;
 pub(in crate::table) mod certified;
 mod finish;
 
-use super::super::request::{self, FittedColumnUpdates};
+use super::super::request;
 use super::stage;
 use crate::{
     Ace16WritePreview, EditError, NativeImage,

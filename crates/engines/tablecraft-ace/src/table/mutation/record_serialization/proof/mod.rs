@@ -1,7 +1,7 @@
 //! Immutable requested serialization and complete historical record framing.
 pub(in crate::table::mutation) mod multiple;
 mod payload;
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
 use super::super::{EditError, WriteBlocker};
@@ -18,6 +18,7 @@ use tablecraft_core::{
 
 const COPY_BYTES: usize = 256;
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) fn reconstruct(
     schema: &TableSchema,
     column: usize,
@@ -59,6 +60,7 @@ pub(in crate::table::mutation) fn reconstruct_declared(
 }
 
 enum PayloadEncoding {
+    #[cfg(feature = "ace16-write-preview")]
     MinimumSize,
     DeclaredPreference,
 }
@@ -94,6 +96,7 @@ fn reconstruct_with(
         .ok_or(EditError::Preservation)?;
     let span = stop.checked_sub(start).ok_or(EditError::Preservation)?;
     let payload = match encoding {
+        #[cfg(feature = "ace16-write-preview")]
         PayloadEncoding::MinimumSize => payload::encode(field, value, budget, cancelled)?,
         PayloadEncoding::DeclaredPreference => {
             let preserved_payload = end.checked_sub(span).ok_or(EditError::Preservation)?;

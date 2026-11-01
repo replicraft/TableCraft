@@ -1,7 +1,8 @@
 //! Independent TCNI0004 framing; constructing data never grants native authority.
 use super::{NativeFixedEditIntent, NativeFixedIntentGroup};
 use crate::{
-    FixedScalarUpdate, InspectError, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
+    FixedScalarUpdate, InspectError, NativeFittedEditIntent, NativeIntentError, NativeUpdateIntent,
+    NativeUpdateProfile,
 };
 use sha2::{Digest, Sha256};
 use tablecraft_core::{
@@ -133,7 +134,7 @@ fn ordinary_fixed_wire_is_distinct_and_keeps_exact_original_body() {
     ));
     assert_eq!(
         NativeUpdateIntent::MAX_ENCODED_BYTES,
-        NativeFixedEditIntent::MAX_ENCODED_BYTES
+        NativeFittedEditIntent::MAX_ENCODED_BYTES
     );
 }
 

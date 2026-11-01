@@ -48,7 +48,7 @@ impl NativeJournalEditor {
         Ok(true)
     }
 
-    fn fixed_position(
+    pub(super) fn fixed_position(
         &self,
         name: &str,
         budget: &mut ResourceBudget,
@@ -104,6 +104,11 @@ impl NativeJournalEditor {
                 .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
                 .ok_or(InspectError::StructureLimit)
                 .map_err(NativeEditError::from)?;
+        }
+        if self.route == JournalRoute::Ordinary
+            && self.fitted_columns_requested(columns, budget, cancelled)?
+        {
+            return self.plan_fitted_columns_with_count(columns, count, budget, cancelled);
         }
         let mut positions = vector(columns.len(), budget)?;
         let mut groups = vector(columns.len(), budget)?;
@@ -161,19 +166,7 @@ impl NativeJournalEditor {
                     .map_err(RecoverableEditError::from)?,
             );
         }
-        let sort_work = rows
-            .len()
-            .checked_mul(rows.len().max(1).ilog2() as usize + 1)
-            .ok_or(InspectError::StructureLimit)
-            .map_err(NativeEditError::from)?;
-        budget
-            .charge(Resource::Steps, sort_work as u64)
-            .map_err(InspectError::from)
-            .map_err(NativeEditError::from)?;
-        rows.sort_unstable();
-        rows.dedup();
-        check(budget, cancelled)?;
-        let matched = rows.len();
+        let matched = matched_rows(rows, budget, cancelled)?;
         let plan = match self.route {
             JournalRoute::Ordinary => self
                 .editor
@@ -186,7 +179,7 @@ impl NativeJournalEditor {
     }
 }
 
-fn scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+pub(super) fn scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
     Ok(match (kind, value) {
         (ScalarType::Boolean, Value::Boolean(value)) => Value::Boolean(*value),
         (ScalarType::Int32, Value::Int32(value)) => Value::Int32(*value),
@@ -201,7 +194,10 @@ fn scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
     })
 }
 
-fn vector<T>(count: usize, budget: &mut ResourceBudget) -> Result<Vec<T>, NativeEditError> {
+pub(super) fn vector<T>(
+    count: usize,
+    budget: &mut ResourceBudget,
+) -> Result<Vec<T>, NativeEditError> {
     budget
         .charge_allocation(count as u64, size_of::<T>() as u64)
         .map_err(InspectError::from)?;
@@ -212,7 +208,10 @@ fn vector<T>(count: usize, budget: &mut ResourceBudget) -> Result<Vec<T>, Native
     Ok(values)
 }
 
-fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), NativeEditError> {
+pub(super) fn check(
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), NativeEditError> {
     if cancelled() {
         return Err(InspectError::Cancelled.into());
     }
@@ -220,4 +219,24 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
         .charge(Resource::Steps, 1)
         .map_err(InspectError::from)?;
     Ok(())
+}
+
+pub(super) fn matched_rows(
+    mut rows: Vec<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, NativeEditError> {
+    let sort_work = rows
+        .len()
+        .checked_mul(rows.len().max(1).ilog2() as usize + 1)
+        .ok_or(InspectError::StructureLimit)
+        .map_err(NativeEditError::from)?;
+    budget
+        .charge(Resource::Steps, sort_work as u64)
+        .map_err(InspectError::from)
+        .map_err(NativeEditError::from)?;
+    rows.sort_unstable();
+    rows.dedup();
+    check(budget, cancelled)?;
+    Ok(rows.len())
 }

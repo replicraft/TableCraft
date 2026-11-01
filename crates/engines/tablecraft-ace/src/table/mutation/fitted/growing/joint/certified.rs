@@ -1,8 +1,9 @@
 //! Only fresh original groups and fully reconstructed records can seed keys.
 use super::super::super::{
     record_proof::{self, verified::Verified},
-    request::{self, FittedColumnUpdates},
+    request,
 };
+use crate::FittedColumnUpdates;
 use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, NativeImage, TableCheck,

@@ -1,6 +1,6 @@
 use super::{
-    NativeFixedEditIntent, NativeFixedIntentGroup, NativeInt32EditIntent, NativeIntentError,
-    NativeUpdateIntent, NativeUpdateProfile,
+    NativeFittedEditIntent, NativeFittedIntentGroup, NativeFixedEditIntent, NativeFixedIntentGroup,
+    NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
 };
 use crate::{EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit};
 use tablecraft_core::limits::ResourceBudget;
@@ -102,6 +102,25 @@ impl NativeImage {
         let original =
             NativeFixedEditIntent::new(table, groups, plan.before_bytes(), budget, cancelled)?;
         let intent = NativeUpdateIntent::from_ordinary_fixed(original);
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
+
+    /// Bind original fitting requests, then qualify the real ordinary native plan.
+    /// The request record contains no save permission or precomputed final cells.
+    pub fn plan_recoverable_ordinary_fitted_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.ordinary_fitted_edit.plan_recoverable").entered();
+        let original =
+            NativeFittedEditIntent::new(table, groups, self.as_bytes(), budget, cancelled)?;
+        let borrowed = original.borrowed_groups(budget, cancelled)?;
+        let plan = self.plan_ordinary_fitted_updates(table, &borrowed, budget, cancelled)?;
+        drop(borrowed);
+        let intent = NativeUpdateIntent::from_fitted(original);
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
 }

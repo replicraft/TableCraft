@@ -1,10 +1,11 @@
 //! Whole-image controls and correlated forgeries use the actual source owner.
+use crate::FittedColumnUpdates;
 mod capacity;
 #[path = "../mixed_fitted_tests/framed.rs"]
 mod framed;
 mod qualified;
 
-use super::{record_proof, request::FittedColumnUpdates, stage};
+use super::{record_proof, stage};
 use crate::table::mutation::{gates, mixed_fitted_tests::model};
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate, TableCheck,

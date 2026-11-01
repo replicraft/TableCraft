@@ -1,9 +1,10 @@
 //! Mixed complete-row placement with the existing represented allocation policy.
+use crate::FittedColumnUpdates;
 mod finish;
 pub(in crate::table) mod joint;
 mod stage;
 
-use super::request::{self, FittedColumnUpdates};
+use super::request;
 use crate::{
     Ace16WritePreview, EditError, NativeImage,
     table::{indexes::index_row_patches, mutation::preview},

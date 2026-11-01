@@ -683,3 +683,6 @@ mod ordinary_indexed_targets;
 
 #[path = "normal/genuine_ordinary.rs"]
 mod genuine_ordinary;
+
+#[path = "normal/fitted.rs"]
+mod fitted;
