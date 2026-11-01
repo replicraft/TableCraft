@@ -269,3 +269,6 @@ pub mod canonical_creation_properties;
 
 /// Independent sparse native ordinals and stored-ID action witnesses.
 pub mod qualified_sparse_numeric;
+
+/// Independent ordinary Int32 creation-default sources and literal action views.
+pub mod canonical_creation_defaults;
