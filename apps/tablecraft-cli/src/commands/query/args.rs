@@ -17,6 +17,8 @@ pub(crate) enum Command {
     FinalizeUpdate(Box<super::journal::FinalizeArguments>),
     /// Apply one qualified normal UPDATE in place with a retained journal.
     JournalUpdate(Box<super::journal::UpdateArguments>),
+    /// Delete qualified original rows in place with a retained normal journal.
+    JournalDelete(Box<super::journal::DeleteArguments>),
     /// Recover one paired native edit without replaying SQL.
     RecoverUpdate(Box<super::journal::RecoveryArguments>),
     /// Explicitly prepare caller-selected before-event guards without creating a write candidate.

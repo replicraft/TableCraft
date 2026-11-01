@@ -24,6 +24,22 @@ The OS lease coordinates cooperating handles; it does not implement Access
 ldb/laccdb locking. Ordinary readers do not automatically discover these journals.
 An interrupted target must not be used merely because its process lock expired.
 
+`query journal-delete` removes original rows through the separate
+[normal DELETE service](../access/writes/NORMAL_ACE_DELETE.md), using the same
+retained session and journal lifecycle. It requires the qualified ACE target-local
+family, no selected indexes and no relationship involving the target. Empty
+matches retain complete admission checks. Payloads, OLE, resolved forwarding
+storage, maps and EOF remain intact; no reclamation or cascade is implied.
+
+```sh
+tablecraft query journal-delete 'DELETE FROM Sentinel WHERE [ID]=23' \
+  --database offline.accdb --journal fresh-delete-journal
+```
+
+The report gives matched and deleted row counts after retirement and release.
+The existing `recover-update` and `finalize-update` commands also recognize its
+separate TCND intent; neither command replays SQL.
+
 ## Admission and resources
 
 Apply accepts one local table under the existing

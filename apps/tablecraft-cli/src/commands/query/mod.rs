@@ -107,9 +107,10 @@ impl fmt::Display for Error {
 pub(super) fn run(command: Command, password: Option<&str>) -> Result<String, Error> {
     match command {
         Command::PreviewBeforeChange(_) => Err(Error::BeforeChangeDispatch),
-        Command::JournalUpdate(_) | Command::RecoverUpdate(_) | Command::FinalizeUpdate(_) => {
-            Err(Error::JournalDispatch)
-        }
+        Command::JournalUpdate(_)
+        | Command::JournalDelete(_)
+        | Command::RecoverUpdate(_)
+        | Command::FinalizeUpdate(_) => Err(Error::JournalDispatch),
         Command::PrepareGuards(args) => {
             prepare_guards::run(*args, password).map_err(Error::GuardPreparation)
         }

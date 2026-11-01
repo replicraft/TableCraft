@@ -14,7 +14,7 @@ sets the target for Access workflows, defaults, restrictions and documented quir
 
 | Format | Current support | Planned tier |
 | --- | --- | --- |
-| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries; restricted journaled updates | **Tier 1 — primary:** full native compatibility |
+| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries; restricted journaled writes | **Tier 1 — primary:** full native compatibility |
 | Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; qualified offline Int32 updates | **Tier 2 — secondary:** maintain and expand qualified support |
 | ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 2 |
 | ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 2 |
@@ -68,7 +68,8 @@ saves remain in development; a separate [journaled BeforeChange profile](docs/ac
 supports restricted Int32 and [fixed-scalar updates](docs/access/writes/NORMAL_ACE_FIXED_SCALARS.md).
 The [ordinary-content route](docs/access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 also supports fixed updates to qualified tables, with a separate
-[fitting Text/Binary route](docs/access/writes/NORMAL_ACE_FITTED.md).
+[fitting Text/Binary route](docs/access/writes/NORMAL_ACE_FITTED.md) and
+[restricted row deletion](docs/access/writes/NORMAL_ACE_DELETE.md).
 
 ## Documentation
 

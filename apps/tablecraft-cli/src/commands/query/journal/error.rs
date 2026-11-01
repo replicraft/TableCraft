@@ -66,7 +66,7 @@ impl fmt::Display for Error {
                 "verified target image {image}; completion output failed; do not rerun SQL: {error}"
             ),
             Self::Credentials => formatter.write_str(
-                "journal editing requires an unencoded admitted Jet4 or ACE BeforeChange profile; --password is unsupported",
+                "journal editing requires an unencoded admitted native profile; --password is unsupported",
             ),
             Self::Parse(error) => error.fmt(formatter),
             Self::Shape(error) => error.fmt(formatter),
@@ -83,13 +83,13 @@ impl fmt::Display for Error {
             Self::Offline(error) => error.fmt(formatter),
             Self::UnexpectedReceipt(retained) => write!(
                 formatter,
-                "unexpected offline completion {:?}; target retained in state {:?}; do not retry the UPDATE",
+                "unexpected offline completion {:?}; target retained in state {:?}; do not retry the mutation",
                 retained.receipt,
                 retained.session.state()
             ),
             Self::Output { outcome, error } => write!(
                 formatter,
-                "target outcome {outcome:?}; completion output failed; do not retry the UPDATE: {error}"
+                "target outcome {outcome:?}; completion output failed; do not retry the mutation: {error}"
             ),
         }
     }

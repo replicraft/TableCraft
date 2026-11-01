@@ -1,5 +1,23 @@
 # Implementation status
 
+## Normal ordinary-row deletion
+
+Normal DELETE now has a separate TCND0001 original-request intent and V1 recovery
+path through typed editors, shared SQL sessions and `query journal-delete`.
+Admission uses fresh native target-local program absence and full Source
+protection; selected indexes and target relationships refuse. Direct and resolved
+root deletion changes only logical slot flags and the table's live-row count.
+Retained payloads, forwarding storage, properties, maps and EOF remain exact.
+
+Five direct-root and four forwarded-root native functions pass. Four typed/SQL growth-then-delete workflows
+perform eight exact commits; two CLI workflows perform four commits and four
+readbacks. All complete images match frozen expectations. Normal INSERT,
+indexed DELETE, cascades and Microsoft Access save/reopen conformance remain
+open. The batch passes 1,114 ACE units, 79 adapter units, 98 CLI units and
+83 recovery functions, with strict feature checks and prior EOF workflows intact.
+See the [normal deletion contract](access/writes/NORMAL_ACE_DELETE.md) and
+[native write record](testing/results/ace16-normal-delete-writes-2026-11-01.json).
+
 ## Active scope
 
 Current implementation work targets native Microsoft Access compatibility, with
@@ -35,8 +53,8 @@ Source goldens are unchanged; first compile/negative-fixture failures remain in
 the [native record](testing/results/ace16-normal-eof-allocation-writes-2026-11-01.json).
 See the [contract](access/writes/NORMAL_ACE_EOF_ALLOCATION.md) and
 [host record](testing/results/ace16-retained-eof-allocation-2026-11-01.json).
-Normal DELETE/INSERT, wider allocation/indexes and native Access qualification
-remain ongoing.
+Normal INSERT, broader DELETE, wider allocation/indexes and native Access
+qualification remain ongoing.
 
 ## Normal alternate-owned-page record growth
 

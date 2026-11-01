@@ -65,8 +65,9 @@ for exact scope, counts and retained first failures. Retained Access/CLI adoptio
 has a separate acceptance record.
 
 This is a bounded first EOF DATA-allocation route. General map growth, additional
-allocation geometries, broader index allocation and normal INSERT/DELETE remain
-separate work. These source/read and portable journal checks do not establish
+allocation geometries, broader index allocation and normal INSERT remain
+separate work. The independent [normal DELETE continuation](NORMAL_ACE_DELETE.md)
+retains allocated forwarding storage without reclamation. These source/read and portable journal checks do not establish
 Microsoft Access save/reopen conformance or Windows locking/durability behavior;
 those comparisons remain unrun.
 
