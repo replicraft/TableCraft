@@ -103,4 +103,4 @@ fn eighteen_counter_index_sources_match_rows_and_complete_native_index_checks() 
     assert_eq!(indexes, 18);
 }
 
-mod export;
+pub(in crate::table::mutation::normal_ordinary_sources) mod export;

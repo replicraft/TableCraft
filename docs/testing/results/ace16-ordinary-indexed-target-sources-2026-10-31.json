@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-31",
+  "scope": "Independent ordinary manual indexed Int32 original/request/literal-AFTER source reads",
+  "recipes": 16,
+  "header_selectors": [
+    5,
+    6
+  ],
+  "before_views": 32,
+  "literal_after_views": 24,
+  "exported_image_report_pairs": 56,
+  "positive_request_contexts_per_header": 12,
+  "intended_refusal_contexts_per_header": 4,
+  "source_first_private_freeze": {
+    "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/FIRST_FREEZE.json",
+    "bytes": 1611,
+    "sha256": "0efb1371ee94e6b4cedb5a36fa5ddf00e4cdacf1a37f9d59136ddb518ed25226"
+  },
+  "export_first_private_freeze": {
+    "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/export/FIRST_FREEZE.json",
+    "bytes": 1321,
+    "sha256": "ceeb479ba6c3294cc137276108708edbf23cf3ec98be9bbc4bc49d117a65797c"
+  },
+  "installed_before_first_reads": {
+    "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/installed-before-first-reads.json",
+    "bytes": 1666,
+    "sha256": "98fa197cf41c0527fdf0831ca6d6881bd9e66007f50fe3101bb36be30357e5d0"
+  },
+  "source_model": {
+    "path": "crates/engineering/tablecraft-testkit/src/access/canonical_ordinary_indexed_targets.rs",
+    "bytes": 10584,
+    "sha256": "f39b7df90280f866f00d2d8fd83691cb0d3d2504818be6874978f0bd7348320b"
+  },
+  "native_read": {
+    "log": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/native-first-root.log",
+      "bytes": 655,
+      "sha256": "559dd7d4904714696dfb6d7d9ffd8c17b4b6f91993cfb4d350b83f997d597971"
+    },
+    "tests_passed": 1,
+    "before_views": 32,
+    "literal_after_views": 24,
+    "runtime_seconds": 0.06,
+    "result": "PASS actual table/index checks, scalar rows and constraints; no writer"
+  },
+  "explicit_export": {
+    "log": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/export-first-root.log",
+      "bytes": 417,
+      "sha256": "eb64fa47d291743ef6d43101b108760de2650e79d2718f6ef4b2f01de2f04c34"
+    },
+    "tests_passed": 1,
+    "runtime_seconds": 0.6,
+    "inventory": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/originals-first/inventory.tsv",
+      "bytes": 5622,
+      "sha256": "b81aeba55eac51dbfe26601631085bed6354e0a16614cd5ce7acb702ed6f0017"
+    },
+    "requests": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/originals-first/requests.tsv",
+      "bytes": 2522,
+      "sha256": "5d640f850934066f835640bb9820cd2c677750a16f8c5d4b452d2b4c530e68bf"
+    },
+    "exclusive_create": true
+  },
+  "independent_sdk": {
+    "observer": {
+      "path": ".cache/ace16-native-ordinary-counter-index-next-20261031/getter/OrdinaryContentGetter.java",
+      "bytes": 30719,
+      "sha256": "4759ba5a25e8b882d06c9f83f3d04f824889a3a7a94d4b56971d9f97a1d656eb"
+    },
+    "observer_changed": false,
+    "new_compilation_required": false,
+    "plan": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/sdk-first/plan-before-calls.json",
+      "bytes": 88211,
+      "sha256": "d760b102276e053e0227cdef011142835458b0671c9356b76f01e6a158ed1126"
+    },
+    "receipt": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/sdk-first/reports-first/receipt.json",
+      "bytes": 63815,
+      "sha256": "71bbdd768ce3ce8af672d0397716ae9fc1ade572714e479c14bc07d34e687838"
+    },
+    "log": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/sdk-first/execution-first.log",
+      "bytes": 76,
+      "sha256": "559406809c7a899fa9f36f34a0cb4b207018b10ad162f4c73c400d345fa90ce0"
+    },
+    "saved_verification": {
+      "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/sdk-first/saved-verification.json",
+      "bytes": 252,
+      "sha256": "c4e446b4d2f0c92265980de3ed17d77892fb3f53f4f0148c13335becef359da5"
+    },
+    "status": "PASS",
+    "started": 56,
+    "completed": 56,
+    "failure": null,
+    "exact_stdout": true,
+    "stderr_empty": true,
+    "all_frozen_pins_unchanged": true,
+    "indexed_producer_calls": 0
+  },
+  "positive_requests": [
+    "manual-seven",
+    "promote-null",
+    "clear-value",
+    "present-beside-null",
+    "unique-swap",
+    "unique-all-null",
+    "aliases",
+    "manual-tree",
+    "prefix-loss",
+    "empty",
+    "present-noop",
+    "null-noop"
+  ],
+  "intended_refusals": {
+    "unique-conflict": "DuplicateKey",
+    "stale-null-expected": "Conflict",
+    "generated-target": "GeneratedColumn",
+    "primary-null": "RequiredIndexKey"
+  },
+  "original_derivatives": [
+    "Manual tree retains index bytes; Id flags7 become3 and LAST becomes0",
+    "Alias leaf stores original keys using prefix4, with original inactive tail retained"
+  ],
+  "boundaries": [
+    "Refusal cases have healthy BEFORE read views and no expected AFTER; source checks do not execute their requests",
+    "Literal AFTER source qualification does not establish a working normal indexed mutation planner or write permission",
+    "All-NULL UNIQUE behavior is observed format/read evidence, not native Microsoft Access write conformance",
+    "No allocation, generated-field updates, normal saves, journal/session acceptance, Windows or native Microsoft Access qualification"
+  ],
+  "third_party_database_bytes_copied": false
+}

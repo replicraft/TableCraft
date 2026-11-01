@@ -127,7 +127,11 @@ fn membership(original: &model::Source) -> String {
     output
 }
 
-fn expected(original: &model::Source, header: u8, digest: &str) -> String {
+pub(in crate::table::mutation::normal_ordinary_sources) fn expected(
+    original: &model::Source,
+    header: u8,
+    digest: &str,
+) -> String {
     assert!(original.ordinary);
     let source = BaseSource {
         bytes: original.bytes.clone(),

@@ -123,3 +123,5 @@ mod export;
 mod inline_sources;
 
 mod indexed_sources;
+
+mod indexed_targets;
