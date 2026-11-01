@@ -209,3 +209,6 @@ mod tests;
 
 #[cfg(test)]
 mod sentinel_source_controls;
+
+#[cfg(all(test, feature = "journal"))]
+mod binary_update_sources;

@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent fitting Binary indexed UPDATE source qualification",
+  "native_views": 16,
+  "healthy_sdk_views": 16,
+  "sdk_calls": 128,
+  "native_constraint_negatives_excluded_from_sdk": 0,
+  "source_qualification_precedes_matching_producers": true,
+  "matching_creator_or_mutation_calls": 0,
+  "checks": [
+    {
+      "name": "binary-update-native-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/binary-update-native-first.log",
+        "bytes": 420,
+        "sha256": "02851639966f986beba5470a88551db04369e067d8a0473e8fa9a8a14639110b"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/first-source-private-checkpoint.json",
+      "bytes": 1800,
+      "sha256": "fe35837409e367525755de31c605213a1476e97142cd0d63fffe25780e3a5ad3"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/code-first-freeze.json",
+      "bytes": 8838,
+      "sha256": "7b47b8b5a446f092a9e344f361cc0927cbe48a07553ddbcb0299d8051fa515a2"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/input-first-freeze.json",
+      "bytes": 2734,
+      "sha256": "640d7fc6e000c55e74d2edcc27bdb97edb46a5491aaf4d5ece920076290bfc58"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/expected-first/manifest.json",
+      "bytes": 35481,
+      "sha256": "129ddb8b5e16ede93eae42e9d5a0ccd5c5b1a99c2f35ebecd4b9f087d13fc765"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/reads-first/precall.json",
+      "bytes": 210198,
+      "sha256": "f1778ee195919fdf6b2f5ecbf35ebc77df669207166fda36267147c30246d1ba"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/reads-first/receipt.json",
+      "bytes": 170331,
+      "sha256": "0b3d201ad1f898ec200ada057f01e60cddc331cb12c908e9aeec2479f2dec309"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/reads-first/saved-verification.json",
+      "bytes": 616,
+      "sha256": "4a25d298307cb1cbd5b755797ec55a80cf6624ae662a5c1472cdb4d669601d2a"
+    },
+    {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/qualification-first-result.json",
+      "bytes": 3050,
+      "sha256": "ce3738a946672ca3fce2921e4c0fe6eb07452200ea8e25b1b91ce5e9d911a121"
+    }
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "laws": [
+    "Seven independent recipes per header; no reference UPDATE outputs supply source expectations.",
+    "Historical counters stay 13/12/12 even when live Binary key families exceed 12.",
+    "Original record capacity, directory/free bytes, primary root and inactive INDEX tails remain exact.",
+    "Atomic duplicate merge has an identical reverse-request reconstruction."
+  ],
+  "root_saved_replay": {
+    "receipt": {
+      "path": ".cache/ace16-normal-binary-update-next-20261101/source/root-saved-verification-first.log",
+      "bytes": 904,
+      "sha256": "0f98da1e4a63b93f6927f2deb47385baf7255d3520300448a0bcf06f2ec6b674"
+    },
+    "status": "128 saved checks passed, then write-once saved-result output refused overwrite; original saved result unchanged, no child calls."
+  }
+}
