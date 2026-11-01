@@ -25,6 +25,7 @@ single-column Int32/Jet 4 editing limits and ordinary ACE refusal.
 | --- | --- |
 | Numeric/Boolean conversion | CBool, CByte, CInt, CLng, CLngLng, CSng, CDbl, CCur, CDec |
 | Eager choice | IIf, Nz |
+| NULL inspection | IsNull |
 | Text length, slicing and spaces | Len, Left, Right, Mid, LTrim, RTrim, Trim |
 | Numeric operations | Abs, Int, Fix, Round |
 | Gregorian date components | Year, Month, Day, Hour, Minute, Second |
@@ -33,7 +34,9 @@ single-column Int32/Jet 4 editing limits and ordinary ACE refusal.
 These are existing query function implementations and argument rules. Numeric
 literals, existing literal/date/GUID forms, depth-zero original fields, unary and
 binary operators, `IS NULL`, BETWEEN and IN lists retain their current behavior.
-`IsNull(...)` is not part of this call set; the `IS NULL` operator remains available.
+`IsNull(value)` uses the same NULL inspection expression as the `IS NULL` operator.
+Its single argument is evaluated eagerly; invalid arities and forbidden nested
+calls refuse before backend preparation.
 The text argument normalizer is reused, including valid optional substring
 arguments. No ambient locale, clock, encoding or comparison policy is selected.
 Text comparisons still require an explicit admitted host collation.

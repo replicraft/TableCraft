@@ -79,6 +79,8 @@ fn delete_alias_targets_three_valued_predicates_and_no_match_finish_once() {
         ("DELETE FROM Items WHERE Id BETWEEN 1 AND 2", vec![0, 1]),
         ("DELETE i.* FROM Items AS i WHERE i.Id IN (1,3)", vec![0, 2]),
         ("DELETE * FROM Items WHERE Score IS NULL", vec![2]),
+        ("DELETE FROM Items WHERE IsNull(Score)", vec![2]),
+        ("DELETE FROM Items WHERE NOT IsNull(Score)", vec![0, 1]),
         ("DELETE FROM Items WHERE Score=20", vec![1]),
         ("DELETE FROM Items WHERE Abs(Id)>0", vec![0, 1, 2]),
         ("DELETE FROM Items WHERE NULL", vec![]),
@@ -104,6 +106,11 @@ fn delete_closed_binding_and_late_eager_errors_never_finish() {
         "DELETE FROM Items WHERE DCount('*','Hidden')>0",
         "DELETE FROM Items WHERE 10/(2-Id)>0",
         "DELETE FROM Items WHERE FALSE AND 1/0>0",
+        "DELETE FROM Items WHERE IsNull(1/0)",
+        "DELETE FROM Items WHERE FALSE AND IsNull(1/0)",
+        "DELETE FROM Items WHERE IsNull()",
+        "DELETE FROM Items WHERE IsNull(Score, 0)",
+        "DELETE FROM Items WHERE IsNull(Rnd())",
         "UPDATE Items SET Score=1",
     ] {
         let (source, calls) = source(false);
