@@ -1,0 +1,48 @@
+{
+  "state": "ORIGINAL_REQUEST_FACTS_BEFORE_CONSTRUCTOR",
+  "table": "Sentinel",
+  "column": "Marker",
+  "row_ordinal": 0,
+  "row_identity": 23,
+  "expected": "unchanged sentinel",
+  "replacement": "aaaaaaaaaaaaaaaaaaa",
+  "profiles": [
+    {
+      "header": 5,
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110
+    },
+    {
+      "header": 6,
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127
+    }
+  ],
+  "original_record_hex": "03001700000075006e006300680061006e006700650064002000730065006e00740069006e0065006c00030000800000000000000000c700ff39002a000600020007",
+  "geometry": {
+    "original_start": 4030,
+    "original_bytes": 66,
+    "original_slots": 1,
+    "original_free": 4014,
+    "new_record_bytes": 68,
+    "hidden_slot": 1,
+    "hidden_start": 3962,
+    "hidden_end": 4030,
+    "slots": 2,
+    "free": 3944,
+    "offsets": [
+      6,
+      44,
+      59
+    ],
+    "footer": 59,
+    "mask": 7
+  },
+  "scope": "Same owned DATA page only; root stays ordinal0, no page allocation, map rewrite or property stripping."
+}

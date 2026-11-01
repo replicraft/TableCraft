@@ -197,3 +197,6 @@ pub mod genuine_property_lval;
 
 /// Explicit pinned original/expected files for readonly numeric-index saves.
 pub mod genuine_retained_numeric;
+
+/// Pinned original, owned-page growth and forwarded second-edit images.
+pub mod genuine_owned_growth;
