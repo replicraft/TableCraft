@@ -1,0 +1,151 @@
+{
+  "state": "ORIGINAL_INPUTS_AND_LITERAL_LAWS_FROZEN_BEFORE_CONSTRUCTOR_AUTHORING",
+  "table": "Sentinel",
+  "original_rows": [
+    [
+      23,
+      "unchanged sentinel",
+      {
+        "Binary_hex": "c700ff"
+      }
+    ]
+  ],
+  "rows": {
+    "new": {
+      "values": [
+        24,
+        "new",
+        null
+      ],
+      "record_hex": "0300180000006e00650077000c000c000600020003",
+      "bytes": 21,
+      "eod": 12,
+      "starts": [
+        6,
+        12
+      ],
+      "mask": 3
+    },
+    "tail": {
+      "values": [
+        25,
+        "tail",
+        null
+      ],
+      "record_hex": "0300190000007400610069006c000e000e000600020003",
+      "bytes": 23,
+      "eod": 14,
+      "starts": [
+        6,
+        14
+      ],
+      "mask": 3
+    }
+  },
+  "orders": [
+    {
+      "id": "new-tail",
+      "rows": [
+        "new",
+        "tail"
+      ],
+      "ordinals": [
+        1,
+        2
+      ],
+      "slots": [
+        1,
+        2
+      ],
+      "record_starts": [
+        4009,
+        3986
+      ],
+      "directory_words": [
+        "0fbe",
+        "0fa9",
+        "0f92"
+      ]
+    },
+    {
+      "id": "tail-new",
+      "rows": [
+        "tail",
+        "new"
+      ],
+      "ordinals": [
+        1,
+        2
+      ],
+      "slots": [
+        1,
+        2
+      ],
+      "record_starts": [
+        4007,
+        3986
+      ],
+      "directory_words": [
+        "0fbe",
+        "0fa7",
+        "0f92"
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h5.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h5/stdout.log",
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h6.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h6/stdout.log",
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "bitmap": 128
+    }
+  ],
+  "law": {
+    "definition_count_at16": [
+      1,
+      3
+    ],
+    "data_count_at12": [
+      1,
+      3
+    ],
+    "data_free_at2": [
+      4014,
+      3966
+    ],
+    "directory_changed_span": [
+      16,
+      20
+    ],
+    "payload_changed_span": [
+      3986,
+      4030
+    ],
+    "new_frontier": 3986,
+    "new_directory_end": 20,
+    "old_record": [
+      4030,
+      4096
+    ],
+    "old_row_word": "0fbe",
+    "unchanged": "EOF, all maps, old row/raw OLE, property bytes, full complement"
+  },
+  "author_producer_calls": 0,
+  "author_constructor_calls": 0
+}
