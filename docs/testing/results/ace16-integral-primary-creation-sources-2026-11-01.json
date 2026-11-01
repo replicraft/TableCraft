@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent manual Int64/Currency primary creation/read/INSERT/DELETE source qualification",
+  "native_views": 32,
+  "healthy_sdk_views": 24,
+  "sdk_calls": 24,
+  "native_constraint_negatives_excluded_from_sdk": 8,
+  "source_qualification_precedes_matching_producers": true,
+  "matching_creator_or_mutation_calls": 0,
+  "checks": [
+    {
+      "name": "integral-native-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-native-first.log",
+        "bytes": 678,
+        "sha256": "50f093ae1cd058c0b60bfa85311f60e809e0b253b27f2c6cb3f1f5cbf9370c96"
+      }
+    },
+    {
+      "name": "integral-export-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-export-first.log",
+        "bytes": 399,
+        "sha256": "aa2ffdbe0083c55bc1126934f7b4881a06042e9d4f8528701a4d6b245f8f855f"
+      }
+    },
+    {
+      "name": "integral-preflight-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-preflight-first.log",
+        "bytes": 69,
+        "sha256": "b5b098195bd5f861102480e264db7c19d63ce6a2e97b408e532e823b8fc08e23"
+      }
+    },
+    {
+      "name": "integral-controls-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-controls-first.log",
+        "bytes": 91,
+        "sha256": "71783e9b8db7ac39b158764795d575b7a645f23c017ced6fd8bc742649aa0431"
+      }
+    },
+    {
+      "name": "integral-compile-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-compile-first.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "integral-inputs-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-inputs-first.log",
+        "bytes": 280,
+        "sha256": "180940c8c03870026f136783ebe2dc67ddadc37ab72a32a720ea63ab201793a2"
+      }
+    },
+    {
+      "name": "integral-plan-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-plan-first.log",
+        "bytes": 299,
+        "sha256": "5dee5240cd52986e06b17342cabbffd564e05b4d242d8ed192639960266c96dd"
+      }
+    },
+    {
+      "name": "integral-sdk-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-sdk-first.log",
+        "bytes": 17946,
+        "sha256": "ea65c3a76d3e933a1f66f57acdd23840b704419165623499d07d25741fc9d2b0"
+      }
+    },
+    {
+      "name": "integral-saved-first",
+      "returncode": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-next-source-gates-20261101/integral-saved-first.log",
+        "bytes": 317,
+        "sha256": "5bbd3fd50c9f16a0056e028e5c9e7917ab3fd70c99c82de83c67cca508d0a238"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/ace16-native-creation-integral-primary-next-20261101/source/first-private-checkpoint.json",
+      "bytes": 3638,
+      "sha256": "8acd7fb30625365c356e22bc6a7ff6d82785514a692047d1dd981af2156f36ea"
+    },
+    {
+      "path": ".cache/ace16-native-creation-integral-primary-next-20261101/source/dependencies-first.json",
+      "bytes": 3175,
+      "sha256": "d4975c8d3d56acb107e2171c72de59eb810e18ddca8ad6a7a8768c44ea303228"
+    },
+    {
+      "path": ".cache/ace16-native-creation-integral-primary-next-20261101/source/export-first/manifest.tsv",
+      "bytes": 3372,
+      "sha256": "3947af62a182190bdbce674a554e8511f7494fb9d4865d4214423435bb58ca8e"
+    },
+    {
+      "path": ".cache/ace16-native-creation-integral-primary-next-20261101/source/getter/predictions-first/plan.json",
+      "bytes": 72981,
+      "sha256": "b78cd40421f73bef65b970c85b4e340564ec80f060258822432681af67f62f32"
+    },
+    {
+      "path": ".cache/ace16-native-creation-integral-primary-next-20261101/source/getter/observations-first/result.json",
+      "bytes": 411,
+      "sha256": "8ba675f8eb8ca719f7f39988f27e5b8adfe0be78eea5c5a998505c84e7756310"
+    }
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "copied_receipt_controls": {
+    "receipt_rejections": 26,
+    "summary_rejections": 10,
+    "plan_rejections": 6,
+    "sdk_calls": 0
+  },
+  "sdk_compilations": 1,
+  "sdk_writer_calls": 0,
+  "laws": [
+    "Exact signed Int64 and scaled Currency carriers remain distinct.",
+    "Manual ordinary declarations do not infer AutoNumber from LAST.",
+    "Subsequent literal DELETE preserves inserted physical tombstone, tails and history.",
+    "Duplicate and NULL keys remain explicit constraint negatives."
+  ]
+}

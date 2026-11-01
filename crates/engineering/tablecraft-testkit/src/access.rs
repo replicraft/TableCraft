@@ -281,3 +281,6 @@ pub mod canonical_creation_primary;
 
 /// Independent complete Binary deletion images and raw witnesses.
 pub mod genuine_binary_delete;
+
+/// Independent manual Int64/Currency primary declarations and literal actions.
+pub mod canonical_creation_integral_primary;

@@ -198,3 +198,5 @@ mod binary_indexed;
 mod binary_delete;
 mod creation_primary;
 mod root_split;
+
+mod creation_integral_primary;
