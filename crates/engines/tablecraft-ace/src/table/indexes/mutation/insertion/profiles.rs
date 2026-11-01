@@ -1,5 +1,6 @@
 //! Bind complete fixed-key profiles to one canonical physical owner.
 use super::*;
+use crate::InspectError;
 use crate::format::data_type::{LONG_TEXT, MAX_SHORT_BINARY_BYTES, SHORT_BINARY, SHORT_TEXT};
 use crate::table::indexes::{
     binary::{BinaryIndexSelection, BinaryProfile},

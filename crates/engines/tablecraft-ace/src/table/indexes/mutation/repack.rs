@@ -1,9 +1,11 @@
 //! Repack entry data within an existing page; never allocate or relink pages.
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+use super::super::page::KeyRef;
 use super::super::{
     header::IndexHeader,
     page::{ENTRY_START, Entry},
 };
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use super::retained::RetainedProfile;
 use super::{IndexDataPatch, encoding, profile::WriteProfile};
 use crate::{EditError, InspectError, WriteBlocker, format::page::PAGE_BYTES, header::check};
@@ -47,7 +49,7 @@ pub(super) fn retained_page<P: RetainedProfile, const N: usize>(
     )
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) fn borrowed_page<P: RetainedProfile, const N: usize>(
     original: &[u8],
     entries: &[Entry<&P::Key>],
@@ -64,7 +66,7 @@ pub(super) fn borrowed_page<P: RetainedProfile, const N: usize>(
     )
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) fn borrowed_fits<P: RetainedProfile, const N: usize>(
     original: &[u8],
     entries: &[Entry<&P::Key>],
@@ -92,7 +94,7 @@ pub(super) fn borrowed_fits_fresh<P: RetainedProfile, const N: usize>(
     borrowed_fits_with_seed::<P, N>(entries, 0, profile, budget, cancelled)
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 fn borrowed_fits_with_seed<P: RetainedProfile, const N: usize>(
     entries: &[Entry<&P::Key>],
     seed: usize,
@@ -277,6 +279,32 @@ fn end(page: &[u8]) -> Result<usize, InspectError> {
         .checked_sub(usize::from(IndexHeader::read(page)?.free.get()))
         .filter(|end| *end >= ENTRY_START)
         .ok_or(InspectError::Malformed)
+}
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub(super) fn leaf_entries<'a, K>(
+    keys: &'a [KeyRef<K>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Entry<&'a K>>, EditError> {
+    budget
+        .charge_allocation(keys.len() as u64, size_of::<Entry<&K>>() as u64)
+        .map_err(InspectError::from)?;
+    let mut entries = Vec::new();
+    entries
+        .try_reserve_exact(keys.len())
+        .map_err(|_| InspectError::Allocation)?;
+    for value in keys {
+        check(budget, cancelled)?;
+        entries.push(Entry {
+            value: KeyRef {
+                key: &value.key,
+                row: value.row,
+            },
+            child: 0,
+        });
+    }
+    Ok(entries)
 }
 
 #[cfg(test)]

@@ -14,7 +14,7 @@ mod delete;
 mod encoding;
 #[cfg(feature = "ace16-write-preview")]
 mod ignored;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod insertion;
 mod kind;
 #[cfg(feature = "ace16-write-preview")]
@@ -43,11 +43,11 @@ pub(in crate::table) use replacement::{
     RowKeyUpdate, SlotKeyChanges, SlotKeyUpdate, patches as slot_patches,
     qualify as qualify_slot_indexes, qualify_row_indexes, row_patches,
 };
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod retained;
 #[cfg(feature = "ace16-write-preview")]
 mod retirement;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod row_key;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use retirement::{

@@ -2,16 +2,22 @@
 pub(in crate::table::indexes::mutation) mod binding;
 pub(in crate::table::indexes) mod membership;
 mod preparation;
+#[cfg(feature = "ace16-write-preview")]
 mod profiles;
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
+#[cfg(feature = "ace16-write-preview")]
+use super::composite::TupleProfile;
+#[cfg(feature = "ace16-write-preview")]
 use super::retained::Preserved;
+#[cfg(feature = "ace16-write-preview")]
 use super::split::{
     AddedPage,
     allocation::{Promotion, Rebase},
 };
-use super::{IndexDataPatch, NumericKey, composite::TupleProfile, profile::SingleProfile};
+use super::{IndexDataPatch, NumericKey, profile::SingleProfile};
+#[cfg(feature = "ace16-write-preview")]
 use crate::table::indexes::{
     binary::BinaryProfile,
     composite::{DecimalColumns, DecimalValue, MixedValue},
@@ -20,13 +26,12 @@ use crate::table::indexes::{
     guid::GuidProfile,
     text::TextProfile,
 };
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::mutation::append::State;
 use crate::{
-    EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableCheck, WriteBlocker,
+    EditError, IndexCheckStatus, NativeImage, NativeIndex, TableCheck, WriteBlocker,
     header::check,
-    table::{
-        indexes::{constraints::PRIMARY_INDEX, key::KeyRow},
-        mutation::append::State,
-    },
+    table::indexes::{constraints::PRIMARY_INDEX, key::KeyRow},
 };
 use preparation::Prepared;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -53,8 +58,11 @@ struct ExpectedKey {
 /// Completed builder facts. Independent replay derives its own request keys.
 pub(in crate::table) struct IndexInsertion {
     pub patches: Vec<IndexDataPatch>,
+    #[cfg(feature = "ace16-write-preview")]
     pub added: Vec<AddedPage>,
+    #[cfg(feature = "ace16-write-preview")]
     pub promotions: Vec<Promotion>,
+    #[cfg(feature = "ace16-write-preview")]
     pub rebases: Vec<Rebase>,
     physical: u32,
     root: u32,
@@ -92,6 +100,7 @@ impl IndexInsertion {
 }
 
 /// Fixed profiles and typed keys stay owned until this phase is consumed.
+#[cfg(feature = "ace16-write-preview")]
 enum PreparedKind<'a> {
     Numeric(Prepared<SingleProfile>),
     Text(Prepared<Preserved<TextProfile>>),
@@ -104,10 +113,12 @@ enum PreparedKind<'a> {
     DecimalTuple(Prepared<TupleProfile<DecimalValue, DecimalColumns>>),
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) struct PreparedIndex<'a> {
     kind: PreparedKind<'a>,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 impl PreparedIndex<'_> {
     pub(in crate::table) fn source_pages(&self) -> &[u32] {
         match &self.kind {
@@ -162,6 +173,7 @@ impl PreparedIndex<'_> {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) fn prepare<'a>(
     image: &NativeImage,
     checked: &'a TableCheck,
@@ -243,7 +255,7 @@ pub(in crate::table) fn prepare<'a>(
     }
 }
 
-pub(in crate::table::indexes) fn qualify<'a>(
+pub(in crate::table) fn qualify<'a>(
     checked: &'a TableCheck,
     physical: u32,
     budget: &mut ResourceBudget,
@@ -303,4 +315,42 @@ pub(in crate::table::indexes) fn qualify<'a>(
         }
     }
     Ok(first)
+}
+
+/// Checked fixed-key preparation with no allocation continuation capability.
+/// The caller owns source/event admission and proves the complete final image.
+#[cfg(feature = "journal")]
+pub(in crate::table) fn prepare_existing(
+    image: &NativeImage,
+    checked: &TableCheck,
+    physical: u32,
+    requests: &[InsertRow<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IndexInsertion, EditError> {
+    check(budget, cancelled)?;
+    let index = qualify(checked, physical, budget, cancelled)?;
+    let [key] = index.columns() else {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    };
+    let mut field = None;
+    for (position, column) in checked.schema().columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        if column.number() == key.number() {
+            field = Some((position, column));
+        }
+    }
+    let (position, column) = field.ok_or(EditError::Preservation)?;
+    if column.scalar_type() != Some(ScalarType::Int32) {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    let profile = SingleProfile {
+        column: position,
+        kind: NumericKey::new(ScalarType::Int32)?,
+        descending: key.descending(),
+    };
+    let prepared: Prepared<SingleProfile> = preparation::prepare::<_, ENTRY_BUFFER>(
+        image, checked, index, profile, requests, budget, cancelled,
+    )?;
+    prepared.finish_existing::<ENTRY_BUFFER>(budget, cancelled)
 }

@@ -31,6 +31,7 @@ const MAX_SLOTS: usize = 255;
 const OFFSET_MASK: u16 = 0x1fff;
 const DELETED_MASK: u16 = 0x8000;
 const UNSUPPORTED_MASK: u16 = 0x2000;
+const MAX_REFERENCE_PAGE: u32 = u32::MAX >> u8::BITS;
 
 struct Capacity {
     number: u32,
@@ -71,9 +72,71 @@ pub(super) fn prove(
         return Err(EditError::Preservation);
     }
 
-    let encoded = encode(&image, &source, requests, budget, cancelled)?;
-    let (mut capacities, space) = capacities(&image, &source, budget, cancelled)?;
+    let expected = reconstruct(&image, &source, requests, budget, cancelled)?;
+    super::compare(&expected, plan.after_bytes(), budget, cancelled)?;
+
+    // Complete final Source validates all final rows/properties/LVAL and
+    // dependencies; INSERT intentionally increases the original row count.
+    let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
+    let final_source = super::capture(&after, table, budget, cancelled)?;
+    let schema = source.table.schema();
+    let total = source.records.len() + requests.len();
+    if final_source.table.schema().object_id() != schema.object_id()
+        || final_source.table.schema().definition_page() != schema.definition_page()
+        || final_source.records.len() != total
+        || final_source.table.schema().declared_rows() as usize != total
+    {
+        return Err(EditError::Preservation);
+    }
+
+    check(budget, cancelled)?;
+    Ok(())
+}
+
+pub(super) fn reconstruct(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    reconstruct_records(image, source, requests, false, budget, cancelled)
+        .map(|(expected, _)| expected)
+}
+
+/// Return request-aligned ROW identities from this proof's own placement replay.
+/// These references never come from producer reservations or the observed AFTER.
+pub(super) fn reconstruct_with_references(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    reconstruct_records(image, source, requests, true, budget, cancelled)
+}
+
+fn reconstruct_records(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    retain_references: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    let encoded = encode(image, source, requests, budget, cancelled)?;
+    let (mut capacities, space) = capacities(image, source, budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
+
+    let mut references = Vec::new();
+    if retain_references {
+        budget
+            .charge_allocation(requests.len() as u64, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
+        references
+            .try_reserve_exact(requests.len())
+            .map_err(|_| InspectError::Allocation)?;
+    }
 
     for record in &encoded {
         check(budget, cancelled)?;
@@ -96,7 +159,7 @@ pub(super) fn prove(
             let next_free = start
                 .checked_sub(DIRECTORY_AT + DIRECTORY_BYTES * next_count)
                 .ok_or(EditError::Preservation)?;
-            space.require_page(&image, capacity.number, false, budget, cancelled)?;
+            space.require_page(image, capacity.number, false, budget, cancelled)?;
 
             let base = capacity.number as usize * PAGE_BYTES;
             let page = expected
@@ -115,6 +178,20 @@ pub(super) fn prove(
             page[COUNT_AT..COUNT_AT + size_of::<u16>()].copy_from_slice(&count.to_le_bytes());
             let free = u16::try_from(next_free).map_err(|_| InspectError::StructureLimit)?;
             page[FREE_AT..FREE_AT + size_of::<u16>()].copy_from_slice(&free.to_le_bytes());
+
+            // Record the destination at the moment this request claims it.
+            // Later smaller rows can legitimately fit an earlier owned page.
+            if retain_references {
+                if capacity.number > MAX_REFERENCE_PAGE || capacity.count >= MAX_SLOTS {
+                    return Err(EditError::Preservation);
+                }
+                let slot =
+                    u32::try_from(capacity.count).map_err(|_| InspectError::StructureLimit)?;
+                budget
+                    .charge(Resource::Steps, size_of::<u32>() as u64)
+                    .map_err(InspectError::from)?;
+                references.push((capacity.number << u8::BITS) | slot);
+            }
 
             capacity.end = start;
             capacity.count = next_count;
@@ -148,22 +225,7 @@ pub(super) fn prove(
         .map_err(InspectError::from)?;
     check(budget, cancelled)?;
     expected[count_at..count_at + size_of::<u32>()].copy_from_slice(&total.to_le_bytes());
-    super::compare(&expected, plan.after_bytes(), budget, cancelled)?;
-
-    // Complete final Source validates all final rows/properties/LVAL and
-    // dependencies; INSERT intentionally increases the original row count.
-    let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
-    let final_source = super::capture(&after, table, budget, cancelled)?;
-    if final_source.table.schema().object_id() != schema.object_id()
-        || final_source.table.schema().definition_page() != schema.definition_page()
-        || final_source.records.len() != total as usize
-        || final_source.table.schema().declared_rows() != total
-    {
-        return Err(EditError::Preservation);
-    }
-
-    check(budget, cancelled)?;
-    Ok(())
+    Ok((expected, references))
 }
 
 fn encode(

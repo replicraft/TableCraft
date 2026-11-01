@@ -18,6 +18,7 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
+const MAX_REFERENCE_PAGE: u32 = 0x00ff_ffff;
 
 struct Capacity {
     number: u32,
@@ -87,7 +88,8 @@ pub(super) fn reserve(
             .as_bytes()
             .get(start..start + PAGE_BYTES)
             .ok_or(EditError::Preservation)?;
-        if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
+        if number > MAX_REFERENCE_PAGE
+            || page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || u32_at(page, OWNER_OFFSET)? != schema.definition_page()
         {
             return Err(EditError::Preservation);
@@ -177,6 +179,12 @@ pub(super) fn reserve(
 }
 
 impl Staged {
+    pub(super) fn references(&self) -> impl ExactSizeIterator<Item = u32> + '_ {
+        self.rows
+            .iter()
+            .map(|reservation| (reservation.number << 8) | reservation.count as u32)
+    }
+
     pub(super) fn apply(
         self,
         image: &NativeImage,

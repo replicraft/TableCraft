@@ -227,3 +227,6 @@ pub mod genuine_ordinary_insert_feff;
 
 /// Frozen ordinary indexed DELETE originals and literal retained-tree results.
 pub mod genuine_indexed_delete;
+
+/// Frozen complete manual indexed INSERT originals and literal results.
+pub mod genuine_indexed_insert;

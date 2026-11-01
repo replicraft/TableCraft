@@ -2,24 +2,20 @@
 use super::InsertRow;
 use crate::{
     EditError, InspectError, NativeIndex, TableSchema,
-    format::{
-        reader::Reader,
-        row::{reference_page, reference_slot},
-    },
-    table::{
-        indexes::{
-            key::KeyWork,
-            mutation::{
-                profile::WriteProfile,
-                retained::{Preserved, RetainedProfile},
-                row_key::RowKeyProfile,
-            },
-            page::KeyRef,
-        },
-        record,
+    format::reader::Reader,
+    table::indexes::{
+        key::KeyWork,
+        mutation::{profile::WriteProfile, retained::RetainedProfile, row_key::RowKeyProfile},
+        page::KeyRef,
     },
 };
+#[cfg(feature = "ace16-write-preview")]
+use crate::{
+    format::row::{reference_page, reference_slot},
+    table::{indexes::mutation::retained::Preserved, record},
+};
 use std::io::Cursor;
+#[cfg(feature = "ace16-write-preview")]
 use tablecraft_core::{limits::Resource, values::Value};
 
 pub(in crate::table::indexes::mutation) trait InsertProfile:
@@ -66,6 +62,7 @@ impl<P: WriteProfile> InsertProfile for P {
     }
 }
 
+#[cfg(feature = "ace16-write-preview")]
 impl<P: RowKeyProfile> InsertProfile for Preserved<P> {
     fn request_key(
         &self,
