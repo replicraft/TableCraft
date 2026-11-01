@@ -55,14 +55,40 @@ The current profile supports one through sixteen columns and at most 64 rows,
 with an additional physical fit check. A wide schema can fit fewer rows; a
 request that does not fit is refused before publication. Names are validated by
 the native constructor and limited to 64 UTF-16 code units. Column order is the
-written schema order. All values are supplied manually: a name such as
-`Id` does not create a primary key or AutoNumber.
+written schema order. All values are supplied manually. Without `--primary-key`, a name such as
+`Id` creates neither a primary key nor AutoNumber.
 
 ```sh
 tablecraft create people.accdb --table 'People Stats' \
   --column 'Person Id' --column 'Score Δ'
 tablecraft create --help
 ```
+
+## Explicit manual primary key
+
+Add `--primary-key COLUMN INDEX_NAME` once to either schema mode:
+
+```sh
+tablecraft create keyed.accdb --table Items \
+  --column Id --column Score --primary-key Id PrimaryId --data rows.tsv
+```
+
+The selector matches exactly one declared column under ASCII case folding. The
+index name is explicit and validated by the native constructor. Int32, Int64 and
+Currency are supported manual key declarations; native constraints reject NULL
+or duplicate keys before publication. A header-only file or omitted `--data`
+creates an empty table with the declared key. Names and LAST values never infer
+AutoNumber or generated values.
+
+`--column` retains present decimal Int32 parsing. Use `--field` for exact Int64
+or `currency-scaled` carriers; Currency input is signed integer units of 1/10000.
+Typed NULL remains NULL and fails the primary key constraint. No SQL coercion,
+default or generation policy is added. Repeated/incomplete key flags, missing or
+ambiguous column selectors, unsupported declarations and native name/key errors
+publish no file. Existing destinations are never replaced.
+
+The CLI still creates one table. Multiple-table creation remains available
+through the shared library service; this flag adds no repeated-table syntax.
 
 ## Explicit typed schema
 

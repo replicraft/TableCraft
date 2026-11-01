@@ -2,6 +2,7 @@
 mod args;
 mod error;
 mod input;
+mod primary;
 mod report;
 mod schema;
 
@@ -13,8 +14,9 @@ pub(crate) use error::Error;
 
 use std::io::Write;
 use tablecraft_access::creation::CreationDestination;
-use tablecraft_ace::InspectError;
+use tablecraft_ace::{CreateColumn, InspectError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_schema::ScalarType;
 
 pub(crate) fn execute(
     arguments: Arguments,
@@ -32,6 +34,32 @@ pub(crate) fn execute(
     } else {
         Some(schema::parse(&arguments.fields, &mut budget, &cancelled)?)
     };
+    // Resolve optional key metadata before destination capture or TSV reads.
+    // The engine still owns name/type/key constraints and physical encoding.
+    let primary_columns = if arguments.primary_key.is_empty() {
+        None
+    } else {
+        let mut columns = Vec::new();
+        if let Some(fields) = &typed {
+            input::reserve(&mut columns, fields.len(), &mut budget)?;
+            columns.extend(fields.iter().map(|field| field.column));
+        } else {
+            input::reserve(&mut columns, arguments.columns.len(), &mut budget)?;
+            columns.extend(
+                arguments
+                    .columns
+                    .iter()
+                    .map(|name| CreateColumn::new(name, ScalarType::Int32)),
+            );
+        }
+        primary::bind(
+            &mut columns,
+            &arguments.primary_key,
+            &mut budget,
+            &cancelled,
+        )?;
+        Some(columns)
+    };
     let destination = CreationDestination::capture(&arguments.path, &mut budget, &cancelled)
         .map_err(Error::Creation)?;
     let prepared = if let Some(fields) = typed {
@@ -41,9 +69,14 @@ pub(crate) fn execute(
         } else {
             Vec::new()
         };
-        let mut columns = Vec::new();
-        input::reserve(&mut columns, fields.len(), &mut budget)?;
-        columns.extend(fields.iter().map(|field| field.column));
+        let columns = if let Some(columns) = primary_columns {
+            columns
+        } else {
+            let mut columns = Vec::new();
+            input::reserve(&mut columns, fields.len(), &mut budget)?;
+            columns.extend(fields.iter().map(|field| field.column));
+            columns
+        };
         let mut borrowed_rows = Vec::new();
         input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
         borrowed_rows.extend(rows.iter().map(Vec::as_slice));
@@ -63,21 +96,39 @@ pub(crate) fn execute(
         } else {
             Vec::new()
         };
-        let mut columns = Vec::new();
-        input::reserve(&mut columns, arguments.columns.len(), &mut budget)?;
-        columns.extend(arguments.columns.iter().map(String::as_str));
-        let mut borrowed_rows = Vec::new();
-        input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
-        borrowed_rows.extend(rows.iter().map(Vec::as_slice));
-        destination
-            .prepare(
-                &arguments.table,
-                &columns,
-                &borrowed_rows,
-                &mut budget,
-                &cancelled,
-            )
-            .map_err(Error::Creation)?
+        if let Some(columns) = primary_columns {
+            // Retain the strict --column parser. Only this new keyed route
+            // adapts its already validated Int32 cells to the typed service.
+            let values = primary::values(&rows, &mut budget, &cancelled)?;
+            let mut borrowed_rows = Vec::new();
+            input::reserve(&mut borrowed_rows, values.len(), &mut budget)?;
+            borrowed_rows.extend(values.iter().map(Vec::as_slice));
+            destination
+                .prepare_typed(
+                    &arguments.table,
+                    &columns,
+                    &borrowed_rows,
+                    &mut budget,
+                    &cancelled,
+                )
+                .map_err(Error::Creation)?
+        } else {
+            let mut columns = Vec::new();
+            input::reserve(&mut columns, arguments.columns.len(), &mut budget)?;
+            columns.extend(arguments.columns.iter().map(String::as_str));
+            let mut borrowed_rows = Vec::new();
+            input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
+            borrowed_rows.extend(rows.iter().map(Vec::as_slice));
+            destination
+                .prepare(
+                    &arguments.table,
+                    &columns,
+                    &borrowed_rows,
+                    &mut budget,
+                    &cancelled,
+                )
+                .map_err(Error::Creation)?
+        }
     };
     let report = report::Report::prepare(&prepared, &mut budget)?;
     let receipt = prepared
