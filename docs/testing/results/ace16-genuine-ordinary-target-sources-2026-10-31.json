@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-31",
+  "scope": "Existing genuine ordinary Items originals and independent literal fixed/index edit source qualification",
+  "originals": [
+    {
+      "header": 5,
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h5-distinct.accdb",
+      "bytes": 405504,
+      "sha256": "72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d"
+    },
+    {
+      "header": 6,
+      "path": ".cache/ace16-secondary-index-public-reference-20261030/generated-sources/h6-distinct.accdb",
+      "bytes": 475136,
+      "sha256": "5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5"
+    }
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      0
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "literal_outcomes": 10,
+  "native_views": 12,
+  "intended_refusal_requests": 4,
+  "source_request_freeze": {
+    "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/FIRST_FREEZE.json",
+    "bytes": 1146,
+    "sha256": "cc320d710df7acefaa6a760f50a681b4b5a08b6fff7e3cb16eeabd6acb45357a"
+  },
+  "report_freeze": {
+    "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/REPORT_FIRST_FREEZE.json",
+    "bytes": 1061,
+    "sha256": "ef708f812639b2f1d54369fffc467f445393c509895986997212f1450d840491"
+  },
+  "original_observation_bindings": {
+    "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/source-bindings.json",
+    "bytes": 2464,
+    "sha256": "f528d3d910ae46f3d40ba2ddcd15700d44415d225937d79deca181bf2e82b78b"
+  },
+  "literal_construction": {
+    "preimport_receipt": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/construction-before-import.json",
+      "bytes": 241,
+      "sha256": "61bfaf4ff9f084b9b44115bccebd1fcc2168011ee70707530895c1a6165b3645"
+    },
+    "views": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/constructed-first/views.json",
+      "bytes": 4091,
+      "sha256": "116f4e93ee548916285f2e6caaf10fa77118804f33ed92515ea682b76f9d1f6a"
+    },
+    "proofs": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/constructed-first/proofs.json",
+      "bytes": 5977,
+      "sha256": "da6d2e363c0d5529115b8208f244ad83ec9676e3e584f8ffaa696f322f43b22c"
+    },
+    "native_inventory": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/constructed-first/native-views.tsv",
+      "bytes": 1380,
+      "sha256": "179f37612fce10783adf3e7a5306126a52a56b97fd8ac38e6d54219fb95ef2e8"
+    },
+    "database_runtime_or_writer_calls": 0
+  },
+  "native_source_read": {
+    "before_first_gate": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/native-gate-before-first.json",
+      "bytes": 3439,
+      "sha256": "eb622d6f6db37430ca3f6eec9cd5ec5c1397fc58e55cbf96fd20aa9a5b2e4469"
+    },
+    "retained_first_compile": {
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/native-first-root.log",
+        "bytes": 3156,
+        "sha256": "eb609f8482f754a68a88a20b1fcd9f176f82c515e430476df1df67f7758be2d9"
+      },
+      "status": "compile_failed_before_tests",
+      "diagnostics": [
+        "E0277 digest LowerHex formatting",
+        "E0277 Column versus &str comparison",
+        "E0277 missing Column Debug for assert_eq"
+      ]
+    },
+    "retained_second_compile": {
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/native-second-root.log",
+        "bytes": 1795,
+        "sha256": "2580a8d4fe388a4b56b9ab8624427c6de12d96741c0bf23fe3158a81347b15cb"
+      },
+      "status": "compile_failed_before_tests",
+      "diagnostics": [
+        "E0277 digest LowerHex formatting",
+        "E0658 unnecessary str.as_str call"
+      ]
+    },
+    "terminal_log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/native-third-root.log",
+      "bytes": 520,
+      "sha256": "66362e54d3eb53df2fa9b9457e91463f50b933e99169a17b110d9fd8c829f618"
+    },
+    "status": "PASS",
+    "tests_passed": 1,
+    "views": 12,
+    "runtime_seconds": 0.12,
+    "result": "Actual scalar rows, complete table/index checks, constraints and inert target payload/child observations",
+    "source_request_model_expected_observer_retuned": false
+  },
+  "independent_sdk": {
+    "plan": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/sdk-first/plan-before-calls.json",
+      "bytes": 95606,
+      "sha256": "41b34d87e913aa1476b6c9c49756c0942a66ceac843a07781e248246ca22b9cf"
+    },
+    "receipt": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/sdk-first/reports-first/receipt.json",
+      "bytes": 77183,
+      "sha256": "eff805bf404045514eb4a7fe3953aa3a81376f23f151ab9925a244b0a4e33234"
+    },
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/sdk-first/execution-first.log",
+      "bytes": 76,
+      "sha256": "1c2731c3ce6534a7049c287a4e36047f0b06ad0d7dbd0a23c250a1956b663018"
+    },
+    "saved_verification": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/sdk-first/saved-verification.json",
+      "bytes": 233,
+      "sha256": "f00b2f07bf0a246a6a9fe028aa137b622a06f75e5f1ca981482248af35d575f1"
+    },
+    "status": "PASS",
+    "completed": 60,
+    "full_inventories": 12,
+    "logical_index_cursors": 48,
+    "exact_stdout": true,
+    "stderr_empty": true,
+    "all_frozen_pins_unchanged": true,
+    "new_observer_or_cursor_source_changes": false,
+    "genuine_native_writer_calls": 0
+  },
+  "maintained_tools": {
+    "files": [
+      {
+        "path": "scripts/compatibility/genuine_ordinary_targets/model.py",
+        "bytes": 8245,
+        "sha256": "bcb944cffb06fdeee2ca822c1782a5871cdeca36a1975622d3f718284538114d"
+      },
+      {
+        "path": "scripts/compatibility/genuine_ordinary_targets/reports.py",
+        "bytes": 7196,
+        "sha256": "739edb61a3dc5ca897b197d886360f9cef8ab608e0d58117b1fc8af5868d199d"
+      },
+      {
+        "path": "scripts/compatibility/genuine_ordinary_targets/requests.json",
+        "bytes": 6159,
+        "sha256": "053995b3538c0a424cbab102ac55930219ddcaf1b349081b807be9ca788ab28f"
+      },
+      {
+        "path": "scripts/compatibility/genuine_ordinary_targets/create_expected.py",
+        "bytes": 5634,
+        "sha256": "2eb39b11ae90f1ca19b06777002998069e53384f630e8b2b2c5d364fea3037ba"
+      }
+    ],
+    "promotion_checks": {
+      "model_ast_identical": true,
+      "reports_ast_identical": true,
+      "requests_byte_identical": true,
+      "create_expected_syntax_parsed": true
+    },
+    "fresh_command_replay_status": "PASS",
+    "expected_artifacts": {
+      "database_views": 12,
+      "proofs": 10,
+      "full_reports": 12,
+      "cursor_reports": 48,
+      "total_files": 75
+    },
+    "fresh_command_replay": {
+      "verification": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/public-replay-verification.json",
+        "bytes": 19732,
+        "sha256": "c776c219a50d32ba5f4710cdaef57a58dd2f746301248ab3b13c3d9a15fee9cf"
+      },
+      "output_directory": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/public-replay-first",
+      "status": "PASS",
+      "artifacts": 75,
+      "database_views": 12,
+      "reports": 60,
+      "manifest_and_proofs": 3,
+      "all_bytes_match_pre_reader_expectations": true,
+      "model_and_report_ast_unchanged": true,
+      "genuine_native_writer_calls": 0,
+      "views": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/public-replay-first/views.json",
+        "bytes": 4091,
+        "sha256": "116f4e93ee548916285f2e6caaf10fa77118804f33ed92515ea682b76f9d1f6a"
+      },
+      "proofs": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/public-replay-first/proofs.json",
+        "bytes": 5977,
+        "sha256": "da6d2e363c0d5529115b8208f244ad83ec9676e3e584f8ffaa696f322f43b22c"
+      },
+      "native_inventory": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/expected/public-replay-first/native-views.tsv",
+        "bytes": 1380,
+        "sha256": "179f37612fce10783adf3e7a5306126a52a56b97fd8ac38e6d54219fb95ef2e8"
+      }
+    }
+  },
+  "boundaries": [
+    "This record qualifies source and literal AFTER reads, not a native producer, normal write admission or recovery/session",
+    "Duplicate Id and stale Score requests have no expected AFTER and remain intended future planner refusals",
+    "Original observations and immutable bytes supply expectations; no new SDK output or producer image is an oracle",
+    "Creator identity, matching digests and empty inventories are not absence certificates or permissions",
+    "All unrelated header/system/VBA/catalog/map/index-capacity bytes are preserved; no original content was stripped",
+    "No native Microsoft Access save/reopen or Windows comparison",
+    "Zero genuine native writer counts describe this completed source-qualification and pure-tool replay phase; later write integration is separate acceptance evidence"
+  ],
+  "new_binary_files_tracked": 0
+}
