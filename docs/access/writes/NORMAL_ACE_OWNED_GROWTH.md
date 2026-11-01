@@ -5,6 +5,9 @@ fitting or owned-page growth from the original bound requests. Every target and
 expected value is checked before selection. Qualified encoding determines the
 minimum payload size against actual record capacity; a failed planner is never
 retried in another mode. Existing explicit fitting APIs keep their previous limits.
+The automatic route can additionally choose [one represented EOF allocation](NORMAL_ACE_EOF_ALLOCATION.md)
+when all owned capacities are exhausted; explicit owned-only planning retains
+this document's fixed-length contract.
 
 ## Admission and physical scope
 

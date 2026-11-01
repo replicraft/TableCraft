@@ -97,13 +97,14 @@ tablecraft query journal-update "UPDATE Items SET TextValue='beta' WHERE Id=1" \
 ```
 
 Fitted requests retain TCNI0005; fixed-only requests retain their prior profiles.
-Qualified native ACE tables can also use [same-page record growth](../access/writes/NORMAL_ACE_OWNED_GROWTH.md)
-through this command, with original capacity selecting TCNI0006 before staging.
-No extra flag is needed. Other-page placement, page allocation and file growth
-remain unsupported by this normal route.
-The adapter validates every target even for zero matches. This route allocates
-no DATA/index pages and rejects indexed variable targets, unsupported properties
-and required programs. Typed/native Binary writes have broader coverage than
+Qualified native ACE tables can also use [owned-page record growth](../access/writes/NORMAL_ACE_OWNED_GROWTH.md)
+through this command. When all eligible owned capacity is exhausted,
+[first EOF allocation](../access/writes/NORMAL_ACE_EOF_ALLOCATION.md) can append
+one DATA page using three already represented map cells. Original capacity and
+complete reservations select TCNI0005/6/7 before staging; no extra flag is needed.
+The adapter validates every target even for zero matches. General map growth,
+index allocation, indexed variable targets, unsupported properties and required
+programs retain their refusals. Typed/native Binary writes have broader coverage than
 SQL literal assignment; the CLI does not invent a Binary literal dialect.
 
 The indexed-target CLI checks pass 24 literal saves and exact row readbacks,
@@ -171,7 +172,7 @@ by completed API barriers.
 ## Recovery and completion
 
 Recovery accepts no SQL, output-copy option or password. It checks actual object
-association, bounded persisted intent and the checked V1 record, then rebuilds the
+association, bounded persisted intent and its selected checked V1/V2 record, then rebuilds the
 record-selected native plan and compares both complete images before a recovery
 write. A different target object with identical bytes does not satisfy
 association. Keep the selected namespace stable while an operation runs.
@@ -182,8 +183,10 @@ bounded pure stored programs against the recorded BEFORE image and original type
 requests. Ordinary TCNI0004 recovery instead freshly repeats the selected content
 or target-local absence profile and reconstructs the original fixed requests;
 no certificate is serialized. No external
-callback or effect is replayed. Closed intent version/profile dispatch refuses
-unknown records without trying another validator.
+callback or effect is replayed. TCNI0005/6 retain fixed V1 recovery; TCNI0007
+requires native reconstruction of the one-page allocation through the same
+loaded V2 journal. Closed intent version/profile dispatch refuses unknown or
+mismatched protocols without trying another validator.
 
 Successful apply reports:
 
@@ -226,7 +229,7 @@ accept an active bundle, SQL or copy-output options. It associates the retained
 objects, requalifies the original native intent and both complete recorded images,
 then lends write-denied target/journal views to completed-image confirmation.
 
-A committed V1 record requires exact current replacement bytes. Pending state,
+A committed V1 or V2 record requires exact current replacement bytes and length. Pending state,
 including an admitted partial marker, requires exact current original bytes.
 Both storage barriers must complete. Opposite or mixed current images refuse
 without copying either image back, rolling forward, rolling back or falling back

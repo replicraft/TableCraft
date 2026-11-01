@@ -69,3 +69,18 @@ allocation geometries, broader index allocation and normal INSERT/DELETE remain
 separate work. These source/read and portable journal checks do not establish
 Microsoft Access save/reopen conformance or Windows locking/durability behavior;
 those comparisons remain unrun.
+
+## Retained Access and CLI adoption
+
+The existing typed editor, SQL session and `query journal-update` command now
+consume this automatic route. The session borrows the same retained target's
+explicit resize capability and stores the original intent before effects.
+Active recovery selects V1 for profiles 1–6 and V2 for profile 7 before native
+qualification; mismatched protocols refuse without fallback. Retired profile 7
+uses write-denied ordinary views for complete-image confirmation.
+
+Two typed and four SQL saves, four CLI saves/readbacks, eight real restarted
+active/retired contexts, two interrupted-extension same-session rollbacks and
+two intent6/V2 mismatch refusals pass. Counts, current-image versus historical
+receipt facts, namespace retirement, exact restored length and continuous lease
+are checked. See the [host record](../../testing/results/ace16-retained-eof-allocation-2026-11-01.json).
