@@ -1,9 +1,28 @@
 # Implementation status
 
+## Retained-tree deletion and optional indexed insertion
+
+Normal DELETE now retains qualified single-Int32 NODE trees without contraction,
+rebuilding full key/ROW fences from original leaf membership. Native, retained
+session and CLI saves match independently authored complete images. Normal INSERT
+now also maintains nullable/descending single-Int32 root leaves, with separate
+raw-mask proof and unchanged ascending/present charging. Both routes preserve
+physical aliases, historical counters, protected tails and the original V1
+journal lifecycle.
+
+Broad checks pass 1,121 ACE units, 79 adapter units, 102 CLI units and 83 default
+recovery functions, alongside strict all/journal/preview and minimal builds.
+Targeted whole-image, recovery, forgery, resource and host checks are in the
+[NODE DELETE record](testing/results/ace16-normal-retained-node-delete-writes-2026-11-01.json)
+and [optional INSERT record](testing/results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
+NODE insertion, defaults/generation, broader keys, page retirement and native
+Access save/reopen remain open.
+
 ## Indexed ordinary INSERT and DELETE
 
 The normal journal routes now maintain qualified single-Int32 root-leaf indexes.
-INSERT currently requires ascending present keys. DELETE now has independently
+The initial INSERT evidence below covers ascending present keys; nullable and
+descending insertion is qualified separately above. DELETE now has independently
 qualified write evidence for both ascending present keys and descending keys
 with stored NULL members. Each physical index changes once across compatible logical aliases.
 Original intents, complete ownership, independent whole-image reconstruction,

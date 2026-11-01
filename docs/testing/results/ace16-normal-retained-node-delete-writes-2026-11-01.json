@@ -146,5 +146,13 @@
     "functions": 2,
     "command": "cargo test --locked -p tablecraft-cli --all-features --bin tablecraft normal_action_boundary_explicit",
     "scope": "Updated help strings only, after the full 102-test CLI batch"
+  },
+  "strict_source_help_follow_on": {
+    "passed": true,
+    "log": {
+      "path": ".cache/ace16-normal-node-and-nullable-next-20261101/strict-source-followon-first.log",
+      "bytes": 403,
+      "sha256": "d2762c0612fa872e98ac16f3698d6957b9bcb142b589d76aa478290001aca6bf"
+    }
   }
 }

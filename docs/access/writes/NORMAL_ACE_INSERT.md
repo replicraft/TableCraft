@@ -12,7 +12,7 @@ tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES
 The first normal INSERT profile accepts complete explicitly supplied rows on a
 qualified native 17-field ordinary table with no required programs. The target
 must have no relationship involving it. Unindexed targets retain their existing
-route; qualified ascending, present-Int32 root-leaf indexes now use the indexed
+route; qualified nullable/directional single-Int32 root-leaf indexes use the indexed
 route described below. Every operation freshly derives NoRequired and the
 complete native Source; creator provenance, an empty inventory or a caller flag
 cannot grant admission. The initial global 15-field catalog family remains outside this
@@ -119,10 +119,10 @@ for focused scope and preserved first preview assertion failures.
 ## Indexed existing-page insertion
 
 The indexed route requires complete ordinary scalar declarations and checked
-single-column Int32 indexes with present values, ascending direction and one
-qualified root leaf per physical index. All logical aliases must agree. Catalog
+single-column Int32 indexes with qualified nullable/directional keys and one
+root leaf per physical index. All logical aliases must agree. Catalog
 ownership and live LVAL checks exclude conflicting page roles. Ignored-NULL,
-composite, descending, nullable-key, foreign-reference and interior-node profiles
+composite, foreign-reference and interior-node profiles
 remain outside this initial insertion route. Empty batches retain these checks.
 
 The shared index builder reserves all rows and keys before copying candidate
@@ -163,3 +163,19 @@ mixed targets refuse without writes. Eight successive typed/SQL single-row
 saves reach the same independently authored joint images under retained leases.
 See the [source contract](../../testing/ACE16_INDEXED_INSERT_ASSOCIATION_SOURCES.md)
 and [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
+
+## Nullable and descending keys
+
+The same stage now admits optional and descending Int32 keys. Independent proof
+binds original raw presence masks, preserves inactive NULL payloads, encodes
+variable-width directional key/ROW entries and recomputes entry-end bitmaps,
+free space and historical deltas. Repeated NULL and existing present families
+do not increment history; NULL retains its separate UNIQUE and Required rules.
+The established ascending/present proof path retains its charging and polling.
+
+Six native source views and 36 SDK observations precede eight complete commits.
+Four directly constructed literal plans also prove without planner authority;
+36 changed images/requests refuse. Recovery, source/protected-byte forgeries,
+full budget/cancellation controls and typed/SQL/CLI NULL readbacks pass. See the
+[source contract](../../testing/ACE16_NORMAL_INDEXED_DESC_NULL_INSERT_SOURCES.md)
+and [write record](../../testing/results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).

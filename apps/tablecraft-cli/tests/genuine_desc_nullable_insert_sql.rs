@@ -1,0 +1,104 @@
+#![cfg(any(target_os = "macos", target_os = "linux"))]
+
+use sha2::{Digest, Sha256};
+use std::{
+    fs,
+    path::Path,
+    process::{Command, Output},
+};
+use tablecraft_testkit::access::genuine_desc_nullable_insert as sources;
+
+fn verify(raw: &[u8], expected: &str) {
+    let actual = Sha256::digest(raw)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    assert_eq!(actual, expected);
+}
+
+fn insert(path: &Path, bundle: &Path, sql: &str) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+        .args(["query", "journal-insert", sql])
+        .arg("--database")
+        .arg(path)
+        .arg("--journal")
+        .arg(bundle)
+        .output()
+        .unwrap()
+}
+
+#[test]
+#[ignore = "requires all six source-first indexed INSERT views and SDK36 qualification"]
+fn cli_nullable_desc_inserts_preserve_exact_files_null_rows_and_primary_constraints() {
+    let mut commits = 0;
+    let mut reads = 0;
+    for case in sources::load_all(verify) {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("target.accdb");
+        let bundle = directory.path().join("journal");
+        fs::write(&path, &case.before).unwrap();
+
+        for (sql, expected, rows) in [
+            (
+                "INSERT INTO Items ([Id], [Score], [Guard]) VALUES (4, 17, NULL)",
+                &case.single,
+                "Id\tScore\tGuard\n1\t-1\tNULL\n2\t0\t1\n3\t1\t2\n4\t17\tNULL\n",
+            ),
+            (
+                "INSERT INTO Items ([Guard], [Id], [Score]) VALUES (1, 5, 18)",
+                &case.batch,
+                "Id\tScore\tGuard\n1\t-1\tNULL\n2\t0\t1\n3\t1\t2\n4\t17\tNULL\n5\t18\t1\n",
+            ),
+        ] {
+            let output = insert(&path, &bundle, sql);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stderr.is_empty());
+            assert_eq!(output.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+            assert_eq!(fs::read(&path).unwrap(), *expected);
+            assert!(!bundle.exists());
+            commits += 1;
+
+            let read = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
+                .args(["query", "run", "SELECT [Id], [Score], [Guard] FROM Items"])
+                .arg("--database")
+                .arg(&path)
+                .output()
+                .unwrap();
+            assert!(
+                read.status.success(),
+                "{}",
+                String::from_utf8_lossy(&read.stderr)
+            );
+            assert!(read.stderr.is_empty());
+            assert_eq!(read.stdout, rows.as_bytes());
+            assert_eq!(fs::read(&path).unwrap(), *expected);
+            assert!(!bundle.exists());
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+            reads += 1;
+        }
+
+        for (sql, diagnostic) in [
+            (
+                "INSERT INTO Items ([Id], [Score], [Guard]) VALUES (4, 99, NULL)",
+                "duplicate non-NULL key",
+            ),
+            (
+                "INSERT INTO Items ([Id], [Score], [Guard]) VALUES (NULL, 99, NULL)",
+                "NULL key in primary or required index",
+            ),
+        ] {
+            let refused = insert(&path, &bundle, sql);
+            assert_eq!(refused.status.code(), Some(2));
+            assert!(refused.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&refused.stderr).contains(diagnostic));
+            assert_eq!(fs::read(&path).unwrap(), case.batch);
+            assert!(!bundle.exists());
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        }
+    }
+    assert_eq!((commits, reads), (4, 4));
+}

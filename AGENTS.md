@@ -66,10 +66,12 @@ sessions and CLI consumers. Insertion schema construction remains metadata-only;
 the consuming finish performs complete native admission. Empty operations retain
 all source/action checks. Preserve separate original TCNA/TCND intents and fresh
 native reconstruction through the same checked journal; never retry a failed
-action decoder as another action. Qualified single-Int32 root-leaf deletion and
-ascending present-Int32 root-leaf insertion retain physical alias grouping,
-complete ownership, protected tails and independent cardinality-changing proof.
-These bounded routes do not qualify broader index trees, generation/defaults or
+action decoder as another action. Qualified nullable/directional single-Int32 root-leaf insertion and deletion
+retain physical alias grouping, complete ownership, protected tails and independent
+cardinality-changing proof. Deletion also supports retained trees whose children
+remain nonempty; check every INDEX descendant against live LVAL roles and rebuild
+full key plus ROW fences from original membership. These routes do not qualify
+page retirement, broader key families, generation/defaults or
 required-program execution.
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and

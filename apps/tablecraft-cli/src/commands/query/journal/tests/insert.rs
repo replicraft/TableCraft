@@ -120,7 +120,7 @@ fn insertion_help_keeps_the_normal_action_boundary_explicit() {
         .to_string();
     let help = help.split_whitespace().collect::<Vec<_>>().join(" ");
     for expected in [
-        "ascending present-Int32 root-leaf indexes are supported",
+        "root-leaf indexes support nullable and descending keys",
         "other indexes and relationships refuse",
         "Supply every declared field exactly once",
         "Non-NULL Memo/OLE authoring is unsupported",
