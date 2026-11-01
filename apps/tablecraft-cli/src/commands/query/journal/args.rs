@@ -11,20 +11,22 @@ const WORK_STEPS: u64 = 100_000_000;
 #[derive(Args)]
 #[command(
     after_help = concat!(
-        "Explicit offline in-place Int32 UPDATE for Jet4 or the narrow positive-program ACE BeforeChange profile. ",
+        "Explicit offline normal UPDATE for Jet4 or the narrow positive-program ACE BeforeChange profile. Jet4 retains one Int32 SET target. ",
         "Keep other applications and ordinary readers closed until this command or explicit recovery finishes. ",
         "The journal directory must be fresh. Planning precedes journal creation; every commit error requires explicit recovery, never automatic SQL retry. ",
         "ACE requires unencoded ACE2016/2019 subversion zero, complete source-bound pure BeforeChange coverage and no relationships. ",
         "Tables containing only ordinary updatable Int32 fields support checked non-NULL indexes with compressed prefixes, retained interior nodes, composites, aliases and final unique-key swaps. ",
-        "Complete mixed scalar tables may maintain checked fixed-Int32 indexes beside untouched NULL components; rich/unavailable siblings retain unindexed edits. Int32 AutoNumber values may be operands/key components, but their fields cannot be assigned. ",
-        "Original NULL-key facts and potential targets select the previous unindexed qualifier or checked indexed route before indexed planning. NULL target transitions remain refused. ",
-        "Changed targets remain non-NULL and outside calculation/collection dependencies. Fitting retains page identities, topology and leaf entry counts. ",
+        "Complete mixed scalar tables may maintain checked fixed-Int32 indexes beside untouched NULL components; rich/unavailable siblings retain the existing unindexed Int32 edits. Int32 AutoNumber values may be operands/key components, but their fields cannot be assigned. ",
+        "Original NULL-key facts and potential targets select the previous unindexed qualifier or checked indexed route before indexed planning. Indexed NULL target transitions remain refused. ",
+        "Existing indexed Int32 targets remain non-NULL and outside calculation/collection dependencies. Fitting retains page identities, topology and leaf entry counts. ",
+        "Complete ordinary scalar ACE tables additionally support atomic unindexed fixed SET groups over Boolean, Int32, Int64, Currency and legacy DATE. Numeric NULL transitions retain inactive payload bytes; Boolean is nonnullable. ",
+        "All SET expressions read one original snapshot before native programs run. Wide fields are user targets only; macro operands and writes retain the Int32/NULL language. ",
         "Ignore-NULL index rewriting, splits and map/storage growth refuse. Supplied equal assignments refuse with EventTiming; unknown required content cannot be skipped. ",
         "This does not enable general ACE saves or certify macro absence. Supported filesystem lifecycle: macOS and Linux.",
     )
 )]
 pub(crate) struct UpdateArguments {
-    /// One local single-assignment UPDATE, evaluated once against the original image.
+    /// One local UPDATE; all SET expressions read the same original snapshot.
     #[arg(allow_hyphen_values = true)]
     pub(super) sql: String,
     /// Existing offline file in an admitted native profile, retained under one exclusive lock.

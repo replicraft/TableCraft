@@ -12,6 +12,21 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Journaled fixed-scalar SQL batches
+
+The CLI now routes validated multiple SET assignments to the shared batch service
+through the existing retained offline session and journal lifecycle. All 94 CLI
+unit tests, twelve complete-image saves in five integration tests, and eight
+legacy journal integration tests pass. Zero matches cannot bypass unsupported
+target metadata or Jet4 batch capabilities. The first reserved-Money parser failure
+is retained; executable requests bracket that identifier without changing the
+qualified source images or expected outcomes. A separate fresh CLI run passes
+twelve complete-image saves and twelve exact full TSV readbacks; its initial
+source-GUID expectation correction is retained separately. This extends the restricted
+positive BeforeChange profile, not general ACE save admission. See the
+[fixed-scalar contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
+[execution record](testing/results/ace16-normal-fixed-sql-cli-2026-10-31.json).
+
 ## SQL-addressable fixed-scalar source qualification
 
 Ten discriminator originals and ten literal outcomes now qualify one-row wide

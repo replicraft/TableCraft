@@ -10,21 +10,23 @@ use tablecraft_io::journal::RecoveryOutcome;
 pub(super) fn update(args: UpdateArguments, writer: &mut dyn Write) -> Result<(), Error> {
     let _span = tracing::debug_span!("cli.query.journal_update").entered();
     let mut budget = args.work.budget();
-    let (query, collation) = preflight::prepare(&args, &mut budget)?;
+    let (query, collation, route) = preflight::prepare(&args, &mut budget)?;
 
     let session =
         OfflineWriteSession::open(&args.database, native::CATALOG_SCOPE, &mut budget, &|| {
             false
         })
         .map_err(Error::OfflineOpen)?;
-    let staged = session
-        .plan_update(
-            query.query(),
-            &mut budget,
-            collation.as_ref().map(|policy| policy as &dyn Collation),
-            &|| false,
-        )
-        .map_err(Error::Offline)?;
+    let collation = collation.as_ref().map(|policy| policy as &dyn Collation);
+    let staged = match route {
+        preflight::Route::Single => {
+            session.plan_update(query.query(), &mut budget, collation, &|| false)
+        }
+        preflight::Route::Batch => {
+            session.plan_batch_update(query.query(), &mut budget, collation, &|| false)
+        }
+    }
+    .map_err(Error::Offline)?;
 
     // Allocate and format the complete host report before journal creation or
     // target mutation. The shared backend owns the actual save lifecycle.

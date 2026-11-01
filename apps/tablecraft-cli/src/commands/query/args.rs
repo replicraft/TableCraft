@@ -15,7 +15,7 @@ pub(crate) enum Command {
     PreviewBeforeChange(Box<super::preview_before_change::Arguments>),
     /// Confirm an intact retired native bundle without replaying its edit.
     FinalizeUpdate(Box<super::journal::FinalizeArguments>),
-    /// Apply one qualified normal Int32 UPDATE in place with a retained journal.
+    /// Apply one qualified normal UPDATE in place with a retained journal.
     JournalUpdate(Box<super::journal::UpdateArguments>),
     /// Recover one paired native edit without replaying SQL.
     RecoverUpdate(Box<super::journal::RecoveryArguments>),

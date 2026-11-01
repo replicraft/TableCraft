@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-31",
+  "scope": "Restricted journaled ACE fixed-scalar SQL/CLI batches",
+  "source_commit": "9e761d86",
+  "production_changes": [
+    "Validated single/batch routing before target open",
+    "Existing shared OfflineWriteSession planning, apply and release",
+    "No engineering-to-normal conversion or planner retry"
+  ],
+  "first_attempt": {
+    "log": {
+      "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/integration-first-root.log",
+      "bytes": 1174,
+      "sha256": "84fd1ba6a6c5bfa1b331b07f0a53453f857d0803c77c51a54a5a50c54256fae2"
+    },
+    "result": "2 passed, 1 failed",
+    "cause": "Authored SQL used reserved unquoted Money target",
+    "correction": "Only executable successor requests quote [Money]; original source/request pins and literal expected images are unchanged"
+  },
+  "verification": [
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/unit-first-root.log",
+        "bytes": 1624,
+        "sha256": "b985355f16d314aecff9b62a6a3aea2571a8c3b1a7bd76b953ab03bab568754f"
+      },
+      "result": "8 journal unit tests passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/integration-quoted-target-root.log",
+        "bytes": 619,
+        "sha256": "5753bcce6b01d89579fcbb6f796c49bf2f1b2650afad2956720946ee3247f24d"
+      },
+      "result": "3 integration tests passed",
+      "complete_image_saves": 12,
+      "headers": [
+        5,
+        6
+      ],
+      "controls": [
+        "Both SET orders read original Flag=false and produce Int64 42",
+        "Eager unused IIf division error refuses without journal",
+        "Duplicate and unsupported targets refuse without journal",
+        "Genuine zero-match preserves complete source"
+      ]
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/legacy-journal-root.log",
+        "bytes": 1055,
+        "sha256": "87f0439f4b4ea90f90c031af59fd2ce491617b10258757075eeae9b5ee57b61b"
+      },
+      "result": "8 legacy journal integration tests passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/bin-regression-root.log",
+        "bytes": 10499,
+        "sha256": "14a56e227e994979d00811cdf77b886fbf807bfa708a1831edbb81691db2ac54"
+      },
+      "result": "All 93 CLI unit tests passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/strict-first-root.log",
+        "bytes": 525,
+        "sha256": "00f7238e352bf6df7632a34b275f8be42a0a1533e8043b9fdda5dba915f81667"
+      },
+      "result": "Strict clippy passed for CLI binary, new integration target and legacy journal integration target"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/final-bin-integration-root.log",
+        "bytes": 11224,
+        "sha256": "7d8a25d1cd3ea2bb5b49966a7222628a26cd23b006b084fe129d197142c8e414"
+      },
+      "result": "94 CLI unit tests and 5 new integration tests passed",
+      "additional_controls": [
+        "Zero matches still reject GUID/generated targets",
+        "Zero matches still reject Jet4 multi-target requests",
+        "Password refusal precedes malformed SQL parsing"
+      ],
+      "private_draft_correction": "CounterPrimary uses Score, not unavailable Flag; corrected before first runtime to exercise generated Id admission directly"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/strict-final-root.log",
+        "bytes": 173,
+        "sha256": "9cfff55252a7738ff600b84a84c3a1cdf6a6bb886f1c7c96492dcc2596ca4e91"
+      },
+      "result": "Strict clippy passed after additional three refusal tests"
+    }
+  ],
+  "binary": {
+    "path": ".cache/ace16-normal-fixed-scalars-cli-next-20261031/qualified-cli/tablecraft",
+    "bytes": 67385016,
+    "sha256": "f8a35cdaa776a4503510572f86c8b5de6d08532cf8e90881c3e0783325e0b3bd"
+  },
+  "limitations": [
+    "Positive complete supported BeforeChange coverage required; no macro-absence permission",
+    "Ordinary unindexed Boolean/Int32/Int64/Currency/legacy DATE user groups only; existing indexed Int32 route remains separate",
+    "No new record growth, allocation, relationships or general normal INSERT/DELETE",
+    "Native Access save/reopen, event timing, Windows and mixed-client qualification remain unrun"
+  ],
+  "dependencies_added": false,
+  "push_performed": false,
+  "cli_smoke": {
+    "first_attempt": {
+      "receipt": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/cli-smoke-first/receipt.json",
+        "bytes": 2672,
+        "sha256": "225ec507bc844800bcd0249d5dfedd39d069afb6508f076a45d38578bb20b135"
+      },
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/run-first-root.log",
+        "bytes": 1048,
+        "sha256": "17ded9cda5bd9a6cb51b73fbf55a1c063ea0d323545e0468e5eecb767b2947d4"
+      },
+      "completed_children": 2,
+      "result": "Stopped on an incorrect expected zero GUID after a successful complete-image save",
+      "correction": "Source canonical_fixed_creation::ordinary uses GUID bytes 0 through 15; SignedZero preserves it. Successor expected GUID derives from that frozen source and independent SDK BEFORE evidence, not CLI output. First artifacts unchanged."
+    },
+    "successor": {
+      "authority": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/authority-second.json",
+        "bytes": 903,
+        "sha256": "27ea0411102f4ed803735ce8bc7eeaf876c1c91bd4f99f7121db98877673bb36"
+      },
+      "plan": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/plan-second.json",
+        "bytes": 30131,
+        "sha256": "682728ce61044ac681b5240005893abe1db6e967f99e0a6e18c279393c5e49cb"
+      },
+      "receipt": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/cli-smoke-second/receipt.json",
+        "bytes": 32219,
+        "sha256": "9832159ccdec87dbf96c84aa7bbb9d69cfa19e0d28e49e3ae133020859042fed"
+      },
+      "log": {
+        "path": ".cache/ace16-normal-fixed-scalars-cli-smoke-next-20261031/run-second-root.log",
+        "bytes": 104,
+        "sha256": "6c38bf20d086d3d2c4b71abfac1b0a4f6377c3410dce63ec4032cd566a7e5f50"
+      },
+      "completed_children": 24,
+      "complete_image_saves": 12,
+      "exact_full_tsv_readbacks": 12,
+      "frozen_source_images_unchanged": 20,
+      "result": "Passed with no diagnostics; journal namespaces retired; targets unchanged by readback"
+    },
+    "first_and_successor_originals_unchanged": true
+  }
+}

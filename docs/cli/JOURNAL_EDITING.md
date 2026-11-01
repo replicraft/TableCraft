@@ -1,7 +1,8 @@
 # Offline native journal editing
 
-`query journal-update` applies one qualified normal Int32 UPDATE to the
-selected file itself. `query recover-update` explicitly resolves its paired
+`query journal-update` applies one qualified normal UPDATE to the selected file
+itself, including admitted atomic fixed-scalar SET groups on ACE 16.
+`query recover-update` explicitly resolves its paired
 journal without replaying SQL. `query finalize-update` confirms an intact retired
 bundle before completing namespace cleanup. These are separate from the unchanged
 [fresh-copy UPDATE](../access/writes/QUERY_EDITING.md) command.
@@ -25,7 +26,7 @@ An interrupted target must not be used merely because its process lock expired.
 
 ## Admission and resources
 
-Apply accepts one local table and one Int32 assignment under the existing
+Apply accepts one local table under the existing
 [normal native write gates](../access/writes/NATIVE_WRITES.md). Closed-shape SQL
 validation happens before opening files. All selected expressions finish against
 one original snapshot before journal setup. Zero matches still pass native gates.
@@ -34,6 +35,26 @@ owns planning, journal apply/recovery and retired confirmation through one retai
 target. The CLI supplies explicit paths, comparison selection, resources and
 preformatted reporting. The same backend service supports successive edits
 without releasing the target between operations.
+
+The [ACE fixed-scalar route](../access/writes/NORMAL_ACE_FIXED_SCALARS.md) also
+accepts ordinary unindexed Boolean, Int32, Int64, Currency and legacy DateTime
+targets, including atomic multiple SET assignments. Numeric NULL transitions
+retain inactive payload bytes; Boolean remains nonnullable. All right-hand sides
+read the same original row, independent of SET order. The required native macro
+language remains Int32/NULL only. These requests still require positive complete
+supported BeforeChange coverage; they do not certify macro absence or enable
+general saves. For an already qualified offline database, the syntax is:
+
+```sh
+tablecraft query journal-update \
+  'UPDATE Items SET Flag=True,Int64Value=CLngLng(42),[Money]=CCur(-1.0001) WHERE Int32Value=0' \
+  --database offline.accdb --journal fresh-edit-journal
+```
+
+Bracket reserved field names such as `[Money]`. Indexed Int32 targets retain the
+separate restrictions below; the fixed-scalar route does not add indexed NULL
+transitions, record growth or relationship actions. Jet4 retains its single-SET
+Int32 profile.
 
 Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
