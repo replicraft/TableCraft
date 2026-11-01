@@ -67,8 +67,8 @@ runs. Image hashes and the original Id request digest are frozen before producer
 execution. Eight independent SDK observations pass: four index metadata reports
 and four ordered Id/Score cursors, with exact output frozen before calls. The
 saved-only verifier passes without launching children. This is index readback,
-not a full SDK inventory. Normal nullable-index writer tests remain pending for
-this companion; read success supplies no write permit or native Access save
-qualification.
+not a full SDK inventory. Separate normal journal tests now match both complete
+companion images and requalify original Id requests through recovery. Read
+success itself supplies no write permit or native Access save qualification.
 The [companion record](results/ace16-nullable-id-companion-sources-2026-10-31.json)
 retains first source/export pins and checks.

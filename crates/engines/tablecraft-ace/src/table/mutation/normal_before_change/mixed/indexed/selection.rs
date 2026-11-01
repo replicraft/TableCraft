@@ -6,7 +6,13 @@ use crate::{
     inspect_table_indexes,
     limits::MAX_LIVE_ROWS,
     table::{
-        mutation::{guards::buffer, record_roots, rows::RowAssignment},
+        mutation::{
+            field,
+            guards::{buffer, native_events},
+            normal_before_change::event_error,
+            record_roots,
+            rows::RowAssignment,
+        },
         record_layout,
     },
 };
@@ -29,6 +35,7 @@ impl RowAssignment for Ordinal {
 pub(super) fn capture(
     image: &NativeImage,
     table: &str,
+    supplied_column: Option<&str>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Route, EditError> {
@@ -110,9 +117,76 @@ pub(super) fn capture(
             nullable |= byte & (1 << (number % MASK_BITS)) == 0;
         }
     }
-    Ok(if nullable {
-        Route::LegacyUnindexed
-    } else {
-        Route::Indexed
-    })
+    if !nullable {
+        return Ok(Route::Indexed);
+    }
+    let mut targets =
+        native_events::potential_targets(image, schema, budget, cancelled).map_err(event_error)?;
+    if let Some(name) = supplied_column {
+        let mut selected = None;
+        for (position, field) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, field.name().len().max(name.len()) as u64)
+                .map_err(InspectError::from)?;
+            if !field.name().eq_ignore_ascii_case(name) {
+                continue;
+            }
+            if selected.replace(position).is_some() {
+                return Err(EditError::Preservation);
+            }
+        }
+        let position = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        budget
+            .charge(Resource::Steps, targets.len() as u64)
+            .map_err(InspectError::from)?;
+        if !targets.contains(&position) {
+            if targets.len() == targets.capacity() {
+                budget
+                    .charge_allocation(1, size_of::<usize>() as u64)
+                    .map_err(InspectError::from)?;
+                targets
+                    .try_reserve_exact(1)
+                    .map_err(|_| InspectError::Allocation)?;
+            }
+            targets.push(position);
+        }
+    }
+    for &position in &targets {
+        check(budget, cancelled)?;
+        let native = schema
+            .columns()
+            .get(position)
+            .ok_or(EditError::Preservation)?
+            .number();
+        budget
+            .charge(Resource::Steps, fields.len() as u64)
+            .map_err(InspectError::from)?;
+        if fields.contains(&native) {
+            return Ok(Route::Indexed);
+        }
+    }
+    if supplied_column.is_some() {
+        return Ok(Route::LegacyUnindexed);
+    }
+    // Table preflight preserves the old unindexed capability where it exists.
+    // All-indexed tables instead need the new checked nullable capability.
+    for (position, field) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        budget
+            .charge(
+                Resource::Steps,
+                (schema.columns().len() + fields.len()) as u64,
+            )
+            .map_err(InspectError::from)?;
+        if fields.contains(&field.number()) {
+            continue;
+        }
+        match field::fixed_column_at(schema, position, ScalarType::Int32, size_of::<i32>()) {
+            Ok(_) => return Ok(Route::LegacyUnindexed),
+            Err(EditError::Unsupported(WriteBlocker::Column)) => {}
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(Route::Indexed)
 }

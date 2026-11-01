@@ -1,4 +1,5 @@
 //! Original-only fitting INDEX tree reconstruction for normal BeforeChange.
+mod atoms;
 mod ownership;
 mod population;
 mod projected;
@@ -92,7 +93,7 @@ pub(in crate::table) fn reconstruct(
                 image,
                 checked: &checked,
                 index,
-                population: &population,
+                population: wire::Population::Present(&population),
                 columns: wire::Columns::Complete,
                 tree,
             },

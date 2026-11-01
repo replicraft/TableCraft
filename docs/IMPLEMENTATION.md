@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Normal updates beside untouched NULL index keys
+
+The normal ACE BeforeChange route now maintains qualified fixed-I32 indexes
+with untouched NULL components while changed cells remain present Int32. The
+proof parses variable-width NULL/present components and protects inactive bytes,
+node bounds, complete membership and alias uniqueness. Native static SetField
+targets and the user target select checked versus legacy unindexed admission
+before ownership qualification; failed planning never triggers fallback.
+Six native functions cover twelve frozen outcomes and recovery/resource controls;
+two further functions cover the present-Id companion. Two direct proof tests and
+four legacy boundary tests pass. Fourteen CLI saves match complete expected
+images and fourteen TSV readbacks. The adapter batch passes nine tests (one
+ignored), including 28 new complete-image saves. All 1,021 ACE unit tests pass
+(25 ignored), all 53 recovery integration tests pass, and strict checks pass for
+the engine, adapter and CLI. Actual NULL transitions, ignore-NULL indexes,
+allocation, other key carriers and native Access qualification remain unfinished.
+Adapter and broader regression results are retained in the
+[write record](testing/results/ace16-normal-nullable-key-before-change-2026-10-31.json).
+
 ## Untouched NULL-key source qualification
 
 Twelve independently authored originals and twelve complete literal outcomes
@@ -19,8 +38,8 @@ now cover scalar/composite NULL keys and NULL node bounds while changing only
 present Int32 cells. Two native source/anchor tests and strict checks pass. NULL
 presence/inactive bytes and original PrimaryId storage remain exact. The unique
 all-NULL pair remains an authored read hypothesis. All ninety-six exact
-independent SDK observations and the saved-only verifier pass; producer execution
-is still pending. See the
+independent SDK observations and the saved-only verifier pass. Separate producer
+checks now match all twelve literal outcomes, as recorded above. See the
 [source contract](testing/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) and
 [record](testing/results/ace16-nullable-key-before-change-sources-2026-10-31.json).
 

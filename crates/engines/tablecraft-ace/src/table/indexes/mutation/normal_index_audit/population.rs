@@ -19,10 +19,10 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub(super) struct Row {
+pub(super) struct Row<T = i32> {
     pub reference: u32,
-    pub before: Vec<i32>,
-    pub after: Vec<i32>,
+    pub before: Vec<T>,
+    pub after: Vec<T>,
 }
 
 pub(super) fn capture(

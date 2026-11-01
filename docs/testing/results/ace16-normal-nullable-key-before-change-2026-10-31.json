@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_nullable_key_before_change_updates",
+  "status": "native_proof_recovery_adapter_cli_and_strict_passed",
+  "native_access_qualification": "unrun",
+  "production_checkpoint": {
+    "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/production-first-private-checkpoint.json",
+    "bytes": 6208,
+    "sha256": "94826f83ab02483495374ddf5f4caa20e486448c35b0c9ae993b510adbab7e79"
+  },
+  "source_record": "ace16-nullable-key-before-change-sources-2026-10-31.json",
+  "companion_record": "ace16-nullable-id-companion-sources-2026-10-31.json",
+  "checks": {
+    "journal_compile": {
+      "passed": true,
+      "seconds": 7.61,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/production-compile-first-root.log",
+        "bytes": 281,
+        "sha256": "4c145009858cb17ebc6cb17100d9df00ab1cb478561f7fe6bbed014f20097c5b"
+      }
+    },
+    "native": {
+      "passed": 6,
+      "seconds": 1.99,
+      "literal_images": 12,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/native-first-root.log",
+        "bytes": 1097,
+        "sha256": "be5fa86abb1317a4a76a5c83925b23dafb14f902710a1c9a616e2e25339f38f9"
+      }
+    },
+    "direct_proof": {
+      "passed": 2,
+      "seconds": 0.38,
+      "literal_images": 12,
+      "producer_calls": 0,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/proof-first-root.log",
+        "bytes": 705,
+        "sha256": "fa9d070a495316b6aefc6773d040384a0eb0504ea3641248166e4cb6570a21e0"
+      }
+    },
+    "normal_recovery_regressions": {
+      "passed": 42,
+      "seconds": 2.39,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/normal-regression-first-root.log",
+        "bytes": 4887,
+        "sha256": "d02794380fa40806777c931c3e79a94df4ce4bfc90d4dc8ed4fe01d4e55a8424"
+      }
+    },
+    "journal_strict": {
+      "passed": true,
+      "seconds": 4.83,
+      "targets": [
+        "lib",
+        "qualified_recovery"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/strict-first-root.log",
+        "bytes": 183,
+        "sha256": "fbabca93d9cef8a7a80d96098e91c97a61d617f79aa1e98f987d0b64bd2bf8ce"
+      }
+    },
+    "cli_build": {
+      "passed": true,
+      "seconds": 18.6,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-build-first-root.log",
+        "bytes": 403,
+        "sha256": "4423cfb6458ec19e282fa3241447b274b8f3266557b69e7ad2e83af112981292"
+      }
+    },
+    "id_companion": {
+      "passed": 2,
+      "seconds": 0.29,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/native-first-root.log",
+        "bytes": 629,
+        "sha256": "345e93cf3e1fc87700b4a496dacfb3338ef824be71dec92f64df7422a586f385"
+      }
+    },
+    "legacy_boundaries": {
+      "passed": 4,
+      "seconds": 0.05,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/legacy-boundaries-first-root.log",
+        "bytes": 996,
+        "sha256": "dfa42c0ad0bd87115cd10326cf53b766a8c7eb22d2f8164482f46e274e8c236d"
+      }
+    },
+    "adapter_legacy": {
+      "passed": 2,
+      "seconds": 0.31,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/adapter-legacy-first-root.log",
+        "bytes": 731,
+        "sha256": "54aa18db9312c440a992f38e0fd56a525598243e6d401d62f30fc7fd9452d9c1"
+      }
+    },
+    "default_check": {
+      "passed": true,
+      "seconds": 3.74,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/default-check-first-root.log",
+        "bytes": 183,
+        "sha256": "a24c27b8392cac91110e288f6bd03274f638bddf954487b332d2a0955cdf8656"
+      }
+    },
+    "cli": {
+      "passed": true,
+      "whole_image_saves": 14,
+      "exact_tsv_reads": 14,
+      "children": 28,
+      "source_images_unchanged": 28,
+      "authority": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-smoke-authority-root.json",
+        "bytes": 1074,
+        "sha256": "0667d4a8f851ec0b0126e23fe7194dfb6cc202e060df4412b5ad7679ffde31c2"
+      },
+      "plan": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-smoke-plan.json",
+        "bytes": 25481,
+        "sha256": "98cafb61a5f6adb87fa72cf7f4872b23fb2527d78edb915b4465b89104fc148d"
+      },
+      "receipt": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-smoke-first/receipt.json",
+        "bytes": 36216,
+        "sha256": "5667dbf0b0eda0f0164eb59734350a6617280ca989d8a22b7640e7c9f58dc504"
+      },
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-first-root.log",
+        "bytes": 113,
+        "sha256": "0078f95ac25e7ea6e5cd19ffe262523825287b5c51169763461ae2aaa0ae331c"
+      },
+      "later_source_changes": "Only CLI help wording changed after smoke execution; scoped CLI unit and strict checks passed afterward. Frozen smoke binary remains retained and unchanged."
+    },
+    "all_ace_units": {
+      "passed": 1021,
+      "ignored": 25,
+      "seconds": 121.96,
+      "features": "all",
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/all-ace-unit-first-root.log",
+        "bytes": 138534,
+        "sha256": "b0d009a41631954b0b5510f9566496dae78719ad8342819f215ffe4c2168f67b"
+      }
+    },
+    "adapter_all_mixed": {
+      "passed": 9,
+      "seconds": 3.98,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/adapter-all-first-root.log",
+        "bytes": 1447,
+        "sha256": "051ccf35ee72575bc7daa74856af667f3d8cd80f857131a69de9bf86054897cb"
+      },
+      "ignored": 1,
+      "new_whole_image_saves": 28,
+      "old_whole_image_saves": 56,
+      "new_stale_handle_failures": 8,
+      "new_null_carrier_failures": 8
+    },
+    "all_qualified_recovery": {
+      "passed": 53,
+      "seconds": 2.89,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/recovery-all-first-root.log",
+        "bytes": 5862,
+        "sha256": "25b723cc8d7adc554b0ff57278015d29cb262e426846b599d1179f1fb1090987"
+      }
+    },
+    "all_features_strict": {
+      "passed": true,
+      "seconds": 42.75,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "all_targets": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/all-features-strict-first-root.log",
+        "bytes": 526,
+        "sha256": "97a5ef67c654c7a6735bc3b5d92691c9bc66e3ff7300d041c0fd945d1dd7fd3f"
+      }
+    },
+    "cli_unit": {
+      "passed": 4,
+      "seconds": 0.01,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-unit-first-root.log",
+        "bytes": 907,
+        "sha256": "f875853b3606db048e6c5b251d064b0b2588965dc0a8024d355bfc91d3cdfb5a"
+      }
+    },
+    "cli_help_strict": {
+      "passed": true,
+      "seconds": 11.61,
+      "log": {
+        "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/cli-help-strict-first-root.log",
+        "bytes": 403,
+        "sha256": "f5aa4cbb33080f283d5b593e18265260fe94be072a3713baebafaed1a6fcfb83"
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6954,
+      "missing_targets": 0,
+      "dependency_packages": 15,
+      "diff_check": true
+    }
+  },
+  "pending": [],
+  "scope_limits": [
+    "Changed values remain present fixed Int32; no NULL transitions",
+    "Only qualified include-NULL fixed-I32 indexes; no ignore-NULL or new carrier admission",
+    "No record resizing, allocation, index splits or relationship widening",
+    "Native required positive pure BeforeChange event remains necessary",
+    "Unique all-NULL pair remains an authored read hypothesis",
+    "Native Access save and mixed-client qualification unrun"
+  ]
+}

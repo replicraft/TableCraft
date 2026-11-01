@@ -132,30 +132,64 @@ fn normal_route_preserves_previously_admitted_nullable_index_updates() {
 }
 
 #[test]
-fn nullable_key_classification_never_grants_indexed_target_permission() {
+fn qualified_present_id_keeps_legacy_proof_and_actual_null_target_boundaries() {
     for header in [5, 6] {
-        let case = model::source(header);
-        assert!(matches!(
-            image(&case.before).plan_recoverable_int32_updates(
+        let companion =
+            tablecraft_testkit::access::canonical_nullable_index_id_before_change::source(header);
+        let requests = [Int32Update::new(0, 1, 7)];
+        let plan = image(&companion.before)
+            .plan_recoverable_int32_updates(
                 "Items",
                 "Id",
                 vec![Int32Update::new(0, 1, 7)],
                 &mut budget(),
                 &|| false,
+            )
+            .unwrap();
+        assert_eq!(plan.after_bytes(), companion.expected);
+        assert_eq!(plan.changed_rows(), 1);
+
+        // The original private unindexed proof retains its original refusal;
+        // only the separately qualified general route gained present Id writes.
+        let observed = NativeEditPlan {
+            before: companion.before.clone(),
+            after: companion.expected.clone(),
+            changed_rows: 1,
+        };
+        assert!(matches!(
+            super::super::proof::prove(
+                &observed,
+                SCOPE,
+                "Items",
+                "Id",
+                &requests,
+                &mut budget(),
+                &|| false
             ),
-            Err(RecoverableEditError::Edit(EditError::Unsupported(
-                WriteBlocker::IndexedColumn
-            )))
+            Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+        ));
+        assert!(matches!(
+            image(&companion.before).plan_recoverable_int32_updates(
+                "Items",
+                "Id",
+                vec![Int32Update::new(2, 3, 7)],
+                &mut budget(),
+                &|| false
+            ),
+            Err(RecoverableEditError::Edit(EditError::Conflict))
         ));
 
-        let plan = NativeEditPlan {
-            before: case.before,
-            after: case.expected,
+        // Existing unindexed Score request still selects the legacy route.
+        // Calling the indexed-only auditor directly for that route stays wrong.
+        let old = model::source(header);
+        let unindexed = NativeEditPlan {
+            before: old.before,
+            after: old.expected,
             changed_rows: 1,
         };
         assert!(matches!(
             super::prove(
-                &plan,
+                &unindexed,
                 SCOPE,
                 "Items",
                 "Score",

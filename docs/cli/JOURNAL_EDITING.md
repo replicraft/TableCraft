@@ -46,10 +46,12 @@ preparation, without retrying a failed encoder. Ascending/descending components,
 composites, consistent logical aliases and final unique-key swaps are supported. Relationships,
 ignore-NULL index rewriting, splits and map/storage growth refuse. A separately
 selected mixed-schema route preserves supported scalar/rich siblings. Complete
-ordinary scalar tables can maintain checked non-NULL fixed-I32 indexes, including
+ordinary scalar tables can maintain checked fixed-I32 indexes beside untouched
+NULL components, including
 readonly counter components and descending composites. Rich/unavailable siblings
-retain unindexed-only edits. Original nullable key populations select the previous
-unindexed qualifier before tree parsing; indexed NULL mutation remains refused.
+retain unindexed-only edits. Original nullable key populations and potential
+targets select the previous unindexed qualifier or checked indexed route before
+tree parsing; NULL target transitions remain refused.
 Int32 AutoNumber may be read but never assigned. Unsupported field operands,
 generated targets and calculation/collection dependencies refuse; changed target
 values remain non-NULL. Unknown/opaque/unrepresented event content,

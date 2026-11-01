@@ -1,5 +1,5 @@
 //! Original-only compressed page graph, partitions, bounds and sibling facts.
-use super::vector;
+use super::{atoms, vector};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, WriteBlocker,
     format::{allocation, page::PAGE_BYTES, reader::Reader},
@@ -7,7 +7,6 @@ use crate::{
     limits::MAX_INDEX_DEPTH,
     table::indexes::{
         header::IndexHeader,
-        key::{ASC_VALUE, DESC_VALUE},
         page::{ENTRY_START, LEAF, NODE, PAGE_VERSION},
     },
 };
@@ -168,10 +167,10 @@ impl Capture<'_, '_, '_> {
             .checked_mul(COMPONENT_BYTES)
             .and_then(|bytes| bytes.checked_add(REFERENCE_BYTES))
             .ok_or(InspectError::StructureLimit)?;
-        let width = key_bytes
+        let maximum_width = key_bytes
             .checked_add(if leaf { 0 } else { REFERENCE_BYTES })
             .ok_or(InspectError::StructureLimit)?;
-        if prefix > width {
+        if prefix > maximum_width {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         let count = raw[MASK_START..ENTRY_START]
@@ -183,15 +182,21 @@ impl Capture<'_, '_, '_> {
             .map_err(InspectError::from)?;
         let mut entries: Vec<Vec<u8>> = vector(count, self.budget, self.cancelled)?;
         let mut last = 0;
+        let mut previous_key_end = 0_usize;
         for bit in 0..(ENTRY_START - MASK_START) * u8::BITS as usize {
             check(self.budget, self.cancelled)?;
             if raw[MASK_START + bit / u8::BITS as usize] & (1 << (bit % u8::BITS as usize)) == 0 {
                 continue;
             }
             let shared = if entries.is_empty() { 0 } else { prefix };
+            let width = shared
+                .checked_add(bit.checked_sub(last).ok_or(EditError::Preservation)?)
+                .filter(|width| *width <= maximum_width)
+                .ok_or(EditError::Preservation)?;
             if bit <= last
-                || ENTRY_START + bit > PAGE_BYTES
-                || shared.checked_add(bit - last) != Some(width)
+                || ENTRY_START
+                    .checked_add(bit)
+                    .is_none_or(|end| end > PAGE_BYTES)
             {
                 return Err(EditError::Preservation);
             }
@@ -203,25 +208,16 @@ impl Capture<'_, '_, '_> {
                 entry.extend_from_slice(first.get(..shared).ok_or(EditError::Preservation)?);
             }
             entry.extend_from_slice(&raw[ENTRY_START + last..ENTRY_START + bit]);
-            for (component, column) in self.index.columns().iter().enumerate() {
-                check(self.budget, self.cancelled)?;
-                let marker = if column.descending() {
-                    DESC_VALUE
-                } else {
-                    ASC_VALUE
-                };
-                if entry[component * COMPONENT_BYTES] != marker {
-                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-                }
-            }
+            let facts = atoms::inspect(&entry, self.index, leaf, self.budget, self.cancelled)?;
             if let Some(previous) = entries.last() {
                 self.budget
-                    .charge(Resource::Steps, key_bytes as u64)
+                    .charge(Resource::Steps, (previous_key_end + facts.key_end) as u64)
                     .map_err(InspectError::from)?;
-                if previous[..key_bytes] >= entry[..key_bytes] {
+                if previous[..previous_key_end] >= entry[..facts.key_end] {
                     return Err(InspectError::Malformed.into());
                 }
             }
+            previous_key_end = facts.key_end;
             entries.push(entry);
             last = bit;
         }
@@ -243,7 +239,10 @@ impl Capture<'_, '_, '_> {
             for entry in &entries {
                 check(self.budget, self.cancelled)?;
                 let child = u32::from_be_bytes(
-                    entry[key_bytes..]
+                    entry[entry
+                        .len()
+                        .checked_sub(REFERENCE_BYTES)
+                        .ok_or(EditError::Preservation)?..]
                         .try_into()
                         .map_err(|_| EditError::Preservation)?,
                 );

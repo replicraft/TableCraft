@@ -12,11 +12,12 @@ consistent aliases and Int32 composites. Fitting is selected before preparation;
 page identities, child topology and per-leaf entry counts remain fixed.
 A separate metadata-selected mixed-schema route supplies actual scalar snapshots
 and preserves admitted unavailable siblings. Its changed fields remain ordinary
-non-NULL Int32. Complete scalar tables may maintain checked non-NULL I32 indexes;
+non-NULL Int32. Complete scalar tables may maintain checked I32 indexes beside
+untouched NULL components;
 rich/unavailable siblings retain unindexed edits only. Readonly Int32 AutoNumber
-may supply operands/keys, never writable targets. Original NULL-key facts choose
-the prior unindexed policy before tree parsing, retaining unchanged nullable
-indexes without permitting their mutation.
+may supply operands/keys, never writable targets. Original NULL-key facts and
+potential targets choose the prior unindexed policy or checked indexed route
+before tree parsing. Actual NULL targets remain unsupported.
 Snapshot handles stay local to the captured image. Relationships, unsupported
 required content, splits and map/storage growth refuse. It grants no general ACE save or
 data-macro absence permission;
