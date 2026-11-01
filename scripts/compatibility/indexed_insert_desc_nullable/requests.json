@@ -1,0 +1,134 @@
+{
+  "state": "ORIGINAL_AND_LITERAL_INSERT_LAWS_BEFORE_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "original": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h5-desc-null-original.accdb",
+      "original_report": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/receipts/h5-inventory.stdout",
+      "bytes": 389120,
+      "sha256": "f8f4b039d9a692a0e1f9b0ef9ee38201f60508d654705c125275a7a169ae414b",
+      "definition": 89,
+      "data": 93,
+      "roots": [
+        91,
+        92
+      ]
+    },
+    {
+      "header": 6,
+      "original": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h6-desc-null-original.accdb",
+      "original_report": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/receipts/h6-inventory.stdout",
+      "bytes": 458752,
+      "sha256": "c6d5f83770a25c8b6d0f34bdaab729d4d181f37fc738c47f5db9339d895fddae",
+      "definition": 106,
+      "data": 110,
+      "roots": [
+        108,
+        109
+      ]
+    }
+  ],
+  "original_rows": [
+    [
+      1,
+      -1,
+      null
+    ],
+    [
+      2,
+      0,
+      1
+    ],
+    [
+      3,
+      1,
+      2
+    ]
+  ],
+  "cases": [
+    {
+      "id": "single-null",
+      "rows": [
+        [
+          4,
+          17,
+          null
+        ]
+      ],
+      "live_added": 1,
+      "distinct_added": [
+        1,
+        0
+      ],
+      "record_starts": [
+        4036
+      ],
+      "data_free": 4014,
+      "active_bytes": [
+        36,
+        28
+      ],
+      "leaf_free": [
+        3580,
+        3588
+      ],
+      "guard_order": [
+        2,
+        1,
+        0,
+        3
+      ]
+    },
+    {
+      "id": "shared-present-batch",
+      "rows": [
+        [
+          4,
+          17,
+          null
+        ],
+        [
+          5,
+          18,
+          1
+        ]
+      ],
+      "live_added": 2,
+      "distinct_added": [
+        2,
+        0
+      ],
+      "record_starts": [
+        4036,
+        4021
+      ],
+      "data_free": 3997,
+      "active_bytes": [
+        45,
+        37
+      ],
+      "leaf_free": [
+        3571,
+        3579
+      ],
+      "guard_order": [
+        2,
+        1,
+        4,
+        0,
+        3
+      ]
+    }
+  ],
+  "law": {
+    "manual": "No AutoNumber/default or companion assignment",
+    "originals": "Only immutable SDK originals, never DELETE AFTERs",
+    "records": "complete3-I32 15B records; new NULL Guard payload00000000/mask03, present mask07",
+    "placement": "append slot3 then4, below original4051 frontier; unchanged original15B bodies",
+    "history": "Primary increments per new distinct Id; Guard stays3 because both NULL and1 already exist; frozen hypothesis must not retune",
+    "index": "prefix0 independent optional DESC atom1or5+ROW4; signed Id ASC, Guard DESC with NULL last and original ROW tie order",
+    "complement": "only TDrowcount/history, DATAfree/count/newdir/newpayload, INDEXfree/bitmap/active prefix; maps/declarations/oldrows/EOF exact"
+  },
+  "constructor_calls": 0,
+  "native_producer_calls": 0
+}
