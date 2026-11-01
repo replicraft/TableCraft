@@ -180,3 +180,5 @@ mod native17_creation;
 mod native17_sessions;
 
 mod integral_indexed;
+
+mod wide_scalar;

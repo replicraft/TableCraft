@@ -260,3 +260,6 @@ pub mod genuine_eof_insert;
 
 /// Independent Int64/Currency index mutation views.
 pub mod genuine_integral_indexed;
+
+/// Independent complete wider-scalar INSERT source images.
+pub mod canonical_ordinary_wide_insert;
