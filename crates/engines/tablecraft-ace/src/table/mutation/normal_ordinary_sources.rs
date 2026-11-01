@@ -131,3 +131,5 @@ mod genuine_targets;
 mod fitted_sources;
 
 mod property_lval;
+
+mod retained_numeric;

@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-01",
+  "scope": "Original/request-only Marker17-to42 sources preserving Byte/Int16/Int64/Currency indexes",
+  "original_provenance": "ace16-integral-index-split-sources-2026-10-27.json",
+  "originals": [
+    {
+      "profile": "V2016",
+      "header": 5,
+      "bytes": 757760,
+      "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+    },
+    {
+      "profile": "V2019",
+      "header": 6,
+      "bytes": 827392,
+      "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+    }
+  ],
+  "input_freeze_sha256": "9dc342850a0ffc4e04279ebfaa239ed5030b139a6bc7fcd89ca4e2dac4b24c6b",
+  "expected_manifest_sha256": "78a59e575015732f70b32d517497b1edc1e13875eeae12a4deb1db2180cda857",
+  "counts": {
+    "originals": 2,
+    "expected_images": 8,
+    "native_read_views": 10,
+    "table_snapshots": 40,
+    "row_observations": 26000,
+    "independent_sdk_reads": 8
+  },
+  "source_inputs_unchanged": true,
+  "constructor_native_calls": 0,
+  "constructor_child_calls": 0,
+  "public_model": {
+    "path": "docs/testing/retained_numeric_originals/model.py",
+    "bytes": 6297,
+    "sha256": "64a8cd3fa616f800668f0deeb64b51306be499df5d531257fe7d31be5b3be4f2"
+  },
+  "public_original_facts": {
+    "path": "docs/testing/retained_numeric_originals/original-observations.json",
+    "bytes": 3081,
+    "sha256": "ebc169b91b8629b38da41b47d4674b1789a9bb973541d8c1f05644b2113b15ca"
+  },
+  "execution": [
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/source/construct-first.log",
+      "bytes": 178,
+      "sha256": "36ee377979c175640238036760830d88c4723b66c155cf2838797fc152cee09e"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/source/native-reads-first.log",
+      "bytes": 533,
+      "sha256": "bb199ec36f5a82836d614fe7cf3a6b025039a7f7a0a6981f648c4c8990446dfd"
+    },
+    {
+      "path": ".cache/ace16-retained-index-next-20261101/source/sdk-expected-first/result.json",
+      "bytes": 2721,
+      "sha256": "31b004f349c1d7cb7265fa69eb06e24ea773530c9ade033b3c5136d68b46c768"
+    }
+  ],
+  "native_access": "Unrun; independently generated files and readers do not establish Microsoft Access conformance",
+  "write_admission": "Separate pending qualification; source reads grant no mutation permission"
+}
