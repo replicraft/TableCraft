@@ -2,6 +2,7 @@
 mod build;
 mod column;
 mod database;
+mod defaults;
 mod definition;
 mod input;
 mod multiple;
@@ -37,3 +38,6 @@ mod capacity_tests;
 
 #[cfg(test)]
 mod property_tests;
+
+#[cfg(test)]
+mod default_tests;

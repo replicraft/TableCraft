@@ -38,6 +38,13 @@ impl<'a> Columns<'a> {
         }
     }
 
+    pub fn default_literal(self, position: usize) -> Option<&'a Value> {
+        match self {
+            Self::Int32(_) => None,
+            Self::Values(columns) => columns[position].default_literal(),
+        }
+    }
+
     pub fn declaration(self, position: usize) -> Declaration {
         match self {
             Self::Int32(_) => Declaration::Fixed(ScalarType::Int32),

@@ -1,5 +1,6 @@
 //! Explicit native creation declarations, without row-driven type inference.
 use super::CreateDatabaseError;
+use tablecraft_core::values::Value;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const SHORT_LIMIT: usize = 255;
@@ -7,7 +8,7 @@ const SHORT_LIMIT: usize = 255;
 /// One borrowed native declaration for fresh database creation.
 ///
 /// Names and complete row/declaration compatibility are validated per operation.
-/// Only explicit supported Boolean field policies are optional; native flags,
+/// Only explicit supported field policies/defaults are optional; native flags,
 /// offsets and mutation authority are not supplied.
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
@@ -15,6 +16,7 @@ pub struct CreateColumn<'a> {
     declaration: Declaration,
     required: Option<bool>,
     allow_zero_length: Option<bool>,
+    default_literal: Option<&'a Value>,
 }
 
 #[derive(Clone, Copy)]
@@ -57,6 +59,7 @@ impl<'a> CreateColumn<'a> {
             declaration: Declaration::Fixed(scalar),
             required: None,
             allow_zero_length: None,
+            default_literal: None,
         }
     }
 
@@ -73,6 +76,7 @@ impl<'a> CreateColumn<'a> {
             declaration,
             required: None,
             allow_zero_length: None,
+            default_literal: None,
         })
     }
 
@@ -86,6 +90,7 @@ impl<'a> CreateColumn<'a> {
             declaration,
             required: None,
             allow_zero_length: None,
+            default_literal: None,
         })
     }
 
@@ -96,6 +101,7 @@ impl<'a> CreateColumn<'a> {
             declaration: Declaration::Decimal(constraints),
             required: None,
             allow_zero_length: None,
+            default_literal: None,
         }
     }
 
@@ -113,6 +119,27 @@ impl<'a> CreateColumn<'a> {
         }
         self.allow_zero_length = Some(allow);
         Ok(self)
+    }
+
+    /// Declare an ordinary Int32 constant or explicit NULL default.
+    ///
+    /// The value is metadata, not a missing initial row cell. It does not replace
+    /// supplied NULL or authorize AutoNumber/expression evaluation. Other exact
+    /// constant families require their own source qualification before admission.
+    pub fn with_default_literal(mut self, value: &'a Value) -> Result<Self, CreateDatabaseError> {
+        if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32)) {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        if !matches!(value, Value::Int32(_) | Value::Null) {
+            return Err(CreateDatabaseError::Carrier);
+        }
+        self.default_literal = Some(value);
+        Ok(self)
+    }
+
+    /// Original typed default, with absent declaration distinct from explicit NULL.
+    pub const fn default_literal(self) -> Option<&'a Value> {
+        self.default_literal
     }
 
     /// Actual explicitly supplied Required policy, without inferred false.
