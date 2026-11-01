@@ -1,0 +1,97 @@
+{
+  "scope": "DESC and stored-NULL Int32 root-leaf DELETE source evidence only; later write evidence separately referenced",
+  "originals": [
+    {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h5-desc-null-original.accdb",
+      "bytes": 389120,
+      "sha256": "f8f4b039d9a692a0e1f9b0ef9ee38201f60508d654705c125275a7a169ae414b"
+    },
+    {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals/h6-desc-null-original.accdb",
+      "bytes": 458752,
+      "sha256": "c6d5f83770a25c8b6d0f34bdaab729d4d181f37fc738c47f5db9339d895fddae"
+    }
+  ],
+  "source_constructor": {
+    "status": "PASS_FIRST",
+    "manifest": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/after-source/expected-first/manifest.json",
+      "bytes": 26916,
+      "sha256": "5cb3b6ec5efe19b7d1f73cfa6090ae5b57cc6cc489880cd0edda574ca8eb353c"
+    },
+    "producer_calls": 0
+  },
+  "original_observations": {
+    "status": "PASS_FIRST",
+    "read_calls": 12,
+    "receipt": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/originals-first-result.json",
+      "bytes": 55723,
+      "sha256": "6a181f3864d4f85856d5591c3f37d39d6b6a57d30e9243ef2380780373623292"
+    },
+    "saved": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/source/original-first/saved-verification.json",
+      "bytes": 4360,
+      "sha256": "eb382a5a6e0a6cb1c797676360f1c40c68257ed312879c5b97db3d36a580a448"
+    }
+  },
+  "source_sdk": {
+    "status": "PASS_FIRST",
+    "inventories": 16,
+    "alias_cursors": 64,
+    "receipt": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/after-source/getter/reads-first/receipt.json",
+      "bytes": 108191,
+      "sha256": "feffeeb8caaf80c0f88cbaeb140a3ea416c984f523e8a8d5d9cf48409496dcd0"
+    },
+    "saved": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/after-source/getter/reads-first/saved-verification.json",
+      "bytes": 605,
+      "sha256": "8c72e04ba4a6af435eb93c2a166d118829379ba86f6ec3865c270144d9300b25"
+    },
+    "producer_calls": 0
+  },
+  "source_native": {
+    "status": "PASS",
+    "functions": 1,
+    "views": 16,
+    "log": {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/desc-null-source-first.log",
+      "bytes": 445,
+      "sha256": "c5e97a91abee9fe6758693bba0dc636a86c374df0b6ea5d6adf9409991dabf9e"
+    },
+    "retained_first_compile_failure": {
+      "path": ".cache/ace16-normal-indexed-writes-next-20261101/node-original-gate-first.log",
+      "bytes": 1212,
+      "sha256": "f480a6415a1e0f20a7e4c24fc500c4ea64784de6ef37b6b0acaac572ae3423bc"
+    },
+    "correction": "Compile-only literal file/length/SHA tuples and whole-manifest hash; no serde_json dependency or law/image change",
+    "successor": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/after-source/source-gate-successor/checkpoint.json",
+      "bytes": 1697,
+      "sha256": "1918f4d4ec7e9faaf708db84c7d8c69896dccd56424c585e31db8f7ba284f9e1"
+    }
+  },
+  "public_replay": {
+    "status": "PASS",
+    "identical_historical_artifacts": 104,
+    "new_sdk_calls": 0,
+    "native_calls": 0,
+    "receipt": {
+      "path": ".cache/ace16-normal-indexed-delete-desc-null-next-20261101/public-replay-first-result.json",
+      "bytes": 839,
+      "sha256": "f9dba71e28a038fb83f956cc8ee0f751c93aacfa68ede1275790d2179970c17e"
+    }
+  },
+  "native_access": "UNRUN",
+  "windows": "UNRUN",
+  "write_followon": {
+    "document": "docs/testing/results/ace16-indexed-write-followons-2026-11-01.json",
+    "status": "Root reports matching native3 and strict follow-on PASS; authoritative counts/logs owned by linked record"
+  },
+  "installed_native_gate": {
+    "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/indexed_delete_desc_nullable.rs",
+    "sha256": "cd679cf70a4c8fd884dd4f7a874577510e4709e9d2b0fd04a77c362abcacc359",
+    "note": "Root literal-pin successor plus equivalent inactive-payload unwrap for strict lint; original frozen predecessors preserved."
+  }
+}

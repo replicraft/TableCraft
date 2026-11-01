@@ -1,0 +1,106 @@
+{
+  "state": "ORIGINAL_HASHES_LITERAL_REQUESTS_AND_ROW_BINDINGS_BEFORE_AFTER_MODEL",
+  "source_result_sha256": "7404bd54418b0ec32514537b42cc95855498756180c026c208c99d917b2cd424",
+  "table": "Items",
+  "columns": [
+    "Id",
+    "Score",
+    "Guard",
+    "Label"
+  ],
+  "requests": [
+    [
+      10,
+      17,
+      7,
+      "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+    ],
+    [
+      11,
+      18,
+      7,
+      "new"
+    ]
+  ],
+  "profiles": [
+    {
+      "header": 5,
+      "file": "h5-association-original.accdb",
+      "bytes": 409600,
+      "sha256": "0356754e5fa7ea5ea9040e5112b17c6cec46faff388bda9f65d92d34a4864df5",
+      "definition": 89,
+      "early": 93,
+      "late": 95,
+      "roots": [
+        91,
+        92
+      ]
+    },
+    {
+      "header": 6,
+      "file": "h6-association-original.accdb",
+      "bytes": 479232,
+      "sha256": "abf41a6e18375c84e0f812d682f26ed903145f586a2ee82b6311a215bf2d95d9",
+      "definition": 106,
+      "early": 110,
+      "late": 112,
+      "roots": [
+        108,
+        109
+      ]
+    }
+  ],
+  "request_row_law": [
+    "request0 Id10 -> later page original nextslot1 at3194..3615",
+    "request1 Id11 -> earlier page original nextslot8 at221..248"
+  ],
+  "sequential_after_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    9,
+    10
+  ],
+  "primary_cursor_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "guard_cursor_ids": [
+    1,
+    4,
+    7,
+    2,
+    5,
+    8,
+    3,
+    6,
+    9,
+    11,
+    10
+  ],
+  "history_before": [
+    9,
+    3
+  ],
+  "history_after": [
+    11,
+    4
+  ],
+  "actual_after_constructors": 0,
+  "native_producer_calls": 0
+}
