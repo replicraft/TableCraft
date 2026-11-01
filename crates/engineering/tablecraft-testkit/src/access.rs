@@ -188,3 +188,6 @@ pub mod canonical_ordinary_indexed_targets;
 
 /// Frozen genuine-source request metadata and explicitly supplied artifacts.
 pub mod genuine_ordinary_targets;
+
+/// Independent original-record fitting sources and literal outcomes.
+pub mod canonical_ordinary_fitted;
