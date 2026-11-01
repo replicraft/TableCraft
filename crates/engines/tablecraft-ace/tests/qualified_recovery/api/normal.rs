@@ -722,3 +722,6 @@ mod genuine_ordinary_insert;
 
 #[path = "normal/genuine_multirow_insert.rs"]
 mod genuine_multirow_insert;
+
+#[path = "normal/genuine_ordinary_insert_feff.rs"]
+mod genuine_ordinary_insert_feff;

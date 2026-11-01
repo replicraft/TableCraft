@@ -221,3 +221,6 @@ pub mod genuine_forwarded_delete;
 
 /// Pinned genuine originals and independently specified explicit-row INSERT images.
 pub mod genuine_ordinary_insert;
+
+/// Independent escaped insertion text and separately classified reader aliases.
+pub mod genuine_ordinary_insert_feff;

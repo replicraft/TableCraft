@@ -24,8 +24,10 @@ staging. Cumulative resource limits remain active through planning and proof. Ev
 complete actual schema in native order; Boolean has a real value bit and does
 not acquire a NULL carrier. Requested empty Text requires an explicit qualified
 AllowZeroLength declaration; false remains a final field-constraint rejection.
-Leading U+FEFF Text is explicitly refused by this first INSERT profile until its
-independent new-record encoding proof is qualified.
+Leading U+FEFF Text now uses the independently qualified marked-wide escape.
+The three-byte prefix participates in record length, offsets and capacity proof.
+A zero low UTF16 byte at a marked-wide boundary remains explicitly unsupported;
+this is a current representation limitation, not a claim about Access values.
 
 The planner serializes and reserves the entire batch against original eligible
 owned DATA capacity before staging. Eligible pages are chosen in ascending
@@ -79,7 +81,7 @@ partial-write recovery and protected-image forgery rejection. Four typed/SQL
 session INSERTs plus four same-session follow-on saves pass. Eight active/retired
 restart contexts, two interrupted commits, metadata-only constructor checks and
 pre-bundle refusals also pass. Two CLI INSERTs plus two follow-on saves and four
-exact row readbacks pass. The regression batch passes 1,118 ACE units, 79 adapter units, 102 CLI units and
+exact row readbacks pass. The initial regression batch passes 1,118 ACE units, 79 adapter units, 102 CLI units and
 83 recovery functions. Strict all-feature, journal-only, preview-only and minimal
 builds pass. Existing DELETE and EOF-update host workflows remain intact. See the
 [native record](../../testing/results/ace16-normal-insert-writes-2026-11-01.json)
@@ -98,3 +100,16 @@ as another action or replays SQL. Receipts distinguish inserted rows from old
 matched rows: INSERT has no matched count and reports its actual inserted count.
 See [offline sessions](OFFLINE_WRITE_SESSIONS.md) for lease, failure and namespace
 requirements.
+
+
+## Leading U+FEFF follow-on
+
+Six native/SDK source views distinguish the escaped requested value from a
+readable alias that loses the leading character. The independent proof now
+reconstructs the escape without importing producer encoding helpers. Two native
+commits and two CLI saves/readbacks match the literal whole images; all six
+pending/partial/committed alias journals refuse before effects. Ten normal INSERT
+controls, 329 existing INSERT tests and strict all-feature/journal checks pass.
+The CLI readback verifies four UTF16 units and signed first-character code -257.
+See the [separate execution record](../../testing/results/ace16-normal-insert-feff-writes-2026-11-01.json)
+for focused scope and preserved first preview assertion failures.

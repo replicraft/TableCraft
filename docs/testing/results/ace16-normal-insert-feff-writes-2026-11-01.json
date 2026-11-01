@@ -1,0 +1,207 @@
+{
+  "date": "2026-11-01",
+  "scope": "independent leading-FEFF proof correction; no protocol/index/allocation/default/program expansion",
+  "source_record": "ace16-normal-insert-feff-sources-2026-11-01.json",
+  "source_commit": "08b8aa43",
+  "source_literals_unchanged": true,
+  "initial_core_commits": [
+    "64511225",
+    "9bc52a89",
+    "aa251144"
+  ],
+  "observations": {
+    "normal_insert_unit_controls": 10,
+    "native_feff_functions": 2,
+    "native_commits": 2,
+    "alias_after_journal_refusals": 6,
+    "cli_functions": 1,
+    "cli_commits": 2,
+    "cli_readbacks": 2,
+    "existing_insert_tests": 329
+  },
+  "logs": [
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/units-first.log",
+      "bytes": 1775,
+      "sha256": "96f3b6c4b9417a250eadfac4c64f86e9b908138b00d2c11aad1e56da41b01ff1",
+      "test_results": [
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 1202 filtered out; finished in 1.21s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/native-first.log",
+      "bytes": 655,
+      "sha256": "f382f2e495238a69b1659335ecdf98ef5493a1e8b2828146d481cf764b4f103c",
+      "test_results": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 128 filtered out; finished in 0.75s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/cli-first.log",
+      "bytes": 843,
+      "sha256": "8f80c8b43d26fd294684e74ec95bf39891237ba1a3ee7a09906618dce329bd51",
+      "test_results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/preview-insert-second.log",
+      "bytes": 46204,
+      "sha256": "5c3b91088f991daae85cfd912c47cf0830a7ee60c73043cee5e4679ebc84ca6c",
+      "test_results": [
+        "test result: ok. 329 passed; 0 failed; 0 ignored; 0 measured; 884 filtered out; finished in 6.83s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/strict-first.log",
+      "bytes": 526,
+      "sha256": "6fcdc8c390812cb70c1d732412959a67a237f6544deb16f7b5b6eab0bb3b049d",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/journal-first.log",
+      "bytes": 307,
+      "sha256": "32d1929ec520a0b4c38f8ce02053214da221831efc348b3d095ecfc90ba67c22",
+      "test_results": []
+    }
+  ],
+  "commands_first": [
+    {
+      "name": "units-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_insert::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "native-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "genuine_ordinary_insert_feff",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "genuine_ordinary_insert_feff_sql",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "preview-insert-first",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::insert::"
+      ],
+      "returncode": 101
+    }
+  ],
+  "commands_second": [
+    {
+      "name": "preview-insert-second",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::insert::"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "journal-first",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    }
+  ],
+  "preserved_first_preview_failure": {
+    "log": {
+      "path": ".cache/ace16-normal-insert-next-20261101/feff-proof-draft/preview-insert-first.log",
+      "bytes": 47416,
+      "sha256": "3d1f35665ee2e917e076ba0a223fb23c030b2dae65addac43a6860b7f99a1e36"
+    },
+    "passed": 326,
+    "failed": 2,
+    "resolution": "Two old assertions expected all leading-FEFF inserts to fail. They now check exact escaped wires and a positive readback for both existing text declarations, while retaining explicit FEFF+U0100 boundary refusals. No source/golden changed."
+  },
+  "implementation": "Independent proof computes the three-byte marked-wide prefix and its allocation/offset length without calling producer storage helpers. Normal blanket refusal removed; decoded original-value equality and low-byte-zero refusal retained.",
+  "cli_semantics": "Actual SQL literal keeps U+FEFF; readback Len=4 and AscW(Left(...,1))=-257, complete file equals independently authored escaped source.",
+  "verification_scope": "Focused affected normal/preview INSERT, native journal and CLI tests; strict all-feature/journal builds. Full initial 1118-engine/79-adapter/102-CLI/83-recovery batch was run before this follow-on and is retained separately, not claimed as rerun.",
+  "limitations": [
+    "Zero low UTF16 bytes at marked-wide boundaries remain an explicit unsupported representation.",
+    "Native Access save/reopen and Windows durability remain unrun."
+  ]
+}

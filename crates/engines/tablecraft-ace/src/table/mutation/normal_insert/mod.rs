@@ -125,3 +125,6 @@ fn compare(
 
 #[cfg(test)]
 mod review_tests;
+
+#[cfg(test)]
+mod feff_tests;

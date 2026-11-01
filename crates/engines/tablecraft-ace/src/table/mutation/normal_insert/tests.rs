@@ -112,7 +112,7 @@ fn original_payload_metadata_null_and_count_forgeries_fail_fresh_proof() {
 
 #[test]
 #[ignore = "requires four source-qualified genuine normal INSERT images"]
-fn unsupported_new_lval_bom_empty_text_and_wrong_carriers_refuse_without_plan() {
+fn unsupported_new_lval_wide_switch_text_empty_text_and_wrong_carriers_refuse_without_plan() {
     let all = cases();
     for case in all {
         for values in [
@@ -123,7 +123,7 @@ fn unsupported_new_lval_bom_empty_text_and_wrong_carriers_refuse_without_plan() 
             ],
             vec![
                 Value::Int32(24),
-                Value::Text("\u{feff}new".into()),
+                Value::Text("\u{feff}\u{0100}".into()),
                 Value::Null,
             ],
             vec![Value::Int32(24), Value::Text(String::new()), Value::Null],
