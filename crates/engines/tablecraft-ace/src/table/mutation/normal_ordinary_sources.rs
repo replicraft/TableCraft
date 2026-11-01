@@ -200,3 +200,5 @@ mod creation_primary;
 mod root_split;
 
 mod creation_integral_primary;
+
+mod compound_root_split;

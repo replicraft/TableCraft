@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent normal compound-root-split source/read qualification before matching producers",
+  "native_executed_functions": 1,
+  "native_views": 4,
+  "native_returncode": 0,
+  "native_receipt": {
+    "path": ".cache/ace16-compound-source-gate-20261101/native-first.log",
+    "bytes": 540,
+    "sha256": "0f1526d234234b17320673a565286cfbd6791ee8f93646f83e5417b29a17ecad"
+  },
+  "new_sdk_read_calls": 0,
+  "matching_mutation_calls": 0,
+  "source_qualification_precedes_matching_producers": true,
+  "source_expected_images_changed": false,
+  "artifacts": [
+    {
+      "path": ".cache/ace16-normal-compound-root-split-next-20261101/native-source-draft/first-private-checkpoint.json",
+      "bytes": 1851,
+      "sha256": "8f7b7ecd33930215cf167bcf7ce959b62a5ea1cd54209a42bf8b8cc156b71abd"
+    },
+    {
+      "path": ".cache/ace16-normal-compound-root-split-next-20261101/source/preparation-checkpoint.json",
+      "bytes": 2010,
+      "sha256": "fbd158b3190528bbb24b4097eb0da09f63853fd88aa0886c713495ec11fe048c"
+    },
+    {
+      "path": ".cache/ace16-normal-compound-root-split-next-20261101/source/request-laws-first.json",
+      "bytes": 13199,
+      "sha256": "5a7461e4bb6712e980ca196ca29665b0a27ef5d512693bcbf2fd0d2d9ad30c11"
+    },
+    {
+      "path": ".cache/ace16-normal-compound-root-split-next-20261101/source/input-first-freeze.json",
+      "bytes": 3442,
+      "sha256": "18f446367a2f81751e10622b075628995cdc3b25cb7ab5f9961ef35e6a33c04b"
+    }
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "laws": [
+    "Reuses existing original and independently modeled full84 pairs without reconstruction calls.",
+    "One 97-byte record cannot fit any of eleven owned DATA pages; primary key also overflows root.",
+    "Original represented authority covers DATA first then right/left INDEX at exactly three EOF pages.",
+    "Whole-image replay, all map bits, Required property and actual native17 Source/NoRequired checks pass."
+  ]
+}
