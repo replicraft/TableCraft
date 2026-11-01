@@ -1,5 +1,22 @@
 # Implementation status
 
+## Fitting Binary index insertion
+
+Normal complete-row INSERT now maintains qualified nullable ascending/descending
+Short Binary secondary root leaves beside manual Int32 primary keys. Sixteen
+literal native commits and independent proofs, interrupted recovery, protected
+bytes, resource controls, typed/SQL saves and CLI readbacks pass against sources
+qualified before producers. The existing UPDATE and DELETE profiles remain
+unchanged; Binary NODEs, allocation and splits remain work.
+
+Strict feature checks and all sixteen prior write-profile regression commands
+pass. The combined batch passes 1,153 ACE units, 79 adapter units, 102 CLI units
+and 90 default recovery functions. The
+[execution record](testing/results/ace16-binary-index-insert-writes-2026-11-01.json)
+retains first failures and corrections without changed expected bytes. See the
+[owning contract](access/writes/NORMAL_BINARY_INDEX_INSERT.md). Native Access
+save/reopen and Windows qualification remain unrun.
+
 ## Explicit creation defaults
 
 Fresh creation now authors exact Int32/NULL DefaultValue metadata. Twelve complete
