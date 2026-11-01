@@ -49,3 +49,22 @@ Required/generated fields, late Raise, rich siblings, actual normal typed
 commits and original-intent recovery remain separate acceptance work. These
 fixtures grant no macro-absence certificate or write permission and establish
 no native Access macro execution or save/reopen conformance.
+
+## Nullable Int32 companion
+
+A separate manual mixed-schema source covers nullable Int32 user requests and
+macro-only NULL results. Both header selectors give four originals and four
+literal expected images. NULL Id to 7 produces Score 2007. Clearing Id makes
+both Id and Score NULL under the original stored expressions, retaining their
+inactive payloads 1 and 1000. The whole complement, variable siblings and native
+program remain exact. These images consume only the original manual BEFORE and
+original row facts; the first 66 views remain unchanged.
+
+Two native source/anchor tests, strict checks and eight full independent SDK
+inventories pass. A separately named observer admits nullable Score; its retained
+predecessor requires Score present. That predecessor boundary is a static
+contract, not a reported execution failure. The successor validates actual SDK
+NULL presence and prints complete raw rows so inactive payloads stay observable.
+The saved-only verifier passes without launching children. See the
+[companion record](results/ace16-nullable-fixed-int32-sources-2026-10-31.json).
+These observations still supply no normal save authority or native event evidence.
