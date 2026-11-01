@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "present_id_untouched_nullable_index_source_companion",
+  "status": "native_source_and_anchors_passed_sdk_and_writer_pending",
+  "native_access_qualification": "unrun",
+  "writer_calls": 0,
+  "source_freeze_sha256": "a4a521e74c72eb0f3a3dcbb6f3441cebb8391b7733900a4bb234dd6b56dffab7",
+  "headers": [
+    5,
+    6
+  ],
+  "views": 4,
+  "total_image_bytes": 163840,
+  "request": {
+    "table": "Items",
+    "column": "Id",
+    "ordinal": 0,
+    "expected": 1,
+    "replacement": 7,
+    "macro_only_final_score": 2007
+  },
+  "original_request_digest": "905ed64f46af8325a8a7459053cbdf4f7f32894369ac7b7f65fbb0a1a6203c73",
+  "source_test": {
+    "passed": 1,
+    "seconds": 0.02,
+    "log": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/source-first-root.log",
+      "bytes": 654,
+      "sha256": "13fb71b5defe49731f8bf5cf37347e0a8597ff68aa40d75fbbe21ad668da7083"
+    }
+  },
+  "anchor_suite": {
+    "passed": 2,
+    "ignored": 1,
+    "seconds": 0.01,
+    "log": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/source-anchors-first-root.log",
+      "bytes": 749,
+      "sha256": "dfbeb28dd8fd6de9bd0f32bf959669a1f758d6f93b4bc30f5e6fb9759495a0c5"
+    }
+  },
+  "export": {
+    "passed": 1,
+    "seconds": 0.06,
+    "log": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/export-first-root.log",
+      "bytes": 914,
+      "sha256": "f40b7b9f212ce3f7894933a3b3000eac848971cda300bab60cb8e3d3bab4f310"
+    }
+  },
+  "images": [
+    {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/originals-first/h5-present-id-expected.accdb",
+      "bytes": 40960,
+      "sha256": "f51ff4159dbec253982c477960a5acba6af9cffd073ea5fdb299bad2b6e23c96"
+    },
+    {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/originals-first/h5-present-id-original.accdb",
+      "bytes": 40960,
+      "sha256": "707c74bf4945d648dffa17bf4459ec20ef15e939258cccebf80694ca7d3e7d16"
+    },
+    {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/originals-first/h6-present-id-expected.accdb",
+      "bytes": 40960,
+      "sha256": "b23dfbf57fae35012b735e6baeba4c4b071811ca2e6a03db1028c6e59b444bd2"
+    },
+    {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/originals-first/h6-present-id-original.accdb",
+      "bytes": 40960,
+      "sha256": "dfa1c6c7454ffc7d63f406f1ad1ba0939b7bc5562d8548a2c83a98cb274b7cbf"
+    }
+  ],
+  "strict": {
+    "passed": true,
+    "seconds": 1.37,
+    "target": "normal_before_change_nullable_id_sources",
+    "features": "journal only",
+    "log": {
+      "path": ".cache/ace16-native-before-change-nullable-keys-next-20261031/id-companion/source-strict-first-root.log",
+      "bytes": 306,
+      "sha256": "bc3c62765a092a46d13bd3bbd0a48b38b89ddc4adc83f24be6782a3aa0513198"
+    }
+  }
+}

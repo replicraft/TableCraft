@@ -161,3 +161,6 @@ pub mod canonical_nullable_index_before_change;
 
 /// Independent BeforeChange sources with untouched nullable I32 index keys.
 pub mod canonical_nullable_key_before_change;
+
+/// Present Id updates beside an untouched nullable ordinary index key.
+pub mod canonical_nullable_index_id_before_change;
