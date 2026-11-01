@@ -749,3 +749,6 @@ mod genuine_retained_node_insert;
 
 #[path = "normal/genuine_default_insert.rs"]
 mod genuine_default_insert;
+
+#[path = "normal/genuine_inline_lval_insert.rs"]
+mod genuine_inline_lval_insert;

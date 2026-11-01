@@ -1,5 +1,7 @@
 //! Qualified Memo/OLE payloads and exact descriptor/chunk framing.
 use super::super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use crate::limits::MAX_LONG_VALUE_CHUNKS;
 use crate::{
     InspectError, NativeColumn,
     format::{
@@ -7,9 +9,10 @@ use crate::{
         text,
     },
     header::check,
-    limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES, MAX_LONG_VALUE_CHUNKS},
+    limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES},
     table::long_value::profile,
 };
+#[cfg(feature = "ace16-write-preview")]
 use std::ops::Range;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -18,7 +21,9 @@ use tablecraft_core::{
 
 const INLINE_BYTES: usize = 64;
 const EXTERNAL_ROW_BYTES: usize = 4076;
+#[cfg(feature = "ace16-write-preview")]
 const REFERENCE_BYTES: usize = size_of::<u32>();
+#[cfg(feature = "ace16-write-preview")]
 const CHAIN_PAYLOAD_BYTES: usize = EXTERNAL_ROW_BYTES - REFERENCE_BYTES;
 const DESCRIPTOR_WORDS: usize = 3;
 const DESCRIPTOR_BYTES: usize = DESCRIPTOR_WORDS * size_of::<u32>();
@@ -29,7 +34,7 @@ const COMPRESSED_MEMO_MAX_UNITS: usize = 1024;
 const COMPRESSED_UNICODE_FLAG: u8 = 1;
 const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
 pub(in crate::table::mutation) enum Encoded {
@@ -44,6 +49,7 @@ pub(in crate::table::mutation) enum StorageChoice {
     Chained,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) struct Chunk {
     pub payload: Range<usize>,
     pub linked: bool,
@@ -186,6 +192,7 @@ impl Encoded {
         Ok(())
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn chunks(
         &self,
         choice: StorageChoice,
@@ -278,6 +285,7 @@ impl Encoded {
         Ok(result)
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn body(
         &self,
         chunk: &Chunk,

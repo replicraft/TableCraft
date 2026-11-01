@@ -1,6 +1,7 @@
 //! Independently derive exact payload authority from immutable request text.
 use super::super::super::EditError;
-use super::super::{encode::Encoded, stage::Change};
+use super::super::stage::Change;
+use crate::table::mutation::record_serialization::long_value::Encoded;
 use crate::{
     InspectError, NativeColumn,
     format::text,

@@ -1,5 +1,6 @@
 //! Record serialization shared by working fitted and placement consumers.
 //! Storage encoding and independent proof encoding retain separate owners.
+pub(in crate::table::mutation) mod long_value;
 pub(in crate::table::mutation) mod policy;
 pub(in crate::table::mutation) mod proof;
 pub(in crate::table::mutation) mod record;
