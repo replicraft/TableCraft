@@ -37,6 +37,8 @@ pub(super) enum Role {
     // Target-local declaration closure; the global closed-content family keeps
     // its existing no-user-LVAL role policy.
     SelectedUser,
+    // Action-only native ordinals and stored IDs; old UPDATE stays canonical.
+    SelectedActions,
 }
 
 pub(super) struct Table<'image> {
@@ -113,14 +115,28 @@ pub(in crate::table::mutation) fn validate_user(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    validate_selected(image, schema, Role::SelectedUser, budget, cancelled)
+}
+
+/// Action-only complete declaration framing; no mutation permission is returned.
+pub(in crate::table::mutation) fn validate_actions(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    validate_selected(image, schema, Role::SelectedActions, budget, cancelled)
+}
+
+fn validate_selected(
+    image: &NativeImage,
+    schema: &TableSchema,
+    role: Role,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     check(budget, cancelled)?;
-    let declaration = raw::capture(
-        image,
-        schema.definition_page(),
-        Role::SelectedUser,
-        budget,
-        cancelled,
-    )?;
+    let declaration = raw::capture(image, schema.definition_page(), role, budget, cancelled)?;
     let inspection = inspect_table_indexes(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -134,13 +150,23 @@ pub(in crate::table::mutation) fn validate_user(
     {
         return Err(refused());
     }
-    let position = indexes::declaration::validate_selected(
-        image,
-        inspection.schema(),
-        inspection.indexes().iter(),
-        budget,
-        cancelled,
-    )?;
+    let position = if matches!(role, Role::SelectedActions) {
+        indexes::declaration::validate_actions(
+            image,
+            inspection.schema(),
+            inspection.indexes().iter(),
+            budget,
+            cancelled,
+        )?
+    } else {
+        indexes::declaration::validate_selected(
+            image,
+            inspection.schema(),
+            inspection.indexes().iter(),
+            budget,
+            cancelled,
+        )?
+    };
     let mut reader_source = image.reader();
     let mut reader = Reader {
         source: &mut reader_source,

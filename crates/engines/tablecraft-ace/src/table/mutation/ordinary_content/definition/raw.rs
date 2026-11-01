@@ -80,11 +80,19 @@ pub(super) fn capture(
         };
         layout::read(&mut reader, number)?
     };
-    if (!matches!(role, Role::User | Role::SelectedUser)
-        && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
+    if (!matches!(
+        role,
+        Role::User | Role::SelectedUser | Role::SelectedActions
+    ) && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
-        || layout.fields.len() != layout.max_columns
+        || (role != Role::SelectedActions && layout.fields.len() != layout.max_columns)
         || layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count()
+    {
+        return Err(refused());
+    }
+    if role == Role::SelectedActions
+        && layout.fields.len() != layout.max_columns
+        && (layout.variable_slots != 0 || layout.fields.iter().any(|field| !field.fixed))
     {
         return Err(refused());
     }
@@ -107,7 +115,10 @@ pub(super) fn capture(
     expected[layout::RECORD_COUNT_OFFSET..layout::RECORD_COUNT_OFFSET + size_of::<u32>()]
         .copy_from_slice(&layout.records.to_le_bytes());
     expected[AUTO_SUPPORT_OFFSET] = AUTO_SUPPORT;
-    expected[TABLE_ROLE_OFFSET] = if matches!(role, Role::User | Role::SelectedUser) {
+    expected[TABLE_ROLE_OFFSET] = if matches!(
+        role,
+        Role::User | Role::SelectedUser | Role::SelectedActions
+    ) {
         USER_TABLE_ROLE
     } else {
         SYSTEM_TABLE_ROLE
@@ -147,7 +158,10 @@ pub(super) fn capture(
         .count();
     for (index, field) in layout.fields.iter().enumerate() {
         check(budget, cancelled)?;
-        if field.number != index
+        if (role != Role::SelectedActions && field.number != index)
+            || (role == Role::SelectedActions
+                && (field.number >= layout.max_columns
+                    || index != 0 && layout.fields[index - 1].number >= field.number))
             || field.name.is_empty()
             || field.name.chars().any(char::is_control)
         {
@@ -173,7 +187,7 @@ pub(super) fn capture(
         descriptor[COLUMN_MAGIC_OFFSET..COLUMN_MAGIC_OFFSET + size_of::<u32>()]
             .copy_from_slice(&MAGIC.to_le_bytes());
         descriptor[COLUMN_NUMBER_OFFSET..COLUMN_NUMBER_OFFSET + size_of::<u16>()]
-            .copy_from_slice(&(index as u16).to_le_bytes());
+            .copy_from_slice(&(field.number as u16).to_le_bytes());
         let variable = if !field.fixed && matches!(field.kind, OLE | LONG_TEXT) {
             let variable = long_variable;
             long_variable += 1;
@@ -185,11 +199,31 @@ pub(super) fn capture(
         };
         descriptor[COLUMN_VARIABLE_OFFSET..COLUMN_VARIABLE_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(variable as u16).to_le_bytes());
+        let stored_id = if role == Role::SelectedActions {
+            let id = u16_at(raw, COLUMN_ID_OFFSET)?;
+            if id == u16::MAX {
+                return Err(refused());
+            }
+            for prior in 0..index {
+                check(budget, cancelled)?;
+                let previous = column_start + prior * COLUMN_BYTES + COLUMN_ID_OFFSET;
+                // Descriptor order is native order; this first action profile
+                // also requires the observed stored-ID order, allowing gaps.
+                if u16_at(page, previous)? >= id {
+                    return Err(refused());
+                }
+            }
+            id
+        } else {
+            index as u16
+        };
         descriptor[COLUMN_ID_OFFSET..COLUMN_ID_OFFSET + size_of::<u16>()]
-            .copy_from_slice(&(index as u16).to_le_bytes());
+            .copy_from_slice(&stored_id.to_le_bytes());
         if matches!(field.kind, SHORT_TEXT | LONG_TEXT) {
             let sort = &raw[COLUMN_SORT_OFFSET..COLUMN_SORT_OFFSET + GENERAL_SORT.len()];
-            let expected_sort = if role == Role::SelectedUser && sort == GENERAL_LEGACY_SORT {
+            let expected_sort = if matches!(role, Role::SelectedUser | Role::SelectedActions)
+                && sort == GENERAL_LEGACY_SORT
+            {
                 GENERAL_LEGACY_SORT
             } else {
                 GENERAL_SORT
@@ -202,8 +236,10 @@ pub(super) fn capture(
         }
         let generator_flags = field.flags & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG);
         descriptor[COLUMN_FLAGS_OFFSET] = if generator_flags != 0 {
-            if !matches!(role, Role::User | Role::SelectedUser)
-                || has_counter
+            if !matches!(
+                role,
+                Role::User | Role::SelectedUser | Role::SelectedActions
+            ) || has_counter
                 || field.kind != INT32
                 || !field.fixed
                 || field.length != size_of::<i32>()
@@ -294,8 +330,11 @@ fn field_profile(field: &Field, role: Role) -> Result<(), EditError> {
         (NUMERIC, 17, false) => {
             (1..=28).contains(&field.precision) && field.scale <= field.precision
         }
-        (OLE, 0, false) => matches!(role, Role::Catalog | Role::SelectedUser),
-        (LONG_TEXT, 0, false) => role == Role::SelectedUser,
+        (OLE, 0, false) => matches!(
+            role,
+            Role::Catalog | Role::SelectedUser | Role::SelectedActions
+        ),
+        (LONG_TEXT, 0, false) => matches!(role, Role::SelectedUser | Role::SelectedActions),
         _ => false,
     };
     if !valid
@@ -343,7 +382,7 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
             ("ObjectId", INT32, Some(4), 4),
             ("SID", SHORT_BINARY, None, 255),
         ],
-        Role::User | Role::SelectedUser => return Ok(()),
+        Role::User | Role::SelectedUser | Role::SelectedActions => return Ok(()),
     };
     if layout.fields.len() != expected.len() {
         return Err(refused());

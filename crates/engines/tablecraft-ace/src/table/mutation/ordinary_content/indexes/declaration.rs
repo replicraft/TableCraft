@@ -143,10 +143,35 @@ pub(in crate::table::mutation::ordinary_content) fn validate_selected<'index>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
+    validate_for(image, schema, indexes, false, budget, cancelled)
+}
+
+pub(in crate::table::mutation::ordinary_content) fn validate_actions<'index>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    validate_for(image, schema, indexes, true, budget, cancelled)
+}
+
+fn validate_for<'index>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
+    actions: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
     let mut logical_count = 0_usize;
     for index in indexes.clone() {
         check(budget, cancelled)?;
-        qualify_selected(schema, index, budget, cancelled)?;
+        if actions {
+            qualify_for(schema, index, KeyFamily::ActionIntegral, budget, cancelled)?;
+        } else {
+            qualify_selected(schema, index, budget, cancelled)?;
+        }
         logical_count += 1;
     }
     if logical_count != schema.layout.logical_indexes {
@@ -222,6 +247,7 @@ fn qualify_selected(
 enum KeyFamily {
     GlobalInt32,
     SelectedIntegral,
+    ActionIntegral,
 }
 
 fn qualify_for(
@@ -236,7 +262,21 @@ fn qualify_for(
         return Err(refused());
     };
     let constraints = index.constraints().ok_or_else(refused)?;
-    let field = schema.columns().get(key.number()).ok_or_else(refused)?;
+    let field = if matches!(family, KeyFamily::ActionIntegral) {
+        let mut selected = None;
+        for field in schema.columns() {
+            check(budget, cancelled)?;
+            if field.number() == key.number() {
+                if selected.is_some() {
+                    return Err(refused());
+                }
+                selected = Some(field);
+            }
+        }
+        selected.ok_or_else(refused)?
+    } else {
+        schema.columns().get(key.number()).ok_or_else(refused)?
+    };
     if matches!(family, KeyFamily::GlobalInt32)
         && (field.native_type() != INT32 || field.scalar_type() != Some(ScalarType::Int32))
     {

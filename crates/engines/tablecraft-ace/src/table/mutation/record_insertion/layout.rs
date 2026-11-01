@@ -13,7 +13,21 @@ pub(in crate::table::mutation) fn variables(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<usize>, EditError> {
-    variables_with_generated(schema, None, budget, cancelled)
+    variables_with_generated(schema, None, false, budget, cancelled)
+}
+
+/// Complete native17 action fields may occupy sparse native mask positions.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn variables_actions(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<usize>, EditError> {
+    if schema.columns().len() == schema.layout.max_columns {
+        return variables(schema, budget, cancelled);
+    }
+
+    variables_with_generated(schema, None, true, budget, cancelled)
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -23,12 +37,13 @@ pub(in crate::table::mutation) fn incrementing_variables(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<usize>, EditError> {
-    variables_with_generated(schema, Some(column), budget, cancelled)
+    variables_with_generated(schema, Some(column), false, budget, cancelled)
 }
 
 fn variables_with_generated(
     schema: &TableSchema,
     generated: Option<usize>,
+    actions: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<usize>, EditError> {
@@ -39,7 +54,8 @@ fn variables_with_generated(
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     if count == 0
-        || count != schema.layout.max_columns
+        || (!actions && count != schema.layout.max_columns)
+        || count > schema.layout.max_columns
         || schema.layout.variable_slots > count
         || schema.layout.fixed_end < COLUMN_COUNT_BYTES
     {
@@ -60,7 +76,11 @@ fn variables_with_generated(
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, column) in fields.iter().enumerate() {
         check(budget, cancelled)?;
-        if column.number() != position {
+        if (!actions && column.number() != position)
+            || actions
+                && (column.number() >= schema.layout.max_columns
+                    || position != 0 && fields[position - 1].number() >= column.number())
+        {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         if column.fixed() {

@@ -236,7 +236,7 @@ pub(super) fn encode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<u8>>, EditError> {
     let schema = source.table.schema();
-    let shape = records::layout::capture(schema, budget, cancelled)?;
+    let shape = records::layout::capture_actions(schema, budget, cancelled)?;
     budget
         .charge_allocation(requests.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;

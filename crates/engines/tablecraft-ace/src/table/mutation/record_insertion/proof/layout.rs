@@ -26,7 +26,21 @@ pub(in crate::table::mutation) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
-    capture_with_generated(schema, None, budget, cancelled)
+    capture_with_generated(schema, None, false, budget, cancelled)
+}
+
+/// Independent action geometry; no producer layout token is consumed.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_actions(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
+    if schema.columns().len() == schema.layout.max_columns {
+        return capture(schema, budget, cancelled);
+    }
+
+    capture_with_generated(schema, None, true, budget, cancelled)
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -36,12 +50,13 @@ pub(in crate::table::mutation) fn capture_incrementing(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
-    capture_with_generated(schema, Some(column), budget, cancelled)
+    capture_with_generated(schema, Some(column), false, budget, cancelled)
 }
 
 fn capture_with_generated(
     schema: &TableSchema,
     generated: Option<usize>,
+    actions: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
@@ -55,7 +70,10 @@ fn capture_with_generated(
     }) {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
-    if count == 0 || schema.layout.max_columns != count {
+    if count == 0
+        || (!actions && schema.layout.max_columns != count)
+        || count > schema.layout.max_columns
+    {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
 
@@ -72,7 +90,12 @@ fn capture_with_generated(
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
-        if field.number() != position || field.complex_type_id().is_some() {
+        if (!actions && field.number() != position)
+            || actions
+                && (field.number() >= schema.layout.max_columns
+                    || position != 0 && schema.columns()[position - 1].number() >= field.number())
+            || field.complex_type_id().is_some()
+        {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         if field.fixed() {
@@ -144,7 +167,12 @@ fn capture_with_generated(
 
     Ok(Shape {
         fixed_end,
-        mask_bytes: count.div_ceil(MASK_BITS),
+        mask_bytes: if actions {
+            schema.layout.max_columns
+        } else {
+            count
+        }
+        .div_ceil(MASK_BITS),
         variables: ordered,
     })
 }

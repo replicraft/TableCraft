@@ -53,7 +53,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         budget,
         cancelled,
     )?;
-    let source = super::super::capture_source(&image, table, budget, cancelled)?;
+    let source = super::super::capture_action_source(&image, table, budget, cancelled)?;
     let (facts, optional_wire) =
         super::qualify(&image, &source, table, requests, budget, cancelled)?;
     crate::table::mutation::record_insertion::properties::require_text_declarations(
@@ -84,6 +84,9 @@ pub(in crate::table::mutation::normal_insert) fn prove(
             requests,
             references: &references,
         };
+        budget
+            .charge(Resource::Steps, schema.columns().len() as u64)
+            .map_err(InspectError::from)?;
         let root_at = index.root_page() as usize * PAGE_BYTES;
         if image.as_bytes().get(root_at) == Some(&super::NODE_KIND) {
             tree::reconstruct(
@@ -101,7 +104,12 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         } else if index
             .columns()
             .first()
-            .and_then(|key| schema.columns().get(key.number()))
+            .and_then(|key| {
+                schema
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+            })
             .is_some_and(|field| matches!(field.native_type(), INT64 | CURRENCY))
         {
             integral::reconstruct(
@@ -140,7 +148,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     // Recapture complete final fields/properties/constraints and every physical
     // alias from the independently reconstructed full image, without effects.
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
-    let final_source = super::super::capture_source(&after, table, budget, cancelled)?;
+    let final_source = super::super::capture_action_source(&after, table, budget, cancelled)?;
     let (final_facts, _) = super::qualify(&after, &final_source, table, &[], budget, cancelled)?;
     if final_source.records.len() != source.records.len() + requests.len()
         || final_source.table.schema().object_id() != schema.object_id()

@@ -266,3 +266,6 @@ pub mod canonical_ordinary_wide_insert;
 
 /// Independent Required/AllowZeroLength creation source images.
 pub mod canonical_creation_properties;
+
+/// Independent sparse native ordinals and stored-ID action witnesses.
+pub mod qualified_sparse_numeric;

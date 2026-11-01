@@ -29,6 +29,26 @@ impl<'image> NoRequiredTablePrograms<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_with_declaration(image, schema, false, budget, cancelled)
+    }
+
+    /// Fresh complete native absence proof with action-only column identities.
+    pub(in crate::table::mutation) fn capture_actions(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_declaration(image, schema, true, budget, cancelled)
+    }
+
+    fn capture_with_declaration(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        actions: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let _span = tracing::debug_span!("native.table.no_required_programs.capture").entered();
         check(budget, cancelled)?;
         image.require_standard_capture()?;
@@ -45,7 +65,13 @@ impl<'image> NoRequiredTablePrograms<'image> {
         }
         let catalog_reference = selected.reference;
         declarations::capture(image, budget, cancelled)?;
-        super::ordinary_content::definition::validate_user(image, schema, budget, cancelled)?;
+        if actions {
+            super::ordinary_content::definition::validate_actions(
+                image, schema, budget, cancelled,
+            )?;
+        } else {
+            super::ordinary_content::definition::validate_user(image, schema, budget, cancelled)?;
+        }
 
         // Public coverage corroborates the raw code-carrier NULL checks,
         // strict property qualification and physical catalog census. Its three
@@ -109,3 +135,6 @@ fn refused() -> EditError {
 
 #[cfg(test)]
 mod resource_tests;
+
+#[cfg(test)]
+mod action_tests;

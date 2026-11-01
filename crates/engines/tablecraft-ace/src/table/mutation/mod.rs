@@ -170,3 +170,6 @@ pub use requests::{InsertFieldValue, OmittedRowInsert, RowInsert};
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod insert_defaults;
+
+#[cfg(feature = "journal")]
+mod normal_actions;

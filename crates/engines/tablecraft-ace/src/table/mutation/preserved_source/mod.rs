@@ -110,10 +110,35 @@ enum PayloadAdmission<'admission, 'image> {
     NoRequired(&'admission NoRequiredTablePrograms<'image>),
 }
 
+#[derive(Clone, Copy)]
+enum ColumnFraming {
+    Dense,
+    #[cfg(feature = "journal")]
+    Actions,
+}
+
 fn capture_with_payload(
     image: &NativeImage,
     table: &str,
     payload: PayloadAdmission<'_, '_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed(
+        image,
+        table,
+        payload,
+        ColumnFraming::Dense,
+        budget,
+        cancelled,
+    )
+}
+
+fn capture_framed(
+    image: &NativeImage,
+    table: &str,
+    payload: PayloadAdmission<'_, '_>,
+    framing: ColumnFraming,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
@@ -126,12 +151,13 @@ fn capture_with_payload(
         cancelled,
     )?;
     let schema = indexes.schema();
-    if schema.columns().len() != schema.layout.max_columns
-        || schema
-            .columns()
-            .iter()
-            .enumerate()
-            .any(|(position, field)| field.number() != position)
+    if matches!(framing, ColumnFraming::Dense)
+        && (schema.columns().len() != schema.layout.max_columns
+            || schema
+                .columns()
+                .iter()
+                .enumerate()
+                .any(|(position, field)| field.number() != position))
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -381,7 +407,11 @@ fn capture_with_payload(
         image,
         &indexes,
         &projected,
-        &payload,
+        matches!(
+            &payload,
+            PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_)
+        )
+        .then_some(framing),
         &long_values,
         budget,
         cancelled,
@@ -399,10 +429,20 @@ fn capture_with_payload(
         let [key] = index.columns() else {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         };
-        let column = schema
-            .columns()
-            .get(key.number())
-            .ok_or(InspectError::Malformed)?;
+        let column = match framing {
+            ColumnFraming::Dense => schema.columns().get(key.number()),
+            #[cfg(feature = "journal")]
+            ColumnFraming::Actions => {
+                budget
+                    .charge(Resource::Steps, schema.columns().len() as u64)
+                    .map_err(InspectError::from)?;
+                schema
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+            }
+        }
+        .ok_or(InspectError::Malformed)?;
         if index.native_type() > 1 || index.constraints().is_none() {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }
@@ -635,6 +675,26 @@ pub(in crate::table::mutation) fn capture_no_required_programs(
         image,
         table,
         PayloadAdmission::NoRequired(certificate),
+        budget,
+        cancelled,
+    )
+}
+
+/// Full action Source; the same native absence certificate and all preservation
+/// checks remain required. No UPDATE/event caller selects this framing.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_no_required_actions(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed(
+        image,
+        table,
+        PayloadAdmission::NoRequired(certificate),
+        ColumnFraming::Actions,
         budget,
         cancelled,
     )

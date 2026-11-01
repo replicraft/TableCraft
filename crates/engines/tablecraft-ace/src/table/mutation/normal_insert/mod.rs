@@ -35,7 +35,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.insert.plan").entered();
-        let source = capture_source(&self, table, budget, cancelled)?;
+        let source = capture_action_source(&self, table, budget, cancelled)?;
         if !source.indexes.indexes().is_empty() {
             return indexed::plan(self, source, table, requests, budget, cancelled);
         }
@@ -105,13 +105,42 @@ fn capture_source(
     Ok(source)
 }
 
+fn capture_action_source(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let catalog = inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        CATALOG_NAME,
+        budget,
+        cancelled,
+    )?;
+    if catalog.columns().len() != NATIVE_CATALOG_FIELDS {
+        return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
+    }
+    let source = super::normal_actions::capture(image, table, budget, cancelled)?;
+
+    // Source already refuses any relationship involving this target and owns
+    // complete properties, dependencies, catalog and LVAL preservation.
+    if source.records.len() != source.table.rows().len()
+        || usize::try_from(source.table.schema().declared_rows()).ok() != Some(source.records.len())
+    {
+        return Err(EditError::Preservation);
+    }
+    check(budget, cancelled)?;
+    Ok(source)
+}
+
 fn capture(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
-    let source = capture_source(image, table, budget, cancelled)?;
+    let source = capture_action_source(image, table, budget, cancelled)?;
     if !source.indexes.indexes().is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
@@ -168,3 +197,6 @@ mod complete;
 
 #[cfg(all(test, feature = "journal"))]
 mod wide_primary_tests;
+
+#[cfg(test)]
+mod sparse_numeric_tests;

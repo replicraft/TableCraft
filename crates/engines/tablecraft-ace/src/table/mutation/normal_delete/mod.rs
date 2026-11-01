@@ -11,7 +11,7 @@ use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowDelete, WriteBlocker,
     header::check,
     inspect_table_schema,
-    table::mutation::{fixed_records, normal_ordinary, preserved_source::Source, rows},
+    table::mutation::{fixed_records, normal_actions, preserved_source::Source, rows},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -94,7 +94,7 @@ fn capture(
     if catalog.columns().len() != NATIVE_CATALOG_FIELDS {
         return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
     }
-    let source = normal_ordinary::capture(image, table, budget, cancelled)?;
+    let source = normal_actions::capture(image, table, budget, cancelled)?;
     if !source.indexes.indexes().is_empty() {
         indexed::qualify(image, &source, budget, cancelled)?;
     }
@@ -112,3 +112,6 @@ mod node_delete_sources;
 
 #[cfg(test)]
 mod integral_tests;
+
+#[cfg(test)]
+mod sparse_numeric_tests;
