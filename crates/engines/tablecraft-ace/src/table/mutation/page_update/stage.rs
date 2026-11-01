@@ -3,10 +3,10 @@ use super::super::{EditError, SlotScalarUpdate, WriteBlocker, rows::RowAssignmen
 use super::{
     audit,
     forward::Plan,
-    record,
     roots::{self, Root},
     space::Space,
 };
+use crate::table::mutation::record_serialization::record;
 use crate::{
     InspectError, NativeImage, TableCheck, TableSchema,
     format::{page::PAGE_BYTES, reader::Reader, row::reference_page},

@@ -5,7 +5,7 @@ use crate::table::mutation::fixed_records::binding as fixed;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, NativeImage, WriteBlocker,
     header::check,
-    table::mutation::{rows, slot::storage},
+    table::mutation::{record_serialization::storage, rows},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 

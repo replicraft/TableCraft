@@ -2,8 +2,8 @@
 use super::super::super::{
     record_proof::{self, verified::Verified},
     request::{self, FittedColumnUpdates},
-    serialization::RecordPolicy,
 };
+use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, NativeImage, TableCheck,
     format::{page::PAGE_BYTES, row::reference_page},

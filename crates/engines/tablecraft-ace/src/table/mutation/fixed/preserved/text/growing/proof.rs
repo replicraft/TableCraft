@@ -9,9 +9,8 @@ use crate::{
     header::check,
     table::{
         mutation::{
-            record_roots as roots,
-            slot::storage,
-            variable_update::{map_audit::record::RecordImage, record_proof},
+            record_roots as roots, record_serialization::proof as record_proof,
+            record_serialization::storage, variable_update::map_audit::record::RecordImage,
         },
         record,
     },

@@ -1,7 +1,7 @@
 //! Exact Text/NULL checks with native declared storage qualification.
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker, header::check,
-    table::mutation::slot::storage,
+    table::mutation::record_serialization::storage,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},

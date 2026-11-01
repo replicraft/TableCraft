@@ -6,7 +6,7 @@ use crate::{
     header::check,
     preservation::COPY_CHUNK_BYTES,
     table::{
-        mutation::{slot::storage, variable_update::record_proof},
+        mutation::{record_serialization::proof as record_proof, record_serialization::storage},
         record,
     },
 };

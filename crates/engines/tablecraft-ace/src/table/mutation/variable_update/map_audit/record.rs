@@ -44,7 +44,12 @@ pub(in crate::table::mutation) fn compare<R: RecordImage>(
             return Err(EditError::Preservation);
         }
         let actual = data.target(event.target.clone(), budget, cancelled)?;
-        super::super::record_proof::equal(record.bytes(), actual, budget, cancelled)?;
+        crate::table::mutation::record_serialization::proof::equal(
+            record.bytes(),
+            actual,
+            budget,
+            cancelled,
+        )?;
     }
     Ok(())
 }

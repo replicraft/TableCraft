@@ -14,7 +14,9 @@ use crate::{
     header::check,
     preservation::COPY_CHUNK_BYTES,
     table::{
-        mutation::{rows, slot::storage, variable_update::record_proof},
+        mutation::{
+            record_serialization::proof as record_proof, record_serialization::storage, rows,
+        },
         record,
     },
 };

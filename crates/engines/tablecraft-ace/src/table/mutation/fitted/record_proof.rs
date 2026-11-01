@@ -3,9 +3,9 @@ pub(super) mod verified;
 
 use super::{
     request::{self, FittedColumnUpdates},
-    serialization::RecordPolicy,
     stage::Staged,
 };
+use crate::table::mutation::record_serialization::policy::RecordPolicy;
 use crate::{
     EditError, InspectError, NativeImage,
     format::{
@@ -16,8 +16,8 @@ use crate::{
     table::{
         indexes::{IndexDataPatch, qualify_row_indexes},
         mutation::{
-            gates, page_update::roots, variable_split::metadata::Metadata,
-            variable_update::record_proof,
+            gates, page_update::roots, record_serialization::proof as record_proof,
+            variable_split::metadata::Metadata,
         },
         record, record_layout,
     },
@@ -256,7 +256,11 @@ pub(super) fn records(
             }
         }
         let mut expected = match variables.as_slice() {
-            [] => super::stage::copy(before, reader.budget, cancelled)?,
+            [] => crate::table::mutation::record_serialization::copy(
+                before,
+                reader.budget,
+                cancelled,
+            )?,
             [one] => match policy {
                 RecordPolicy::FittedDeclared => record_proof::reconstruct_declared(
                     schema,

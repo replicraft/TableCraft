@@ -1,12 +1,8 @@
 //! Joint encoding selection precedes emission and is ordered by native slot.
-use super::{request, serialization::RecordPolicy};
+use super::{check, policy::RecordPolicy, record, storage};
 use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
-    format::layout::UNICODE_COMPRESSION_FLAG,
-    table::{
-        mutation::{page_update::record, slot::storage},
-        record_layout::RecordLayout,
-    },
+    format::layout::UNICODE_COMPRESSION_FLAG, table::record_layout::RecordLayout,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -16,7 +12,7 @@ use tablecraft_core::{
 const MARKER_BYTES: usize = 2;
 const UTF16_BYTES: usize = size_of::<u16>();
 
-pub(super) struct Cell<'a> {
+pub(in crate::table::mutation) struct Cell<'a> {
     pub column: usize,
     pub value: &'a Value,
 }
@@ -28,7 +24,7 @@ struct Choice {
     length: usize,
 }
 
-pub(super) fn rebuild(
+pub(in crate::table::mutation) fn rebuild(
     schema: &TableSchema,
     before: &[u8],
     layout: &RecordLayout,
@@ -38,7 +34,7 @@ pub(super) fn rebuild(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     match cells {
-        [] => return super::stage::copy(before, budget, cancelled),
+        [] => return super::copy(before, budget, cancelled),
         [cell] => return single(schema, before, layout, cell, policy, budget, cancelled),
         _ => {}
     }
@@ -52,7 +48,7 @@ pub(super) fn rebuild(
     let mut removed = 0_usize;
     let mut preferred = 0_usize;
     for (selected, cell) in cells.iter().enumerate() {
-        request::check(budget, cancelled)?;
+        check(budget, cancelled)?;
         let field = &schema.columns()[cell.column];
         let variable = field.field.variable;
         let start = *layout
@@ -104,7 +100,7 @@ pub(super) fn rebuild(
             .checked_sub(preserved)
             .ok_or(InspectError::Malformed)?;
         for choice in &mut choices {
-            request::check(budget, cancelled)?;
+            check(budget, cancelled)?;
             if preferred <= capacity {
                 break;
             }
@@ -126,7 +122,7 @@ pub(super) fn rebuild(
         .try_reserve_exact(choices.len())
         .map_err(|_| InspectError::Allocation)?;
     for choice in choices {
-        request::check(budget, cancelled)?;
+        check(budget, cancelled)?;
         let cell = &cells[choice.selected];
         let field = &schema.columns()[cell.column];
         let bytes = if matches!(policy, RecordPolicy::GrowingPreferred)
@@ -158,7 +154,7 @@ fn lengths(
             let mut count = 0_usize;
             let mut narrow = true;
             for unit in text.encode_utf16() {
-                request::check(budget, cancelled)?;
+                check(budget, cancelled)?;
                 budget
                     .charge(Resource::Steps, 1)
                     .map_err(InspectError::from)?;

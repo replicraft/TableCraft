@@ -1,6 +1,7 @@
 //! Checked live-row spans and exact expected-value preconditions.
 use super::super::{EditError, WriteBlocker, patch::BytePatch, rows};
-use super::{SlotScalarUpdate, storage};
+use super::SlotScalarUpdate;
+use crate::table::mutation::record_serialization::storage;
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::{reader::Reader, row::MASK_BITS},

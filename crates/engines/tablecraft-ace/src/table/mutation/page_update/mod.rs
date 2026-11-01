@@ -1,7 +1,6 @@
 //! Bounded existing-page forwarding with stable logical roots and full checks.
 pub(super) mod audit;
 mod forward;
-pub(super) mod record;
 pub(super) use super::record_roots as roots;
 pub(super) mod space;
 pub(super) mod stage;
@@ -9,7 +8,8 @@ pub(super) mod stage;
 mod tests;
 
 use super::{
-    Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview, slot::storage,
+    Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview,
+    record_serialization::storage,
 };
 use crate::{
     InspectError, NativeImage,

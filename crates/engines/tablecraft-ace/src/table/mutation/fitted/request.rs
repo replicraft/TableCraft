@@ -134,7 +134,7 @@ pub(super) fn bind(
             }
             FittedColumnUpdates::Variable { updates, .. } => {
                 variable_groups.push(group_number);
-                super::super::slot::storage::qualify(selected)?;
+                super::super::record_serialization::storage::qualify(selected)?;
                 rows::unique(updates, budget, cancelled)?;
             }
         }
@@ -150,8 +150,8 @@ pub(super) fn bind(
                     fixed_bytes(selected, cell.value)?;
                 }
                 FittedColumnUpdates::Variable { .. } => {
-                    super::super::slot::storage::validate(selected, cell.expected)?;
-                    super::super::slot::storage::validate(selected, cell.value)?;
+                    super::super::record_serialization::storage::validate(selected, cell.expected)?;
+                    super::super::record_serialization::storage::validate(selected, cell.value)?;
                 }
             }
         }

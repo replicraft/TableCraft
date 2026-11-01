@@ -8,7 +8,8 @@ use super::{
     EditError, SlotScalarUpdate, gates,
     page_update::stage,
     preview,
-    slot::{self, storage},
+    record_serialization::storage,
+    slot,
     variable_update::{
         authority::Operation,
         placement::{Data, Plan},

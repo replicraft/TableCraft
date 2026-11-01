@@ -49,6 +49,8 @@ mod preview;
 mod record_protection;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod record_roots;
+#[cfg(feature = "ace16-write-preview")]
+mod record_serialization;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod requests;
 mod rows;

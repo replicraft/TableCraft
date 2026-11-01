@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-31",
+  "scope": "Move existing record encoders and independent proof reconstructors to one neutral internal owner; no new normal write capability",
+  "source_before": "f3b9ffdd",
+  "owner": "crates/engines/tablecraft-ace/src/table/mutation/record_serialization",
+  "direct_consumers": true,
+  "forwarding_modules_retained": false,
+  "producer_and_proof_encoders_remain_separate": true,
+  "feature_gate": "ace16-write-preview; journal availability waits for a real normal consumer",
+  "focused_tests_passed": 426,
+  "focused_runs": [
+    {
+      "filter": "record_serialization",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-01-root.log",
+        "bytes": 782,
+        "sha256": "4df7d7eef425c6fd0ddf075e6c5648a0f57dba48d8f5678ed90390b66bf9177a"
+      },
+      "exit": 0,
+      "tests_passed": 3
+    },
+    {
+      "filter": "table::mutation::fitted",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-02-root.log",
+        "bytes": 4716,
+        "sha256": "9e92916c20d65d2bad4eefe00048c6e53199edc02f734e780a8efea43431cd01"
+      },
+      "exit": 0,
+      "tests_passed": 37
+    },
+    {
+      "filter": "table::mutation::page_update",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-03-root.log",
+        "bytes": 932,
+        "sha256": "97019f4a341f9615e46776ec527aa34d456a026997917ab4f6a7c4dfc553197b"
+      },
+      "exit": 0,
+      "tests_passed": 6
+    },
+    {
+      "filter": "table::mutation::slot",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-04-root.log",
+        "bytes": 275,
+        "sha256": "b118c0238768b31d324ac3b239abf8d2c1611af86f98ec177652a8b5620c3696"
+      },
+      "exit": 0,
+      "tests_passed": 0
+    },
+    {
+      "filter": "table::mutation::variable_update",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-05-root.log",
+        "bytes": 1322,
+        "sha256": "bce159dd81d5eb94dd52f88f4941b182fc53cd58cc0c2a9324b2316476887c51"
+      },
+      "exit": 0,
+      "tests_passed": 8
+    },
+    {
+      "filter": "table::mutation::fixed::preserved::text",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-06-root.log",
+        "bytes": 3068,
+        "sha256": "2714b5d4e9a44ea7061c190b27585c52a9af8c4f4ae7d947adc1ad0647321a1d"
+      },
+      "exit": 0,
+      "tests_passed": 15
+    },
+    {
+      "filter": "table::mutation::insert",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-07-root.log",
+        "bytes": 46399,
+        "sha256": "a744e33863dd240d7cc9295f08bc8d5abac16b99e1dda1b9aeed8f48286bd904"
+      },
+      "exit": 0,
+      "tests_passed": 331
+    },
+    {
+      "filter": "table::mutation::long_value",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-08-root.log",
+        "bytes": 1788,
+        "sha256": "09d7af5f22511553878f85a81160265cbf38d24432954db231f1b3fff4ad3207"
+      },
+      "exit": 0,
+      "tests_passed": 12
+    },
+    {
+      "filter": "table::mutation::variable_split",
+      "log": {
+        "path": ".cache/ace16-normal-fitted-serialization-next-20261031/checks-second/tests-09-root.log",
+        "bytes": 2174,
+        "sha256": "a5011b222df35e511ddec215b73577cb912e014847b275f34377672896c1cbec"
+      },
+      "exit": 0,
+      "tests_passed": 14
+    }
+  ],
+  "strict_all_features": {
+    "status": "PASS",
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ],
+    "all_targets": true,
+    "log": {
+      "path": ".cache/ace16-normal-fitted-serialization-next-20261031/clippy-second-root.log",
+      "bytes": 457,
+      "sha256": "6d2b585dd1e6d9526d7951bd4ee956a9f16c88a4d095c298228a71a79d9c8370"
+    }
+  },
+  "journal_only_check": {
+    "status": "PASS",
+    "log": {
+      "path": ".cache/ace16-normal-fitted-serialization-next-20261031/check-journal-root.log",
+      "bytes": 238,
+      "sha256": "7f6b55b858587190320c57a396566e4710c6ef7a653e5366ec177e6cc47048cc"
+    }
+  },
+  "static_inverse_comparison": {
+    "path": ".cache/ace16-normal-fitted-serialization-next-20261031/inverse-body-comparison.json",
+    "bytes": 2633,
+    "sha256": "b63cc40c2985f17c80c08480a5d6e4d837ff9c760e7b3ea7b23ad896b7d6bad7"
+  },
+  "retained_first_diagnostics": [
+    {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/record-extraction-check-first-root.log",
+      "bytes": 517,
+      "sha256": "6b028171866865ebc25d0f3342caa23fbf71534c8cb15c95f3b689b6cf99023b"
+    },
+    {
+      "path": ".cache/ace16-normal-fitted-serialization-next-20261031/tests-01-root.log",
+      "bytes": 2044,
+      "sha256": "276e51d0885b70916c1ff88d4bc968b119246c9194f7137aad72faf9694170c9"
+    }
+  ],
+  "diagnostic_resolution": [
+    "Restored a record field accidentally removed from the Change initializer during import migration",
+    "Moved one nested audit-test builder import to the real shared owner"
+  ],
+  "limitations": [
+    "No new ordinary Text/Binary save API, serialized intent or recovery profile",
+    "Native Access save/reopen conformance remains unrun"
+  ]
+}

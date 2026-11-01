@@ -3,7 +3,9 @@ use crate::{
     EditError, InspectError, NativeColumn, SlotScalarUpdate, TableSchema, WriteBlocker,
     header::check,
     table::{
-        mutation::{page_update::record, patch::BytePatch, rows, slot::storage},
+        mutation::{
+            patch::BytePatch, record_serialization::record, record_serialization::storage, rows,
+        },
         record_layout,
     },
 };

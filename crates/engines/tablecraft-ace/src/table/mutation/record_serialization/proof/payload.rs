@@ -1,5 +1,5 @@
 //! Preferred variable-record bytes, independent of the exact-slot chooser.
-use super::super::super::{EditError, WriteBlocker, slot::storage};
+use super::super::super::{EditError, WriteBlocker, record_serialization::storage};
 use crate::{
     InspectError, NativeColumn,
     format::{layout::UNICODE_COMPRESSION_FLAG, text},
