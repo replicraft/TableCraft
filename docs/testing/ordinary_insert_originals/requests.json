@@ -1,0 +1,86 @@
+{
+  "state": "ORIGINALS_AND_EXPLICIT_INSERT_LAWS_FROZEN_BEFORE_MODEL",
+  "table": "Sentinel",
+  "new_row": {
+    "values": [
+      {
+        "type": "Int32",
+        "value": 24
+      },
+      {
+        "type": "Text",
+        "value": "new"
+      },
+      {
+        "type": "Null"
+      }
+    ],
+    "ordinal": 1,
+    "physical_slot": 1,
+    "record_hex": "0300180000006e00650077000c000c000600020003",
+    "record_bytes": 21,
+    "fixed_prefix_bytes": 6,
+    "variable_slots": 2,
+    "variable_starts": [
+      6,
+      12
+    ],
+    "eod": 12,
+    "mask": 3
+  },
+  "profiles": [
+    {
+      "header": 5,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h5.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h5/stdout.log",
+      "bytes": 458752,
+      "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4",
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "bitmap": 111
+    },
+    {
+      "header": 6,
+      "before": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/sources/h6.accdb",
+      "before_reader": ".cache/ace16-preserved-fixed-scalars-source-first-20261031/calls/inspect-h6/stdout.log",
+      "bytes": 528384,
+      "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d",
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "bitmap": 128
+    }
+  ],
+  "law": {
+    "definition_record_count_at_16": [
+      1,
+      2
+    ],
+    "data_free_at_2": [
+      4014,
+      3991
+    ],
+    "data_slot_count_at_12": [
+      1,
+      2
+    ],
+    "new_slot_at_16": [
+      "0000",
+      "a90f"
+    ],
+    "new_record_span": [
+      4009,
+      4030
+    ],
+    "new_record_word": "0x0fa9",
+    "old_root_span": [
+      4030,
+      4096
+    ],
+    "old_root_word": "0x0fbe",
+    "maps_eof_properties_existing_payloads": "unchanged",
+    "unknown_and_other_table_bytes": "entire complement preserved"
+  },
+  "producer_calls": 0
+}

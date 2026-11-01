@@ -1,0 +1,147 @@
+{
+  "date": "2026-11-01",
+  "scope": "original-only explicit ordinary INSERT source qualification; no insertion producer executed",
+  "source_checkpoint": {
+    "path": ".cache/ace16-normal-insert-next-20261101/source/first-private-checkpoint.json",
+    "bytes": 4451,
+    "sha256": "77afab405f1df8506d84dd74ee01469fc24f3f9eed73f1132f15de707dd40512"
+  },
+  "input_freeze": {
+    "path": ".cache/ace16-normal-insert-next-20261101/source/input-freeze.json",
+    "bytes": 2467,
+    "sha256": "9a043cb93b81a0045b4f1d6cfc010fe1c95d6e3b8780413c74a5b4e83abff38d"
+  },
+  "constructor_manifest": {
+    "path": ".cache/ace16-normal-insert-next-20261101/source/expected-first/manifest.json",
+    "bytes": 2228,
+    "sha256": "c16407307840dcbd7ac59e2672062ce435915aa0a2eecc459fc52d1c87477529"
+  },
+  "cases": [
+    {
+      "id": "h5-ordinary-insert",
+      "header": 5,
+      "before": {
+        "file": "h5-ordinary-insert-before.accdb",
+        "bytes": 458752,
+        "sha256": "997e16d73e6b9945a52cfefa9d8531d8a970538036225039188fb2e424071ce4"
+      },
+      "expected": {
+        "file": "h5-ordinary-insert-inserted.accdb",
+        "bytes": 458752,
+        "sha256": "52d9ecd720e1292f325c35f495d4c2db9ef0cdf700154b409f7e017200b4b4c9"
+      },
+      "before_reader": {
+        "file": "h5-ordinary-insert-before.reader.txt",
+        "bytes": 4318,
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      },
+      "reader": {
+        "file": "h5-ordinary-insert-inserted.reader.txt",
+        "bytes": 4355,
+        "sha256": "c01a6395b5865f94f21e2552f7cc3a3de8b6e23e5b2d2db2a91a25f95e18bcbd"
+      },
+      "proof": {
+        "file": "h5-ordinary-insert.proof.json",
+        "bytes": 571,
+        "sha256": "f18b73c7dbb19e718f922d3c61ca0e870f80c306f1fd30d28789694fbc56cb67"
+      }
+    },
+    {
+      "id": "h6-ordinary-insert",
+      "header": 6,
+      "before": {
+        "file": "h6-ordinary-insert-before.accdb",
+        "bytes": 528384,
+        "sha256": "84af525badcb4d11ecf9f8bc46aee87946aa3037792795fd91c1c37b9036d67d"
+      },
+      "expected": {
+        "file": "h6-ordinary-insert-inserted.accdb",
+        "bytes": 528384,
+        "sha256": "81ae4c1a7eaf5b6957b07a4ba24b3e50de5eadf667dc2c03c446dc1d844f8a72"
+      },
+      "before_reader": {
+        "file": "h6-ordinary-insert-before.reader.txt",
+        "bytes": 4331,
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      },
+      "reader": {
+        "file": "h6-ordinary-insert-inserted.reader.txt",
+        "bytes": 4368,
+        "sha256": "5cfe581839bf83a8b3ad2bbbb47cfc19f01e908e924b6dc3c8d38d88b1a54a47"
+      },
+      "proof": {
+        "file": "h6-ordinary-insert.proof.json",
+        "bytes": 571,
+        "sha256": "577eec38fa2f70f5217221ad1b360488b44618ce9a346c419a8c7eea43f67f29"
+      }
+    }
+  ],
+  "literal_law": "Append explicit (Int32(24), Text(new), NULL OLE) in 21 bytes at DATA4009..4030, slot1 at16 word0fa9, DATAfree4014 to3991, slots1 to2, TDrows1 to2; all complement and original66B row remain exact.",
+  "source_precedes_producers": true,
+  "native": {
+    "views": 4,
+    "functions": 1,
+    "passed": true,
+    "log": {
+      "path": ".cache/ace16-normal-insert-next-20261101/source/native-reads-first.log",
+      "bytes": 529,
+      "sha256": "b66a61b5bf77e5893561f8cdf2471302b65228f6b3de98dff39fdde7b9801dac"
+    },
+    "seconds": 0.16
+  },
+  "independent_sdk": {
+    "classes": 2,
+    "inputs_unchanged": true,
+    "compile": {
+      "path": ".cache/ace16-normal-insert-next-20261101/getter/compile-first/execution.json",
+      "bytes": 1107,
+      "sha256": "768a07096498ac4dbbb9f59ea7c25448edeb0fe74bcc928488700a0deb1a88b2"
+    },
+    "classes_record": {
+      "path": ".cache/ace16-normal-insert-next-20261101/getter/classes-first.json",
+      "bytes": 490,
+      "sha256": "adde7fdc8ee635fe44d70cf8e95db053a516f7b996a45e99d8a402b2519673ad"
+    },
+    "summary": {
+      "path": ".cache/ace16-normal-insert-next-20261101/getter/root-first.log",
+      "bytes": 54,
+      "sha256": "4c2123c4cd4fc8e809749e5dcfe981d0f1b5abcb4f0f63eefa41baebd976ebad"
+    },
+    "reads_record": {
+      "path": ".cache/ace16-normal-insert-next-20261101/getter/reads-first/result.json",
+      "bytes": 1381,
+      "sha256": "a4fd744137f0d0ad95179cf40c7e185835a4a5b29f2870d8ff1baac046c5a4a1"
+    },
+    "read_count": 4
+  },
+  "observer_delta": "Only successor class/constructor name, explicit two-row flag and Sentinel expected count differ from qualified zero-row observer; original formatter, other table bounds, read-only bounded channel unchanged.",
+  "gate_review_correction": "Original private gate used undeclared serde_json; replaced with literal constructed source image hashes before first compilation. No added dependency, failed compiler call, or source/golden change.",
+  "maintained_artifacts": [
+    {
+      "path": "docs/testing/ordinary_insert_originals/model.py",
+      "bytes": 4323,
+      "sha256": "3b6c01f1cd6b8651471148ac5204ab2584f1a735232318936e45eb624d6edfc9"
+    },
+    {
+      "path": "docs/testing/ordinary_insert_originals/requests.json",
+      "bytes": 2012,
+      "sha256": "0adbedac19c8cbaec45c817947f52cafc7002d7299dc207166f3d04b42787e20"
+    },
+    {
+      "path": "docs/testing/preserved_fixed_scalars_genuine/OrdinaryInsertGetter.java",
+      "bytes": 11569,
+      "sha256": "5efea5f25cc398f6074afba8f384526a7749993f04f5179c9ecdae2cae320aeb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/insert.rs",
+      "bytes": 7569,
+      "sha256": "0e14dd4caeff5c20f7ef8314450928d6b04eef4540a622cfd5ce9d65d677d3ab"
+    }
+  ],
+  "provenance": "Uses the unchanged genuine h5/h6 SDK-created original sources and established provenance in FIXTURES.md and prior preserved-fixed-scalar source qualification. No binary fixture or JAR added.",
+  "limitations": [
+    "Source reads do not establish native INSERT permission or write behavior.",
+    "Microsoft Access INSERT/save/reopen and Windows locking/durability comparisons remain unrun.",
+    "Explicit NULL OLE source does not qualify inserting new long-value payloads."
+  ]
+}
