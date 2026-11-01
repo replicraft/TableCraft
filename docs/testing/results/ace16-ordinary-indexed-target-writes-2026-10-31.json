@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-31",
+  "scope": "Ordinary fitting indexed manual Int32 updates through normal sessions and TCNI0004 recovery",
+  "source_commit": "8924d2dd",
+  "source_gate": "32 original and 24 literal outcome native/constraint reads and 56 exact independent SDK observations completed before indexed writers",
+  "behavior": [
+    "Neutral actual checked-index facts are separate from positive native program admission; no fabricated event selections",
+    "Original metadata selects fitting indexed routing before binding, never by catching a failed writer",
+    "Manual Int32 present/NULL transitions, final UNIQUE swaps, compatible physical aliases and retained compressed/interior trees",
+    "Generated fields remain refused, including empty groups and zero-match SQL",
+    "Existing fixed-record staging and fitting index serialization consume original requests with one final key population",
+    "Fresh complete content capture, independent manual record replay and nullable index wire reconstruction prove every byte and distinct changed root",
+    "Original inactive NULL payloads, historical counters, index tails, maps, topology, per-leaf counts and EOF retain their required bytes",
+    "TCNI0004 retains original groups, row order, optional carriers, empty requests and noops; no new format version"
+  ],
+  "verification": [
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/proof-first-root.log",
+        "bytes": 1043,
+        "sha256": "22d2af0af07e81eade20b2a9d3a1168b430a1fd86f9f1d6766084fa9fe5d4adf"
+      },
+      "result": "1 passed: independent proof accepts all 24 literal outcomes before indexed producer calls"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/native-first-root.log",
+        "bytes": 1071,
+        "sha256": "3579dbfd8085e6060399ed6052422137a26fde3e33edd53be53cbdc2ad0c99bf"
+      },
+      "result": "5 passed: 24 exact outcomes, eight precise refusals and independent causal proof forgeries"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/access-second-root.log",
+        "bytes": 1100,
+        "sha256": "1d249258dc3d1f9c4f773fa053dbc2e0232cdc6245214bdf001da7c4fa63ead9"
+      },
+      "result": "5 passed: two new and three retained-session regressions; 16 principal indexed saves plus two stale-handle predecessor commits; manual indexed empty selections now retire successfully"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/cli-second-root.log",
+        "bytes": 1042,
+        "sha256": "97ccef12d18effe77e7781b5f9f13be1824fdb1e9468dc2572e500c26020e853"
+      },
+      "result": "4 passed: 24 indexed saves and 24 exact full row readbacks, eight SQL refusals, plus retained-index predecessor coverage"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/recovery-first-root.log",
+        "bytes": 9102,
+        "sha256": "4f21ec2a6f6ade1017b22e64a9178759c17342cd599cbf8795b689383687a5a4"
+      },
+      "result": "79 passed including four new public tests, 24 literal commits, repeated pending/partial/committed recovery and two reverse-order swap plans; 8.16 seconds"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/ace-all-features-root.log",
+        "bytes": 146985,
+        "sha256": "4872ba6184bb93bb90665d71fd183e56191160f161e86337b91420fbd0c1c034"
+      },
+      "result": "1075 passed, 32 ignored; includes exact indexed planning/recovery resource pools and entry/middle/terminal cancellation; 137.00 seconds"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/clippy-final-root.log",
+        "bytes": 457,
+        "sha256": "4da764b20b5b06a609b435372ac98f8c0914f4935270708f32b9e5c20c0e44f0"
+      },
+      "result": "Strict ACE/Access/CLI all-targets all-features clippy passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/clippy-journal-root.log",
+        "bytes": 293,
+        "sha256": "a8f716a8d3799e61f2c99ea5109ca228198981f17fa7bbf8c70863448c7f9ae1"
+      },
+      "result": "Journal-only ACE library strict clippy passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/clippy-preview-final-root.log",
+        "bytes": 183,
+        "sha256": "fad68d3db5bed1e11a52620006e004ae14e874b143798d64d6c0ee1c6b8386f5"
+      },
+      "result": "Preview-only ACE library strict clippy passed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/default-check-root.log",
+        "bytes": 126,
+        "sha256": "90c7e38e5769b7ad5f8cadd5ca1e74c4d1c9e46a6eb812a196a71f9c04aeb8b6"
+      },
+      "result": "Access no-default-features check passed"
+    }
+  ],
+  "first_diagnostics": [
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/access-first-root.log",
+        "bytes": 1987,
+        "sha256": "a4adc05cc5359ef49a43d0087c01eb8a6474d817d56879169704a5bc9fb851f0"
+      },
+      "resolution": "Borrowed both sides of Vec comparisons in new test assertions; no expected bytes changed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/cli-first-root.log",
+        "bytes": 3333,
+        "sha256": "cd4ca4128acad3b34b77e4804be754938cf46e4fbe6ebd69d6e9b5aeecde457d"
+      },
+      "resolution": "Same borrowed Vec assertion correction; no SQL or expected outcomes changed"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/clippy-preview-root.log",
+        "bytes": 1034,
+        "sha256": "302045122c00b4810ce6189a15d556121ee8f7d678b195a1a66fb217ec040464"
+      },
+      "resolution": "Two helpers have journal-only consumers; gated those helpers accordingly"
+    },
+    {
+      "log": {
+        "path": ".cache/ace16-ordinary-indexed-targets-next-20261031/clippy-preview-second-root.log",
+        "bytes": 542,
+        "sha256": "f8b96a4ecc7d49a870bc00c893534af0588b3e15baf51d80a0beea0ab579efe6"
+      },
+      "resolution": "Gated the corresponding journal-only EditError import"
+    }
+  ],
+  "initial_journal_warning": "The first proof compilation reported qualify_selected unused under journal-only mode. Its remaining preview-only consumer is retained behind the matching feature gate.",
+  "migration": "Four prior retention-only regression controls now admit manual indexed empty/zero-match requests or compare the already qualified ManualSeven full image. Generated-target refusals, original source bytes and original non-target goldens remain intact.",
+  "evidence_boundary": "Native tests own forged expected values; SQL and CellUpdate use actual snapshots and instead test real stale handles or metadata refusals. No equivalent coverage is invented.",
+  "limitations": [
+    "Known clear header 5/6, code page 1252, General sort and complete closed ordinary data-only catalog remain required",
+    "Only existing local single-Int32 indexes; foreign and ignore-NULL profiles remain refused",
+    "No splits, allocation, counter generation, variable record growth or general INSERT/DELETE normal saves",
+    "Genuine imported headers, indirect maps, passive properties and broader object/long-value families remain separate admission work",
+    "Microsoft Access, Windows, power-loss and mixed-client qualification remain unrun"
+  ],
+  "dependencies_added": false,
+  "intent_version_changed": false,
+  "write_goldens_retuned": false,
+  "push_performed": false
+}

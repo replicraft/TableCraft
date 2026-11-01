@@ -12,6 +12,19 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Ordinary fitting indexed updates
+
+Ordinary fixed requests now update manual Int32 index keys, including NULL
+transitions, atomic UNIQUE swaps, aliases and fitting retained trees. Generated
+fields remain read-only. Neutral checked-index facts retain separate positive
+program admission; ordinary saves still require complete content validation.
+Fresh manual record and nullable-index reconstruction independently prove the
+whole image. Twenty-four literal CLI saves/readbacks, 16 principal typed session
+saves and all 79 recovery tests pass. The full ACE batch passes 1,075 tests
+(32 ignored), including exact resource/cancellation controls. Strict all-feature,
+journal-only and preview-only checks pass. See the
+[write record](testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
+
 ## Ordinary indexed-target source qualification
 
 Thirty-two original views and 24 literal outcomes now pass native table/index

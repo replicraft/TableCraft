@@ -30,18 +30,23 @@ Its exact native flags, width and extended metadata must qualify. Its stored LAS
 value is historical data, preserved independently of the live IDs; this route
 does not generate values or assign the counter field.
 
-Existing local ordinary/primary indexes may be retained when each physical index
+Existing local ordinary/primary indexes qualify when each physical index
 has one ordinary Int32 key and complete original membership. Untouched NULL keys
 are supported where the original required/unique constraints permit them.
 Compatible logical aliases share their actual physical ownership. Foreign and
-ignore-NULL index profiles remain refused. Index key fields remain read-only,
-including supplied empty groups; an eligible unindexed field must be selected
-for updates.
+ignore-NULL index profiles remain refused. Manual indexed Int32 fields may now
+be updated through fitting serialization on their existing pages. Present/NULL
+transitions and atomic final UNIQUE swaps are supported; primary/required keys
+still reject NULL and final duplicate keys refuse. Include-NULL indexes retain
+the NULL marker and each original ROW suffix. Generated Id fields remain
+read-only, including supplied empty groups.
 
 Ordinary stored scalars, Short Text/Binary and Decimal can be preserved. Writable
 targets are the existing Boolean, Int32, Int64, Currency and legacy DATE fixed
-carriers; numeric NULL transitions retain inactive bytes. No record resizing,
-allocation or index mutation is added. These limits describe this route,
+carriers; numeric NULL transitions retain inactive bytes. Indexed targets use
+the manual Int32 profile above. No record resizing, page allocation, index split,
+map growth or EOF change is added. A key rewrite that cannot fit refuses before
+journal setup. These limits describe this route,
 not the long-term compatibility target or the broader reader.
 
 ## Authority and physical proof
@@ -62,8 +67,13 @@ of the semantic reader.
 Existing compressed prefixes and interior nodes are validated with their
 original bounds, row suffixes, links, heights, entry extents and free counts.
 Inactive INDEX capacity may retain bytes such as A7 under that explicitly checked
-page role. Updates preserve the entire index, including inactive bytes; they do
-not rebuild keys, alter topology or reinterpret capacity as active content.
+page role. Unaffected indexes remain byte-exact. An affected physical index is
+rewritten once even when it has multiple logical aliases, using fitting encoding
+selected before staging. Page identities, child topology and per-leaf entry counts
+stay fixed. Prefixes, active extents, free counts and node bounds may change to
+describe the final key population. Entry-storage bytes beyond the new active
+extent retain their original contents. Equal assignments and empty groups
+preserve whole images.
 
 Only a complete validation returns a private image-borrowed certificate. It binds
 the actual image instance and user-table identity. Neither an empty inventory,
@@ -73,11 +83,20 @@ manufactured. Generic record protection has one shared owner, used by both this
 route and existing BeforeChange consumers.
 
 Every requested declaration/carrier/duplicate check precedes stale-value checks.
-Equal assignments are ordinary no-ops in this proved program-free context. The
-existing fixed-record stage derives patches; a fresh proof recaptures BEFORE,
-repeats content validation and reconstructs all expected payload/mask changes
-with the independent manual codec. Every AFTER byte, final constraint result and
-changed-row count must agree. Staged patches are not proof authority.
+Equal assignments are ordinary no-ops in this proved program-free context.
+Image-bound `CheckedIndexes` supplies actual scalar/index metadata independently
+of event admission. Ordinary callers do not construct a program selection;
+BeforeChange callers retain their separate native program checks. These neutral
+facts alone do not certify ordinary content or make a generated field writable.
+
+The shared fixed-record stage derives DATA patches, and the existing fitting
+index writer consumes all original-to-final key changes together. A fresh proof
+recaptures BEFORE, repeats complete content validation, manually reconstructs
+payloads/masks and independently rebuilds the index population and wire bytes.
+The nullable population callback visits actual absent keys as NULL and never
+decodes their inactive payloads. Every AFTER byte, final constraint result and
+changed-root count must agree. Producer patches, encoded keys and counts are not
+proof authority. No failed encoder triggers another writer.
 
 ## Journal and verification
 
@@ -91,8 +110,8 @@ The [independent sources](../../testing/ACE16_ORDINARY_CONTENT_SOURCES.md) passe
 native reads and 24 exact SDK observations before mutation calls. Three content
 tests cover 24 accepted and 34 refused views, image/table binding and resource
 controls. Four planner/proof tests and five public planning/recovery tests pass,
-including 22 literal whole-image commits. The full ACE unit and recovery batches
-pass. First compile/test/lint diagnostics remain in the
+including 22 literal whole-image commits. The initial ordinary fixed-field unit
+and recovery batches passed. First compile/test/lint diagnostics remain in the
 [execution record](../../testing/results/ace16-normal-ordinary-fixed-2026-10-31.json).
 Native Microsoft Access save/reopen, Windows, power-loss and mixed-client
 qualification remain separate and unrun.
@@ -118,15 +137,32 @@ recovery. See the [dynamic execution record](../../testing/results/ace16-ordinar
 
 ## Shared sessions and CLI
 
-The retained counter/index extension passes eighteen literal native updates and
-eighteen public journal commits with unchanged TCNI0004 framing. Five public
-tests cover repeated recovery, forged counters/index bytes/requests, empty
-groups and resource/cancellation boundaries. The retained adapter passes
-36 typed/SQL saves plus empty requests, read-only target refusals and successive
-save/stale-handle checks. Two CLI tests pass eighteen saves and exact target
-readbacks, with twelve generated/indexed target refusals. The complete unit and
-recovery batches pass. See the
+The earlier counter/index preservation acceptance, including unchanged physical
+indexes, historical counters, recovery and retained-session saves, is recorded
+in the
 [counter/index write record](../../testing/results/ace16-ordinary-counter-index-writes-2026-10-31.json).
+
+The [indexed-target sources](../../testing/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md)
+qualify 32 original and 24 literal AFTER views through native checks and 56 exact
+independent SDK observations before indexed producer calls. Native indexed-target
+tests pass all 24 literal outcomes, eight refusal contexts and causal proof
+forgeries. The public recovery batch passes 79 tests, including four new tests
+with 24 literal commits, two reverse-order swap plans, pending/partial/committed
+requalification and original-intent/image forgeries.
+
+Five retained-session tests pass: the new cases perform 16 representative typed
+saves and two predecessor commits followed by stale-handle refusals; existing
+coverage retains 36 typed/SQL counter-preserving saves and four newly admitted
+manual empty-group saves. Four CLI tests pass, including 24 new literal saves,
+24 exact row readbacks and eight SQL refusal controls, plus the earlier eighteen
+saves/readbacks and manual Id migration. Explicit stale expected-value forgeries
+remain native API tests; SQL uses actual snapshot expectations. Generated-field
+refusals remain separate from newly admitted manual indexed fields. See the
+[indexed-target write record](../../testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
+The full ACE batch passes 1,075 tests (32 ignored), including exact indexed
+planning/recovery pools and entry/middle/terminal cancellation. Strict checks
+pass for all-feature consumers and journal-only/preview-only engine libraries.
+Native Microsoft Access write/reopen qualification remains unrun.
 
 Inert metadata chooses which family to attempt; it never proves absence. The
 ordinary candidate must pass complete content/source/target checking before the

@@ -8,8 +8,11 @@ the CLI, including equal/empty requests and TCNI0004 recovery. Full content proo
 replaces neither native mutation proof nor qualification of arbitrary imported
 files. Variable inline-map windows now remove the initial 64-page ceiling, with
 qualified 96-page source/save/recovery/readback checks. Retained Int32 counters
-and local single-Int32 indexes now have ordinary content and fixed-write checks;
-indexed target mutation is next. Wider headers, indirect maps, metadata, other actions and native Access
+and local single-Int32 indexes now have ordinary content and fixed-write checks.
+Manual Int32 indexed updates now include fitting NULL transitions, atomic UNIQUE
+swaps and independent TCNI0004 reconstruction. Next, qualify genuine scalar-file
+bootstrap headers, catalog/property storage and indirect-map ownership. Wider
+metadata, other actions and native Access
 qualification remain explicit work.
 
 The normal [typed fixed-scalar batch service](access/writes/NORMAL_ACE_FIXED_SCALARS.md)

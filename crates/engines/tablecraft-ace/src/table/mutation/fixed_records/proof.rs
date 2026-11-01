@@ -1,7 +1,7 @@
 //! Independent original authority for preserved joint fixed-field candidates.
 #[cfg(feature = "ace16-write-preview")]
 use super::copy;
-use super::{name_work, unique};
+use super::{indexed::CheckedIndexes, name_work, unique};
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::mutation::preserved_source as source;
 use crate::table::mutation::{
@@ -93,7 +93,7 @@ pub(in crate::table::mutation) fn prove(
 
 pub(in crate::table::mutation) fn prove_original(
     original: Original<'_>,
-    mut expected: Vec<u8>,
+    expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     observed: Observed<'_>,
     budget: &mut ResourceBudget,
@@ -108,6 +108,79 @@ pub(in crate::table::mutation) fn prove_original(
     if expected.len() != image.as_bytes().len() || after.len() != image.as_bytes().len() {
         return Err(EditError::Preservation);
     }
+    let (expected, changed_rows) =
+        reconstruct(original, expected, groups, None, budget, cancelled)?;
+    if changed_rows != returned_count || expected.len() != after.len() {
+        return Err(EditError::Preservation);
+    }
+    validation::expected(
+        image,
+        first.table(),
+        &original.table,
+        &expected,
+        budget,
+        cancelled,
+    )?;
+    for (expected, observed) in expected
+        .chunks(COPY_CHUNK_BYTES)
+        .zip(after.chunks(COPY_CHUNK_BYTES))
+    {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, expected.len() as u64)
+            .map_err(InspectError::from)?;
+        if expected != observed {
+            return Err(EditError::Preservation);
+        }
+    }
+    check(budget, cancelled)?;
+    Ok(())
+}
+
+/// Reconstruct fixed records from ORIGINAL requests and original raw records.
+/// The caller must replay affected indexes into these bytes, then validate
+/// original constraints and compare the whole image/count. This returns no
+/// plan, event result, byte patch authority or reusable content permission.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn reconstruct_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: Option<&CheckedIndexes<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    check(budget, cancelled)?;
+    groups.first().ok_or(EditError::Preservation)?;
+    if expected.len() != original.image.as_bytes().len() {
+        return Err(EditError::Preservation);
+    }
+    if let Some(indexed) = indexed {
+        indexed.require_source(
+            original.image,
+            original.source.table.schema(),
+            budget,
+            cancelled,
+        )?;
+    }
+    reconstruct(
+        original.source,
+        expected,
+        groups,
+        indexed,
+        budget,
+        cancelled,
+    )
+}
+
+fn reconstruct(
+    original: &Source,
+    mut expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: Option<&CheckedIndexes<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
     if groups.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
         return Err(InspectError::StructureLimit.into());
     }
@@ -127,7 +200,7 @@ pub(in crate::table::mutation) fn prove_original(
         .map_err(|_| InspectError::Allocation)?;
     for group in groups {
         check(budget, cancelled)?;
-        let selected = select(original, group, budget, cancelled)?;
+        let selected = select(original, group, indexed, budget, cancelled)?;
         budget
             .charge(Resource::Steps, bound.len() as u64)
             .map_err(InspectError::from)?;
@@ -242,38 +315,14 @@ pub(in crate::table::mutation) fn prove_original(
             references.push(record.reference);
         }
     }
-    if unique(&mut references, budget, cancelled)? != returned_count
-        || expected.len() != after.len()
-    {
-        return Err(EditError::Preservation);
-    }
-    validation::expected(
-        image,
-        first.table(),
-        &original.table,
-        &expected,
-        budget,
-        cancelled,
-    )?;
-    for (expected, observed) in expected
-        .chunks(COPY_CHUNK_BYTES)
-        .zip(after.chunks(COPY_CHUNK_BYTES))
-    {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, expected.len() as u64)
-            .map_err(InspectError::from)?;
-        if expected != observed {
-            return Err(EditError::Preservation);
-        }
-    }
-    check(budget, cancelled)?;
-    Ok(())
+    let changed_rows = unique(&mut references, budget, cancelled)?;
+    Ok((expected, changed_rows))
 }
 
 fn select<'a>(
     original: &'a Source,
     group: &FixedColumnUpdates<'_>,
+    indexed: Option<&CheckedIndexes<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound<'a>, EditError> {
@@ -283,14 +332,16 @@ fn select<'a>(
         return Err(EditError::Preservation);
     }
     let mut selected = None;
-    for field in schema.columns() {
+    for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
         name_work(field.name(), group.column(), budget)?;
-        if field.name().eq_ignore_ascii_case(group.column()) && selected.replace(field).is_some() {
+        if field.name().eq_ignore_ascii_case(group.column())
+            && selected.replace((position, field)).is_some()
+        {
             return Err(EditError::Preservation);
         }
     }
-    let field = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    let (position, field) = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
     let (carrier, width) = match (field.native_type(), field.scalar_type()) {
         (BOOLEAN, Some(ScalarType::Boolean)) => (Carrier::Boolean, 0),
         (INT32, Some(ScalarType::Int32)) => (Carrier::Int32, INT32_BYTES),
@@ -336,7 +387,10 @@ fn select<'a>(
         for key in index.columns() {
             check(budget, cancelled)?;
             if key.number() == field.number() {
-                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                let Some(indexed) = indexed else {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                };
+                indexed.require_target(schema, position, budget, cancelled)?;
             }
         }
     }

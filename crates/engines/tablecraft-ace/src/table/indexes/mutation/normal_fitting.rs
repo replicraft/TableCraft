@@ -30,7 +30,8 @@ pub(in crate::table) fn patches(
     check(budget, cancelled)?;
     let schema = checked.schema();
     // Qualify every original physical declaration even when updates are empty.
-    // The normal planner has separately bound all required native programs.
+    // The caller separately qualifies required programs or complete ordinary
+    // content. These physical index facts supply neither kind of admission.
     let ownership = Ownership::capture(image, checked, budget, cancelled)?;
     let mut patches = Vec::new();
     let mut source = image.reader();

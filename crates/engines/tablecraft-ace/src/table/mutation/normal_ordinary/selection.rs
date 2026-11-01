@@ -8,6 +8,7 @@ use crate::{
     },
     header::check,
     inspect_table_schema,
+    table::mutation::fixed_records::{binding, indexed::CheckedIndexes},
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
@@ -82,20 +83,26 @@ impl NativeImage {
                 check(budget, cancelled)?;
                 unavailable |= *dependency == field.number();
             }
+            if unavailable {
+                continue;
+            }
+            let mut indexed = false;
             for index in source.indexes.indexes() {
                 for key in index.columns() {
                     check(budget, cancelled)?;
-                    unavailable |= key.number() == field.number();
+                    indexed |= key.number() == field.number();
                 }
-            }
-            if unavailable {
-                continue;
             }
             let groups = [FixedColumnUpdates::new(
                 source.table.schema().name(),
                 field.name(),
                 &[],
             )];
+            if indexed {
+                let facts = CheckedIndexes::capture(self, table, budget, cancelled)?;
+                binding::all_indexed(self, &source, &groups, &facts, budget, cancelled)?;
+                return Ok(());
+            }
             return preflight(&source, &groups, budget, cancelled);
         }
         Err(EditError::Unsupported(WriteBlocker::Column))

@@ -27,6 +27,33 @@ pub(in crate::table) fn reconstruct<F>(
 where
     F: FnMut(usize, usize, i32, &mut ResourceBudget) -> Result<i32, EditError>,
 {
+    reconstruct_nullable(
+        image,
+        checked,
+        expected,
+        |ordinal, position, original, budget| match original {
+            Some(original) => final_value(ordinal, position, original, budget).map(Some),
+            None => Ok(None),
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Original NULL cells are passed as None without reading inactive payload.
+/// The callback must be bound to the proof's own fresh original requests;
+/// producer key deltas, event reports and candidate bytes are not authority.
+pub(in crate::table) fn reconstruct_nullable<F>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    expected: &mut [u8],
+    mut final_value: F,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError>
+where
+    F: FnMut(usize, usize, Option<i32>, &mut ResourceBudget) -> Result<Option<i32>, EditError>,
+{
     let _span = tracing::debug_span!("native.before_change.index_projected_proof").entered();
     check(budget, cancelled)?;
     if expected.len() != image.as_bytes().len() || checked.indexes().is_empty() {
@@ -117,24 +144,21 @@ where
                 let present = record.data.get(mask).ok_or(EditError::Preservation)?
                     & (1 << (field.number() % MASK_BITS))
                     != 0;
-                if !present {
-                    // NULL is an actual indexed cell. Its inactive payload is
-                    // never decoded, and no callback may transition it.
-                    before.push(None);
-                    after.push(None);
-                    continue;
-                }
-                reader.work(size_of::<i32>())?;
-                let value = i32::from_le_bytes(
-                    record
-                        .data
-                        .get(start..end)
-                        .ok_or(EditError::Preservation)?
-                        .try_into()
-                        .map_err(|_| EditError::Preservation)?,
-                );
-                before.push(Some(value));
-                after.push(Some(final_value(ordinal, position, value, reader.budget)?));
+                let value = if present {
+                    reader.work(size_of::<i32>())?;
+                    Some(i32::from_le_bytes(
+                        record
+                            .data
+                            .get(start..end)
+                            .ok_or(EditError::Preservation)?
+                            .try_into()
+                            .map_err(|_| EditError::Preservation)?,
+                    ))
+                } else {
+                    None
+                };
+                before.push(value);
+                after.push(final_value(ordinal, position, value, reader.budget)?);
             }
             population.push(Row {
                 reference: reference(number, slot),
