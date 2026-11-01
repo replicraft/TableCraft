@@ -1,0 +1,12 @@
+//! Original fixed-group data, separate from macro results and native authority.
+mod carrier;
+mod codec;
+mod model;
+
+pub use model::{NativeFixedEditIntent, NativeFixedIntentGroup};
+
+pub(super) use codec::MAGIC;
+pub(super) use model::borrow_groups;
+
+#[cfg(test)]
+mod tests;

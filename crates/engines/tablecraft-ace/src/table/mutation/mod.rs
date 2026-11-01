@@ -14,6 +14,8 @@ mod field;
 pub(in crate::table) mod fitted;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod fixed;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+mod fixed_records;
 mod gates;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod guards;
@@ -88,7 +90,7 @@ pub use guards::{
 pub use plan::{Int32Update, NativeEditPlan};
 #[cfg(feature = "ace16-write-preview")]
 pub use preview::Ace16WritePreview;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use requests::FixedColumnUpdates;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use requests::FixedScalarUpdate;

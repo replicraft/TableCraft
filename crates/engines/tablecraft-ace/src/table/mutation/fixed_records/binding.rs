@@ -1,5 +1,6 @@
 //! Complete joint target and carrier preflight before any record visitor.
-use super::super::{FixedColumnUpdates, name_work, source::Source};
+use super::name_work;
+use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpdates};
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::data_type::{
@@ -15,10 +16,10 @@ use tablecraft_core::{
 };
 use tablecraft_schema::ScalarType;
 
-pub(in crate::table::mutation::fixed::preserved) struct Bound {
-    pub(in crate::table::mutation::fixed::preserved) column: usize,
-    pub(in crate::table::mutation::fixed::preserved) kind: ScalarType,
-    pub(in crate::table::mutation::fixed::preserved) width: usize,
+pub(in crate::table::mutation) struct Bound {
+    pub(in crate::table::mutation) column: usize,
+    pub(in crate::table::mutation) kind: ScalarType,
+    pub(in crate::table::mutation) width: usize,
 }
 
 fn carrier(kind: ScalarType, value: &Value) -> bool {
@@ -32,9 +33,30 @@ fn carrier(kind: ScalarType, value: &Value) -> bool {
     )
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(super) fn all(
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    all_with_minimum(source, groups, 2, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_normal(
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    all_with_minimum(source, groups, 1, budget, cancelled)
+}
+
+fn all_with_minimum(
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    minimum: usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
@@ -42,7 +64,7 @@ pub(super) fn all(
     if groups.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
         return Err(InspectError::StructureLimit.into());
     }
-    if groups.len() < 2 {
+    if groups.len() < minimum {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     let schema = source.table.schema();
@@ -96,7 +118,7 @@ pub(super) fn all(
 }
 
 // Both callers resolve and reject duplicate targets before field qualification.
-pub(in crate::table::mutation::fixed::preserved) fn qualify_selected(
+pub(in crate::table::mutation) fn qualify_selected(
     source: &Source,
     column: usize,
     updates: &[FixedScalarUpdate],

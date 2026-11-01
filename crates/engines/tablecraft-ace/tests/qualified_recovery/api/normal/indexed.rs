@@ -77,6 +77,8 @@ fn indexed_normal_plans_commit_all_sixteen_literal_images_and_reverse_the_unique
                 assert_eq!(recorded.changed_rows(), case.changed_rows);
                 let actual = recorded
                     .intent()
+                    .int32()
+                    .expect("Int32 intent")
                     .updates()
                     .iter()
                     .map(Int32Update::row)

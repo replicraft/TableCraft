@@ -93,9 +93,19 @@ fn nullable_key_normal_commits_twelve_literal_images_with_exact_original_intents
                 plan.intent().profile(),
                 NativeUpdateProfile::Ace16BeforeChangeInt32
             );
-            assert_eq!(plan.intent().updates().as_ptr(), pointer);
-            assert_eq!(plan.intent().updates().len(), 1);
-            let actual = &plan.intent().updates()[0];
+            assert_eq!(
+                plan.intent()
+                    .int32()
+                    .expect("Int32 intent")
+                    .updates()
+                    .as_ptr(),
+                pointer
+            );
+            assert_eq!(
+                plan.intent().int32().expect("Int32 intent").updates().len(),
+                1
+            );
+            let actual = &plan.intent().int32().expect("Int32 intent").updates()[0];
             assert_eq!(
                 (actual.row(), actual.expected(), actual.value()),
                 (0, 1000, case.update.replacement)

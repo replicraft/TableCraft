@@ -1,8 +1,12 @@
 //! Independent original authority for preserved joint fixed-field candidates.
-use super::super::{
-    FixedColumnUpdates, copy, name_work,
-    source::{self, Source},
-    unique, validation,
+#[cfg(feature = "ace16-write-preview")]
+use super::copy;
+use super::{name_work, unique};
+#[cfg(feature = "ace16-write-preview")]
+use crate::table::mutation::preserved_source as source;
+use crate::table::mutation::{
+    preserved_source::{Source, validation},
+    requests::FixedColumnUpdates,
 };
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, WriteBlocker,
@@ -45,17 +49,18 @@ enum Cell {
     Fixed(Option<[u8; WIDE_BYTES]>),
 }
 
-pub(in crate::table::mutation::fixed::preserved) struct Original<'a> {
+pub(in crate::table::mutation) struct Original<'a> {
     pub image: &'a NativeImage,
     pub source: &'a Source,
 }
 
-pub(in crate::table::mutation::fixed::preserved) struct Observed<'a> {
+pub(in crate::table::mutation) struct Observed<'a> {
     pub bytes: &'a [u8],
     pub changed_rows: usize,
 }
 
-pub(in crate::table::mutation::fixed::preserved) fn prove(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn prove(
     image: &NativeImage,
     groups: &[FixedColumnUpdates<'_>],
     after: &[u8],
@@ -86,7 +91,7 @@ pub(in crate::table::mutation::fixed::preserved) fn prove(
     )
 }
 
-pub(in crate::table::mutation::fixed::preserved) fn prove_original(
+pub(in crate::table::mutation) fn prove_original(
     original: Original<'_>,
     mut expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
@@ -370,6 +375,3 @@ fn set_bit(expected: &mut [u8], at: usize, bit: u8, value: bool) -> Result<(), E
     }
     Ok(())
 }
-
-#[cfg(test)]
-mod tests;

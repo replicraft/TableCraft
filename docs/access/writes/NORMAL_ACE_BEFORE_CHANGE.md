@@ -7,6 +7,11 @@ bounded ACE 16 table profiles. The Access adapter exposes it through
 Ordinary fresh-copy `query update` remains Jet 4 only. Engineering candidates
 cannot be converted into normal plans or recovery permission.
 
+A separate [typed fixed-scalar batch route](NORMAL_ACE_FIXED_SCALARS.md) admits
+qualified unindexed Boolean/Int32/Int64/Currency/DATE requests through the normal
+journal/session API. The Int32 route described below retains its existing record
+formats and indexed admission.
+
 ## Admission
 
 The source must be an unencoded, standard-capture ACE 2016/2019 layout with

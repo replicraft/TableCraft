@@ -1,7 +1,7 @@
 //! Owned guarded-batch preparation, without exposing preserved Source.
-use super::super::super::{BeforeEventGuardError, BeforeGuardRejection};
+use super::super::super::{BeforeEventGuardError, BeforeGuardRejection, buffer};
 #[cfg(feature = "ace16-write-preview")]
-use super::super::super::{BeforeGuardProgramRevision, BeforeGuardTrace, buffer};
+use super::super::super::{BeforeGuardProgramRevision, BeforeGuardTrace};
 #[cfg(feature = "ace16-write-preview")]
 use super::super::BeforeChangeAssignment;
 use super::super::evaluate;
@@ -13,7 +13,6 @@ use super::{
     derive::{self, FinalGroup},
     frames, requests, targets,
 };
-#[cfg(feature = "ace16-write-preview")]
 use crate::InspectError;
 use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{EditError, NativeImage, TableSchema, header::check};
@@ -187,7 +186,6 @@ impl Prepared<'_> {
         self.groups.as_deref()
     }
 
-    #[cfg(feature = "ace16-write-preview")]
     pub(in crate::table::mutation) fn groups<'view>(
         &'view self,
         schema: &'view TableSchema,

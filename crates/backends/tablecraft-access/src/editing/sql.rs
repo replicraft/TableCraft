@@ -97,3 +97,36 @@ pub fn plan_recoverable_update(
         editor, query, budget, collation, cancelled,
     )?)
 }
+
+/// Check a closed local UPDATE with one or more original-snapshot SET targets.
+/// Syntax admission does not grant native program or fixed-storage permission.
+#[cfg(feature = "journal")]
+pub fn local_batch_update_table(query: &Query) -> Result<&str, QueryError> {
+    let Statement::Update(update) = &query.statement else {
+        return Err(QueryError::Unsupported);
+    };
+    let [TableSource::Table(table)] = update.sources.as_slice() else {
+        return Err(QueryError::Unsupported);
+    };
+    if !query.parameters.is_empty() || table.database.is_some() || update.assignments.is_empty() {
+        return Err(QueryError::Unsupported);
+    }
+    Ok(table.name.as_str())
+}
+
+/// Evaluate every SET expression against the original captured snapshot, then
+/// finish one normal batch. Recovery retains resolved carriers, never SQL text.
+#[cfg(feature = "journal")]
+pub fn plan_recoverable_batch_update(
+    image: NativeImage,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<RecoverableNativeEditPlan>, RecoverableError> {
+    let table = local_batch_update_table(query)?;
+    let editor = NativeJournalEditor::new(image, table, budget, cancelled)?;
+    Ok(tablecraft_query::plan_batch_update(
+        editor, query, budget, collation, cancelled,
+    )?)
+}

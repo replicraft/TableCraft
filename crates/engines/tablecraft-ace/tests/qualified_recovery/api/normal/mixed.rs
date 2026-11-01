@@ -79,14 +79,34 @@ fn mixed_normal_plans_commit_sixteen_literal_images_and_keep_original_tcni2_requ
             assert_eq!(plan.after_bytes(), expected);
             assert_eq!(plan.changed_rows(), case.changed_rows);
             assert_eq!(plan.after_bytes().len(), case.before.len());
-            assert_eq!(plan.intent().updates().as_ptr(), pointer);
-            assert_eq!(plan.intent().column(), case.column);
+            assert_eq!(
+                plan.intent()
+                    .int32()
+                    .expect("Int32 intent")
+                    .updates()
+                    .as_ptr(),
+                pointer
+            );
+            assert_eq!(
+                plan.intent().int32().expect("Int32 intent").column(),
+                case.column
+            );
             assert_eq!(
                 plan.intent().profile(),
                 NativeUpdateProfile::Ace16BeforeChangeInt32
             );
-            assert_eq!(plan.intent().updates().len(), case.updates.len());
-            for (actual, original) in plan.intent().updates().iter().zip(&case.updates) {
+            assert_eq!(
+                plan.intent().int32().expect("Int32 intent").updates().len(),
+                case.updates.len()
+            );
+            for (actual, original) in plan
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .iter()
+                .zip(&case.updates)
+            {
                 assert_eq!(
                     (actual.row(), actual.expected(), actual.value()),
                     (original.ordinal, original.expected, original.replacement),
@@ -220,7 +240,13 @@ fn empty_requests_still_compile_metadata_and_supplied_equal_or_stale_requests_re
         ));
         let empty = model::source(header, Recipe::CounterEmpty);
         let plan = record(&empty, &mut budget(), &|| false).unwrap();
-        assert!(plan.intent().updates().is_empty());
+        assert!(
+            plan.intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .is_empty()
+        );
         assert_eq!(plan.after_bytes(), empty.before);
         assert_eq!(plan.changed_rows(), 0);
     }

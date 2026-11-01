@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "kind": "normal_typed_fixed_before_change_updates",
+  "status": "typed_native_and_retained_session_batches_verified",
+  "native_access_qualification": "unrun",
+  "source_records": [
+    "ace16-fixed-before-change-sources-2026-10-31.json",
+    "ace16-nullable-fixed-int32-sources-2026-10-31.json"
+  ],
+  "installation": {
+    "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/install-first-root.json",
+    "bytes": 5223,
+    "sha256": "3268e98eca4384f0a3bf98a06315b880ec64099df442dba6f30214ea59bc6e67"
+  },
+  "checks": {
+    "first_compile": {
+      "passed": false,
+      "exit_code": 101,
+      "reason": "Five feature/import/error-type integration errors; no producer calls",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/combined-compile-first-root.log",
+        "bytes": 4776,
+        "sha256": "58ad83f16423f3f13a3aa8d729d98c9e4bcbea436734a9c01d2afdfe7bd5e6ba"
+      }
+    },
+    "journal_compile_after_fixes": {
+      "passed": true,
+      "seconds": 19.06,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/combined-compile-after-feature-fixes-root.log",
+        "bytes": 271,
+        "sha256": "ee4a1df384449033a33d72ebc554f0c222d0f16df00c0d13657d0391cc144702"
+      }
+    },
+    "intent_first": {
+      "passed": 7,
+      "failed": 1,
+      "reason": "Test incorrectly required pure metadata decoding to consume Rows budget",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/intent-first-root.log",
+        "bytes": 1745,
+        "sha256": "8e5a64c11d7be8dcc0ea963b9fcada822459626802e946ff85946fb81704448d"
+      }
+    },
+    "intent_test_correction_compile": {
+      "passed": false,
+      "exit_code": 101,
+      "reason": "Missing Resource import in corrected test",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/intent-after-metadata-budget-test-fix-root.log",
+        "bytes": 555,
+        "sha256": "cc0a0666f867e27ad9de884977eb6efa72ec3658f7ac92e0d5869aeeada3551d"
+      }
+    },
+    "intent_after_test_fix": {
+      "passed": 8,
+      "seconds": 0.0,
+      "old_literal_bytes_unchanged": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/intent-after-test-import-fix-root.log",
+        "bytes": 1258,
+        "sha256": "02bf38244c15cb21c05b6d720b6d0c56381899415cf5083636591c6ffd6fe687"
+      }
+    },
+    "native_first": {
+      "passed": 8,
+      "seconds": 2.44,
+      "literal_fixed_commits": 28,
+      "nullable_int32_plans": 4,
+      "source_or_expected_bytes_changed": false,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/native-first-root.log",
+        "bytes": 1334,
+        "sha256": "57cb2dc5f75bbc1e8200a3a1302351ffafc3ad86b583ef2802de139a69a143ca"
+      }
+    },
+    "nullable_int32_commit_extension": {
+      "passed": 1,
+      "seconds": 0.3,
+      "complete_image_commits": 4,
+      "pending_partial_committed_repeated_recovery": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/native-nullable-commits-first-root.log",
+        "bytes": 515,
+        "sha256": "c4d768080d9e9c3c2c709989c69d6cbe8e7f1f41d90b2305c7a357dc4c96f8b4"
+      }
+    },
+    "adapter_first_compile": {
+      "passed": false,
+      "exit_code": 101,
+      "reason": "One preview consumer retained removed joint proof import; changed to direct shared owner",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-first-root.log",
+        "bytes": 544,
+        "sha256": "0eed96bdeca39385bb565f0bde7d368f0b792d8663570a6e778a09713927b251"
+      }
+    },
+    "adapter_after_import_fix": {
+      "passed": 3,
+      "seconds": 3.91,
+      "complete_image_saves": 56,
+      "group_order": "forward and reversed",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-after-preview-import-fix-root.log",
+        "bytes": 770,
+        "sha256": "002d6001a674ff0b2412540d27bb1d730088259c84483f2cf7ff4175740a2d90"
+      }
+    },
+    "all_recovery": {
+      "passed": 61,
+      "seconds": 3.33,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/recovery-all-first-root.log",
+        "bytes": 6800,
+        "sha256": "6929beb62f739d3e4f84c68a0ccd2249218cf6f09a2560193c399923f45400e9"
+      }
+    },
+    "mixed_first": {
+      "passed": 4,
+      "failed": 5,
+      "ignored": 1,
+      "reason": "Old capability assertions expected ExistingInt32 for newly admitted StoredScalar tables",
+      "seconds": 2.65,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-mixed-regression-first-root.log",
+        "bytes": 3484,
+        "sha256": "83fcef5f5759ebfa8d492ba066ca695da1ede0389fa3c2a0ef60656ef6750038"
+      }
+    },
+    "mixed_after_capability_assertion_migration": {
+      "passed": 8,
+      "failed": 1,
+      "ignored": 1,
+      "reason": "One refreshed-snapshot capability assertion still used ExistingInt32",
+      "seconds": 3.86,
+      "source_or_expected_bytes_changed": false,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-mixed-after-capability-test-migration-root.log",
+        "bytes": 2025,
+        "sha256": "0d3dff402d4a8278418f3ac12d106603235c4bf6c188ea52718494032fba6908"
+      }
+    },
+    "nullable_after_refresh_assertion_fix": {
+      "passed": 2,
+      "seconds": 0.29,
+      "source_or_expected_bytes_changed": false,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-nullable-after-refresh-profile-test-fix-root.log",
+        "bytes": 617,
+        "sha256": "fa80ec25f8e8af8824f14a4b53d0e14dbfdbec40c85e4d396eeb02fa8f581eed"
+      }
+    },
+    "legacy_record_dispatch": {
+      "passed": 1,
+      "seconds": 0.07,
+      "plans": 4,
+      "empty_single_int32_included": true,
+      "magic": "TCNI0002",
+      "fixed_body_absent": true,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-legacy-record-dispatch-first-root.log",
+        "bytes": 507,
+        "sha256": "17c448c604be387df7d06040b15728f0f4fccc35a6366cd7cbd79c3fcefa454b"
+      }
+    },
+    "all_ace_units_before_schema_scope_guard": {
+      "passed": 1029,
+      "ignored": 27,
+      "seconds": 141.18,
+      "features": "all",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/all-ace-unit-first-root.log",
+        "bytes": 139931,
+        "sha256": "b4cbde5cf05d8f9d29cef2984f4fbccffe0e8ea2802eef2bba63a2f4f4bed6a4"
+      }
+    },
+    "default_check": {
+      "passed": true,
+      "seconds": 5.5,
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/default-check-first-root.log",
+        "bytes": 301,
+        "sha256": "1abd58566a54179390acccd5dd3ff5cde87d9570e531203e47e3089dc3b4da33"
+      }
+    },
+    "strict_first": {
+      "passed": false,
+      "exit_code": 101,
+      "reason": "Collapsible legacy-route condition; corrected without changing branch order",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/all-features-strict-first-root.log",
+        "bytes": 1612,
+        "sha256": "6ec31dbc8227157a0756ec741c7a54e7d922772d9acbbd1f3ee9a7c456ff0157"
+      }
+    },
+    "strict_after_branch_style_fix_before_schema_guard": {
+      "passed": true,
+      "seconds": 53.99,
+      "all_targets": true,
+      "features": "all",
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/all-features-strict-after-branch-style-fix-root.log",
+        "bytes": 403,
+        "sha256": "3527f914b535e8418293af5ae1458b39f095805f277019803e917f7d014ea2df"
+      }
+    },
+    "schema_scope_guard": {
+      "passed": 2,
+      "seconds": 0.05,
+      "reason": "Readable complex foreign-key slots must not qualify the new ordinary writer; both selector and direct plan enforce the shared predicate",
+      "checkpoint": {
+        "path": ".cache/ace16-normal-fixed-scope-successor-next-20261031/first-private-checkpoint.json",
+        "sha256": "ce31dd2c030a779163f9f38f40be8b054af97a9084542ee6b9eab1e0db0e22bd",
+        "bytes": 2772
+      },
+      "root_derivative": "Preserve ACE format qualification before new metadata inspection",
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/scope-guard-first-root.log",
+        "bytes": 649,
+        "sha256": "22ebd0b1d61a2e258580615ac10cdaf38611c757407f95dd4534ea4fb28026be"
+      }
+    },
+    "recovery_after_guard": {
+      "passed": 61,
+      "seconds": 3.81,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/recovery-after-schema-guard-root.log",
+        "bytes": 6911,
+        "sha256": "d9700eef653c6c235749671761acd5d2ca21d40838b7025e509f9e024ed0bd64"
+      }
+    },
+    "adapter_after_guard": {
+      "fixed_tests_passed": 4,
+      "fixed_seconds": 4.26,
+      "mixed_tests_passed": 9,
+      "mixed_ignored": 1,
+      "mixed_seconds": 5.0,
+      "new_complete_image_saves": 56,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-after-schema-guard-root.log",
+        "bytes": 2114,
+        "sha256": "075d6ef143df94d12830f2387304b240285ff53ded77facc78b7d432f1522004"
+      }
+    },
+    "strict_after_guard": {
+      "passed": true,
+      "seconds": 64,
+      "all_targets": true,
+      "features": "all",
+      "packages": [
+        "tablecraft-ace",
+        "tablecraft-access",
+        "tablecraft-cli"
+      ],
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/strict-after-schema-guard-root.log",
+        "bytes": 403,
+        "sha256": "a31f15fbe9713b8b8db1c36927420068ec83f04be1cdea9a263c6802ab83a715"
+      }
+    },
+    "old_sessions": {
+      "journal_tests_passed": 2,
+      "journal_seconds": 0.01,
+      "session_tests_passed": 15,
+      "session_seconds": 0.5,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-existing-sessions-first-root.log",
+        "bytes": 2108,
+        "sha256": "ee64542d436c930c485c5110b6f80238fb2eba16d3d6f332888b0c3bf462e1b8"
+      }
+    },
+    "explicit_rich_after_guard": {
+      "passed": 1,
+      "literal_plans": 2,
+      "seconds": 0.05,
+      "log": {
+        "path": ".cache/ace16-native-before-change-fixed-scalars-next-20261031/adapter-rich-after-schema-guard-root.log",
+        "bytes": 394,
+        "sha256": "886177f607c65db622404345655f8aa14836a63f840e80aa1008a9f276f0a6dd"
+      }
+    },
+    "repository_checks": {
+      "format": true,
+      "documentation_targets": 6967,
+      "missing_targets": 0,
+      "dependency_packages": 15,
+      "diff_check": true
+    }
+  },
+  "pending": [],
+  "followup": [
+    "Source-qualified wider SQL and CLI batch acceptance remains a separate delivery",
+    "Other carriers, indexes, allocation, relationships and broader macro programs remain unsupported by this new route",
+    "Native Access event/save/reopen and mixed-client qualification remain unrun"
+  ]
+}

@@ -1,6 +1,6 @@
 //! Closed native validators selected by exact request-record version/profile.
-use super::{NativeInt32EditIntent, NativeIntentError};
-use crate::{Int32Update, header::check};
+use super::{NativeFixedEditIntent, NativeInt32EditIntent, NativeIntentError};
+use crate::header::check;
 use tablecraft_core::limits::ResourceBudget;
 
 const JET4_MAGIC: &[u8; 8] = b"TCNI0001";
@@ -15,6 +15,8 @@ pub enum NativeUpdateProfile {
     Jet4Int32,
     /// Positive source-derived pure BeforeChange ACE16 Int32 UPDATE.
     Ace16BeforeChangeInt32,
+    /// Positive source-derived pure BeforeChange ACE16 fixed-group UPDATE.
+    Ace16BeforeChangeFixed,
 }
 
 /// Immutable original user intent and BEFORE binding for one normal route.
@@ -22,18 +24,34 @@ pub enum NativeUpdateProfile {
 /// rederives its complete native plan before any write, regardless of this tag.
 pub struct NativeUpdateIntent {
     profile: NativeUpdateProfile,
-    original: NativeInt32EditIntent,
+    body: NativeUpdateBody,
+}
+
+/// Exact original request family; no missing body is replaced with empty data.
+pub enum NativeUpdateBody {
+    /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
+    Int32(NativeInt32EditIntent),
+    /// Original ordered fixed column groups for TCNI0003.
+    Fixed(NativeFixedEditIntent),
 }
 
 impl NativeUpdateIntent {
-    /// Both versions share the same bounded original-request payload geometry.
-    pub const MAX_ENCODED_BYTES: usize = NativeInt32EditIntent::MAX_ENCODED_BYTES;
+    /// Maximum of the implemented closed data records, for bounded host capture.
+    pub const MAX_ENCODED_BYTES: usize =
+        if NativeFixedEditIntent::MAX_ENCODED_BYTES > NativeInt32EditIntent::MAX_ENCODED_BYTES {
+            NativeFixedEditIntent::MAX_ENCODED_BYTES
+        } else {
+            NativeInt32EditIntent::MAX_ENCODED_BYTES
+        };
 
     pub(super) fn from_original(
         profile: NativeUpdateProfile,
         original: NativeInt32EditIntent,
     ) -> Self {
-        Self { profile, original }
+        Self {
+            profile,
+            body: NativeUpdateBody::Int32(original),
+        }
     }
 
     /// Exact record-selected validator, not source eligibility or event coverage.
@@ -41,24 +59,48 @@ impl NativeUpdateIntent {
         self.profile
     }
 
-    /// Original source-selected table spelling, without SQL or file selectors.
+    pub(super) fn from_fixed(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16BeforeChangeFixed,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
+    /// Closed original body, requiring consumers to inspect its actual family.
+    pub fn body(&self) -> &NativeUpdateBody {
+        &self.body
+    }
+
+    /// Int32 original data, absent for a fixed-group request.
+    pub fn int32(&self) -> Option<&NativeInt32EditIntent> {
+        match &self.body {
+            NativeUpdateBody::Int32(original) => Some(original),
+            NativeUpdateBody::Fixed(_) => None,
+        }
+    }
+
+    /// Fixed original data, absent for an Int32 request.
+    pub fn fixed(&self) -> Option<&NativeFixedEditIntent> {
+        match &self.body {
+            NativeUpdateBody::Fixed(original) => Some(original),
+            NativeUpdateBody::Int32(_) => None,
+        }
+    }
+
+    /// Original table spelling, without SQL or file selectors.
     pub fn table(&self) -> &str {
-        self.original.table()
-    }
-
-    /// Original user-request column; macro-only targets are reconstructed later.
-    pub fn column(&self) -> &str {
-        self.original.column()
-    }
-
-    /// Original written requests, including every supplied equal assignment.
-    pub fn updates(&self) -> &[Int32Update] {
-        self.original.updates()
+        match &self.body {
+            NativeUpdateBody::Int32(original) => original.table(),
+            NativeUpdateBody::Fixed(original) => original.table(),
+        }
     }
 
     /// Exact original source byte length.
-    pub const fn before_length(&self) -> u64 {
-        self.original.before_length()
+    pub fn before_length(&self) -> u64 {
+        match &self.body {
+            NativeUpdateBody::Int32(original) => original.before_length(),
+            NativeUpdateBody::Fixed(original) => original.before_length(),
+        }
     }
 
     /// Compare complete original-source digest, without granting replay permission.
@@ -68,7 +110,10 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), NativeIntentError> {
-        self.original.verify_before(before, budget, cancelled)
+        match &self.body {
+            NativeUpdateBody::Int32(original) => original.verify_before(before, budget, cancelled),
+            NativeUpdateBody::Fixed(original) => original.verify_before(before, budget, cancelled),
+        }
     }
 
     /// Encode the selected closed record. Jet4 emits byte-identical TCNI0001.
@@ -77,12 +122,17 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
-        match self.profile {
-            NativeUpdateProfile::Jet4Int32 => self.original.encode(budget, cancelled),
-            NativeUpdateProfile::Ace16BeforeChangeInt32 => {
-                self.original
-                    .encode_profile(ACE_MAGIC, ACE_PROFILE, budget, cancelled)
+        match (&self.body, self.profile) {
+            (NativeUpdateBody::Int32(original), NativeUpdateProfile::Jet4Int32) => {
+                original.encode(budget, cancelled)
             }
+            (NativeUpdateBody::Int32(original), NativeUpdateProfile::Ace16BeforeChangeInt32) => {
+                original.encode_profile(ACE_MAGIC, ACE_PROFILE, budget, cancelled)
+            }
+            (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16BeforeChangeFixed) => {
+                original.encode(budget, cancelled)
+            }
+            _ => Err(NativeIntentError::UnsupportedProfile),
         }
     }
 
@@ -92,6 +142,11 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..8) == Some(super::fixed::MAGIC.as_slice()) {
+            return Ok(Self::from_fixed(NativeFixedEditIntent::decode(
+                bytes, budget, cancelled,
+            )?));
+        }
         let (profile, original) = match bytes.get(..JET4_MAGIC.len()) {
             Some(magic) if magic == JET4_MAGIC => (
                 NativeUpdateProfile::Jet4Int32,
@@ -116,12 +171,13 @@ impl NativeUpdateIntent {
                 });
             }
         };
-        Ok(Self { profile, original })
+        Ok(Self {
+            profile,
+            body: NativeUpdateBody::Int32(original),
+        })
     }
 
-    pub(in crate::transaction) fn into_original(
-        self,
-    ) -> (NativeUpdateProfile, NativeInt32EditIntent) {
-        (self.profile, self.original)
+    pub(in crate::transaction) fn into_body(self) -> (NativeUpdateProfile, NativeUpdateBody) {
+        (self.profile, self.body)
     }
 }

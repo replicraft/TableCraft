@@ -1,12 +1,13 @@
 //! One paid original-row visit produces joint fixed payload/mask observations.
-use super::super::{FixedColumnUpdates, source::Source, unique};
 use super::binding;
+use super::unique;
+use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpdates};
+use crate::table::scalar_encoding;
 use crate::{
-    EditError, FixedScalarUpdate, InspectError, NativeImage,
+    EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::row::{COLUMN_COUNT_BYTES, MASK_BITS},
     header::check,
     table::mutation::{
-        fixed::encoding,
         patch::{BytePatch, spans},
         rows::{self, RowAssignment},
     },
@@ -88,16 +89,21 @@ fn encode(kind: ScalarType, value: &Value) -> Result<Option<[u8; MAX_PAYLOAD_BYT
         return Ok(None);
     }
     if kind == ScalarType::Int32 {
-        let encoded = encoding::encode::<{ size_of::<i32>() }>(kind, value)?;
+        let encoded = scalar_encoding::encode::<{ size_of::<i32>() }>(kind, value)
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
         let mut bytes = [0; MAX_PAYLOAD_BYTES];
         bytes[..size_of::<i32>()].copy_from_slice(&encoded);
         Ok(Some(bytes))
     } else {
-        Ok(Some(encoding::encode::<MAX_PAYLOAD_BYTES>(kind, value)?))
+        Ok(Some(
+            scalar_encoding::encode::<MAX_PAYLOAD_BYTES>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?,
+        ))
     }
 }
 
-pub(in crate::table::mutation::fixed::preserved) fn prepare(
+#[cfg(feature = "ace16-write-preview")]
+pub(in crate::table::mutation) fn prepare(
     image: &NativeImage,
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
@@ -105,6 +111,30 @@ pub(in crate::table::mutation::fixed::preserved) fn prepare(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all(source, groups, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_normal(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) = binding::all_normal(source, groups, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+fn compose(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    bound: Vec<binding::Bound>,
+    capacity: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
     budget
         .charge_allocation(capacity as u64, size_of::<Cell<'_>>() as u64)
         .map_err(InspectError::from)?;

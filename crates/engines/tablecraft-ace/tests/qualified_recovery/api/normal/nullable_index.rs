@@ -34,7 +34,10 @@ fn nullable_unchanged_index_original_intent_requalifies_pending_and_committed_jo
             plan.intent().profile(),
             NativeUpdateProfile::Ace16BeforeChangeInt32
         );
-        assert_eq!(plan.intent().updates()[0].value(), 17);
+        assert_eq!(
+            plan.intent().int32().expect("Int32 intent").updates()[0].value(),
+            17
+        );
         for marker in [Marker::Pending, Marker::Committed] {
             let committed = matches!(marker, Marker::Committed);
             let mut journal = Storage::new(journals::journal(&case.before, &case.expected, marker));

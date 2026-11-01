@@ -6,6 +6,7 @@ use tablecraft_access::editing::{
     offline::{Cause, Failure, OfflineWriteSession, Phase, SessionState},
     sql,
 };
+use tablecraft_ace::{EditError, RecoverableEditError, WriteBlocker};
 use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
@@ -18,6 +19,7 @@ use tablecraft_testkit::access::{
 };
 
 struct Intent<'a> {
+    profile: UpdateProfile,
     column: &'a str,
     update: &'a Update,
     sql: String,
@@ -48,7 +50,7 @@ fn assert_save(
     let mut work = budget();
     let session = OfflineWriteSession::open(&database, SCOPE, &mut work, &|| false).unwrap();
     let editor = session.edit_table("Items", &mut work, &|| false).unwrap();
-    assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+    assert_eq!(editor.update_profile(), intent.profile);
     assert_eq!(editor.snapshot().rows(), rows);
     let old = editor.snapshot().row_handle(intent.update.ordinal).unwrap();
     assert_eq!(
@@ -92,7 +94,7 @@ fn assert_save(
     locked(&database);
 
     let editor = session.edit_table("Items", &mut work, &|| false).unwrap();
-    assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+    assert_eq!(editor.update_profile(), intent.profile);
     assert_eq!(editor.snapshot().rows(), final_rows);
     session = editor.into_session();
 
@@ -145,11 +147,23 @@ fn assert_save(
                 session.plan_update(query.query(), &mut work, None, &|| false)
             }
         };
-        let failure = result.err().expect("NULL is not an Int32 expected carrier");
-        assert!(matches!(
-            adapter_error(&failure),
-            journal::Error::Native(NativeEditError::Unsupported)
-        ));
+        let failure = result
+            .err()
+            .expect("indexed NULL transitions remain refused");
+        let refused = if intent.profile == UpdateProfile::StoredScalar {
+            matches!(
+                adapter_error(&failure),
+                journal::Error::Plan(RecoverableEditError::Edit(EditError::Unsupported(
+                    WriteBlocker::IndexedColumn
+                )))
+            )
+        } else {
+            matches!(
+                adapter_error(&failure),
+                journal::Error::Native(NativeEditError::Unsupported)
+            )
+        };
+        assert!(refused, "{failure:?}");
         assert_eq!(failure.phase(), Phase::Planning);
         assert_eq!(failure.state(), SessionState::Ready);
         assert_eq!(failure.last_completed(), Some(receipt));
@@ -175,6 +189,7 @@ fn nullable_score_keys_publish_twenty_four_typed_and_sql_literal_images() {
             let case = score_model::source(header, recipe);
             for transport in [Transport::Typed, Transport::Sql] {
                 let intent = Intent {
+                    profile: UpdateProfile::ExistingInt32,
                     column: "Score",
                     update: &case.update,
                     sql: format!(
@@ -232,6 +247,7 @@ fn nullable_id_companion_publishes_four_present_id_and_macro_score_images() {
         assert_eq!(case.final_rows[0][5], Value::Int32(2007));
         for transport in [Transport::Typed, Transport::Sql] {
             let intent = Intent {
+                profile: UpdateProfile::StoredScalar,
                 column: case.column,
                 update: &case.update,
                 sql: "UPDATE Items SET Id=7 WHERE Score=1000".to_owned(),

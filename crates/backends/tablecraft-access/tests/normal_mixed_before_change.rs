@@ -51,7 +51,7 @@ fn stage(
     match transport {
         Transport::Typed => {
             let editor = owner.edit_table("Items", work, &|| false)?;
-            assert_eq!(editor.update_profile(), UpdateProfile::ExistingInt32);
+            assert_eq!(editor.update_profile(), UpdateProfile::StoredScalar);
             let updates = case
                 .updates
                 .iter()

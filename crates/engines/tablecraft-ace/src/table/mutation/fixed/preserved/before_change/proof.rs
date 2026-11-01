@@ -1,11 +1,12 @@
 //! Fresh program/intent replay supplies the sole physical byte authority.
-use super::super::{copy, joint::proof as fixed_audit, source};
+use super::super::{copy, source};
 use crate::{
     BeforeChangePreviewError, BeforeEventGuardError, BeforeEventGuardSelector, FixedColumnUpdates,
     InspectError, NativeImage,
     header::check,
     inspect_table_schema,
     table::mutation::{
+        fixed_records::proof as fixed_audit,
         guards::fields::batch::{self, Prepared, SelectedPrograms, SourceFacts},
         preview,
     },

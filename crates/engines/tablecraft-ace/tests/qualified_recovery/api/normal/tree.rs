@@ -56,7 +56,14 @@ fn normal_tree_plans_commit_eighteen_literal_images_without_page_or_map_allocati
                 plan.intent().profile(),
                 NativeUpdateProfile::Ace16BeforeChangeInt32
             );
-            for (actual, original) in plan.intent().updates().iter().zip(&case.updates) {
+            for (actual, original) in plan
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .iter()
+                .zip(&case.updates)
+            {
                 assert_eq!(
                     (actual.row(), actual.expected(), actual.value()),
                     (original.ordinal, original.expected, original.replacement)
@@ -142,14 +149,32 @@ fn retained_upper_bounds_real_restoration_empty_and_supplied_equal_intent_are_di
         let restore = record(&case, &mut budget(), &|| false).unwrap();
         assert_eq!(restore.after_bytes(), case.before);
         assert_eq!(restore.changed_rows(), 0);
-        assert_eq!(restore.intent().updates().len(), 1);
-        assert_eq!(restore.intent().updates()[0].value(), 17);
+        assert_eq!(
+            restore
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .len(),
+            1
+        );
+        assert_eq!(
+            restore.intent().int32().expect("Int32 intent").updates()[0].value(),
+            17
+        );
         let empty = image(&case.before)
             .plan_recoverable_int32_updates("Items", "Score", Vec::new(), &mut budget(), &|| false)
             .unwrap();
         assert_eq!(empty.after_bytes(), case.before);
         assert_eq!(empty.changed_rows(), 0);
-        assert!(empty.intent().updates().is_empty());
+        assert!(
+            empty
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .is_empty()
+        );
 
         // A changed non-key field must also retain this index's loose bound.
         // Construct and read-check the entire expected image before planning.

@@ -12,6 +12,18 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Journaled typed fixed-scalar batches
+
+The normal native planner and retained Access session now accept qualified fixed
+Boolean/Int32/Int64/Currency/DATE groups beside Int32-only native macro effects.
+Shared raw staging/manual proof have working preview and normal consumers.
+Original typed groups use closed `TCNI0003` records; recovery freshly replays
+them, while the old single-present-Int32 route retains `TCNI0002`. Thirty-two
+native complete-image commits, 61 recovery integration tests and 56 real typed
+session saves pass. Broader verification and SQL/CLI qualification remain
+explicit in the [contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
+[record](testing/results/ace16-normal-fixed-before-change-2026-10-31.json).
+
 ## Typed fixed-scalar BeforeChange source qualification
 
 Thirty-eight independently authored originals and 28 literal expected images

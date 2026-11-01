@@ -1,6 +1,6 @@
 //! Closed original-request dispatch for active and already settled journals.
 use super::{
-    NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
+    NativeRecoveryQualificationError, NativeUpdateBody, NativeUpdateIntent, NativeUpdateProfile,
     QualifiedJet4Recovery, qualified_recovery::equal_image, qualify_jet4_int32_recovery,
 };
 use crate::{NativeImage, header::check};
@@ -74,12 +74,12 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<QualifiedNativeRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.update_recovery.qualify").entered();
-    let (profile, original) = intent.into_original();
-    let qualified = match profile {
-        NativeUpdateProfile::Jet4Int32 => Qualified::Jet4(qualify_jet4_int32_recovery(
-            checked, original, scope, budget, cancelled,
-        )?),
-        NativeUpdateProfile::Ace16BeforeChangeInt32 => {
+    let (profile, body) = intent.into_body();
+    let qualified = match (profile, body) {
+        (NativeUpdateProfile::Jet4Int32, NativeUpdateBody::Int32(original)) => Qualified::Jet4(
+            qualify_jet4_int32_recovery(checked, original, scope, budget, cancelled)?,
+        ),
+        (NativeUpdateProfile::Ace16BeforeChangeInt32, NativeUpdateBody::Int32(original)) => {
             check(budget, cancelled)?;
             original.verify_before(checked.before_bytes(), budget, cancelled)?;
             let image = NativeImage::capture(
@@ -105,6 +105,33 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             check(budget, cancelled)?;
             Qualified::BeforeChange(checked)
         }
+        (NativeUpdateProfile::Ace16BeforeChangeFixed, NativeUpdateBody::Fixed(original)) => {
+            check(budget, cancelled)?;
+            original.verify_before(checked.before_bytes(), budget, cancelled)?;
+            let image = NativeImage::capture(
+                &mut Cursor::new(checked.before_bytes()),
+                scope,
+                budget,
+                cancelled,
+            )?;
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            let plan = image.plan_before_change_fixed_updates(
+                original.table(),
+                &groups,
+                budget,
+                cancelled,
+            )?;
+            equal_image(
+                plan.before_bytes(),
+                checked.before_bytes(),
+                budget,
+                cancelled,
+            )?;
+            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
+            check(budget, cancelled)?;
+            Qualified::BeforeChange(checked)
+        }
+        _ => return Err(super::NativeIntentError::UnsupportedProfile.into()),
     };
     Ok(QualifiedNativeRecovery { qualified })
 }

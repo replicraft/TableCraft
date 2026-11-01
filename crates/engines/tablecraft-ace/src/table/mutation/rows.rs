@@ -14,7 +14,7 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 mod directory;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) mod final_record;
 
 pub(super) use directory::Directory;

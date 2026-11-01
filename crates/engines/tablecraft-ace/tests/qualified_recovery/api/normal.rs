@@ -136,6 +136,8 @@ fn successful_multirow_requests_keep_original_order_and_count_distinct_roots() {
             assert_eq!(recorded.changed_rows(), 2);
             let ordinals = recorded
                 .intent()
+                .int32()
+                .expect("Int32 intent")
                 .updates()
                 .iter()
                 .map(Int32Update::row)
@@ -164,9 +166,18 @@ fn alternate_user_id_target_and_macro_only_score_share_one_original_root() {
         assert_eq!(recorded.before_bytes(), case.before);
         assert_eq!(recorded.after_bytes(), expected);
         assert_eq!(recorded.changed_rows(), 1);
-        assert_eq!(recorded.intent().column(), "Id");
-        assert_eq!(recorded.intent().updates()[0].expected(), 1);
-        assert_eq!(recorded.intent().updates()[0].value(), 7);
+        assert_eq!(
+            recorded.intent().int32().expect("Int32 intent").column(),
+            "Id"
+        );
+        assert_eq!(
+            recorded.intent().int32().expect("Int32 intent").updates()[0].expected(),
+            1
+        );
+        assert_eq!(
+            recorded.intent().int32().expect("Int32 intent").updates()[0].value(),
+            7
+        );
     }
 }
 
@@ -184,12 +195,27 @@ fn normal_planner_commits_ten_literal_images_and_retains_original_requests() {
             assert_eq!(recorded.before_bytes(), case.before);
             assert_eq!(recorded.after_bytes(), case.expected.as_ref().unwrap());
             assert_eq!(recorded.changed_rows(), case.changed_rows);
-            assert_eq!(recorded.intent().updates().as_ptr(), pointer);
+            assert_eq!(
+                recorded
+                    .intent()
+                    .int32()
+                    .expect("Int32 intent")
+                    .updates()
+                    .as_ptr(),
+                pointer
+            );
             assert_eq!(
                 recorded.intent().profile(),
                 NativeUpdateProfile::Ace16BeforeChangeInt32
             );
-            for (actual, original) in recorded.intent().updates().iter().zip(&case.updates) {
+            for (actual, original) in recorded
+                .intent()
+                .int32()
+                .expect("Int32 intent")
+                .updates()
+                .iter()
+                .zip(&case.updates)
+            {
                 assert_eq!(actual.row(), original.ordinal);
                 assert_eq!(actual.expected(), original.expected);
                 assert_eq!(actual.value(), original.replacement);
@@ -636,3 +662,9 @@ mod nullable_keys;
 
 #[path = "normal/id_companion.rs"]
 mod id_companion;
+
+#[path = "normal/native_fixed.rs"]
+mod native_fixed;
+
+#[path = "normal/native_fixed_controls.rs"]
+mod native_fixed_controls;

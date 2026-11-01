@@ -1,4 +1,7 @@
-use super::{NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile};
+use super::{
+    NativeFixedEditIntent, NativeFixedIntentGroup, NativeInt32EditIntent, NativeIntentError,
+    NativeUpdateIntent, NativeUpdateProfile,
+};
 use crate::{EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError};
@@ -15,7 +18,7 @@ pub enum RecoverableEditError {
     Intent(#[from] NativeIntentError),
 }
 
-/// A qualified normal Jet4 plan retaining its original resolved request intent.
+/// A qualified normal plan retaining its exact original resolved request intent.
 /// No public constructor from parts or decoded request grants this authority.
 pub struct RecoverableNativeEditPlan {
     plan: NativeEditPlan,
@@ -59,6 +62,25 @@ impl NativeImage {
             NativeUpdateProfile::Jet4Int32
         };
         let intent = NativeUpdateIntent::from_original(profile, intent);
+        Ok(RecoverableNativeEditPlan { plan, intent })
+    }
+
+    /// Plan original fixed groups using positive native BeforeChange admission,
+    /// then retain those same owned requests for recovery. No preview conversion.
+    pub fn plan_recoverable_fixed_updates(
+        self,
+        table: &str,
+        groups: Vec<NativeFixedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.fixed_edit.plan_recoverable").entered();
+        let borrowed = super::fixed::borrow_groups(table, &groups, budget, cancelled)?;
+        let plan = self.plan_before_change_fixed_updates(table, &borrowed, budget, cancelled)?;
+        drop(borrowed);
+        let original =
+            NativeFixedEditIntent::new(table, groups, plan.before_bytes(), budget, cancelled)?;
+        let intent = NativeUpdateIntent::from_fixed(original);
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
 }

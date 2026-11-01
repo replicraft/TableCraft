@@ -23,6 +23,14 @@ required content, splits and map/storage growth refuse. It grants no general ACE
 data-macro absence permission;
 ACE engineering candidates remain separate.
 
+The separate [fixed-scalar batch service](NORMAL_ACE_FIXED_SCALARS.md) now
+advertises `StoredScalar` for qualified complete ordinary tables and consumes
+`EditableBatch` through the same retained session. It supports admitted unindexed
+Boolean/Int32/Int64/Currency/DATE groups with original typed intents and fresh
+recovery replay. Present single-column Int32 requests keep the existing route.
+Complex, Memo/OLE, calculated and partial declarations do not select this new
+capability; the prior Int32 service keeps its own qualified preservation scope.
+
 The host must provide an explicitly offline target, exclude noncooperating
 writers and resolve any other journals before editing. This is not native
 Access multiuser coordination. Filesystem pairing currently operates on Linux

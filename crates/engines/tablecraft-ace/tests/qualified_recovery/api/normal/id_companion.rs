@@ -53,9 +53,12 @@ fn qualified_present_id_commits_two_companion_images_with_original_id_intent_onl
             plan.intent().profile(),
             NativeUpdateProfile::Ace16BeforeChangeInt32
         );
-        assert_eq!(plan.intent().column(), "Id");
-        assert_eq!(plan.intent().updates().len(), 1);
-        let request = &plan.intent().updates()[0];
+        assert_eq!(plan.intent().int32().expect("Int32 intent").column(), "Id");
+        assert_eq!(
+            plan.intent().int32().expect("Int32 intent").updates().len(),
+            1
+        );
+        let request = &plan.intent().int32().expect("Int32 intent").updates()[0];
         assert_eq!(
             (request.row(), request.expected(), request.value()),
             (0, 1, 7)

@@ -1,6 +1,7 @@
 //! Complete mixed target preflight before original records are composed.
-use super::super::super::{joint::binding as fixed, name_work, source::Source};
+use super::super::super::{name_work, source::Source};
 use super::super::stage;
+use crate::table::mutation::fixed_records::binding as fixed;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, NativeImage, WriteBlocker,
     header::check,

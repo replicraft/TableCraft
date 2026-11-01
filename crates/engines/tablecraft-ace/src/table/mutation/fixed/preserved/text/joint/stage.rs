@@ -1,9 +1,10 @@
 //! Compose one complete original record; fixed bits follow Text serialization.
 use super::super::{
-    super::{copy, joint::binding::Bound as FixedColumn, source::Source, unique},
+    super::{copy, source::Source, unique},
     stage as text,
 };
 use super::binding::{self, Kind};
+use crate::table::mutation::fixed_records::binding::Bound as FixedColumn;
 use crate::{
     EditError, FittedColumnUpdates, InspectError,
     format::row::{COLUMN_COUNT_BYTES, MASK_BITS},

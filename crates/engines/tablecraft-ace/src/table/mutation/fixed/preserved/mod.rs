@@ -1,17 +1,17 @@
 //! Source-certified mixed-schema copies for fixed scalars and fitting Short Text.
 mod before_change;
 mod int32;
-mod joint;
 mod proof;
 mod scalar;
 mod stage;
 mod text;
 
 use super::FixedColumnUpdates;
+use crate::table::mutation::fixed_records::{copy, name_work, unique};
 use crate::table::mutation::preserved_source::{self as source, validation};
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, WriteBlocker, header::check,
-    inspect_table_schema, preservation::COPY_CHUNK_BYTES, table::mutation::patch::BytePatch,
+    inspect_table_schema, table::mutation::patch::BytePatch,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -126,55 +126,6 @@ pub(super) fn preview(
     ))
 }
 
-fn copy(
-    bytes: &[u8],
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, EditError> {
-    budget
-        .charge_allocation(bytes.len() as u64, 1)
-        .map_err(InspectError::from)?;
-    let mut result = Vec::new();
-    result
-        .try_reserve_exact(bytes.len())
-        .map_err(|_| InspectError::Allocation)?;
-    for chunk in bytes.chunks(COPY_CHUNK_BYTES) {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, chunk.len() as u64)
-            .map_err(InspectError::from)?;
-        result.extend_from_slice(chunk);
-    }
-    Ok(result)
-}
-
-fn name_work(left: &str, right: &str, budget: &mut ResourceBudget) -> Result<(), EditError> {
-    budget
-        .charge(Resource::Steps, left.len().max(right.len()) as u64)
-        .map_err(InspectError::from)?;
-    Ok(())
-}
-
-fn unique(
-    references: &mut Vec<u32>,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<usize, EditError> {
-    check(budget, cancelled)?;
-    let levels = references.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    let work = references
-        .len()
-        .checked_mul(levels)
-        .ok_or(InspectError::StructureLimit)?;
-    budget
-        .charge(Resource::Steps, work as u64)
-        .map_err(InspectError::from)?;
-    references.sort_unstable();
-    references.dedup();
-    check(budget, cancelled)?;
-    Ok(references.len())
-}
-
 pub(in crate::table::mutation) fn projected(
     schema: &crate::TableSchema,
     budget: &mut ResourceBudget,
@@ -212,3 +163,7 @@ mod rich_before_change_sources;
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod mixed_normal_sources;
+
+#[cfg(test)]
+#[path = "joint/proof/tests.rs"]
+mod joint_proof_tests;
