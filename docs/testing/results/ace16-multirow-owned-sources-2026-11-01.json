@@ -1,0 +1,284 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_SOURCE_AND_READ_OBSERVATIONS_ONLY",
+  "scope": "Independent source/model evidence for pre-owned DATA growth; producer/recovery/host acceptance is a separate record.",
+  "counts": {
+    "unique_images": 10,
+    "authored_before_views": 6,
+    "modeled_after_views": 4,
+    "source_native_functions_passed": 2,
+    "source_native_views_passed": 10,
+    "successor_sdk_reads_passed": 10,
+    "historical_observer_profile_refusals": 1,
+    "source_program_calls": 0,
+    "source_producer_calls": 0
+  },
+  "corpora": [
+    {
+      "id": "multirow-source",
+      "scope": "competing reservations and healthy no-capacity inputs",
+      "views": 6,
+      "authored_before_views": 4,
+      "modeled_after_views": 2,
+      "freeze": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/input-freeze.json",
+        "bytes": 2743,
+        "sha256": "a52f002419f72404f1e7dd7338015644aaa0b21d66f1ac739301a7dd75504575"
+      },
+      "model": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/model.py",
+        "bytes": 7178,
+        "sha256": "ca8997625d89aad90f9f3b5f0272fa941eb59edce98539b67c3b3a01b87d6c75"
+      },
+      "requests": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/requests.json",
+        "bytes": 2116,
+        "sha256": "277d86231bd74e176899d041571c69f577ad76acffdacb0a8a0191a9f08aa52c"
+      },
+      "constructor_receipt": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/construct-first.log",
+        "bytes": 185,
+        "sha256": "6e184abe1c3a8e06055de0f84e9c70a1e7f0397ecea825529641d8c29494e703"
+      },
+      "native_gate_log": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/native-reads-first.log",
+        "bytes": 517,
+        "sha256": "a7bea7aa6e1eb8f3317aaa99f65644e9af8781869b6f1973f859848dc1e272bb"
+      },
+      "manifest": {
+        "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/manifest.json",
+        "bytes": 2961,
+        "sha256": "fca83e86dbd275f861e370056dee66f9db323c001e7dacb1e357426deda67201"
+      },
+      "images": [
+        {
+          "case": "h5-multirow-owned",
+          "kind": "before",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h5-multirow-owned-before.accdb",
+          "bytes": 466944,
+          "sha256": "be0323af76ec000fd6eaace6b4595c4568dfed31ea83d83f85b067777f712f57"
+        },
+        {
+          "case": "h5-multirow-owned",
+          "kind": "expected",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h5-multirow-owned-growth.accdb",
+          "bytes": 466944,
+          "sha256": "ce6411064a66d2ca1c56138f25123ba69b694db3a50f72ce5cbe64744a3e7250"
+        },
+        {
+          "case": "h5-multirow-owned",
+          "kind": "no_capacity_before",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h5-multirow-owned-no-capacity.accdb",
+          "bytes": 466944,
+          "sha256": "2515f4fe4977005335f5aa68a6375ade70b75ffd0dd9f552fa4e62c249a27888"
+        },
+        {
+          "case": "h6-multirow-owned",
+          "kind": "before",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h6-multirow-owned-before.accdb",
+          "bytes": 536576,
+          "sha256": "41f5d0d9fb4c1a997fcd8072855fd72f1183923a76f1615229825bfd76e5e257"
+        },
+        {
+          "case": "h6-multirow-owned",
+          "kind": "expected",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h6-multirow-owned-growth.accdb",
+          "bytes": 536576,
+          "sha256": "eddbff288ae4c27b2468d5596afb938d49ebe5fac9e2c4cf9ed7d7b64bcd33eb"
+        },
+        {
+          "case": "h6-multirow-owned",
+          "kind": "no_capacity_before",
+          "path": ".cache/owned-growth-next-20261101/multirow-source/expected-first/h6-multirow-owned-no-capacity.accdb",
+          "bytes": 536576,
+          "sha256": "cbfaca8d36102e477d3aa7a7b86830169de70b5a64ff6d24b10f2855e81a9bde"
+        }
+      ]
+    },
+    {
+      "id": "mixed-event-source",
+      "scope": "one page combines cross append and same-page growth",
+      "views": 4,
+      "authored_before_views": 2,
+      "modeled_after_views": 2,
+      "freeze": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/input-freeze.json",
+        "bytes": 3722,
+        "sha256": "44a74b609448a3acd2c8f1a3bf177d05d3b807761de6d0434c0db5ee14f3493c"
+      },
+      "model": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/model.py",
+        "bytes": 7334,
+        "sha256": "1b731d152c1e29e0cf25c1f9d4e9a106ecdd124a545432d68eb5d678e9b3f98c"
+      },
+      "requests": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/requests.json",
+        "bytes": 2632,
+        "sha256": "4f27a7bff1caeb7885d8a7404dd8e4abf5d076c7f48d2abe51822617386ce6c9"
+      },
+      "constructor_receipt": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/construct-first.log",
+        "bytes": 185,
+        "sha256": "ead1b2be0581bd703b135372549addd97da87e41eb1c3578421c9d5899581cf8"
+      },
+      "native_gate_log": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/native-reads-first.log",
+        "bytes": 426,
+        "sha256": "6ad3440d8e39b57553b64122e21f2d461a3a55498189929c53f14ccead300683"
+      },
+      "manifest": {
+        "path": ".cache/owned-growth-next-20261101/mixed-event-source/expected-first/manifest.json",
+        "bytes": 2860,
+        "sha256": "a751f00d771619fe1f792c41bf1f7055a231fbe5e029f4864003fcf9e9a4dcca"
+      },
+      "images": [
+        {
+          "case": "h5-mixed-events",
+          "kind": "before",
+          "path": ".cache/owned-growth-next-20261101/mixed-event-source/expected-first/h5-mixed-events-before.accdb",
+          "bytes": 462848,
+          "sha256": "9654761272b4e1fbc76a4b2a8d3a7c86b7bcb1f3db9d8f7d320bd289ceab8ced"
+        },
+        {
+          "case": "h5-mixed-events",
+          "kind": "expected",
+          "path": ".cache/owned-growth-next-20261101/mixed-event-source/expected-first/h5-mixed-events-growth.accdb",
+          "bytes": 462848,
+          "sha256": "6b12cfbbc1838b33cdbe30f9e95707354e9f9fe982d06289088c5d7719d4b49c"
+        },
+        {
+          "case": "h6-mixed-events",
+          "kind": "before",
+          "path": ".cache/owned-growth-next-20261101/mixed-event-source/expected-first/h6-mixed-events-before.accdb",
+          "bytes": 532480,
+          "sha256": "f3ad302be80519b73f9283a3a045b051191b42c96eb2e03fcb57e18f3243f5ae"
+        },
+        {
+          "case": "h6-mixed-events",
+          "kind": "expected",
+          "path": ".cache/owned-growth-next-20261101/mixed-event-source/expected-first/h6-mixed-events-growth.accdb",
+          "bytes": 532480,
+          "sha256": "921ba8be0a8d45e3e849f99e3a6a74fe3d5bc59a409540028a339a2ae6313d1d"
+        }
+      ]
+    }
+  ],
+  "native_selectors": [
+    "table::mutation::normal_ordinary_sources::competing_owned::competing_owned_reservations_sources_read_before_any_writer",
+    "table::mutation::normal_fitted::owned_growth::mixed_event_sources::genuine_mixed_page_event_source_and_literal_after_read_before_any_writer"
+  ],
+  "sdk": {
+    "result": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/reads-first/result.json",
+      "bytes": 3404,
+      "sha256": "4d76f10952329cb661ea8de150a55207426b30c6f00bc5dd08b7cb61ada4c807"
+    },
+    "precall": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/reads-first/precall.json",
+      "bytes": 22023,
+      "sha256": "6141d078caa0f3acfbedcc2675ae9a95ecaae7dc15a888d3e090a908ba5753cb"
+    },
+    "plan": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/reader-plan.json",
+      "bytes": 22146,
+      "sha256": "64e8fddb8f63b4353da72c1a87f36c319abe049666c4e65ab5e3d6b76a8e696c"
+    },
+    "code_freeze": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/reader-first-freeze.json",
+      "bytes": 1689,
+      "sha256": "12cfb2ee0172fd7dc9a798520c0031c237dddd6b59c090489ffee4ae1bd20f7c"
+    },
+    "all_inputs_unchanged": true,
+    "exact_full_stdout_matches": 10,
+    "stderr_empty": true,
+    "observed_profile": "PreservedRows and its attachment table remain exactly3 rows; explicit Sentinel exactly2; selected metadata/cells/rows only, not all system tables."
+  },
+  "getter": {
+    "java_source": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/OwnedGrowthTwoRowGetter.java",
+      "bytes": 11633,
+      "sha256": "250b528f3258c796d67008a269a34cd02fdc705da30ccba73d0e4edd154e7622"
+    },
+    "compile_authority": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/classes-first.json",
+      "bytes": 976,
+      "sha256": "71e5be5003c6b2b31dc56850e4b1a13a0d200168399dbf2ded5841292385cc95"
+    },
+    "compile_receipt": {
+      "path": ".cache/owned-growth-next-20261101/two-row-getter/compile-first/execution.json",
+      "bytes": 1290,
+      "sha256": "f661422fcca072023aa89596ea415c69b1f3c92fbfa84aab0c7882e79ea1a2c7"
+    },
+    "inverse": {
+      "original": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/inputs/PreservedFixedScalarGetter.java",
+      "original_sha256": "9d660176d8915ae8dd2102e570b0b48870d29cf420d384373a7240008d6e4ee6",
+      "successor_sha256": "250b528f3258c796d67008a269a34cd02fdc705da30ccba73d0e4edd154e7622",
+      "whole_source_inverse_exact": true,
+      "changes": [
+        "new class/constructor name",
+        "explicit two-row selector argument",
+        "Sentinel finite expected count2",
+        "owning comment/argument error only"
+      ],
+      "stdout_formatter_changed": false,
+      "unrelated_expected_rows": 3
+    },
+    "exact_classes": 2,
+    "compile_database_calls": 0,
+    "mode": "--inspect-sentinel-two"
+  },
+  "retained_first_failure": {
+    "execution": {
+      "path": ".cache/owned-growth-next-20261101/multirow-source/sdk-expected-first/h5-multirow-owned-before/execution.json",
+      "bytes": 1292,
+      "sha256": "4713ac76ed119eb5af73c916a67e553eec73b4dd5ae82b7cef9a25fd91044ee2"
+    },
+    "stdout": {
+      "path": ".cache/owned-growth-next-20261101/multirow-source/sdk-expected-first/h5-multirow-owned-before/stdout.log",
+      "bytes": 2331,
+      "sha256": "d8af2b20bd4361b39d5279bbb23c2dbf3c24e63687d6250666feb4781554c8e7"
+    },
+    "stderr": {
+      "path": ".cache/owned-growth-next-20261101/multirow-source/sdk-expected-first/h5-multirow-owned-before/stderr.log",
+      "bytes": 248,
+      "sha256": "efb921dfa43a0ff769ac430e21d4bcb6c06046e2024d255e8920b1c40726a41c"
+    },
+    "returncode": 1,
+    "cause": "Old getter required Sentinel expectedRows1; rejected new authored two-row source before Sentinel output.",
+    "successor_fix": "Explicit expectedRows2 selector; unrelated table3 bound/formatters unchanged. Source images, requests and expected stdout were not retuned."
+  },
+  "limitations": [
+    "Authored derivatives of independently generated genuine originals, not new native Access-generated sources.",
+    "Independent SDK/native read observations are not Microsoft Access save/reopen conformance.",
+    "No full-suite or producer/recovery success is claimed by this source-only record.",
+    "Existing strict target admission and supported index/LVAL/metadata policies remain separate."
+  ],
+  "date": "2026-11-01",
+  "public_artifacts": [
+    {
+      "path": "docs/testing/owned_growth_originals/multirow_model.py",
+      "bytes": 7178,
+      "sha256": "ca8997625d89aad90f9f3b5f0272fa941eb59edce98539b67c3b3a01b87d6c75"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/multirow_requests.json",
+      "bytes": 2116,
+      "sha256": "277d86231bd74e176899d041571c69f577ad76acffdacb0a8a0191a9f08aa52c"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/mixed_model.py",
+      "bytes": 7334,
+      "sha256": "1b731d152c1e29e0cf25c1f9d4e9a106ecdd124a545432d68eb5d678e9b3f98c"
+    },
+    {
+      "path": "docs/testing/owned_growth_originals/mixed_requests.json",
+      "bytes": 2632,
+      "sha256": "4f27a7bff1caeb7885d8a7404dd8e4abf5d076c7f48d2abe51822617386ce6c9"
+    },
+    {
+      "path": "docs/testing/preserved_fixed_scalars_genuine/OwnedGrowthTwoRowGetter.java",
+      "bytes": 11633,
+      "sha256": "250b528f3258c796d67008a269a34cd02fdc705da30ccba73d0e4edd154e7622"
+    }
+  ]
+}

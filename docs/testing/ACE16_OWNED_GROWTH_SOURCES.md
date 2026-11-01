@@ -48,3 +48,23 @@ Their [model](owned_growth_originals/joint_model.py) and
 payload for NULL and clear its bit at the new mask offset 67. Six native views
 and four fresh SDK inventories pass before their producer calls. The first six
 images and their original evidence remain unchanged.
+
+## Already-owned alternate destinations
+
+The [alternate model](owned_growth_originals/alternate_model.py) and its
+[original requests](owned_growth_originals/alternate_requests.json) derive two
+BEFORE files from the same immutable SDK originals. They saturate the original
+root directory and add an empty, already-owned DATA destination before editing.
+Their literal first outcomes change only the root forwarding capsule and that
+existing destination. Maps and EOF remain exact during the edit.
+
+A separate [second model](owned_growth_originals/alternate_second_model.py) uses
+those independently authored first outcomes as its originals and changes only
+the forwarded terminal's same-length text payload. Both original files,
+both first outcomes and both second outcomes pass native read gates; six
+independent SDK reads match complete predicted reports. See the
+[source record](results/ace16-alternate-owned-sources-2026-11-01.json).
+This is authored placement evidence, not native Access allocation policy or
+write-time page allocation.
+
+The separate [two-row source qualification](ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md) covers competing last-slot reservations and mixed same-page/cross-page events, with ten additional independently read source images.

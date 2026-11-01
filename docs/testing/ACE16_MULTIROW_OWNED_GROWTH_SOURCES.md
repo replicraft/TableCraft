@@ -1,0 +1,15 @@
+# Pre-owned DATA growth source qualification
+
+Two independently authored continuations reuse frozen genuine header5/header6 originals through the previously qualified alternate-owned BEFORE sources. Constructors read original bytes, literal rows and requests; they do not call a producer or use writer results as expected images.
+
+The competing-reservations corpus contains six views: two healthy BEFORE/AFTER pairs and two healthy no-capacity BEFORE controls. The mixed-events corpus contains four views: each BEFORE has ID23 on the full root page and ID24 on an existing owned DATA page; AFTER places their enlarged rows in slots1/2 on that page. The same page therefore receives a cross-page target and a same-page growth operation. No write-time map or EOF changes are modeled. Readonly OLE, passive properties, declarations, indexes and unrelated bytes remain exact.
+
+Root qualification passed two native source functions over all ten unique images, followed by ten exact read-only SDK stdout comparisons with unchanged inputs. The source functions also check literal complete images, logical rows, properties, inline OLE and map/allocation facts. These calls invoked no producer or stored program. Producer, recovery, host and full-suite results belong to the implementation record.
+
+The first SDK attempt is retained: the old getter required exactly one Sentinel row and refused the new two-row source before Sentinel output. A separately compiled `OwnedGrowthTwoRowGetter` now requires explicit `--inspect-sentinel-two`; the other two observed tables still require exactly three rows. Reversing its class/selector/count/comment edits reproduces the old source exactly. No row formatter, database bytes, request or expected stdout changed. The successor's ten reads passed; the original getter, failed receipt and partial output remain intact.
+
+This is native-reader/independent-SDK evidence for authored source derivatives. It is not native Access generation or save/reopen conformance, and the getter observes the existing selected-table inventory rather than every system object. Normal save admission remains a separate fresh native conjunction.
+
+See the [source record](results/ace16-multirow-owned-sources-2026-11-01.json) for exact input/output pins and retained first failure. The [competing model](owned_growth_originals/multirow_model.py), [requests](owned_growth_originals/multirow_requests.json), [mixed model](owned_growth_originals/mixed_model.py) and [requests](owned_growth_originals/mixed_requests.json) depend on the already qualified [alternate BEFORE sources](ACE16_OWNED_GROWTH_SOURCES.md).
+
+Compile the [two-row inspector](preserved_fixed_scalars_genuine/OwnedGrowthTwoRowGetter.java) with the existing [bounded file channel](parent_index_split_originals/BoundedFileChannel.java) and Jackcess 5.0.4, then invoke `OwnedGrowthTwoRowGetter --inspect-sentinel-two PATH`. Keep all generated databases, classes and JARs outside Git. The source record retains the compiled runtime and bounded execution receipts.

@@ -100,3 +100,6 @@ fn capture(
     require_native_catalog(image, budget, cancelled)?;
     normal_ordinary::capture(image, table, budget, cancelled)
 }
+
+#[cfg(test)]
+mod mixed_event_sources;

@@ -1,0 +1,94 @@
+{
+  "state": "SOURCE_LAWS_AND_LITERAL_REQUESTS_FROZEN_BEFORE_MODEL",
+  "profiles": [
+    {
+      "header": 5,
+      "definition": 107,
+      "maps": 108,
+      "data": 110,
+      "destination": 112,
+      "before_input": {
+        "path": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h5-alternate-owned-before.accdb",
+        "bytes": 462848,
+        "sha256": "a8954a42742b6414726055970c628c88436059d7e14f919d939cae95d35c4cbd"
+      },
+      "reader_input": {
+        "path": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h5-alternate-owned-before.reader.txt",
+        "sha256": "6d9da85f6dbf2af1ed5756e84e94bf58d05648eed6a412536c0faf518f5651db"
+      }
+    },
+    {
+      "header": 6,
+      "definition": 125,
+      "maps": 126,
+      "data": 127,
+      "destination": 129,
+      "before_input": {
+        "path": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h6-alternate-owned-before.accdb",
+        "bytes": 532480,
+        "sha256": "a0b3bf39db8322a21b90cde1c72d168f1ece059c268fae6212eb93c4692b0a21"
+      },
+      "reader_input": {
+        "path": ".cache/owned-growth-next-20261101/alternate-source/expected-first/h6-alternate-owned-before.reader.txt",
+        "sha256": "7d4fc7cedf1c716894fca54fbad6fd5351523031ec234a614ab2e2c8eaab86d1"
+      }
+    }
+  ],
+  "table": "Sentinel",
+  "column": "Marker",
+  "updates": [
+    {
+      "ordinal": 0,
+      "identity": 23,
+      "expected": "unchanged sentinel",
+      "replacement": "aaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "ordinal": 1,
+      "identity": 24,
+      "expected": "unchanged sentinel",
+      "replacement": "ccccccccccccccccccc"
+    }
+  ],
+  "source_changes": {
+    "declared_rows": 2,
+    "old_root_slots": 255,
+    "old_root_free": 3506,
+    "destination_slots": 1,
+    "destination_free": 4014,
+    "destination_live_row_slot": 0,
+    "destination_live_row_start": 4030,
+    "destination_live_row_end": 4096,
+    "new_identity": 24,
+    "maps_and_eof": "unchanged from frozen alternate BEFORE"
+  },
+  "after_law": {
+    "old_root_slots": 255,
+    "old_root_free": 3506,
+    "old_root_pointer_slot": 1,
+    "destination_live_root_pointer_slot": 2,
+    "cross_target": [
+      3962,
+      4030
+    ],
+    "same_page_target": [
+      3894,
+      3962
+    ],
+    "hidden_slots": [
+      1,
+      2
+    ],
+    "destination_slots": 3,
+    "destination_free": 3874,
+    "record_bytes": 68,
+    "offsets": [
+      6,
+      44,
+      59
+    ],
+    "mask": 7,
+    "changed_rows": 2,
+    "writer_changes_only": "two owned DATA pages; all maps, schema, readonly OLE bytes, other objects and EOF preserved"
+  }
+}
