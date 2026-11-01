@@ -1,6 +1,7 @@
 //! Complete original-row root promotion; physical and proof owners stay separate.
 mod admission;
 mod authority;
+mod compound;
 mod proof;
 mod selection;
 mod stage;

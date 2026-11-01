@@ -6,7 +6,7 @@ use crate::{
     header::check,
     inspect_table_index_counter,
     table::{
-        indexes::mutation::insertion::{self, InsertRow},
+        indexes::mutation::insertion::{self, InsertRow, root_split::prepare_root_promotion},
         mutation::{fixed_records, preserved_source::Source, record_insertion::properties},
     },
 };
@@ -36,7 +36,20 @@ pub(in crate::table::mutation::normal_insert) fn plan(
     super::super::records::qualify(source.table.schema(), requests, budget, cancelled)?;
     let records =
         super::super::records::encode(source.table.schema(), requests, budget, cancelled)?;
-    let placement = super::super::placement::reserve(&image, &source, &records, budget, cancelled)?;
+    let placement =
+        super::super::placement::reserve_growing(&image, &source, &records, budget, cancelled)?;
+    if placement.uses_eof() {
+        drop(facts);
+        return super::compound::plan(
+            image,
+            source,
+            table,
+            requests,
+            super::compound::Reservation { records, placement },
+            budget,
+            cancelled,
+        );
+    }
     budget
         .charge_allocation(requests.len() as u64, size_of::<InsertRow<'_>>() as u64)
         .map_err(InspectError::from)?;
@@ -70,8 +83,7 @@ pub(in crate::table::mutation::normal_insert) fn plan(
         .value()
         .checked_add(u32::try_from(requests.len()).map_err(|_| InspectError::StructureLimit)?)
         .ok_or(InspectError::StructureLimit)?;
-    let promotion =
-        insertion::prepare_root_promotion(&image, facts.checked(), &rows, budget, cancelled)?;
+    let promotion = prepare_root_promotion(&image, facts.checked(), &rows, budget, cancelled)?;
     let root = index.root_page() as usize * PAGE_BYTES;
     let counter_range = counter.byte_range();
 

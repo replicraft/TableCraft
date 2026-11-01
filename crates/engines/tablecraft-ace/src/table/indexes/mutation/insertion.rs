@@ -2,14 +2,12 @@
 pub(in crate::table::indexes::mutation) mod binding;
 pub(in crate::table::indexes) mod membership;
 mod preparation;
-#[cfg(feature = "journal")]
-mod root_split;
-#[cfg(feature = "journal")]
-pub(in crate::table) use root_split::prepare_root_promotion;
 #[cfg(all(test, feature = "journal"))]
 mod primary_tests;
 #[cfg(feature = "ace16-write-preview")]
 mod profiles;
+#[cfg(feature = "journal")]
+pub(in crate::table) mod root_split;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 

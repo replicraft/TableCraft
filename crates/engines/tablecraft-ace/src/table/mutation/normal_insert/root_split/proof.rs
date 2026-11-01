@@ -1,4 +1,6 @@
-//! Independent original membership, record placement and two-page raw replay.
+//! Independent original membership, record placement and raw root promotion.
+mod data;
+
 use crate::{
     EditError, IndexConstraintViolation, InspectError, NativeColumn, NativeEditPlan, NativeImage,
     RowInsert, TableSchema,
@@ -52,7 +54,10 @@ pub(super) fn prove(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let _span = tracing::debug_span!("native.ordinary.insert.root_split.prove").entered();
-    if plan.before_bytes().len().checked_add(2 * PAGE_BYTES) != Some(plan.after_bytes().len())
+    let compound =
+        plan.before_bytes().len().checked_add(3 * PAGE_BYTES) == Some(plan.after_bytes().len());
+    if (!compound
+        && plan.before_bytes().len().checked_add(2 * PAGE_BYTES) != Some(plan.after_bytes().len()))
         || plan.changed_rows() != requests.len()
     {
         return Err(EditError::Preservation);
@@ -71,8 +76,24 @@ pub(super) fn prove(
         super::admission::qualify(&image, &source, table, requests, budget, cancelled)?;
     let index =
         crate::table::indexes::mutation::insertion::qualify(facts.checked(), 0, budget, cancelled)?;
-    super::authority::Authority::capture(&image, source.table.schema(), index, budget, cancelled)?
-        .require(&image, source.table.schema(), index)?;
+    let authority = if compound {
+        super::authority::Authority::capture_after_data(
+            &image,
+            source.table.schema(),
+            index,
+            budget,
+            cancelled,
+        )?
+    } else {
+        super::authority::Authority::capture(
+            &image,
+            source.table.schema(),
+            index,
+            budget,
+            cancelled,
+        )?
+    };
+    authority.require(&image, source.table.schema(), index)?;
     crate::table::mutation::record_insertion::properties::require_text_declarations(
         &image,
         source.table.schema(),
@@ -81,9 +102,13 @@ pub(super) fn prove(
         cancelled,
     )?;
     super::super::records::qualify(source.table.schema(), requests, budget, cancelled)?;
-    let (mut expected, references) = super::super::proof::reconstruct_with_references(
-        &image, &source, requests, budget, cancelled,
-    )?;
+    let (mut expected, references) = if compound {
+        data::reconstruct(&image, &source, requests, budget, cancelled)?
+    } else {
+        super::super::proof::reconstruct_with_references(
+            &image, &source, requests, budget, cancelled,
+        )?
+    };
     if references.len() != requests.len() || source.table.rows().len() != source.records.len() {
         return Err(EditError::Preservation);
     }
@@ -137,7 +162,12 @@ pub(super) fn prove(
     {
         return Err(EditError::Preservation);
     }
-    let right = image.catalog().header().page_count();
+    let right = image
+        .catalog()
+        .header()
+        .page_count()
+        .checked_add(u32::from(compound))
+        .ok_or(InspectError::StructureLimit)?;
     let left = right.checked_add(1).ok_or(InspectError::StructureLimit)?;
     let definition = source.table.schema().definition_page();
     let right_page = leaf(definition, left, 0, &keys[middle..], budget, cancelled)?;
@@ -188,7 +218,14 @@ pub(super) fn prove(
         .checked_add(u32::try_from(requests.len()).map_err(|_| InspectError::StructureLimit)?)
         .ok_or(InspectError::StructureLimit)?;
     expected[counter.byte_range()].copy_from_slice(&history.to_le_bytes());
-    maps(&image, index.usage_map(), &mut expected, budget, cancelled)?;
+    maps(
+        &image,
+        index.usage_map(),
+        compound,
+        &mut expected,
+        budget,
+        cancelled,
+    )?;
     super::super::compare(&expected, plan.after_bytes(), budget, cancelled)?;
 
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
@@ -354,6 +391,7 @@ fn leaf(
 fn maps(
     image: &NativeImage,
     usage: u32,
+    compound: bool,
     expected: &mut [u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -368,7 +406,12 @@ fn maps(
     };
     let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     let owned = RepresentedMap::read(&mut reader, usage, MapRole::Owned)?;
-    let first = image.catalog().header().page_count();
+    let first = image
+        .catalog()
+        .header()
+        .page_count()
+        .checked_add(u32::from(compound))
+        .ok_or(InspectError::StructureLimit)?;
     for number in [
         first,
         first.checked_add(1).ok_or(InspectError::StructureLimit)?,

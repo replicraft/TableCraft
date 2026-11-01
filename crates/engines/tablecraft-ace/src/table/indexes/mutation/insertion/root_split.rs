@@ -30,6 +30,32 @@ pub(in crate::table) fn prepare_root_promotion(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RootPromotion, EditError> {
+    prepare_with(image, checked, requests, false, budget, cancelled)
+}
+
+/// The compound normal consumer has already reserved one original EOF DATA
+/// page. INDEX numbers still derive from that original image, not caller pages.
+pub(in crate::table) fn prepare_root_promotion_after_data(
+    image: &NativeImage,
+    checked: &TableCheck,
+    requests: &[InsertRow<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RootPromotion, EditError> {
+    if requests.len() != 1 || requests[0].reference != image.catalog().header().page_count() << 8 {
+        return Err(EditError::Preservation);
+    }
+    prepare_with(image, checked, requests, true, budget, cancelled)
+}
+
+fn prepare_with(
+    image: &NativeImage,
+    checked: &TableCheck,
+    requests: &[InsertRow<'_>],
+    leading_data: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RootPromotion, EditError> {
     let _span = tracing::debug_span!("native.index.root_promotion.prepare").entered();
     check(budget, cancelled)?;
     let index = super::qualify(checked, 0, budget, cancelled)?;
@@ -75,7 +101,12 @@ pub(in crate::table) fn prepare_root_promotion(
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
     }
-    let right = image.catalog().header().page_count();
+    let right = image
+        .catalog()
+        .header()
+        .page_count()
+        .checked_add(u32::from(leading_data))
+        .ok_or(InspectError::StructureLimit)?;
     let left = right.checked_add(1).ok_or(InspectError::StructureLimit)?;
     // These are the working shared preview leaf/root serializers. New normal
     // authority, staging and manual proof remain separate consumers.
