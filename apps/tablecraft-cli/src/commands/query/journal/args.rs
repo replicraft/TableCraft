@@ -73,18 +73,18 @@ pub(crate) struct DeleteArguments {
 #[command(
     after_help = concat!(
         "Offline normal INSERT VALUES for the qualified native ACE2016/2019 profile. ",
-        "Supply every declared field exactly once, positionally or with a complete field list. ",
-        "Omissions, generated values, defaults, INSERT SELECT, parameters and external sources refuse. ",
+        "Supply all fields positionally, or use an explicit field list with qualified constant defaults for omitted fields. Supplied NULL remains explicit NULL. ",
+        "Generated values, clock or arbitrary-expression defaults, INSERT SELECT, parameters and external sources refuse. ",
         "The native planner rechecks required programs, constraints and preservation before any journal exists. ",
-        "Initial placement uses existing qualified owned DATA space without file or map growth. Qualified single-column Int32 root-leaf indexes support nullable and descending keys; other indexes and relationships refuse. ",
-        "Non-NULL Memo/OLE authoring is unsupported. Existing readonly content remains preserved. ",
+        "Placement uses existing qualified owned DATA space without file or map growth. Qualified single-column Int32 root leaves and retained trees support nullable and descending keys; splits, other indexes and relationships refuse. ",
+        "Qualified Memo/OLE values fit at most 64 encoded payload bytes inline; external payload allocation refuses. Existing readonly content remains preserved. ",
         "Keep other applications closed until completion or explicit recovery. The journal directory must be fresh. ",
         "Interrupted journals use recover-update or finalize-update, which validate original typed INSERT intent without replaying SQL. ",
         "This does not establish general ACE saves or native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
     )
 )]
 pub(crate) struct InsertArguments {
-    /// One local INSERT with one complete VALUES row.
+    /// One local INSERT with one VALUES row and an optional field list.
     #[arg(allow_hyphen_values = true)]
     pub(super) sql: String,
     /// Existing offline target retained under one exclusive lock.

@@ -41,3 +41,10 @@ The [Access SQL engineering copy consumer](../access/writes/SQL_INSERT_COPIES.md
 now routes original presence to one source-bound native preview. Its literal-default
 and fresh-copy checks are recorded separately from these neutral contract tests;
 it does not qualify normal ACE saves or Microsoft Access timing.
+
+
+The [normal journaled Access consumer](../access/writes/NORMAL_ACE_INSERT.md#original-omitted-fields-and-constant-defaults)
+now retains original supplied/omitted fields through TCNA0002, typed sessions and
+SQL partial-field INSERT. Its source, complete-image, recovery and CLI checks are
+separate native evidence. It evaluates qualified constant defaults only; identity,
+clock and arbitrary-expression defaults remain outside that normal profile.

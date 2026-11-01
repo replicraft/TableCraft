@@ -1,0 +1,370 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal fitting retained-tree, original-presence constant-default and inline Memo/OLE INSERT",
+  "native_access": "UNRUN",
+  "windows_durability": "UNRUN",
+  "sources_before_producers": true,
+  "source_expectations_retuned_to_producers": false,
+  "features": {
+    "retained_tree": {
+      "passed": true,
+      "receipts": [
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/node-native-second.log",
+          "bytes": 825,
+          "sha256": "405b2e675fb79c8489c35e1eed3804d9cb87864a957c8a4c0719d6286c444277",
+          "test_result": [
+            "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 165 filtered out; finished in 18.97s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/node-direct-first.log",
+          "bytes": 584,
+          "sha256": "1470c65bb1005fd53d2435c39aa0f7b710e3a04cf990cd058fc5ff30fd6a6b6f",
+          "test_result": [
+            "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1240 filtered out; finished in 1.40s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_retained_node_insert-first.log",
+          "bytes": 610,
+          "sha256": "2fbd15b148211e8cf292631c70bf7d6b1a112dabc97f2efd4d9144ee941eccc1",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.09s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_retained_node_insert_sql-first.log",
+          "bytes": 850,
+          "sha256": "6e3ed166af1249aeb7918d7138832c6e620167c39fd7a6c764219eb0547ef287",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.41s"
+          ]
+        }
+      ]
+    },
+    "original_presence_defaults": {
+      "passed": true,
+      "receipts": [
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/default-codec-second.log",
+          "bytes": 1046,
+          "sha256": "8e03fad91638e2b085a052d7a4d5eb08980b936050b8459fa44af113752a916b",
+          "test_result": [
+            "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1237 filtered out; finished in 0.00s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/default-native-first.log",
+          "bytes": 923,
+          "sha256": "c6b712d02b1ca58b063f5519510566f4ebb5f4a6dc2f8f949021804cffed610a",
+          "test_result": [
+            "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 164 filtered out; finished in 20.84s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_default_insert-first.log",
+          "bytes": 606,
+          "sha256": "24536f4df0b1b47920f3ea0678f1c4ed44c5ccc8cee36e165e3cfacd02bd0f19",
+          "test_result": [
+            "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.66s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_default_insert_sql-first.log",
+          "bytes": 490,
+          "sha256": "7b2127d65e2972bd4df356584d89194bf3510820fdf4351e87ac575eaa38e1de",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.29s"
+          ]
+        }
+      ]
+    },
+    "inline_memo_ole": {
+      "passed": true,
+      "receipts": [
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/inline-source-first.log",
+          "bytes": 413,
+          "sha256": "b3a883a91dc6d926269f89cdb771b3c424ed06cdd9904820b67974e48537f009",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1241 filtered out; finished in 0.76s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/inline-native-second.log",
+          "bytes": 922,
+          "sha256": "e3900d735ce591c30b80996b82fa9d4d1c4e327c323ecef9d92e67a22bb95882",
+          "test_result": [
+            "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 169 filtered out; finished in 7.22s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/inline-direct-first.log",
+          "bytes": 521,
+          "sha256": "6379c14b2b6d1e822a7ee8dfe097f9ec068218bb569cc6e193ae11ad3b87ee89",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1242 filtered out; finished in 4.84s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_inline_lval_insert-first.log",
+          "bytes": 597,
+          "sha256": "dd70e364d3d5baebd125d9116b51881ec678b57d43c8109eb9d084cc61a5c974",
+          "test_result": [
+            "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.87s"
+          ]
+        },
+        {
+          "path": ".cache/ace16-normal-node-default-integration-20261101/genuine_inline_lval_insert_sql-first.log",
+          "bytes": 486,
+          "sha256": "2fc483fa07a40056a551b9f9213f4e79de01d9fefeae37aaae2ad81ca224efae",
+          "test_result": [
+            "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.43s"
+          ]
+        }
+      ]
+    }
+  },
+  "remaining": [
+    "index splits/allocation and broader keys",
+    "external LVAL payload allocation",
+    "identity/clock/arbitrary-expression defaults",
+    "relationships and positive INSERT programs",
+    "native Access save/reopen"
+  ],
+  "first_failures_preserved": [
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/default-codec-first.log",
+      "bytes": 1117,
+      "sha256": "3faadf67d01df97044d7a1bf2a4059d66bac6191e34ed105a2f736047c6190aa",
+      "test_result": []
+    },
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/node-native-first.log",
+      "bytes": 2794,
+      "sha256": "0c6b99df17be4608d9de5a03857b02dcaafb58f4fb4e741404a4ae48c71fca4e",
+      "test_result": [
+        "FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 165 filtered out; finished in 0.00s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/inline-native-first.log",
+      "bytes": 2054,
+      "sha256": "e6e6307758ee15a2442b9aeaa34a30bcf47776b3c1973f88332071d453342d05",
+      "test_result": []
+    },
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/native17-source-first.log",
+      "bytes": 1454,
+      "sha256": "5c42bd996fd7e668ca2c052f7b8dbace7fda166c3143a22525d637b445c1c9f7",
+      "test_result": [
+        "FAILED. 1 passed; 1 failed; 1 ignored; 0 measured; 1239 filtered out; finished in 0.43s"
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/strict-all-first.log",
+      "bytes": 1016,
+      "sha256": "23d585cf0b228c2eec4ec618dd2a07e9acfa1c952e5d8ca63a240f826550d796",
+      "test_result": []
+    },
+    {
+      "path": ".cache/ace16-normal-node-default-integration-20261101/strict-all-second.log",
+      "bytes": 1177,
+      "sha256": "bba9172bb5911cc03f2526eaada2da4b309cf7a8f1008c61dab73f463b76cd12",
+      "test_result": []
+    }
+  ],
+  "first_failure_explanations": [
+    "Moved default-copy consumer import missed; corrected actual owner import.",
+    "Retained-tree acceptance invoked without its required source-directory environment variable; corrected invocation only.",
+    "Two preview consumers retained old inline encoder names; corrected direct imports/call.",
+    "Native17 negative source control exposed aliased LVAL map ownership; fixed complete-census admission and retained the original control.",
+    "Source fixture tuple complexity lint; introduced a descriptive type alias without changing source bytes.",
+    "Source hex decoder lint; used fixed array chunks without changing literals."
+  ],
+  "broad_checks": {
+    "status": "passed",
+    "receipts": [
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/strict-all-third.log",
+        "bytes": 184,
+        "sha256": "4b8f0c6ffd8dca0d5bf5970f44b0922a68850d7f558a10ce65009856f34e21e4",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/journal-first.log",
+        "bytes": 307,
+        "sha256": "11c5439e7ad59844164413f321211f2276f400cd617c1dd6a4e9ea78b9732c13",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/preview-first.log",
+        "bytes": 184,
+        "sha256": "bd135e43319fee7fd2911d3088b67193391584224b77922e9888f7ca73e6fa64",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/minimal-first.log",
+        "bytes": 301,
+        "sha256": "bfbf84b6ddf63b4797fe977c1568222722834e200f611e3252ab948d1972c587",
+        "test_result": []
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/ace-units-first.log",
+        "bytes": 171873,
+        "sha256": "14f4cb7415f1a7d9e17da1a45a784669e7ce0dfc060c00055f55f3d4a5b07db7",
+        "test_result": [
+          "ok. 1129 passed; 0 failed; 115 ignored; 0 measured; 0 filtered out; finished in 113.48s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/access-units-first.log",
+        "bytes": 9802,
+        "sha256": "68b09f62d8161f0940e98177fc60f5946c78c9e1c6f21a6cc69948db958b37d7",
+        "test_result": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/cli-units-first.log",
+        "bytes": 11939,
+        "sha256": "bcbca7df1eeac8c61d439f26cf811eae4101fa7f450a026fcad3494ade9dcb28",
+        "test_result": [
+          "ok. 102 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/recovery-default-first.log",
+        "bytes": 28237,
+        "sha256": "6248fbdf2a73a192bf637dc957ba30e472eb7a9c891973e921558498abee69a6",
+        "test_result": [
+          "ok. 83 passed; 0 failed; 90 ignored; 0 measured; 0 filtered out; finished in 5.39s"
+        ]
+      }
+    ]
+  },
+  "acceptance_after_complete_census_guard": {
+    "passed": true,
+    "receipts": [
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-node-native-second.log",
+        "bytes": 825,
+        "sha256": "c7903246321c578e6dcf06751f8d94314feea573abf58ff902fa823702bfe1a6",
+        "test_result": [
+          "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 169 filtered out; finished in 19.24s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-node-direct-first.log",
+        "bytes": 584,
+        "sha256": "2c0c6dab66dd156850434dea31dd2638e44f0dfcf6f79ca9b481f9b1aaf67464",
+        "test_result": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1242 filtered out; finished in 1.42s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-default-native-first.log",
+        "bytes": 923,
+        "sha256": "aa6c490f2435d80620c18faa9d71850186d2369b1a18d80da33967d4421f610c",
+        "test_result": [
+          "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 168 filtered out; finished in 21.33s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-inline-native-second.log",
+        "bytes": 810,
+        "sha256": "52a2dd3a47f89df5cb3b15c5ca3a7b7675bf937721a06bd94250f6a80d2650b0",
+        "test_result": [
+          "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 169 filtered out; finished in 7.56s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-inline-direct-first.log",
+        "bytes": 409,
+        "sha256": "441bcd49959f7f8522b3f4f0892fa0fd523de4810a5bdb9f209532fc75cb0b4e",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1243 filtered out; finished in 5.39s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_retained_node_insert-first.log",
+        "bytes": 498,
+        "sha256": "2fdf832a98827fbea3db28ce897a70c0e5d3138a65530e00810187ac45ad789c",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.15s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_default_insert-first.log",
+        "bytes": 606,
+        "sha256": "24e47c11c753297319ed53aea440591eb90f063d20fcb482c02858a084929262",
+        "test_result": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.96s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_inline_lval_insert-first.log",
+        "bytes": 597,
+        "sha256": "4d1f6394512d7c5a40358f63edbdb23e9c4de24895c3658dd7db9bbc1ebd13bd",
+        "test_result": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.96s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_retained_node_insert_sql-first.log",
+        "bytes": 497,
+        "sha256": "63619731c9b31a94868f2b97af315a50da2d1fb7f59c5448ab304787d31338cd",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.43s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_default_insert_sql-first.log",
+        "bytes": 490,
+        "sha256": "ee107c021c494dcc9506b8bf627cb1b6d46af12da6ea90730a3c985df3ab008f",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.45s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-genuine_inline_lval_insert_sql-first.log",
+        "bytes": 486,
+        "sha256": "373d517dd617d1ae83acd2d95b78072d167944436c27c5009b695a835b096a03",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-inline-source-first.log",
+        "bytes": 413,
+        "sha256": "fb685175ea7b6a5076661220a9712882b1c18b786326b907fcc32ae0a0e10cbd",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1243 filtered out; finished in 0.84s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-eof-source-first.log",
+        "bytes": 411,
+        "sha256": "690964ab4cf4f5c2a78fc2f8b5daa5b81c588aa07471f30ec5c18983fa07690f",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1243 filtered out; finished in 0.18s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-single-eof-source-first.log",
+        "bytes": 418,
+        "sha256": "fa75c0f3729d5d4b62878bedb3d2ea0b8abac3cc1e20a24ff91e6a7b11163d09",
+        "test_result": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1243 filtered out; finished in 0.17s"
+        ]
+      },
+      {
+        "path": ".cache/ace16-normal-node-default-integration-20261101/guarded-insert-help.log",
+        "bytes": 2870,
+        "sha256": "cc8f02b754e0875bfa0c386ce17bed4387a6d63ae8b6ea679feb4ddde83f061e",
+        "test_result": []
+      }
+    ]
+  }
+}
