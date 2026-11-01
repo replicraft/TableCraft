@@ -18,6 +18,7 @@ use tablecraft_core::{
 
 const MARKER: [u8; 2] = [0xff, 0xfe];
 const UNIT_BYTES: usize = size_of::<u16>();
+const WIDE_PREFIX: [u8; 3] = [0xff, 0xfe, 0];
 
 pub(in crate::table::mutation) fn encode(
     field: &NativeColumn,
@@ -43,14 +44,15 @@ pub(in crate::table::mutation) fn encode(
     if field.native_type() == NUMERIC {
         return decimal::encode(field, value, budget, cancelled);
     }
-    let (length, compressed) = match (field.native_type(), value) {
+    let (length, compressed, escaped) = match (field.native_type(), value) {
         (_, Value::Null) => return Ok(Vec::new()),
         (SHORT_BINARY, Value::Binary(bytes)) if bytes.len() <= field.storage_length() => {
-            (bytes.len(), false)
+            (bytes.len(), false, false)
         }
         (SHORT_TEXT, Value::Text(value)) => {
             let mut units = 0_usize;
             let mut narrow = true;
+            let escaped = value.starts_with('\u{feff}');
             for unit in value.encode_utf16() {
                 check(budget, cancelled)?;
                 budget
@@ -60,6 +62,11 @@ pub(in crate::table::mutation) fn encode(
                 if units > field.storage_length() / UNIT_BYTES {
                     return Err(EditError::Unsupported(WriteBlocker::Column));
                 }
+                // In marked wide mode, only a character's low zero byte is a
+                // switch. Its high byte remains ordinary character data.
+                if escaped && unit.to_le_bytes()[0] == 0 {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
                 narrow &= unit != 0 && unit <= u16::from(u8::MAX);
             }
             let compressed = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
@@ -68,9 +75,14 @@ pub(in crate::table::mutation) fn encode(
             let length = if compressed {
                 MARKER.len() + units
             } else {
-                UNIT_BYTES * units
+                units
+                    .checked_mul(UNIT_BYTES)
+                    .and_then(|length| {
+                        length.checked_add(if escaped { WIDE_PREFIX.len() } else { 0 })
+                    })
+                    .ok_or(InspectError::StructureLimit)?
             };
-            (length, compressed)
+            (length, compressed, escaped)
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
@@ -92,6 +104,8 @@ pub(in crate::table::mutation) fn encode(
         Value::Text(value) => {
             if compressed {
                 result.extend_from_slice(&MARKER);
+            } else if escaped {
+                result.extend_from_slice(&WIDE_PREFIX);
             }
             for unit in value.encode_utf16() {
                 check(budget, cancelled)?;

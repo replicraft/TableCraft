@@ -1,5 +1,15 @@
 # Implementation status
 
+## Leading U+FEFF INSERT preservation
+
+Normal INSERT now preserves the qualified leading-U+FEFF marked-wide form.
+Independent proof reconstructs its prefix and length; readable aliases that drop
+the requested character refuse recovery. Two native commits and two CLI
+saves/readbacks match independently authored full images. Ten normal controls,
+329 existing INSERT tests and strict all-feature/journal checks pass. Wide-mode
+zero-low-byte representations remain unsupported. See the
+[follow-on record](testing/results/ace16-normal-insert-feff-writes-2026-11-01.json).
+
 ## Normal explicit-row INSERT
 
 Qualified native17 ordinary tables now accept complete explicitly supplied rows

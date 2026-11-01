@@ -199,7 +199,7 @@ fn eof_multirow_preserves_old_deleted_capacity_and_extreme_payload_footers() {
 }
 
 #[test]
-fn exact_carriers_boolean_null_width_overflow_and_leading_marker_are_refused() {
+fn exact_carriers_boolean_null_width_overflow_and_wide_switch_boundaries_are_refused() {
     let case = fixture::source(6, true, false, Index::Primary, false);
     let good = Row::rich(40).values(true);
     for (position, replacement) in [
@@ -230,12 +230,41 @@ fn exact_carriers_boolean_null_width_overflow_and_leading_marker_are_refused() {
     }
     for position in [11, 13] {
         let mut values = good.clone();
-        values[position] = Value::Text("\u{feff}".into());
+        values[position] = Value::Text("\u{feff}\u{0100}".into());
         refusal(
             &case,
             values,
             EditError::Unsupported(WriteBlocker::RowLayout),
         );
+    }
+}
+
+#[test]
+fn escaped_leading_marker_remains_data_in_both_text_declarations() {
+    let case = fixture::source(6, true, false, Index::Primary, false);
+    checked(&case, &case.before, &[]);
+
+    for position in [11, 13] {
+        let mut values = Row::rich(40).values(true);
+        values[position] = Value::Text("\u{feff}new".into());
+        let candidate = base::capture(&case.before)
+            .preview_ace16_insert_rows(
+                "Items",
+                &[RowInsert::new(values.clone())],
+                &mut base::budget(),
+                &|| false,
+            )
+            .unwrap();
+        base::checked(candidate.candidate_bytes(), case.rows.len() + 1, 1);
+        let table = read_table(
+            &mut Cursor::new(candidate.candidate_bytes()),
+            CatalogScope::new(1),
+            "Items",
+            &mut base::budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(table.rows().last(), Some(&values));
     }
 }
 

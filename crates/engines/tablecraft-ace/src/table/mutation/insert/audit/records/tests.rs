@@ -184,6 +184,10 @@ fn preferred_text_wires_reject_alternate_equivalent_encodings_and_bom_alias() {
         ("ABC", vec![0xff, 0xfe, 65, 66, 67]),
         ("A\0B", vec![65, 0, 0, 0, 66, 0]),
         ("\u{1f600}", vec![0x3d, 0xd8, 0, 0xde]),
+        (
+            "\u{feff}ABC",
+            vec![0xff, 0xfe, 0, 0xff, 0xfe, 65, 0, 66, 0, 67, 0],
+        ),
     ] {
         let actual = payload::encode(
             &schema.columns()[1],
@@ -211,12 +215,28 @@ fn preferred_text_wires_reject_alternate_equivalent_encodings_and_bom_alias() {
     assert!(matches!(
         payload::encode(
             &schema.columns()[1],
-            &Value::Text("\u{feff}ABC".into()),
+            &Value::Text("\u{feff}\u{0100}".into()),
             &mut budget(),
             &|| false
         ),
         Err(EditError::Unsupported(WriteBlocker::RowLayout))
     ));
+
+    let alias = [0xff, 0xfe, 65, 0, 66, 0, 67, 0];
+    assert_eq!(
+        crate::format::text::decode(&alias, true, &mut budget()).unwrap(),
+        "ABC"
+    );
+    assert_ne!(
+        payload::encode(
+            &schema.columns()[1],
+            &Value::Text("\u{feff}ABC".into()),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+        alias
+    );
 }
 
 #[test]

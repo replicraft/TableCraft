@@ -49,14 +49,6 @@ pub(super) fn qualify(
             if matches!(field.native_type(), LONG_TEXT | OLE) && !matches!(value, Value::Null) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
-            if let Value::Text(text) = value {
-                // Existing independent INSERT proof does not qualify the raw
-                // leading-BOM escape emitted by the shared producer. Keep this
-                // representation explicit until a separate source closes it.
-                if text.starts_with('\u{feff}') {
-                    return Err(EditError::Unsupported(WriteBlocker::Column));
-                }
-            }
         }
     }
     check(budget, cancelled)?;

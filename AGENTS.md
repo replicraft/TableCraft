@@ -52,13 +52,22 @@ validate runtime carriers without coercion and retain the no-create/read-only
 boundary. Backend-neutral query code must not import either concrete adapter.
 `tablecraft-db` owns working [snapshot/edit contracts](docs/foundation/DB.md), consumed by
 the Access adapter. Keep row handles snapshot-local and concrete storage out of
-that crate. [Native edit plans](docs/access/writes/NATIVE_WRITES.md) preserve all bytes outside
-qualified fixed Int32 patches; unsupported constraints/payloads block writes.
+that crate. [Native edit plans](docs/access/writes/NATIVE_WRITES.md) preserve all
+bytes outside each qualified operation's exact edit scope; unsupported constraints
+and payloads block writes.
 The optional ACE 16 [engineering preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
 returns a separate non-journalable candidate type. Keep it out of normal CLI/backend
 write paths; its independent byte checks do not qualify data macros or native saves.
 Optional journal integration requires explicit exclusive offline resources and
 host-owned durable namespace setup/cleanup.
+The source-bound normal [INSERT](docs/access/writes/NORMAL_ACE_INSERT.md) and
+[DELETE](docs/access/writes/NORMAL_ACE_DELETE.md) routes now use shared typed/SQL
+sessions and CLI consumers. Insertion schema construction remains metadata-only;
+the consuming finish performs complete native admission. Empty operations retain
+all source/action checks. Preserve separate original TCNA/TCND intents and fresh
+native reconstruction through the same checked journal; never retry a failed
+action decoder as another action. These bounded routes do not qualify general
+indexed mutations, generation/defaults or required-program execution.
 The CLI executable is `tablecraft`. Argument handling uses
 clap's `Parser` derive. The CLI provides help, version, `query parse` output and
 `query eval` for source-free scalar SELECT expressions. Eval rejects clauses
