@@ -1,0 +1,292 @@
+{
+  "date": "2026-10-31",
+  "scope": "Bounded native ordinary fixed writes on two unchanged genuine ACE 16 Items originals",
+  "source_record": "docs/testing/results/ace16-genuine-ordinary-target-sources-2026-10-31.json",
+  "source_phase": {
+    "native_views": 12,
+    "independent_SDK_observations": 60,
+    "literal_outcomes": 10,
+    "genuine_native_writer_calls": 0,
+    "meaning": "Historical source qualification and pure replay counts; write checks below occurred afterward"
+  },
+  "admission": {
+    "certificate": "Fresh image/table-bound target certificate, strict seventeen-field catalog rows, NULL empty payload/remote carriers, child/identity census and complete LVAL declaration pairs",
+    "conjunction": "Shared selected native declaration classification plus existing Source property/constraint/dependency/relationship/root/LVAL/index/record preservation census",
+    "required_program_evidence": "Bounded supported-profile inference informed by primary native Type1/LvExtra locator and acTableDataMacro consumers; not a universal absence theorem",
+    "recovery": "Existing TCNI0004 stores original exact groups; recovery requalifies BEFORE and independently reconstructs complete AFTER"
+  },
+  "resources": {
+    "status": "PASS",
+    "tests_passed": 2,
+    "runtime_seconds": 0.28,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/resource-first-root.log",
+      "bytes": 797,
+      "sha256": "c1994bb93c909cdd1b13b3b535677f3bee41558bfb6eb6d840fbeb34d51a0008"
+    }
+  },
+  "native_planning_and_recovery": {
+    "status": "PASS",
+    "tests_passed": 5,
+    "runtime_seconds": 6.98,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/recovery-mixed-target-root.log",
+      "bytes": 1027,
+      "sha256": "e010388a09f38e5f1a98bcb1f58cdf891dd640b27ee06c6449570aa089524f9a"
+    },
+    "literal_commits": 10,
+    "pending_partial_committed_contexts": 30,
+    "repeated_recovery_and_write_free_confirmation": true,
+    "duplicate_and_stale_request_errors": 4,
+    "self_consistent_after_or_original_request_forgeries": 6,
+    "tests_ignored": 0,
+    "earlier_pass_log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/recovery-first-root.log",
+      "bytes": 864,
+      "sha256": "2ed89a3cfe4ab57d1f4a217fd5a3797eee0e87cc3bda7803e91769dd115d4750"
+    },
+    "mixed_INDEX_DATA_undo_contexts": 4,
+    "mixed_target_confirmation_without_writes": true
+  },
+  "retained_sessions": {
+    "status": "PASS",
+    "tests_passed": 2,
+    "runtime_seconds": 4.19,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-hash-second-root.log",
+      "bytes": 756,
+      "sha256": "a58e7188f0779313a318e6a1065d481e3eacde4627075233b4fd1b9b5fff5838"
+    },
+    "principal_typed_SQL_saves": 20,
+    "stale_handle_predecessor_saves": 2,
+    "full_images_rows_retirement_lease_and_receipt_checks": true,
+    "tests_ignored": 0,
+    "earlier_pass_log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-second-root.log",
+      "bytes": 590,
+      "sha256": "a09d6a17e05779ec69cbbde84cbfc61cd0b24b9d75b0812ae132b2b58cfe79dc"
+    },
+    "original_and_expected_SHA256_checked_before_session": true
+  },
+  "CLI": {
+    "status": "PASS",
+    "tests_passed": 2,
+    "runtime_seconds": 3.08,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/cli-classified-root.log",
+      "bytes": 847,
+      "sha256": "490ef90bad0fbf59a026e9d6cbe2ac11e0c53f69a48ad23d545fffcd362e606c"
+    },
+    "saves": 10,
+    "exact_row_readbacks": 10,
+    "duplicate_refusals": 2,
+    "duplicate_refusal_classification": "Exact exit code 2 and duplicate non-NULL key diagnostic",
+    "tests_ignored": 0,
+    "earlier_pass_log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/cli-formal-first-root.log",
+      "bytes": 969,
+      "sha256": "3b40f95f91dc2ec976ad3a7842daedf8ba3922d8596727416b6a6a63fc49e9db"
+    }
+  },
+  "source_controls": {
+    "status": "PASS",
+    "tests_passed": 1,
+    "runtime_seconds": 0.21,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-hidden-span-second-root.log",
+      "bytes": 508,
+      "sha256": "44183483ad79019fd2b1e9dcc99adbdd1c1c7f3417d8b6ed55ea193d28b0580e"
+    },
+    "tests_ignored": 0,
+    "earlier_pass_log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-final-root.log",
+      "bytes": 563,
+      "sha256": "a967dcdabf97f451187be1385fd5fc6a29bc25fe06d5387aef1badb5240714f6"
+    },
+    "NULL_carrier_nonempty_raw_span_controls": 18
+  },
+  "recovery_regression": {
+    "status": "PASS",
+    "tests_passed": 79,
+    "runtime_seconds": 5.63,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/recovery-regression-final-root.log",
+      "bytes": 9940,
+      "sha256": "1767267acb67529892071704d61106a703c24ee92a85a59dc0f1b0d8c359f76a"
+    },
+    "tests_ignored": 4
+  },
+  "retained_diagnostics": [
+    {
+      "phase": "source-control bring-up",
+      "status": "failed_before_genuine_producer_calls",
+      "logs": [
+        {
+          "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-first-root.log",
+          "bytes": 1552,
+          "sha256": "2cbe3335e37eca7804a1900be2678ccddaba5a0abff7633dd2db941a5cfdafde"
+        },
+        {
+          "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-location-root.log",
+          "bytes": 2502,
+          "sha256": "1a89bfd85e0f218a4968e5914c8c4bfaa0a7c41c08d8ae708e3ad8ac92707383"
+        },
+        {
+          "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-layered-root.log",
+          "bytes": 1085,
+          "sha256": "8e02cf2358f9826541429274d9f205034d1ffc7c2a4e2cdc83ee9782bad21d31"
+        }
+      ],
+      "diagnostic": "Original source certificate initially returned Unsupported(ActiveContent); failures retained before subsequent source-control passes"
+    },
+    {
+      "phase": "Access test compilation",
+      "status": "compile_failed_before_tests",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-first-root.log",
+        "bytes": 1957,
+        "sha256": "30da698f81c5347e002570db0652fec30dcca01ed95ca2b8add5fa2cc90033b2"
+      },
+      "diagnostic": "Two E0277 assertions compared Vec<u8> with &Vec<u8>; comparison plumbing corrected, literal sources and requests unchanged"
+    },
+    {
+      "phase": "initial final strict check",
+      "status": "failed",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/clippy-final-first-root.log",
+        "bytes": 2246,
+        "sha256": "506f695ddb582074b5f7614b8e5828f76c937aa8f8498aba58d84715525f089b"
+      },
+      "diagnostics": [
+        "clippy::collapsible_if",
+        "clippy::needless_range_loop"
+      ],
+      "successor": "Strict third run passed after iterator and auto-dereference cleanup"
+    },
+    {
+      "phase": "fixture hash checks manifest update",
+      "status": "locked_commands_refused_before_compilation",
+      "logs": [
+        {
+          "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/source-controls-hidden-span-root.log",
+          "bytes": 249,
+          "sha256": "361609dfe6c8f3a433427f4310ab2babdfcdb2fd6f4e6b2e294a6fb9f146a7e1"
+        },
+        {
+          "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-hash-root.log",
+          "bytes": 249,
+          "sha256": "361609dfe6c8f3a433427f4310ab2babdfcdb2fd6f4e6b2e294a6fb9f146a7e1"
+        }
+      ],
+      "resolution": "Added the existing sha2 dev dependency to the Access package lock entry offline; no package versions changed"
+    },
+    {
+      "phase": "second strict check",
+      "status": "failed",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/clippy-final-second-root.log",
+        "bytes": 935,
+        "sha256": "b4eea7d559789d870cd8d6615144eb0e339d55974b09eee5838a9c67a8d2118d"
+      },
+      "diagnostic": "clippy::explicit_auto_deref",
+      "resolution": "Removed redundant explicit dereference; third strict run passed"
+    }
+  ],
+  "limits": [
+    "Evidence covers these two pinned originals and the explicitly checked native target profile; it does not grant arbitrary imported files permission",
+    "Creator identity, file digest, empty inventory and preview candidates are not write authority",
+    "No VBA execution, new allocation, index split, schema change or normal after-effect support is established",
+    "No native Microsoft Access save/reopen or Windows conformance comparison"
+  ],
+  "expected_images_retuned_from_writer": false,
+  "ACE_unit_final": {
+    "status": "PASS",
+    "tests_passed": 1082,
+    "tests_ignored": 37,
+    "runtime_seconds": 137.25,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/ace-unit-final-root.log",
+      "bytes": 148965,
+      "sha256": "d90418867dc339979cbacf2105503036fcdb0b2ad67db99fa63d9fae38510f87"
+    }
+  },
+  "strict_final": {
+    "status": "PASS",
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-cli"
+    ],
+    "all_targets": true,
+    "all_features": true,
+    "log": {
+      "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/clippy-final-third-root.log",
+      "bytes": 457,
+      "sha256": "c8e8f1a5164a402aa635184df2383343887a2bfe7c0c0fcc5e002e4422b9924d"
+    },
+    "journal_only": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/clippy-journal-root.log",
+        "bytes": 361,
+        "sha256": "8eb750bd0a16d277dac4188efc5782aa7e2217944b842bfba9b39067544ea4db"
+      }
+    },
+    "preview_only": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/clippy-preview-root.log",
+        "bytes": 238,
+        "sha256": "0182c1718f56a62750d8ff97c860a11f829530e80ad392e4141ac98e7d7b63cc"
+      }
+    },
+    "adapter_minimal": {
+      "status": "PASS",
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-minimal-root.log",
+        "bytes": 356,
+        "sha256": "c9ad7aa468bfd768ea520d8a9a568648329d3b17c3d0dbe3483cd6a05f13319a"
+      }
+    }
+  },
+  "source_and_frozen_expectation_verification": {
+    "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/final-input-verification.json",
+    "bytes": 125,
+    "sha256": "98fedf8eac8decb3a0e4586ced8690a36b75c438ef6276232363acce02eb5257"
+  },
+  "host_regressions": {
+    "adapter_units": {
+      "status": "PASS",
+      "tests_passed": 79,
+      "tests_ignored": 0,
+      "test_binaries": 1,
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/access-regression-root.log",
+        "bytes": 9856,
+        "sha256": "600c29ad51032c2e3c8e735d1229a313b4451f1360763f979425bef7e62b9ef2"
+      }
+    },
+    "CLI_units": {
+      "status": "PASS",
+      "tests_passed": 94,
+      "tests_ignored": 0,
+      "test_binaries": 1,
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/cli-unit-root.log",
+        "bytes": 10898,
+        "sha256": "a6a446d1f1466ec3f26f11698c61a2e37ded7553adef67ced73b7d65ee5ed05d"
+      }
+    },
+    "CLI_journal_integrations": {
+      "status": "PASS",
+      "tests_passed": 23,
+      "tests_ignored": 0,
+      "test_binaries": 6,
+      "log": {
+        "path": ".cache/ace16-genuine-ordinary-bootstrap-next-20261031/normal-source-integration/cli-journal-regression-root.log",
+        "bytes": 3451,
+        "sha256": "6774a8dffc05037da71461162edf8a3dd6c391cb3c8956954897334adb218eb2"
+      }
+    }
+  }
+}

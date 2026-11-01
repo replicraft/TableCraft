@@ -32,6 +32,7 @@ tablecraft-expressions.workspace = true
 tablecraft-sql.workspace = true
 
 [dev-dependencies]
+sha2.workspace = true
 tempfile.workspace = true
 uuid.workspace = true
 zip.workspace = true

@@ -1416,3 +1416,12 @@ contracts still import neither the concrete adapter nor the application host.
 The CLI member explicitly enables this shared session feature for its existing
 apply, recovery and retired-confirmation commands; it owns report formatting
 and protected output failure handling.
+
+## Genuine ordinary write acceptance hashes
+
+The Access adapter's development dependencies now inherit the existing workspace
+`sha2` declaration. Its genuine ordinary write integration tests verify the
+original and independently constructed expected-image digests before opening a
+session, matching the native and CLI acceptance checks. This adds no registry
+package or production adapter dependency; digests establish fixture identity,
+not permission to write.

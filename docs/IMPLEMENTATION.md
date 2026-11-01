@@ -12,6 +12,25 @@ governs backend services and the eventual UI. Access workflows, defaults,
 restrictions and documented quirks remain compatibility requirements. Current
 engineering previews and independent comparisons do not establish full parity.
 
+## Genuine ordinary target writes
+
+The ordinary fixed route now saves ten independently qualified outcomes on two
+unchanged genuine ACE 16 originals: Score updates, NULL clearing, noops, empty
+requests and fitting manual Id index changes. Native TCNI0004 planning/recovery,
+20 principal typed/SQL session saves and ten CLI saves with ten exact row
+readbacks pass complete-image checks. Two stale-handle predecessor saves retain
+their receipts; duplicate keys and explicit stale expectations refuse. The
+existing recovery regression passes 79 tests (four ignored). Genuine recovery
+also checks four mixed DATA/INDEX targets and write-free rollback confirmation.
+
+Admission combines a source-bound target certificate, strict catalog/LVAL and
+selected-declaration checks, and the existing full preservation census. Its
+required-program absence inference is bounded by primary native locator evidence;
+it is not a universal absence theorem or observed Microsoft Access save/reopen
+conformance. All 1,082 ACE unit tests pass (37 ignored), alongside strict
+all-feature, journal-only and preview-only checks. See the
+[write record](testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
+
 ## Ordinary fitting indexed updates
 
 Ordinary fixed requests now update manual Int32 index keys, including NULL

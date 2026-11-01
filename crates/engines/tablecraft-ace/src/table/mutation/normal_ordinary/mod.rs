@@ -1,4 +1,4 @@
-//! Ordinary fixed requests require fresh complete content ownership proof.
+//! Ordinary fixed requests require fresh native content and ownership proof.
 mod indexed;
 mod proof;
 mod selection;
@@ -14,12 +14,16 @@ use crate::{
     header::check,
     table::mutation::{
         fixed_records::{self, binding, stage},
+        no_required_programs::NoRequiredTablePrograms,
         ordinary_content,
         patch::BytePatch,
         preserved_source::{self, Source, validation},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
+const NATIVE_CATALOG_FIELDS: usize = 17;
+const CATALOG_NAME: &str = "MSysObjects";
 
 const CARRIER_COMPARISON_BYTES: usize = 2 * size_of::<i64>();
 
@@ -80,6 +84,32 @@ fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
+    // Choose the catalog grammar from original metadata before attempting any
+    // content admission. A failed native-profile check never retries globally.
+    let catalog = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        CATALOG_NAME,
+        budget,
+        cancelled,
+    )?;
+    if catalog.columns().len() == NATIVE_CATALOG_FIELDS {
+        let target = crate::inspect_table_schema(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let certificate = NoRequiredTablePrograms::capture(image, &target, budget, cancelled)?;
+        return preserved_source::capture_no_required_programs(
+            image,
+            table,
+            &certificate,
+            budget,
+            cancelled,
+        );
+    }
     let certificate = ordinary_content::capture(image, budget, cancelled)?;
     preserved_source::capture_closed_content(image, table, &certificate, budget, cancelled)
 }

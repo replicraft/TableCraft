@@ -1,28 +1,18 @@
-//! Complete retained single-I32 index declarations, membership and page roles.
+//! Complete retained single-I32 membership and page roles.
+pub(super) mod declaration;
 use super::{
     ledger::{Ledger, Role},
     refused,
 };
 use crate::{
-    EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, TableSchema, check_table,
-    format::{
-        bytes::u16_at,
-        data_type::INT32,
-        layout::{self, Layout},
-        page::PAGE_BYTES,
-        row::MASK_BITS,
-    },
+    EditError, IndexCheckStatus, InspectError, NativeImage, NativeIndex, check_table,
+    format::{layout::Layout, page::PAGE_BYTES, row::MASK_BITS},
     header::check,
-    inspect_table_index_counter, inspect_table_indexes,
+    inspect_table_indexes,
     limits::MAX_INDEX_DEPTH,
     read_table,
     table::{
         indexes::{
-            definition::{
-                ASCENDING, DATA_NUMBER_OFFSET, FLAGS_OFFSET, KEY_BYTES, KEY_START, LOGICAL_BYTES,
-                NUMBER_OFFSET, PHYSICAL_BYTES, ROOT_OFFSET, TYPE_OFFSET, UNUSED_COLUMN,
-                USAGE_OFFSET,
-            },
             header::IndexHeader,
             page::{ENTRY_START, LEAF, NODE},
             preserved,
@@ -34,15 +24,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_schema::ScalarType;
 
-const PHYSICAL_MAGIC: u32 = 1923;
-const LOGICAL_MAGIC: u32 = 1625;
-const MAGIC_OFFSET: usize = 0;
-const HISTORY_OFFSET: usize = size_of::<u32>();
-const NO_REFERENCE_OFFSET: usize = 13;
-const NO_REFERENCE: u32 = u32::MAX;
-const NAME_LENGTH_BYTES: usize = size_of::<u16>();
 const HEADER_BYTES: usize = size_of::<IndexHeader>();
 const REFERENCE_BYTES: usize = size_of::<u32>();
 const KEY_BYTES_MAX: usize = size_of::<u8>() + size_of::<i32>();
@@ -65,6 +47,9 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
+    if start != layout.index_start {
+        return Err(refused());
+    }
     let scope = image.catalog().catalog().scope();
     let object = scope.object_id(u64::from(definition));
     let mut name = None;
@@ -84,7 +69,7 @@ pub(super) fn capture(
         return Err(refused());
     }
     for index in inspection.indexes() {
-        qualify(inspection.schema(), index, budget, cancelled)?;
+        declaration::qualify(inspection.schema(), index, budget, cancelled)?;
     }
     let checked = check_table(&mut image.reader(), scope, name, budget, cancelled)?;
     if checked.schema().definition_page() != definition
@@ -117,42 +102,13 @@ pub(super) fn capture(
         return Err(refused());
     }
 
-    let physical_end = layout
-        .physical_indexes
-        .checked_mul(PHYSICAL_BYTES)
-        .and_then(|bytes| start.checked_add(bytes))
-        .ok_or(InspectError::StructureLimit)?;
-    let logical_end = layout
-        .logical_indexes
-        .checked_mul(LOGICAL_BYTES)
-        .and_then(|bytes| physical_end.checked_add(bytes))
-        .ok_or(InspectError::StructureLimit)?;
-    let page = ledger.page(definition)?;
-    let mut position = logical_end;
-    for (ordinal, entry) in checked.indexes().iter().enumerate() {
-        check(budget, cancelled)?;
-        let index = entry.index();
-        let begin = physical_end + ordinal * LOGICAL_BYTES;
-        let raw = page.get(begin..begin + LOGICAL_BYTES).ok_or_else(refused)?;
-        logical(raw, index, budget)?;
-        let bytes = usize::from(u16_at(page, position)?);
-        position += NAME_LENGTH_BYTES;
-        let encoded = page.get(position..position + bytes).ok_or_else(refused)?;
-        budget
-            .charge(Resource::Steps, bytes as u64)
-            .map_err(InspectError::from)?;
-        if !bytes.is_multiple_of(size_of::<u16>())
-            || !encoded
-                .as_chunks::<2>()
-                .0
-                .iter()
-                .map(|word| u16::from_le_bytes(*word))
-                .eq(index.name().encode_utf16())
-        {
-            return Err(refused());
-        }
-        position += bytes;
-    }
+    let position = declaration::names(
+        image,
+        checked.schema(),
+        checked.indexes().iter().map(|entry| entry.index()),
+        budget,
+        cancelled,
+    )?;
 
     // Logical aliases are grouped by their real physical data number. Their
     // shared map and pages are claimed exactly once, never as fake collisions.
@@ -165,52 +121,21 @@ pub(super) fn capture(
                 continue;
             }
             if let Some(prior) = selected {
-                aliases(prior, entry.index(), budget, cancelled)?;
+                declaration::aliases(prior, entry.index(), budget, cancelled)?;
             } else {
                 selected = Some(entry.index());
             }
         }
         let index = selected.ok_or_else(refused)?;
-        let begin = start + physical * PHYSICAL_BYTES;
-        let raw = page
-            .get(begin..begin + PHYSICAL_BYTES)
-            .ok_or_else(refused)?;
-        physical_record(raw, index, budget)?;
-        // The public reader performs a name search in its fresh metadata.
-        // Prepay that search from the same immutable original index names.
-        for candidate in checked.indexes() {
-            check(budget, cancelled)?;
-            let bytes = candidate.index().name().len().max(index.name().len());
-            budget
-                .charge(Resource::Steps, bytes as u64)
-                .map_err(InspectError::from)?;
-        }
-        let history = inspect_table_index_counter(
-            &mut image.reader(),
-            scope,
-            name,
-            index.name(),
+        declaration::physical(
+            image,
+            checked.schema(),
+            index,
+            physical,
+            checked.indexes().iter().map(|entry| entry.index()),
             budget,
             cancelled,
         )?;
-        let count_start = layout::COLUMN_BLOCK_OFFSET + physical * layout::INDEX_ENTRY_BYTES;
-        let raw_count = page
-            .get(count_start..count_start + layout::INDEX_ENTRY_BYTES)
-            .ok_or_else(refused)?;
-        let mut expected_count = [0; layout::INDEX_ENTRY_BYTES];
-        expected_count[HISTORY_OFFSET..HISTORY_OFFSET + size_of::<u32>()]
-            .copy_from_slice(&history.value().to_le_bytes());
-        budget
-            .charge(Resource::Steps, layout::INDEX_ENTRY_BYTES as u64)
-            .map_err(InspectError::from)?;
-        if history.definition_page() != definition
-            || history.physical_index() as usize != physical
-            || history.byte_range().start
-                != definition as usize * PAGE_BYTES + count_start + HISTORY_OFFSET
-            || raw_count != expected_count
-        {
-            return Err(refused());
-        }
 
         let key = index.columns()[0];
         let mut population = vector(checked.rows(), budget, cancelled)?;
@@ -243,103 +168,6 @@ pub(super) fn capture(
     }
     check(budget, cancelled)?;
     Ok(position)
-}
-
-fn qualify(
-    schema: &TableSchema,
-    index: &NativeIndex,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
-    check(budget, cancelled)?;
-    let [key] = index.columns() else {
-        return Err(refused());
-    };
-    let constraints = index.constraints().ok_or_else(refused)?;
-    let field = schema.columns().get(key.number()).ok_or_else(refused)?;
-    if index.native_type() > 1
-        || index.foreign_reference().is_some()
-        || constraints.ignore_nulls()
-        || field.number() != key.number()
-        || field.native_type() != INT32
-        || field.scalar_type() != Some(ScalarType::Int32)
-        || !field.fixed()
-        || field.storage_length() != size_of::<i32>()
-        || field.extended_flags() != 0
-    {
-        return Err(refused());
-    }
-    Ok(())
-}
-
-fn aliases(
-    before: &NativeIndex,
-    after: &NativeIndex,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
-    check(budget, cancelled)?;
-    budget
-        .charge(Resource::Steps, before.columns().len() as u64)
-        .map_err(InspectError::from)?;
-    if before.root_page() != after.root_page()
-        || before.usage_map() != after.usage_map()
-        || before.flags() != after.flags()
-        || before.columns() != after.columns()
-    {
-        return Err(refused());
-    }
-    Ok(())
-}
-
-fn physical_record(
-    raw: &[u8],
-    index: &NativeIndex,
-    budget: &mut ResourceBudget,
-) -> Result<(), EditError> {
-    let mut expected = [0; PHYSICAL_BYTES];
-    expected[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&PHYSICAL_MAGIC.to_le_bytes());
-    for number in 0..layout::INDEX_KEY_COLUMNS {
-        let at = KEY_START + number * KEY_BYTES;
-        expected[at..at + size_of::<u16>()].copy_from_slice(&UNUSED_COLUMN.to_le_bytes());
-    }
-    let key = index.columns()[0];
-    expected[KEY_START..KEY_START + size_of::<u16>()]
-        .copy_from_slice(&(key.number() as u16).to_le_bytes());
-    expected[KEY_START + size_of::<u16>()] = if key.descending() { 0 } else { ASCENDING };
-    expected[USAGE_OFFSET..USAGE_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&index.usage_map().to_le_bytes());
-    expected[ROOT_OFFSET..ROOT_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&index.root_page().to_le_bytes());
-    expected[FLAGS_OFFSET] = index.flags();
-    budget
-        .charge(Resource::Steps, PHYSICAL_BYTES as u64)
-        .map_err(InspectError::from)?;
-    if raw != expected {
-        return Err(refused());
-    }
-    Ok(())
-}
-
-fn logical(raw: &[u8], index: &NativeIndex, budget: &mut ResourceBudget) -> Result<(), EditError> {
-    let mut expected = [0; LOGICAL_BYTES];
-    expected[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&LOGICAL_MAGIC.to_le_bytes());
-    expected[NUMBER_OFFSET..NUMBER_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&index.number().to_le_bytes());
-    expected[DATA_NUMBER_OFFSET..DATA_NUMBER_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&index.data_number().to_le_bytes());
-    expected[NO_REFERENCE_OFFSET..NO_REFERENCE_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&NO_REFERENCE.to_le_bytes());
-    expected[TYPE_OFFSET] = index.native_type();
-    budget
-        .charge(Resource::Steps, LOGICAL_BYTES as u64)
-        .map_err(InspectError::from)?;
-    if raw != expected {
-        return Err(refused());
-    }
-    Ok(())
 }
 
 fn vector<T>(

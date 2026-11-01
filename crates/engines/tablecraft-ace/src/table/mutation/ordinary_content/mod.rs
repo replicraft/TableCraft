@@ -1,7 +1,7 @@
 //! Full supported content ownership, without creator or empty-inventory trust.
 mod catalog;
 mod data;
-mod definition;
+pub(super) mod definition;
 mod header;
 mod indexes;
 mod inline;
