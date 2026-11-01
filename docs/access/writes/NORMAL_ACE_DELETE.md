@@ -25,12 +25,13 @@ including readonly Memo/OLE preservation. The fifteen-field global data-only
 family remains outside this deletion route.
 
 Indexed deletion additionally requires a complete ordinary scalar table check
-and checked single-column Int32 physical indexes whose entire owned traversal
-is one qualified root leaf. Every logical alias and physical declaration must
+and checked single-column Int32 physical indexes with a qualified root leaf or
+a retained tree whose child pages remain nonempty. Every logical alias and physical declaration must
 agree. Ascending/descending and stored nullable Int32 key grammar are handled
 without reading inactive numeric payloads; required/unique constraints retain
-their existing checks. Ignored-NULL indexes, composite/non-I32 keys, interior
-nodes, foreign index references and unqualified table/field shapes refuse.
+their existing checks. Ignored-NULL indexes, composite/non-I32 keys, foreign
+index references and unqualified table/field shapes refuse. Retained trees
+refuse requests that would require page retirement or contraction.
 This operation removes whole rows and introduces no NULL assignment or generation
 policy. The initial literal tranche covers ascending present keys. A separate follow-on
 now qualifies descending Guard keys with an actual stored NULL member.
@@ -155,3 +156,22 @@ original inactive-NULL witness recovery refusals pass. Logical NULL does not
 authorize changes to inactive payloads, original masks or vacated entry bytes.
 See the [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
 No interior-tree or wider-key mutation is established by these results.
+
+## Retained NODE trees
+
+Normal DELETE now uses the existing deletion kernel for fitting retained trees.
+It consumes original leaf partitions, removes exact ROW identities and rebuilds
+both full key and ROW parent fences in original child order. No surviving row
+is redistributed to another leaf. Independent proof uses the separate original
+ownership graph and manual page writer, with decreasing-cardinality replay.
+Every INDEX descendant receives ownership and live LVAL exclusion checks. Empty
+operations preserve original valid fences. Requests emptying a non-root leaf
+refuse until retirement is qualified.
+
+Four source views and 24 SDK observations precede four complete native commits
+in both request orders. Twelve recovery contexts, 42 protected-image refusals,
+full resource/cancellation checks, six retained typed/SQL saves plus six empty
+follow-ons, and four CLI saves/readbacks pass. The observed sources have
+height-one trees; broader heights and native Access qualification remain
+separate evidence. See the [source contract](../../testing/GENUINE_RETAINED_NODE_DELETE_SOURCE.md)
+and [write record](../../testing/results/ace16-normal-retained-node-delete-writes-2026-11-01.json).
