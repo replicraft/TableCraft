@@ -1,0 +1,301 @@
+{
+  "date": "2026-11-01",
+  "scope": "Combined normal Increment INSERT, explicit Text policy, new Text key and repeated retirement integration worktree",
+  "checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "942863e1c3aaafe29b774aa5bb265b60449b73818cace15b124979992d125403",
+      "passed_functions": []
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "212f4443fb66f11ea082a673cce2aa16b5708d5aff5a2537cb9c718f9a8ee077",
+      "passed_functions": []
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "66c93249d84c323ede20c564a571824d813c0f9e9bd7d4944be91a9841964c34",
+      "passed_functions": []
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "5e434e0d666c6e69b680ee481e56f435d7e1c99a0448cc5a5ca199fc85ec66cf",
+      "passed_functions": []
+    },
+    {
+      "name": "old-preview-audit",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "tree::siblings::audit::tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "acfdeb7b5f3f9419e8de47d001540f4c23ace0b4af9f5c8fe459eba17590cfe3",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "old-height-one-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_delete::node_retirement_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "dbae2dc6e2455ff2988a5ba756f0b17e181eae327668b0ef200f26ebee4214ae",
+      "passed_functions": [
+        2
+      ]
+    },
+    {
+      "name": "old-height-one-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_node_retirement::node_retirement_commits_both_original_orders_and_preserves_full_alias_history",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "11b9fa24ca2b371610123c51c7a2d7ca30dc7cf2d80421975f90d5d2df9e6a71",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "old-noncontracting-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_retained_node_delete::retained_node_deletion_commits_both_orders_and_preserves_full_fence_identity",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "14c847d11c6c9eda990b45b6e146fad0955b882da95acfe5061ffc32ce387c20",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "old-autonumber-audit",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "insert::autonumber::tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "93fc5bdc5bfc6d863fb4ac62a456cbeb7b640c7d7686f3a4ce108f90cfeb2c71",
+      "passed_functions": [
+        3
+      ]
+    },
+    {
+      "name": "engine-units",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "bcc95696005658c1ced1c264a1bae0bd6212538eb4f2ca39e174b797b9e1db88",
+      "passed_functions": [
+        1169
+      ]
+    },
+    {
+      "name": "adapter-units",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "b7facde2c91e75909534ee596eed9453bfcdc2f171e5dbf1c6d7d56fbb5d2001",
+      "passed_functions": [
+        79
+      ]
+    },
+    {
+      "name": "cli-units",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "cec5303b515abceec794caef153dedf17d1242652f45182953a4ba54202a261f",
+      "passed_functions": [
+        104
+      ]
+    },
+    {
+      "name": "dependency-boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "passed_functions": []
+    },
+    {
+      "name": "documentation-links",
+      "argv": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "log_sha256": "3d54e3ee001b590aed369cfa06168434e7dbf1f81da3956f098e09c6f8ef4f22",
+      "passed_functions": []
+    }
+  ],
+  "qualification": "Local portable checks; no remote CI or native Access qualification. Checks ran once over the combined integration worktree before its logical commit series.",
+  "broad_units": {
+    "engine_passed": 1169,
+    "engine_ignored": 195,
+    "adapter_passed": 79,
+    "cli_passed": 104
+  }
+}

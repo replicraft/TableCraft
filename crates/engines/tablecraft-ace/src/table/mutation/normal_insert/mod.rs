@@ -1,5 +1,6 @@
 //! Normal complete-row INSERT into protected, already-owned DATA capacity.
 mod eof;
+mod incrementing;
 mod indexed;
 pub(crate) use eof::OrdinaryInsertPlanKind;
 mod omitted;

@@ -30,7 +30,7 @@ pub(in crate::table::mutation) fn variables_actions(
     variables_with_generated(schema, None, true, budget, cancelled)
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(in crate::table::mutation) fn incrementing_variables(
     schema: &TableSchema,
     column: usize,

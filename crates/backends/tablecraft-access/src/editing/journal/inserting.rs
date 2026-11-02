@@ -1,4 +1,4 @@
-//! Metadata-only ordinary insertion; complete native admission occurs at finish.
+//! Metadata-only insertion; complete native admission occurs at finish.
 mod plan;
 
 use super::Error;
@@ -17,7 +17,7 @@ use tablecraft_schema::{Column, NameComparison, SchemaPolicy};
 const MAX_NAME_BYTES: usize = 255;
 const MAX_COLUMNS: usize = 256;
 
-/// A complete insertion schema, without a target-row snapshot or generated fields.
+/// A complete insertion schema, without a target-row snapshot or resolved values.
 /// This capability retains the immutable image; it grants no mutation permission.
 pub struct NativeJournalInserter {
     image: NativeImage,

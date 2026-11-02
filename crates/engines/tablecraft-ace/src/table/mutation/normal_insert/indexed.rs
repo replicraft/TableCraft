@@ -74,7 +74,33 @@ pub(super) fn plan(
         .filter(|count| *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
     let records = super::records::encode(source.table.schema(), requests, budget, cancelled)?;
-    let placement = super::placement::reserve(&image, &source, &records, budget, cancelled)?;
+    let after = stage(
+        &image, &source, requests, &records, &facts, budget, cancelled,
+    )?;
+
+    drop(facts);
+    let scope = image.catalog().catalog().scope();
+    let plan = NativeEditPlan {
+        before: image.bytes,
+        after,
+        changed_rows: requests.len(),
+    };
+    proof::prove(&plan, scope, table, requests, budget, cancelled)?;
+    check(budget, cancelled)?;
+    Ok(plan)
+}
+
+pub(super) fn stage(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    records: &[Vec<u8>],
+    facts: &CheckedIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let table = source.table.schema().name();
+    let placement = super::placement::reserve(image, source, records, budget, cancelled)?;
 
     let mut rows = vector(requests.len(), budget, cancelled)?;
     for (reference, request) in placement.references().zip(requests) {
@@ -92,7 +118,7 @@ pub(super) fn plan(
         check(budget, cancelled)?;
         let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
         let index = insertion::prepare_existing(
-            &image,
+            image,
             facts.checked(),
             physical,
             &rows,
@@ -144,7 +170,7 @@ pub(super) fn plan(
     // before the first candidate bytes exist. Existing NODE partitions may
     // be repacked; splits and allocation remain unavailable.
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
-    placement.apply(&image, &records, &mut after, budget, cancelled)?;
+    placement.apply(image, records, &mut after, budget, cancelled)?;
     for index in &indexes {
         for patch in &index.patches {
             apply(
@@ -168,19 +194,10 @@ pub(super) fn plan(
         )?;
     }
 
-    drop(facts);
-    let scope = image.catalog().catalog().scope();
-    let plan = NativeEditPlan {
-        before: image.bytes,
-        after,
-        changed_rows: requests.len(),
-    };
-    proof::prove(&plan, scope, table, requests, budget, cancelled)?;
-    check(budget, cancelled)?;
-    Ok(plan)
+    Ok(after)
 }
 
-fn qualify<'image>(
+pub(super) fn qualify<'image>(
     image: &'image NativeImage,
     source: &Source,
     table: &str,

@@ -4,7 +4,7 @@ use crate::{
     EditError, IndexCheckStatus, NativeImage, RuleCheckStatus, TableCheck, check_table_constraints,
     read_table,
     table::mutation::{
-        gates,
+        autonumber_counter, gates,
         insert::{
             RowInsert, Staged, audit, compose, prepare_with, record,
             tests::{incrementing_autonumber::model as literal, model as original},
@@ -76,8 +76,10 @@ fn stage(case: &Case, rows: &[Row]) -> Prepared {
         &|| false,
     )
     .unwrap();
-    staged.autonumber =
-        Some(counter::prepare(source, rows.len(), &mut original::budget(), &|| false).unwrap());
+    staged.autonumber = Some(
+        autonumber_counter::prepare(source, rows.len(), &mut original::budget(), &|| false)
+            .unwrap(),
+    );
     Prepared {
         image,
         checked,

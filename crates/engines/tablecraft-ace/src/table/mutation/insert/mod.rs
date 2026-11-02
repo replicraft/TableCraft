@@ -14,7 +14,7 @@ mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
 
-use super::{gates, preview, requests::RowInsert};
+use super::{autonumber_counter, gates, preview, requests::RowInsert};
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck,
     WriteBlocker, check_table, check_table_constraints,
@@ -40,7 +40,7 @@ struct Staged {
     long_values: long_values::Plan,
     indexes: Vec<IndexInsertion>,
     counters: Vec<counters::Patch>,
-    autonumber: Option<autonumber::counter::Plan>,
+    autonumber: Option<autonumber_counter::Plan>,
 }
 
 #[derive(Clone, Copy)]

@@ -1,0 +1,170 @@
+{
+  "date": "2026-11-01",
+  "scope": "Qualified normal omitted Increment AutoNumber INSERT",
+  "source_views": 14,
+  "source_gate_commit": "3fca06ec",
+  "source_sdk_receipt_sha256": "f1c02559a1e52431498522b42a54e4b3bb0db0d52a5dd12210c3fdcc15d2cfa5",
+  "production_checkpoint_sha256": "4ea9e984ad34f1e9a640a4434036b329570d59c2915187b5999234f7ec548d70",
+  "acceptance_checkpoint_sha256": "9a540a37e8c1b4c1df3be914284d5aac6020c47d180fd728710bb3f70c444441",
+  "tests": [
+    {
+      "name": "increment-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::incrementing::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "first",
+      "log_sha256": "22a909ec9f052816176d96c9f732e0421c20df370c02b40d67a0e66eedb29cdf"
+    },
+    {
+      "name": "increment-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::incrementing::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "3001f681a3662b29ad786ba657b1b501753109c110273fab45378630b28cae92"
+    },
+    {
+      "name": "increment-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::normal_autonumber::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "5"
+      ],
+      "accepted": true,
+      "phase": "fourth",
+      "log_sha256": "ec186e54d180af7607855e411bd2743537193c82e7dbf8533ea7555080fda91c"
+    },
+    {
+      "name": "increment-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_autonumber_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "fourth",
+      "log_sha256": "643a8d107ace54ed56ed0aee4ba5090e0aed67eef339d01c0ab34769266d3b8a"
+    },
+    {
+      "name": "increment-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_autonumber_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "phase": "fifth",
+      "log_sha256": "c3928a9da35673e1ec17bcdf90859c732f708ed02e45abbf53d66f19892ba3d5"
+    },
+    {
+      "name": "increment-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "normal_autonumber_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "phase": "fifth",
+      "log_sha256": "c5f69adb76e79a13f9754d4f73142f2a7c055805f945bdb226a8e91376629878"
+    }
+  ],
+  "integration_corrections": [
+    "Property.text returns Result; propagate malformed native properties with question mark, rather than matching Option.",
+    "Import selected mode owner directly; share native flag/type constants.",
+    "Retained SQL acceptance StagedInsert has one unwrap, not two."
+  ],
+  "coverage": {
+    "literal_native_commits": 4,
+    "empty_native_requests": 4,
+    "direct_proofs": 8,
+    "direct_forgeries": 40,
+    "resource_contexts": 8,
+    "same_token_recovery_contexts": 24,
+    "forged_journal_contexts": 24,
+    "typed_and_sql_saves": 8,
+    "cli_saves_and_readbacks": 4
+  },
+  "unchanged": [
+    "TCNA2 wire format",
+    "V1 checked journal framing",
+    "Host production API and CLI selection",
+    "Random/unknown/explicit supplied ID and NULL refusals",
+    "Source images and independent expected bytes"
+  ],
+  "qualification": "Independent model/native reads/inert SDK evidence; native Microsoft Access save/reopen unrun.",
+  "combined_validation_record": "ace16-increment-text-retirement-batch-checks-2026-11-01.json"
+}

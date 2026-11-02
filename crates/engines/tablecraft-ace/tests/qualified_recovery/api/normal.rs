@@ -806,3 +806,6 @@ mod text_storage_carriers;
 
 #[path = "normal/genuine_recursive_retirement.rs"]
 mod genuine_recursive_retirement;
+
+#[path = "normal/normal_autonumber.rs"]
+mod normal_autonumber;

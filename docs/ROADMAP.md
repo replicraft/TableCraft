@@ -2,6 +2,12 @@
 
 ## Current product priority
 
+[Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+now passes native, recovery, retained-session and CLI checks using original
+omissions and the database's actual declaration. Random/unknown modes, broader
+generated layouts, fresh generated creation and native Access qualification
+remain work.
+
 [Exact Date defaults](access/writes/DATE_CREATION_DEFAULTS.md) now pass native
 creation, omission-aware INSERT, proof/recovery and retained-session checks.
 Date representation aliases without a bit-preserving declaration refuse;
