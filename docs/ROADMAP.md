@@ -1163,6 +1163,16 @@ include 20 MiB OLE, 3 MiB Memo and 3 MiB incompressible attachments.
 [Explicit decoded Memo/query Text ceilings](access/storage/LARGER_MEMOS.md) reach 16 MiB without
 raising defaults or cumulative limits; rendered output retains its own ceiling.
 
+## Retained Binary-index UPDATE continuation
+
+Qualified ordinary unindexed Int32 updates now retain untouched Binary indexes
+through the normal Source/proof/journal route. Two ACE 16-family originals pass
+complete-image commits, recovery, resource and retained typed/SQL/CLI checks; see
+[the bounded write profile](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md).
+This removes a whole-schema admission barrier for these targets. It does not
+qualify changing the indexed Id in this mixed profile, broader index maintenance,
+new allocation or native Access save/reopen.
+
 ## Remaining local-file read/query work
 
 The explicit [arithmetic declaration profile](expressions/numeric/DECLARED_ARITHMETIC.md) now carries

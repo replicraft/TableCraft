@@ -117,6 +117,38 @@ enum ColumnFraming {
     Actions,
 }
 
+#[cfg(feature = "journal")]
+#[derive(Clone, Copy)]
+enum RetainedKeys {
+    Integral,
+    Scalar,
+}
+
+#[derive(Clone, Copy)]
+struct ReadProfile {
+    columns: ColumnFraming,
+    #[cfg(feature = "journal")]
+    keys: RetainedKeys,
+}
+
+impl ReadProfile {
+    const fn dense() -> Self {
+        Self {
+            columns: ColumnFraming::Dense,
+            #[cfg(feature = "journal")]
+            keys: RetainedKeys::Integral,
+        }
+    }
+
+    #[cfg(feature = "journal")]
+    const fn retained(columns: ColumnFraming) -> Self {
+        Self {
+            columns,
+            keys: RetainedKeys::Scalar,
+        }
+    }
+}
+
 fn capture_with_payload(
     image: &NativeImage,
     table: &str,
@@ -128,7 +160,7 @@ fn capture_with_payload(
         image,
         table,
         payload,
-        ColumnFraming::Dense,
+        ReadProfile::dense(),
         budget,
         cancelled,
     )
@@ -138,10 +170,11 @@ fn capture_framed(
     image: &NativeImage,
     table: &str,
     payload: PayloadAdmission<'_, '_>,
-    framing: ColumnFraming,
+    profile: ReadProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
+    let framing = profile.columns;
     check(budget, cancelled)?;
     let indexes = inspect_table_indexes(
         &mut image.reader(),
@@ -411,7 +444,7 @@ fn capture_framed(
             &payload,
             PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_)
         )
-        .then_some(framing),
+        .then_some(profile),
         &long_values,
         budget,
         cancelled,
@@ -694,7 +727,30 @@ pub(in crate::table::mutation) fn capture_no_required_actions(
         image,
         table,
         PayloadAdmission::NoRequired(certificate),
-        ColumnFraming::Actions,
+        ReadProfile::retained(ColumnFraming::Actions),
+        budget,
+        cancelled,
+    )
+}
+
+/// Dense native UPDATE Source retains readonly keys without issuing target facts.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_no_required_updates(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    check(budget, cancelled)?;
+    if !certificate.retained_update_keys()? {
+        return capture_no_required_programs(image, table, certificate, budget, cancelled);
+    }
+    capture_framed(
+        image,
+        table,
+        PayloadAdmission::NoRequired(certificate),
+        ReadProfile::retained(ColumnFraming::Dense),
         budget,
         cancelled,
     )

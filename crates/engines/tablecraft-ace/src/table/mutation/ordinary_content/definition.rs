@@ -115,7 +115,7 @@ pub(in crate::table::mutation) fn validate_user(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    validate_selected(image, schema, Role::SelectedUser, budget, cancelled)
+    validate_selected(image, schema, Role::SelectedUser, false, budget, cancelled)
 }
 
 /// Action-only complete declaration framing; no mutation permission is returned.
@@ -125,13 +125,31 @@ pub(in crate::table::mutation) fn validate_actions(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    validate_selected(image, schema, Role::SelectedActions, budget, cancelled)
+    validate_selected(
+        image,
+        schema,
+        Role::SelectedActions,
+        false,
+        budget,
+        cancelled,
+    )
+}
+
+/// Dense canonical field identities with complete readonly scalar index closure.
+pub(in crate::table::mutation) fn validate_retained_updates(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    validate_selected(image, schema, Role::SelectedUser, true, budget, cancelled)
 }
 
 fn validate_selected(
     image: &NativeImage,
     schema: &TableSchema,
     role: Role,
+    retained_updates: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -152,6 +170,14 @@ fn validate_selected(
     }
     let position = if matches!(role, Role::SelectedActions) {
         indexes::declaration::validate_actions(
+            image,
+            inspection.schema(),
+            inspection.indexes().iter(),
+            budget,
+            cancelled,
+        )?
+    } else if retained_updates {
+        indexes::declaration::validate_retained_updates(
             image,
             inspection.schema(),
             inspection.indexes().iter(),

@@ -853,3 +853,6 @@ mod increment_multi;
 
 #[path = "normal/external_lval_mixed.rs"]
 mod external_lval_mixed;
+
+#[path = "normal/retained_binary_marker.rs"]
+mod retained_binary_marker;

@@ -348,3 +348,5 @@ pub mod genuine_wide_primary_prefix_growth;
 pub mod tcna2;
 
 pub mod genuine_wide_leaf_compression;
+
+pub mod genuine_retained_binary_marker;

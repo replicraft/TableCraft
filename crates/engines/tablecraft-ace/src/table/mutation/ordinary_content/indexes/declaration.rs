@@ -146,7 +146,14 @@ pub(in crate::table::mutation::ordinary_content) fn validate_selected<'index>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
-    validate_for(image, schema, indexes, false, budget, cancelled)
+    validate_for(
+        image,
+        schema,
+        indexes,
+        KeyFamily::SelectedIntegral,
+        budget,
+        cancelled,
+    )
 }
 
 pub(in crate::table::mutation::ordinary_content) fn validate_actions<'index>(
@@ -156,24 +163,47 @@ pub(in crate::table::mutation::ordinary_content) fn validate_actions<'index>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
-    validate_for(image, schema, indexes, true, budget, cancelled)
+    validate_for(
+        image,
+        schema,
+        indexes,
+        KeyFamily::ActionIntegral,
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table::mutation::ordinary_content) fn validate_retained_updates<'index>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    validate_for(
+        image,
+        schema,
+        indexes,
+        KeyFamily::SelectedScalar,
+        budget,
+        cancelled,
+    )
 }
 
 fn validate_for<'index>(
     image: &NativeImage,
     schema: &TableSchema,
     indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
-    actions: bool,
+    family: KeyFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
     let mut logical_count = 0_usize;
     for index in indexes.clone() {
         check(budget, cancelled)?;
-        if actions {
-            qualify_for(schema, index, KeyFamily::ActionIntegral, budget, cancelled)?;
-        } else {
-            qualify_selected(schema, index, budget, cancelled)?;
+        match family {
+            KeyFamily::SelectedIntegral => qualify_selected(schema, index, budget, cancelled)?,
+            _ => qualify_for(schema, index, family, budget, cancelled)?,
         }
         logical_count += 1;
     }
@@ -250,6 +280,7 @@ fn qualify_selected(
 enum KeyFamily {
     GlobalInt32,
     SelectedIntegral,
+    SelectedScalar,
     ActionIntegral,
 }
 
@@ -285,11 +316,15 @@ fn qualify_for(
     {
         return Err(refused());
     }
-    let binary = matches!(family, KeyFamily::ActionIntegral)
-        && field.native_type() == SHORT_BINARY
+    let binary = matches!(
+        family,
+        KeyFamily::ActionIntegral | KeyFamily::SelectedScalar
+    ) && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary);
-    let text = matches!(family, KeyFamily::ActionIntegral)
-        && field.native_type() == SHORT_TEXT
+    let text = matches!(
+        family,
+        KeyFamily::ActionIntegral | KeyFamily::SelectedScalar
+    ) && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text);
     let variable = binary || text;
     let width = match (field.native_type(), field.scalar_type()) {
