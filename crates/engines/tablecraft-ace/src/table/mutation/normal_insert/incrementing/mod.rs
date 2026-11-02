@@ -119,3 +119,9 @@ pub(super) fn vector<T>(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod companion_original_sources;
+
+#[cfg(test)]
+mod companion_sources;
