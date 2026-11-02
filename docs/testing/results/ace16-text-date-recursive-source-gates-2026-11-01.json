@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-01",
+  "scope": "Source qualification before matching write producers",
+  "gates": [
+    {
+      "name": "date-core-bit-controls-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::creation_date_defaults::frozen_date_literal_and_alias_laws_keep_representation_separate_from_calendar",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 1,
+      "accepted": true
+    },
+    {
+      "name": "date-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::creation_date_defaults::date_default_literals_have_exact_bits_properties_presence_and_full_readonly_source",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 1,
+      "accepted": true
+    },
+    {
+      "name": "text-cardinality-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::text_cardinality::fitting_text_cardinality_views_have_exact_raw_and_complete_action_source",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 1,
+      "accepted": true
+    },
+    {
+      "name": "text-carrier-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::text_storage_carriers::indexed_text_storage_carriers_require_complete_source_and_preserve_raw_capacity_keys_and_history",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 1,
+      "accepted": true
+    },
+    {
+      "name": "recursive-original-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_delete::recursive_node_sources::recursive_node_originals_require_current_native17_source_constraints_and_complete_owned_tree",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "actual_passed": 1,
+      "accepted": true
+    }
+  ],
+  "coverage": {
+    "date_default_views": 36,
+    "text_cardinality_views": 54,
+    "text_cardinality_contexts": 64,
+    "text_storage_carrier_views": 34,
+    "recursive_originals": 2
+  },
+  "limitations": [
+    "These checks qualify original/raw/reference source views, not matching write producers.",
+    "Four empty Text INSERT requests still require explicit AllowZeroLength authority.",
+    "Native Microsoft Access save/reopen remains unrun."
+  ],
+  "matching_followon_producers_installed_at_execution": false
+}
