@@ -209,3 +209,6 @@ mod text_update;
 mod creation_date_defaults;
 mod text_cardinality;
 mod text_storage_carriers;
+
+mod normal_autonumber;
+mod text_azl;
