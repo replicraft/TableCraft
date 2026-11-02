@@ -5,12 +5,14 @@ const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 #[test]
 fn concatenation_retains_raw_units_and_buffers_final_publication_failures() {
     for mode in ["eval", "run"] {
-        let result = CLI.run(&[
-                "query",
-                mode,
-                "SELECT ChrW(55357)&ChrW(56832) AS Face,Len(ChrW(55296)&NULL) AS Units,Nz(NULL)&'x' AS Empty",
-            ],
+        let sql = concat!(
+            "SELECT ChrW(55357)&ChrW(56832) AS Face,",
+            "Len(ChrW(55296)&NULL) AS Units,",
+            "Nz(NULL)&'x' AS Empty,",
+            "LenB(ChrB(65)&ChrB(0)) AS ByteLength",
         );
+        let result = CLI.run(&["query", mode, sql]);
+
         assert!(
             result.status.success(),
             "{}",
@@ -23,11 +25,13 @@ fn concatenation_retains_raw_units_and_buffers_final_publication_failures() {
             .next()
             .unwrap()
             .unwrap();
-        assert_eq!(row.iter().collect::<Vec<_>>(), ["\"😀\"", "1", "\"x\""]);
+        assert_eq!(
+            row.iter().collect::<Vec<_>>(),
+            ["\"😀\"", "1", "\"x\"", "2"]
+        );
 
         for expression in [
             "ChrW(55296)&'x'",
-            "LenB(ChrB(65)&ChrB(0))",
             "ChrW(55296)&CVErr(1)",
             "ChrW(55296)&(1/0)",
         ] {
