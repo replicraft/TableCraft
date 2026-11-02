@@ -121,7 +121,7 @@ fn insertion_help_keeps_the_normal_action_boundary_explicit() {
     let help = help.split_whitespace().collect::<Vec<_>>().join(" ");
     for expected in [
         "root leaves and retained trees support nullable and descending keys",
-        "other indexes and relationships refuse",
+        "Other split/allocation profiles, broader indexes and relationships refuse.",
         "qualified constant defaults for omitted fields",
         "Supplied NULL remains explicit NULL",
         "Complete supplied rows derive existing or represented EOF DATA capacity",
