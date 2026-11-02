@@ -1,0 +1,364 @@
+{
+  "scope": "Normal ACE16 complete-row INSERT with simultaneous Int64/Currency secondary root promotion",
+  "status": "portable acceptance passed; native Microsoft Access save/reopen unrun",
+  "outcomes": {
+    "literal_images": 4,
+    "direct_functions": 2,
+    "native_functions": 5,
+    "pending_recovery_shapes": 56,
+    "minimum_forged_journals": 240,
+    "retained_host_functions": 2,
+    "cold_host_restarts": 16,
+    "cli_functions": 1
+  },
+  "source_qualification": "ace16-wide-root-promotion-sources-2026-11-02.json",
+  "preserved_corrections": [
+    "First direct run passed two functions; runner expected one. Count corrected without rerunning tests.",
+    "Initial strict lint rejected fixture Vec initialization. Equivalent literal vec syntax passed the strict successor."
+  ],
+  "receipts": [
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/results-first.json",
+      "sha256": "b742eba40b22d498c7d024dfca078b4895b43a745f3c988050a6751f5f554221",
+      "record": [
+        {
+          "name": "wide-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "table::mutation::normal_insert::root_promotions::tests::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 1,
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/direct-count-successor.json",
+      "sha256": "8de0d613a9fdb64da2e6cc5d88fc1210add9c59e14287bf272aa135d989ff7fa",
+      "record": {
+        "state": "DIRECT_EXPECTED_FUNCTION_COUNT_CORRECTION_ONLY",
+        "original_results": {
+          "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/results-first.json",
+          "sha256": "b742eba40b22d498c7d024dfca078b4895b43a745f3c988050a6751f5f554221"
+        },
+        "actual_exit": 0,
+        "actual_passed_functions": 2,
+        "expected_count_correction": "Two separate direct proof functions (positive literals and forged images), not one. Both passed; no code/source or test changed. Resume remaining commands without rerunning them."
+      }
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/results-second.json",
+      "sha256": "31868e3ff3110140a1b673024e1fa7137dcce1d9170cb94bdab696605021e6ec",
+      "record": [
+        {
+          "name": "wide-native-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::wide_root_promotion::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            5
+          ],
+          "expected_functions": 5,
+          "accepted": true
+        },
+        {
+          "name": "wide-access-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 2,
+          "accepted": true
+        },
+        {
+          "name": "wide-cli-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true
+        },
+        {
+          "name": "i32-root-direct-regression-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "normal_insert::root_split::tests::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 2,
+          "accepted": true
+        },
+        {
+          "name": "i32-root-native-regression-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::root_split::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            3
+          ],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "ace-default-first",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "ace-journal-first",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--features",
+            "journal",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "ace-preview-first",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--features",
+            "ace16-write-preview",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "native-strict-first",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "--all-features",
+            "--all-targets",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 101,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/fixture-vector-lint-successor.json",
+      "sha256": "0b04368900bda5a2040399312d0392cb1bf44e34409fb0ce326fa31ce8096132",
+      "record": {
+        "state": "FIXTURE_VECTOR_INITIALIZATION_LINT_ONLY_SUCCESSOR",
+        "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/genuine_wide_root_promotion.rs",
+        "before_sha256": "311c208e2f6f8733e62705ea88cea23cfdf86e89cf45cbb970c13cfe9d117f73",
+        "after_sha256": "df6c4b625cd226fda78c2f17701db4eec1ada16ce5bc8830f63ea5d1e0bef172",
+        "change": "Four identical Case literals now initialize vec! directly; source pins, values and native behavior are unchanged."
+      }
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/matching-first/results-third.json",
+      "sha256": "9f8b6a2953874169652ba43ea141f6461af501cd4f2aec354b5565a9401ce4e4",
+      "record": [
+        {
+          "name": "native-strict-second",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "--all-features",
+            "--all-targets",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "access-strict-first",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "cli-strict-first",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "fmt-first",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        },
+        {
+          "name": "boundaries-first",
+          "argv": [
+            "python3",
+            "scripts/check_dependency_boundaries.py"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true
+        }
+      ]
+    }
+  ]
+}

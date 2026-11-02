@@ -8,6 +8,7 @@ mod omitted;
 mod placement;
 mod proof;
 mod records;
+mod root_promotions;
 mod root_split;
 
 #[cfg(test)]

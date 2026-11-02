@@ -1,5 +1,7 @@
 //! Typed request membership, followed by physical-owner continuation and wire facts.
 pub(in crate::table::indexes::mutation) mod binding;
+#[cfg(feature = "journal")]
+pub(in crate::table) mod coordinated;
 pub(in crate::table::indexes) mod membership;
 mod preparation;
 #[cfg(all(test, feature = "journal"))]

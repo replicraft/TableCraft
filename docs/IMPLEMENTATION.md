@@ -1,5 +1,16 @@
 # Implementation status
 
+## Coordinated wider root promotion
+
+Normal [wider numeric root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
+now splits qualified ascending and descending Int64/Currency secondary roots in
+one complete-row INSERT, retaining a fitting Int32 primary and existing DATA
+capacity. Four literal outcomes pass direct proof, journal recovery, retained
+typed/SQL sessions and CLI saves/readbacks. Partial map mixtures, committed
+mixed-image refusals, cold restarts and resource/cancellation controls pass.
+Primary-prefix growth, broader allocation/split combinations and native Access
+save/reopen remain work.
+
 ## External Memo/OLE retirement
 
 Normal [whole-page external retirement](access/writes/NORMAL_EXTERNAL_LONG_RETIREMENT.md)

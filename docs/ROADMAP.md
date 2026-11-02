@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+[Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
+now passes complete-image, recovery, retained-session and CLI acceptance for
+qualified Int64/Currency secondary splits with existing DATA capacity. Broader
+prefix/allocation composition and native Access save/reopen remain open.
+
 [Wider numeric index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md) now passes
 native, proof/recovery, retained-session and CLI checks for fitting root leaves.
 [Retained numeric NODE UPDATE](access/writes/NORMAL_WIDE_NODE_UPDATE.md) now

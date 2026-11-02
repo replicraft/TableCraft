@@ -1,0 +1,70 @@
+#![cfg(any(target_os = "macos", target_os = "linux"))]
+use sha2::{Digest, Sha256};
+use std::fs;
+use tablecraft_testkit::{
+    fixtures::access::genuine_wide_root_promotion as sources, support::cli::Runner,
+};
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
+#[test]
+#[ignore = "requires literal wider root promotion sources before normal CLI saves"]
+fn cli_explicit_scalar_promotions_publish_exact_whole_images_and_retained_scalar_readbacks() {
+    let cases = sources::load_all(|bytes, expected| {
+        let actual: String = Sha256::digest(bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        assert_eq!(actual, expected);
+    });
+    let mut commits = 0;
+    for case in cases {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("target.accdb");
+        let bundle = directory.path().join("journal");
+        fs::write(&path, &case.before).unwrap();
+        let output = CLI.run(&[
+            "query",
+            "journal-insert",
+            &case.sql(),
+            "--database",
+            path.to_str().unwrap(),
+            "--journal",
+            bundle.to_str().unwrap(),
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stderr.is_empty());
+        assert_eq!(output.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(fs::read(&path).unwrap(), case.after);
+        assert!(!bundle.exists());
+        let query = format!(
+            "SELECT [ID] AS NewID, [Marker] AS NewMarker FROM [{}] WHERE [ID] = 401",
+            case.table
+        );
+        let read = CLI.run(&["query", "run", &query, "--database", path.to_str().unwrap()]);
+        assert!(
+            read.status.success(),
+            "{}",
+            String::from_utf8_lossy(&read.stderr)
+        );
+        assert!(read.stderr.is_empty());
+        assert_eq!(read.stdout, b"NewID\tNewMarker\n401\t6817\n");
+        let query = format!("SELECT Count(*) AS Total FROM [{}]", case.table);
+        let read = CLI.run(&["query", "run", &query, "--database", path.to_str().unwrap()]);
+        assert!(
+            read.status.success(),
+            "{}",
+            String::from_utf8_lossy(&read.stderr)
+        );
+        assert!(read.stderr.is_empty());
+        assert_eq!(read.stdout, b"Total\n401\n");
+        assert_eq!(fs::read(&path).unwrap(), case.after);
+        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        commits += 1;
+    }
+    assert_eq!(commits, 4);
+}

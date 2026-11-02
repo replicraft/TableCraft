@@ -59,6 +59,9 @@ introduced. BEFORE and AFTER retain the existing 64 MiB image ceiling.
 Existing indexed placement delegates to the current fitting index planner and
 its actual INSERT/DELETE action facts. That preserves existing I32/I64/Currency
 key profiles, aliases, histories, constraints and ownership. Qualified
+[coordinated wider root promotion](NORMAL_WIDE_ROOT_PROMOTION.md) now has a
+separate source-selected path with four represented EOF INDEX pages and existing
+DATA capacity. Qualified
 [fitting Short Binary secondary roots](NORMAL_BINARY_INDEX_INSERT.md) now also
 use this path; it does not widen
 indexed UPDATE's separate I32 target policy. Existing unindexed fixed-scalar
