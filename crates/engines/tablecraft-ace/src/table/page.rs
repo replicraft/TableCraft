@@ -19,7 +19,9 @@ use tablecraft_model::CatalogScope;
 use tablecraft_schema::{Column, validate_row};
 
 mod cursor;
+mod projection;
 mod records;
+pub use projection::read_table_projection_page;
 mod traversal;
 pub use cursor::{
     TableBatch, TableCursor, TableSnapshotLimits, read_table_batched, read_table_projection_batched,
@@ -135,6 +137,34 @@ pub(super) fn read_records<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PageRecords, InspectError> {
+    read_projected_records(
+        source,
+        schema,
+        RecordProjection {
+            columns,
+            selected: None,
+        },
+        request,
+        budget,
+        cancelled,
+    )
+}
+
+// A qualified borrowed layout, shared by ordinary/cached pages and explicit
+// scalar projections. This does not qualify new carriers on behalf of a caller.
+struct RecordProjection<'a> {
+    columns: &'a [Column],
+    selected: Option<&'a [usize]>,
+}
+
+fn read_projected_records<R: crate::NativeReadSource>(
+    source: &mut R,
+    schema: &TableSchema,
+    projection: RecordProjection<'_>,
+    request: TablePageRequest,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PageRecords, InspectError> {
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -152,7 +182,13 @@ pub(super) fn read_records<R: crate::NativeReadSource>(
             traversal.skip(&root)?;
             continue;
         }
-        let values = traversal.values(&root, &mut reader, schema, columns, None)?;
+        let values = traversal.values(
+            &root,
+            &mut reader,
+            schema,
+            projection.columns,
+            projection.selected,
+        )?;
         push(&mut rows, values, &mut reader)?;
     }
     reader.tick()?;

@@ -40,8 +40,9 @@ through cursor use, excluding cooperating exclusive writers without adding a
 live Access snapshot.
 
 The mode conflicts with `--all`, `--offset`, `--stored-calculations`, `--multivalues`
-and `--collections`. Those commands retain their existing page contracts. `--column`
-requires `--stream`. Native read limits also apply to explicit buffered
+and `--collections`. Those commands retain their existing page contracts.
+`--column` also selects explicit ordinary scalar fields for buffered pages.
+Native read limits also apply to explicit buffered
 `--collections`/`--multivalues` pages. `--native-bytes` also applies to ordinary
 buffered row pages, including container opening; `--native-rows` and
 `--native-steps` also apply to buffered browsing, which selects qualified stored
@@ -116,3 +117,14 @@ python3 docs/testing/compare_stream_rows.py \
 [Fixture provenance and hashes](../testing/FIXTURES.md#original-progressive-row-inputs) record
 the observed files. Native Access, live coordination and larger SQL execution
 remain separate qualification/implementation work.
+
+## Buffered column selection
+
+The same repeatable `--column NAME` option (alias `--columns`) now also selects
+ordinary scalar fields for buffered `rows --offset/--limit` pages. It no longer
+requires `--stream`. Default complete browsing remains unchanged without a
+selection. Explicit projection keeps native column order, complete fetched row
+framing and cumulative controls while omitting unselected collection payloads.
+Collection/cached mode flags conflict with ordinary scalar selection; templates
+refuse the option before table interpretation after normal inert package capture.
+See [buffered browsing](CLI_BROWSING.md) for the exact page and EOF boundary.

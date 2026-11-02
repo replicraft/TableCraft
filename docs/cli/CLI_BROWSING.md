@@ -95,6 +95,30 @@ reader, including cached calculations. There is no retry after a record failure,
 no omitted unsupported field and no implicit formula or attachment decoding.
 Collection views retain their complete parent/child snapshot limits.
 
+Explicit `rows PATH TABLE --column NAME` selects ordinary scalar columns for a
+buffered page as well as for streaming. Repeat the option (or its `--columns`
+alias) for more names. Resolution is ASCII-insensitive; missing or duplicate names
+fail, and selected columns retain native logical order rather than option order.
+Unselected fields stay visible in the returned engine schema but their payloads
+are omitted from this explicit view; they are never replaced by NULL.
+
+This uses `NativeBrowser::projected_page` and the engine's actual bounded page
+traversal. It does not load complete child collections or unselected attachment
+payloads. Usage maps, page/root structure and fetched record framing remain
+checked, along with selected values. Skipped and unvisited payloads are outside
+the page's qualification; only actual EOF validates the declared count. The
+existing offset, cumulative native controls, buffered output and failure boundaries
+remain. No complete snapshot/query cache is populated from this page.
+
+With no column selection, automatic complete-column/collection browsing above is
+unchanged. Explicit scalar selection conflicts with `--multivalues`, `--collections`
+and `--stored-calculations`; selected cached calculations and collection fields
+retain the ordinary scalar refusal. `--all` applies the selection to each local
+table under its original shared budget. Template packages refuse scalar selection
+before object/table interpretation rather than ignoring it; normal inert ZIP/OPC
+capture still occurs. This adds no formula execution or native Access comparison
+qualification. Lazy per-parent collection reads remain separate work.
+
 The display uses comfy-table Unicode borders when stdout is a terminal and
 TSV encoded by `csv::WriterBuilder` when redirected. Global `--format table` and `--format tsv` override
 this selection for `tables`, `rows`, `inspect` and `query run`/`query eval`.

@@ -1,3 +1,5 @@
+#[path = "automatic_browsing/projection.rs"]
+mod projection;
 use fixture as base;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]

@@ -1,5 +1,26 @@
 # Implementation status
 
+## Explicit scalar browsing pages
+
+`read_table_projection_page` and `NativeBrowser::projected_page` now expose bounded
+ordinary scalar subsets through the existing physical page traversal. Buffered
+CLI `rows --column NAME` shares the repeated selection option with streaming,
+including `--all`, and preserves native column order, original live-row offsets,
+complete native schema and truthful EOF. Unselected collection records/payloads
+are not loaded; default complete-column/collection browsing remains unchanged.
+Selected cached calculations and collection fields retain their ordinary scalar
+refusal. Template packages reject selection after inert capture, before table
+interpretation. This adds no lazy collection membership or complete query cache.
+See [native reading](access/NATIVE_READING.md#explicit-projected-scalar-pages)
+and [CLI browsing](cli/CLI_BROWSING.md).
+Ten focused functions and existing regressions pass: 95 engine functions,
+19 adapter functions, all 35 CLI browsing functions across the preserved first
+run and one test-only correction, plus existing streaming unit checks. Strict
+checks, minimal-feature builds and dependency guards pass. The
+[acceptance record](testing/results/projected-scalar-pages-2026-11-02.json)
+retains the first failure, narrow correction and a real example-database smoke
+run separately from native Access qualification.
+
 ## Fixed updates beside retained Binary indexes
 
 Normal native UPDATE now admits qualified dense declarations with retained scalar

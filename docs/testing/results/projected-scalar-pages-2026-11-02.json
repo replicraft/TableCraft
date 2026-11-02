@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable projected scalar page and CLI acceptance passed; native Access qualification separate",
+  "services": [
+    "read_table_projection_page",
+    "NativeBrowser::projected_page",
+    "buffered rows --column/--columns, including --all"
+  ],
+  "scope": "Explicit ordinary scalar selection in native logical order, full schema, original live offsets, checked EOF and cumulative native controls; defaults unchanged.",
+  "not_implemented_here": [
+    "lazy per-parent collections",
+    "coherent live-file refresh",
+    "complete query cache from a projected page",
+    "new carriers or formula execution"
+  ],
+  "new_tests": {
+    "engine": 3,
+    "adapter": 2,
+    "CLI": 5
+  },
+  "acceptance": {
+    "engine_functions": 95,
+    "adapter_functions": 19,
+    "CLI_first_passing_siblings": 34,
+    "CLI_corrected_function": 1,
+    "stream_unit_functions": 3
+  },
+  "first_results": [
+    {
+      "name": "feature-engine-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "table_projection",
+        "--test",
+        "table_pages",
+        "--test",
+        "table_rows",
+        "--test",
+        "stored_projection_cursor",
+        "--test",
+        "multivalue_pages",
+        "--test",
+        "attachment_metadata",
+        "--test",
+        "attachment_columns",
+        "--test",
+        "version_history"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        12,
+        4,
+        8,
+        3,
+        35,
+        8,
+        11,
+        14
+      ],
+      "accepted": true,
+      "log_sha256": "9a92d90b08d39af7125e6b5cc2239735ad45b4b85b3c76829b51c1acf92c87ee"
+    },
+    {
+      "name": "feature-access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "automatic_browsing",
+        "--test",
+        "browsing"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6,
+        13
+      ],
+      "accepted": true,
+      "log_sha256": "8a91121abac860cf76633080ae8e081d261d5533102a51d34e43c9a6b7cd4ddc"
+    },
+    {
+      "name": "feature-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "log_sha256": "08e90577e5133392c56db34a5ddb0a24ecaad65f2e978fdede61a9778df12b4b"
+    }
+  ],
+  "successor_results": [
+    {
+      "name": "feature-cli-message-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "projection::cached_selection_is_explicit_and_name_envelope_is_bounded_before_open",
+        "--",
+        "--exact"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "6422b308a8ef5b2b0ffe27de89de9273faa0e64c4cdefa44e0aef3f7ac6ab065"
+    },
+    {
+      "name": "feature-stream-unit-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--bin",
+        "tablecraft",
+        "commands::rows::stream::tests"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true,
+      "log_sha256": "11d19685d8a46e0633b0d7b4c82c36d072d88848b87205e2f7786ec35b181e28"
+    },
+    {
+      "name": "feature-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "4be17c80ccb477a789df74d1056ef145bf07fd33d0ce39191b6924a3d76d1344"
+    },
+    {
+      "name": "feature-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "34c532912828f8716356871d13f897035a8f885c72b1699657b31d4437e62b3f"
+    },
+    {
+      "name": "feature-boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "feature-links-first",
+      "argv": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "c4784ff58caa1d3c2a5049a27438745e3707d0571cad7b3d3f1f345af6edbed7"
+    },
+    {
+      "name": "feature-format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "first_failure_correction": "One new test expected structure while the existing error says structural. Corrected only the test to exact mode-specific existing messages; 34 passing CLI siblings retained, failed function rerun alone. No production/oracle changes.",
+  "evidence": [
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 18093,
+      "sha256": "e2b6471f34f56d0d14a17093a5e33dd0c1436fefc835098c0bb2234d9dcf0eb5"
+    },
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/implementation-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 4418,
+      "sha256": "70424f31467d6dc18a26d2aa3b51ff8f9d9e1b9de1df59c124c0947d261bd231"
+    },
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/root-first/feature-installation.json",
+      "bytes": 230,
+      "sha256": "6bb511a65f84b60dfe4dedf4a5af55988169e1df1a8777d2276153dc67517cc4"
+    },
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/root-first/feature-results-first.json",
+      "bytes": 1581,
+      "sha256": "499cf6a03432b554d1117d1b6bb2a1205e2a5cb548d9cd74fb294581d56471c8"
+    },
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/root-first/cli-message-successor.json",
+      "bytes": 487,
+      "sha256": "1d82cb3ab30d6f290f71babb2aa9e7f4043b8fcd390a2777d25408367d2d89e7"
+    },
+    {
+      "path": ".cache/ace16-projected-browsing-next-20261102/root-first/feature-results-second.json",
+      "bytes": 2750,
+      "sha256": "e85d280f7d63072721bc862c2b9c72f159184478ec9ecc4979c35ecf30bd1c0a"
+    }
+  ],
+  "manual_CLI_smoke": {
+    "fixture": {
+      "path": "docs/examples/Access_Example_VBA.accdb",
+      "bytes": 3387392,
+      "sha256": "3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf"
+    },
+    "arguments": [
+      "--format",
+      "tsv",
+      "rows",
+      "docs/examples/Access_Example_VBA.accdb",
+      "ROULETTE_TB",
+      "--column",
+      "ORDR_NBR",
+      "--column",
+      "NBR_VALUE",
+      "--limit",
+      "3"
+    ],
+    "exit": 0,
+    "columns": [
+      "ORDR_NBR",
+      "NBR_VALUE"
+    ],
+    "rows_returned": 3,
+    "fixture_profile": "ACE 2007 example; no ACE 16 or Windows qualification inferred from this smoke check"
+  },
+  "native_Access_comparison": "unrun"
+}

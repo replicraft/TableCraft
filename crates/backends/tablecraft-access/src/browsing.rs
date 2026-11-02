@@ -3,6 +3,7 @@ mod automatic;
 pub use automatic::BrowsePage;
 mod cursor;
 mod description;
+mod projection;
 pub use cursor::{BrowserCursor, TableBatch};
 pub use description::TableDescription;
 pub use tablecraft_ace::NativeTableStorage;

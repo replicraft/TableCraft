@@ -1592,6 +1592,12 @@ contract retains the primary references, algorithms, provenance and exact limits
    preserving separate row/work/execution/output limits and the default budget.
    [CLI scalar row continuation](cli/STREAMING_ROWS.md) now uses one source-bound cursor,
    explicit scalar projections and cumulative read/output controls.
+   [Explicit buffered scalar pages](access/NATIVE_READING.md#explicit-projected-scalar-pages)
+   now use the same physical page traversal and qualified scalar selection,
+   retaining offsets, complete schema and checked EOF while avoiding unselected
+   child records/payloads. CLI `rows --column` consumes that service, including
+   `--all`. Default complete collection browsing remains unchanged; lazy per-parent
+   collection membership and payload retrieval remain separate work.
    Ordinary SQL execution remains buffered; explicit
    [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
    cursors without complete-table retention. Explicit positive sorted TOP instead
