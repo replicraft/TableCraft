@@ -31,9 +31,17 @@ fn lossy_unicode_aliases_undefined_tokens_and_invalid_raw_sources_are_refused() 
     ] {
         assert!(run(sql).is_err(), "{sql}");
     }
+    // Concatenation joins the two active bytes without Unicode publication.
+    // F0 40 is also the little-endian payload of ChrW(16624) below; the explicit
+    // WHATWG decoder accepts this pair, without a Windows/NLS equivalence claim.
     assert_eq!(
-        run("SELECT StrConv(ChrB(240)&ChrB(64),64,1041)"),
-        Err(QueryError::Evaluation(EvalError::UnrepresentableText))
+        run("SELECT LenB(ChrB(240)&ChrB(64)),AscB(ChrB(240)&ChrB(64)),AscB(MidB(ChrB(240)&ChrB(64),2,1)),StrConv(ChrB(240)&ChrB(64),64,1041)").unwrap(),
+        [vec![
+            Value::Int32(2),
+            Value::Int16(240),
+            Value::Int16(64),
+            Value::Text("\u{e000}".into()),
+        ]]
     );
 
     for (bytes, text) in [("ChrB(128)", "\u{80}"), ("ChrW(16624)", "\u{e000}")] {
