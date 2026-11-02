@@ -1,0 +1,126 @@
+{
+  "date": "2026-11-01",
+  "scope": "Independent retained numeric NODE, external LVAL reuse and Increment companion Source before matching writers",
+  "families": {
+    "retained_numeric_node": {
+      "source_gate_checkpoint_sha256": "74be1da47e7af6e328a0c86ee097f97a5ee05f6719475ff3efb82feccc5c8f36",
+      "source_manifest_sha256": "1e8c6815f0a145f66b049464bf729c7abb7ca4f2d75aefb4dc68b74a7d10a117",
+      "independent_result_sha256": "b34dd6adc07bdeb34ece66d2205fe55ed04159ef82c5e7edd06b8b8f76438206",
+      "views": 20,
+      "native_before_after_checks": 40,
+      "sdk_reads": 20,
+      "native_log_sha256": "a78ae723087d5056f5ad2cba54385daf7f1b0567483e3c2ae62234daf6cbaeb6",
+      "command_filter": "wide_node_update_sources::wider_node_update_sources_require_full_independent_replay_and_complete_current_source",
+      "source_environment": "TABLECRAFT_WIDE_NODE_UPDATE_SOURCE_DIR",
+      "native_gate_passed_functions": 1,
+      "policy": "Explicit format-valid stable-count existing-tree repack; no SDK/native save byte identity claim.",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "wide_node_update_sources::wider_node_update_sources_require_full_independent_replay_and_complete_current_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ]
+    },
+    "external_lval_reuse": {
+      "original_source_checkpoint_sha256": "d531db73bde5772c8efe5f43ee79acdf0157accd0400223c0ec3a6fe32d4b301",
+      "report_successor_sha256": "fc6cb8e7594ad127b3a8f0cd29e4add590e0e92863a0c9bd6b219621e37854f3",
+      "source_manifest_sha256": "1d1b8bfc50336ea16692004b3b3ec23a356260e003fc7e23eb87867d9a6be782",
+      "independent_result_sha256": "bf9c6b871b0bdf69100331d50decf15856b508ce232a61c02cc6454ec8e19631",
+      "views": 32,
+      "unique_images": 24,
+      "sdk_reads": 32,
+      "no_after_refusal_requests": 16,
+      "native_log_sha256": "3edae164dfac9cb9f9e8aec8d399745118d4dbe776e3f4fdc601b36779e16611",
+      "command_filter": "external_lval_reuse_sources_read_full_rows_aliases_orphans_and_ordinary_source",
+      "source_environment": "TABLECRAFT_EXTERNAL_LVAL_UPDATE_SOURCE_DIR",
+      "native_gate_passed_functions": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "external_lval_reuse_sources_read_full_rows_aliases_orphans_and_ordinary_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ]
+    },
+    "increment_companion_before": {
+      "genuine_original_checkpoint_sha256": "98556617e2c59c8120e6015bec81cfa244b91b255a8c0698b6f1cfccc079752b",
+      "before_package_sha256": "b0ff85ade0d97582a669acce1d98afb2ca87bbf02b9a3db9c3e388895473b676",
+      "sdk_closure_sha256": "e83ff2d4d3c8fcb3b84df13abc9b55a32b997c0b69713661f3853526b926f9ba",
+      "source_manifest_sha256": "979cd4d82bd4a4c846de718a665e76e9f798f84c18c336aecbc7eef6d278f751",
+      "independent_result_sha256": "4d847a190b98259d4755b9e08eb01d809409272c82d9c8aa8dfeacab22dda59b",
+      "genuine_original_views": 2,
+      "new_before_views": 18,
+      "sdk_reads": 18,
+      "genuine_original_log_sha256": "d777745420acbe81bfd2044f235e26527890750786e4e5986f2ee3d41339f8d4",
+      "native_log_sha256": "b6acfb0d4d5366d4bc4c32467014a336fd9c397570171373c644b14344ffaabc",
+      "command_filter": "table::mutation::normal_insert::incrementing::companion_sources::companion_originals_preserve_variable_fixed_and_inactive_carriers_before_generation",
+      "source_environment": "TABLECRAFT_INCREMENT_COMPANION_SOURCE_DIR",
+      "native_gate_passed_functions": 1,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_insert::incrementing::companion_sources::companion_originals_preserve_variable_fixed_and_inactive_carriers_before_generation",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "genuine_original_argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_insert::incrementing::companion_original_sources::existing_numbered_originals_bind_middle_generator_aliases_deleted_high_and_actual_counter_source",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ]
+    }
+  },
+  "lint": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "tablecraft-ace",
+      "-p",
+      "tablecraft-testkit",
+      "--all-features",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "log_sha256": "e973872c9ac03ae77390dd20682bb3f1a63e89071c2d790ce1665ae4affae1dc"
+  },
+  "retained_lint_failure": {
+    "reason": "A source assertion converted Vec<u8> to the same type. Removed only the redundant into(); values and goldens unchanged.",
+    "log_sha256": "7ddb219aa9cb472d1ecb6a442ed2bca8e8c73c40da68495df1f52251b6f3b673"
+  },
+  "verification_scope": "Focused Source gates and strict engine/testkit lint; no full-suite rerun for these read-only additions. Saved SDK verifiers used zero children.",
+  "qualification": "No matching writer installed/invoked during these gates; native Access save/reopen unrun."
+}

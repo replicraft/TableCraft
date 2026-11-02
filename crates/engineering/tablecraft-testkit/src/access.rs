@@ -325,3 +325,5 @@ pub mod genuine_wide_update;
 pub mod genuine_inline_lval_update;
 
 pub mod normal_clock_defaults;
+
+pub mod genuine_wide_node_update;
