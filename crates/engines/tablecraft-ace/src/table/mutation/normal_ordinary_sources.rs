@@ -220,3 +220,6 @@ mod inline_lval_update;
 
 #[cfg(test)]
 mod normal_clock_defaults;
+
+#[cfg(test)]
+mod external_lval_originals;

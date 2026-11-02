@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-01",
+  "scope": "Current original-only native Source before retained numeric NODE and external long reuse UPDATE models",
+  "gates": [
+    {
+      "family": "wide-retained-node",
+      "checkpoint_sha256": "35c9ade8935886e86b6632b7b2141f9ac37b49ff76a8e4080830380b02ed76e2",
+      "original_views": 4,
+      "rows": 1600,
+      "wide_roots": 8,
+      "wide_leaves": 16,
+      "logical_alias_reads": 16,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "wide_node_original_sources::wide_node_originals_require_current_native17_source_and_complete_owned_trees",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "source_environment": "TABLECRAFT_WIDE_NODE_SOURCE_REPO",
+      "returncode": 0,
+      "passed_functions": 1,
+      "log_sha256": "cc30aadb28bc7e26f209875640f3bc459b6d6ddeff82da9750499b11248c0d36"
+    },
+    {
+      "family": "external-long",
+      "checkpoint_sha256": "68ee0d594d91afbaaf7d2fa8f55927c7631291fb98227a53ad25a34519497df4",
+      "original_views": 4,
+      "rows_per_original": 6,
+      "logical_alias_reads_per_original": 4,
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "external_lval_sdk_originals_have_full_current_ordinary_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "source_environment": "TABLECRAFT_EXTERNAL_LVAL_ORIGINALS_DIR",
+      "returncode": 0,
+      "passed_functions": 1,
+      "log_sha256": "cbe8c6a7f1c81d9897a25cc6b513e96ce617664da2a1cff9d3443e615a578b72"
+    }
+  ],
+  "lint": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "log_sha256": "c2a03b4a94d965529b704800024d0e82bb29bc4c7189fa5c81dd48a93f6e2e4f"
+  },
+  "qualification": "Original-only native read/Source checks before new AFTER models/constructors. No matching writer or native Access save/reopen qualification."
+}
