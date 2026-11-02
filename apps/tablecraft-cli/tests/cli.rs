@@ -11,7 +11,8 @@ fn help_states_actual_capabilities_without_a_display() {
         let text = String::from_utf8(output.stdout).unwrap();
         assert!(text.contains("Usage: tablecraft"));
         assert!(text.contains("Query update creates a fresh offline Jet 4 copy"));
-        assert!(text.contains("In-place CLI editing and GUI hosts are not implemented."));
+        assert!(text.contains("Query journal-update/recover-update explicitly edit or recover"));
+        assert!(text.contains("GUI hosts are not implemented."));
     }
 }
 

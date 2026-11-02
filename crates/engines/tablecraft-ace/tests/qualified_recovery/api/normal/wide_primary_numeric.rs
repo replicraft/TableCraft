@@ -2,7 +2,7 @@
 use super::{Storage, budget, model as journals, scope};
 use journals::Marker;
 use sha2::{Digest, Sha256};
-use std::{fs, io::Cursor, path::PathBuf};
+use std::{collections::BTreeSet, fs, io::Cursor, path::PathBuf};
 use tablecraft_ace::{
     EditError, IndexConstraintViolation, InspectError, NativeDeleteIntent, NativeImage,
     NativeInsertIntent, RecoverableEditError, RowDelete, RowInsert, WriteBlocker,
@@ -268,6 +268,9 @@ fn wire(case: &Case) -> Vec<u8> {
 #[test]
 #[ignore = "requires48 native/SDK-qualified fresh numeric source views"]
 fn wide_primary_actions_retain_exact_original_carriers_histories_and_wires() {
+    let mut originals = BTreeSet::new();
+    let mut empty_plans = 0;
+
     for case in cases() {
         let mut target = Storage::new(case.before.clone());
         let mut journal = Storage::new(Vec::new());
@@ -319,17 +322,33 @@ fn wide_primary_actions_retain_exact_original_carriers_histories_and_wires() {
             );
         }
         assert_eq!(target.bytes.get_ref(), &case.after);
-        let empty_insert = image(&case.before)
-            .plan_recoverable_ordinary_row_inserts(case.table, Vec::new(), &mut budget(), &|| false)
-            .unwrap();
-        assert_eq!(empty_insert.inserted_rows(), 0);
-        assert_eq!(empty_insert.after_bytes(), case.before);
-        let empty_delete = image(&case.before)
-            .plan_recoverable_ordinary_row_deletes(case.table, Vec::new(), &mut budget(), &|| false)
-            .unwrap();
-        assert_eq!(empty_delete.deleted_rows(), 0);
-        assert_eq!(empty_delete.after_bytes(), case.before);
+        if originals.insert((case.table, digest(&case.before))) {
+            let empty_insert = image(&case.before)
+                .plan_recoverable_ordinary_row_inserts(
+                    case.table,
+                    Vec::new(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+            assert_eq!(empty_insert.inserted_rows(), 0);
+            assert_eq!(empty_insert.after_bytes(), case.before);
+            let empty_delete = image(&case.before)
+                .plan_recoverable_ordinary_row_deletes(
+                    case.table,
+                    Vec::new(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+            assert_eq!(empty_delete.deleted_rows(), 0);
+            assert_eq!(empty_delete.after_bytes(), case.before);
+            empty_plans += 2;
+        }
     }
+
+    assert_eq!(originals.len(), 4);
+    assert_eq!(empty_plans, 8);
 }
 
 #[test]
