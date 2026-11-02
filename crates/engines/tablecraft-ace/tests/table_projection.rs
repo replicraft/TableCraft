@@ -1,5 +1,7 @@
 #[path = "table_projection/cursor.rs"]
 mod cursor;
+#[path = "table_projection/pages.rs"]
+mod pages;
 use std::io::Cursor;
 use tablecraft_ace::{InspectError, read_table, read_table_projection};
 use tablecraft_core::{limits::ResourceBudget, values::Value};

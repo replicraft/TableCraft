@@ -6,7 +6,6 @@ use tablecraft_access::{BrowserCursor, NativeBrowser};
 use tablecraft_core::limits::ResourceBudget;
 
 const MAX_STREAM_OUTPUT_BYTES: u64 = 256 * 1024 * 1024;
-const MAX_SELECTED_COLUMNS: usize = 256;
 
 fn operation(error: impl std::fmt::Display) -> ExecutionError {
     ExecutionError::Operation(error.to_string())
@@ -23,7 +22,7 @@ impl Args {
         if matches!(format, Format::Table) {
             return Err(operation("streaming rows require TSV; omit --format table"));
         }
-        if self.columns.len() > MAX_SELECTED_COLUMNS {
+        if !self.projection_fits() {
             return Err(operation("too many selected streaming columns"));
         }
         let mut budget = ResourceBudget::new(
@@ -32,14 +31,14 @@ impl Args {
             self.native_steps.unwrap_or(native::DEFAULT_NATIVE_STEPS),
         );
         let source = native::open(&self.path, password, &mut budget).map_err(operation)?;
-        budget
-            .charge_allocation(self.columns.len() as u64, size_of::<&str>() as u64)
-            .map_err(operation)?;
-        let mut names = Vec::new();
-        names
-            .try_reserve_exact(self.columns.len())
-            .map_err(|_| operation("streaming column allocation failed"))?;
-        names.extend(self.columns.iter().map(String::as_str));
+        let names = self
+            .projection_names(&mut budget)
+            .map_err(|error| match error {
+                tablecraft_ace::InspectError::Allocation => {
+                    operation("streaming column allocation failed")
+                }
+                error => operation(error),
+            })?;
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
         let table =
             super::selected_table(&mut browser, self.table.as_deref()).map_err(operation)?;

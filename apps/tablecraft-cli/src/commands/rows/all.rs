@@ -6,6 +6,7 @@ use tablecraft_access::{CollectionPageRequest, NativeBrowser, NativeTableStorage
 pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
     browser: &mut NativeBrowser<'_, R>,
     args: &Args,
+    names: &[&str],
     request: CollectionPageRequest,
     format: Format,
 ) -> Result<String, Error> {
@@ -24,7 +25,7 @@ pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
         section.newline().map_err(Error::Output)?;
         section.table_section().map_err(Error::Output)?;
         let text = match entry.storage() {
-            Some(NativeTableStorage::Local) => read_page(browser, name, request, args)?,
+            Some(NativeTableStorage::Local) => read_page(browser, name, request, args, names)?,
             _ => "Status\nExternal or unknown source not opened\n".to_owned(),
         };
         section.display(&text).map_err(Error::Output)?;

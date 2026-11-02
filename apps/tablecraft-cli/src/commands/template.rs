@@ -138,7 +138,7 @@ pub(super) fn rows(
     budget: &mut ResourceBudget,
     format: Format,
 ) -> Result<String, Error> {
-    if args.multivalues {
+    if args.multivalues || !args.columns.is_empty() {
         return Err(Error::Template(TemplateError::Unsupported));
     }
     let objects = package

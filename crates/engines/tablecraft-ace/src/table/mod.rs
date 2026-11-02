@@ -80,7 +80,7 @@ pub use indexes::{
 };
 pub use page::{
     TableBatch, TableCursor, TablePage, TablePageRequest, TableSnapshotLimits, read_table_batched,
-    read_table_page, read_table_projection_batched,
+    read_table_page, read_table_projection_batched, read_table_projection_page,
 };
 pub(crate) use security_identifiers::remask;
 mod row_reference;

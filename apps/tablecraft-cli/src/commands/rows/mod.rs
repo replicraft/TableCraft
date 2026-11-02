@@ -9,6 +9,7 @@ use tablecraft_core::values::Value;
 mod all;
 mod collections;
 mod multivalue;
+mod projection;
 pub(in crate::commands) mod stream;
 
 pub(crate) const DEFAULT_PAGE_ROWS: u32 = 100;
@@ -27,8 +28,8 @@ pub(crate) struct Args {
     /// Stream all ordinary scalar rows as TSV batches; later errors may follow earlier output.
     #[arg(long, conflicts_with_all = ["all", "offset", "stored_calculations", "multivalues", "collections"])]
     pub(super) stream: bool,
-    /// Ordinary scalar column to stream; repeat for a subset of a mixed schema.
-    #[arg(long = "column", requires = "stream")]
+    /// Ordinary scalar column to display or stream; repeat for a mixed-schema subset.
+    #[arg(long = "column", visible_alias = "columns", conflicts_with_all = ["multivalues", "collections", "stored_calculations"])]
     pub(super) columns: Vec<String>,
     /// Cumulative native read/container bytes, including temporary extraction and failures.
     #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
@@ -62,6 +63,9 @@ impl Args {
         format: crate::presentation::Format,
         password: Option<&str>,
     ) -> Result<String, Error> {
+        if !self.projection_fits() {
+            return Err(Error::Read(InspectError::StructureLimit));
+        }
         let page = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
         let row_allowance = self.native_rows.unwrap_or(native::DEFAULT_NATIVE_ROWS);
         let maximum_rows =
@@ -82,12 +86,13 @@ impl Args {
             return super::template::rows(&package, &self, &mut budget, format);
         }
         let source = native::open(&self.path, password, &mut budget).map_err(Error::Input)?;
+        let names = self.projection_names(&mut budget).map_err(Error::Read)?;
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
         if self.all {
-            all::run(&mut browser, &self, request, format)
+            all::run(&mut browser, &self, &names, request, format)
         } else {
             let table = selected_table(&mut browser, self.table.as_deref())?;
-            let text = read_page(&mut browser, &table, request, &self)?;
+            let text = read_page(&mut browser, &table, request, &self, &names)?;
             format.render(text).map_err(Error::Output)
         }
     }
@@ -98,7 +103,17 @@ fn read_page<R: tablecraft_ace::NativeReadSource>(
     table: &str,
     request: CollectionPageRequest,
     args: &Args,
+    names: &[&str],
 ) -> Result<String, Error> {
+    if !names.is_empty() {
+        let page = browser
+            .projected_page(table, names, request.page())
+            .map_err(Error::Read)?;
+        return display_rows(
+            page.columns().iter().map(|column| (column.name(), false)),
+            page.rows(),
+        );
+    }
     if args.multivalues {
         let page = browser
             .multivalue_page_with_request(table, request)

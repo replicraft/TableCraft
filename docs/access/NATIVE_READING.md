@@ -361,3 +361,24 @@ The browser retains cumulative controls, output remains buffered under its own
 ceiling, and attachment data stays encoded. See [request, scope and independent
 evidence](collections/LARGER_NATIVE_COLLECTIONS.md#buffered-larger-cli-pages). Inspection and
 ordinary scalar browsing defaults remain unchanged.
+
+## Explicit projected scalar pages
+
+`read_table_projection_page` and the adapter's `NativeBrowser::projected_page`
+reuse ordinary bounded page traversal with explicitly qualified scalar positions.
+They retain the complete native schema, selected logical-order columns, original
+live-row offset and checked `reached_end` state. Unknown or unsupported unselected
+payloads and collection children are omitted from this requested view; selected
+unknown/duplicate/missing columns fail before user rows. Fetched complete record
+framing remains checked even for an empty engine projection.
+
+Default full-column/collection pages are unchanged. Offset-skipped payloads and an
+unvisited suffix remain outside page validation, and EOF alone checks declared
+live-row totals. Budgets/cancellation stay cumulative and no partial page is
+returned on failure. This extends an existing projection service to bounded
+pages; native Access compatibility and whole-file integrity remain separate
+qualification work.
+
+The [projected-page acceptance record](../testing/results/projected-scalar-pages-2026-11-02.json)
+covers engine, browser and CLI controls, retained regressions and the preserved
+first test diagnostic correction. Native Access comparisons remain unrun.
