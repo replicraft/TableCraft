@@ -1,4 +1,5 @@
-//! Independent original-partition pruning for the qualified height-one profile.
+//! Independent original-partition pruning for qualified normal profiles.
+mod recursive;
 use super::super::{
     tree::{Node, Tree},
     vector, wire,
@@ -98,6 +99,11 @@ impl Tree {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u32>, EditError> {
+        if self.root.height == 2 {
+            return recursive::reconstruct(
+                self, image, original, removed, expected, budget, cancelled,
+            );
+        }
         check(budget, cancelled)?;
         self.original(original, budget, cancelled)?;
         let root = &self.root;

@@ -1,4 +1,5 @@
-//! Original-partition deletion and qualified height-one child retirement.
+//! Original-partition deletion and qualified child retirement.
+mod recursive;
 use super::super::{
     encoding,
     profile::SingleProfile,
@@ -46,6 +47,20 @@ pub(super) fn patches(
         return Err(EditError::Preservation);
     }
     if contraction {
+        if tree.height() == 2 {
+            return recursive::patches(
+                image,
+                reader,
+                recursive::Operation {
+                    tree,
+                    keys,
+                    index,
+                    references,
+                    profile,
+                },
+                output,
+            );
+        }
         let start = index.root_page() as usize * PAGE_BYTES;
         let raw = image
             .as_bytes()

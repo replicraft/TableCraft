@@ -803,3 +803,6 @@ mod creation_date_defaults;
 
 #[path = "normal/text_storage_carriers.rs"]
 mod text_storage_carriers;
+
+#[path = "normal/genuine_recursive_retirement.rs"]
+mod genuine_recursive_retirement;

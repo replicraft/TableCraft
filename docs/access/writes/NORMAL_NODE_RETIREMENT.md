@@ -40,7 +40,8 @@ empty follow-ons, and twelve CLI saves/readbacks pass. Earlier non-retiring NODE
 regressions pass; the old child-emptying refusal now checks the separately
 qualified LEFT/ALL images and keeps its reserved-stamp denial.
 
-Deeper retirement, NULL/DESC retirement, DATA-page retirement, nonempty root
+The separate [height-two profile](NORMAL_RECURSIVE_NODE_RETIREMENT.md) now
+supports qualified deeper retirement. NULL/DESC retirement, DATA-page retirement, nonempty root
 promotion and a second nonempty retirement from an already single-child source
 remain work. The sole-child AFTER is readable and accepts empty plans. Native
 Access save/reopen and Windows qualification remain unrun.
@@ -54,4 +55,5 @@ The later [recursive source gate](../../testing/results/ace16-recursive-retireme
 passes six independently modeled height-two views and twelve read-only SDK
 observations before matching recursive producers. It checks original partitions,
 fences, sibling chains, exact retirement cells and current complete native Source
-admission. This is source qualification; recursive mutation remains separate work.
+admission. Matching mutation is now qualified separately in the height-two
+contract above.
