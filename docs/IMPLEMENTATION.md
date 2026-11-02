@@ -1,5 +1,14 @@
 # Implementation status
 
+## Next write sources qualified
+
+[Wider numeric, inline Memo/OLE and Date/Now sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md)
+now pass native Source checks and independent inert readers before their matching
+writers. Wider UPDATE has 48 complete views and 408 reports; inline UPDATE has
+28 contexts/24 unique images and 28 reports; clock defaults have eighteen views
+and eighteen reports. These are source/read qualification gates, not completed
+mutation or native Access execution/save evidence.
+
 ## Fresh Increment declarations
 
 Both native creation services and the CLI now author an explicitly selected

@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-01",
+  "scope": "Read-only Source qualification before wider indexed UPDATE, inline Memo/OLE UPDATE and Date/Now default writers",
+  "tests": [
+    {
+      "name": "wide-original",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "wide_update_original_sources::wider_indexed_update_originals_require_actual_native17_source_and_all_alias_reads",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "8ae6323d76b9041d3304c6048c05972f8edb1263fc5898fc46e1451628ee9c25"
+    },
+    {
+      "name": "inline-update",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "inline_lval_update_literals_have_complete_read_and_ordinary_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "5160f34fcefce79c180a63b525d819e947a75cea0546d2bb2f1a9eeed797b2ca"
+    },
+    {
+      "name": "clock-defaults",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "date_now_sources_have_exact_raw_bits_presence_properties_and_complete_action_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "179034abf8382dfc2b479e871fee708772cb7c31a3beb9897b4bd0f91784d5b1"
+    },
+    {
+      "name": "wide-complete-after-sources",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "wide_update_sources::wider_indexed_update_sources_require_complete_raw_replay_native_source_and_all_aliases",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "e3b4f7d0ead98307f65370f6974b358ab0421c0fb68108a5ea55835c3f4c2951"
+    }
+  ],
+  "families": {
+    "wide_numeric": {
+      "original_views": 4,
+      "target_tables": 8,
+      "complete_views": 48,
+      "request_contexts": 48,
+      "native_before_after_checks": 96,
+      "inert_sdk_reports": 408,
+      "saved_verifier_children": 0,
+      "source_manifest_sha256": "cb2c3e3956793c0df9b02da14269ef660796aae47fe492561a4fced37f460c00",
+      "independent_result_sha256": "3c2ff1169d36568ba83f7e425e4d22273c231ca46caac2202e28bb0b6d29cce2",
+      "source_gate_checkpoint_sha256": "10be751df56ef81dbba6db1ed30641dec414f8d84913063d4f706afc535bead0"
+    },
+    "inline_lval": {
+      "unique_images": 24,
+      "request_contexts": 28,
+      "inert_sdk_reports": 28,
+      "saved_verifier_children": 0,
+      "source_manifest_sha256": "eacf49ab1528ae1c46b81c191a0c40f3b94468771ae4aeff7a8170a2411d2f80",
+      "independent_result_sha256": "a7ebd8e325a3b575eb5be9491f9a33136fa827ae31ce20e7f26fa0715590d359",
+      "source_checkpoint_sha256": "19d828bd8600879c747631c164ace7717177f01d6bd8799888db4be6a589fe12"
+    },
+    "clock_defaults": {
+      "complete_views": 18,
+      "inert_sdk_reports": 18,
+      "saved_verifier_children": 0,
+      "source_manifest_sha256": "14e3fe58a599a9a23b61305137d90e60a3ecff30249ed68bcba4ba4427023ebb",
+      "independent_result_sha256": "6adf38aa9c7f69752cbf68c12015eeb3336635a232f6aff912062dd875788992",
+      "source_checkpoint_sha256": "767e752d62813faf4969c68c8699f4c21f2119d48b8555e6b7a0f3f7b3810647",
+      "sdk_historical_binding_checkpoint_sha256": "a866b86c3a21e1a79e1346e55ea1960fa664eb64fd2a19506ab65356d760d3e7"
+    }
+  },
+  "integration_note": "Strict lint found one unnecessary expected-row clone in the inline source gate; replaced only the test comparison with slice::from_ref. First lint failure is retained.",
+  "boundary": "No matching wider/inline/clock writer was installed or invoked for these gates. Existing native read/Source and independent inert SDK observations are not native Microsoft Access save/reopen or stored-default execution qualification.",
+  "combined_validation_record": "ace16-creation-and-write-source-checks-2026-11-01.json"
+}
