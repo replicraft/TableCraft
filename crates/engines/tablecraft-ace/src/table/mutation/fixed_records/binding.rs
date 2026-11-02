@@ -1,5 +1,5 @@
 //! Complete joint target and carrier preflight before any record visitor.
-use super::indexed::CheckedIndexes;
+use super::indexed::{CheckedIndexes, IndexTargets};
 use super::name_work;
 use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpdates};
 use crate::{
@@ -72,6 +72,37 @@ fn all_with_minimum(
     groups: &[FixedColumnUpdates<'_>],
     minimum: usize,
     indexed: Option<&CheckedIndexes<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    all_with_targets(
+        source,
+        groups,
+        minimum,
+        indexed.map(|facts| facts as &dyn IndexTargets),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_integral(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::integral_updates::IntegralUpdates<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    indexed.require_source(image, source.table.schema(), budget, cancelled)?;
+    all_with_targets(source, groups, 1, Some(indexed), budget, cancelled)
+}
+
+fn all_with_targets(
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    minimum: usize,
+    indexed: Option<&dyn IndexTargets>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
@@ -149,7 +180,7 @@ fn qualify_with_indexes(
     source: &Source,
     column: usize,
     updates: &[FixedScalarUpdate],
-    indexed: Option<&CheckedIndexes<'_>>,
+    indexed: Option<&dyn IndexTargets>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {

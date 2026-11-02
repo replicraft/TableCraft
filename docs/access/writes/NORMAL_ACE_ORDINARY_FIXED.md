@@ -57,7 +57,9 @@ This selected-table family also supports unindexed updates beside
 [unchanged Byte/Int16/Int64/Currency indexes](NORMAL_ACE_RETAINED_NUMERIC.md),
 using complete-owned generic checks and actual catalog member-role exclusion.
 Its wider readonly index policy does not expand the global closed family or
-permit those indexed fields as mutation targets.
+permit those indexed fields as mutation targets. A separate
+[qualified numeric UPDATE route](NORMAL_WIDE_INDEX_UPDATE.md) now maintains
+fitting Int64/Currency root leaves under its own complete schema/index checks.
 
 A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
 now admits the exact native seventeen-field catalog through a strict conjunction:

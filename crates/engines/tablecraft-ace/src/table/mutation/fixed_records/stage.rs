@@ -142,6 +142,20 @@ pub(in crate::table::mutation) fn prepare_indexed(
     compose(image, source, groups, bound, capacity, budget, cancelled)
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_integral(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::integral_updates::IntegralUpdates<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) =
+        binding::all_integral(image, source, groups, indexed, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
 fn compose(
     image: &NativeImage,
     source: &Source,

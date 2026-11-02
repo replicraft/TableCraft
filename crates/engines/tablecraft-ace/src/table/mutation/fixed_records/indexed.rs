@@ -2,6 +2,8 @@
 #[cfg(feature = "journal")]
 mod actions;
 #[cfg(feature = "journal")]
+pub(in crate::table::mutation) mod integral_updates;
+#[cfg(feature = "journal")]
 mod text_updates;
 use crate::{
     EditError, NativeImage, TableCheck, TableSchema, WriteBlocker, format::data_type::INT32,
@@ -119,5 +121,48 @@ impl<'image> CheckedIndexes<'image> {
         // The ordinary field writer separately checks writable/generated flags
         // and span overlap. This token never converts a counter into a target.
         Ok(())
+    }
+}
+
+/// Borrowed captured index facts used by joint fixed record binding and proof.
+/// This qualifies a target only; Source, physical proof and journaling remain
+/// owned by the operation. External callers cannot implement this private trait.
+pub(in crate::table::mutation) trait IndexTargets {
+    #[cfg(feature = "journal")]
+    fn require_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError>;
+    fn require_target(
+        &self,
+        schema: &TableSchema,
+        position: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError>;
+}
+
+impl IndexTargets for CheckedIndexes<'_> {
+    #[cfg(feature = "journal")]
+    fn require_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        CheckedIndexes::require_source(self, image, schema, budget, cancelled)
+    }
+    fn require_target(
+        &self,
+        schema: &TableSchema,
+        position: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        CheckedIndexes::require_target(self, schema, position, budget, cancelled)
     }
 }

@@ -818,3 +818,6 @@ mod text_azl;
 
 #[path = "normal/text_new_key.rs"]
 mod text_new_key;
+
+#[path = "normal/wide_indexed_update.rs"]
+mod wide_indexed_update;

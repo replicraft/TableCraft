@@ -95,3 +95,6 @@ mod leaf_removal;
 
 #[cfg(feature = "journal")]
 pub(in crate::table) mod normal_deletion;
+
+#[cfg(feature = "journal")]
+pub(in crate::table) mod normal_integral_update;

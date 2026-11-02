@@ -1,5 +1,16 @@
 # Implementation status
 
+## Wider indexed fixed updates
+
+Normal [Int64/Currency index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md)
+now fits qualified numeric root leaves through actual TCNI4 plans, V1 recovery,
+retained sessions and the CLI. Ninety-six native commits, independent proof and
+original wires, mixed recovery/forgery/resource controls, 56 typed/SQL saves and
+eight CLI saves/readbacks pass. Existing I32, Binary, Text, inline INSERT and
+Increment CLI routes pass focused regressions. The combined batch passes 1,171
+engine, 79 adapter and 104 CLI units and strict standalone profiles. NODE
+partitions, broader schemas and native Access save/reopen remain work.
+
 ## Next write sources qualified
 
 [Wider numeric, inline Memo/OLE and Date/Now sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md)
