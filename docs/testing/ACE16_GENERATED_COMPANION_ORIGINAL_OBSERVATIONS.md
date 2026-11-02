@@ -17,8 +17,9 @@ preserves the actual outcomes and first log pin. These are observations rather
 than permanent admission assertions: future valid Source admission changes must
 not be mistaken for a format regression. Execution used the pending reviewed
 retained-index UPDATE implementation. It is not evidence about an older revision.
-Independent AFTER construction, actual typed/SQL saves, recovery and Microsoft
-Access save/reopen remain separate qualification work.
+The later [AFTER source qualification](ACE16_GENERATED_COMPANION_UPDATE_SOURCES.md)
+now checks twelve views and thirty inert reader reports. Actual typed/SQL saves,
+recovery and Microsoft Access save/reopen remain separate qualification work.
 
 ```sh
 TABLECRAFT_GENERATED_COMPANION_GENUINE_DIR=/path/to/genuine-originals \
