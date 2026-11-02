@@ -1,4 +1,5 @@
 //! Independent cardinality-decreasing replay over the original checked graph.
+mod retirement;
 use super::{
     tree::{Node, Tree},
     vector, wire,

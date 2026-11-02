@@ -788,3 +788,6 @@ mod genuine_binary_update;
 
 #[path = "normal/compound_root_split.rs"]
 mod compound_root_split;
+
+#[path = "normal/genuine_node_retirement.rs"]
+mod genuine_node_retirement;

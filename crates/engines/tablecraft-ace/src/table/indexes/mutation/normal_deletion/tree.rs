@@ -1,11 +1,16 @@
-//! Fitting original-partition deletion with no contraction or allocation state.
+//! Original-partition deletion and qualified height-one child retirement.
 use super::super::{
-    IndexDataPatch, encoding,
+    encoding,
     profile::SingleProfile,
-    tree::{Deletion, Tree},
+    retirement,
+    tree::{Contraction, Deletion, Tree},
 };
+use super::Deletions;
 use crate::{
-    EditError, NativeImage, NativeIndex, WriteBlocker, format::reader::Reader, header::check,
+    EditError, NativeImage, NativeIndex, WriteBlocker,
+    format::{page::PAGE_BYTES, reader::Reader},
+    header::check,
+    table::indexes::{header::IndexHeader, profile::KeyType},
 };
 use std::io::Cursor;
 
@@ -16,7 +21,7 @@ pub(super) fn patches(
     owner: u32,
     references: &[u32],
     profile: &SingleProfile,
-    patches: &mut Vec<IndexDataPatch>,
+    output: &mut Deletions,
 ) -> Result<(), EditError> {
     let mut keys = Vec::new();
     let tree = Tree::read::<_, { encoding::MAX_ENTRY_BYTES }>(
@@ -41,7 +46,54 @@ pub(super) fn patches(
         return Err(EditError::Preservation);
     }
     if contraction {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        let start = index.root_page() as usize * PAGE_BYTES;
+        let raw = image
+            .as_bytes()
+            .get(start..start + PAGE_BYTES)
+            .ok_or(EditError::Preservation)?;
+        let header = IndexHeader::read(raw)?;
+        reader.work(keys.len() + tree.children().len())?;
+        if tree.height() != 1
+            || tree.children().len() != 2
+            || tree.children().iter().any(|child| child.count() == 0)
+            || header.prefix.get() != 0
+            || header.tail.get() != tree.children()[1].number()
+            || profile.descending
+            || !matches!(profile.kind.key_type(), KeyType::Int32)
+            || keys.iter().any(|key| key.key.is_none())
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        let mut remaining = keys.as_slice();
+        let mut state = Contraction {
+            bounded_single_child: true,
+            profile,
+            references,
+            index,
+            retired: &mut output.retired,
+            leaves: Vec::new(),
+            removed: 0,
+        };
+        tree.contract::<_, { encoding::MAX_ENTRY_BYTES }>(
+            image,
+            &mut remaining,
+            &mut state,
+            &mut output.patches,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        if !remaining.is_empty() || state.removed != references.len() {
+            return Err(EditError::Preservation);
+        }
+        retirement::leaf_links(
+            image,
+            &state.leaves,
+            &mut output.patches,
+            reader.budget,
+            reader.cancelled,
+        )?;
+        check(reader.budget, reader.cancelled)?;
+        return Ok(());
     }
 
     let mut remaining = keys.as_slice();
@@ -54,7 +106,7 @@ pub(super) fn patches(
         image,
         &mut remaining,
         &mut deletion,
-        patches,
+        &mut output.patches,
         reader.budget,
         reader.cancelled,
     )?;

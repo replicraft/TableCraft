@@ -15,6 +15,7 @@ use crate::{EditError, InspectError, NativeImage, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(in crate::table::indexes::mutation) struct Contraction<'a, P> {
+    pub bounded_single_child: bool,
     pub profile: &'a P,
     pub references: &'a [u32],
     pub index: &'a NativeIndex,
@@ -110,6 +111,23 @@ impl Tree {
             }
             if tail_form {
                 tail = pending.as_ref().map_or(0, |(_, number)| *number);
+                if state.bounded_single_child
+                    && entries.is_empty()
+                    && let Some((maximum, number)) = pending.as_ref()
+                {
+                    // The qualified normal height-one profile demotes a sole
+                    // tail into its complete key/ROW/child entry. Preview keeps
+                    // its existing representation policy through false above.
+                    entries.push(Entry {
+                        value: retained::reference(
+                            state.profile,
+                            maximum,
+                            &mut KeyWork { budget, cancelled },
+                        )?,
+                        child: *number,
+                    });
+                    tail = 0;
+                }
             }
             pending.map(|(value, _)| value)
         };
