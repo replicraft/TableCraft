@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+The next wider indexed UPDATE, inline Memo/OLE UPDATE and Date/Now default
+writers now have [independently qualified native sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
+Native Source admission and inert SDK checks pass before matching mutation;
+implementation/recovery/session acceptance remains the next step.
+
 [Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now passes native, recovery, retained-session and CLI checks using original
 omissions and the database's actual declaration. Random/unknown modes, broader

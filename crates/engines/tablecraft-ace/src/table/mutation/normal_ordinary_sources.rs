@@ -214,3 +214,9 @@ mod normal_autonumber;
 mod text_azl;
 
 mod text_new_key;
+
+#[cfg(test)]
+mod inline_lval_update;
+
+#[cfg(test)]
+mod normal_clock_defaults;

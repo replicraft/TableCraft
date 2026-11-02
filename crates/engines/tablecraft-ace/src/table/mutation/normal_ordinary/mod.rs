@@ -154,3 +154,9 @@ fn preflight(
 
 #[cfg(test)]
 mod counter_index_tests;
+
+#[cfg(test)]
+mod wide_update_original_sources;
+
+#[cfg(test)]
+mod wide_update_sources;
