@@ -51,9 +51,9 @@ covers all six consumers, strict checks, minimal features and dependency guards.
 
 `fixtures::access::tcni4::single_column_original_wire` frames the independent
 single-column I32/NULL request grammar with caller-supplied original digest bytes.
-The retained Binary Marker fixture consumes it directly. Table/column names and
-requests stay with each fixture; the helper owns no image expectation and imports
-no engine serializer. Its extraction preserves every existing request byte;
+The retained Binary Marker and generated-companion Score fixtures consume it
+directly. Table/column names and requests stay with each fixture; the helper owns
+no image expectation and imports no engine serializer. Its extraction preserves every existing request byte;
 [existing proof/journal regressions](results/shared-tcni4-literal-framing-2026-11-02.json)
 and strict/minimal-feature checks pass.
 

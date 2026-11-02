@@ -856,3 +856,6 @@ mod external_lval_mixed;
 
 #[path = "normal/retained_binary_marker.rs"]
 mod retained_binary_marker;
+
+#[path = "normal/generated_companion_update.rs"]
+mod generated_companion_update;
