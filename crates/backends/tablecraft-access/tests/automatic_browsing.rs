@@ -9,8 +9,6 @@ mod calculated_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/support/page_reads.rs"]
-mod page_reads;
 use std::io::Cursor;
 use tablecraft_access::{
     BrowsePage, CollectionPageRequest, NativeBrowser, StoredCollectionItem,
@@ -20,6 +18,7 @@ use tablecraft_ace::{InspectError, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::support::ace::page_reads;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 100_000, 1_000_000)

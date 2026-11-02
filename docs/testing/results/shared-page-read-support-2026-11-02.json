@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "shared PageReads extraction acceptance passed",
+  "helper": "tablecraft_testkit::support::ace::page_reads::PageReads",
+  "helper_bytes_unchanged": true,
+  "direct_existing_consumers": 6,
+  "old_owner_deleted": true,
+  "production_dependency_changes": false,
+  "dev_feature_change": "Access testkit dev dependency enables existing ace-support feature.",
+  "style_only_overlay": "Move new Access browsing import to top imports; separate imports from first functions in native catalog/row tests.",
+  "engine_tests": {
+    "exit": 0,
+    "passed_functions": [
+      7,
+      35,
+      5,
+      11
+    ],
+    "log_sha256": "45c119316b74fb0db72d4d6b4a3860da21157ed827287f3178566cb23276ff38"
+  },
+  "remaining_checks": [
+    {
+      "name": "support-access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "--test",
+        "automatic_browsing"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        4,
+        13
+      ],
+      "accepted": true,
+      "log_sha256": "84aaa26f2781740989e5fdac14b2dd66f2869945a831525629779e992dcb53ab"
+    },
+    {
+      "name": "support-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "34998a334928e642488be54f064fac615d31d36dea48c9d83aa32464aef443bb"
+    },
+    {
+      "name": "support-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "96fabe21264c372b0cbde6408b8eb1524eab182a5926d2d27d902fe72e8a4869"
+    },
+    {
+      "name": "support-boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "support-guard-tests-first",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "7a0e36a08118a05887e1da5a6e3b8f5bcb876c20b36af37c589f839117d3eeb3"
+    },
+    {
+      "name": "support-format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
