@@ -34,7 +34,7 @@ pass. The execution record retains initial integration compile failures and thei
 corrections. This is portable independent evidence; native Access save/reopen
 remains unrun.
 
-Fresh generated declarations, Random generation, arbitrary AutoNumber layouts,
-reseeding and generated columns combined with broader field policies remain
-separate work. See the [source record](../../testing/ACE16_AZL_AUTONUMBER_SOURCES.md)
+[Fresh empty Increment declarations](INCREMENTING_CREATION.md) now pass separate
+creator/session/CLI checks. Random generation, arbitrary AutoNumber layouts,
+reseeding and generated columns combined with broader field policies remain work. See the [source record](../../testing/ACE16_AZL_AUTONUMBER_SOURCES.md)
 and [execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).

@@ -1,0 +1,169 @@
+{
+  "date": "2026-11-01",
+  "scope": "Combined fresh Increment creator and read-only wider/inline/clock source qualification batch",
+  "checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 101,
+      "accepted": false,
+      "phase": "second",
+      "log_sha256": "a7c960b7cb3a725bfef32c3c9f5705af05a9ef76bd79faf5ee7368e27a371d84"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "87fb5ec7b92d36f221b9c0d3421e452c36a8950111e83e0ace62f04f39560888"
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "464a9e50ec3176d6856000cbdac9b1c35e35c2b12c01cc7ef6e389692120f672"
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "c39679d7b6bb8a6aa24a6a63dd94d59b97efc4a498c82502a67aad62db33b56a"
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e"
+    },
+    {
+      "name": "dependency-boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "documentation-links",
+      "argv": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "bb0dc2956fbf9a1f209667624c6e7b4c5ef0b1dc39a66be73ca3351666081aca"
+    }
+  ],
+  "retained_lint_failure": "Inline source acceptance unnecessarily cloned one expected row; replaced only with std::slice::from_ref. No producer or source/golden changed.",
+  "broad_suite_policy": "Prior full1169/79/104 batch is separate. This batch reran45 native creation and16 CLI creation regressions, new creation matching tests, four native Source gates and applicable lint/build/link/dependency profiles; it did not rerun the complete test suite."
+}

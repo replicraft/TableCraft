@@ -1,5 +1,14 @@
 # Implementation status
 
+## Fresh Increment declarations
+
+Both native creation services and the CLI now author an explicitly selected
+[empty Int32 Increment primary](access/writes/INCREMENTING_CREATION.md). Four
+whole-image builder comparisons, resource/cancellation controls, typed/SQL
+create-then-insert saves and both CLI schema modes pass. Existing creation
+regressions pass. The two-table check remains component evidence; Random,
+nonempty generated initialization and native Access save/reopen remain work.
+
 ## Repeated native retirement
 
 Normal [height-two retirement](access/writes/NORMAL_RECURSIVE_NODE_RETIREMENT.md)
@@ -28,8 +37,8 @@ AutoNumber declarations through the existing typed/SQL sessions and CLI.
 original presence, complete source/property checks and TCNA2 recovery. Four
 native commits, direct proof/forgery, resource/recovery controls, eight retained
 saves and four CLI saves/readbacks pass. Random/unknown declarations, explicit
-IDs/NULL and exhaustion remain precise refusals. Fresh generated declarations
-and native Access save/reopen remain separate work. The combined batch passes
+IDs/NULL and exhaustion remain precise refusals. Fresh declarations now pass
+separately above; native Access save/reopen remains work. The combined batch passes
 1,169 engine, 79 adapter and 104 CLI unit tests, strict lint and standalone
 minimal/journal/preview profiles.
 

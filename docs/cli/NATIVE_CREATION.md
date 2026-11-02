@@ -160,3 +160,20 @@ This fresh construction profile does not authorize normal updates to imported
 ACE databases, certify arbitrary files as macro-free, or establish native Access
 creation/save compatibility. Existing [normal write limits](../access/writes/NATIVE_WRITES.md)
 remain separate.
+
+## Explicit Increment primary
+
+An empty two-Int32 table can explicitly declare its first primary field as
+Increment AutoNumber:
+
+```sh
+tablecraft create fresh.accdb --table Items --column Id --column Score \
+  --primary-key Id PrimaryId --incrementing Id
+```
+
+The same selector works with typed `--field Id int32 --field Score int32`.
+No initial rows, defaults or field policies are admitted in this initial profile.
+Later omitted-ID INSERT uses actual native metadata, checked LAST arithmetic and
+the normal journal service. Supplied IDs/NULL are never turned into omissions.
+Random generation and reseeding remain unsupported. See the
+[creation contract](../access/writes/INCREMENTING_CREATION.md).

@@ -52,6 +52,13 @@ impl<'a> Columns<'a> {
         }
     }
 
+    pub fn incrementing(self, position: usize) -> bool {
+        match self {
+            Self::Int32(_) => false,
+            Self::Values(columns) => columns[position].incrementing_autonumber(),
+        }
+    }
+
     pub fn declaration(self, position: usize) -> Declaration {
         match self {
             Self::Int32(_) => Declaration::Fixed(ScalarType::Int32),

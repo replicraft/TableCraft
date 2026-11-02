@@ -128,6 +128,7 @@ pub(super) fn validate<'a>(
         native_variable: None,
     }; profile::MAX_COLUMNS];
     let mut fixed_bytes = 0_usize;
+    let mut incrementing = None;
     for (position, field) in fields[..columns.count()].iter_mut().enumerate() {
         let column = columns.name(position);
         name(column, budget, cancelled)?;
@@ -139,12 +140,19 @@ pub(super) fn validate<'a>(
             }
         }
         *field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
+        if columns.incrementing(position) {
+            if incrementing.replace(position).is_some() {
+                return Err(CreateDatabaseError::Declaration);
+            }
+            field.native_flags = Some(super::autonumber::LONG_INCREMENT_FLAGS);
+        }
         if field.offset.is_some() {
             fixed_bytes = fixed_bytes
                 .checked_add(field.width)
                 .ok_or(CreateDatabaseError::Layout)?;
         }
     }
+    super::autonumber::qualify(columns, rows, incrementing, budget, cancelled)?;
     if rows.count() > profile::MAX_ROWS {
         return Err(CreateDatabaseError::RowLimit);
     }
