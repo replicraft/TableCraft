@@ -1,5 +1,6 @@
 //! Preferred variable-record bytes, independent of the exact-slot chooser.
 use super::super::super::{EditError, WriteBlocker, record_serialization::storage};
+use super::long_value;
 use crate::{
     InspectError, NativeColumn,
     format::{layout::UNICODE_COMPRESSION_FLAG, text},
@@ -53,6 +54,15 @@ fn encode_with(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    if field.is_ordinary_long_value() {
+        let bytes = long_value::encode_inline(field, value, budget, cancelled)?;
+        if let Compression::DeclaredPreference(capacity) = policy
+            && bytes.len() > capacity
+        {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        return Ok(bytes);
+    }
     storage::validate(field, value)?;
     check(budget, cancelled)?;
 

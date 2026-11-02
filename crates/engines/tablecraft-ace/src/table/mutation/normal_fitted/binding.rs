@@ -1,4 +1,5 @@
 //! Original target metadata and paid request directory, never stage authority.
+use super::inline;
 use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeImage, WriteBlocker,
     format::data_type::{SHORT_BINARY, SHORT_TEXT},
@@ -46,6 +47,7 @@ pub(in crate::table::mutation) struct Selected {
 }
 
 pub(in crate::table::mutation) struct Bound {
+    pub has_long_targets: bool,
     pub targets: Vec<Target>,
     pub columns: Vec<usize>,
     pub assignments: Vec<Assignment>,
@@ -151,6 +153,7 @@ fn all_with(
     };
     let mut fixed_bound = fixed_bound.into_iter();
     let mut targets = vector(groups.len(), budget)?;
+    let mut has_long_targets = false;
     for (group, column) in groups.iter().zip(columns.iter().copied()) {
         check(budget, cancelled)?;
         match group {
@@ -167,7 +170,15 @@ fn all_with(
             }
             FittedColumnUpdates::Variable { updates, .. } => {
                 let field = &schema.columns()[column];
-                storage::qualify(field)?;
+                if field.is_ordinary_long_value() {
+                    if indexed_native.is_some() {
+                        return Err(EditError::Unsupported(WriteBlocker::Column));
+                    }
+                    inline::validate(field, &Value::Null)?;
+                    has_long_targets = true;
+                } else {
+                    storage::qualify(field)?;
+                }
                 for dependency in &source.dependencies {
                     check(budget, cancelled)?;
                     if *dependency == column {
@@ -187,8 +198,13 @@ fn all_with(
                 rows::unique(updates, budget, cancelled)?;
                 for update in *updates {
                     check(budget, cancelled)?;
-                    storage::validate(field, update.expected())?;
-                    storage::validate(field, update.value())?;
+                    if field.is_ordinary_long_value() {
+                        inline::validate(field, update.expected())?;
+                        inline::validate(field, update.value())?;
+                    } else {
+                        storage::validate(field, update.expected())?;
+                        storage::validate(field, update.value())?;
+                    }
                     if update.row() >= source.records.len() {
                         return Err(EditError::Conflict);
                     }
@@ -237,6 +253,7 @@ fn all_with(
     columns.sort_unstable();
     check(budget, cancelled)?;
     Ok(Bound {
+        has_long_targets,
         targets,
         columns,
         assignments,

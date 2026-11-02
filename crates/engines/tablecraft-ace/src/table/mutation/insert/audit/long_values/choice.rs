@@ -3,12 +3,9 @@
 mod tests;
 
 use super::super::reserve;
-use crate::table::mutation::record_insertion::proof::{
-    layout,
-    payload::{
-        self,
-        long_value::{self, Payload},
-    },
+use crate::table::mutation::{
+    record_insertion::proof::{layout, payload},
+    record_serialization::proof::long_value::{self, Payload},
 };
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,

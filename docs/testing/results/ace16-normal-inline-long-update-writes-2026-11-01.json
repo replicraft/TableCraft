@@ -1,0 +1,127 @@
+{
+  "date": "2026-11-01",
+  "combined_validation_record": "ace16-wide-inline-clock-batch-checks-2026-11-01.json",
+  "qualification": "Portable independent source/native/SDK evidence. Native Microsoft Access save/reopen and Windows behavior comparisons remain unrun.",
+  "scope": "Normal fitting inline Memo/OLE UPDATE under complete original LVAL authority",
+  "production_checkpoint_sha256": "be53dbf7e8f8e40783c6e1e1f6d3bd1a2ad986339a7592456ccee5c7746e03ea",
+  "acceptance_checkpoint_sha256": "8f729612f32e0222e49dfe72b9938a7c0885d0ae98dc0db714780e9089f585cd",
+  "source_gate_commit": "68ac92ec",
+  "source_manifest_sha256": "eacf49ab1528ae1c46b81c191a0c40f3b94468771ae4aeff7a8170a2411d2f80",
+  "tests": [
+    {
+      "name": "inline-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_fitted::proof::inline_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "fd74078ede05e6b2a85c99d83ea740f8b1edfb6a2d552b4d61fa79dbf30c3c48"
+    },
+    {
+      "name": "inline-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::inline_lval_update::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        4
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "827dfd78dbc25c83027630aa129f69818aa676ede29070abae820e4cc212fc89"
+    },
+    {
+      "name": "inline-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_inline_lval_update",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "dcf932782b0eb656c1cce10e6668ebc3d0888c93cd1bbdd3f40123c4f6df916c"
+    },
+    {
+      "name": "inline-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "normal_inline_lval_update_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "93c65e42de2cc972e0a1944843090899467557ccde7e76380428e197da1428a9"
+    }
+  ],
+  "coverage": {
+    "literal_native_commits": 26,
+    "same_token_recovery_contexts": 132,
+    "native_after_forgeries": 104,
+    "direct_proofs": 26,
+    "direct_forgeries": 130,
+    "full_public_resource_contexts": 4,
+    "typed_saves": 26,
+    "sql_saves": 16,
+    "same_lease_empty_saves": 42,
+    "stale_predecessor_saves": 2,
+    "precise_capacity_external_refusals": 4,
+    "stale_handle_refusals": 2,
+    "cli_saves_and_readbacks": 16
+  },
+  "integration_adjustment": "Derived reserved descriptor width from the represented u32 words instead of duplicating literal8. No layout, cost or expectation change.",
+  "proof_move": "Insertion inline payload proof moved byte-exact to record_serialization/proof/long_value.rs; consumers import its actual owner without forwarding shims.",
+  "unchanged": [
+    "TCNI5 wire",
+    "V1 checked journal",
+    "readonly external sibling capabilities",
+    "source images and expected bytes"
+  ]
+}

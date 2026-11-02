@@ -7,7 +7,7 @@ mod tail;
 
 use self::{choice::Storage, cursor::Cursor as Placement};
 use super::{ImageProof, reserve};
-use crate::table::mutation::record_insertion::proof::payload::long_value::Payload;
+use crate::table::mutation::record_serialization::proof::long_value::Payload;
 use crate::{
     EditError, InspectError, LongValueCheckStatus, LongValueMapReferences, NativeImage, TableCheck,
     format::{

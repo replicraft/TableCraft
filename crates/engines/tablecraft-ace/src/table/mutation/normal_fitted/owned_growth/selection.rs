@@ -4,7 +4,7 @@ use super::super::{
     original_values,
 };
 use crate::{
-    EditError, FittedColumnUpdates, NativeImage,
+    EditError, FittedColumnUpdates, NativeImage, WriteBlocker,
     header::check,
     table::{mutation::record_serialization::variables, record_layout},
 };
@@ -18,6 +18,7 @@ pub(in crate::table::mutation) fn requires_growth(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
     let bound = binding::all(source, groups, budget, cancelled)?;
+    super::super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
     let schema = source.table.schema();
     let mut growth = false;
     for selected in &bound.rows {
@@ -78,6 +79,9 @@ pub(in crate::table::mutation) fn requires_growth(
             .checked_sub(preserved)
             .ok_or(EditError::Preservation)?;
         growth |= required > capacity;
+    }
+    if growth && bound.has_long_targets {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     if growth {
         super::require_native_catalog(image, budget, cancelled)?;

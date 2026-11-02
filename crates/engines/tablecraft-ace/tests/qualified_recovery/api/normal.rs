@@ -821,3 +821,6 @@ mod text_new_key;
 
 #[path = "normal/wide_indexed_update.rs"]
 mod wide_indexed_update;
+
+#[path = "normal/inline_lval_update.rs"]
+mod inline_lval_update;

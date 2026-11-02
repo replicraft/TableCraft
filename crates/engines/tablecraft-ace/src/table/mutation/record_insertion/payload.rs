@@ -41,11 +41,7 @@ pub(in crate::table::mutation) fn encode(
     check(budget, cancelled)?;
     qualify(column)?;
     if long_profile::ordinary(column) {
-        let encoded = long_encode::encode(column, value, budget, cancelled)?;
-        if encoded.preferred() != long_encode::StorageChoice::Inline {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
-        return encoded.descriptor(long_encode::StorageChoice::Inline, None, budget, cancelled);
+        return long_encode::encode_inline(column, value, budget, cancelled);
     }
     if column.scalar_type() != Some(ScalarType::Decimal) {
         return storage::encode_preferred(column, value, budget, cancelled);

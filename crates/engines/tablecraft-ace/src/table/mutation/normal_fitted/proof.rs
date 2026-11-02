@@ -78,6 +78,7 @@ fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
+    super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
     let schema = source.table.schema();
     let mut expected = record_serialization::copy(image.as_bytes(), budget, cancelled)?;
     let mut changed_rows = 0_usize;
@@ -215,5 +216,16 @@ fn reconstruct(
             .copy_from_slice(&row);
         changed_rows += 1;
     }
+    if bound.has_long_targets {
+        // Requalify actual final LVAL ownership and native admission after the
+        // independently reconstructed inline records, before publication.
+        let scope = image.catalog().catalog().scope();
+        let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
+        let final_source = normal_ordinary::capture(&after, schema.name(), budget, cancelled)?;
+        super::inline::qualify(&after, &final_source, groups, &bound, budget, cancelled)?;
+    }
     Ok((expected, changed_rows))
 }
+
+#[cfg(test)]
+mod inline_tests;

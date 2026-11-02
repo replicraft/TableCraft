@@ -1,6 +1,6 @@
 //! Whole-row proof derives all payload choices afresh from immutable requests.
 use super::super::super::{EditError, WriteBlocker};
-use super::{copy, payload};
+use super::{copy, long_value, payload};
 use crate::{
     InspectError, NativeColumn, TableSchema,
     format::{
@@ -271,6 +271,10 @@ fn measure(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(usize, usize), EditError> {
+    if field.is_ordinary_long_value() {
+        let bytes = long_value::encode_inline(field, value, budget, cancelled)?;
+        return Ok((bytes.len(), bytes.len()));
+    }
     match value {
         Value::Null => Ok((0, 0)),
         Value::Binary(bytes) => Ok((bytes.len(), bytes.len())),

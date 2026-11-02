@@ -5,7 +5,9 @@
 [Wider numeric index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md) now passes
 native, proof/recovery, retained-session and CLI checks for fitting root leaves.
 Retained NODE partitions, wider splits and broader schema combinations remain
-work. Inline Memo/OLE UPDATE and Date/Now default writers have
+work. [Inline Memo/OLE UPDATE](access/writes/NORMAL_INLINE_LONG_UPDATE.md) now
+passes the same connected checks under complete inline-only storage authority.
+External reuse/allocation remains work. Date/Now defaults have
 [independently qualified native sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md);
 matching writer acceptance remains their next step.
 

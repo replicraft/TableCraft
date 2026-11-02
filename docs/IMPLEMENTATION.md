@@ -1,5 +1,16 @@
 # Implementation status
 
+## Inline Memo and OLE updates
+
+Normal [fitting inline long updates](access/writes/NORMAL_INLINE_LONG_UPDATE.md)
+now share existing TCNI5, independent payload proof and retained typed/SQL/CLI
+services. Twenty-six native commits, proof/forgery, mixed recovery/resource
+checks, 42 retained saves with empty follow-ons and sixteen CLI saves/readbacks
+pass. Selected fields require complete inline/null storage and no external
+ownership; descriptor growth and external targets still refuse before staging.
+The old inline INSERT route passes regression after its encoder/proof extraction.
+Native Access save/reopen remains unrun.
+
 ## Wider indexed fixed updates
 
 Normal [Int64/Currency index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md)
