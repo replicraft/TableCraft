@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "original-only admission observations passed; actual mutation/save qualification remains separate",
+  "original_count": 4,
+  "families": {
+    "genuine-middle-generated": "Two SDK-authored Numbered originals, header 5/6, generated Id in middle field; deleted high slot and LAST retained.",
+    "preserved-random-declaration": "Two modern authored Items declaration carriers, header 5/6, preserved GenUniqueID metadata; not SDK-authored Random generation evidence."
+  },
+  "observations": [
+    [
+      "5",
+      "genuine-middle-generated",
+      "generated_field_guard",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "canonical_source",
+      "ADMITTED"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "ordinary_score_empty_binding",
+      "ADMITTED"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "generated_changed_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "generated_noop_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "generated_empty_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "genuine-middle-generated",
+      "fixed_capability",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "generated_field_guard",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "canonical_source",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "ordinary_score_empty_binding",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "generated_changed_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "generated_noop_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "generated_empty_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "genuine-middle-generated",
+      "fixed_capability",
+      "ADMITTED"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "generated_field_guard",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "canonical_source",
+      "ADMITTED"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "ordinary_score_empty_binding",
+      "ADMITTED"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "generated_changed_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "generated_noop_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "generated_empty_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "5",
+      "preserved-random-declaration",
+      "fixed_capability",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "generated_field_guard",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "canonical_source",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "ordinary_score_empty_binding",
+      "ADMITTED"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "generated_changed_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "generated_noop_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "generated_empty_binding",
+      "REFUSED:Unsupported(Column)"
+    ],
+    [
+      "6",
+      "preserved-random-declaration",
+      "fixed_capability",
+      "ADMITTED"
+    ]
+  ],
+  "mutation_plan_calls": 0,
+  "generated_values_produced": 0,
+  "source_context": "Executed against the pending reviewed target-relative retained-index UPDATE graph; not attributed to an older revision. Read/capability admission is not save support.",
+  "raw_log": {
+    "path": ".cache/marker-sorted-batch-20261102/generated-original-observation-first.log",
+    "bytes": 3687,
+    "sha256": "e8d9ae30506d783b6ca4a2b8845fc4f3496fe777afbe568ca74c3ffe11d49ea5"
+  },
+  "native_access_comparison": "unrun"
+}
