@@ -4,8 +4,11 @@ use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema,
     format::{
         bytes::u16_at,
-        data_type::{BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
-        layout,
+        data_type::{
+            BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS,
+            SHORT_BINARY, SHORT_TEXT,
+        },
+        layout::{self, UPDATABLE_FLAG},
         page::PAGE_BYTES,
     },
     header::check,
@@ -285,6 +288,10 @@ fn qualify_for(
     let binary = matches!(family, KeyFamily::ActionIntegral)
         && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary);
+    let text = matches!(family, KeyFamily::ActionIntegral)
+        && field.native_type() == SHORT_TEXT
+        && field.scalar_type() == Some(ScalarType::Text);
+    let variable = binary || text;
     let width = match (field.native_type(), field.scalar_type()) {
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
         (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
@@ -292,6 +299,7 @@ fn qualify_for(
         (INT64, Some(ScalarType::Int64)) => size_of::<i64>(),
         (CURRENCY, Some(ScalarType::Currency)) => size_of::<i64>(),
         (SHORT_BINARY, Some(ScalarType::Binary)) if binary => field.storage_length(),
+        (SHORT_TEXT, Some(ScalarType::Text)) if text => field.storage_length(),
         _ => return Err(refused()),
     };
     if index.native_type() > 1
@@ -299,9 +307,18 @@ fn qualify_for(
         || constraints.ignore_nulls()
         || field.number() != key.number()
         || field.storage_length() != width
-        || binary && field.fixed()
-        || !binary && !field.fixed()
+        || variable && field.fixed()
+        || !variable && !field.fixed()
         || binary && !(1..=MAX_SHORT_BINARY_BYTES).contains(&width)
+        || text
+            && (field.flags() != UPDATABLE_FLAG
+                || width == 0
+                || !width.is_multiple_of(size_of::<u16>())
+                || width / size_of::<u16>() > MAX_SHORT_TEXT_UNITS
+                || field
+                    .text_sort_order()
+                    .and_then(|order| order.general_family())
+                    .is_none())
         || field.extended_flags() != 0
     {
         return Err(refused());

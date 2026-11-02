@@ -11,11 +11,13 @@ and qualified nullable/directional root leaves. Replacements already exist in th
 same original. The model does not generate expected keys through the engine's
 Text profile or infer comparison from an operating-system locale.
 
-Current full action Source still refuses selected Text declarations with coarse
-`Unsupported(ActiveContent)`. The first native gate tests that exact boundary
+The first full action Source gate refused selected Text declarations with coarse
+`Unsupported(ActiveContent)`. The first native gate tested that exact boundary
 separately from public body/module/Extra absence. This is a profile gap, not a
 malicious-content diagnosis. Generic readability grants no write permission.
-Read-only Source admission and actual UPDATE/proof remain separate steps.
+The later [read-only Source qualification](../access/writes/TEXT_ACTION_SOURCE.md)
+now passes actual Source capture and negative/refusal controls. Actual
+UPDATE/proof remains a separate step.
 
 The [source record](results/ace16-text-index-update-sources-2026-11-01.json)
 retains these first observations. Native Access save/reopen and Windows

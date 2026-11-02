@@ -1,8 +1,7 @@
-//! Generic native reads/raw laws; current Text action Source stays explicitly refused.
+//! Generic/raw and full read-only action Source qualification; Text mutation stays closed.
 use crate::{
-    EditError, IndexCheckStatus, NativeImage, PayloadPresence, TableExtraCoverage, WriteBlocker,
-    check_table_constraints, inspect_table_indexes, inspect_table_schema, read_table,
-    read_table_index,
+    IndexCheckStatus, NativeImage, PayloadPresence, TableExtraCoverage, check_table_constraints,
+    inspect_table_indexes, inspect_table_schema, read_table, read_table_index,
 };
 use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
@@ -289,21 +288,35 @@ fn inspect(raw: &[u8], table: &str, td: u32, version: u8, expected: &[Vec<Value>
         TableExtraCoverage::NotPresent
     );
     assert!(coverage.children().is_empty());
-    assert!(matches!(
-        super::super::no_required_programs::NoRequiredTablePrograms::capture_actions(
-            &image,
-            schema,
-            &mut budget(),
-            &|| false
-        ),
-        Err(EditError::Unsupported(WriteBlocker::ActiveContent))
-    ));
+    let certificate = super::super::no_required_programs::NoRequiredTablePrograms::capture_actions(
+        &image,
+        schema,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    certificate
+        .require_source(&image, schema, &mut budget(), &|| false)
+        .unwrap();
+    let source =
+        super::super::normal_actions::capture(&image, table, &mut budget(), &|| false).unwrap();
+    assert_eq!(source.table.rows(), expected);
+    assert_eq!(source.table.schema().object_id(), schema.object_id());
+    assert_eq!(source.table.schema().definition_page(), td);
+    assert_eq!(source.records.len(), 24);
+    assert_eq!(source.indexes.indexes().len(), 4);
+    for (ordinal, record) in source.records.iter().enumerate() {
+        let (start, end) = frame(raw, td as usize + 5, ordinal);
+        assert_eq!(record.reference, ((td + 5) << 8) | ordinal as u32);
+        assert_eq!(record.offset, start);
+        assert_eq!(record.data, raw[start..end]);
+    }
     assert_eq!(image.as_bytes(), raw);
 }
 
 #[test]
-#[ignore = "requires34 independent Text source views; no normal Text writer or Source permission"]
-fn text_fitting_updates_have_exact_raw_generic_reads_and_explicit_current_source_boundary() {
+#[ignore = "requires 34 pinned Text views; full read-only Source, no Text writer"]
+fn text_views_have_exact_raw_generic_reads_and_complete_action_source() {
     let directory = PathBuf::from(std::env::var_os("TABLECRAFT_TEXT_UPDATE_SOURCE_DIR").unwrap());
     assert!(directory.is_absolute());
     assert_eq!(
@@ -787,3 +800,6 @@ fn text_fitting_updates_have_exact_raw_generic_reads_and_explicit_current_source
     }
     assert_eq!((views.len(), reconstructed, inspected), (34, 44, 36));
 }
+
+#[path = "text_update/actions.rs"]
+mod actions;

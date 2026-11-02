@@ -1,4 +1,4 @@
-//! Read-only ordinary integral and action Binary indexes; no mutation authority.
+//! Read-only integral and action Binary/General Text indexes; no mutation authority.
 mod ownership;
 use super::ColumnFraming;
 use crate::{
@@ -6,7 +6,11 @@ use crate::{
     NativeIndex, TableSnapshot, WriteBlocker,
     format::{
         allocation,
-        data_type::{BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
+        data_type::{
+            BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS,
+            SHORT_BINARY, SHORT_TEXT,
+        },
+        layout::UPDATABLE_FLAG,
         reader::Reader,
     },
     header::check,
@@ -16,6 +20,21 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
 fn supported(field: &NativeColumn, framing: ColumnFraming) -> bool {
+    if matches!(framing, ColumnFraming::Actions)
+        && field.native_type() == SHORT_TEXT
+        && field.scalar_type() == Some(ScalarType::Text)
+    {
+        return !field.fixed()
+            && field.flags() == UPDATABLE_FLAG
+            && field.extended_flags() == 0
+            && field.storage_length() > 0
+            && field.storage_length().is_multiple_of(size_of::<u16>())
+            && field.storage_length() / size_of::<u16>() <= MAX_SHORT_TEXT_UNITS
+            && field
+                .text_sort_order()
+                .and_then(|order| order.general_family())
+                .is_some();
+    }
     if matches!(framing, ColumnFraming::Actions)
         && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary)
@@ -71,7 +90,8 @@ pub(super) fn qualify(
             }
             .ok_or(InspectError::Malformed)?;
             wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
-                || matches!(framing, ColumnFraming::Actions) && field.native_type() == SHORT_BINARY;
+                || matches!(framing, ColumnFraming::Actions)
+                    && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT);
         }
     }
     if !wide {
