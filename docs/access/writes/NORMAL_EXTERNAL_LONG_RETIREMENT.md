@@ -38,7 +38,8 @@ SQL and CLI use supported NULL assignments rather than invented Binary literals.
 Default, journal-only and preview-only compilation, strict lint and formatting
 pass. See the [execution record](../../testing/results/ace16-external-long-retirement-writes-2026-11-02.json).
 
-Mixed retirement with changed retained descriptors, shared-page partial removal,
+Mixed retirement with changed retained descriptors now has its separate
+[composed route](NORMAL_EXTERNAL_LONG_MIXED.md). Shared-page partial removal,
 relocation, new external allocation and native Microsoft Access save/reopen
 remain active work. Independent reader agreement does not establish native save
 compatibility.

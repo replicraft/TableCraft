@@ -41,7 +41,7 @@ const SINGLE: u32 = 0x4000_0000;
 const LVAL_OWNER: &[u8; WORD_BYTES] = b"LVAL";
 const INVALID_PREFIX_BYTES: usize = size_of::<u32>();
 
-fn references(
+pub(in crate::table::mutation::normal_fitted::external) fn references(
     image: &NativeImage,
     descriptor: &[u8],
     budget: &mut ResourceBudget,
@@ -109,7 +109,7 @@ fn references(
     Err(EditError::Preservation)
 }
 
-fn maps_and_residuals(
+pub(in crate::table::mutation::normal_fitted::external) fn maps_and_residuals(
     image: &NativeImage,
     source: &Source,
     pages: &[Page],

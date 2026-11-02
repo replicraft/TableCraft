@@ -403,3 +403,183 @@ pub fn load_all(mut verify: impl FnMut(&[u8], &str)) -> Vec<Case> {
     assert_eq!(cases.len(), 20);
     cases
 }
+
+/// Original frozen presence and typed carriers, in either written group order.
+pub fn request_groups(
+    case: &Case,
+    reverse: bool,
+) -> Vec<super::genuine_external_lval_update::Group> {
+    use super::genuine_external_lval_update::{Group, Update};
+    let original = original_rows();
+    let (retiring, retained) = match case.recipe {
+        "clear-blob3-grow-memo5" => ((2, 2), (4, 3)),
+        "clear-memo3-reuse-blob3" | "clear-memo3-shrink-blob3" => ((2, 3), (2, 2)),
+        "clear-blob3-grow-memo3" => ((2, 2), (2, 3)),
+        _ => panic!("nonempty frozen mixed recipe required"),
+    };
+    let mut groups = [retiring, retained]
+        .map(|(row, column)| Group {
+            column: if column == 2 { "Blob" } else { "Memo" },
+            updates: vec![Update {
+                row,
+                expected: original[row][column].clone(),
+                replacement: case.rows[row][column].clone(),
+            }],
+        })
+        .into_iter()
+        .collect::<Vec<_>>();
+    if reverse {
+        groups.reverse();
+    }
+    groups
+}
+
+pub fn changed_rows(case: &Case) -> usize {
+    if case.recipe == "clear-blob3-grow-memo5" {
+        2
+    } else {
+        1
+    }
+}
+
+pub fn intent_wire(case: &Case, reverse: bool, before_digest: [u8; 32]) -> Vec<u8> {
+    super::genuine_external_lval_continuation::intent_wire_parts(
+        case.before.len(),
+        &request_groups(case, reverse),
+        before_digest,
+    )
+}
+
+/// SQL covers the two NULL plus Text outcomes, never the nonempty Binary carriers.
+pub fn statement(case: &Case, reverse: bool) -> Option<String> {
+    let (blob, memo, predicate) = match case.recipe {
+        "clear-blob3-grow-memo5" => (
+            "[Blob]=IIf([ID]=3,NULL,[Blob])".to_owned(),
+            format!("[Memo]=IIf([ID]=5,'{}',[Memo])", "β".repeat(2040)),
+            "[ID]=3 OR [ID]=5",
+        ),
+        "clear-blob3-grow-memo3" => (
+            "[Blob]=NULL".to_owned(),
+            format!("[Memo]='{}'", "β".repeat(34)),
+            "[ID]=3",
+        ),
+        _ => return None,
+    };
+    let assignments = if reverse {
+        format!("{memo},{blob}")
+    } else {
+        format!("{blob},{memo}")
+    };
+    Some(format!("UPDATE Items SET {assignments} WHERE {predicate}"))
+}
+
+pub fn retired_page(case: &Case) -> usize {
+    let shift = usize::from(case.header == 6) * 17;
+    if case.recipe.starts_with("clear-blob3") {
+        95 + shift
+    } else {
+        96 + shift
+    }
+}
+
+pub fn retained_pages(case: &Case) -> Vec<usize> {
+    let shift = usize::from(case.header == 6) * 17;
+    match case.recipe {
+        "clear-blob3-grow-memo5" => vec![101 + shift, 102 + shift],
+        "clear-blob3-grow-memo3" => vec![96 + shift],
+        _ => vec![95 + shift],
+    }
+}
+
+pub fn map_offsets(case: &Case) -> [usize; 3] {
+    let page = retired_page(case);
+    let (owned, hint) = if case.recipe.starts_with("clear-blob3") {
+        (3751, 3682)
+    } else {
+        (3613, 3544)
+    };
+    [
+        (case.definition + 1) * 4096 + owned + 5 + page / 8,
+        (case.definition + 1) * 4096 + hint + 5 + page / 8,
+        4096 + 4027 + 5 + page / 8,
+    ]
+}
+
+/// Four genuinely partial targets from literal causal components, not byte guesses.
+pub fn partial_targets(case: &Case) -> Vec<Vec<u8>> {
+    let mut parent = case.before.clone();
+    let start = case.data * 4096;
+    parent[start..start + 4096].copy_from_slice(&case.after[start..start + 4096]);
+    let mut payload = case.before.clone();
+    for page in retained_pages(case) {
+        let start = page * 4096;
+        payload[start..start + 4096].copy_from_slice(&case.after[start..start + 4096]);
+    }
+    let mut prefix = case.before.clone();
+    let start = retired_page(case) * 4096;
+    prefix[start..start + 4].copy_from_slice(&case.after[start..start + 4]);
+    let mut maps = case.before.clone();
+    for at in map_offsets(case) {
+        maps[at] = case.after[at];
+    }
+    let targets = vec![parent, payload, prefix, maps];
+    for target in &targets {
+        assert_ne!(target, &case.before);
+        assert_ne!(target, &case.after);
+    }
+    targets
+}
+
+/// Protected literal descriptor, slack, payload, map, orphan and unrelated bytes.
+pub fn forged_offsets(case: &Case) -> Vec<usize> {
+    let start = case.data * 4096 + usize::from(word(&case.before, case.data * 4096 + 18) & 0x1fff);
+    let moved = 10;
+    let retained = *retained_pages(case).last().unwrap();
+    let retired = retired_page(case);
+    let shift = usize::from(case.header == 6) * 17;
+    let mut offsets = vec![
+        start + moved,
+        start + moved + 4,
+        start + moved + 8,
+        start + 33,
+        start + 34,
+        start + 42,
+        retained * 4096 + 2,
+        retained * 4096 + 14,
+        retained * 4096 + 4095,
+        retired * 4096,
+        retired * 4096 + 4095,
+        (103 + shift) * 4096 + 4095,
+        (case.definition + 2) * 4096 + 500,
+        200,
+    ];
+    offsets.extend(map_offsets(case));
+    if case.recipe == "clear-blob3-grow-memo5" {
+        offsets.push((101 + shift) * 4096 + 20);
+        let parent5 =
+            case.data * 4096 + usize::from(word(&case.before, case.data * 4096 + 22) & 0x1fff);
+        offsets.extend([parent5 + 22, parent5 + 26, parent5 + 30]);
+    }
+    offsets.sort_unstable();
+    offsets.dedup();
+    offsets
+}
+
+/// Adapt frozen requests without depending on a feature-gated engine dialect.
+pub fn map_groups<G, U>(
+    groups: Vec<super::genuine_external_lval_update::Group>,
+    mut update: impl FnMut(usize, Value, Value) -> U,
+    mut group: impl FnMut(&'static str, Vec<U>) -> G,
+) -> Vec<G> {
+    groups
+        .into_iter()
+        .map(|original| {
+            let updates = original
+                .updates
+                .into_iter()
+                .map(|cell| update(cell.row, cell.expected, cell.replacement))
+                .collect();
+            group(original.column, updates)
+        })
+        .collect()
+}

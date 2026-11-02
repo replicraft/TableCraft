@@ -24,7 +24,8 @@ passed complete native reads and 36 inert independent-reader reports before
 matching writers. Its twelve growth outcomes cover single, chained and joint
 changes under both header variants and both Memo storage declarations.
 [Whole-page clearing/retirement](NORMAL_EXTERNAL_LONG_RETIREMENT.md) now has separate
-connected acceptance. Mixed changes, row relocation and new LVAL
+connected acceptance. [Mixed changes](NORMAL_EXTERNAL_LONG_MIXED.md) now have
+their separate composed route. Row relocation and new LVAL
 allocation remain work. Native Microsoft Access save/reopen remains unrun.
 
 Twelve changed native commits plus eight original no-op/empty commits, independent

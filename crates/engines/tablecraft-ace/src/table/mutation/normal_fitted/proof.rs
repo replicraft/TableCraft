@@ -243,3 +243,6 @@ mod external_growth_tests;
 
 #[cfg(test)]
 mod external_retirement_tests;
+
+#[cfg(test)]
+mod external_mixed_tests;

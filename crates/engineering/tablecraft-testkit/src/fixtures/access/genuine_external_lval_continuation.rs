@@ -371,9 +371,18 @@ fn carrier(output: &mut Vec<u8>, value: &Value) {
 }
 
 pub fn intent_wire(case: &Case, before_digest: [u8; 32]) -> Vec<u8> {
+    intent_wire_parts(case.before.len(), &case.groups, before_digest)
+}
+
+/// Independently frame original groups without cloning complete source images.
+pub fn intent_wire_parts(
+    before_len: usize,
+    groups: &[super::genuine_external_lval_update::Group],
+    before_digest: [u8; 32],
+) -> Vec<u8> {
     let mut body = Vec::from(*b"Items");
     let mut assignments = 0_u32;
-    for group in &case.groups {
+    for group in groups {
         let mut cells = Vec::new();
         for update in &group.updates {
             let mut cell = (update.row as u64).to_le_bytes().to_vec();
@@ -394,9 +403,9 @@ pub fn intent_wire(case: &Case, before_digest: [u8; 32]) -> Vec<u8> {
     let mut raw = Vec::from(*b"TCNI0005");
     raw.extend_from_slice(&((72 + body.len()) as u32).to_le_bytes());
     raw.extend_from_slice(&[5, 0, 0, 0]);
-    raw.extend_from_slice(&(case.before.len() as u64).to_le_bytes());
+    raw.extend_from_slice(&(before_len as u64).to_le_bytes());
     raw.extend_from_slice(&before_digest);
-    for number in [5, case.groups.len() as u32, assignments, 0] {
+    for number in [5, groups.len() as u32, assignments, 0] {
         raw.extend_from_slice(&number.to_le_bytes());
     }
     raw.extend_from_slice(&body);
