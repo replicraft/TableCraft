@@ -1,5 +1,15 @@
 # Implementation status
 
+## Compressed Text write sources
+
+Fitting indexed UPDATE now proves original
+[compressed and marked Text cells](access/writes/TEXT_STORAGE_CARRIER_WRITES.md)
+with exact UTF16 binding and no allocation or normalization. Sixteen native
+commits, mixed recovery/forgery/resource controls, 32 retained typed/SQL saves
+and sixteen CLI saves/readbacks pass. No-op plans retain compressed bytes.
+Thirteen plain-Text proof regressions, strict lint and standalone feature
+profiles pass; metadata, encoders, history and intent formats are unchanged.
+
 ## Exact Date defaults
 
 Fresh creation now authors [bit-preserving legacy Date defaults](access/writes/DATE_CREATION_DEFAULTS.md)
@@ -18,8 +28,8 @@ now maintains qualified nonunique General root leaves. Sixty literal native
 commits, independent proof, recovery/forgery/resource controls, 64 retained
 typed/SQL saves and 44 CLI saves/readbacks pass. Four empty-string INSERT
 requests without explicit AllowZeroLength authority remain precise refusals.
-Explicit property sources, broader storage carriers and topology changes remain
-follow-ons; native Access save/reopen is unrun.
+Explicit property sources and topology changes remain follow-ons; storage-carrier
+qualification is recorded separately above. Native Access save/reopen is unrun.
 
 ## Indexed General Text updates
 
@@ -29,7 +39,7 @@ plans, retained typed/SQL sessions and CLI saves. Forty-four literal native
 commits, direct whole-image proofs, recovery/forgery/resource controls, eight
 session saves and four CLI saves/readbacks pass. The execution record retains
 the initial compile and serialization failures and their corrections. Broader
-Text carriers, topology changes and native Access
+Text carriers are separately qualified above. Topology changes and native Access
 save/reopen remain separate work.
 
 ## Constant defaults and NODE retirement
