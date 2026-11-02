@@ -2,8 +2,10 @@
 
 Six independently constructed files now pass eight native table contexts and six
 complete Jackcess reader reports. They cover Int64 and Currency tables under both
-frozen modern header variants. These are qualified prospective INSERT images;
-the matching normal writer has not yet been executed.
+frozen modern header variants. The source phase preceded matching writes; the
+[normal writer](../access/writes/NORMAL_WIDE_ROOT_PROMOTION.md) now passes its
+separate mutation acceptance. The source receipt retains its historical phase
+status.
 
 Each changed image adds one complete row to an original 400-row table. The Int32
 primary still fits its original leaf. The ascending and descending wide indexes

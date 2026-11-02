@@ -229,3 +229,6 @@ mod external_lval_update;
 
 #[cfg(test)]
 mod external_lval_continuation;
+
+#[cfg(test)]
+mod external_lval_mixed;

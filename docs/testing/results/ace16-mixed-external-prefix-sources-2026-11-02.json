@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "independent source/read qualification only",
+  "matching_producer_calls": 0,
+  "native_access_save_reopen": "unrun",
+  "families": {
+    "external_mixed": {
+      "unique_files": 20,
+      "request_contexts": 32,
+      "sdk_reports": 20
+    },
+    "primary_prefix": {
+      "unique_files": 6,
+      "native_selected_contexts": 8,
+      "sdk_reports": 6
+    }
+  },
+  "receipts": [
+    {
+      "path": ".cache/backend-next-source-gates-20261102/external-mixed-native-first.json",
+      "sha256": "7e797efd1f59c1d18df8ef3b5827a88a613b28dc1676467243ea41edce1b8797",
+      "record": {
+        "name": "external-mixed",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "mixed_external_retirement_sources_have_exact_bytes_and_full_ordinary_source",
+          "--",
+          "--ignored"
+        ],
+        "environment": {
+          "TABLECRAFT_INCREMENT_MULTI_ORIGINAL_DIR": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/original-first/originals",
+          "TABLECRAFT_INCREMENT_MULTI_SOURCE_DIR": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/expected-first",
+          "TABLECRAFT_EXTERNAL_LVAL_MIXED_SOURCE_DIR": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/expected-first",
+          "TABLECRAFT_WIDE_PRIMARY_PREFIX_SOURCE_DIR": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/expected-first"
+        },
+        "exit": 0,
+        "passed_functions": [
+          "1"
+        ],
+        "accepted": true,
+        "log_sha256": "811a579e26b0916d8802d6d92b42e90a59a8aab5bd4aae5e6acc6150e5ec1d83"
+      }
+    },
+    {
+      "path": ".cache/backend-next-source-gates-20261102/primary-prefix-native-first.json",
+      "sha256": "0dee45f43d02a8aebe13efeb830af4b935286a39c989644789c91ca543d441f2",
+      "record": {
+        "name": "primary-prefix",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "wider_primary_prefix_growth_source_eight_contexts_replay_complete_images_before_mutation",
+          "--",
+          "--ignored"
+        ],
+        "environment": {
+          "TABLECRAFT_INCREMENT_MULTI_ORIGINAL_DIR": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/original-first/originals",
+          "TABLECRAFT_INCREMENT_MULTI_SOURCE_DIR": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/expected-first",
+          "TABLECRAFT_EXTERNAL_LVAL_MIXED_SOURCE_DIR": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/expected-first",
+          "TABLECRAFT_WIDE_PRIMARY_PREFIX_SOURCE_DIR": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/expected-first"
+        },
+        "exit": 0,
+        "passed_functions": [
+          "1"
+        ],
+        "accepted": true,
+        "log_sha256": "c1620abad527769443c20f3c0b9a408b17a9c270a67c92961825f2701596b4df"
+      }
+    },
+    {
+      "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/source-qualification-first.json",
+      "sha256": "795f99dce04107884e5e5c747d5f9d8621d82c22601b6cfd9b831634deb6e82d",
+      "record": {
+        "state": "FIRST_MIXED_EXTERNAL_SDK20_AND_ZERO_CHILD_SAVED_VERIFICATION_PASS",
+        "argv": [
+          {
+            "argv": [
+              "python3",
+              ".cache/ace16-normal-external-lval-mixed-next-20261102/source/run_sdk.py"
+            ],
+            "environment": {
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "exec_session": 73430,
+            "returncode": 0
+          },
+          {
+            "argv": [
+              "python3",
+              ".cache/ace16-normal-external-lval-mixed-next-20261102/source/verify_saved.py"
+            ],
+            "environment": {
+              "PYTHONDONTWRITEBYTECODE": "1"
+            },
+            "returncode": 0
+          }
+        ],
+        "counts": {
+          "sdk_inert_reads": 20,
+          "request_contexts": 32,
+          "compiler_calls": 0,
+          "native_producer_calls": 0,
+          "saved_verifier_children": 0,
+          "retries": 0
+        },
+        "frozen_input_pins_unchanged": 41,
+        "outputs": [
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/first-complete-private-checkpoint.json",
+            "bytes": 1410,
+            "sha256": "6250d35b7e1d06727b43d505b9a69a10d215b7f6b40ce49ef4c51267de7c6da0"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/execution-code-first-freeze.json",
+            "bytes": 9286,
+            "sha256": "bbaf59cb010aa68cf3616fe28a3f4e897d589065d74a93a93999c26b389fed7c"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/expected-first/manifest.json",
+            "bytes": 15032,
+            "sha256": "65caec78bc86af0ea48b8dbed008d73b5a1c6998aef3da197cbbb1bae288e560"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/controls-first.json",
+            "bytes": 412,
+            "sha256": "5a0f72aab4fe7b897910960a04d6ae90b3d778c1b3fab4040bcf6049d6393d51"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/sdk-first/precall.json",
+            "bytes": 48789,
+            "sha256": "c5e257656144974d681eb7980941fd6ac2df47c66577676d041e21582c0cccf7"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/sdk-first/receipt.json",
+            "bytes": 26389,
+            "sha256": "a4e22d800e5fe8fbf7caa73ddb674fb90371a65dfb3fb13d1377f8a0e619369a"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/sdk-first/saved-verification.json",
+            "bytes": 590,
+            "sha256": "aad0793a981993b3486d7724c55ee146cbd73a8fd93cf7583ab0ac1a13e0b92e"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/sdk-wrapper-first.stdout",
+            "bytes": 74,
+            "sha256": "1d28e0ed080c80fb393423e2dc4074a73f8ccdac1628b59870a5acafa377ed8d"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/sdk-wrapper-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/saved-wrapper-first.stdout",
+            "bytes": 79,
+            "sha256": "b7baad50c215e4b9fac380cdf1494d0f6db9256f791ca9071542f66d036279d9"
+          },
+          {
+            "path": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/saved-wrapper-first.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "scope": "Source-only qualification; not matching native writes or native Access saves."
+      }
+    },
+    {
+      "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/readonly-sdk-execution-first.json",
+      "sha256": "27663b4703796e361973c7696b417c4f6c69b8ff9ede057372ba264b95d5df2d",
+      "record": {
+        "state": "SOURCE_SDK6_AND_ZERO_CHILD_SAVED_VERIFICATION_FIRST_PASS",
+        "implementation_static_review": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/implementation-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+          "bytes": 2453,
+          "sha256": "c4d5d437577cf077b432fce969dafc856010a5b4108f3a975cf7b43ea7678840"
+        },
+        "closure": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/code-first-freeze.json",
+          "bytes": 11996,
+          "sha256": "28cf67f88f819f914269c640084cda6f2cde7dab673634d972f086beb1301c40"
+        },
+        "manifest": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/expected-first/manifest.json",
+          "bytes": 4406,
+          "sha256": "566dc85244be008343498fae728f7c0d29e5093bf455b2493065add3bdf4ce75"
+        },
+        "native_prerequisite": {
+          "path": ".cache/backend-next-source-gates-20261102/primary-prefix-native-sdk-prerequisite.json",
+          "bytes": 1196,
+          "sha256": "0b92e91511c50c45c2b3a875f1471744b06b0335df2bb153d9c616450fb46a6e"
+        },
+        "sdk_wrapper": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/sdk-execution-first/receipt.json",
+          "bytes": 1023,
+          "sha256": "73a5e5c847c0efc5ea49bdf05c647aad6ccb225bc2b52af8737a7021c436fb81"
+        },
+        "saved_wrapper": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/saved-execution-first/receipt.json",
+          "bytes": 886,
+          "sha256": "af5badc6add2f16ce9ba0794b061888fc0c7a8bd282fc2d629cd0172d41a7834"
+        },
+        "sdk_receipt": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/reads-first/receipt.json",
+          "bytes": 7495,
+          "sha256": "a22c1d5b822abcfe21f80feeb9b1664414e5a2ab9a5cb3f3c26e4393c648dca8"
+        },
+        "precall": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/reads-first/precall.json",
+          "bytes": 23620,
+          "sha256": "4950acb72e8a7b2bc7e51216095a2782b198a5578b07b9d90a911095830dff55"
+        },
+        "saved_verification": {
+          "path": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/reads-first/saved-verification.json",
+          "bytes": 19768,
+          "sha256": "7c1396fd7c8050f4a396883dcc620bc75a08f31e7269e6261945fa0bd55bd498"
+        },
+        "effects": {
+          "inert_sdk_describe_calls": 6,
+          "compile_calls": 0,
+          "sdk_database_writes": 0,
+          "native_producers": 0,
+          "cargo_calls": 0,
+          "saved_verifier_child_calls": 0,
+          "tracked_edits": 0
+        },
+        "inputs_unchanged": true,
+        "active_handles": [],
+        "historical_handles": [
+          {
+            "session_id": 50360,
+            "terminal_exit": 0
+          }
+        ],
+        "qualification": "Read-only SDK comparison and root native source gate are distinct from matching writes and native Access save/reopen. No matching producer executed by reviewer."
+      }
+    }
+  ]
+}
