@@ -28,13 +28,7 @@ pub(super) fn plan(
         .filter(|count| *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
 
-    binding::validate(
-        source.table.schema(),
-        counter.column,
-        requests,
-        budget,
-        cancelled,
-    )?;
+    binding::validate(&source, counter.column, requests, budget, cancelled)?;
 
     let generated = autonumber_counter::prepare(counter, requests.len(), budget, cancelled)?;
     let counter = generated.source;
@@ -113,3 +107,6 @@ mod companion_tests;
 
 #[cfg(test)]
 mod multi_index_sources;
+
+#[cfg(test)]
+mod multi_index_tests;

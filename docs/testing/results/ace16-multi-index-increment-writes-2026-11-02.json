@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Normal Increment with multiple physical indexes and atomic original-presence host batches",
+  "status": "portable acceptance passed",
+  "counts": {
+    "literal_batch_commits": 2,
+    "empty_plans": 2,
+    "direct_literal_proofs": 4,
+    "direct_refusals": 88,
+    "native_recovery_contexts": 42,
+    "forged_journal_refusals": 76,
+    "public_resource_contexts": 4,
+    "typed_batch_saves": 2,
+    "typed_empty_saves": 2,
+    "cold_host_contexts": 8,
+    "cli_supplied_generator_refusals": 2
+  },
+  "verification": "backend-write-batch-2026-11-02.json",
+  "source_qualification": "ace16-multi-index-increment-sources-2026-11-02.json",
+  "native_access_save_reopen": "unrun",
+  "scope_limits": "See the owning write contract; counts do not establish general native compatibility."
+}

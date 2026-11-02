@@ -1,0 +1,915 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable acceptance passed after two test-contract corrections; native Access save/reopen unrun",
+  "attempts": [
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/connected-regressions-first.json",
+        "bytes": 2297,
+        "sha256": "5abdcaabcb8aa93c5a6b09c7a70b2ae06607e54b65f08d2c5ef965ee4938b2bc"
+      },
+      "commands": [
+        {
+          "name": "connected-regression-increment-unit-regression-second",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "normal_insert::incrementing::tests",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true
+        },
+        {
+          "name": "connected-regression-external-reuse-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "external_long_fresh_proof_reconstructs_whole_images_without_staged_descriptors",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true
+        },
+        {
+          "name": "connected-regression-external-growth-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "external_terminal_growth_fresh_proof_reconstructs_whole_images_without_staged_descriptors",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true
+        },
+        {
+          "name": "connected-regression-retained-sessions-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "normal_increment_companion_sessions",
+            "--test",
+            "genuine_external_lval_retirement",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2,
+            1
+          ],
+          "expected_functions": 3,
+          "accepted": true
+        },
+        {
+          "name": "connected-regression-cli-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "normal_increment_companion_sql",
+            "--test",
+            "genuine_external_lval_retirement",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1,
+            1
+          ],
+          "expected_functions": 2,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/acceptance-results-first.json",
+        "bytes": 1928,
+        "sha256": "bbb06b7ad69d58375be8647e3303df786f1feebe7659e613d24fee55a07e4c75"
+      },
+      "commands": [
+        {
+          "name": "increment-multi-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "multi_index_tests",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "d3290de11b1feb10ab2b9c154a6e8e66da2cd175cf90ee7f2cf6732879e50e61"
+        },
+        {
+          "name": "external-mixed-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "table::mutation::normal_fitted::proof::external_mixed_tests::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "e5d8bbb37c2184d46829e8de7f880a55a8f13db48113ae68046e7ac02bde1f84"
+        },
+        {
+          "name": "prefix-direct-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "root_promotions::tests",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 2,
+          "accepted": true,
+          "log_sha256": "4df756e73a986807e1a679151e6a55f999fa05f18858f3bfd5f80579c4581321"
+        },
+        {
+          "name": "increment-multi-native-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_multi",
+            "--",
+            "--ignored"
+          ],
+          "exit": 101,
+          "passed_functions": [],
+          "expected_functions": 6,
+          "accepted": false,
+          "log_sha256": "d65891475fbddf9f65a84cb1cd7ce0234c80a8911e9a4649899410025b8dcaae"
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/acceptance-results-second.json",
+        "bytes": 1076,
+        "sha256": "cf9cdcfac0de3a3c7aa8c3ad874e496d597f50d12adcf1d1e9de721842117929"
+      },
+      "commands": [
+        {
+          "name": "increment-multi-negative-second",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_multi::complete_batch_validation_and_signed_seed_fail_before_publication",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "f01094e79ed0fff3eeaabc9e68edea45fc6705c96cbe731744e3e7849a3c94a9"
+        },
+        {
+          "name": "external-mixed-native-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::external_lval_mixed::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 101,
+          "passed_functions": [],
+          "expected_functions": 5,
+          "accepted": false,
+          "log_sha256": "6c42c6cb0ef1252e27da69900071f905240c7427456caea2a6e429f7adedbcb5"
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/acceptance-results-third.json",
+        "bytes": 3329,
+        "sha256": "a13f931175b1ebfea0a9c6e87d7e6ac3496a9134dd2fd8949152a3f4beed7d2c"
+      },
+      "commands": [
+        {
+          "name": "prefix-native-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::wide_root_promotion",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            5
+          ],
+          "expected_functions": 5,
+          "accepted": true,
+          "log_sha256": "193fee988e46e761df578b7e4017b4e220dc14681a6822de5cbbe023aa7d348b"
+        },
+        {
+          "name": "increment-multi-host-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "normal_increment_multi_sessions",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 2,
+          "accepted": true,
+          "log_sha256": "703df18f5dd068acd4acdd43ac6fe0c53e4a93d45c4dd83096721a07ead165c1"
+        },
+        {
+          "name": "external-mixed-host-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_external_lval_mixed",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "4b038d445c4c28a4cccbee609b2eb1c37197107d2d93e96bfd02be5a22a491d1"
+        },
+        {
+          "name": "prefix-host-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            3
+          ],
+          "expected_functions": 3,
+          "accepted": true,
+          "log_sha256": "ef607ee22c9f254425564ed1ffcc548fc348e475d9481fc81edef4117f1c808e"
+        },
+        {
+          "name": "increment-multi-cli-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "normal_increment_multi_sql",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "a793a13a775a91d20f7760ab004226e60f5c6da230bf5fea27e6e9e07f4f0a81"
+        },
+        {
+          "name": "external-mixed-cli-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_external_lval_mixed",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "fdc606ee797aa702bf043b40f17dc08c87ab4e83fda2631073243600a9ccae39"
+        },
+        {
+          "name": "prefix-cli-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            2
+          ],
+          "expected_functions": 2,
+          "accepted": true,
+          "log_sha256": "ac40058c8c8862a4be36aaffbc11fcbfda84ebccfc328df021160a7e0a16b151"
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/focused-successors-first.json",
+        "bytes": 4986,
+        "sha256": "2db4ab434425ad37ebfce4236007842b995c96f19f464b68daecd173fa76ad63"
+      },
+      "commands": [
+        {
+          "name": "leaf-compression-source-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "wider_leaf_compression_source_eight_contexts_replay_complete_images_before_mutation",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "d05fb029e8ccc219dd4e56a6d7c7ea5bee00904e1025584d39e5447504c5741a"
+        },
+        {
+          "name": "external-mixed-empty-contract-second",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::external_lval_mixed::external_mixed_all_original_group_orders_commit_literal_images_and_noops",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "4609bacc01161534be045ffc157d443203e62747f4d33619b7837453d746a14a"
+        },
+        {
+          "name": "shared-companion-resources-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_companions::resources::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "f0b270694f17637e379ed92830476480c5055a5519db4a887660776d0d7f2639"
+        },
+        {
+          "name": "shared-multi-resources-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_multi::resources::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "ba0dfd8342dd842fe5ae8509e67c19227bf0fc1c8983e5bb9abf1f560b64e4d1"
+        },
+        {
+          "name": "shared-mixed-resources-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::external_lval_mixed::resources::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "7219afb6bc38ce8cbbcf603f8de64e8856f338cc7078c6f65f9c23ec9ac19859"
+        },
+        {
+          "name": "shared-wide-resources-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::wide_root_promotion::resources::",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "1c1724b906c7099935625b5ae4f96f0f28f8dd8f9de4639b97f0216744595c96"
+        },
+        {
+          "name": "shared-companion-wire-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_companions::companion_presence_commits_twenty_exact_images_and_preserves_twenty_empty_sources",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "7a38a1e068c903da5c5f817fdf96360c96e799887daec82f0975b732cf3b1256"
+        },
+        {
+          "name": "shared-multi-wire-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::increment_multi::ordered_omissions_generate_two_rows_and_update_each_physical_history_once",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "e908e50ffb4343fa19caf5249f3b9550dd36564c0fbead349b50b9ef28ae02f5"
+        },
+        {
+          "name": "wide-unique-guard-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::wide_root_promotion::wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_or_invalid_allocation_authority",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "3248d56fe045d377981459c299799d9e656b206bacafd721ba4caaf3e161562e"
+        }
+      ]
+    },
+    {
+      "receipt": {
+        "path": ".cache/backend-next-writers-20261102/final-checks-first.json",
+        "bytes": 4532,
+        "sha256": "23d55d92863f1bc84429aea5d94b7927d6d9b949ac3d552f3c91c961c67726a8"
+      },
+      "commands": [
+        {
+          "name": "retirement-shared-wire-regression-first",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "api::normal::external_lval_retirement::external_retirement_updates_commit_exact_literals_with_original_profile_five_groups",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "expected_functions": 1,
+          "accepted": true,
+          "log_sha256": "0ebaf7dee60aaab631fa8769e38b74e4092cd47a1a738c9790b5660b7c7b738a"
+        },
+        {
+          "name": "default-build-final",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "c2ccae29be8ebbd8973f3201e5f6646ec32bdad22fe9c3866ff8d1618ed74896"
+        },
+        {
+          "name": "journal-build-final",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--features",
+            "journal",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "f98c86467ac5c40c168c1dfef4e4f2aa48d4b950d30eb8f79cc6d3249ecdbc1e"
+        },
+        {
+          "name": "preview-build-final",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--features",
+            "ace16-write-preview",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "f0788aa36d1c86b6ccdfb7f4042a5574102d82061c046422a2d42e008a1e4710"
+        },
+        {
+          "name": "testkit-minimal-final",
+          "argv": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-testkit",
+            "--no-default-features",
+            "--lib",
+            "--offline",
+            "--locked"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "93aa119ed2e2d5b3d2bdb86aa760d2a5591d8d8458d16f61266cecd8e0f66f5a"
+        },
+        {
+          "name": "native-strict-final",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "--all-features",
+            "--all-targets",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "32966cebd09353eb7778d0d5040aaf6dab251ab466d59cd5107e7d59e168ba6f"
+        },
+        {
+          "name": "access-strict-final",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--test",
+            "normal_increment_multi_sessions",
+            "--test",
+            "genuine_external_lval_mixed",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "ab204343dd588fdcd96442437a966e08f6e722784f09fedf92cb5dd9e82f9e37"
+        },
+        {
+          "name": "cli-strict-final",
+          "argv": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--test",
+            "normal_increment_multi_sql",
+            "--test",
+            "genuine_external_lval_mixed",
+            "--test",
+            "genuine_wide_root_promotion",
+            "--offline",
+            "--locked",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "b020c0c2884db4f2933ea5b52acb330bb294cc8c83641f8190242cb13e5f22f6"
+        },
+        {
+          "name": "fmt-final",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "boundaries-final",
+          "argv": [
+            "python3",
+            "scripts/check_dependency_boundaries.py"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "expected_functions": null,
+          "accepted": true,
+          "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+        }
+      ]
+    }
+  ],
+  "preserved_failures": [
+    {
+      "attempt": "acceptance-results-first.json",
+      "name": "increment-multi-native-first",
+      "failure": "One negative expected Column for indexed NULL; actual IndexedColumn is the exact declared binding refusal.",
+      "resolution": "increment-multi-negative-second; only failed function rerun; five successful functions retained"
+    },
+    {
+      "attempt": "acceptance-results-second.json",
+      "name": "external-mixed-native-first",
+      "failure": "Targetless UPDATE groups violate existing intent framing before native admission.",
+      "resolution": "external-mixed-empty-contract-second; four exact targetless refusals and eight named empty positives; four successful functions retained"
+    }
+  ],
+  "test_machinery": {
+    "owner": "tablecraft-testkit",
+    "resource_contexts": 84,
+    "calls_per_resource_context": 8,
+    "duplicate_targetless_positive_calls_removed": 28,
+    "duplicate_primary_controls_removed": 4,
+    "production_changes_from_extraction": 0
+  }
+}

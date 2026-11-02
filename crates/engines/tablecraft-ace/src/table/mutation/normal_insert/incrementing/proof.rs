@@ -99,23 +99,48 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         budget,
         cancelled,
     )?;
-    let index = source
-        .indexes
-        .indexes()
-        .first()
-        .ok_or(EditError::Preservation)?;
-    super::super::indexed::proof::reconstruct_index(
-        &image,
-        &source,
-        index,
-        super::super::indexed::proof::RequestedRows {
-            requests: &rows,
-            references: &references,
-        },
-        &mut expected,
-        budget,
-        cancelled,
-    )?;
+    if source.table.schema().layout.physical_indexes == 1 {
+        let index = source
+            .indexes
+            .indexes()
+            .first()
+            .ok_or(EditError::Preservation)?;
+        super::super::indexed::proof::reconstruct_index(
+            &image,
+            &source,
+            index,
+            super::super::indexed::proof::RequestedRows {
+                requests: &rows,
+                references: &references,
+            },
+            &mut expected,
+            budget,
+            cancelled,
+        )?;
+    } else {
+        for physical in 0..source.table.schema().layout.physical_indexes {
+            check(budget, cancelled)?;
+            let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
+            let index = crate::table::indexes::mutation::insertion::qualify_actions(
+                facts.checked(),
+                physical,
+                budget,
+                cancelled,
+            )?;
+            super::super::indexed::proof::reconstruct_index(
+                &image,
+                &source,
+                index,
+                super::super::indexed::proof::RequestedRows {
+                    requests: &rows,
+                    references: &references,
+                },
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        }
+    }
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, size_of::<i32>() as u64)
