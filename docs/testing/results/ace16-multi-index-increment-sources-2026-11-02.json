@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "multi-index Increment source/read qualification only",
+  "source_views": 4,
+  "sdk_reports": 24,
+  "matching_producer_calls": 0,
+  "native_access_save_reopen": "unrun",
+  "receipts": [
+    {
+      "path": ".cache/backend-next-source-gates-20261102/increment-multi-native-first.json",
+      "sha256": "54b0db869925eb2c7de59da647c7f5b8fcfcc9de1783d05e733d662677584346",
+      "record": {
+        "name": "increment-multi",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "table::mutation::normal_insert::incrementing::multi_index_sources::source_conversion_and_batch_preserve_full_source_and_all_physical_aliases",
+          "--",
+          "--ignored"
+        ],
+        "environment": {
+          "TABLECRAFT_INCREMENT_MULTI_ORIGINAL_DIR": ".cache/ace16-normal-indexed-insert-next-20261101/association-source/original-first/originals",
+          "TABLECRAFT_INCREMENT_MULTI_SOURCE_DIR": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/expected-first",
+          "TABLECRAFT_EXTERNAL_LVAL_MIXED_SOURCE_DIR": ".cache/ace16-normal-external-lval-mixed-next-20261102/source/expected-first",
+          "TABLECRAFT_WIDE_PRIMARY_PREFIX_SOURCE_DIR": ".cache/ace16-normal-wide-primary-prefix-growth-next-20261102/source/expected-first"
+        },
+        "exit": 0,
+        "passed_functions": [
+          "1"
+        ],
+        "accepted": true,
+        "log_sha256": "d9c909e3e5caaf21dd3e3067bfeb9f0d10894ba94b76cbf9c5d792918525af79"
+      }
+    },
+    {
+      "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/readonly-sdk-execution-first.json",
+      "sha256": "90b48e6ef615b9167efeff0f760a0dbb2eaa1c24bfcf91f735adb1cfea0a9106",
+      "record": {
+        "state": "NATIVE4_PREREQUISITE_THEN_SDK24_AND_SAVED_ZERO_CHILD_FIRST_PASS",
+        "closed_pins_unchanged": true,
+        "completed_reads": 24,
+        "failed_reads": 0,
+        "live_handles": [],
+        "sdk_write_calls": 0,
+        "compiler_calls": 0,
+        "cargo_calls": 0,
+        "matching_producer_calls": 0,
+        "evidence": [
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/sdk-delegated-first.json",
+            "bytes": 2573,
+            "sha256": "b40e5c88311d6a8904e9cbe0af3ca5ab67f3a0f65bbeef6b6a85650a23d9487a"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/saved-verifier-delegated-first.json",
+            "bytes": 1374,
+            "sha256": "fd001f18c6f7f6f0531045d845b55f2a3d20dd195ba238b3f46592a4e8160be7"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/result.json",
+            "bytes": 218,
+            "sha256": "11c6353c443c7ade1e56d08757530e34cb0ac9719975fa407f830d5cf46ec5e7"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/precall-freeze.json",
+            "bytes": 54372,
+            "sha256": "ffab7ef0300b57aff0d05dafb7b3a364113e4f37d97675cb18b7dc6e835c05ac"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/expected-first/manifest.json",
+            "bytes": 26599,
+            "sha256": "3cc39d09781a0a27032ae98b2bdee03c5261a095e67ebe297283d026d5f2c723"
+          },
+          {
+            "path": ".cache/backend-next-source-gates-20261102/increment-multi-native-first.json",
+            "bytes": 1058,
+            "sha256": "54b0db869925eb2c7de59da647c7f5b8fcfcc9de1783d05e733d662677584346"
+          }
+        ],
+        "observations": [
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-cursor-GroupAlias.completed.json",
+            "bytes": 1277,
+            "sha256": "2b19bd09e99e7666b3bce8b13f1b7693bb2eb2b8c0ae43fb064d6900649c0cc7"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-cursor-GroupOrder.completed.json",
+            "bytes": 1277,
+            "sha256": "6e479e04190e7154170bf57d9620cf3ee31c6989fd010eb2e926765ccfdfa97c"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-cursor-PrimaryAlias.completed.json",
+            "bytes": 1285,
+            "sha256": "6e30389e29633f3722424e88ef576800d1793de9e4c417380d87039d47bf8ca2"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-cursor-PrimaryID.completed.json",
+            "bytes": 1273,
+            "sha256": "7fbb53a3bac72f88fe15907a99044ba8a22f4c35ca8c41a4bc9ebe343a3df67a"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-inventory.completed.json",
+            "bytes": 1206,
+            "sha256": "d5703f80ca583d36a24e739fd905e07d18fa2a5a8e6f2e992121d2eb39c2a5e3"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-batch-metadata.completed.json",
+            "bytes": 1178,
+            "sha256": "774402485e80d428b6ffbf42a62e12ada88e11e337ff60ba171fc20d0e65b6be"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-cursor-GroupAlias.completed.json",
+            "bytes": 1281,
+            "sha256": "4d814c01ecf84f96625c45fae3f5c87e49433f5ee47691b18bbc663b46ad44d9"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-cursor-GroupOrder.completed.json",
+            "bytes": 1281,
+            "sha256": "ad3f74752b7891a66e52a55786cedd9ec2e6b47522867693c97b04e46cba62b6"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-cursor-PrimaryAlias.completed.json",
+            "bytes": 1289,
+            "sha256": "9be41ad72e30ae2aa8fe8f2b2e281a0ebc7d806a38797690b1123ca56100aeab"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-cursor-PrimaryID.completed.json",
+            "bytes": 1277,
+            "sha256": "0864b43a8b308c2d9b1529427b0c787ed71edf10e3aa707a8e5164223315a0f3"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-inventory.completed.json",
+            "bytes": 1210,
+            "sha256": "2c6b787cdd1f4cfe809293f950609918928177f1af2d4f834242d844b60ceb17"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h5-increment-multi-before-metadata.completed.json",
+            "bytes": 1182,
+            "sha256": "21f94dcff4dd6dcf38461ae404be5818cb1ec01c9ee89b475abaa9524982efa7"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-cursor-GroupAlias.completed.json",
+            "bytes": 1277,
+            "sha256": "824894667e716386e203312e64a4bcacea20170aa70297a2cf1ce2e0f0bb2059"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-cursor-GroupOrder.completed.json",
+            "bytes": 1277,
+            "sha256": "95bb676324ae210433cd5c521191d9ccbee9d4174d06547ae3a76d6201937d5c"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-cursor-PrimaryAlias.completed.json",
+            "bytes": 1285,
+            "sha256": "a65f09e9efa2565390c55b7166365f6aa720ab7b08514d7cda12e977c85330f4"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-cursor-PrimaryID.completed.json",
+            "bytes": 1273,
+            "sha256": "6fa7aaa88229cae98bd94e031fb876385e1055be2004f44366f8e752407b07ca"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-inventory.completed.json",
+            "bytes": 1206,
+            "sha256": "b89f3fcf82040d4a65446ce1b7d950064fb1a3db091458a83495425d7e4e19f4"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-batch-metadata.completed.json",
+            "bytes": 1178,
+            "sha256": "9ddfcc6430121e7e131ce727574061fbb6678ec6141ff77f40290e2152acc17c"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-cursor-GroupAlias.completed.json",
+            "bytes": 1281,
+            "sha256": "136af53fc85c735c7b53b8a3386633ec361fbf10232483c6b240e084c0fe4828"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-cursor-GroupOrder.completed.json",
+            "bytes": 1281,
+            "sha256": "d2f11ec5fbb33f2e6b437cb69aa142fd5b6e16c17e1a6a8801d5d4bcbe0af603"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-cursor-PrimaryAlias.completed.json",
+            "bytes": 1289,
+            "sha256": "1da366b808d0b6216c6803653ce6b1a4826f47f3a94aa25462151e6d4e7894ca"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-cursor-PrimaryID.completed.json",
+            "bytes": 1277,
+            "sha256": "3ad6f076eb3d2e312cdc212ff46557bf96ee3687ae2899eac02cfaa4608e5159"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-inventory.completed.json",
+            "bytes": 1210,
+            "sha256": "3e25832fa49fe5c86dceda81bc9c4eff83d07277b408a79b3df0cfbae2f9acf2"
+          },
+          {
+            "path": ".cache/ace16-normal-autonumber-multi-index-next-20261102/source/observations-first/h6-increment-multi-before-metadata.completed.json",
+            "bytes": 1182,
+            "sha256": "efb542da684cfc543370754a4e01e0b94c034eb19f2dd9f5176f4a81c2af5980"
+          }
+        ]
+      }
+    }
+  ]
+}

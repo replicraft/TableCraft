@@ -110,3 +110,6 @@ mod companion_after_sources;
 
 #[cfg(test)]
 mod companion_tests;
+
+#[cfg(test)]
+mod multi_index_sources;
