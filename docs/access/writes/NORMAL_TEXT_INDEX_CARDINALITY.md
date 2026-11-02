@@ -20,11 +20,12 @@ native key framing and final full image without staged keys or patches. The
 shared key proof lives in its neutral native index audit owner; UPDATE imports
 that owner directly.
 
-The current sources have no stored AllowZeroLength property. Four hypothetical
+The original source family has no stored AllowZeroLength property. Four hypothetical
 empty-string INSERT outcomes remain source evidence only: their actual requests
 refuse with ConstraintCoverage. A readable existing empty value does not supply
-permission to insert another one. Explicit true/false property sources are a
-separate follow-on. NULL insertion and deletion of existing empty values retain
+permission to insert another one. Separate [explicit true/false property
+sources](EXPLICIT_TEXT_AZL.md) now pass native/session/CLI acceptance without
+widening those absent-property requests. NULL insertion and deletion of existing empty values retain
 their separately checked semantics.
 
 Native engine and host checks do not establish Microsoft Access save/reopen

@@ -1,5 +1,14 @@
 # Implementation status
 
+## Explicit empty-Text field policies
+
+The existing normal Text INSERT route now passes separately qualified
+[AllowZeroLength true/false sources](access/writes/EXPLICIT_TEXT_AZL.md): twenty
+native contexts, direct proof/forgery, resource/recovery controls, 24 typed/SQL
+saves with empty follow-ons and twelve CLI saves/readbacks plus no-effect policy
+refusals. Supplied NULL remains distinct from empty Text. This is acceptance of
+existing production policy checks; absent-property permission stays refused.
+
 ## Native Increment insertion
 
 Normal omitted-field INSERT now consumes qualified native Int32 Increment
@@ -52,8 +61,9 @@ now maintains qualified nonunique General root leaves. Sixty literal native
 commits, independent proof, recovery/forgery/resource controls, 64 retained
 typed/SQL saves and 44 CLI saves/readbacks pass. Four empty-string INSERT
 requests without explicit AllowZeroLength authority remain precise refusals.
-Explicit property sources and topology changes remain follow-ons; storage-carrier
-qualification is recorded separately above. Native Access save/reopen is unrun.
+Explicit [property sources](access/writes/EXPLICIT_TEXT_AZL.md) now pass separately;
+topology changes remain follow-ons. Storage-carrier qualification is recorded
+separately above. Native Access save/reopen is unrun.
 
 ## Indexed General Text updates
 

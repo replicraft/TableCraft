@@ -315,3 +315,5 @@ pub mod canonical_normal_autonumber;
 pub mod genuine_recursive_retirement;
 
 pub mod genuine_normal_autonumber;
+
+pub mod genuine_text_azl;
