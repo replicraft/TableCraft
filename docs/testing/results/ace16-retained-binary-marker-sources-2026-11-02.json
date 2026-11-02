@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "independent source/read qualification only; matching target-relative UPDATE unrun",
+  "originals": 2,
+  "source_views": 6,
+  "source_artifacts": 59,
+  "sdk_reports": 48,
+  "matching_producer_calls": 0,
+  "manifest": {
+    "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/expected-first/manifest.json",
+    "bytes": 13045,
+    "sha256": "fc8f6df057d6d5a09148677a468861143975328d0c7c2d8e958fee13c5dfe1e3"
+  },
+  "native_read_gate": {
+    "receipt": {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/root-native-first/durable-source-first.json",
+      "bytes": 679,
+      "sha256": "3cfc3678aca7533db4422939b249f67045d79e0a032009a8821c802dc3f3631d"
+    },
+    "record": {
+      "name": "durable-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "--offline",
+        "--locked",
+        "table::mutation::normal_ordinary_sources::retained_binary_marker::retained_binary_marker_sources_have_exact_bytes_and_full_read_actions_coverage",
+        "--",
+        "--exact",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "source_views": 6,
+      "canonical_observations": [],
+      "observation_is_mutation_qualification": false,
+      "log_sha256": "aaab7e2aee8b15ce359a62342f9ff0ed45315b2d07e2cba0c3afc4dd93c25ea8",
+      "matching_producer_calls": 0,
+      "SDK_calls": 0
+    }
+  },
+  "initial_canonical_observation": {
+    "receipt": {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/root-native-first/initial-canonical-observation-first.json",
+      "bytes": 813,
+      "sha256": "74bbdbfaef73d2746ac85ae9ff010e18a3128869aff3604468b6347abc6c8d7a"
+    },
+    "record": {
+      "name": "initial-canonical-observation-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "--offline",
+        "--locked",
+        "table::mutation::normal_ordinary_sources::retained_binary_marker::observe_canonical_update_source_admission_from_pinned_originals",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "source_views": null,
+      "canonical_observations": [
+        [
+          "5",
+          "REFUSED_ACTIVE_CONTENT"
+        ],
+        [
+          "6",
+          "REFUSED_ACTIVE_CONTENT"
+        ]
+      ],
+      "observation_is_mutation_qualification": false,
+      "log_sha256": "69edffed08ee7dcb77397dd647faa4dcfbb15fcf55e9ef2109d158984573c16e",
+      "matching_producer_calls": 0,
+      "SDK_calls": 0
+    },
+    "status_is_not_conformance_requirement": true
+  },
+  "sdk_aggregate": {
+    "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/readonly-sdk-execution-first.json",
+    "bytes": 3232,
+    "sha256": "ea7a9db50c43f346410f492b9b86eff66a60460e04cc52b1907665e5c7564dca"
+  },
+  "preserved_wrapper_preflight_error": {
+    "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/sdk-wrapper-preflight-first-failure.json",
+    "bytes": 836,
+    "sha256": "1372f331d1f6bf053c196b521feeb255325aa7e348b39d82724f4a0d180c51ed"
+  },
+  "observation_split_successor": {
+    "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/canonical-observation-successor/successor-checkpoint.json",
+    "bytes": 4878,
+    "sha256": "8c5a62ad2167bb8087fd97d61a0d733c09aeeb1f4ae6fc8c5a1fed54cd53f7ce"
+  },
+  "interpretation": "Read/Actions Source does not authorize canonical mutations. Six images preserve complete unrelated INDEX/history/maps/catalog/EOF. No source/controller/expected-image retuning or SDK call retries.",
+  "native_access_save_reopen": "unrun"
+}
