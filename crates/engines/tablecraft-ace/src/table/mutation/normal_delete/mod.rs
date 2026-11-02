@@ -127,3 +127,6 @@ mod node_retirement_tests;
 
 #[cfg(test)]
 mod recursive_node_sources;
+
+#[cfg(test)]
+mod recursive_retirement_sources;

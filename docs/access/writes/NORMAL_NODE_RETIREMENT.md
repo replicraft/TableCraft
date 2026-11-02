@@ -49,3 +49,9 @@ The [combined execution record](../../testing/results/ace16-constant-defaults-an
 retains focused/strict checks and the first broad regression. One stale unit-test
 error expectation was corrected and replayed; the 1,164 other engine units passed
 the first run. Adapter/CLI/recovery checks passed separately.
+
+The later [recursive source gate](../../testing/results/ace16-recursive-retirement-sources-2026-11-01.json)
+passes six independently modeled height-two views and twelve read-only SDK
+observations before matching recursive producers. It checks original partitions,
+fences, sibling chains, exact retirement cells and current complete native Source
+admission. This is source qualification; recursive mutation remains separate work.
