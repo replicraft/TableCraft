@@ -1,0 +1,250 @@
+{
+  "date": "2026-11-01",
+  "qualification": {
+    "local_engine_and_host": "PASS",
+    "native_microsoft_access_save_reopen": "UNRUN",
+    "full_backend": "INCOMPLETE"
+  },
+  "scope": "Exact legacy Date creation defaults and omission-aware INSERT",
+  "source_manifest_sha256": "e620da97acf09064b8b024ddc81ca54914c525b6fa181d00de319954cc2dd616",
+  "independent_views": 36,
+  "coverage": {
+    "creator_full_images": 12,
+    "creator_resource_contexts": 12,
+    "native_full_image_commits": 24,
+    "empty_native_plans": 12,
+    "native_resource_contexts": 24,
+    "direct_literal_proofs": 24,
+    "direct_causal_denials": 122,
+    "retained_typed_sql_saves": 24,
+    "nonreversible_alias_families": 4
+  },
+  "tests": [
+    {
+      "name": "date-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::omitted::date_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true
+    },
+    {
+      "name": "date-creators",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "native_creation_date_defaults",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true
+    },
+    {
+      "name": "date-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::creation_date_defaults::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        4
+      ],
+      "accepted": true
+    },
+    {
+      "name": "cardinality-date-hosts",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_text_cardinality",
+        "--test",
+        "native_creation_date_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2,
+        2
+      ],
+      "accepted": true
+    }
+  ],
+  "creation_scope": "Creator header profile only; both source headers independently exercise native INSERT/proof/recovery.",
+  "cold_recovery_scope": "Fractional-second case under both source header variants; all six civil cases have separate literal plan/direct/host coverage.",
+  "independent_review_sha256": "f2c17b7dc2dc1f85c90825dd6b9fead8507599e59ff54d821e1c0f7a36c2038c",
+  "combined_batch_checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "ace-lib",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "access-lib",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-bin",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0
+    }
+  ],
+  "combined_batch_unit_counts": {
+    "ace": 1166,
+    "access": 79,
+    "cli": 104
+  },
+  "documentation_links": {
+    "checked_targets": 7332,
+    "missing": 0
+  }
+}

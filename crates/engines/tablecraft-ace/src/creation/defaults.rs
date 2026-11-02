@@ -1,4 +1,6 @@
 //! Bounded canonical constant declarations, without an expression evaluator.
+mod date;
+
 use super::CreateDatabaseError;
 use crate::header::check;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -29,6 +31,10 @@ impl Literal {
             Value::Int32(value) => Self::number(i64::from(*value), false, budget, cancelled),
             Value::Int64(value) => Self::number(*value, false, budget, cancelled),
             Value::Currency(value) => Self::number(value.scaled(), true, budget, cancelled),
+            Value::DateTime(value) => {
+                let literal = date::capture(*value, budget, cancelled)?;
+                Self::word(literal.bytes(), budget, cancelled)
+            }
             Value::Text(value) => Self::text(value, budget, cancelled),
             _ => Err(CreateDatabaseError::Carrier),
         }

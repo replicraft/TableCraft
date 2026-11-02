@@ -303,3 +303,6 @@ pub mod genuine_node_retirement;
 pub mod genuine_text_indexed_update;
 
 pub mod genuine_text_cardinality;
+
+/// Frozen exact legacy DATE default source values and pins.
+pub mod creation_date_defaults;

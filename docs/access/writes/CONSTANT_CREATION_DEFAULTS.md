@@ -3,8 +3,9 @@
 Fresh creation authors exact Boolean, Int32, Int64, Currency, Short Text and
 explicit NULL defaults through `CreateColumn::with_default_literal`. Nullable
 families accept NULL; Boolean defaults require a Boolean. Values with another
-carrier refuse rather than coerce. Date, clocks, generated values and arbitrary
-expressions remain separate work.
+carrier refuse rather than coerce. [Exact Date defaults](DATE_CREATION_DEFAULTS.md)
+have a separate bit-preserving formatter and qualification. Clocks, generated
+values and arbitrary expressions remain outside this constructive API.
 
 The native formatter uses bounded UTF16 stack storage, explicit quote escaping
 and signed integer/scaled Currency formatting without locale or floating-point
@@ -27,8 +28,9 @@ The old Int32-default regression passes. Shared source pins/rows have one pure
 testkit owner; concrete creation setup remains at each actual consumer boundary.
 
 These are bounded engineering checks, not native Access save/reopen qualification.
-Broader constant families, Date representation, generated expressions and native
-application comparison remain explicit work.
+Broader constant families, Date representations outside the separately qualified
+literal profile, generated expressions and native application comparison remain
+explicit work.
 
 The [combined execution record](../../testing/results/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
 retains focused/strict checks and the first broad regression. One stale unit-test

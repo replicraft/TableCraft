@@ -1,4 +1,6 @@
 //! Bounded literal defaults and separately authorized Date()/Now() binding.
+mod date;
+
 use crate::{EditError, InspectError, NativeColumn, WriteBlocker, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -119,6 +121,7 @@ fn assign(
         Expression::Null => Ok(Value::Null),
         Expression::Boolean(value) if kind == ScalarType::Boolean => Ok(Value::Boolean(value)),
         Expression::Text(value) if kind == ScalarType::Text => Ok(Value::Text(value)),
+        Expression::DateLiteral(text) => date::resolve(column, &text, budget, cancelled),
         Expression::Boolean(_) | Expression::Text(_) => {
             Err(EditError::Unsupported(WriteBlocker::Column))
         }
