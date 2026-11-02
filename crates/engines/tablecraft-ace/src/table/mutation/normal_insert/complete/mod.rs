@@ -25,6 +25,11 @@ impl NativeImage {
         if !source.indexes.indexes().is_empty() {
             // Derive an unavoidable root split from original metadata before
             // selecting one planner. Existing fitting paths remain unchanged.
+            if super::root_promotions::selected(&self, &source, requests, budget, cancelled)? {
+                return super::root_promotions::plan(
+                    self, source, table, requests, budget, cancelled,
+                );
+            }
             if super::root_split::selected(&self, &source, requests)? {
                 return super::root_split::plan(self, source, table, requests, budget, cancelled);
             }

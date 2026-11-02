@@ -336,3 +336,5 @@ pub mod index_fixture;
 pub mod index_tuples;
 
 pub mod genuine_increment_companions;
+
+pub mod genuine_wide_root_promotion;

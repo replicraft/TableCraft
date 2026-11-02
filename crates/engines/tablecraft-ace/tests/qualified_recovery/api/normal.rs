@@ -844,3 +844,6 @@ mod increment_companions;
 
 #[path = "normal/external_lval_retirement.rs"]
 mod external_lval_retirement;
+
+#[path = "normal/wide_root_promotion.rs"]
+mod wide_root_promotion;
