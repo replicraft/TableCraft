@@ -1,20 +1,13 @@
 //! Re-read actual declarations for each fresh original presence projection.
-use super::{literal, proof_literal, values::copy_value};
+use super::{declaration::capture as declaration, literal, proof_literal, values::copy_value};
 use crate::{
-    EditError, InsertFieldValue, InspectError, NativeColumn, NativeImage, NativeProperty,
-    OmittedRowInsert, PropertyGroupKind, RowInsert, TableProperties, TableSchema, WriteBlocker,
-    format::{
-        data_type::OLE,
-        layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG},
-    },
+    EditError, InsertFieldValue, InspectError, NativeImage, OmittedRowInsert, RowInsert,
+    TableSchema, WriteBlocker,
     header::check,
     inspect_table_properties,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 #[derive(Clone, Copy)]
 enum Projection {
@@ -135,47 +128,6 @@ fn resolve(
     }
     check(budget, cancelled)?;
     Ok(resolved)
-}
-
-fn declaration<'a>(
-    column: &NativeColumn,
-    properties: &'a TableProperties,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Option<&'a NativeProperty>, EditError> {
-    let mut selected = None;
-    for group in properties.groups() {
-        check(budget, cancelled)?;
-        budget
-            .charge(
-                Resource::Steps,
-                (group.name().len() + column.name().len()) as u64,
-            )
-            .map_err(InspectError::from)?;
-        if group.kind() != PropertyGroupKind::Column
-            || !group.name().eq_ignore_ascii_case(column.name())
-        {
-            continue;
-        }
-        for property in group.properties() {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, property.name().len() as u64)
-                .map_err(InspectError::from)?;
-            if property.name().eq_ignore_ascii_case("DefaultValue")
-                && selected.replace(property).is_some()
-            {
-                return Err(EditError::Unsupported(WriteBlocker::Properties));
-            }
-        }
-    }
-    if selected.is_some()
-        && (column.native_type() == OLE
-            || column.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0)
-    {
-        return Err(EditError::Unsupported(WriteBlocker::Properties));
-    }
-    Ok(selected)
 }
 
 fn vector<T>(

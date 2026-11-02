@@ -230,3 +230,9 @@ pub use transaction::{
     NativeCompleteInsertIntent, QualifiedNativeCompleteInsertRecovery,
     RecoverableNativeCompleteInsertPlan, qualify_native_complete_insert_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeClockInsertIntent, QualifiedNativeClockInsertRecovery, RecoverableNativeClockInsertPlan,
+    qualify_native_clock_insert_recovery,
+};

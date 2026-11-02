@@ -7,9 +7,12 @@ native, proof/recovery, retained-session and CLI checks for fitting root leaves.
 Retained NODE partitions, wider splits and broader schema combinations remain
 work. [Inline Memo/OLE UPDATE](access/writes/NORMAL_INLINE_LONG_UPDATE.md) now
 passes the same connected checks under complete inline-only storage authority.
-External reuse/allocation remains work. Date/Now defaults have
-[independently qualified native sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md);
-matching writer acceptance remains their next step.
+External reuse/allocation remains work.
+[Captured Date/Now defaults](access/writes/NORMAL_CLOCK_DEFAULTS.md) now pass
+native/retained-session/CLI and cold replay checks under the initial two-field
+unindexed profile. Broader default/identity/index composition and native Access
+clock/save qualification remain work. All three writer source families were
+[independently qualified](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md) first.
 
 [Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now passes native, recovery, retained-session and CLI checks using original
@@ -21,7 +24,7 @@ creator, retained-session and CLI checks; initial generated rows stay closed.
 [Exact Date defaults](access/writes/DATE_CREATION_DEFAULTS.md) now pass native
 creation, omission-aware INSERT, proof/recovery and retained-session checks.
 Date representation aliases without a bit-preserving declaration refuse;
-generated defaults and native Access qualification remain work.
+broader generated defaults and native Access qualification remain work.
 
 The fitting [General Text UPDATE route](access/writes/NORMAL_TEXT_INDEX_UPDATE.md)
 now passes independently sourced native, recovery, retained-session and CLI
@@ -40,8 +43,8 @@ qualified constant defaults from original omitted-field requests, and stores
 qualified inline Memo/OLE values through the existing offline sessions and CLI.
 Independent complete-image sources preceded producer tests; native recovery,
 forgery, resource, typed/SQL and CLI checks pass. Splits, broader indexed keys,
-external LVAL allocation, generated/clock defaults, relationships and positive
-INSERT programs remain work. Native Access save/reopen remains unrun. See the
+external LVAL allocation, broader generated/clock-default composition,
+relationships and positive INSERT programs remain work. Native Access save/reopen remains unrun. See the
 [normal INSERT contract](access/writes/NORMAL_ACE_INSERT.md).
 
 The [fitting Binary INSERT route](access/writes/NORMAL_BINARY_INDEX_INSERT.md)

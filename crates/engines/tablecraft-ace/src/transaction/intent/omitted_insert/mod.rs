@@ -52,6 +52,15 @@ impl NativeOmittedInsertIntent {
         })
     }
 
+    /// Exact original-presence wire size for a bounded execution-input envelope.
+    pub(in crate::transaction::intent) fn encoded_length(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<usize, NativeIntentError> {
+        codec::validate_requests(self.table().len(), self.rows(), budget, cancelled)
+    }
+
     /// Canonical caller-supplied table name without implicit normalization.
     pub fn table(&self) -> &str {
         self.table.as_str()

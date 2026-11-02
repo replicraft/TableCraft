@@ -1,14 +1,14 @@
 //! One explicit operation reading; projections never call the host again.
 use crate::{EditError, InspectError, WriteBlocker, header::check};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_expressions::{
     EvalError,
     functions::dates::clock::{ClockFunction, ClockReading},
 };
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table::mutation) fn capture(
     provider: &dyn Clock,
     budget: &mut ResourceBudget,

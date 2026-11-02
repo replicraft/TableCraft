@@ -1,4 +1,5 @@
 //! Normal complete-row INSERT into protected, already-owned DATA capacity.
+mod clock;
 mod eof;
 mod incrementing;
 mod indexed;

@@ -9,6 +9,7 @@ use std::path::Path;
 use tablecraft_ace::NativeImage;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_schema::{Column, SchemaPolicy};
 use tablecraft_sql::query::Query;
 
@@ -126,6 +127,44 @@ impl OfflineWriteSession {
             Err(cause) => Err(self.fail(Phase::Planning, cause)),
         }
     }
+
+    /// Explicit clock capability for original omitted defaults, sampled only
+    /// after fresh native binding and retained unchanged for recovery.
+    pub fn plan_insert_with_clock(
+        mut self,
+        query: &Query,
+        provider: &dyn Clock,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedInsert, Failure> {
+        let _span = tracing::debug_span!("access.offline.plan_insert").entered();
+        let result = (|| {
+            self.require_ready()?;
+            sql::local_insert_table(query, budget, cancelled).map_err(|error| {
+                Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
+            })?;
+            let slot = self.slot_mut()?;
+            slot.current = None;
+            slot.state = SessionState::RefreshRequired;
+            let image = NativeImage::capture(
+                slot.target.as_mut().ok_or(Cause::InvalidState)?,
+                slot.scope,
+                budget,
+                cancelled,
+            )
+            .map_err(Cause::Native)?;
+            slot.state = SessionState::Ready;
+            sql::plan_recoverable_insert_with_clock(image, query, provider, budget, cancelled)
+                .map_err(Cause::InsertPlanning)
+        })();
+        match result {
+            Ok(plan) => Ok(StagedInsert {
+                session: self,
+                plan,
+            }),
+            Err(cause) => Err(self.fail(Phase::Planning, cause)),
+        }
+    }
 }
 
 impl OfflineTableInserter {
@@ -180,6 +219,24 @@ impl OmittingInsertableTable for OfflineTableInserter {
         let _span = tracing::debug_span!("access.offline.plan_omitted_insert").entered();
         let Self { session, inserter } = self;
         match inserter.plan_insert_with_omissions(values, budget, cancelled) {
+            Ok(plan) => Ok(StagedInsert { session, plan }),
+            Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
+        }
+    }
+}
+
+impl OfflineTableInserter {
+    /// Typed original presence with a host clock capability, not native permission.
+    pub fn plan_insert_with_omissions_and_clock(
+        self,
+        values: Vec<InsertValue>,
+        provider: &dyn Clock,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedInsert, Failure> {
+        let _span = tracing::debug_span!("access.offline.plan_omitted_insert").entered();
+        let Self { session, inserter } = self;
+        match inserter.plan_insert_with_omissions_and_clock(values, provider, budget, cancelled) {
             Ok(plan) => Ok(StagedInsert { session, plan }),
             Err(error) => Err(session.fail(Phase::Planning, Cause::Editing(error))),
         }

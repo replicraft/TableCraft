@@ -1,5 +1,17 @@
 # Implementation status
 
+## Captured native Date/Now defaults
+
+Normal [clock-default INSERT](access/writes/NORMAL_CLOCK_DEFAULTS.md) now captures
+one needed civil reading after source/carrier/capacity preflight and retains it
+through TCNA5/V1 replay. Fourteen inserted outcomes plus four empty cases,
+independent wire/proof/resource/recovery controls, 24 typed/SQL saves, sixteen
+cold host restarts and twelve CLI saves/readbacks pass. CLI INSERT owns the
+existing HostClock automatically with optional deterministic `--clock`; unused
+clocks and recovery do not sample time. The initial profile remains manual
+Int32 plus legacy Date without indexes; wider/default/identity composition and
+native Access timing/save qualification remain work.
+
 ## Inline Memo and OLE updates
 
 Normal [fitting inline long updates](access/writes/NORMAL_INLINE_LONG_UPDATE.md)

@@ -74,14 +74,14 @@ pub(crate) struct DeleteArguments {
     after_help = concat!(
         "Offline normal INSERT VALUES for the qualified native ACE2016/2019 profile. ",
         "Supply all fields positionally, or use an explicit field list with qualified constant defaults for omitted fields. Supplied NULL remains explicit NULL. ",
-        "Generated values, clock or arbitrary-expression defaults, INSERT SELECT, parameters and external sources refuse. ",
+        "Qualified Increment generation and constant defaults retain their original presence. Needed exact Date()/Now() defaults on the qualified unindexed Int32 plus legacy Date shape use one captured local civil clock reading; unknown calls, INSERT SELECT, parameters and external sources refuse. ",
         "The native planner rechecks required programs, constraints and preservation before any journal exists. ",
         "Complete supplied rows derive existing or represented EOF DATA capacity from original rows and maps; omitted/default rows retain existing capacity. ",
         "Complete unindexed rows support exact Byte, Int16, Single, Double, GUID and Decimal carriers alongside the prior scalars; SQL assignment retains exact-carrier limits. ",
-        "Indexed insertion retains existing pages. Qualified single-column Int32 root leaves and retained trees support nullable and descending keys. ",
+        "Fitting indexed insertion retains existing pages; qualified Int32 root splits and compound DATA/INDEX placement use represented extensions. Single-column Int32 root leaves and retained trees support nullable and descending keys. ",
         "Manual Int64/Currency root leaves also support qualified secondary keys and ascending required primary keys. ",
         "Qualified Short Binary secondary root leaves support nullable and descending keys; SQL Binary insertion currently supports NULL. ",
-        "Splits, other indexes and relationships refuse. ",
+        "Other split/allocation profiles, broader indexes and relationships refuse. ",
         "Qualified Memo/OLE values fit at most 64 encoded payload bytes inline; external payload allocation refuses. Existing readonly content remains preserved. ",
         "Keep other applications closed until completion or explicit recovery. The journal directory must be fresh. ",
         "Interrupted journals use recover-update or finalize-update, which validate original typed INSERT intent without replaying SQL. ",
@@ -98,6 +98,10 @@ pub(crate) struct InsertArguments {
     /// Fresh journal bundle directory; existing entries are never replaced.
     #[arg(long, value_name = "DIRECTORY")]
     pub(super) journal: PathBuf,
+    /// Fixed local civil clock for needed Date()/Now() defaults; otherwise use
+    /// the existing local system clock capability. Replay never resamples it.
+    #[arg(long, value_name = "LOCAL-DATETIME", value_parser = crate::commands::clock::parse_reading)]
+    pub(super) clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     #[command(flatten)]
     pub(super) work: Work,
 }
