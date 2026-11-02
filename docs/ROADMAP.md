@@ -10,7 +10,9 @@ Wider splits and broader schema combinations remain work. [Inline Memo/OLE UPDAT
 passes the same connected checks under complete inline-only storage authority.
 [External Memo/OLE reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md) now passes
 native proof/recovery, retained-session and CLI checks without allocating or
-retiring chunks. External growth, NULL/empty transitions and allocation remain work.
+retiring chunks. [Terminal external growth](access/writes/NORMAL_EXTERNAL_LONG_GROWTH.md)
+uses checked space in the last original LVAL slot without allocation. NULL/empty
+transitions, retirement and allocation remain work.
 [Captured Date/Now defaults](access/writes/NORMAL_CLOCK_DEFAULTS.md) now pass
 native/retained-session/CLI and cold replay checks under the initial two-field
 unindexed profile. Broader default/identity/index composition and native Access

@@ -10,8 +10,9 @@ bundle before completing namespace cleanup. These are separate from the unchange
 Qualified ordinary updates also maintain [retained Int64/Currency index trees](../access/writes/NORMAL_WIDE_NODE_UPDATE.md)
 and [reuse external Memo/OLE chunks](../access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md).
 These routes keep their original typed intents and repeat independent preservation
-proof during recovery. External growth, clearing and allocation remain separate
-work; broader index declarations and splits retain their own limits.
+proof during recovery. [Terminal external growth](../access/writes/NORMAL_EXTERNAL_LONG_GROWTH.md)
+uses checked existing LVAL capacity. Clearing and allocation remain separate work;
+broader index declarations and splits retain their own limits.
 
 ```sh
 tablecraft query journal-update 'UPDATE Items SET Score=12 WHERE Id=1' \

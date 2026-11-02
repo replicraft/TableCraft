@@ -121,8 +121,8 @@ pub(super) fn capture(
                 Kind::Chained => true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::RowLayout)),
             };
-            let old = traced.value.as_ref().ok_or(EditError::Preservation)?;
-            if payload.is_empty() || payload.len() > old.len() || traced.chunks.is_empty() {
+            let _original_payload = traced.value.as_ref().ok_or(EditError::Preservation)?;
+            if payload.is_empty() || traced.chunks.is_empty() {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
             let mut prefix = 0_usize;
@@ -148,13 +148,24 @@ pub(super) fn capture(
                         .checked_sub(prefix)
                         .filter(|count| *count != 0)
                         .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?;
-                    if tail > available || (tail < available && slot + 1 != row_count(&page)?) {
-                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    if tail > available {
+                        if slot + 1 != row_count(&page)?
+                            || tail
+                                .checked_add(link)
+                                .is_none_or(|bytes| bytes > long_value::EXTERNAL_ROW_BYTES)
+                            || tail - available > usize::from(u16_at(&page, FREE_OFFSET)?)
+                        {
+                            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                        }
+                    } else {
+                        if tail < available && slot + 1 != row_count(&page)? {
+                            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                        }
+                        let freed = available - tail;
+                        u16_at(&page, FREE_OFFSET)?
+                            .checked_add(u16::try_from(freed).map_err(|_| EditError::Preservation)?)
+                            .ok_or(EditError::Preservation)?;
                     }
-                    let freed = available - tail;
-                    u16_at(&page, FREE_OFFSET)?
-                        .checked_add(u16::try_from(freed).map_err(|_| EditError::Preservation)?)
-                        .ok_or(EditError::Preservation)?;
                 } else {
                     prefix = prefix
                         .checked_add(available)
@@ -248,7 +259,7 @@ pub(in crate::table::mutation::normal_fitted) fn prepare(
         check(budget, cancelled)?;
         let mut offset = 0_usize;
         let linked = matches!(change.trace.kind, Kind::Chained);
-        for chunk in &change.trace.chunks {
+        for (index, chunk) in change.trace.chunks.iter().enumerate() {
             check(budget, cancelled)?;
             let number = reference_page(chunk.reference);
             let slot = usize::from(reference_slot(chunk.reference));
@@ -256,27 +267,59 @@ pub(in crate::table::mutation::normal_fitted) fn prepare(
                 &image.as_bytes()[number as usize * PAGE_BYTES..(number as usize + 1) * PAGE_BYTES];
             let (_, start, end) = row_range(original, slot)?;
             let link = if linked { WORD_BYTES } else { 0 };
-            let length = (end - start - link).min(change.payload.len() - offset);
-            let freed = end - start - link - length;
-            let after = page(&mut patches, number, image, budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, (length + link) as u64)
-                .map_err(InspectError::from)?;
-            if linked {
-                after[start + freed..start + freed + WORD_BYTES]
-                    .copy_from_slice(&original[start..start + WORD_BYTES]);
-            }
-            after[start + freed + link..end]
-                .copy_from_slice(&change.payload[offset..offset + length]);
-            if freed != 0 {
-                let word = u16::try_from(start + freed).map_err(|_| EditError::Preservation)?;
-                after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()]
-                    .copy_from_slice(&word.to_le_bytes());
+            let available = end - start - link;
+            let remaining = change.payload.len() - offset;
+            let growing = index + 1 == change.trace.chunks.len() && remaining > available;
+            let length = if growing {
+                remaining
+            } else {
+                available.min(remaining)
+            };
+            if growing {
+                let consumed = length - available;
+                let new_start = start.checked_sub(consumed).ok_or(EditError::Preservation)?;
+                let after = page(&mut patches, number, image, budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, (length + link) as u64)
+                    .map_err(InspectError::from)?;
+                if linked {
+                    after[new_start..new_start + WORD_BYTES]
+                        .copy_from_slice(&original[start..start + WORD_BYTES]);
+                }
+                after[new_start + link..end]
+                    .copy_from_slice(&change.payload[offset..offset + length]);
+                after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()].copy_from_slice(
+                    &u16::try_from(new_start)
+                        .map_err(|_| EditError::Preservation)?
+                        .to_le_bytes(),
+                );
                 let free = u16_at(after, FREE_OFFSET)?
-                    .checked_add(u16::try_from(freed).map_err(|_| EditError::Preservation)?)
+                    .checked_sub(u16::try_from(consumed).map_err(|_| EditError::Preservation)?)
                     .ok_or(EditError::Preservation)?;
                 after[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
                     .copy_from_slice(&free.to_le_bytes());
+            } else {
+                let freed = end - start - link - length;
+                let after = page(&mut patches, number, image, budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, (length + link) as u64)
+                    .map_err(InspectError::from)?;
+                if linked {
+                    after[start + freed..start + freed + WORD_BYTES]
+                        .copy_from_slice(&original[start..start + WORD_BYTES]);
+                }
+                after[start + freed + link..end]
+                    .copy_from_slice(&change.payload[offset..offset + length]);
+                if freed != 0 {
+                    let word = u16::try_from(start + freed).map_err(|_| EditError::Preservation)?;
+                    after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()]
+                        .copy_from_slice(&word.to_le_bytes());
+                    let free = u16_at(after, FREE_OFFSET)?
+                        .checked_add(u16::try_from(freed).map_err(|_| EditError::Preservation)?)
+                        .ok_or(EditError::Preservation)?;
+                    after[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
+                        .copy_from_slice(&free.to_le_bytes());
+                }
             }
             offset += length;
         }

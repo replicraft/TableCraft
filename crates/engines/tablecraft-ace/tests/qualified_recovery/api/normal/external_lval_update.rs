@@ -302,7 +302,12 @@ fn external_topology_changes_and_stale_expected_values_refuse_before_journals() 
                 Value::Text("Ā".repeat(2039)),
                 Value::Text("β".repeat(2036)),
             ),
-            ("Blob", 2, fixtures::binary(65, 3), fixtures::binary(66, 13)),
+            (
+                "Blob",
+                3,
+                fixtures::binary(4076, 4),
+                fixtures::binary(4077, 14),
+            ),
             ("Memo", 4, Value::Text("Ā".repeat(2039)), Value::Null),
         ] {
             let group = NativeFittedIntentGroup::new(

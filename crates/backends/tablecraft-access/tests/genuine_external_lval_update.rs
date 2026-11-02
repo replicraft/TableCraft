@@ -185,7 +185,7 @@ fn external_reuse_keeps_retained_receipts_and_rejects_stale_handles_and_retireme
             .unwrap();
         let (mut session, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
         assert_eq!(fs::read(&path).unwrap(), case.after);
-        for value in [Value::Null, Value::Text("β".repeat(2039))] {
+        for value in [Value::Null, Value::Text("β".repeat(4075))] {
             let editor = session
                 .edit_table("Items", &mut budget(), &|| false)
                 .unwrap();

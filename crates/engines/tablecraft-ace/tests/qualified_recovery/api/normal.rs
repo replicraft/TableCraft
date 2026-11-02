@@ -833,3 +833,6 @@ mod external_lval_update;
 
 #[path = "normal/wide_node_update.rs"]
 mod wide_node_update;
+
+#[path = "normal/external_lval_growth.rs"]
+mod external_lval_growth;

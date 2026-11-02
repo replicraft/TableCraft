@@ -18,7 +18,7 @@ const WORK_STEPS: u64 = 100_000_000;
         "Qualified ordinary tables also support unindexed Short Text/Binary batches and optional fixed siblings within existing record capacity. Raw noops and empty selections remain distinct from NULL and present-empty values. ",
         "Qualified ordinary records can grow within owned DATA capacity or one represented EOF extension. Planning selects the qualified mode before staging. ",
         "The ordinary fixed route supports qualified retained Int32 indexes, including fitting NULL-key transitions and atomic unique-key swaps. Exact Int64/Currency index updates also support root leaves and retained NODE partitions without splitting. AutoNumber fields remain read-only. ",
-        "Qualified inline Memo/OLE updates and external single/chained payload reuse retain existing storage; external growth, clearing and allocation refuse. ",
+        "Qualified inline Memo/OLE updates and external single/chained payload reuse retain existing storage. Terminal growth uses checked free space in the last original LVAL slot; external clearing and allocation refuse. ",
         "All SET expressions read one original snapshot. Required programs need supported native coverage; macro assignments retain the Int32/NULL language. Unsupported targets, properties, required programs and unsupported allocation changes refuse, including empty operations. ",
         "This command does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
     )
