@@ -126,16 +126,23 @@ impl<'a> CreateColumn<'a> {
         Ok(self)
     }
 
-    /// Declare an ordinary Int32 constant or explicit NULL default.
+    /// Declare an exact constant default for Boolean, Int32, Int64, Currency or
+    /// explicitly sized Short Text. Nullable families also accept explicit NULL.
     ///
-    /// The value is metadata, not a missing initial row cell. It does not replace
-    /// supplied NULL or authorize AutoNumber/expression evaluation. Other exact
-    /// constant families require their own source qualification before admission.
+    /// This metadata never replaces a supplied value. Date, clock, generated and
+    /// executable expressions remain outside this constructive declaration API.
     pub fn with_default_literal(mut self, value: &'a Value) -> Result<Self, CreateDatabaseError> {
-        if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32)) {
-            return Err(CreateDatabaseError::Declaration);
-        }
-        if !matches!(value, Value::Int32(_) | Value::Null) {
+        let compatible = match self.declaration {
+            Declaration::Fixed(ScalarType::Boolean) => matches!(value, Value::Boolean(_)),
+            Declaration::Fixed(ScalarType::Int32) => matches!(value, Value::Int32(_) | Value::Null),
+            Declaration::Fixed(ScalarType::Int64) => matches!(value, Value::Int64(_) | Value::Null),
+            Declaration::Fixed(ScalarType::Currency) => {
+                matches!(value, Value::Currency(_) | Value::Null)
+            }
+            Declaration::ShortText { .. } => matches!(value, Value::Text(_) | Value::Null),
+            _ => return Err(CreateDatabaseError::Declaration),
+        };
+        if !compatible {
             return Err(CreateDatabaseError::Carrier);
         }
         self.default_literal = Some(value);

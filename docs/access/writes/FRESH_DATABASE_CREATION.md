@@ -279,3 +279,11 @@ these declarations through the same shared creation service.
 The [wider-key and CLI execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 records the complete focused and broader verification batch separately from
 native Access qualification.
+
+## Wider explicit constant defaults
+
+The [constant-default creator](CONSTANT_CREATION_DEFAULTS.md) now adds exact
+Boolean, Int64, Currency and Short Text literals to existing Int32/NULL metadata.
+Source-complete creators and actual typed/SQL omitted-field sessions pass.
+Supplied NULL/false/Text stay supplied; invalid rows and oversized escaped
+metadata publish nothing. Date, clocks and generated expressions remain separate.

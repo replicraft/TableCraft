@@ -293,3 +293,6 @@ pub mod genuine_root_split;
 
 /// Frozen compound DATA and INDEX source pairs for actual consumers.
 pub mod genuine_compound_root_split;
+
+/// Frozen constant-default rows, literal inputs and source image pins.
+pub mod creation_constant_defaults;

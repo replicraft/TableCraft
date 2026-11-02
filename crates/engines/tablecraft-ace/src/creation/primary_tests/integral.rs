@@ -92,7 +92,7 @@ fn both_creators_match_literal_wide_primaries_and_refuse_duplicate_or_null_keys_
 }
 
 #[test]
-fn wide_primary_declarations_keep_exact_carriers_no_defaults_and_existing_row_ceiling() {
+fn wide_primary_declarations_keep_exact_carriers_no_inferred_defaults_and_existing_row_ceiling() {
     for family in [Family::Int64, Family::Currency] {
         let columns = columns(family);
         assert_eq!(columns[0].primary_key_name(), Some("PrimaryId"));
@@ -100,7 +100,7 @@ fn wide_primary_declarations_keep_exact_carriers_no_defaults_and_existing_row_ce
         assert_eq!(columns[0].default_literal(), None);
         assert!(matches!(
             columns[0].with_default_literal(&Value::Int32(7)),
-            Err(CreateDatabaseError::Declaration),
+            Err(CreateDatabaseError::Carrier),
         ));
         let wrong = match family {
             Family::Int64 => Family::Currency.value(1),
