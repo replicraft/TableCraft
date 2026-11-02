@@ -215,7 +215,8 @@ and [progressive contract](../query/PROGRESSIVE_QUERIES.md).
 | Static named/derived global or eligible grouped/HAVING stage | Implemented bounded profiles | Implemented, retained values and successful per-stage logical EOF; no complete intermediate relation cache |
 | Inner UNION | Implemented bounded profiles | Refused; root flat UNION ALL remains supported |
 | Terminal DISTINCT over proven Boolean/integral/Currency/Decimal/NULL tuples | Implemented | Implemented; retained first values, checked EOF and TOP after deduplication |
-| Other DISTINCT families, active DISTINCTROW, joins and sorting | Implemented bounded profiles | Refused; no silent buffered fallback |
+| Positive sorted TOP over row-local terminal arms and static row-local chains | Implemented strict-key profile | Complete terminal retention through checked EOF; shared stable ordering, complete Text policies and all boundary ties, under cumulative budgets |
+| Other DISTINCT families, active DISTINCTROW, joins, other sorting and sorted stateful/grouped arms | Implemented bounded profiles | Refused; no silent buffered source fallback |
 | Crosstabs and runtime schema discovery | Implemented qualified profiles | Refused; preparation remains metadata-only |
 | Subqueries, domain calls and closed Eval | Implemented qualified profiles | Refused source-dependent/stateful expressions |
 

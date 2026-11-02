@@ -8,7 +8,7 @@ fn unsupported_shapes_are_rejected_before_scan_even_when_empty_or_false() {
         for sql in [
             "SELECT DISTINCT CDbl(N) FROM T WHERE False",
             "SELECT TOP 1 PERCENT N FROM T WHERE False",
-            "SELECT TOP 1 N FROM T WHERE False ORDER BY N",
+            "SELECT TOP 1 Count(*) FROM T WHERE False ORDER BY Count(*)",
             "SELECT N FROM T WHERE False ORDER BY N",
             "SELECT Last(N) FROM T WHERE False",
             "SELECT CDbl(N) FROM T WHERE False GROUP BY CDbl(N)",

@@ -46,7 +46,8 @@ declared-arithmetic policies use the same
 host context as buffered retrieval. Ordinary scalar views of mixed schemas are
 supported; unavailable fields and matching wildcards fail without NULL placeholders.
 
-Ordering, TOP PERCENT, unproven/Text DISTINCT, active DISTINCTROW, nonaggregate HAVING, joins/products,
+Sorting without positive TOP, sorted aggregate/grouped arms or stateful input
+chains, TOP PERCENT, unproven/Text DISTINCT, active DISTINCTROW, nonaggregate HAVING, joins/products,
 duplicate-eliminating sets, nested UNIONs, scalar/predicate subqueries, domains,
 collections, Eval and volatile clock/random calls remain outside this progressive
 profile. Static named/derived SELECT chains can contain row-local stages and the
@@ -62,6 +63,20 @@ Explicit table format is rejected before opening the input; auto format is TSV f
 supported package/encryption opening retain their existing qualifications; this
 mode does not add a codec, provider or template reader.
 
+## Positive sorted TOP
+
+A row-local terminal SELECT with a positive TOP count can use ORDER BY over the
+existing admitted scalar expression profile. Static row-local input chains remain
+available. The query retains complete projected rows and keys under cumulative
+query budgets, checks source EOF, then uses the same stable strict sorting and
+TOP-with-ties service as buffered execution. All rows tied at the boundary survive
+in encounter order; Text keys require the existing explicit comparison policies.
+This mode produces no arm output until scanning and ordering succeed. It does not
+promise constant memory or early first-row latency, and a large population or tie
+set can fail an explicit limit instead of returning a truncated success. Native
+read and CLI output pools remain separate and cumulative. This query service does
+not add native Access comparison evidence.
+
 ## Terminal DISTINCT over exact fixed carriers
 
 A terminal `SELECT DISTINCT` can eliminate duplicate projected tuples with proven
@@ -69,7 +84,8 @@ Boolean, Byte, Integer, Long, LongLong, Currency, Decimal or NULL output types.
 The active materialized/declared execution profile determines admission; runtime
 values never invent a missing type guarantee. Text, floating, Date, GUID, Binary
 and Dynamic output profiles remain refused before scans. This does not admit
-inner DISTINCT stages, active DISTINCTROW, sorting or duplicate-eliminating UNION.
+inner DISTINCT stages, active DISTINCTROW or duplicate-eliminating UNION.
+Qualified row-local DISTINCT can compose with positive sorted TOP.
 
 Every selected projection remains eager. The service retains first-encounter
 representatives and a metered exact-key directory, then waits for complete input
@@ -352,7 +368,8 @@ The same cumulative allowances apply to every stage. Text grouping, HAVING repla
 and String extrema can retain input-dependent state; nested streaming does not
 promise constant memory. A late inner error may leave earlier completed row
 batches but cannot publish a misleading completed outer total. Inner UNION,
-ordering, joins and schema discovery remain unsupported in streaming.
+inner ordering, sorted stateful input chains, joins and schema discovery remain
+unsupported in streaming.
 
 ## Explicit stored calculations
 

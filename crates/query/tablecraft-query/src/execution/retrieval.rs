@@ -57,7 +57,7 @@ impl Runtime<'_, '_> {
         self.finish_read(rows, plan)
     }
 
-    fn project(
+    pub(super) fn project(
         &mut self,
         select: &SelectPlan,
         plan: &ReadPlan,
