@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "independent_sources_qualified_matching_writer_unrun",
+  "source_views": 6,
+  "selected_native_contexts": 8,
+  "changed_images": 4,
+  "existing_rows_per_context": 400,
+  "inserted_rows_per_changed_image": 1,
+  "appended_index_pages_per_changed_image": 4,
+  "new_data_pages": 0,
+  "source_manifest": {
+    "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/expected-first/manifest.json",
+    "bytes": 4437,
+    "sha256": "7d261cdfc6a4892ee1729d894e39b5f7704187a53fc4386a5bbc867ad902ae4e"
+  },
+  "image_pins": [
+    {
+      "file": "h5-CurrencyKeys-promoted.accdb",
+      "bytes": 774144,
+      "sha256": "c243983f7355f47eff845fc09d7741ed90de495acea7dc16af3cb89fc20e9d7e"
+    },
+    {
+      "file": "h5-Int64Keys-promoted.accdb",
+      "bytes": 774144,
+      "sha256": "af15c15771be4c1c8d5a34ec82a4ec8f08b350db5816199c63d72ac418b8dacd"
+    },
+    {
+      "file": "h5-before.accdb",
+      "bytes": 757760,
+      "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+    },
+    {
+      "file": "h6-CurrencyKeys-promoted.accdb",
+      "bytes": 843776,
+      "sha256": "eeb86e6fe43ec6889aba6f24e7f9f756d049d26c56513cb451fe9b1a2d23cf81"
+    },
+    {
+      "file": "h6-Int64Keys-promoted.accdb",
+      "bytes": 843776,
+      "sha256": "3668448927e2f2f55fbb278a630ba4386ac34b022d857713f808a94238bbbec9"
+    },
+    {
+      "file": "h6-before.accdb",
+      "bytes": 827392,
+      "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+    }
+  ],
+  "native_attempts": [
+    {
+      "receipt": {
+        "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/native-root-first.json",
+        "bytes": 374,
+        "sha256": "844c5ca87ec874699e083c1b058dd05416c2e3ed989ac3f7c04934a0da363aa6"
+      },
+      "result": {
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "wider_root_promotions_source_eight_contexts_replay_complete_images_before_mutation",
+          "--",
+          "--ignored"
+        ],
+        "exit": 101,
+        "passed": false,
+        "selected_contexts": null,
+        "matching_producer_calls": 0,
+        "SDK_calls": 0
+      }
+    },
+    {
+      "receipt": {
+        "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/native-root-cache-rebuild-second.json",
+        "bytes": 592,
+        "sha256": "75c71d1f1bf4e563b2364269e62fec57f02f1e1ef85a65cd9a7b9b553be699d6"
+      },
+      "result": {
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "wider_root_promotions_source_eight_contexts_replay_complete_images_before_mutation",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed": true,
+        "build_target": ".cache/cargo-backend-20261102",
+        "selected_contexts": 8,
+        "reason": "First attempt terminated before any test when the entire default target directory disappeared; unchanged inputs reverified and isolated build cache selected.",
+        "matching_producer_calls": 0,
+        "SDK_calls": 0
+      }
+    }
+  ],
+  "sdk": {
+    "full_reports_validated": 6,
+    "total_reader_children": 6,
+    "first_attempt": {
+      "started": 3,
+      "completed": 2,
+      "failure": "h5-Int64Keys-promoted",
+      "receipt": {
+        "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/reads-first/receipt.json",
+        "bytes": 3726,
+        "sha256": "b6f1cd913b25ea14ea8eb0adba27c598905dd700205ceff4b9916c514d424154"
+      }
+    },
+    "continuation": {
+      "started": 3,
+      "completed": 3,
+      "failure": null,
+      "receipt": {
+        "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/reads-continuation-first/receipt.json",
+        "bytes": 3905,
+        "sha256": "4e49fa3799f1fd801f4663b771ab2797a4eae49170ca28ef85f94ac0f689d04a"
+      }
+    },
+    "third_first_attempt_raw_reused": true,
+    "report_correction_only": true,
+    "source_images_unchanged": true,
+    "sdk_compiler_calls": 0,
+    "sdk_database_writes": 0,
+    "matching_producer_calls": 0,
+    "saved_verification": {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/reads-continuation-first/saved-verification.json",
+      "bytes": 20679,
+      "sha256": "c969eff9b5cef1095d7a36ab445203ed9ec7fa75628695d4d729b06cd7512d40"
+    }
+  },
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/input-first-freeze.json",
+      "bytes": 1205,
+      "sha256": "2cb294aeb335b887f81da7bcefa69451365f0f153a4477f08f8c3a7bfe60a899"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/requests-first.json",
+      "bytes": 232122,
+      "sha256": "cdd828012ff655b6c20ca07ab61bb36d477c21f9223538e75f6a84d714d16187"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/code-first-freeze.json",
+      "bytes": 6226,
+      "sha256": "a8806c26abe7292787b6d3f3e5962ee12fe379bce7919c06b34ca750c4427adf"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/construction-root-first.json",
+      "bytes": 339,
+      "sha256": "300bb8d5bee029781d26e1b2dbc0b86e49690b1a5e670eb69f20dfa8f39ba0a9"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/first-private-checkpoint.json",
+      "bytes": 2541,
+      "sha256": "628f1d49041c8615d1d594aae8ce4474c18299f9e9acb5b93d8ae5772ade901f"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/root-install-first.json",
+      "bytes": 987,
+      "sha256": "e5528aa4b44b4e5c61a13c647a577b289910628e7a32e32abe2f77bc469f5a7f"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/native-root-first.log",
+      "bytes": 5264,
+      "sha256": "7e90dd19bf598c4a9cde6545e72f25ed434ad7c9458756841d332e12267c1de0"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/full-native-gate/native-root-cache-rebuild-second.log",
+      "bytes": 4691,
+      "sha256": "3d2dcb902ee7d7d1a9e8287c0ebbab45c80fad1c10247405c0203c462669f053"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/report-successor/first-private-checkpoint.json",
+      "bytes": 4399,
+      "sha256": "90236471aa4436e4de5bbb68825c7ba031c19ba4cfb3b8d2a4dc8715b610f7c2"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/report-successor/continuation-code-freeze.json",
+      "bytes": 16934,
+      "sha256": "be23801182f26a09ae8f092d48201ba9d6f2fca16b926c7f71e82335600c3169"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/report-successor/strict-verifier-successor/successor-checkpoint.json",
+      "bytes": 1810,
+      "sha256": "3e0a9463acb1095ff2033ab74e7318d3a1aeb6c86a11c1afed8c0d321592148d"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/report-successor/remaining-root-first.json",
+      "bytes": 279,
+      "sha256": "9ffb947c31d7b751dc8232f0a47e35b7bfb19e4dc5303c2c9eeb410d4803be97"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-root-promotion-next-20261101/source/report-successor/strict-saved-root-first.json",
+      "bytes": 405,
+      "sha256": "a288f38ae6e649d02197c6a99b4474d603f84790f233583a087f4bd192cdc154"
+    }
+  ],
+  "native_source_test_files": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary/wide_root_promotion_sources.rs",
+      "bytes": 12116,
+      "sha256": "f5c736bdcc96288b4fb7fdc9538831292a5323dad99560757bd017f8ee8d96c7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary/wide_root_promotion_sources/pins.rs",
+      "bytes": 3072,
+      "sha256": "bd8ac7209550630c1f3a31d5092d8083dbd72f8ad41ed102e1db500dae1da5d0"
+    }
+  ],
+  "limits": [
+    "Prospective normal writer implementation and matching mutation acceptance remain unrun.",
+    "Jackcess read agreement and independent byte replay are separate from native Microsoft Access qualification.",
+    "The original failed report expectation and build attempt remain immutable evidence."
+  ]
+}

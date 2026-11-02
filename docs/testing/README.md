@@ -4,6 +4,7 @@
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
 - [Test duplication audit](TEST_DUPLICATION_AUDIT.md)
+- [Wider numeric root-promotion sources](ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
 - [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
 - [Physical secondary-index creation SOURCE qualification](ACE16_SECONDARY_INDEX_CREATION.md)
