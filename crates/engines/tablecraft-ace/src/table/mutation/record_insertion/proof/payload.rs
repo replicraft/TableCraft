@@ -1,6 +1,6 @@
 //! Requested preferred variable wires; no builder serializer supplies proof.
 mod decimal;
-pub(in crate::table::mutation) mod long_value;
+use crate::table::mutation::record_serialization::proof::long_value;
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker,
     format::{

@@ -166,6 +166,21 @@ pub(in crate::table::mutation) fn encode(
     Ok(Encoded::Present(bytes))
 }
 
+/// Exact inline descriptor shared by complete-row and fitting normal writes.
+/// External placement remains a different operation with its own ownership proof.
+pub(in crate::table::mutation) fn encode_inline(
+    column: &NativeColumn,
+    value: &Value,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let encoded = encode(column, value, budget, cancelled)?;
+    if encoded.preferred() != StorageChoice::Inline {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    encoded.descriptor(StorageChoice::Inline, None, budget, cancelled)
+}
+
 impl Encoded {
     pub fn preferred(&self) -> StorageChoice {
         match self {

@@ -24,8 +24,10 @@ raw representations. Empty groups still validate target metadata.
 Slot positions, record lengths, unrelated variable data, inactive slack, masks,
 footer framing and all bytes outside affected records remain protected. A request
 that exceeds aggregate record capacity refuses before journal publication. For these unindexed targets there
-is no record growth, page allocation, index maintenance or EOF change. Memo/OLE update targets, richer property profiles and broader macro
-handling require separate qualification.
+is no record growth, page allocation, index maintenance or EOF change.
+[Inline Memo/OLE targets](NORMAL_INLINE_LONG_UPDATE.md) now have separate fitting
+qualification under complete inline-only LVAL authority. External long targets,
+richer property profiles and broader macro handling remain work.
 
 ## Original intent and consumers
 

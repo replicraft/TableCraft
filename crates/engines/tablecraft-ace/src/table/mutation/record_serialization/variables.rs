@@ -1,5 +1,5 @@
 //! Joint encoding selection precedes emission and is ordered by native slot.
-use super::{check, policy::RecordPolicy, record, storage};
+use super::{check, long_value, policy::RecordPolicy, record, storage};
 use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::layout::UNICODE_COMPRESSION_FLAG, table::record_layout::RecordLayout,
@@ -124,7 +124,9 @@ pub(in crate::table::mutation) fn rebuild(
         check(budget, cancelled)?;
         let cell = &cells[choice.selected];
         let field = &schema.columns()[cell.column];
-        let bytes = if policy.prefers_growth() || matches!(cell.value, Value::Null) {
+        let bytes = if field.is_ordinary_long_value() {
+            long_value::encode_inline(field, cell.value, budget, cancelled)?
+        } else if policy.prefers_growth() || matches!(cell.value, Value::Null) {
             storage::encode_preferred(field, cell.value, budget, cancelled)?
         } else {
             storage::encode_for_span(field, cell.value, choice.length, budget, cancelled)?
@@ -146,7 +148,11 @@ pub(in crate::table::mutation) fn minimum_length(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
-    storage::validate(field, value)?;
+    if field.is_ordinary_long_value() {
+        long_value::qualify(field)?;
+    } else {
+        storage::validate(field, value)?;
+    }
     lengths(field, value, budget, cancelled).map(|(_, minimum)| minimum)
 }
 
@@ -156,6 +162,10 @@ fn lengths(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(usize, usize), EditError> {
+    if field.is_ordinary_long_value() {
+        let bytes = long_value::encode_inline(field, value, budget, cancelled)?;
+        return Ok((bytes.len(), bytes.len()));
+    }
     match value {
         Value::Null => Ok((0, 0)),
         Value::Binary(bytes) => Ok((bytes.len(), bytes.len())),
@@ -219,13 +229,16 @@ fn single(
         .data_end
         .checked_sub(preserved)
         .ok_or(InspectError::Malformed)?;
-    let payload = storage::encode_declared(
-        &schema.columns()[cell.column],
-        cell.value,
-        capacity,
-        budget,
-        cancelled,
-    )?;
+    let field = &schema.columns()[cell.column];
+    let payload = if field.is_ordinary_long_value() {
+        let bytes = long_value::encode_inline(field, cell.value, budget, cancelled)?;
+        if bytes.len() > capacity {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        bytes
+    } else {
+        storage::encode_declared(field, cell.value, capacity, budget, cancelled)?
+    };
     record::replace_payload(
         schema,
         cell.column,

@@ -105,6 +105,10 @@ fn prepare_bound(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
+    super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
+    if bound.has_long_targets && policy.prefers_growth() {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
     let schema = source.table.schema();
     let mut patches = binding::vector(bound.rows.len(), budget)?;
     for selected in &bound.rows {

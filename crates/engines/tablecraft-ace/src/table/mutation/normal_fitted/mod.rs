@@ -1,6 +1,7 @@
 //! Ordinary fitting records use fresh native admission and original requests.
 pub(in crate::table::mutation) mod binding;
 pub(in crate::table::mutation) mod indexed;
+mod inline;
 pub(in crate::table::mutation) mod owned_growth;
 mod proof;
 pub(in crate::table::mutation) mod stage;
