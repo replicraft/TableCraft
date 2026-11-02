@@ -2,7 +2,7 @@
 mod profile;
 
 use super::{EditError, WriteBlocker};
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use crate::table::mutation::map_authority::RecordIdentity;
 use crate::table::mutation::map_authority::{Census, Owner};
 use crate::{
@@ -23,7 +23,7 @@ use crate::{
     },
 };
 use std::io::Cursor;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -33,7 +33,7 @@ struct Claim {
     column: usize,
 }
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 #[derive(Clone, Copy)]
 pub(in crate::table::mutation) enum ColumnMapKind {
     Owned,
@@ -445,7 +445,7 @@ impl Inventory {
         Ok(())
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(in crate::table::mutation) fn require_global_record_rewrite(
         &self,
         record: RecordIdentity,
@@ -467,7 +467,7 @@ impl Inventory {
             )
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(in crate::table::mutation) fn require_record_rewrite(
         &self,
         schema: &TableSchema,

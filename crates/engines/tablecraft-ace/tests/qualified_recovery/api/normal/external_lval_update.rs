@@ -308,7 +308,7 @@ fn external_topology_changes_and_stale_expected_values_refuse_before_journals() 
                 fixtures::binary(4076, 4),
                 fixtures::binary(4077, 14),
             ),
-            ("Memo", 4, Value::Text("Ā".repeat(2039)), Value::Null),
+            ("Blob", 4, fixtures::binary(4077, 5), Value::Null),
         ] {
             let group = NativeFittedIntentGroup::new(
                 column,

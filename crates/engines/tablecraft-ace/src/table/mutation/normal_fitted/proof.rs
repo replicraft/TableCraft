@@ -240,3 +240,6 @@ mod external_tests;
 
 #[cfg(test)]
 mod external_growth_tests;
+
+#[cfg(test)]
+mod external_retirement_tests;

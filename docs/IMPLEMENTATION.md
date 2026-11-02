@@ -1,5 +1,16 @@
 # Implementation status
 
+## External Memo/OLE retirement
+
+Normal [whole-page external retirement](access/writes/NORMAL_EXTERNAL_LONG_RETIREMENT.md)
+now clears qualified Memo/OLE values or stores present-empty OLE through TCNI5/V1.
+Twenty changed literal commits plus eight no-op/empty commits, independent proof,
+recovery/forgery/resource controls, twenty typed saves, sixteen SQL saves and
+sixteen CLI saves/readbacks pass. Actual map roles and all unselected live slots
+are checked before retiring a page; every byte after its invalid prefix remains
+exact. Old reuse/growth and INDEX ownership-audit checks pass. Mixed changes, partial-page
+removal, external allocation and native Access save/reopen remain work.
+
 ## Increment AutoNumber companions
 
 The normal [Increment insertion route](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
@@ -18,8 +29,9 @@ TCNI5/V1, preserving every original link/reference and all maps. Twelve changed
 literal native commits plus eight original no-op/empty commits, independent
 proof, mixed recovery/forgery/resource controls, sixteen typed/SQL saves with
 sixteen empty follow-ons and four CLI saves/readbacks pass. Stale-handle checks
-retain prior receipts. Clearing, page retirement, relocation, new LVAL allocation
-and native Access save/reopen remain work.
+retain prior receipts. Whole-page clearing/retirement now has the separate route
+above. Mixed changes, relocation, new LVAL allocation and native Access save/reopen
+remain work.
 
 ## Retained wider numeric tree updates
 
@@ -39,8 +51,9 @@ now retains original single/chained references while replacing or safely
 shortening their payloads through TCNI5/V1. Twenty-eight literal native commits,
 120 recovery contexts, direct proof/forgery/resource controls, 40 typed/SQL saves
 with 40 empty follow-ons and twelve CLI saves/readbacks pass. Complete catalog,
-column-map and LVAL ownership checks preserve existing orphan rows. Terminal growth now has the separate route above; retirement, NULL/empty
-transitions and native Access saves remain work.
+column-map and LVAL ownership checks preserve existing orphan rows. Terminal
+growth and whole-page retirement now have the separate routes above. Mixed
+changes and native Access saves remain work.
 
 ## Captured native Date/Now defaults
 

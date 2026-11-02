@@ -63,61 +63,22 @@ fn groups(case: &Case) -> Vec<NativeFittedIntentGroup> {
         .collect()
 }
 
-fn carrier(output: &mut Vec<u8>, value: &Value) {
-    let (tag, payload) = match value {
-        Value::Null => (0, Vec::new()),
-        Value::Int32(value) => (2, value.to_le_bytes().to_vec()),
-        Value::Text(value) => (6, value.as_bytes().to_vec()),
-        Value::Binary(value) => (7, value.clone()),
-        _ => panic!("only original literal source carriers enter this wire"),
-    };
-    output.extend_from_slice(&[tag, 0, 0, 0]);
-    output.extend_from_slice(&(payload.len() as u32).to_le_bytes());
-    output.extend_from_slice(&payload);
-}
-
-fn wire(case: &Case) -> Vec<u8> {
-    let mut body = Vec::from(*b"Items");
-    let mut assignments = 0_u32;
-    for group in &case.groups {
-        let mut cells = Vec::new();
-        for update in &group.updates {
-            let mut cell = (update.row as u64).to_le_bytes().to_vec();
-            carrier(&mut cell, &update.expected);
-            carrier(&mut cell, &update.replacement);
-            cells.extend_from_slice(&((cell.len() + 4) as u32).to_le_bytes());
-            cells.extend_from_slice(&cell);
-            assignments += 1;
-        }
-        body.extend_from_slice(&((20 + group.column.len() + cells.len()) as u32).to_le_bytes());
-        body.extend_from_slice(&(group.column.len() as u32).to_le_bytes());
-        body.extend_from_slice(&(group.updates.len() as u32).to_le_bytes());
-        body.extend_from_slice(&[1, 0, 0, 0]);
-        body.extend_from_slice(&0_u32.to_le_bytes());
-        body.extend_from_slice(group.column.as_bytes());
-        body.extend_from_slice(&cells);
-    }
-    let mut raw = Vec::from(*b"TCNI0005");
-    raw.extend_from_slice(&((72 + body.len()) as u32).to_le_bytes());
-    raw.extend_from_slice(&[5, 0, 0, 0]);
-    raw.extend_from_slice(&(case.before.len() as u64).to_le_bytes());
+fn before_digest(before: &[u8]) -> [u8; 32] {
     let mut hash = Sha256::new();
     hash.update(b"TCNI0001:BEFORE\0");
-    hash.update((case.before.len() as u64).to_le_bytes());
-    hash.update(&case.before);
-    raw.extend_from_slice(&hash.finalize());
-    for number in [5, case.groups.len() as u32, assignments, 0] {
-        raw.extend_from_slice(&number.to_le_bytes());
-    }
-    raw.extend_from_slice(&body);
-    raw
+    hash.update((before.len() as u64).to_le_bytes());
+    hash.update(before);
+    hash.finalize().into()
 }
 
 #[test]
 #[ignore = "requires external continuation36 source admission before matching producers"]
 fn external_terminal_growth_updates_commit_exact_literals_with_original_profile_five_groups() {
     let cases = cases();
-    let wires = cases.iter().map(wire).collect::<Vec<_>>();
+    let wires = cases
+        .iter()
+        .map(|case| fixtures::intent_wire(case, before_digest(&case.before)))
+        .collect::<Vec<_>>();
     let mut commits = 0;
     for (case, original_wire) in cases.iter().zip(wires) {
         let plan = image(&case.before)
@@ -211,8 +172,12 @@ fn external_terminal_growth_original_intent_recovery_preserves_partial_and_commi
                 let saved = journal.bytes.get_ref().clone();
                 for _ in 0..2 {
                     let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
-                    let intent =
-                        NativeUpdateIntent::decode(&wire(&case), &mut budget(), &|| false).unwrap();
+                    let intent = NativeUpdateIntent::decode(
+                        &fixtures::intent_wire(&case, before_digest(&case.before)),
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .unwrap();
                     let qualified = qualify_native_update_recovery(
                         checked,
                         intent,
@@ -235,8 +200,12 @@ fn external_terminal_growth_original_intent_recovery_preserves_partial_and_commi
                 let writes = target.writes;
                 target.fail_prefix = Some(0);
                 let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
-                let intent =
-                    NativeUpdateIntent::decode(&wire(&case), &mut budget(), &|| false).unwrap();
+                let intent = NativeUpdateIntent::decode(
+                    &fixtures::intent_wire(&case, before_digest(&case.before)),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
                 let qualified = qualify_native_update_recovery(
                     checked,
                     intent,
@@ -279,8 +248,12 @@ fn external_growth_chunks_slack_and_preserved_lval_declarations_are_not_recovery
                 Storage::new(journals::journal(&case.before, &forged, Marker::Pending));
             let saved = journal.bytes.get_ref().clone();
             let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
-            let intent =
-                NativeUpdateIntent::decode(&wire(&case), &mut budget(), &|| false).unwrap();
+            let intent = NativeUpdateIntent::decode(
+                &fixtures::intent_wire(&case, before_digest(&case.before)),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
             assert!(matches!(
                 qualify_native_update_recovery(checked, intent, scope(), &mut budget(), &|| false),
                 Err(NativeRecoveryQualificationError::ImageMismatch)
@@ -369,7 +342,7 @@ fn external_growth_keeps_original_noops_empty_groups_and_stale_intents_closed() 
                 }],
                 changed: 0,
             };
-            let expected_wire = wire(&original);
+            let expected_wire = fixtures::intent_wire(&original, before_digest(&original.before));
             let plan = image(&original.before)
                 .plan_recoverable_ordinary_fitted_updates(
                     "Items",
@@ -400,7 +373,7 @@ fn external_growth_keeps_original_noops_empty_groups_and_stale_intents_closed() 
             commits += 1;
         }
         case.groups[0].updates[0].expected = Value::Binary(vec![0; 65]);
-        let original_wire = wire(&case);
+        let original_wire = fixtures::intent_wire(&case, before_digest(&case.before));
         let error = image(&case.before)
             .plan_recoverable_ordinary_fitted_updates(
                 "Items",

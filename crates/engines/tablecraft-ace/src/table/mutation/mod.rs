@@ -178,3 +178,6 @@ mod normal_actions;
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod storage_scope;
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub(in crate::table) mod map_changes;

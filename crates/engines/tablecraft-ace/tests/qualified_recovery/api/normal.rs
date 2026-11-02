@@ -841,3 +841,6 @@ mod external_lval_growth;
 
 #[path = "normal/increment_companions.rs"]
 mod increment_companions;
+
+#[path = "normal/external_lval_retirement.rs"]
+mod external_lval_retirement;

@@ -11,8 +11,11 @@ passes the same connected checks under complete inline-only storage authority.
 [External Memo/OLE reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md) now passes
 native proof/recovery, retained-session and CLI checks without allocating or
 retiring chunks. [Terminal external growth](access/writes/NORMAL_EXTERNAL_LONG_GROWTH.md)
-uses checked space in the last original LVAL slot without allocation. NULL/empty
-transitions, retirement and allocation remain work.
+uses checked space in the last original LVAL slot without allocation.
+[Whole-page retirement](access/writes/NORMAL_EXTERNAL_LONG_RETIREMENT.md) now passes
+the same connected checks for NULL Memo/OLE and present-empty OLE, including
+original map authority and preserved page residuals. Mixed changed retained
+values, partial-page removal and new external allocation remain work.
 [Captured Date/Now defaults](access/writes/NORMAL_CLOCK_DEFAULTS.md) now pass
 native/retained-session/CLI and cold replay checks under the initial two-field
 unindexed profile. Broader default/identity/index composition and native Access
