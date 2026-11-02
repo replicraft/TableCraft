@@ -4,8 +4,12 @@
 
 [Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now passes complete-image, recovery, retained-session and CLI acceptance for
-qualified Int64/Currency secondary splits with existing DATA capacity. Broader
-prefix/allocation composition and native Access save/reopen remain open.
+qualified Int64/Currency secondary splits and two-row primary-prefix growth with
+existing DATA capacity. Typed complete and original-presence batches now share
+the existing retained journal lifecycle. [Multi-index Increment insertion](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+and [mixed Memo/OLE updates](access/writes/NORMAL_EXTERNAL_LONG_MIXED.md) also pass
+connected native/recovery/host acceptance. Broader mixed-schema admission,
+allocation composition and native Access save/reopen remain open.
 
 [Wider numeric index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md) now passes
 native, proof/recovery, retained-session and CLI checks for fitting root leaves.

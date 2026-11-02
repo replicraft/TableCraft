@@ -5,11 +5,30 @@
 Normal [wider numeric root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now splits qualified ascending and descending Int64/Currency secondary roots in
 one complete-row INSERT, retaining a fitting Int32 primary and existing DATA
-capacity. Four literal outcomes pass direct proof, journal recovery, retained
-typed/SQL sessions and CLI saves/readbacks. Partial map mixtures, committed
-mixed-image refusals, cold restarts and resource/cancellation controls pass.
-Primary-prefix growth, broader allocation/split combinations and native Access
+capacity. Eight literal outcomes now include atomic two-row primary-prefix growth.
+Direct proof, journal recovery, twelve typed/SQL saves, 32 cold restarts and the
+existing four CLI saves/readbacks pass. Partial map mixtures, committed
+mixed-image refusals and resource/cancellation controls pass. Broader
+allocation/split combinations and native Access
 save/reopen remain work.
+
+## Mixed external updates
+
+Normal [mixed Memo/OLE updates](access/writes/NORMAL_EXTERNAL_LONG_MIXED.md)
+compose whole-page retirement and retained reuse/growth/shrinking in one parent
+frame. All 32 ordered literal outcomes, independent proof, recovery/forgery and
+resource controls, 32 typed saves, sixteen SQL saves and sixteen CLI saves pass.
+Named-column empty plans remain distinct from targetless intent refusals.
+New external allocation, partial-page retirement and native Access saves remain work.
+
+## Multi-index Increment batches
+
+The [Increment route](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md) now retains
+qualified present Int32 secondary leaves and logical aliases. Two ordered batch
+commits and two empty plans, independent proof, original TCNA2/V1 recovery and
+resource controls pass. Real `OmittingInsertableBatch` saves retain one lease and
+receipt; eight cold host restarts pass. Nullable/descending secondary keys,
+allocation, defaults and native Access qualification remain work.
 
 ## External Memo/OLE retirement
 
@@ -19,8 +38,9 @@ Twenty changed literal commits plus eight no-op/empty commits, independent proof
 recovery/forgery/resource controls, twenty typed saves, sixteen SQL saves and
 sixteen CLI saves/readbacks pass. Actual map roles and all unselected live slots
 are checked before retiring a page; every byte after its invalid prefix remains
-exact. Old reuse/growth and INDEX ownership-audit checks pass. Mixed changes, partial-page
-removal, external allocation and native Access save/reopen remain work.
+exact. Old reuse/growth and INDEX ownership-audit checks pass. Mixed changes now
+have the composed route above. Partial-page removal, external allocation and
+native Access save/reopen remain work.
 
 ## Increment AutoNumber companions
 
@@ -29,8 +49,9 @@ now binds ordinary companions and the actual generated-field position. Twenty
 source-qualified exact commits plus twenty empty plans, independent proof,
 recovery/forgery/resource controls, twenty typed saves, twelve SQL saves and twelve
 CLI saves/readbacks pass. Genuine middle-position declarations retain aliases
-and deleted slots. Earlier Increment regressions pass. Multiple physical indexes,
-default composition, allocation and native Access save/reopen remain work.
+and deleted slots. Earlier Increment regressions pass. Multiple physical indexes
+now have the batch profile above; default composition, allocation and native
+Access save/reopen remain work.
 
 ## External terminal growth
 
@@ -41,8 +62,8 @@ literal native commits plus eight original no-op/empty commits, independent
 proof, mixed recovery/forgery/resource controls, sixteen typed/SQL saves with
 sixteen empty follow-ons and four CLI saves/readbacks pass. Stale-handle checks
 retain prior receipts. Whole-page clearing/retirement now has the separate route
-above. Mixed changes, relocation, new LVAL allocation and native Access save/reopen
-remain work.
+above. Mixed changes now have the composed route; relocation, new LVAL allocation
+and native Access save/reopen remain work.
 
 ## Retained wider numeric tree updates
 
@@ -63,8 +84,8 @@ shortening their payloads through TCNI5/V1. Twenty-eight literal native commits,
 120 recovery contexts, direct proof/forgery/resource controls, 40 typed/SQL saves
 with 40 empty follow-ons and twelve CLI saves/readbacks pass. Complete catalog,
 column-map and LVAL ownership checks preserve existing orphan rows. Terminal
-growth and whole-page retirement now have the separate routes above. Mixed
-changes and native Access saves remain work.
+growth, whole-page retirement and mixed changes now have the separate routes
+above. Native Access saves remain work.
 
 ## Captured native Date/Now defaults
 
