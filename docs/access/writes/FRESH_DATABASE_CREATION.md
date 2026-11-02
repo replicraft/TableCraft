@@ -286,4 +286,6 @@ The [constant-default creator](CONSTANT_CREATION_DEFAULTS.md) now adds exact
 Boolean, Int64, Currency and Short Text literals to existing Int32/NULL metadata.
 Source-complete creators and actual typed/SQL omitted-field sessions pass.
 Supplied NULL/false/Text stay supplied; invalid rows and oversized escaped
-metadata publish nothing. Date, clocks and generated expressions remain separate.
+metadata publish nothing. [Exact Date defaults](DATE_CREATION_DEFAULTS.md) now
+have separate creator and omitted-INSERT qualification. Clocks and generated
+expressions remain outside the constructive declaration API.

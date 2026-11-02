@@ -126,11 +126,12 @@ impl<'a> CreateColumn<'a> {
         Ok(self)
     }
 
-    /// Declare an exact constant default for Boolean, Int32, Int64, Currency or
-    /// explicitly sized Short Text. Nullable families also accept explicit NULL.
+    /// Declare an exact constant default for Boolean, Int32, Int64, Currency,
+    /// reversible legacy Date or sized Short Text. Nullable families accept NULL.
     ///
-    /// This metadata never replaces a supplied value. Date, clock, generated and
-    /// executable expressions remain outside this constructive declaration API.
+    /// This metadata never replaces a supplied value. Date declaration formatting
+    /// must preserve every original bit or preparation refuses before publication.
+    /// Clock, generated and executable expressions remain outside this API.
     pub fn with_default_literal(mut self, value: &'a Value) -> Result<Self, CreateDatabaseError> {
         let compatible = match self.declaration {
             Declaration::Fixed(ScalarType::Boolean) => matches!(value, Value::Boolean(_)),
@@ -138,6 +139,9 @@ impl<'a> CreateColumn<'a> {
             Declaration::Fixed(ScalarType::Int64) => matches!(value, Value::Int64(_) | Value::Null),
             Declaration::Fixed(ScalarType::Currency) => {
                 matches!(value, Value::Currency(_) | Value::Null)
+            }
+            Declaration::Fixed(ScalarType::DateTime) => {
+                matches!(value, Value::DateTime(_) | Value::Null)
             }
             Declaration::ShortText { .. } => matches!(value, Value::Text(_) | Value::Null),
             _ => return Err(CreateDatabaseError::Declaration),

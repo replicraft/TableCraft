@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+[Exact Date defaults](access/writes/DATE_CREATION_DEFAULTS.md) now pass native
+creation, omission-aware INSERT, proof/recovery and retained-session checks.
+Date representation aliases without a bit-preserving declaration refuse;
+generated defaults and native Access qualification remain work.
+
 The fitting [General Text UPDATE route](access/writes/NORMAL_TEXT_INDEX_UPDATE.md)
 now passes independently sourced native, recovery, retained-session and CLI
 acceptance for nonunique root leaves. Fitting

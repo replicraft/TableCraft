@@ -1,5 +1,16 @@
 # Implementation status
 
+## Exact Date defaults
+
+Fresh creation now authors [bit-preserving legacy Date defaults](access/writes/DATE_CREATION_DEFAULTS.md)
+and normal omitted-field INSERT resolves their explicit ISO literals. Twelve
+complete creator images, 24 native commits, independent proof and resource
+controls, same-token recovery and 24 retained typed/SQL saves pass. Supplied NULL
+stays supplied; four nonreversible alias families refuse before publication.
+The combined broader batch passes 1,166 engine, 79 adapter and 104 CLI tests,
+strict lint and standalone feature profiles. Native Access qualification remains
+unrun.
+
 ## Indexed Text insertion and deletion
 
 Normal fitting [Text INSERT/DELETE](access/writes/NORMAL_TEXT_INDEX_CARDINALITY.md)

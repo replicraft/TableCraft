@@ -1,4 +1,6 @@
 //! Audit literal projection is independent of producer assignment/rescale code.
+mod date;
+
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker, header::check,
     table::mutation::insert_defaults::clock as default_clock,
@@ -124,6 +126,9 @@ pub(in crate::table::mutation) fn derive(
             } else {
                 Err(carrier())
             };
+        }
+        Expression::DateLiteral(text) if !numeric_unary => {
+            return date::derive(column, &text, budget, cancelled);
         }
         Expression::Integer(value) => (i128::from(value) * sign, 0_u8),
         Expression::Number(text) => {

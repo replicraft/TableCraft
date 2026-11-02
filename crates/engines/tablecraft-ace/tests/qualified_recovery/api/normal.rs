@@ -797,3 +797,6 @@ mod text_update;
 
 #[path = "normal/text_cardinality.rs"]
 mod text_cardinality;
+
+#[path = "normal/creation_date_defaults.rs"]
+mod creation_date_defaults;

@@ -31,3 +31,6 @@ impl NativeImage {
         Ok(plan)
     }
 }
+
+#[cfg(test)]
+mod date_tests;
