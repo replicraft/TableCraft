@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "literal test TCNI4 grammar extraction passed existing actual plan/proof/journal acceptance",
+  "helper": "tablecraft_testkit::fixtures::access::tcni4::single_column_original_wire",
+  "consumer": "genuine_retained_binary_marker::Case::wire",
+  "wire_changes": 0,
+  "source_oracle_changes": 0,
+  "production_changes": 0,
+  "overlay": "Unsupported-carrier panic diagnostic made generic; encoded bytes unchanged.",
+  "checks": [
+    {
+      "name": "marker-direct-first",
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "log_sha256": "36824f03fc83af7ec4095b6df2fdba93e0477d71fc996f8389be1dd376ebdbbf"
+    },
+    {
+      "name": "marker-native-first",
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "log_sha256": "b99b5fd86aa884bf536dbfcf2d9c4eb3c7fc2d0f025f034c2d796e1017453a95"
+    },
+    {
+      "name": "kit-strict-first",
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "a4f9fa6d050f9eba18e5929edbd95dd2b2746c650a626d66cca5861a64d26918"
+    },
+    {
+      "name": "kit-minimal-first",
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "82d115580a74a06ded0db890d1df81618be47d16b8600fab1e1eabb938a28132"
+    },
+    {
+      "name": "format-first",
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/tcni4-extraction/first-private-checkpoint.json",
+      "bytes": 2539,
+      "sha256": "c4f14d4e4563352b5057a45f6864c9c4a79737ffa8b3d1700eb76b521678b547"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/tcni4-extraction/original-wire-method.rs.txt",
+      "bytes": 1414,
+      "sha256": "bf542b563c6d69f4ef2f56b83d91be6bb5efc56b3f39403a0df2970eafba9e94"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/tcni4-extraction/inverse-body.rs.txt",
+      "bytes": 1209,
+      "sha256": "ccd193e1d364ae648309bf9631a37ae5ebf364561cfb6d00efa0953779244d51"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/tcni4-extraction/root-first/installation.json",
+      "bytes": 400,
+      "sha256": "3a1ad48d41228bf769c9f2ddfa3812f4153f5a643f1824aa7672e68a9f218362"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/tcni4-extraction/root-first/results-first.json",
+      "bytes": 1967,
+      "sha256": "ebe4fa55a9ccf403a49995a0859b3b4be5e44e501d34351ac753dac3bfd5f003"
+    }
+  ],
+  "qualification": "Extraction grants no additional write permission or native Access compatibility."
+}

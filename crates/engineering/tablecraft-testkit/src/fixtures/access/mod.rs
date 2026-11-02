@@ -350,3 +350,5 @@ pub mod tcna2;
 pub mod genuine_wide_leaf_compression;
 
 pub mod genuine_retained_binary_marker;
+
+pub mod tcni4;

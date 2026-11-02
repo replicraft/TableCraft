@@ -70,35 +70,13 @@ impl Case {
     /// Independently framed TCNI0004. The caller owns the original digest kernel.
     pub fn wire(&self, binding: [u8; 32], reverse: bool) -> Vec<u8> {
         let updates = self.updates(reverse);
-        let total = 72 + 10 + 12 + 6 + 26 * updates.len();
-        let mut wire = Vec::from(*b"TCNI0004");
-        wire.extend_from_slice(&(total as u32).to_le_bytes());
-        wire.extend_from_slice(&[4, 0, 0, 0]);
-        wire.extend_from_slice(&(self.before.len() as u64).to_le_bytes());
-        wire.extend_from_slice(&binding);
-        for number in [10_u32, 1, updates.len() as u32, 0] {
-            wire.extend_from_slice(&number.to_le_bytes());
-        }
-        wire.extend_from_slice(b"BinaryKeys");
-        for number in [6_u32, updates.len() as u32, 0] {
-            wire.extend_from_slice(&number.to_le_bytes());
-        }
-        wire.extend_from_slice(b"Marker");
-        for (row, expected, value) in updates {
-            wire.extend_from_slice(&(row as u64).to_le_bytes());
-            for value in [expected, value] {
-                match value {
-                    Value::Int32(value) => {
-                        wire.push(2);
-                        wire.extend_from_slice(&u64::from(value as u32).to_le_bytes());
-                    }
-                    Value::Null => wire.extend_from_slice(&[0; 9]),
-                    _ => panic!("outside frozen Marker carrier law"),
-                }
-            }
-        }
-        assert_eq!(wire.len(), total);
-        wire
+        super::tcni4::single_column_original_wire(
+            "BinaryKeys",
+            "Marker",
+            &updates,
+            self.before.len(),
+            binding,
+        )
     }
 
     /// Fixed, source-relative protected bytes. No serializer/producer geometry.

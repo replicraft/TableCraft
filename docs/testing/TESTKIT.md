@@ -11,7 +11,8 @@ it as a normal dependency. The crate has no application-package dependency.
 src/
 ├── fixtures/
 │   ├── access/                 independent images, requests and literal pins
-│   │   └── tcna2.rs            independent original-presence wire grammar
+│   │   ├── tcna2.rs            independent original-presence wire grammar
+│   │   └── tcni4.rs            literal single-column I32/NULL original requests
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
@@ -47,6 +48,14 @@ import this owner directly. Access tests enable the existing `ace-support` dev
 feature for these consumers. The default testkit and production dependencies
 remain unchanged. Its [acceptance record](results/shared-page-read-support-2026-11-02.json)
 covers all six consumers, strict checks, minimal features and dependency guards.
+
+`fixtures::access::tcni4::single_column_original_wire` frames the independent
+single-column I32/NULL request grammar with caller-supplied original digest bytes.
+The retained Binary Marker fixture consumes it directly. Table/column names and
+requests stay with each fixture; the helper owns no image expectation and imports
+no engine serializer. Its extraction preserves every existing request byte;
+[existing proof/journal regressions](results/shared-tcni4-literal-framing-2026-11-02.json)
+and strict/minimal-feature checks pass.
 
 ## Optional subsystem support
 
