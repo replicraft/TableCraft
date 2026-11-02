@@ -96,10 +96,16 @@ fn journal_help_describes_fixed_and_fitted_updates_without_obsolete_limits() {
 
     assert!(help.contains("Short Text/Binary batches"));
     assert!(help.contains("fitting NULL-key transitions"));
+    assert!(help.contains("Int64/Currency index updates"));
+    assert!(help.contains("retained NODE partitions without splitting"));
+    assert!(help.contains("external single/chained payload reuse"));
+    assert!(help.contains("external growth, clearing and allocation refuse"));
+    assert!(help.contains("one represented EOF extension"));
     assert!(help.contains("AutoNumber fields remain read-only"));
     assert!(help.contains("All SET expressions read one original snapshot"));
     assert!(help.contains("does not enable general ACE saves"));
     assert!(!help.contains("Indexed NULL target transitions remain refused"));
     assert!(!help.contains("indirect maps remain refused"));
     assert!(!help.contains("at most 64 pages"));
+    assert!(!help.contains("page allocation and file growth remain unsupported"));
 }

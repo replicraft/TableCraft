@@ -16,9 +16,10 @@ const WORK_STEPS: u64 = 100_000_000;
         "The journal directory must be fresh. Planning precedes journal creation; commit failures require explicit recovery rather than automatic SQL retry. ",
         "ACE requires an unencoded ACE2016/2019 subversion-zero file without relationships. Supported fixed targets are Boolean, Int32, Int64, Currency and legacy DATE; numeric NULL transitions preserve inactive bytes and Boolean is nonnullable. ",
         "Qualified ordinary tables also support unindexed Short Text/Binary batches and optional fixed siblings within existing record capacity. Raw noops and empty selections remain distinct from NULL and present-empty values. ",
-        "Qualified ACE16 tables can also grow records using space in the same page. Planning selects the mode before staging; page allocation and file growth remain unsupported. ",
-        "The ordinary fixed route supports qualified retained Int32 indexes, including fitting NULL-key transitions and atomic unique-key swaps. AutoNumber fields remain read-only. ",
-        "All SET expressions read one original snapshot. Required programs need supported native coverage; macro assignments retain the Int32/NULL language. Unsupported targets, properties, required programs and allocation changes refuse, including empty operations. ",
+        "Qualified ordinary records can grow within owned DATA capacity or one represented EOF extension. Planning selects the qualified mode before staging. ",
+        "The ordinary fixed route supports qualified retained Int32 indexes, including fitting NULL-key transitions and atomic unique-key swaps. Exact Int64/Currency index updates also support root leaves and retained NODE partitions without splitting. AutoNumber fields remain read-only. ",
+        "Qualified inline Memo/OLE updates and external single/chained payload reuse retain existing storage; external growth, clearing and allocation refuse. ",
+        "All SET expressions read one original snapshot. Required programs need supported native coverage; macro assignments retain the Int32/NULL language. Unsupported targets, properties, required programs and unsupported allocation changes refuse, including empty operations. ",
         "This command does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
     )
 )]
