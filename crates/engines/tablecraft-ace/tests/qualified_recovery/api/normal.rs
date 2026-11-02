@@ -838,3 +838,6 @@ mod wide_node_update;
 
 #[path = "normal/external_lval_growth.rs"]
 mod external_lval_growth;
+
+#[path = "normal/increment_companions.rs"]
+mod increment_companions;

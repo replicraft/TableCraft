@@ -1,18 +1,15 @@
 //! Normal Increment insertion retains original presence in the existing TCNA2.
+mod binding;
 pub(super) mod mode;
 pub(super) mod proof;
 
 use crate::{
-    EditError, InsertFieldValue, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
-    RowInsert, WriteBlocker,
+    EditError, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
     header::check,
     limits::MAX_LIVE_ROWS,
-    table::mutation::{autonumber_counter, preserved_source::Source},
+    table::mutation::{autonumber_counter, preserved_source::Source, record_insertion::properties},
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn plan(
     image: NativeImage,
@@ -23,31 +20,33 @@ pub(super) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let counter = mode::capture(&image, &source, budget, cancelled)?;
+
     source
         .records
         .len()
         .checked_add(requests.len())
         .filter(|count| *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
-    validate_requests(requests, budget, cancelled)?;
+
+    binding::validate(
+        source.table.schema(),
+        counter.column,
+        requests,
+        budget,
+        cancelled,
+    )?;
+
     let generated = autonumber_counter::prepare(counter, requests.len(), budget, cancelled)?;
     let counter = generated.source;
-    let mut rows = vector(requests.len(), budget, cancelled)?;
-    for (request, value) in requests.iter().zip(&generated.values) {
-        check(budget, cancelled)?;
-        let InsertFieldValue::Supplied(Value::Int32(score)) = &request.values()[1] else {
-            return Err(EditError::Preservation);
-        };
-        let mut values = vector(2, budget, cancelled)?;
-        values.push(Value::Int32(*value));
-        values.push(Value::Int32(*score));
-        rows.push(RowInsert::new(values));
-    }
+    let rows = binding::expand(&generated, requests, budget, cancelled)?;
+
+    properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
     let (facts, optional) =
         super::indexed::qualify(&image, &source, table, &rows, budget, cancelled)?;
     if optional {
         return Err(EditError::Preservation);
     }
+
     let encoded = super::records::encode_incrementing(
         source.table.schema(),
         &rows,
@@ -69,6 +68,7 @@ pub(super) fn plan(
     }
     destination.copy_from_slice(&generated.after);
     drop(facts);
+
     let scope = image.catalog().catalog().scope();
     let plan = NativeEditPlan {
         before: image.bytes,
@@ -78,27 +78,6 @@ pub(super) fn plan(
     proof::prove(&plan, scope, table, requests, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(plan)
-}
-
-fn validate_requests(
-    requests: &[OmittedRowInsert],
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
-    for request in requests {
-        check(budget, cancelled)?;
-        if !matches!(
-            request.values(),
-            [
-                InsertFieldValue::Omitted,
-                InsertFieldValue::Supplied(Value::Int32(_))
-            ]
-        ) {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
-    }
-    check(budget, cancelled)?;
-    Ok(())
 }
 
 pub(super) fn vector<T>(
@@ -128,3 +107,6 @@ mod companion_sources;
 
 #[cfg(test)]
 mod companion_after_sources;
+
+#[cfg(test)]
+mod companion_tests;

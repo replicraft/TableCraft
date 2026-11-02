@@ -21,8 +21,11 @@ clock/save qualification remain work. All three writer source families were
 
 [Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now passes native, recovery, retained-session and CLI checks using original
-omissions and the database's actual declaration. Random/unknown modes, broader
-generated layouts and native Access qualification remain work. Explicit
+omissions and the database's actual declaration. Ordinary companions and a genuine
+middle-position generated field now pass twenty exact image outcomes, including
+physical aliases and deleted-slot preservation. Multiple physical indexes,
+default composition, Random/unknown modes and native Access qualification remain
+work. Explicit
 [empty Increment creation](access/writes/INCREMENTING_CREATION.md) now passes
 creator, retained-session and CLI checks; initial generated rows stay closed.
 

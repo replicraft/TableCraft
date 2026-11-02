@@ -206,8 +206,9 @@ is bounded; random and arbitrary stored expressions remain unsupported here.
 Qualified [Date/Now defaults](NORMAL_CLOCK_DEFAULTS.md) now use an explicitly
 supplied clock capability and a separate TCNA5 replay envelope; APIs without
 that capability remain ambient-free. The separate [native Increment route](NORMAL_INCREMENTING_AUTONUMBER.md)
-now consumes qualified generated declarations from the same original presence
-contract; ordinary omission alone never establishes generation mode. Complete declarations and target eligibility still
+now consumes qualified generated declarations and ordinary companions at the
+actual generated-field position through the same original presence contract;
+ordinary omission alone never establishes generation mode. Complete declarations and target eligibility still
 qualify for an empty batch. Required fields without usable values and Boolean
 NULL refuse.
 

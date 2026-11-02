@@ -1,5 +1,15 @@
 # Implementation status
 
+## Increment AutoNumber companions
+
+The normal [Increment insertion route](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+now binds ordinary companions and the actual generated-field position. Twenty
+source-qualified exact commits plus twenty empty plans, independent proof,
+recovery/forgery/resource controls, twenty typed saves, twelve SQL saves and twelve
+CLI saves/readbacks pass. Genuine middle-position declarations retain aliases
+and deleted slots. Earlier Increment regressions pass. Multiple physical indexes,
+default composition, allocation and native Access save/reopen remain work.
+
 ## External terminal growth
 
 Normal [external Memo/OLE terminal growth](access/writes/NORMAL_EXTERNAL_LONG_GROWTH.md)
