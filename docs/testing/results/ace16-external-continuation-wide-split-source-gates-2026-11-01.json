@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-01",
+  "qualification": "Source-only current native reads and independent reader observations; no matching growth, retirement or wider split producer evidence. Native Microsoft Access save/reopen unrun.",
+  "tests": [
+    {
+      "name": "external-continuation-source36",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "external_lval_growth_and_page_retirement_sources_have_full_ordinary_source",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "80479f30b253daa73a9c61d8bfc59dcd8d408616930f0717c97cc971b72f8559"
+    },
+    {
+      "name": "wider-split-originals4",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "wide_split_original_sources::wider_split_originals_require_current_source_complete_aliases_and_represented_future_cells",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "bab93dd60c3437500e566e2d17b982bf57f5b2f3c5e184bb1311f1f9dac6c6cc"
+    },
+    {
+      "name": "source-strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "cb41de265d2f49752c76f2cb085f49f6bb7c24df7e522b87a57cbf373df63b7a"
+    }
+  ],
+  "external_continuation": {
+    "execution_checkpoint_sha256": "8a74389128655a644963e8d119e7062fd058233a41f6fa60d25e87899ff82a86",
+    "closed_input_pins": 37,
+    "source_manifest_sha256": "b8468b51e6d6166ea31d1700b0b2c2a3b0722cbc53494c02fb660be4aa648424",
+    "source_views": 36,
+    "original_report_roundtrips_before_construction": 4,
+    "sdk_reads": 36,
+    "sdk_receipt_sha256": "70d4683380244c8edb03b463eace01e99a80e8bcdf9181b97cb5dda6851ab0f6",
+    "zero_child_saved_verifier_sha256": "12da054b4655407b06a4b6f9728b89ceacf515397734e00cb1f3c905da6a0207",
+    "aggregate_sha256": "0cc699e04220beeb4a98a70363e72561e433a05662fea04989dfbcf3af1ade7f",
+    "required_environment": "TABLECRAFT_EXTERNAL_LVAL_CONTINUATION_SOURCE_DIR",
+    "matching_producer_calls": 0
+  },
+  "wider_split_originals": {
+    "checkpoint_sha256": "432a673fb98897a102077db51e2f85192b96fb4ed6e61b7e96ac73480fae68a7",
+    "input_laws_sha256": "2cb294aeb335b887f81da7bcefa69451365f0f153a4477f08f8c3a7bfe60a899",
+    "request_laws_sha256": "cdd828012ff655b6c20ca07ab61bb36d477c21f9223538e75f6a84d714d16187",
+    "immutable_databases": 2,
+    "selected_tables": 4,
+    "required_environment": "TABLECRAFT_WIDE_SPLIT_SOURCE_REPO",
+    "after_model_and_matching_producer_calls": 0
+  },
+  "scope_notes": [
+    "External terminal growth retains actual references and original parent capacities; selected exclusive whole-page retirement protects residuals and existing orphan rows.",
+    "Wider split original gate checks actual three DATA pages, four aliases, 400 raw records per selected table and represented future INDEX/GLOBAL cells before AFTER modeling.",
+    "Earlier narrow static parent-frame law correction remains preserved; no runtime failure or expected-image retuning in this source batch."
+  ]
+}
