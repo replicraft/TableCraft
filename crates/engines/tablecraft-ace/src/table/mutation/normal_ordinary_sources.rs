@@ -212,3 +212,5 @@ mod text_storage_carriers;
 
 mod normal_autonumber;
 mod text_azl;
+
+mod text_new_key;
