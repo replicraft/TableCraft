@@ -1,6 +1,6 @@
 //! Read-only integral and action Binary/General Text indexes; no mutation authority.
 mod ownership;
-use super::ColumnFraming;
+use super::{ColumnFraming, ReadProfile, RetainedKeys};
 use crate::{
     EditError, IndexCheckStatus, IndexInspection, InspectError, NativeColumn, NativeImage,
     NativeIndex, TableSnapshot, WriteBlocker,
@@ -19,8 +19,8 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
-fn supported(field: &NativeColumn, framing: ColumnFraming) -> bool {
-    if matches!(framing, ColumnFraming::Actions)
+fn supported(field: &NativeColumn, keys: RetainedKeys) -> bool {
+    if matches!(keys, RetainedKeys::Scalar)
         && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text)
     {
@@ -35,7 +35,7 @@ fn supported(field: &NativeColumn, framing: ColumnFraming) -> bool {
                 .and_then(|order| order.general_family())
                 .is_some();
     }
-    if matches!(framing, ColumnFraming::Actions)
+    if matches!(keys, RetainedKeys::Scalar)
         && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary)
     {
@@ -62,14 +62,16 @@ pub(super) fn qualify(
     image: &NativeImage,
     indexes: &IndexInspection,
     projected: &TableSnapshot,
-    admission: Option<ColumnFraming>,
+    admission: Option<ReadProfile>,
     long_values: &Inventory,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
-    let Some(framing) = admission else {
+    let Some(profile) = admission else {
         return Ok(false);
     };
+    let framing = profile.columns;
+    let keys = profile.keys;
     let schema = indexes.schema();
     let mut wide = false;
     for index in indexes.indexes() {
@@ -90,7 +92,7 @@ pub(super) fn qualify(
             }
             .ok_or(InspectError::Malformed)?;
             wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
-                || matches!(framing, ColumnFraming::Actions)
+                || matches!(keys, RetainedKeys::Scalar)
                     && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT);
         }
     }
@@ -121,7 +123,7 @@ pub(super) fn qualify(
                 .constraints()
                 .is_some_and(|constraints| !constraints.ignore_nulls())
             || field.number() != key.number()
-            || !supported(field, framing)
+            || !supported(field, keys)
         {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }

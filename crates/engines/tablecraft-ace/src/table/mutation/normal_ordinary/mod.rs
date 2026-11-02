@@ -111,8 +111,9 @@ pub(in crate::table::mutation) fn capture(
             budget,
             cancelled,
         )?;
-        let certificate = NoRequiredTablePrograms::capture(image, &target, budget, cancelled)?;
-        return preserved_source::capture_no_required_programs(
+        let certificate =
+            NoRequiredTablePrograms::capture_updates(image, &target, budget, cancelled)?;
+        return preserved_source::capture_no_required_updates(
             image,
             table,
             &certificate,
@@ -182,3 +183,6 @@ mod wide_primary_prefix_sources;
 
 #[cfg(test)]
 mod wide_leaf_compression_sources;
+
+#[cfg(test)]
+mod retained_binary_marker_tests;

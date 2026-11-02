@@ -9,9 +9,18 @@ mod tests;
 
 use crate::{
     EditError, FileFormat, NativeImage, PayloadPresence, TableExtraCoverage, TableSchema,
-    WriteBlocker, header::check,
+    WriteBlocker,
+    format::data_type::{SHORT_BINARY, SHORT_TEXT},
+    header::check,
 };
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Declaration {
+    DenseIntegral,
+    DenseRetained,
+    Actions,
+}
 
 /// No public constructor or serialized permission. This certificate binds the
 /// actual image and strict target catalog row, never an empty program selection.
@@ -20,6 +29,7 @@ pub(in crate::table::mutation) struct NoRequiredTablePrograms<'image> {
     object: ObjectId,
     definition: u32,
     catalog_reference: u32,
+    declaration: Declaration,
 }
 
 impl<'image> NoRequiredTablePrograms<'image> {
@@ -29,7 +39,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_with_declaration(image, schema, false, budget, cancelled)
+        Self::capture_with_declaration(image, schema, Declaration::DenseIntegral, budget, cancelled)
     }
 
     /// Fresh complete native absence proof with action-only column identities.
@@ -39,13 +49,45 @@ impl<'image> NoRequiredTablePrograms<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_with_declaration(image, schema, true, budget, cancelled)
+        Self::capture_with_declaration(image, schema, Declaration::Actions, budget, cancelled)
+    }
+
+    /// Dense native UPDATE declarations retain checked readonly scalar indexes.
+    /// This proves no mutation target; each planner still binds its actual fields.
+    pub(in crate::table::mutation) fn capture_updates(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        check(budget, cancelled)?;
+        let mut retained = false;
+        if schema.layout.physical_indexes != 0 {
+            for field in schema.columns() {
+                check(budget, cancelled)?;
+                retained |= matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT);
+            }
+        }
+        // Metadata chooses a declaration attempt before reading. Integral-only
+        // profiles retain their actual legacy consumer; no failure is retried.
+        if !retained {
+            return Self::capture(image, schema, budget, cancelled);
+        }
+        Self::capture_with_declaration(image, schema, Declaration::DenseRetained, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn retained_update_keys(&self) -> Result<bool, EditError> {
+        match self.declaration {
+            Declaration::DenseIntegral => Ok(false),
+            Declaration::DenseRetained => Ok(true),
+            Declaration::Actions => Err(EditError::Preservation),
+        }
     }
 
     fn capture_with_declaration(
         image: &'image NativeImage,
         schema: &TableSchema,
-        actions: bool,
+        declaration: Declaration,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -65,12 +107,22 @@ impl<'image> NoRequiredTablePrograms<'image> {
         }
         let catalog_reference = selected.reference;
         declarations::capture(image, budget, cancelled)?;
-        if actions {
-            super::ordinary_content::definition::validate_actions(
-                image, schema, budget, cancelled,
-            )?;
-        } else {
-            super::ordinary_content::definition::validate_user(image, schema, budget, cancelled)?;
+        match declaration {
+            Declaration::DenseIntegral => {
+                super::ordinary_content::definition::validate_user(
+                    image, schema, budget, cancelled,
+                )?;
+            }
+            Declaration::DenseRetained => {
+                super::ordinary_content::definition::validate_retained_updates(
+                    image, schema, budget, cancelled,
+                )?;
+            }
+            Declaration::Actions => {
+                super::ordinary_content::definition::validate_actions(
+                    image, schema, budget, cancelled,
+                )?;
+            }
         }
 
         // Public coverage corroborates the raw code-carrier NULL checks,
@@ -94,6 +146,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
             object: schema.object_id(),
             definition: schema.definition_page(),
             catalog_reference,
+            declaration,
         })
     }
 

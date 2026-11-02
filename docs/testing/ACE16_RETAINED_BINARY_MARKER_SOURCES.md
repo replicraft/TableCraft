@@ -15,9 +15,10 @@ requests reuse originals rather than creating duplicate images.
 Independent native replay checks whole images, logical rows, Marker declarations,
 complete absent property inventories, constraints, all aliases and full Actions
 Source. Read/Actions qualification grants no canonical UPDATE permission. A
-separate initial observer records that current canonical capture refuses both
-originals; this historical observation is not a permanent format invariant.
-Future valid admission can succeed without invalidating the source gate.
+separate initial observer recorded canonical capture refusing both originals;
+that historical observation is not a permanent format invariant. The later
+qualified implementation now reports `ADMITTED` for both headers without changing
+this read gate or any source image.
 
 The 48 independent reports cover full inventory, metadata and six index cursors
 for each view. Closed saved verification validates exact input/output bindings,
@@ -33,5 +34,9 @@ TABLECRAFT_RETAINED_BINARY_MARKER_SOURCE_DIR=/absolute/path/to/expected-first \
 ```
 
 See the [source record](results/ace16-retained-binary-marker-sources-2026-11-02.json).
-Matching UPDATE support and native Microsoft Access save/reopen remain separate
-acceptance work.
+Subsequent [normal fixed UPDATE acceptance](../access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
+now passes against these same frozen files; its separate
+[write result](results/ace16-retained-binary-marker-writes-2026-11-02.json) records
+the matching runs. The linked source record is intentionally unchanged and
+describes the earlier source-only phase. Native Microsoft Access save/reopen
+and Windows mixed-client qualification remain unrun.

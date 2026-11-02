@@ -1,5 +1,18 @@
 # Implementation status
 
+## Fixed updates beside retained Binary indexes
+
+Normal native UPDATE now admits qualified dense declarations with retained scalar
+indexes while keeping actual mutation target checks separate. Two source-qualified
+ACE 16-family originals accept unindexed Int32 Marker changes and NULL, preserving
+all Binary index pages and aliases byte-for-byte. Ten native commits, independent
+proof and journal forgeries, recovery/resource controls, eighteen typed/SQL saves
+and eight CLI saves/readbacks pass. Indexed Id remains refused in this mixed
+profile. The [write contract](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
+and [acceptance record](testing/results/ace16-retained-binary-marker-writes-2026-11-02.json)
+separate earlier source-only qualification from matching saves. Native Access
+save/reopen remains unrun.
+
 ## Progressive sorted TOP
 
 Explicit progressive queries now accept positive sorted TOP on admitted row-local

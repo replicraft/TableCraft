@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "qualified normal unindexed fixed Marker UPDATE beside retained Binary indexes; matching writes after separate source/read qualification",
+  "source_record": "ace16-retained-binary-marker-sources-2026-11-02.json",
+  "source_phase_unchanged": true,
+  "source_images": 6,
+  "source_originals": 2,
+  "independent_SDK_reports": 48,
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "catalog_family": "native17 NoRequired",
+    "table": "BinaryKeys",
+    "target": "unindexed nullable Int32 Marker",
+    "physical_indexes": 3,
+    "logical_aliases": 6,
+    "intent": "TCNI0004 / Ace16OrdinaryFixed",
+    "journal": "V1",
+    "allocation": false
+  },
+  "counts": {
+    "source_images": 6,
+    "principal_cases": 8,
+    "native_commits": 10,
+    "direct_positives": 10,
+    "direct_byte_forgeries": 176,
+    "direct_wrong_counts": 8,
+    "direct_stale_witnesses": 6,
+    "sealed_action_certificate_refusals": 2,
+    "recovery_marker_target_contexts": 42,
+    "committed_target_mismatch_refusals": 6,
+    "native_journal_forgeries": 176,
+    "measured_full_public_contexts": 8,
+    "typed_saves": 10,
+    "SQL_saves": 8,
+    "CLI_saves": 8,
+    "CLI_prepublication_refusals": 4
+  },
+  "executed_functions": {
+    "direct_proof": 2,
+    "native_including_resources_recovery_and_guards": 5,
+    "retained_session": 2,
+    "CLI": 2
+  },
+  "preservation": "Complete frozen file comparison; every byte outside two selected Marker payloads or the selected presence bit remains exact, including inactive payload, indexes/history/aliases/maps/catalog/opaque bytes/EOF.",
+  "source_and_implementation_evidence": [
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/expected-first/manifest.json",
+      "bytes": 13045,
+      "sha256": "fc8f6df057d6d5a09148677a468861143975328d0c7c2d8e958fee13c5dfe1e3"
+    },
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/readonly-sdk-execution-first.json",
+      "bytes": 3232,
+      "sha256": "ea7a9db50c43f346410f492b9b86eff66a60460e04cc52b1907665e5c7564dca"
+    },
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 8089,
+      "sha256": "bdc265de602df7376f557f2a302cc56cf93348301d470eb9bd6eb01c8d2c9395"
+    },
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/implementation-draft/ADVANCED_FIELDS_CROSS_CALLER_REVIEW_FIRST.json",
+      "bytes": 4760,
+      "sha256": "4860d8529326a137435dc0ecfb505b54a7e3278f8f63ee74d96b19572fec5fde"
+    },
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/acceptance-draft/registration-successor/successor-checkpoint.json",
+      "bytes": 9024,
+      "sha256": "c240a9f532142a727f9fe5dc0f1bb32d15dae5848a51271dbdc50e938c15541c"
+    },
+    {
+      "path": ".cache/ace16-normal-target-relative-update-next-20261102/acceptance-draft/registration-successor/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 3635,
+      "sha256": "67ea83776d8394b18471a41b6d9cb0b8163cb2a39ed80fd2e46d84f5595636cf"
+    }
+  ],
+  "root_execution_receipts": [
+    {
+      "pin": {
+        "path": ".cache/marker-sorted-batch-20261102/results-second.json",
+        "bytes": 3756,
+        "sha256": "f309326e7fe320244e5e5dfb257133f0ee495dba63a1789bc9aef287ef566149"
+      }
+    },
+    {
+      "pin": {
+        "path": ".cache/marker-sorted-batch-20261102/final-results-second.json",
+        "bytes": 8279,
+        "sha256": "2a494ca0ed39ee7103ab61c804226487365ae3f5004ab1f6f065419d675e86b6"
+      }
+    }
+  ],
+  "scoped_passing_steps": [
+    {
+      "name": "marker-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "retained_binary_marker_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "expected_functions": 2,
+      "accepted": true,
+      "log_sha256": "f0170a62e8753ee0de6dee29ba8e65441a283b41e2765cf02fcc800e0b5c1822"
+    },
+    {
+      "name": "marker-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::retained_binary_marker",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "898ebbc90be2379107c16f582ac680b8de118a4ed4b62c17c848a58ec98dc8e0"
+    },
+    {
+      "name": "marker-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_retained_binary_marker",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "1c2e16e2fee9b3ff3b8131c93d0be34e40431106bf3f895bb63ee8e6478f9738"
+    },
+    {
+      "name": "marker-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_retained_binary_marker",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "45aeac448839184144a35533271d39252d46fe03d477bfdde277a601ef188760"
+    },
+    {
+      "name": "ordinary-fixed-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::native_ordinary"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "fc2c705e63ad9eab7692b0b79caacd359fbceba2d07f1a6032536e82cd606b0c"
+    },
+    {
+      "name": "fixed-scalar-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::native_fixed"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        8
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "90bb602903b1aaf676dc9b8a5c76b846ee3d0eac5b1c9a1651e7cad5d6d865b6"
+    },
+    {
+      "name": "canonical-current-observation-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::retained_binary_marker::observe_canonical_update_source_admission_from_pinned_originals",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true,
+      "log_sha256": "22eab59161205ab114e184fb0827812eb7249b09478d2a92c42ecd4e847d1f86"
+    },
+    {
+      "name": "native-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af"
+    },
+    {
+      "name": "native-journal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "e3da67ed0968d123dbf203249f2c366a21748532db7542fc8812e8e92dd1b9ef"
+    },
+    {
+      "name": "native-preview-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "0fb5c2a3ef3dc06645dbb498798bfa2e124be0e9bd9a26e196f1fa98205204ed"
+    },
+    {
+      "name": "native-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "c578c1a4a55813866561e561bd31f46dff93ea1e75fa9809f5f27f74ec46ba28"
+    },
+    {
+      "name": "access-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_retained_binary_marker",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "328af8d0831950d5297a97a3494b03e5cb9f87e95f380aeed658c7df61c913d7"
+    },
+    {
+      "name": "cli-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "genuine_retained_binary_marker",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "0c976fc1f4e569de74487220db673066d735ca5643d2f1391408e2b75d9d5fbe"
+    },
+    {
+      "name": "fmt-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    }
+  ],
+  "current_canonical_observations": [
+    [
+      5,
+      "ADMITTED"
+    ],
+    [
+      6,
+      "ADMITTED"
+    ]
+  ],
+  "historical_evidence": {
+    "initial_canonical_refusal": "Preserved unchanged in the earlier source-only result; not a permanent format invariant.",
+    "external_wrapper_preflight": "Wrong external class-name assertion stopped before any SDK child; preserved source receipt1372. Corrected to frozen names before the original once-only reader launch; no SDK retry.",
+    "acceptance_preexecution_successors": "1758 preserved; fbd811 stale-only dedup removes two identical inputs, c240a9 adds exact native module path. No source/golden/production retuning.",
+    "shared_batch_failures": [
+      {
+        "receipt": {
+          "path": ".cache/marker-sorted-batch-20261102/results-first.json",
+          "bytes": 434,
+          "sha256": "33776d12967dc9ec6fa8e5d9164703a814f0c40ce51ea262360aeece54b2358c"
+        },
+        "scope": "Separate sorted TOP acceptance SQL used an unbracketed reserved identifier; unrelated to Marker, corrected without changing expected rows."
+      },
+      {
+        "receipt": {
+          "path": ".cache/marker-sorted-batch-20261102/final-results-first.json",
+          "bytes": 2484,
+          "sha256": "3a3e29bac3ff843f1121dfaf25325303c533f38b3e19c23030c21e5986160203"
+        },
+        "scope": "Separate Japanese StrConv stale boundary assertion; corrected and targeted remainder passed. Not a single uninterrupted full-workspace pass."
+      }
+    ]
+  },
+  "verification_scope": "Focused matching functions, fixed UPDATE regressions, three native feature builds, native/testkit all-target strict checks, focused adapter/CLI strict checks, formatting and dependency boundaries. No new full ACE/Access/CLI suite run is claimed by this record.",
+  "native_Microsoft_Access_save_reopen": "unrun",
+  "Windows_mixed_client_locking": "unrun",
+  "native_compatibility_claim": false
+}
