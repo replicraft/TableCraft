@@ -125,3 +125,6 @@ mod companion_original_sources;
 
 #[cfg(test)]
 mod companion_sources;
+
+#[cfg(test)]
+mod companion_after_sources;

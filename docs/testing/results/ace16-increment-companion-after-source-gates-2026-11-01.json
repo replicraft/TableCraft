@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-01",
+  "scope": "Source-only Increment AFTER20 qualification before generalized writer execution",
+  "source_checkpoint_sha256": "c0e20f046946dc99b9752e332b3b83744cd370e9a1ad4bee4fbe400268acec2f",
+  "observer_checkpoint_sha256": "51d928a281ca72b05ddcf1896bdcf5f316c4550a473002508bc55bc185ed7928",
+  "frozen_laws_sha256": "71b32b79d4b4e54e5099959ca20234ed29d5d6034968062a350576597a8c4d9c",
+  "source_manifest_sha256": "a405fdbc05b27b6394d2ddb4c67a40053d5c44df378530d68ea213848dd31400",
+  "construction_receipt_sha256": "82964dc496045d3bfb7e27d6151c707db9abf1afaeddd56f5109f0bec929d293",
+  "source_and_observer_input_pins": 100,
+  "native_gate": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_insert::incrementing::companion_after_sources::companion_after_sources_match_presence_counter_physical_rows_and_full_protected_complement",
+      "--",
+      "--ignored",
+      "--exact"
+    ],
+    "required_environment": [
+      "TABLECRAFT_INCREMENT_COMPANION_AFTER_SOURCE_DIR",
+      "TABLECRAFT_INCREMENT_COMPANION_SOURCE_DIR",
+      "TABLECRAFT_INCREMENT_COMPANION_ORIGINAL_DIR"
+    ],
+    "exit": 0,
+    "passed_functions": 1,
+    "log_sha256": "ec20011082771b16e4e877e7474069005387c7b0efab521b2cfce244205f7e57"
+  },
+  "coverage": {
+    "complete_after_images": 20,
+    "companion_images": 18,
+    "genuine_middle_generator_images": 2,
+    "observer_compiles": 1,
+    "exact_inert_reports": 26,
+    "receipt_summary_plan_controls": [
+      26,
+      10,
+      6
+    ],
+    "saved_verifier_children": 0,
+    "matching_generator_calls": 0
+  },
+  "sdk_aggregate_sha256": "20ba2738e044cabf7d35fb8dbbbc12ff396838f71e830b670b8cba36ad65cea2",
+  "sdk_summary_sha256": "00297e3d1fcffc51d79d04c734762bdd12e5b186eaea4377d69237357b8ac27e",
+  "saved_receipt_sha256": "958d90aafdeccbac7183183d71759e25554fe34fd27ae37491418d3d0c6955ff",
+  "control_receipt_sha256": "c5f96035d95e316c0f89850e1eb41a4c5b9d12d9e4b9cc0beb38edf1e70578fe",
+  "qualification": "Source/read evidence only. Generalized writer and host acceptance are separate. Native Microsoft Access generation/save timing and native save/reopen unrun.",
+  "root_lint_correction": "Removed two redundant Vec<u8>.into() calls from the installed source gate after strict lint. Exact values, frozen b206 source, request laws and all source/SDK images remain unchanged.",
+  "installed_native_gate_sha256": "599f19b0690e1782464a30ac159d3d449e578de76ea11c347efc8e4022e644c6",
+  "combined_strict_lint": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-ace",
+      "-p",
+      "tablecraft-testkit",
+      "-p",
+      "tablecraft-access",
+      "-p",
+      "tablecraft-cli",
+      "--all-targets",
+      "--all-features",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "log_sha256": "3eed572e668b23edf93aa441ce7a6b0ebbde438d1b7157700ac7f2282fd2108d"
+  }
+}
