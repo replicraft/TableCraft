@@ -1,5 +1,5 @@
 use super::*;
-use tablecraft_testkit::access::map_growth::model::number;
+use tablecraft_testkit::fixtures::access::map_growth::model::number;
 
 const SLOT_START: usize = 14;
 const SLOT_BYTES: usize = 2;

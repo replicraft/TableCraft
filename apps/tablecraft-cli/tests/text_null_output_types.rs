@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn null_text_union_arms_keep_the_other_arms_byte_carrier() {
@@ -22,7 +23,7 @@ fn null_text_union_arms_keep_the_other_arms_byte_carrier() {
         let sql = format!(
             "SELECT N,VarType(N) AS Kind FROM (SELECT {expression} AS N UNION ALL SELECT CByte(2)) AS Q"
         );
-        let result = run(&["query", "run", &sql]);
+        let result = CLI.run(&["query", "run", &sql]);
         assert!(
             result.status.success(),
             "{expression}: {}",
@@ -42,7 +43,7 @@ fn null_text_metadata_does_not_allow_partial_output_before_a_late_failure() {
         "String(NULL,1/0)",
     ] {
         let sql = format!("SELECT CByte(2) AS N UNION ALL SELECT {expression}");
-        let result = run(&["query", "run", &sql]);
+        let result = CLI.run(&["query", "run", &sql]);
         assert_eq!(result.status.code(), Some(2), "{expression}");
         assert!(result.stdout.is_empty(), "{expression}");
     }

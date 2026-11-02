@@ -6,8 +6,8 @@ use crate::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as model;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as model;
 
 const PAGE: usize = 4096;
 

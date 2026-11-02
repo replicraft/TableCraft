@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,17 +14,18 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn date_conversion_runs_with_separate_year_window_and_reference_year_controls() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Year(DateValue('Feb 29')) AS Y,Hour(TimeValue('2:24PM')) AS H,Year(CDate('1/2/49')) AS W,DateValue(NULL) AS N",
-            "--date-format",
-            "en-us",
-            "--reference-year",
-            "2024",
-            "--two-digit-year-max",
-            "2049",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Year(DateValue('Feb 29')) AS Y,Hour(TimeValue('2:24PM')) AS H,Year(CDate('1/2/49')) AS W,DateValue(NULL) AS N",
+                "--date-format",
+                "en-us",
+                "--reference-year",
+                "2024",
+                "--two-digit-year-max",
+                "2049",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -32,7 +35,7 @@ fn date_conversion_runs_with_separate_year_window_and_reference_year_controls() 
             table(&result.stdout),
             [vec!["Y", "H", "W", "N"], vec!["2024", "14", "2049", "NULL"]]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Hour(CDate('-1.25')) AS H",
@@ -54,7 +57,7 @@ fn date_conversion_runs_with_separate_year_window_and_reference_year_controls() 
             "TimeValue('2026-02-30 12:00')",
             "CDate(1,1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -66,7 +69,7 @@ fn reference_year_is_validated_and_not_available_during_inert_parse() {
         vec!["query", "eval", "SELECT 1", "--reference-year", "99"],
         vec!["query", "parse", "SELECT 1", "--reference-year", "2024"],
     ] {
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
     }
@@ -75,13 +78,14 @@ fn reference_year_is_validated_and_not_available_during_inert_parse() {
 #[test]
 fn en_us_dotted_times_share_conversion_and_recognition_paths() {
     for mode in ["eval", "run"] {
-        let result = support::run(&[
-            "query",
-            mode,
-            "SELECT IsDate('04.28.14') AS Good,IsDate('04.28.2014') AS Bad,Hour(CDate('04.28.14')) AS H,Minute(TimeValue('4/28/2014 04.28.14')) AS M,Year(DateValue('4/28/2014 04.28.14')) AS Y",
-            "--date-format",
-            "en-us",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsDate('04.28.14') AS Good,IsDate('04.28.2014') AS Bad,Hour(CDate('04.28.14')) AS H,Minute(TimeValue('4/28/2014 04.28.14')) AS M,Year(DateValue('4/28/2014 04.28.14')) AS Y",
+                "--date-format",
+                "en-us",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -113,13 +117,14 @@ fn en_us_dotted_times_share_conversion_and_recognition_paths() {
 #[test]
 fn cvdate_alias_preserves_date_subtype_and_explicit_policies() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Year(CVDate(0)) AS Y,Hour(CVDate(-1.25)) AS H,VarType(CVDate(0)) AS T,Year(CVDate('2024-02-29')) AS Leap",
-            "--date-format",
-            "iso",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Year(CVDate(0)) AS Y,Hour(CVDate(-1.25)) AS H,VarType(CVDate(0)) AS T,Year(CVDate('2024-02-29')) AS Leap",
+                "--date-format",
+                "iso",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -140,7 +145,7 @@ fn cvdate_alias_preserves_date_subtype_and_explicit_policies() {
             "CVDate('2024-02-30')",
             "CVDate(2958466)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }

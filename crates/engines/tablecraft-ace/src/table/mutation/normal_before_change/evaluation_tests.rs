@@ -7,7 +7,7 @@ use std::{error::Error, io::Cursor};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::EvalError;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_before_change::{Recipe, source},
     wide_properties,
 };

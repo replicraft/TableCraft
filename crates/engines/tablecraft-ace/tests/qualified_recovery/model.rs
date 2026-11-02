@@ -1,13 +1,11 @@
 use sha2::{Digest, Sha256};
 use std::ops::Range;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
-use tablecraft_testkit::access::secondary_index::{self, Population};
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::secondary_index::{self, Population};
 
 // Installation target: tests/qualified_recovery/model.rs. Reuse the original
 // indexed literal owner once; do not copy its builder or create a fake module.
-#[path = "../mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Shape {

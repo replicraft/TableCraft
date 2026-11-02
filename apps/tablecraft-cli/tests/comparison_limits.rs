@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
@@ -8,7 +9,7 @@ fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
         ("--comparison-steps", "100000000"),
     ] {
         for value in ["0", "-1", "many", "18446744073709551616"] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 "SELECT 1",
@@ -20,11 +21,11 @@ fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }
-        let result = run(&["query", "run", "SELECT 1", flag, maximum]);
+        let result = CLI.run(&["query", "run", "SELECT 1", flag, maximum]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8_lossy(&result.stderr).contains("--collation"));
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 'a'='A' AS E",
@@ -44,7 +45,7 @@ fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
         ("--comparison-bytes", "268435457"),
         ("--comparison-steps", "100000001"),
     ] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 1",
@@ -61,7 +62,7 @@ fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
 #[test]
 fn low_comparison_pools_fail_buffered_without_borrowing_execution_allowances() {
     for flag in ["--comparison-bytes", "--comparison-steps"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 'a'='A'",

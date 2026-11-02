@@ -1,8 +1,8 @@
 //! Genuine ordinary schema/records with the indexed Int32 after a companion.
 use super::model::Row;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::insert_seed as base;
-use tablecraft_testkit::access::mutation_fixture as catalog;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::insert_seed as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as catalog;
 
 pub(super) const PAGE: usize = 4096;
 

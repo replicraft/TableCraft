@@ -3,7 +3,6 @@
 mod boundaries;
 #[path = "typed_multivalue_join_contract/namespaces.rs"]
 mod namespaces;
-#[path = "typed_multivalue_join_contract/support.rs"]
-mod support;
+use tablecraft_testkit::support::query::multivalue as support;
 #[path = "typed_multivalue_join_contract/values.rs"]
 mod values;

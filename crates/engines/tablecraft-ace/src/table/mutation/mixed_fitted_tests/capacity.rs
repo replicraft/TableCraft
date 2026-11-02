@@ -1,7 +1,7 @@
 //! Raw one-character text consumes its entire genuine physical field capacity.
 use super::{model, qualify};
 use model::{Case, Family, PAGE, Recipe};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub fn case(family: Family, descending: bool) -> Case {
     // The independently authored raw UTF16 frame already describes the exact

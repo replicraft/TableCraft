@@ -3,7 +3,9 @@ use crate::{IndexCheckStatus, NativeImage, check_table, check_table_constraints,
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_indexed_targets::{self as model, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed_targets::{
+    self as model, Recipe,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

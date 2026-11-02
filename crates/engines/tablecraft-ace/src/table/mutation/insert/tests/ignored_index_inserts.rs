@@ -4,8 +4,8 @@ use crate::{EditError, IndexConstraintViolation, InspectError, RowInsert};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub(in crate::table::mutation) mod model;
 use model::{Case, PAGE, Shape};

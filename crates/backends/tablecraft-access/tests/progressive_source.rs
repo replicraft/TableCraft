@@ -1,10 +1,10 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "progressive_source/extrema.rs"]
 mod extrema;

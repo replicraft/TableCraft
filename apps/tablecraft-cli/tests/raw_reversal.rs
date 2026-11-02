@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn retained_reversal_reaches_both_cli_evaluators() {
     for command in ["eval", "run"] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             command,
             "SELECT StrReverse(StrReverse('a🦀中')) AS Repaired,LenB(StrReverse('🦀')) AS Bytes",
@@ -37,7 +37,7 @@ fn invalid_final_reversal_and_late_failures_never_publish_a_prefix() {
             "SELECT 1 AS Prefix,LenB(StrReverse(ChrB(1)))",
             "SELECT 1 AS Prefix,IIf(True,StrReverse(ChrW(55296)),1/0)",
         ] {
-            let output = run(&["query", command, sql]);
+            let output = CLI.run(&["query", command, sql]);
             assert_eq!(output.status.code(), Some(2));
             assert!(output.stdout.is_empty());
         }

@@ -21,7 +21,7 @@ use tablecraft_io::{
     },
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::normal_clock_defaults::{self as fixtures, Recipe};
+use tablecraft_testkit::fixtures::access::normal_clock_defaults::{self as fixtures, Recipe};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

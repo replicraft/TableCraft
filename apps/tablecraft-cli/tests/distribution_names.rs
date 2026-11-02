@@ -1,5 +1,5 @@
 //! Filename routing evidence, not native compiled-project qualification.
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 use std::{fs, path::Path, process::Command};
 

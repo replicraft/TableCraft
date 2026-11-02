@@ -1,10 +1,10 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn numeric_parameters_reach_query_execution_with_their_declared_carriers() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "PARAMETERS D DECIMAL,S SINGLE,F DOUBLE; SELECT D,S,F,TypeName(D),TypeName(S),TypeName(F)",
@@ -57,7 +57,7 @@ fn invalid_or_mismatched_numeric_parameters_publish_no_rows() {
         ("DECIMAL", "D=double:1.5"),
     ] {
         let sql = format!("PARAMETERS D {declaration}; SELECT 1,D");
-        let result = run(&["query", "run", &sql, "--param", parameter]);
+        let result = CLI.run(&["query", "run", &sql, "--param", parameter]);
         assert_eq!(result.status.code(), Some(2), "{parameter}");
         assert!(result.stdout.is_empty(), "{parameter}");
     }
@@ -72,7 +72,7 @@ fn decimal_parameter_boundaries_reach_output_without_rounding() {
         "0.0000",
     ] {
         let parameter = format!("D=decimal:{text}");
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "PARAMETERS D DECIMAL; SELECT D AS Exact",

@@ -1,6 +1,6 @@
 //! Test-only registry carrier using the actual literal MR2/payload builders.
 use super::inspect::payload_fixture;
-use tablecraft_testkit::access::{self as raw, wide_properties};
+use tablecraft_testkit::fixtures::access::{self as raw, wide_properties};
 
 pub(crate) struct Carrier {
     pub record: Vec<u8>,

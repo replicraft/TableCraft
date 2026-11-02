@@ -7,7 +7,7 @@ use std::{
     process::{Command, Output},
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_property_lval::{self as sources, Case, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_property_lval::{self as sources, Case, Recipe};
 
 fn verify(bytes: &[u8], expected: &str) {
     let actual = Sha256::digest(bytes)

@@ -2,13 +2,13 @@ use super::{Coverage, IndexProfile, NativeIndex};
 use crate::{
     IndexInspection, InspectError, inspect_table_indexes,
     table::indexes::composite::{Columns, DecimalColumns},
-    test_support::tuples::{decimal_fixture, numeric_fixture},
 };
 use decimal_fixture::Cell;
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::SchemaName;
+use tablecraft_testkit::fixtures::access::index_tuples::{decimal_fixture, numeric_fixture};
 
 fn metadata(bytes: &[u8]) -> IndexInspection {
     inspect_table_indexes(

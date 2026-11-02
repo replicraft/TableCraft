@@ -14,7 +14,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     genuine_external_lval_continuation as fixtures,
     genuine_external_lval_update::{Case, Group, Update, binary, original_rows},
 };

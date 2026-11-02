@@ -1,6 +1,6 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn mixed_numeric_groups_and_large_integer_sorting_retain_exact_carriers() {
@@ -22,7 +22,7 @@ fn mixed_numeric_groups_and_large_integer_sorting_retain_exact_carriers() {
                 arguments.push("--declared-arithmetic");
             }
 
-            let result = run(&arguments);
+            let result = CLI.run(&arguments);
             assert!(
                 result.status.success(),
                 "{}",
@@ -35,7 +35,7 @@ fn mixed_numeric_groups_and_large_integer_sorting_retain_exact_carriers() {
 
 #[test]
 fn failed_later_operands_do_not_publish_an_ordered_prefix() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT DISTINCT IIf(Id=1,CDec('0.1'),CDbl(1)/0) AS K \

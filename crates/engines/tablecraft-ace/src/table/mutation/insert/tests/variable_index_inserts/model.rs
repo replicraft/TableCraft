@@ -1,8 +1,8 @@
 //! Literal variable records and key bytes, independent of producer profiles.
 use std::collections::BTreeSet;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub(super) const PAGE: usize = 4096;
 

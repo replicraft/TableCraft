@@ -6,7 +6,7 @@ canonical originals: six Int32, five fixed, five IEEE, five variable, two capaci
 four catalog-name and four multiple-table cases. Original source owners and
 previous fifteen-field goldens remain unchanged.
 
-The [new source owner](../../crates/engineering/tablecraft-testkit/src/access/canonical_native17_creation.rs)
+The [new source owner](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_creation.rs)
 reconstructs the catalog declaration, catalog DATA and map container from literal
 seventeen-field laws. It retains native fixed prefix 32, eleven variable slots,
 bf0000 presence, seven distinct Memo/OLE declaration pairs and 22 initial map cells.
@@ -59,7 +59,7 @@ new user scalar write carrier is introduced by this source qualification.
 ## Literal normal-session companion
 
 A separate source owner,
-[canonical_native17_sessions](../../crates/engineering/tablecraft-testkit/src/access/canonical_native17_sessions.rs),
+[canonical_native17_sessions](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_sessions.rs),
 authors the explicit `(1,10)`→INSERT `(2,20)`→DELETE row1 sequence before any
 creator or session producer runs. Its six header 5/6 views reuse the two exact
 original core source images and add four unique complete AFTER images.

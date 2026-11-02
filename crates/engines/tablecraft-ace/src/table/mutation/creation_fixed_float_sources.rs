@@ -8,7 +8,9 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{canonical_fixed_creation, canonical_fixed_float_creation};
+use tablecraft_testkit::fixtures::access::{
+    canonical_fixed_creation, canonical_fixed_float_creation,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(1);
 

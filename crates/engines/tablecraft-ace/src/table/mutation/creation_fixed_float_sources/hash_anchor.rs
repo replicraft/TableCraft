@@ -1,6 +1,6 @@
 //! Ordinary CI anchor for exported IEEE originals, independent of producer code.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_fixed_float_creation;
+use tablecraft_testkit::fixtures::access::canonical_fixed_float_creation;
 
 #[test]
 fn fixed_ieee_sources_remain_bound_to_exported_original_hashes() {

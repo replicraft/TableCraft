@@ -9,8 +9,8 @@ use crate::table::mutation::record_serialization::record as builder;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 const PAGE_BYTES: usize = 4096;
 const DEFINITION_PAGE: usize = 10;

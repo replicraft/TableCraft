@@ -4,7 +4,9 @@ use super::{model, source};
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_ordinary_content::{Source as BaseSource, Table};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_content::{
+    Source as BaseSource, Table,
+};
 
 const PAGE: usize = 4096;
 

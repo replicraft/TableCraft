@@ -8,7 +8,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_indexed_mixed_before_change::{self as model, Case, Recipe},
     canonical_mixed_before_change as original,
 };

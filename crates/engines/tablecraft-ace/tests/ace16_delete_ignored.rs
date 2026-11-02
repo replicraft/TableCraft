@@ -3,14 +3,13 @@
 #[allow(dead_code)]
 #[path = "ace16_encoded_delete_contract/model.rs"]
 mod encoded;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ignored_null_indexes/fixture.rs"]
 mod ignored;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 use std::io::Cursor;
 use tablecraft_ace::{IndexCheckStatus, NativeImage, RowDelete, check_table, read_table};

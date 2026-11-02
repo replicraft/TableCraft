@@ -1,18 +1,19 @@
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/narrow_indexes/fixture.rs"]
 mod narrow_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -34,7 +35,7 @@ impl Database {
     fn query(&self, sql: &str, extra: &[&str]) -> std::process::Output {
         let mut args = vec!["query", "run", sql, "--database", self.0.to_str().unwrap()];
         args.extend(extra);
-        cli_support::run(&args)
+        CLI.run(&args)
     }
 }
 impl Drop for Database {

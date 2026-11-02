@@ -8,7 +8,7 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_variable_capacity_creation, canonical_variable_creation,
 };
 

@@ -1,6 +1,6 @@
 # Wider scalar INSERT source qualification
 
-The [independent source owner](../../crates/engineering/tablecraft-testkit/src/access/canonical_ordinary_wide_insert.rs)
+The [independent source owner](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_ordinary_wide_insert.rs)
 defines eight complete-row INSERT recipes from immutable canonical originals and
 the independently qualified seventeen-field catalog projection. Both header codes
 5 and 6 have BEFORE and literal AFTER views: 32 views in total. Repeated BEFORE

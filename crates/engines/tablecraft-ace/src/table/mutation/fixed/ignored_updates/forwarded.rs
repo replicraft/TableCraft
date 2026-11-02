@@ -3,7 +3,7 @@ use super::{PAGE, assert_image, budget, capture, example, qualify};
 use crate::table::mutation::insert::tests::ignored_index_inserts::model as forwarding;
 use crate::{EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::multiple_indexes as model;
+use tablecraft_testkit::fixtures::access::multiple_indexes as model;
 
 struct Case {
     before: Vec<u8>,

@@ -1,7 +1,7 @@
 //! Literal source and complete-image expectations for public INSERT splitting.
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::insert_seed as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::insert_seed as base;
 
 const PAGE: usize = 4096;
 const TABLE: usize = 10;

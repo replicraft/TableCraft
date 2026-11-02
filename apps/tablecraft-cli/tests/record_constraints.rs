@@ -1,9 +1,10 @@
-mod support;
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture {
@@ -39,7 +40,7 @@ impl Drop for Fixture {
 #[test]
 fn explicit_audit_reports_each_field_and_foreign_key_without_changing_normal_reads() {
     let fixture = Fixture::new();
-    let output = run(&[
+    let output = CLI.run(&[
         "inspect",
         fixture.path(),
         "--table",
@@ -55,7 +56,7 @@ fn explicit_audit_reports_each_field_and_foreign_key_without_changing_normal_rea
     assert!(text.contains("Rows checked\t933\n"));
     assert!(text.contains("TAG_GRP_ID\tChecked\tNot declared\tNot declared\n"));
     assert!(text.contains("TAG_GRP_TBTAG_NME_TB\tChecked: exact key membership\n"));
-    let output = run(&[
+    let output = CLI.run(&[
         "-vv",
         "inspect",
         fixture.path(),
@@ -97,7 +98,7 @@ fn constraint_audits_require_a_table_and_keep_failed_results_buffered() {
             "--constraints",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }

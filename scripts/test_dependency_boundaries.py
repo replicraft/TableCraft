@@ -5,6 +5,13 @@ import unittest
 from check_dependency_boundaries import violations
 
 
+TESTKIT_SUPPORT_TARGETS = (
+    "tablecraft-ace", "tablecraft-access", "tablecraft-query",
+    "tablecraft-db", "tablecraft-model", "tablecraft-schema",
+    "tablecraft-sql", "tablecraft-io",
+)
+
+
 def package(name, directory, dependencies=(), library=True):
     return {"name": name, "id": name, "manifest_path": f"/repo/{directory}/Cargo.toml",
             "targets": [{"kind": ["lib" if library else "bin"]}],
@@ -92,7 +99,7 @@ class BoundaryTests(unittest.TestCase):
                 else:
                     self.assertTrue(any("development-only" in error for error in errors))
 
-    def test_testkit_core_values_are_allowed_but_engine_layouts_are_not(self):
+    def test_testkit_core_values_pass_but_nonoptional_engine_support_is_rejected(self):
         data = deepcopy(self.base)
         helper = package("tablecraft-testkit", "crates/engineering/tablecraft-testkit",
                          ["tablecraft-core"])
@@ -102,6 +109,117 @@ class BoundaryTests(unittest.TestCase):
 
         helper["dependencies"].append({"name": "tablecraft-ace"})
         self.assertTrue(violations(data))
+
+    def _testkit_workspace(self):
+        data = deepcopy(self.base)
+        for name, directory in [
+            ("tablecraft-model", "crates/foundation/model"),
+            ("tablecraft-io", "crates/platform/io"),
+            ("tablecraft-sql", "crates/query/sql"),
+            ("tablecraft-crypto", "crates/platform/crypto"),
+        ]:
+            support = package(name, directory)
+            data["packages"].append(support)
+            data["workspace_members"].append(support["id"])
+        helper = package(
+            "tablecraft-testkit",
+            "crates/engineering/tablecraft-testkit",
+            ["tablecraft-core"],
+        )
+        data["packages"].append(helper)
+        data["workspace_members"].append(helper["id"])
+        return data, helper
+
+    def test_reviewed_testkit_support_accepts_only_optional_normal_edges(self):
+        for target in TESTKIT_SUPPORT_TARGETS:
+            for extra in [
+                {},
+                {"rename": "domain_support", "target": 'cfg(target_os = "windows")'},
+            ]:
+                with self.subTest(target=target, extra=extra):
+                    data, helper = self._testkit_workspace()
+                    helper["dependencies"].append({
+                        "name": target,
+                        "kind": None,
+                        "optional": True,
+                        **extra,
+                    })
+                    self.assertEqual(violations(data), [])
+
+    def test_reviewed_testkit_support_rejects_nonoptional_normal_edges(self):
+        for target in TESTKIT_SUPPORT_TARGETS:
+            for extra in [{}, {"optional": False}]:
+                with self.subTest(target=target, extra=extra):
+                    data, helper = self._testkit_workspace()
+                    helper["dependencies"].append({"name": target, **extra})
+                    self.assertTrue(any(
+                        f"tablecraft-testkit -> {target}" in error
+                        for error in violations(data)
+                    ))
+
+    def test_reviewed_testkit_support_rejects_build_and_dev_edges(self):
+        for target in TESTKIT_SUPPORT_TARGETS:
+            for kind in ["build", "dev"]:
+                with self.subTest(target=target, kind=kind):
+                    data, helper = self._testkit_workspace()
+                    helper["dependencies"].append({
+                        "name": target,
+                        "kind": kind,
+                        "optional": True,
+                        "rename": "domain_support",
+                        "target": 'cfg(target_os = "windows")',
+                    })
+                    self.assertTrue(any(
+                        f"tablecraft-testkit -> {target}" in error
+                        for error in violations(data)
+                    ))
+
+    def test_optional_support_does_not_admit_other_packages_or_apps(self):
+        for target in ["tablecraft-crypto", "tablecraft-cli"]:
+            with self.subTest(target=target):
+                data, helper = self._testkit_workspace()
+                helper["dependencies"].append({
+                    "name": target,
+                    "optional": True,
+                    "rename": "domain_support",
+                    "target": 'cfg(target_os = "windows")',
+                })
+                errors = violations(data)
+                self.assertTrue(any(
+                    f"tablecraft-testkit -> {target}" in error
+                    for error in errors
+                ))
+                if target == "tablecraft-cli":
+                    self.assertTrue(any("application" in error for error in errors))
+
+    def test_query_testkit_incoming_edges_remain_dev_only_even_when_disguised(self):
+        for kind in [None, "build", "dev"]:
+            for optional in [False, True]:
+                for identity in [
+                    {"name": "tablecraft-testkit", "rename": "fixtures"},
+                    {"name": "tablecraft-core", "path": "/repo/crates/engineering/tablecraft-testkit"},
+                ]:
+                    with self.subTest(kind=kind, optional=optional, identity=identity):
+                        data, _ = self._testkit_workspace()
+                        query = next(
+                            candidate for candidate in data["packages"]
+                            if candidate["name"] == "tablecraft-query"
+                        )
+                        query["dependencies"].append({
+                            **identity,
+                            "kind": kind,
+                            "optional": optional,
+                            "target": 'cfg(target_os = "windows")',
+                        })
+                        errors = violations(data)
+                        if kind == "dev":
+                            self.assertEqual(errors, [])
+                        else:
+                            self.assertTrue(any(
+                                "tablecraft-query -> tablecraft-testkit" in error
+                                and "development-only" in error
+                                for error in errors
+                            ))
 
     def test_library_placement_is_checked(self):
         data = deepcopy(self.base)

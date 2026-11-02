@@ -1,9 +1,11 @@
-mod support;
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture {
     path: PathBuf,
@@ -38,7 +40,7 @@ impl Fixture {
     fn query(&self, sql: &str, extra: &[&str]) -> std::process::Output {
         let mut args = vec!["query", "run", "--database", self.path(), sql];
         args.extend(extra);
-        run(&args)
+        CLI.run(&args)
     }
 }
 
@@ -57,7 +59,7 @@ fn ace16_family_cli_reads_use_native_sources_but_keep_writes_blocked() {
         );
         assert_eq!(result.stdout, b"ORDR_NBR\n1\n2\n3\n");
         let output = fixture.path.with_extension("updated.accdb");
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "update",
             "UPDATE ROULETTE_TB SET ORDR_NBR=1",
@@ -178,7 +180,7 @@ fn native_failures_do_not_publish_partial_results_or_sensitive_paths_and_names()
             assert!(!error.contains(private));
         }
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "--database",

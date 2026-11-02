@@ -9,8 +9,8 @@ use tablecraft_core::{
     values::Currency,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;

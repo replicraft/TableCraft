@@ -1,10 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture {
@@ -40,7 +41,7 @@ impl Drop for Fixture {
 #[test]
 fn property_inspection_reports_declarations_and_keeps_opaque_values_explicit() {
     let fixture = Fixture::new();
-    let output = run(&[
+    let output = CLI.run(&[
         "inspect",
         fixture.path(),
         "--table",
@@ -88,11 +89,11 @@ fn failed_property_inspection_is_buffered_and_options_require_a_table() {
             "--properties",
         ],
     ] {
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }
-    let output = run(&[
+    let output = CLI.run(&[
         "-vv",
         "inspect",
         fixture.path(),

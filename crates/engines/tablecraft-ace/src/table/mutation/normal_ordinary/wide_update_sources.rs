@@ -10,7 +10,7 @@ use tablecraft_core::{
     values::{Currency, Value},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_wide_update::{self as fixtures, Case};
+use tablecraft_testkit::fixtures::access::genuine_wide_update::{self as fixtures, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(283);
 

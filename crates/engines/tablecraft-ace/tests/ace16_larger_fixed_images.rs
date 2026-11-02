@@ -1,5 +1,5 @@
 //! SOURCE-only complete large images; no capture-policy or mutation relaxation.
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "complex_schema/fixture.rs"]
 pub mod complex_fixture;
@@ -19,4 +19,4 @@ mod preserved_model;
 mod source;
 
 use support as raw;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;

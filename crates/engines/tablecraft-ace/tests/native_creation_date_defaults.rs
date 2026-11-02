@@ -12,7 +12,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::creation_date_defaults as fixtures;
+use tablecraft_testkit::fixtures::access::creation_date_defaults as fixtures;
 
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
 const LIMITS: [u64; 3] = [1_000_000_000, 1_000_000, 1_000_000_000];

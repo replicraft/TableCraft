@@ -6,7 +6,7 @@ fn registered_saved_join_with_qualified_wildcard_matches_explicit_query() {
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let original = std::fs::read(&path).unwrap();
     let database = path.to_str().unwrap();
-    let saved = cli_support::run(&[
+    let saved = CLI.run(&[
         "query",
         "saved",
         "--database",
@@ -24,7 +24,7 @@ fn registered_saved_join_with_qualified_wildcard_matches_explicit_query() {
             .starts_with(b"SELECT [N].*, [G].[TAG_GRP_NME] FROM ")
     );
 
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "--database",
@@ -37,13 +37,14 @@ fn registered_saved_join_with_qualified_wildcard_matches_explicit_query() {
         "{}",
         String::from_utf8_lossy(&result.stderr)
     );
-    let explicit = cli_support::run(&[
-        "query",
-        "run",
-        "SELECT N.*,G.TAG_GRP_NME FROM TAG_NME_TB AS N INNER JOIN TAG_GRP_TB AS G ON N.TAG_GRP_ID=G.TAG_GRP_ID",
-        "--database",
-        database,
-    ]);
+    let explicit = CLI.run(&[
+            "query",
+            "run",
+            "SELECT N.*,G.TAG_GRP_NME FROM TAG_NME_TB AS N INNER JOIN TAG_GRP_TB AS G ON N.TAG_GRP_ID=G.TAG_GRP_ID",
+            "--database",
+            database,
+        ],
+    );
     assert!(
         explicit.status.success(),
         "{}",
@@ -51,7 +52,7 @@ fn registered_saved_join_with_qualified_wildcard_matches_explicit_query() {
     );
     assert_eq!(result.stdout, explicit.stdout);
     assert!(!result.stdout.is_empty());
-    let limited = cli_support::run(&[
+    let limited = CLI.run(&[
         "query",
         "run",
         "--database",

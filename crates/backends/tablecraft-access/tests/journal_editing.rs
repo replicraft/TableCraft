@@ -9,7 +9,7 @@ use tablecraft_io::{
     journal::{DurableStorage, RecoveryOutcome, inspect_v1},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 // Independent fixture location; no production layout constant constructs this.
 const SECOND_ROW_SCORE_OFFSET: usize = 12 * 4096 + 4080;

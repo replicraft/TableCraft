@@ -7,7 +7,9 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_fixed_sql_before_change::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_fixed_sql_before_change::{
+    self as model, Case,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(114);
 

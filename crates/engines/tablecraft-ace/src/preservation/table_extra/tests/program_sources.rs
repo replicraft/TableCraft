@@ -4,7 +4,7 @@ use super::super::{
     program_fixtures::{Outcome, sources},
 };
 use super::budget;
-use tablecraft_testkit::access::wide_properties as fixture;
+use tablecraft_testkit::fixtures::access::wide_properties as fixture;
 
 #[test]
 fn qualify_documented_desktop_macro_program_sources_before_inspection() {

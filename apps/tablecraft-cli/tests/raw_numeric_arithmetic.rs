@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn raw_numeric_nulls_and_eager_failures_use_the_same_profile_in_both_hosts() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT ChrW(55296)-NULL AS S,NULL*ChrB(65) AS M,ChrW(55296)/NULL AS D,ChrB(65)\\NULL AS Q,ChrW(55296) Mod NULL AS R,NULL^ChrW(55296) AS P",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT ChrW(55296)-NULL AS S,NULL*ChrB(65) AS M,ChrW(55296)/NULL AS D,ChrB(65)\\NULL AS Q,ChrW(55296) Mod NULL AS R,NULL^ChrW(55296) AS P",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -25,7 +26,7 @@ fn raw_numeric_nulls_and_eager_failures_use_the_same_profile_in_both_hosts() {
             "ChrW(55296)*1",
             "LeftB('12',4)/2",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

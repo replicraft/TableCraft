@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,13 +14,14 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn all_three_formats_optional_slots_and_overrides_work_in_both_paths() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT FormatNumber(1234.5) AS N,FormatPercent(0.125) AS P,FormatCurrency(-1234.5) AS C,FormatNumber(0.5,2,False) AS Z,FormatNumber(1234.5,,,,False) AS G,FormatNumber(-1.25,,,-1,) AS B",
-            "--number-format",
-            "en-us",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT FormatNumber(1234.5) AS N,FormatPercent(0.125) AS P,FormatCurrency(-1234.5) AS C,FormatNumber(0.5,2,False) AS Z,FormatNumber(1234.5,,,,False) AS G,FormatNumber(-1.25,,,-1,) AS B",
+                "--number-format",
+                "en-us",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -38,7 +41,7 @@ fn all_three_formats_optional_slots_and_overrides_work_in_both_paths() {
                 ]
             ]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT FormatNumber(1234.5),FormatCurrency('1.234,50 €'),FormatPercent(0.125,1)",
@@ -72,7 +75,7 @@ fn invalid_call_shapes_options_and_policies_publish_nothing() {
             "FormatNumber(NULL,1/0)",
             "IIf(False,FormatNumber(1/0),0)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -93,7 +96,7 @@ fn invalid_call_shapes_options_and_policies_publish_nothing() {
             if let Some(format) = format {
                 arguments.extend(["--number-format", format]);
             }
-            let result = run(&arguments);
+            let result = CLI.run(&arguments);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }

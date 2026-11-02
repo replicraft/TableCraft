@@ -1,6 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -12,11 +11,12 @@ mod linked_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
-use cli_support::run;
 use std::{fs, io::Write, path::PathBuf};
 use tempfile::TempDir;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const PAGE_BYTES: usize = 4096;
 const CHILD_DATA_PAGE: usize = 22;
@@ -75,7 +75,7 @@ fn native_inner_and_cross_join_lists_keep_parent_rows_nulls_and_duplicate_member
                 "A\tB\tL\tR\n1\t2\t[101, 100, 101, NULL]\t[200]\n",
             ),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -93,7 +93,7 @@ fn native_inner_and_cross_join_lists_keep_parent_rows_nulls_and_duplicate_member
         }
 
         let nullable = Database::new(join_fixture::with_null_parent(code));
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT a.Id AS A,b.Id AS B,a.Score AS L,b.Score AS R FROM Items a \
@@ -124,7 +124,7 @@ fn explicit_link_and_external_join_routes_return_their_own_complete_lists() {
     ));
     let linked = Database::new(join_fixture::database(6, 0));
     let external = Database::new(join_fixture::database(6, 1000));
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT a.Id AS A,b.Id AS B,a.Score AS L,b.Score AS R FROM Linked a \
@@ -185,7 +185,7 @@ fn selected_corruption_eager_errors_and_limits_publish_no_join_prefix() {
             "--multivalues",
         ];
         arguments.extend(flags);
-        let result = run(&arguments);
+        let result = CLI.run(&arguments);
         assert!(!result.status.success(), "{sql}");
         assert!(result.stdout.is_empty(), "{sql}");
         assert!(
@@ -197,7 +197,7 @@ fn selected_corruption_eager_errors_and_limits_publish_no_join_prefix() {
     let mut bad = join_fixture::database(6, 0);
     bad[CHILD_DATA_PAGE * PAGE_BYTES] = 0;
     let corrupt = Database::new(bad);
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT a.Score,b.Score FROM Items a ,Items b",

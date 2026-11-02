@@ -7,7 +7,7 @@ use tablecraft_ace::{EditError, RecoverableEditError, RowDelete, WriteBlocker, r
 #[ignore = "requires four independent native/SDK-qualified retained NODE source images"]
 fn emptying_original_children_matches_separately_qualified_retirement_sources() {
     use sha2::{Digest, Sha256};
-    use tablecraft_testkit::access::genuine_node_retirement as retirement;
+    use tablecraft_testkit::fixtures::access::genuine_node_retirement as retirement;
 
     let expected = retirement::load_all(|raw, wanted| {
         let actual = Sha256::digest(raw)

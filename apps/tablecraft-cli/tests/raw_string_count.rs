@@ -1,14 +1,15 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn count_consumes_raw_strings_and_buffers_failures() {
-    let result = run(&[
-        "query",
-        "run",
-        "SELECT Count(ChrW(N)) AS W,Count(ChrB(65)) AS B,Count(CStr(LeftB(ChrW(N),1))) AS C,Count(ChrW(N)+NULL) AS Z FROM (SELECT 55296 AS N UNION ALL SELECT 57343) AS Q",
-    ]);
+    let result = CLI.run(&[
+            "query",
+            "run",
+            "SELECT Count(ChrW(N)) AS W,Count(ChrB(65)) AS B,Count(CStr(LeftB(ChrW(N),1))) AS C,Count(ChrW(N)+NULL) AS Z FROM (SELECT 55296 AS N UNION ALL SELECT 57343) AS Q",
+        ],
+    );
     assert!(
         result.status.success(),
         "{}",
@@ -22,7 +23,7 @@ fn count_consumes_raw_strings_and_buffers_failures() {
         "CStr(NULL)",
         "ChrW(55296)+(1/0)",
     ] {
-        let result = run(&["query", "run", &format!("SELECT 1,Count({expression})")]);
+        let result = CLI.run(&["query", "run", &format!("SELECT 1,Count({expression})")]);
         assert_eq!(result.status.code(), Some(2), "{expression}");
         assert!(result.stdout.is_empty(), "{expression}");
     }

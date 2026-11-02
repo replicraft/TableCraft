@@ -9,7 +9,9 @@ use tablecraft_ace::{
     RecoverableEditError, qualify_native_update_recovery,
 };
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_ordinary_targets::{self as sources, Case, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_ordinary_targets::{
+    self as sources, Case, Recipe,
+};
 
 fn hash(bytes: &[u8]) -> String {
     Sha256::digest(bytes)

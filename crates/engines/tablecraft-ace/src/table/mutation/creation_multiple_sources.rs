@@ -9,7 +9,7 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{canonical_creation, canonical_multiple_creation};
+use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_multiple_creation};
 
 const SCOPE: CatalogScope = CatalogScope::new(1);
 

@@ -1,9 +1,9 @@
 //! Independent literal 451-entry child and complete INDEX-phase image.
 //! DATA bodies and counters belong to the caller and remain untouched here.
 use super::*;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::map_growth::model::declaration_end;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::map_growth::model::declaration_end;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 const ROW_START: usize = 4027;

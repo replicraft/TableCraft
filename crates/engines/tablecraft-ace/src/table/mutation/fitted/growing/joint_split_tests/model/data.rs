@@ -1,6 +1,6 @@
 //! Literal DATA slots, ordinary maps and stable logical-root forwarding.
 use super::{Family, PAGE, Row};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(crate) fn data_page(rows: &[(u16, Vec<u8>)]) -> Vec<u8> {
     let mut page = raw::data_page(10, rows);

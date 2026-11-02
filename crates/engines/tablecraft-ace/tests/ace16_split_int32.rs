@@ -1,10 +1,7 @@
 #![cfg(feature = "ace16-write-preview")]
 
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
-use tablecraft_testkit::access as support;
-
 #[path = "ace16_split_int32/model.rs"]
 mod model;
 #[path = "ace16_split_int32/values.rs"]

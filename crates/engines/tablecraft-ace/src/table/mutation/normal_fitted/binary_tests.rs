@@ -13,7 +13,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_binary_update::{self as source, Case};
+use tablecraft_testkit::fixtures::access::genuine_binary_update::{self as source, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(217);
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
@@ -374,7 +374,7 @@ fn binary_update_empty_and_nonempty_requests_reject_readable_unknown_and_noncano
             .unwrap();
             assert_eq!(
                 rows.rows(),
-                tablecraft_testkit::access::genuine_binary_indexed::original_rows()
+                tablecraft_testkit::fixtures::access::genuine_binary_indexed::original_rows()
             );
             for empty in [false, true] {
                 let groups = if empty {

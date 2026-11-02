@@ -1,15 +1,10 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
-
-use fixture as base;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 #[path = "ace16_delete_tree_contract/boundaries.rs"]
 mod boundaries;

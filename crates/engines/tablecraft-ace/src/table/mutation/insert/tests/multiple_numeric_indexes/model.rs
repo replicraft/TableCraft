@@ -2,8 +2,8 @@
 use super::super::model as original;
 use std::collections::BTreeSet;
 use tablecraft_core::values::{Currency, Value};
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 const PAGE: usize = 4096;
 const GROUP_HEADER: usize = 10 * PAGE + 112;

@@ -6,7 +6,7 @@ use tablecraft_ace::{
     EditError, InspectError, NativeImage, RecoverableEditError, RecoverableNativeCompleteInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::genuine_compound_root_split::Case;
+use tablecraft_testkit::fixtures::access::genuine_compound_root_split::Case;
 
 fn plan(
     case: &Case,

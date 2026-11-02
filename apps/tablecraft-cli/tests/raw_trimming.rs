@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn trimming_retains_raw_results_for_observation_and_keeps_output_buffered() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT LenB(LTrim(' '&ChrW(55296)&' ')) AS L,LenB(RTrim(' '&ChrW(55296)&' ')) AS R,LenB(Trim(' '&ChrW(55296)&' ')) AS B,Trim(NULL) AS N",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT LenB(LTrim(' '&ChrW(55296)&' ')) AS L,LenB(RTrim(' '&ChrW(55296)&' ')) AS R,LenB(Trim(' '&ChrW(55296)&' ')) AS B,Trim(NULL) AS N",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -21,7 +22,7 @@ fn trimming_retains_raw_results_for_observation_and_keeps_output_buffered() {
             "SELECT LenB(Trim(ChrB(32)))",
             "SELECT LenB(Trim(ChrW(55296))),1/0",
         ] {
-            let result = run(&["query", command, sql]);
+            let result = CLI.run(&["query", command, sql]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty(), "{sql}");
         }

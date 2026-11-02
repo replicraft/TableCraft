@@ -13,7 +13,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_inline_lval_update::{self as fixtures, Case};
+use tablecraft_testkit::fixtures::access::genuine_inline_lval_update::{self as fixtures, Case};
 
 fn cases() -> Vec<Case> {
     fixtures::load_all(|raw, expected| {

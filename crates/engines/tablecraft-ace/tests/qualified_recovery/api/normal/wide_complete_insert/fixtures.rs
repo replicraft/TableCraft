@@ -1,7 +1,7 @@
 //! Source-only cases and independent original-request framing.
 use sha2::{Digest, Sha256};
 use tablecraft_ace::{NativeCompleteInsertIntent, RowInsert};
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::{self as sources, Case};
 
 pub(super) struct View {
     pub case: Case,

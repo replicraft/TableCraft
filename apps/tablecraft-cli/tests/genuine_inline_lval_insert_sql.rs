@@ -2,7 +2,7 @@
 
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_inline_lval_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_inline_lval_insert as sources;
 
 fn verify(raw: &[u8], expected: &str) {
     let actual = Sha256::digest(raw)

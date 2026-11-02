@@ -4,8 +4,8 @@ use std::fs;
 use tablecraft_ace::{CreateColumn, CreateDatabaseError};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_creation as fixed, canonical_fixed_float_creation as ieee,
 };
 

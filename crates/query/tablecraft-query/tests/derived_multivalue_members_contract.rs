@@ -5,7 +5,6 @@ mod boundaries;
 mod origins;
 #[path = "derived_multivalue_members_contract/policies.rs"]
 mod policies;
-#[path = "derived_multivalue_members_contract/support.rs"]
-mod support;
+use tablecraft_testkit::support::query::multivalue as support;
 #[path = "derived_multivalue_members_contract/wide.rs"]
 mod wide;

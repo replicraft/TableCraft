@@ -2,7 +2,7 @@
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_binary_update as source;
+use tablecraft_testkit::fixtures::access::genuine_binary_update as source;
 
 #[test]
 #[ignore = "requires 16 qualified fitting Binary UPDATE source views"]

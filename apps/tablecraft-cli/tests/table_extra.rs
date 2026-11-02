@@ -1,10 +1,9 @@
 #[path = "table_extra/program.rs"]
 mod program;
 
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access::wide_properties as extra_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::wide_properties as extra_fixture;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/object_payloads/fixture.rs"]
 mod payload_fixture;
 
@@ -12,7 +11,9 @@ use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -30,7 +31,7 @@ fn later_invalid_xml_does_not_publish_an_earlier_valid_envelope() {
         ),
     ]);
     let database = Database::new(local_table(payload_fixture::inline(&raw), false));
-    let output = cli_support::run(&[
+    let output = CLI.run(&[
         "inspect",
         database.path(),
         "--table",
@@ -50,7 +51,7 @@ fn names_only_and_empty_groups_report_no_xml_inspected_without_absence_claims() 
         blocks.extend(groups);
         let raw = extra_fixture::bag(&blocks);
         let database = Database::new(local_table(payload_fixture::inline(&raw), false));
-        let output = cli_support::run(&[
+        let output = CLI.run(&[
             "inspect",
             database.path(),
             "--table",
@@ -101,7 +102,7 @@ fn macro_xml_requires_explicit_selection_and_reports_envelopes_without_bodies() 
     ]);
     let database = Database::new(local_table(payload_fixture::inline(&raw), false));
     let base = ["inspect", database.path(), "--table", "Items", "--extra"];
-    let ordinary = cli_support::run(&base);
+    let ordinary = CLI.run(&base);
     assert!(ordinary.status.success());
     let text = String::from_utf8(ordinary.stdout).unwrap();
     assert!(!text.contains("BeforeChange"));
@@ -109,7 +110,7 @@ fn macro_xml_requires_explicit_selection_and_reports_envelopes_without_bodies() 
 
     let mut arguments = base.to_vec();
     arguments.push("--macro-xml");
-    let output = cli_support::run(&arguments);
+    let output = CLI.run(&arguments);
     assert!(output.status.success(), "{:?}", output.stderr);
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
@@ -127,7 +128,7 @@ fn malformed_or_unrecognized_macro_xml_keeps_stdout_empty() {
         payload_fixture::inline(&extra_fixture::golden()),
         false,
     ));
-    let output = cli_support::run(&[
+    let output = CLI.run(&[
         "inspect",
         database.path(),
         "--table",
@@ -140,7 +141,7 @@ fn malformed_or_unrecognized_macro_xml_keeps_stdout_empty() {
     assert!(!output.stderr.is_empty());
 
     let opaque = Database::new(local_table(payload_fixture::inline(b"future"), false));
-    let output = cli_support::run(&[
+    let output = CLI.run(&[
         "inspect",
         opaque.path(),
         "--table",
@@ -170,7 +171,7 @@ fn malformed_or_unrecognized_macro_xml_keeps_stdout_empty() {
             "--indexes",
         ],
     ] {
-        let output = cli_support::run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
         let stderr = String::from_utf8(output.stderr).unwrap();
@@ -238,7 +239,7 @@ fn local_table(payload: Vec<u8>, duplicate_name: bool) -> Vec<u8> {
 fn extra_inspection_is_explicit_buffered_and_does_not_publish_text() {
     let bytes = local_table(payload_fixture::inline(&extra_fixture::golden()), false);
     let database = Database::new(bytes);
-    let output = cli_support::run(&["inspect", database.path(), "--table", "Items", "--extra"]);
+    let output = CLI.run(&["inspect", database.path(), "--table", "Items", "--extra"]);
     assert!(
         output.status.success(),
         "{}",
@@ -277,7 +278,7 @@ fn extra_inspection_is_explicit_buffered_and_does_not_publish_text() {
             "1",
         ],
     ] {
-        let output = cli_support::run(&arguments);
+        let output = CLI.run(&arguments);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }
@@ -286,7 +287,7 @@ fn extra_inspection_is_explicit_buffered_and_does_not_publish_text() {
 #[test]
 fn extra_mode_rejects_every_other_mode_before_opening_a_database() {
     let missing = "tablecraft-extra-missing-database.accdb";
-    let without_table = cli_support::run(&["inspect", missing, "--extra"]);
+    let without_table = CLI.run(&["inspect", missing, "--extra"]);
     assert_eq!(without_table.status.code(), Some(2));
     assert!(without_table.stdout.is_empty());
     assert!(String::from_utf8_lossy(&without_table.stderr).contains("--table"));
@@ -307,7 +308,7 @@ fn extra_mode_rejects_every_other_mode_before_opening_a_database() {
     ] {
         let mut args = vec!["inspect", missing, "--table", "Items", "--extra"];
         args.extend(other);
-        let output = cli_support::run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(String::from_utf8_lossy(&output.stderr).contains("cannot be used"));
@@ -317,7 +318,7 @@ fn extra_mode_rejects_every_other_mode_before_opening_a_database() {
 #[test]
 fn ambiguous_names_refuse_and_external_extra_bytes_remain_opaque() {
     let database = Database::new(local_table(payload_fixture::inline(&[]), true));
-    let output = cli_support::run(&["inspect", database.path(), "--table", "Items", "--extra"]);
+    let output = CLI.run(&["inspect", database.path(), "--table", "Items", "--extra"]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
     assert!(String::from_utf8_lossy(&output.stderr).contains("ambiguous"));
@@ -326,7 +327,7 @@ fn ambiguous_names_refuse_and_external_extra_bytes_remain_opaque() {
     let mut bytes = local_table(payload_fixture::external(&raw), false);
     bytes[13 * 4096..14 * 4096].copy_from_slice(&payload_fixture::lval(&raw));
     let database = Database::new(bytes);
-    let output = cli_support::run(&["inspect", database.path(), "--table", "Items", "--extra"]);
+    let output = CLI.run(&["inspect", database.path(), "--table", "Items", "--extra"]);
     assert!(
         output.status.success(),
         "{}",
@@ -341,7 +342,7 @@ fn ambiguous_names_refuse_and_external_extra_bytes_remain_opaque() {
 #[test]
 fn narrow_properties_keep_their_existing_explicit_mode() {
     let database = Database::new(base::with_rule("Description", "existing narrow text"));
-    let output = cli_support::run(&[
+    let output = CLI.run(&[
         "inspect",
         database.path(),
         "--table",

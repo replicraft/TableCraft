@@ -1,6 +1,6 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod model;
@@ -15,7 +15,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 fn update(row: usize, before: i32, after: i32) -> FixedScalarUpdate {
     FixedScalarUpdate::new(row, Value::Int32(before), Value::Int32(after))

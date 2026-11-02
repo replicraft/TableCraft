@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn explicit_general_searches_and_replacements_support_unequal_length_matches() {
@@ -29,7 +30,7 @@ fn explicit_general_searches_and_replacements_support_unequal_length_matches() {
                 "Empty\tNullValue\n1\tNULL\n",
             ),
         ] {
-            let output = run(&["query", "run", sql, "--collation", policy]);
+            let output = CLI.run(&["query", "run", sql, "--collation", policy]);
             assert!(
                 output.status.success(),
                 "{}",
@@ -43,13 +44,14 @@ fn explicit_general_searches_and_replacements_support_unequal_length_matches() {
 #[test]
 fn general_search_keeps_mode_defaults_and_payload_free_failures() {
     for policy in ["general-legacy", "general-2010"] {
-        let output = run(&[
-            "query",
-            "run",
-            "SELECT InStrRev('Straße','ss') AS ReverseBinary,Replace('Straße','ss','X') AS ReplaceBinary",
-            "--collation",
-            policy,
-        ]);
+        let output = CLI.run(&[
+                "query",
+                "run",
+                "SELECT InStrRev('Straße','ss') AS ReverseBinary,Replace('Straße','ss','X') AS ReplaceBinary",
+                "--collation",
+                policy,
+            ],
+        );
         assert!(output.status.success());
         assert_eq!(
             output.stdout,
@@ -59,7 +61,7 @@ fn general_search_keeps_mode_defaults_and_payload_free_failures() {
             "SELECT InStr(1,'private-text','A',1) AS R",
             "SELECT Replace('private-text','A','x',1,-1,1) AS R",
         ] {
-            let output = run(&["query", "run", sql, "--collation", policy]);
+            let output = CLI.run(&["query", "run", sql, "--collation", policy]);
             assert!(!output.status.success());
             assert!(output.stdout.is_empty());
             assert!(!String::from_utf8_lossy(&output.stderr).contains("private-text"));
@@ -86,7 +88,7 @@ fn cumulative_search_limits_discard_all_prior_rows() {
             "PARAMETERS P TEXT,Q TEXT; SELECT q.ID,InStr(1,P,Q,2) AS R FROM ({source}) AS q"
         );
         for policy in ["general-legacy", "general-2010"] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 &sql,

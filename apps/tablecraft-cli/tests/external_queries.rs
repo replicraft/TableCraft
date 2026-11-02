@@ -1,24 +1,24 @@
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod agile_fixture;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as target_fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 
 #[path = "external_queries/per_table.rs"]
 mod per_table;
 
-use cli_support::run;
 use std::{
     fs,
     io::Write,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const PAGE_BYTES: usize = 4096;
 const ITEMS_PAGE: usize = 12;
@@ -83,7 +83,7 @@ fn exact_tokens_select_explicit_targets_across_priority_profiles() {
     for profile in [1, 2, 5, 6] {
         let root = Database::new(image(profile, 10));
         let target = Database::new(image(profile, 100));
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Score FROM Items IN 'opaque-token' WHERE Id >= 2 ORDER BY Id",
@@ -108,16 +108,17 @@ fn exact_tokens_select_explicit_targets_across_priority_profiles() {
 fn nested_selects_retain_their_own_explicit_source_scope() {
     let root = Database::new(image(6, 10));
     let target = Database::new(image(6, 100));
-    let output = run(&[
-        "query",
-        "run",
-        "SELECT x.Id,x.Score,(SELECT Sum(Score) FROM Items) AS LocalTotal FROM Items AS x IN 'remote' ORDER BY x.Id",
-        "--database",
-        root.path(),
-        "--external",
-        "remote",
-        target.path(),
-    ]);
+    let output = CLI.run(&[
+            "query",
+            "run",
+            "SELECT x.Id,x.Score,(SELECT Sum(Score) FROM Items) AS LocalTotal FROM Items AS x IN 'remote' ORDER BY x.Id",
+            "--database",
+            root.path(),
+            "--external",
+            "remote",
+            target.path(),
+        ],
+    );
     assert!(
         output.status.success(),
         "{}",
@@ -128,16 +129,17 @@ fn nested_selects_retain_their_own_explicit_source_scope() {
         b"Id\tScore\tLocalTotal\n1\t100\t60\n2\t200\t60\n3\t300\t60\n"
     );
 
-    let output = run(&[
-        "query",
-        "run",
-        "SELECT Id,(SELECT Sum(Score) FROM Items IN 'remote') AS RemoteTotal FROM Items ORDER BY Id",
-        "--database",
-        root.path(),
-        "--external",
-        "remote",
-        target.path(),
-    ]);
+    let output = CLI.run(&[
+            "query",
+            "run",
+            "SELECT Id,(SELECT Sum(Score) FROM Items IN 'remote') AS RemoteTotal FROM Items ORDER BY Id",
+            "--database",
+            root.path(),
+            "--external",
+            "remote",
+            target.path(),
+        ],
+    );
     assert!(
         output.status.success(),
         "{}",
@@ -156,19 +158,20 @@ fn linked_root_and_external_target_compose_without_namespace_collisions() {
     ));
     let linked = Database::new(image(6, 10));
     let external = Database::new(image(6, 100));
-    let output = run(&[
-        "query",
-        "run",
-        "SELECT l.Id,l.Score+r.Score AS Total FROM Linked AS l INNER JOIN (SELECT Id,Score FROM Items IN 'remote') AS r ON l.Id=r.Id ORDER BY l.Id",
-        "--database",
-        root.path(),
-        "--link",
-        "Linked",
-        linked.path(),
-        "--external",
-        "remote",
-        external.path(),
-    ]);
+    let output = CLI.run(&[
+            "query",
+            "run",
+            "SELECT l.Id,l.Score+r.Score AS Total FROM Linked AS l INNER JOIN (SELECT Id,Score FROM Items IN 'remote') AS r ON l.Id=r.Id ORDER BY l.Id",
+            "--database",
+            root.path(),
+            "--link",
+            "Linked",
+            linked.path(),
+            "--external",
+            "remote",
+            external.path(),
+        ],
+    );
     assert!(
         output.status.success(),
         "{}",
@@ -246,7 +249,7 @@ fn unbound_mismatched_duplicate_and_provider_tokens_publish_nothing() {
     for arguments in cases {
         let mut command = vec!["query", "run"];
         command.extend(arguments);
-        let output = run(&command);
+        let output = CLI.run(&command);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -272,7 +275,7 @@ fn encrypted_external_targets_use_the_explicit_password() {
     ];
     let mut correct = arguments.to_vec();
     correct.extend(["-p", "public external password"]);
-    let output = run(&correct);
+    let output = CLI.run(&correct);
     assert!(
         output.status.success(),
         "{}",
@@ -283,7 +286,7 @@ fn encrypted_external_targets_use_the_explicit_password() {
     let mut wrong = arguments.to_vec();
     wrong.extend(["-p", "wrong external password"]);
     for arguments in [arguments.to_vec(), wrong] {
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
         assert!(
@@ -305,7 +308,7 @@ fn external_index_selection_reaches_only_the_named_target_and_never_falls_back()
         ("MissingIndex", false),
         ("Number", true),
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Count(*) AS N FROM ROULETTE_TB IN 'remote'",
@@ -354,7 +357,7 @@ fn external_sources_share_native_limits_and_preserve_buffered_failure() {
             target.path(),
         ];
         arguments.extend(limits);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -362,7 +365,7 @@ fn external_sources_share_native_limits_and_preserve_buffered_failure() {
 
 #[test]
 fn external_help_and_argument_dependencies_are_explicit() {
-    let help = run(&["query", "run", "--help"]);
+    let help = CLI.run(&["query", "run", "--help"]);
     assert!(help.status.success());
     let help = String::from_utf8(help.stdout).unwrap();
     assert!(help.contains("--external <DATABASE_TOKEN> <PATH>"));
@@ -400,7 +403,7 @@ fn external_help_and_argument_dependencies_are_explicit() {
             "missing.accdb",
         ],
     ] {
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }

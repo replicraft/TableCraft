@@ -1,7 +1,7 @@
 //! Real INDEX continuations. DATA bodies/counters remain the caller's proof;
 //! these controls never publish a complete candidate with unstaged DATA bytes.
 use super::*;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 fn wire(key: &KeyRef) -> Vec<u8> {
     let value = i32::try_from(key.key.unwrap()).unwrap();

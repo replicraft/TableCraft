@@ -8,7 +8,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_creation as fixed,
     canonical_mixed_before_change::{self as model, Case, Recipe},
     canonical_variable_creation as variable,

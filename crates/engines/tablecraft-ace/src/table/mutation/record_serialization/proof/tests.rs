@@ -9,7 +9,7 @@ use crate::table::record_layout;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 10_000, 1_000_000)

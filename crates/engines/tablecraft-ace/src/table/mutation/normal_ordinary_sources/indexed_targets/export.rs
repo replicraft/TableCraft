@@ -3,7 +3,7 @@ use super::super::indexed_sources::export::expected;
 use super::model::{self, Case, Recipe, Refusal};
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
-use tablecraft_testkit::access::canonical_ordinary_indexed::{self as originals, Source};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{self as originals, Source};
 
 const PAGE: usize = 4096;
 

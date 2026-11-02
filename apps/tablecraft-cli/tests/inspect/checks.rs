@@ -1,4 +1,4 @@
-use super::{Fixture, run};
+use super::{CLI, Fixture};
 
 fn bytes() -> Vec<u8> {
     std::fs::read(
@@ -11,7 +11,7 @@ fn bytes() -> Vec<u8> {
 fn completed_check_reports_qualified_coverage_and_preserves_original_bytes() {
     let original = bytes();
     let fixture = Fixture::new(&original);
-    let output = run(&[
+    let output = CLI.run(&[
         "inspect",
         fixture.path(),
         "--table",
@@ -37,7 +37,7 @@ fn completed_check_reports_qualified_coverage_and_preserves_original_bytes() {
             "--indexes",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }
@@ -47,7 +47,7 @@ fn failed_check_has_no_partial_stdout_and_diagnostics_omit_payloads() {
     let mut corrupt = bytes();
     corrupt[731 * 4096] = 0;
     let fixture = Fixture::new(&corrupt);
-    let output = run(&[
+    let output = CLI.run(&[
         "-vv",
         "inspect",
         fixture.path(),
@@ -81,19 +81,19 @@ fn explicit_inspection_work_limits_preserve_independent_byte_limits() {
         "ROULETTE_TB",
         "--check",
     ];
-    let reference = run(&base);
+    let reference = CLI.run(&base);
     assert!(reference.status.success());
 
     let mut low = base.to_vec();
     low.extend(["--native-steps", "1"]);
-    let refused = run(&low);
+    let refused = CLI.run(&low);
     assert_eq!(refused.status.code(), Some(2));
     assert!(refused.stdout.is_empty());
     assert!(String::from_utf8_lossy(&refused.stderr).contains("Steps resource limit"));
 
     let mut enough = base.to_vec();
     enough.extend(["--native-steps", "10000000"]);
-    let completed = run(&enough);
+    let completed = CLI.run(&enough);
     assert!(
         completed.status.success(),
         "{}",
@@ -103,7 +103,7 @@ fn explicit_inspection_work_limits_preserve_independent_byte_limits() {
     assert_eq!(completed.stdout, reference.stdout);
 
     enough.extend(["--native-bytes", "1"]);
-    let byte_refusal = run(&enough);
+    let byte_refusal = CLI.run(&enough);
     assert_eq!(byte_refusal.status.code(), Some(2));
     assert!(byte_refusal.stdout.is_empty());
     assert!(String::from_utf8_lossy(&byte_refusal.stderr).contains("Bytes resource limit"));
@@ -111,7 +111,7 @@ fn explicit_inspection_work_limits_preserve_independent_byte_limits() {
     for value in ["0", "100000001"] {
         let mut invalid = base.to_vec();
         invalid.extend(["--native-steps", value]);
-        let output = run(&invalid);
+        let output = CLI.run(&invalid);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }

@@ -8,7 +8,7 @@ use tablecraft_access::engineering::{self, EngineeringRequest, sql_index};
 use tablecraft_ace::SecondaryIndexCreate;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::secondary_index as model;
+use tablecraft_testkit::fixtures::access::secondary_index as model;
 
 #[test]
 fn qualify_create_secondary_index_host_sources_before_consumer() {

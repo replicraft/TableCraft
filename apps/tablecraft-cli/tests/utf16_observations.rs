@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Len(Left('😀',1)) AS L,AscW(Mid(ChrW(55296),1,1)) AS W,LenB(Right('😀',1)) AS B,VarType(Left('😀',1)) AS T,AscW(Right('😀',1)) AS Tail",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Len(Left('😀',1)) AS L,AscW(Mid(ChrW(55296),1,1)) AS W,LenB(Right('😀',1)) AS B,VarType(Left('😀',1)) AS T,AscW(Right('😀',1)) AS Tail",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -17,11 +18,12 @@ fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
         );
         assert_eq!(result.stdout, b"L\tW\tB\tT\tTail\n1\t-10240\t2\t8\t-8704\n");
 
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Mid(Left('A😀Z',3),2,2) AS Face,Left(ChrW(55296),0) AS Empty,Right(Mid('A😀Z',2,3),1) AS Tail",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Mid(Left('A😀Z',3),2,2) AS Face,Left(ChrW(55296),0) AS Empty,Right(Mid('A😀Z',2,3),1) AS Tail",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -45,7 +47,7 @@ fn unicode_intermediates_remain_strings_inside_calls_and_strict_at_stdout() {
             "Left('😀',1)",
             "Len(Left(NULL,1/0))",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

@@ -1,6 +1,6 @@
 //! Exact independent source/fresh INDEX framing and inactive-byte retention.
 use super::PAGE;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(crate) fn index_page(
     before: Option<&[u8]>,

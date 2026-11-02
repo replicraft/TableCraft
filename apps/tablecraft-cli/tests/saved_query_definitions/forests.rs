@@ -53,7 +53,7 @@ fn saved_forests_run_explicitly_and_as_named_sources_with_buffered_failures() {
         let mut args = vec!["query", "run"];
         args.extend(query);
         args.extend(["--database", db.path()]);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -65,13 +65,13 @@ fn saved_forests_run_explicitly_and_as_named_sources_with_buffered_failures() {
         );
     }
     let db = Database::new(saved("NeverRunMe(b.Id)"));
-    let inspect = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+    let inspect = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
     assert!(inspect.status.success());
     for query in [vec!["--saved", "Saved"], vec!["SELECT * FROM Saved"]] {
         let mut args = vec!["query", "run"];
         args.extend(query);
         args.extend(["--database", db.path()]);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }

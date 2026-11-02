@@ -1,12 +1,10 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ace16_delete_trees/fixture.rs"]
 mod fixture;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 use std::io::Cursor;
 use tablecraft_ace::{

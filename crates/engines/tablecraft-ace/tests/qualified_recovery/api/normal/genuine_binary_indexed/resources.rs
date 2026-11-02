@@ -6,7 +6,7 @@ use tablecraft_ace::{
     EditError, InspectError, NativeImage, RecoverableEditError, RecoverableNativeCompleteInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::genuine_binary_indexed::Case;
+use tablecraft_testkit::fixtures::access::genuine_binary_indexed::Case;
 
 fn plan(
     case: &Case,

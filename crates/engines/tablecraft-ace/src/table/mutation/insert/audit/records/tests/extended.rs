@@ -2,7 +2,7 @@
 use super::{FIELD_BYTES, FIELDS, TABLE, budget, qualify, reconstruct, schema, source};
 use crate::{EditError, WriteBlocker};
 use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Value};
-use tablecraft_testkit::access as literal;
+use tablecraft_testkit::fixtures::access as literal;
 
 #[test]
 fn extended_timestamp_records_preserve_exact_fraction_digits_and_null_mask() {

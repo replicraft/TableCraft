@@ -1,12 +1,11 @@
 #![cfg(feature = "ace16-write-preview")]
 
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[allow(dead_code)]
 #[path = "ace16_delete_contraction_contract/model.rs"]
 mod model;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
 #[path = "ace16_delete_tree_contract/model.rs"]
 mod tree_model;

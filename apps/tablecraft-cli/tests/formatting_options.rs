@@ -1,10 +1,11 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_format_options_share_explicit_number_and_date_profiles() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT FormatNumber(1,'2,5'),FormatDateTime(#2025-01-02 03:04:05#,'2,5')",
@@ -33,7 +34,7 @@ fn cli_format_options_share_explicit_number_and_date_profiles() {
             "SELECT 99,FormatDateTime(#2025-01-02#,'2')",
             "SELECT FormatNumber(NULL,'bad',1/0)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

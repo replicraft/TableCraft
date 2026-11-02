@@ -1,7 +1,7 @@
 #![cfg(any(target_os = "macos", target_os = "linux"))]
 
 use std::{fs, process::Command};
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::{self as sources, Case};
 
 #[test]
 fn cli_complete_scalar_null_rows_save_exact_images_and_read_back_supported_finite_columns() {

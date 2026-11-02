@@ -36,7 +36,7 @@ fn database(expression: &str, parameter: bool) -> Database {
 fn explicit_saved_streams_use_parameters_and_normal_tsv_publication() {
     let db = database("[Id]", true);
     for batch in ["1", "2"] {
-        let result = cli_support::run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "--saved",
@@ -61,7 +61,7 @@ fn explicit_saved_streams_use_parameters_and_normal_tsv_publication() {
 #[test]
 fn saved_named_pipeline_sources_stay_explicit_and_unknown_calls_never_execute() {
     let db = database("[Id]", false);
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Q.Chosen FROM Saved Q WHERE Q.Chosen>=2",
@@ -77,7 +77,7 @@ fn saved_named_pipeline_sources_stay_explicit_and_unknown_calls_never_execute() 
     assert_eq!(result.stdout, b"Chosen\n2\n3\n");
 
     let unknown = database("NeverRunMe([Id])", false);
-    let refused = cli_support::run(&[
+    let refused = CLI.run(&[
         "query",
         "run",
         "--saved",

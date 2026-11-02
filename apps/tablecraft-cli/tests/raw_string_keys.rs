@@ -1,6 +1,6 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn raw_keys_work_with_general_policies_and_keep_buffered_publication() {
@@ -19,7 +19,7 @@ fn raw_keys_work_with_general_policies_and_keep_buffered_publication() {
                 "ID\n1\n2\n",
             ),
         ] {
-            let result = run(&["query", "run", sql, "--collation", collation]);
+            let result = CLI.run(&["query", "run", sql, "--collation", collation]);
             assert!(result.status.success(), "{:?}", result.stderr);
             assert_eq!(result.stdout, expected.as_bytes(), "{sql}");
         }
@@ -29,7 +29,7 @@ fn raw_keys_work_with_general_policies_and_keep_buffered_publication() {
             "SELECT Count(*) FROM (SELECT ChrB(65) AS S UNION SELECT ChrB(65)) AS Q",
             "SELECT TOP 1 ID FROM (SELECT 1 AS ID,ChrW(55296) AS S UNION ALL SELECT 2,ChrW(1/0)) AS Q ORDER BY S",
         ] {
-            let result = run(&["query", "run", sql, "--collation", collation]);
+            let result = CLI.run(&["query", "run", sql, "--collation", collation]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty(), "{sql}");
         }

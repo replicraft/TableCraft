@@ -12,7 +12,7 @@ use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
 use tablecraft_query::UpdateError;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_nullable_index_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_nullable_index_before_change as model;
 
 fn null_record(bytes: &[u8]) -> (usize, usize) {
     let page = 8 * 4096;

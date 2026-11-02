@@ -1,18 +1,18 @@
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 
-use cli_support::run;
 use std::{
     fs,
     io::Write,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -53,7 +53,7 @@ fn queries_require_the_cached_flag_and_preserve_stored_values_without_recalculat
         let mut bytes = calculated_fixture::database(&[Some(999), None, Some(41)]);
         bytes[20] = code;
         let database = Database::new(bytes);
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Score FROM Items",
@@ -68,7 +68,7 @@ fn queries_require_the_cached_flag_and_preserve_stored_values_without_recalculat
         );
         assert_eq!(output.stdout, b"Id\tScore\n1\t999\n2\tNULL\n3\t41\n");
         assert!(output.stderr.is_empty());
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Id FROM Items WHERE Score>100",
@@ -95,7 +95,7 @@ fn queries_require_the_cached_flag_and_preserve_stored_values_without_recalculat
                 database.path(),
             ];
             args.extend(options);
-            let output = run(&args);
+            let output = CLI.run(&args);
             assert!(!output.status.success());
             assert!(output.stdout.is_empty());
         }
@@ -113,7 +113,7 @@ fn cached_query_cli_buffers_late_errors_and_keeps_ordinary_projections_available
         "SELECT TOP 1 Score FROM Items",
         "SELECT Score FROM Items WHERE Id=999",
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             sql,
@@ -124,7 +124,7 @@ fn cached_query_cli_buffers_late_errors_and_keeps_ordinary_projections_available
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items",
@@ -145,7 +145,7 @@ fn cached_query_cli_buffers_late_errors_and_keeps_ordinary_projections_available
             "--stored-calculations",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }

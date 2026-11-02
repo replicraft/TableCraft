@@ -15,8 +15,8 @@ use tablecraft_core::{
     limits::ResourceBudget,
     values::{Decimal, Value},
 };
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_creation as fixed, canonical_fixed_float_creation as ieee,
     canonical_variable_creation as variable,
 };

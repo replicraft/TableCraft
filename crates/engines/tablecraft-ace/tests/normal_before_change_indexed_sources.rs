@@ -9,7 +9,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_before_change,
     canonical_indexed_before_change::{self as model, Case, Recipe},
 };

@@ -1,12 +1,10 @@
-use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod composite_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as composite_fixture;
 // Shared with the independent complete-request contract target.
 #[allow(dead_code)]
 #[path = "large_index_selections/fixture.rs"]
 mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::ops::Bound::{Included, Unbounded};
 use tablecraft_ace::{

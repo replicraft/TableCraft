@@ -1,7 +1,7 @@
 //! Source-first file UPDATE images; no transport or native writer calls.
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs"]
 mod cases;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_long_value_updates_contract/forwarding_case.rs"]
 mod forwarding;
 #[path = "write_update_files/model.rs"]
@@ -16,7 +16,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[test]
 fn qualify_file_update_sources_before_transport() {

@@ -1,8 +1,8 @@
 //! Original empty membership and a first INSERT image, without producer codecs.
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as literal;
-use tablecraft_testkit::access::insert_seed as original;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as literal;
+use tablecraft_testkit::fixtures::access::insert_seed as original;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub const PAGE: usize = 4096;
 pub const DATA: u32 = 16;

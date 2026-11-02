@@ -5,7 +5,7 @@ use crate::{
 };
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_testkit::access::wide_properties as fixture;
+use tablecraft_testkit::fixtures::access::wide_properties as fixture;
 
 #[test]
 fn numeric_groups_names_and_uncompressed_text_remain_independent_facts() {

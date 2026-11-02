@@ -2,8 +2,8 @@
 use super::budget;
 use sha2::{Digest, Sha256};
 use tablecraft_ace::{NativeInsertIntent, RowInsert};
-use tablecraft_testkit::access::genuine_ordinary_insert as sources;
-pub(super) use tablecraft_testkit::access::genuine_ordinary_insert::Case;
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert as sources;
+pub(super) use tablecraft_testkit::fixtures::access::genuine_ordinary_insert::Case;
 
 pub(super) fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

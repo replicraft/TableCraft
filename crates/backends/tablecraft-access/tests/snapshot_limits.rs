@@ -1,7 +1,3 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
-mod index_fixture;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -14,7 +10,9 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare, source::ScanConstraint};
 use tablecraft_sql::parse_query;
-use tablecraft_testkit::access as support;
+#[allow(dead_code)]
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 struct Reads {
     input: Cursor<Vec<u8>>,

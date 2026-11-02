@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "wide_rows/fixture.rs"]
 mod fixture;
 use std::{
@@ -14,7 +14,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const SCOPE: CatalogScope = CatalogScope::new(1);

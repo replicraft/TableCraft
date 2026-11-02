@@ -13,14 +13,16 @@ ALLOWED = {
     "tablecraft-model": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-io": {"tablecraft-core"},
     "tablecraft-crypto": set(),
-    "tablecraft-testkit": {"tablecraft-core"},
+    "tablecraft-testkit": {"tablecraft-core", "tablecraft-ace", "tablecraft-access",
+                           "tablecraft-query", "tablecraft-db", "tablecraft-model",
+                           "tablecraft-schema", "tablecraft-sql", "tablecraft-io"},
     "tablecraft-formats": {"tablecraft-core", "tablecraft-io", "tablecraft-model",
                            "tablecraft-schema"},
     "tablecraft-db": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-sql": set(),
     "tablecraft-expressions": {"tablecraft-core", "tablecraft-sql"},
     "tablecraft-query": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
-                         "tablecraft-sql", "tablecraft-expressions"},
+                         "tablecraft-sql", "tablecraft-expressions", "tablecraft-testkit"},
     "tablecraft-ace": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-sql", "tablecraft-expressions",
                        "tablecraft-query", "tablecraft-crypto", "tablecraft-testkit"},
@@ -68,6 +70,9 @@ def violations(metadata):
                 continue
             if target == "tablecraft-testkit" and dep.get("kind") != "dev":
                 errors.append(f"{name} -> {target}: engineering fixtures are development-only")
+            if name == "tablecraft-testkit" and target != "tablecraft-core":
+                if not dep.get("optional") or dep.get("kind") is not None:
+                    errors.append(f"{name} -> {target}: subsystem test support requires an optional normal dependency")
             target_directory = Path(packages[target]["manifest_path"]).resolve().parent
             if is_library and target_directory.is_relative_to(root / "apps"):
                 errors.append(f"{name} -> {target}: library must not depend on an application")

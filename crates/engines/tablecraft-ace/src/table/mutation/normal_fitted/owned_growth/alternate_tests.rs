@@ -10,7 +10,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     genuine_alternate_owned::{self as sources, Case},
     genuine_owned_growth as root_sources,
 };

@@ -1,17 +1,18 @@
-use cli_support::run;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn scalar_byte_functions_work_in_both_query_commands_with_explicit_formats() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT LeftB(1234,4) AS L,MidB(12.5,5,2) AS M,InStrB(1,1234,23,0) AS P,StrConv(True,1,1033) AS S",
-            "--number-format",
-            "de-de",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT LeftB(1234,4) AS L,MidB(12.5,5,2) AS M,InStrB(1,1234,23,0) AS P,StrConv(True,1,1033) AS S",
+                "--number-format",
+                "de-de",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -30,11 +31,11 @@ fn scalar_byte_functions_work_in_both_query_commands_with_explicit_formats() {
         );
         assert!(reader.records().next().is_none());
         for sql in ["SELECT 1,LeftB(1234,1)", "SELECT 1,StrConv(1234,1,1/0)"] {
-            let result = run(&["query", mode, sql, "--number-format", "en-us"]);
+            let result = CLI.run(&["query", mode, sql, "--number-format", "en-us"]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }
-        let result = run(&["query", mode, "SELECT LeftB(1234,2)"]);
+        let result = CLI.run(&["query", mode, "SELECT LeftB(1234,2)"]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }

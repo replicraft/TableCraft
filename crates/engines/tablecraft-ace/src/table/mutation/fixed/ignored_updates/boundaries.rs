@@ -2,7 +2,7 @@
 use super::{PAGE, assert_image, budget, capture, example, leaf, model, qualify, requests};
 use crate::{EditError, FixedScalarUpdate, IndexConstraintViolation, InspectError, WriteBlocker};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 struct NodeCase {
     before: Vec<u8>,

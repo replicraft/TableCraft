@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn raw_strcomp_works_in_both_hosts_and_keeps_failures_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT StrComp(ChrW(55296),ChrW(57343),0) AS A,StrComp(ChrW(55296),ChrW(55296),0) AS B,StrComp(ChrB(65),NULL,0) AS N",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT StrComp(ChrW(55296),ChrW(57343),0) AS A,StrComp(ChrW(55296),ChrW(55296),0) AS B,StrComp(ChrB(65),NULL,0) AS N",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -23,7 +24,7 @@ fn raw_strcomp_works_in_both_hosts_and_keeps_failures_buffered() {
             "StrComp(ChrW(55296),'x',1)",
             "StrComp(ChrW(55296),NULL,1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

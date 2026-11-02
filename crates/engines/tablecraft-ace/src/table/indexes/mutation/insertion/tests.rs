@@ -3,12 +3,13 @@ mod variable;
 use super::*;
 use crate::{
     IndexConstraintViolation, InspectError, check_table, check_table_constraints,
-    test_support::{index_fixture, split_model},
+    test_support::split_model,
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{LimitError, Resource};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 const PAGE: usize = 4096;
 const ROOT_START: usize = 13 * 4096;

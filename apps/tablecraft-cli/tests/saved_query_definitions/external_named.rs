@@ -65,7 +65,7 @@ fn root_and_external_saved_names_keep_their_own_sources_across_profiles() {
                 &b"Chosen\n100\n200\n300\n"[..],
             ),
         ] {
-            let result = cli_support::run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -96,7 +96,7 @@ fn stored_external_dependency_with_the_same_name_is_not_a_local_cycle() {
             "remote",
             target.path(),
         ]);
-        let result = cli_support::run(&arguments);
+        let result = CLI.run(&arguments);
         assert!(result.status.success(), "{:?}", result);
         assert_eq!(result.stdout, b"Chosen\n100\n200\n300\n");
     }
@@ -107,10 +107,10 @@ fn target_definition_failures_stay_buffered_and_never_use_the_root_definition() 
     let root = Database::new(image(6, 10, "Score", false));
     for projection in ["NeverRunMe(Score)", "Score/(Id-3)"] {
         let target = Database::new(image(6, 100, projection, false));
-        let inert = cli_support::run(&["query", "saved", "--database", target.path(), "Saved"]);
+        let inert = CLI.run(&["query", "saved", "--database", target.path(), "Saved"]);
         assert!(inert.status.success(), "{:?}", inert);
 
-        let failed = cli_support::run(&[
+        let failed = CLI.run(&[
             "query",
             "run",
             "SELECT Chosen FROM Saved IN 'remote'",
@@ -123,7 +123,7 @@ fn target_definition_failures_stay_buffered_and_never_use_the_root_definition() 
         assert_eq!(failed.status.code(), Some(2), "{:?}", failed);
         assert!(failed.stdout.is_empty());
 
-        let local = cli_support::run(&[
+        let local = CLI.run(&[
             "query",
             "run",
             "SELECT Chosen FROM Saved",

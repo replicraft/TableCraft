@@ -1,6 +1,6 @@
 //! Independent source bytes; shared literal fixtures are read-only inputs.
 use super::{fixed_model, fixture, support};
-use tablecraft_testkit::access::map_growth::model::{declaration_end, number};
+use tablecraft_testkit::fixtures::access::map_growth::model::{declaration_end, number};
 
 pub const PAGE: usize = 4096;
 pub const EOF: usize = 600;

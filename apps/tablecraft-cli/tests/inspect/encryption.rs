@@ -1,4 +1,4 @@
-use super::{Fixture, image, run};
+use super::{CLI, Fixture, image};
 
 const INFO_LENGTH_OFFSET: usize = 0x299;
 const INFO_OFFSET: usize = INFO_LENGTH_OFFSET + size_of::<u16>();
@@ -17,7 +17,7 @@ fn encrypted_image() -> Vec<u8> {
 fn encryption_inspection_exposes_envelope_metadata_without_payloads_or_read_qualification() {
     let bytes = encrypted_image();
     let fixture = Fixture::new(&bytes);
-    let output = run(&["encryption", "inspect", fixture.path()]);
+    let output = CLI.run(&["encryption", "inspect", fixture.path()]);
     assert!(output.status.success(), "{:?}", output);
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
@@ -27,18 +27,18 @@ fn encryption_inspection_exposes_envelope_metadata_without_payloads_or_read_qual
     assert!(text.contains("Password verification\tNot performed\n"));
     assert!(!text.contains("private"));
     assert!(!text.contains("Outer flags"));
-    let basic = run(&["inspect", fixture.path()]);
+    let basic = CLI.run(&["inspect", fixture.path()]);
     assert!(basic.status.success());
     let summary = String::from_utf8(basic.stdout).unwrap();
     assert!(summary.contains("Page encryption\tYes\n"));
     assert!(summary.contains("Encryption type\tOffice Agile\n"));
     assert!(!summary.contains("Descriptor bytes"));
     assert!(!summary.contains("Envelope version"));
-    let catalog = run(&["inspect", fixture.path(), "--catalog"]);
+    let catalog = CLI.run(&["inspect", fixture.path(), "--catalog"]);
     assert_eq!(catalog.status.code(), Some(2));
     assert!(catalog.stdout.is_empty());
     assert_eq!(std::fs::read(&fixture.0).unwrap(), bytes);
-    let table = run(&["--format", "table", "encryption", "inspect", fixture.path()]);
+    let table = CLI.run(&["--format", "table", "encryption", "inspect", fixture.path()]);
     assert!(table.status.success());
     assert!(
         String::from_utf8(table.stdout)
@@ -50,7 +50,7 @@ fn encryption_inspection_exposes_envelope_metadata_without_payloads_or_read_qual
 #[test]
 fn unencoded_pages_do_not_assert_absence_of_password_protection() {
     let fixture = Fixture::new(&image());
-    let output = run(&["encryption", "inspect", fixture.path()]);
+    let output = CLI.run(&["encryption", "inspect", fixture.path()]);
     assert!(output.status.success());
     assert_eq!(
         output.stdout,
@@ -63,7 +63,7 @@ fn malformed_envelopes_fail_atomically_and_conflicting_modes_are_rejected() {
     let mut bytes = encrypted_image();
     bytes[INFO_OFFSET + 4] = 0x41;
     let fixture = Fixture::new(&bytes);
-    let output = run(&["encryption", "inspect", fixture.path()]);
+    let output = CLI.run(&["encryption", "inspect", fixture.path()]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
     assert!(
@@ -78,11 +78,11 @@ fn malformed_envelopes_fail_atomically_and_conflicting_modes_are_rejected() {
     ] {
         let mut args = vec!["encryption", "inspect", fixture.path()];
         args.extend(extra);
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }
-    let removed_flag = run(&["inspect", fixture.path(), "--encryption"]);
+    let removed_flag = CLI.run(&["inspect", fixture.path(), "--encryption"]);
     assert_eq!(removed_flag.status.code(), Some(2));
     assert!(removed_flag.stdout.is_empty());
     assert_eq!(std::fs::read(&fixture.0).unwrap(), bytes);

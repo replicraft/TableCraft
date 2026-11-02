@@ -2,7 +2,7 @@
 //! Ordinary Memo/OLE source gates and explicit engineering copy consumers.
 #[path = "../../../engines/tablecraft-ace/tests/ace16_long_value_updates_contract/routing_cases.rs"]
 mod cases;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_long_value_updates_contract/model.rs"]
 pub mod original;
 
@@ -13,7 +13,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "default_long_value_updates/api.rs"]
 mod api;

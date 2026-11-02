@@ -1,6 +1,6 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn value_parameters_keep_explicit_cli_carriers_and_variant_arithmetic() {
@@ -11,7 +11,7 @@ fn value_parameters_keep_explicit_cli_carriers_and_variant_arithmetic() {
         ("P=text:SELECT 1;", "\"SELECT 1;\""),
         ("P=null:", "NULL"),
     ] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "PARAMETERS P VALUE; SELECT P AS V",
@@ -31,7 +31,7 @@ fn value_parameters_keep_explicit_cli_carriers_and_variant_arithmetic() {
         assert_eq!(&rows[0][0], expected);
     }
 
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "PARAMETERS P VALUE; SELECT P+CInt(1) AS N",
@@ -61,7 +61,7 @@ fn value_parameter_failures_never_publish_an_earlier_result() {
             "PARAMETERS P VALUE; SELECT CInt(1) AS N UNION ALL SELECT CInt(1)/(P-CInt(3))",
         ];
         command.extend(arguments);
-        let result = run(&command);
+        let result = CLI.run(&command);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }

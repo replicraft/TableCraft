@@ -5,8 +5,8 @@ use std::fs;
 use tablecraft_ace::{CreateColumn, CreateDatabaseError, CreateTable};
 use tablecraft_core::values::Value;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
-use tablecraft_testkit::access::canonical_multiple_creation as source;
-use tablecraft_testkit::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_multiple_creation as source;
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
 fn column(column: &source::Column) -> CreateColumn<'_> {
     match column.native_type {

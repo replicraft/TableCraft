@@ -18,7 +18,7 @@ use tablecraft_io::{
     journal::{DurableStorage, inspect_v1},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_indexed_targets::{
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed_targets::{
     self as sources, Case, Recipe,
 };
 

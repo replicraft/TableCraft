@@ -4,7 +4,7 @@ use super::support::*;
 fn equal_join_keys_keep_duplicate_parents_and_both_physical_collection_zeroes() {
     for declared in [false, true] {
         for on in ["L.Id=R.Id", "R.Id=L.Id"] {
-            let data = Data::fixture();
+            let data = Data::join_fixture();
             let mut expected = Vec::new();
             for left in &data.tables[0].rows {
                 for right in &data.tables[1].rows {
@@ -24,7 +24,7 @@ fn equal_join_keys_keep_duplicate_parents_and_both_physical_collection_zeroes() 
             assert_eq!(*data.scans.borrow(), ["L", "R"]);
             assert_eq!(data.scalar_scans.get(), 0);
 
-            let data = Data::fixture();
+            let data = Data::join_fixture();
             let mut expected = Vec::new();
             for left in &data.tables[0].rows {
                 for right in &data.tables[1].rows {
@@ -59,7 +59,7 @@ fn nested_right_offsets_match_a_linear_three_parent_model() {
         "SELECT L.A,R.B,S.A,L.Id FROM L INNER JOIN (R INNER JOIN S ON R.K=S.Id) ON L.Id=R.Id",
         "SELECT L.A,R.B,S.A,L.Id FROM L,R,S WHERE L.Id=R.Id AND R.K=S.Id",
     ] {
-        let data = Data::fixture();
+        let data = Data::join_fixture();
         let mut expected = Vec::new();
         for left in &data.tables[0].rows {
             for right in &data.tables[1].rows {
@@ -83,7 +83,7 @@ fn nested_right_offsets_match_a_linear_three_parent_model() {
 
 #[test]
 fn named_derived_lists_keep_dense_aliases_and_scalar_only_leaves_use_scalar_scans() {
-    let mut data = Data::fixture();
+    let mut data = Data::join_fixture();
     data.definitions
         .push(("ProjectedRows", syntax("SELECT A AS Items,Id,K FROM R")));
     let mut pairs = Vec::new();
@@ -107,8 +107,8 @@ fn named_derived_lists_keep_dense_aliases_and_scalar_only_leaves_use_scalar_scan
     .unwrap();
     assert_rows(&result, &expected);
 
-    let mut data = Data::fixture();
-    let mut plain = Table::new(
+    let mut data = Data::join_fixture();
+    let mut plain = Table::text_lists(
         "Plain",
         vec![
             Parent::new(1, 0, &[], "unused"),
@@ -150,7 +150,7 @@ fn named_derived_lists_keep_dense_aliases_and_scalar_only_leaves_use_scalar_scan
 
 #[test]
 fn hidden_criteria_choose_parent_pairs_without_trimming_or_repeating_display_lists() {
-    let data = Data::fixture();
+    let data = Data::join_fixture();
     let mut expected = Vec::new();
     for left in &data.tables[0].rows {
         for right in &data.tables[1].rows {

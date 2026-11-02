@@ -11,7 +11,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_indexed_mixed_before_change::{
+use tablecraft_testkit::fixtures::access::canonical_indexed_mixed_before_change::{
     self as model, Case, Recipe,
 };
 

@@ -18,7 +18,7 @@ use tablecraft_io::{
     },
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_indexed_delete::{self as sources, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_indexed_delete::{self as sources, Recipe};
 
 const SCOPE: CatalogScope = CatalogScope::new(165);
 

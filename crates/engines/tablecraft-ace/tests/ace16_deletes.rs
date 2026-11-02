@@ -1,10 +1,7 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 use proptest::prelude::*;
 use std::io::Cursor;

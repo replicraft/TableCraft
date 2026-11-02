@@ -1,6 +1,6 @@
 //! Whole-image anchors for the independently read-qualified table sets.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_multiple_creation;
+use tablecraft_testkit::fixtures::access::canonical_multiple_creation;
 
 #[test]
 fn multiple_table_originals_retain_four_exported_whole_image_hashes() {

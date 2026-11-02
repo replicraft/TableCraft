@@ -1,6 +1,6 @@
 //! Frozen source and original-request pins, recorded before writer execution.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_nullable_index_id_before_change::source;
+use tablecraft_testkit::fixtures::access::canonical_nullable_index_id_before_change::source;
 
 const PINS: &[(u8, &str, &str)] = &[
     (

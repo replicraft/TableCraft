@@ -5,7 +5,7 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::canonical_native17_sessions;
+use tablecraft_testkit::fixtures::access::canonical_native17_sessions;
 
 fn action(path: &Path, bundle: &Path, verb: &str, sql: &str) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

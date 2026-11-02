@@ -7,7 +7,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::insert_seed as source_base;
+use tablecraft_testkit::fixtures::access::insert_seed as source_base;
 
 mod model;
 use model::{Case, Expected, Maps, PAGE, Row, Shape};

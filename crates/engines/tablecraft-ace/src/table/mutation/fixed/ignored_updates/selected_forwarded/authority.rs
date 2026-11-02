@@ -7,7 +7,7 @@ use crate::{
 use std::cell::Cell;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes as model;
+use tablecraft_testkit::fixtures::access::multiple_indexes as model;
 
 fn bad_target(alias: bool) -> Vec<u8> {
     let mut before = case(6, false, 2, false, Some(30), false).before;

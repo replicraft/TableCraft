@@ -1,9 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "decimal_composite_indexes/fixture.rs"]
-mod fixture;
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::decimal_fixture as fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 use fixture::Cell;
 use proptest::prelude::*;

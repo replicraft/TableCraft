@@ -1,8 +1,8 @@
 use super::*;
 use std::fs;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::canonical_creation::{self, Case};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_creation::{self, Case};
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

@@ -5,7 +5,7 @@ use super::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_creation_defaults as sources;
+use tablecraft_testkit::fixtures::access::canonical_creation_defaults as sources;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

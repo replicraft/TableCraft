@@ -1,9 +1,8 @@
 #[path = "ignored_null_indexes/fixture.rs"]
 mod ignored;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 use std::{cell::Cell, io::Cursor, ops::Bound};
 use tablecraft_ace::{

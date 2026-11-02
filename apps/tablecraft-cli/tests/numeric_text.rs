@@ -1,9 +1,11 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 #[test]
 fn numeric_text_calls_work_in_both_paths_with_buffered_errors() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Hex(459) AS H,Oct(459) AS O,Str(-459.65) AS S,Str(459.001) AS P,Hex(NULL) AS N",
@@ -29,12 +31,12 @@ fn numeric_text_calls_work_in_both_paths_with_buffered_errors() {
         );
         if mode == "eval" {
             let oversized = format!("SELECT {}", vec!["Str(CDbl(1e-299))"; 16].join(","));
-            let result = run(&["query", mode, &oversized]);
+            let result = CLI.run(&["query", mode, &oversized]);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
         for expression in ["Hex('x')", "Oct(1,1/0)", "Str('1')", "Hex(2147483648.0)"] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -44,7 +46,7 @@ fn numeric_text_calls_work_in_both_paths_with_buffered_errors() {
 #[test]
 fn numeric_text_inputs_use_explicit_parsing_and_buffer_conversion_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Hex('3,5') AS H,Oct('8') AS O,Str('2,5') AS S",
@@ -68,7 +70,7 @@ fn numeric_text_inputs_use_explicit_parsing_and_buffer_conversion_failures() {
             [vec!["H", "O", "S"], vec!["\"4\"", "\"10\"", "\" 2.5\""]]
         );
         for expression in ["Hex('2147483648')", "Oct('bad')", "Str('bad')"] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -84,7 +86,7 @@ fn numeric_text_inputs_use_explicit_parsing_and_buffer_conversion_failures() {
 #[test]
 fn str_expression_values_use_standard_codes_and_explicit_date_policy() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Str(CVErr(2001)) AS E,Str(Nz(NULL,0)) AS Z,Str(CDate(2)) AS D",
@@ -111,7 +113,7 @@ fn str_expression_values_use_standard_codes_and_explicit_date_policy() {
             ]
         );
         for expression in ["Str(IIf(True,CVErr(1),1/0))", "Str(CDate(2))"] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }
@@ -121,7 +123,7 @@ fn str_expression_values_use_standard_codes_and_explicit_date_policy() {
 #[test]
 fn radix_date_inputs_need_no_locale_and_error_data_does_not_become_a_code() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Hex(CDate(2.5)) AS H,Oct(CDate(8.5)) AS O,Hex(CLng(CVErr(1))) AS C",
@@ -147,7 +149,7 @@ fn radix_date_inputs_need_no_locale_and_error_data_does_not_become_a_code() {
             "Oct(CVErr(1))",
             "Hex(IIf(True,CVErr(1),1/0))",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }

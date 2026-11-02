@@ -1,5 +1,5 @@
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 use std::{cell::Cell, io::Cursor};
 use support::data_page;

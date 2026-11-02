@@ -138,11 +138,11 @@ fn unknown_text_declarations_aliases_and_map_roles_refuse_full_action_source() {
 #[ignore = "requires pinned originals; same-image certificate and independent cardinality proofs"]
 fn text_action_certificate_stays_bound_and_cardinality_uses_its_own_proof() {
     let expected_cases =
-        tablecraft_testkit::access::genuine_text_indexed_update::load_all(|raw, digest| {
-            assert_eq!(hash(raw), digest)
-        });
+        tablecraft_testkit::fixtures::access::genuine_text_indexed_update::load_all(
+            |raw, digest| assert_eq!(hash(raw), digest),
+        );
     let cardinality_cases =
-        tablecraft_testkit::access::genuine_text_cardinality::load_all(|raw, digest| {
+        tablecraft_testkit::fixtures::access::genuine_text_cardinality::load_all(|raw, digest| {
             assert_eq!(hash(raw), digest)
         });
     let mut contexts = 0;

@@ -13,7 +13,7 @@ workspace = true
 
 [features]
 ace16-create = ["tablecraft-ace/ace16-create", "tablecraft-io/fresh-publication"]
-offline-write-session = ["journal", "tablecraft-io/filesystem-journal"]
+offline-write-session = ["journal", "tablecraft-io/filesystem-journal", "tablecraft-testkit/access-support"]
 journal = ["tablecraft-ace/journal"]
 ace16-write-preview = ["tablecraft-ace/ace16-write-preview"]
 
@@ -38,7 +38,7 @@ uuid.workspace = true
 zip.workspace = true
 flate2.workspace = true
 base64.workspace = true
-tablecraft-testkit.workspace = true
+tablecraft-testkit = { workspace = true, features = ["formats-fixtures"] }
 clap.workspace = true
 proptest.workspace = true
 

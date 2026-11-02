@@ -1,7 +1,7 @@
 //! Explicit create-new export and first hash dump, with literal request inventory.
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
-use tablecraft_testkit::access::canonical_tree_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_tree_before_change as model;
 
 fn create(path: &Path, bytes: &[u8]) {
     let mut file = fs::OpenOptions::new()

@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -12,7 +12,7 @@ mod modes;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
 mod old_attachment;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     cell::Cell,

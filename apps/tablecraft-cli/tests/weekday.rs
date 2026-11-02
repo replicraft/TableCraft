@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,19 +14,20 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn weekday_supports_defaults_optional_slots_conversion_and_host_context() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Weekday(#1969-02-12#) AS A,Weekday(#1969-02-12#,2) AS B,Weekday(#1969-02-12#,0) AS C,Weekday(#1969-02-12#,) AS D,Weekday(NULL) AS N,Weekday(0) AS E,Weekday('Feb 29',2) AS T,Weekday('-1.25') AS F",
-            "--first-day-of-week",
-            "2",
-            "--date-format",
-            "en-us",
-            "--reference-year",
-            "2024",
-            "--number-format",
-            "invariant",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Weekday(#1969-02-12#) AS A,Weekday(#1969-02-12#,2) AS B,Weekday(#1969-02-12#,0) AS C,Weekday(#1969-02-12#,) AS D,Weekday(NULL) AS N,Weekday(0) AS E,Weekday('Feb 29',2) AS T,Weekday('-1.25') AS F",
+                "--first-day-of-week",
+                "2",
+                "--date-format",
+                "en-us",
+                "--reference-year",
+                "2024",
+                "--number-format",
+                "invariant",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -55,7 +58,7 @@ fn invalid_shapes_missing_policies_and_eager_failures_publish_nothing() {
             "Weekday(NULL,1/0)",
             "IIf(False,Weekday(1/0),0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -71,7 +74,7 @@ fn weekday_error_state_retains_policy_and_eager_failures_without_output() {
             ("CDate(CVErr(1))", "type mismatch"),
             ("TimeValue(CVErr(1))", "type mismatch"),
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
             assert!(

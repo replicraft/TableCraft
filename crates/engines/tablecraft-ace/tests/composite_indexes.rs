@@ -1,11 +1,9 @@
-use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "composite_indexes/edits.rs"]
 mod edits;
 #[path = "composite_indexes/failures.rs"]
 mod failures;
-#[path = "composite_indexes/fixture.rs"]
-mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as fixture;
 
 use proptest::prelude::*;
 use std::io::Cursor;

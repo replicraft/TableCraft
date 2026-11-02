@@ -1,17 +1,18 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn text_masks_sections_casing_and_unicode_execute_in_both_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Format('Ab','@@@@') AS R,Format('Ab','!@@@@') AS L,Format(Null,'@@;\"missing\"') AS N,Format('straße','>\"label:\"@@@@@@') AS C,Format('🦀','@@') AS U",
-            "--case-locale",
-            "und",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Format('Ab','@@@@') AS R,Format('Ab','!@@@@') AS L,Format(Null,'@@;\"missing\"') AS N,Format('straße','>\"label:\"@@@@@@') AS C,Format('🦀','@@') AS U",
+                "--case-locale",
+                "und",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -39,7 +40,7 @@ fn text_masks_sections_casing_and_unicode_execute_in_both_commands() {
             "Format('x','><@@')",
             "Format(Null,'@@',1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

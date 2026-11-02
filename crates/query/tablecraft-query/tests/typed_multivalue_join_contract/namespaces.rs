@@ -2,7 +2,7 @@ use super::support::*;
 use tablecraft_query::{QueryError, prepare};
 
 fn source<'a>(value: i32, label: &str) -> Data<'a> {
-    let mut data = Data::new(vec![Table::new(
+    let mut data = Data::new(vec![Table::text_lists(
         "T",
         vec![Parent::new(1, 0, &[Some(value)], label)],
     )]);

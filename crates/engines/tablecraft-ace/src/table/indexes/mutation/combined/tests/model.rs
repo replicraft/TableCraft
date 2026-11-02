@@ -1,14 +1,7 @@
 //! Existing independent field/key fixtures, with explicit NULL/delete goldens.
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
 
-#[allow(dead_code)]
-mod numeric_fixture {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/composite_indexes/fixture.rs"
-    ));
-}
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 #[allow(dead_code)]
 mod guid_fixture {
     include!(concat!(

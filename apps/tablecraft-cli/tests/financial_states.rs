@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn financial_error_data_retains_eager_and_conversion_order_with_buffered_failures() {
@@ -11,12 +12,12 @@ fn financial_error_data_retains_eager_and_conversion_order_with_buffered_failure
             ("SLN(NULL,CVErr(1),10)", "NULL"),
             ("EuroConvert(1,'USD',CVErr(1))", "domain"),
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(String::from_utf8_lossy(&result.stderr).contains(error));
         }
-        let result = run(&["query", mode, "SELECT SLN(CLng(CVErr(1)),0,1) AS N"]);
+        let result = CLI.run(&["query", mode, "SELECT SLN(CLng(CVErr(1)),0,1) AS N"]);
         assert!(result.status.success());
         assert_eq!(result.stdout, b"N\n1\n");
     }

@@ -13,7 +13,7 @@ use tablecraft_io::{
         prepare_resizable_expected,
     },
 };
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::Case;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::Case;
 
 struct DeniedTarget {
     bytes: Cursor<Vec<u8>>,

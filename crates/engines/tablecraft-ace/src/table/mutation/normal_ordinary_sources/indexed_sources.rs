@@ -2,7 +2,7 @@
 use super::{SCOPE, budget};
 use crate::{IndexCheckStatus, NativeImage, check_table, check_table_constraints, read_table};
 use std::io::Cursor;
-use tablecraft_testkit::access::canonical_ordinary_indexed::{self as model, Source};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{self as model, Source};
 
 fn source(header: u8, case: model::Case) -> Source {
     assert!(matches!(header, 5 | 6));

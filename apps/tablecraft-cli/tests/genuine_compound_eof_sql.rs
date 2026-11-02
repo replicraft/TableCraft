@@ -2,7 +2,7 @@
 
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_compound_eof as sources;
+use tablecraft_testkit::fixtures::access::genuine_compound_eof as sources;
 
 const SQL: &str =
     "UPDATE Sentinel SET Marker=IIf([ID]=23,'aaaaaaaaaaaaaaaaaaa','ccccccccccccccccccc')";

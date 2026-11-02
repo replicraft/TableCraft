@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn date_and_calendar_name_states_preserve_order_and_atomic_failure() {
@@ -12,7 +13,7 @@ fn date_and_calendar_name_states_preserve_order_and_atomic_failure() {
             ("WeekdayName(0,False,CVErr(11))", "domain"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql, "--date-format", "iso"]);
+            let result = CLI.run(&["query", mode, &sql, "--date-format", "iso"]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(
@@ -35,13 +36,14 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn all_named_formats_and_optional_slot_work_in_both_cli_paths() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT FormatDateTime(#2026-10-20 16:28:14#) AS G,FormatDateTime(#2026-10-20#,1) AS L,FormatDateTime(0,2) AS D,FormatDateTime('04.28.14',3) AS T,FormatDateTime(#2026-10-20 16:28:14#,4) AS S,FormatDateTime(#2026-10-20#,) AS M",
-            "--date-format",
-            "en-us",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT FormatDateTime(#2026-10-20 16:28:14#) AS G,FormatDateTime(#2026-10-20#,1) AS L,FormatDateTime(0,2) AS D,FormatDateTime('04.28.14',3) AS T,FormatDateTime(#2026-10-20 16:28:14#,4) AS S,FormatDateTime(#2026-10-20#,) AS M",
+                "--date-format",
+                "en-us",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -61,7 +63,7 @@ fn all_named_formats_and_optional_slot_work_in_both_cli_paths() {
                 ]
             ]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT FormatDateTime('Feb 29',2)",
@@ -94,7 +96,7 @@ fn errors_and_invalid_call_shapes_publish_nothing() {
             "IIf(False,FormatDateTime(1/0),0)",
             "FormatDateTime('Feb 29')",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -104,7 +106,7 @@ fn errors_and_invalid_call_shapes_publish_nothing() {
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
-        let result = run(&["query", mode, "SELECT 1,FormatDateTime(#2026-10-20#)"]);
+        let result = CLI.run(&["query", mode, "SELECT 1,FormatDateTime(#2026-10-20#)"]);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
     }

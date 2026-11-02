@@ -8,8 +8,8 @@ use crate::table::mutation::insert::record;
 use crate::table::mutation::insert::record::input;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 1_000_000)

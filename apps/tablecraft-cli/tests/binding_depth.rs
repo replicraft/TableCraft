@@ -1,7 +1,8 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::path::Path;
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const COMPOUND: &str = "SELECT VarType(K) AS T,K AS V,N FROM \
     (SELECT K,Count(*) AS N FROM \
@@ -12,7 +13,7 @@ const COMPOUND: &str = "SELECT VarType(K) AS T,K AS V,N FROM \
 
 #[test]
 fn compound_queries_keep_the_default_and_support_explicit_deeper_binding() {
-    let refused = run(&["query", "run", COMPOUND, "--number-format", "invariant"]);
+    let refused = CLI.run(&["query", "run", COMPOUND, "--number-format", "invariant"]);
     assert_eq!(refused.status.code(), Some(2));
     assert!(refused.stdout.is_empty());
     assert!(String::from_utf8_lossy(&refused.stderr).contains("structural limit"));
@@ -30,7 +31,7 @@ fn compound_queries_keep_the_default_and_support_explicit_deeper_binding() {
         if declared {
             args.push("--declared-arithmetic");
         }
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -43,7 +44,7 @@ fn compound_queries_keep_the_default_and_support_explicit_deeper_binding() {
 #[test]
 fn invalid_binding_depth_fails_argument_parsing_before_opening_a_database() {
     for depth in ["0", "33", "18446744073709551615", "deep"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 1",
@@ -82,12 +83,12 @@ fn deeper_native_domain_and_progressive_queries_use_the_same_option() {
         if progressive {
             args.push("--stream");
         }
-        let refused = run(&args);
+        let refused = CLI.run(&args);
         assert_eq!(refused.status.code(), Some(2));
         assert!(refused.stdout.is_empty());
 
         args.extend(["--binding-depth", "32"]);
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",

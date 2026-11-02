@@ -5,7 +5,7 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::canonical_fixed_sql_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_fixed_sql_before_change as model;
 
 fn run(path: &Path, journal: &Path, sql: &str) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

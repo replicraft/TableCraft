@@ -12,7 +12,9 @@ use std::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::FieldConstraintViolation;
-use tablecraft_testkit::access::canonical_creation_properties::{self as sources, Violation};
+use tablecraft_testkit::fixtures::access::canonical_creation_properties::{
+    self as sources, Violation,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(218);
 

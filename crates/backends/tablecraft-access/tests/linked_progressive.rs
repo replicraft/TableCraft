@@ -1,8 +1,8 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as target_fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 
 #[path = "linked_progressive/boundaries.rs"]
 mod boundaries;

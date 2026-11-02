@@ -10,7 +10,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_owned_growth::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_owned_growth::{self as sources, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(147);
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];

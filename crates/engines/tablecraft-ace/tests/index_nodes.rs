@@ -1,11 +1,9 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "composite_indexes/fixture.rs"]
-mod fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as fixture;
 #[path = "index_nodes/large.rs"]
 mod large;
 #[path = "index_nodes/limits.rs"]
 mod limits;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     io::Cursor,

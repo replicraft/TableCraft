@@ -1,9 +1,8 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "mutation/non_unique.rs"]
 mod non_unique;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[path = "mutation/tree_fixture.rs"]
 mod tree_fixture;
 #[path = "mutation/unowned.rs"]

@@ -8,8 +8,10 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_indexed_before_change as baseline;
-use tablecraft_testkit::access::canonical_tree_before_change::{self as model, Case, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_indexed_before_change as baseline;
+use tablecraft_testkit::fixtures::access::canonical_tree_before_change::{
+    self as model, Case, Recipe,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(98);
 const ORIGINAL: [[i32; 2]; 3] = [[1, 10], [2, 20], [3, 30]];

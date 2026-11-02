@@ -13,7 +13,7 @@ use data::{append_record, data_page, map_page, record};
 use index::{index_page, separator};
 use keys::entries;
 use schema::definition;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 const PAGE: usize = 4096;
 const ROWS: usize = 64;

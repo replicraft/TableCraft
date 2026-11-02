@@ -1,17 +1,18 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn eval_builtin_uses_shared_context_and_keeps_output_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Eval('15+3'),Eval('Chr$(65)'),Eval('Eval(''CVErr(2001)'')'),Eval('Month(Date())')",
-            "--clock",
-            "2026-10-21T13:14:15",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Eval('15+3'),Eval('Chr$(65)'),Eval('Eval(''CVErr(2001)'')'),Eval('Month(Date())')",
+                "--clock",
+                "2026-10-21T13:14:15",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -28,7 +29,7 @@ fn eval_builtin_uses_shared_context_and_keeps_output_buffered() {
             row.iter().collect::<Vec<_>>(),
             ["18", "\"A\"", "#ERROR(2001)", "10"]
         );
-        let result = run(&["query", mode, "SELECT Eval('Rnd()'),Eval('Rnd(0)')"]);
+        let result = CLI.run(&["query", mode, "SELECT Eval('Rnd()'),Eval('Rnd(0)')"]);
         assert!(result.status.success());
         let row = csv::ReaderBuilder::new()
             .delimiter(b'\t')
@@ -52,7 +53,7 @@ fn eval_builtin_uses_shared_context_and_keeps_output_buffered() {
             "Eval('IIf(True,1,1/0)')",
             "Eval('15+3'),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

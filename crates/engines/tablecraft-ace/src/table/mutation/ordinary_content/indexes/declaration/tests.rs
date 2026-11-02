@@ -5,7 +5,7 @@ use crate::{EditError, NativeImage, WriteBlocker, inspect_table_indexes, read_ta
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_ordinary_indexed::{self as sources, Case},
     data_page,
 };

@@ -1,9 +1,8 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
 mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "saved_query_definitions/crosstabs.rs"]
 mod crosstabs;
@@ -36,6 +35,8 @@ use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -72,7 +73,7 @@ impl Drop for Database {
 #[test]
 fn explicit_saved_query_inspection_retains_inert_fragments_and_quoted_null_distinctions() {
     let db = Database::new(fixture::database());
-    let result = cli_support::run(&["inspect", db.path(), "--query", "Saved"]);
+    let result = CLI.run(&["inspect", db.path(), "--query", "Saved"]);
     assert!(
         result.status.success(),
         "{}",
@@ -87,7 +88,7 @@ fn explicit_saved_query_inspection_retains_inert_fragments_and_quoted_null_disti
         "200\t\"\"\"NeverRunMe()\\t\\n\\u{0000}é🦀\"\"\"\t-32768\t-2147483648\t\"\"\"NULL\"\"\"\t\"\"\"\"\"\"\t0x09080706\n"
     ));
     assert!(text.ends_with("NULL\tNULL\tNULL\tNULL\tNULL\tNULL\t0x\n"));
-    let result = cli_support::run(&["-vv", "inspect", db.path(), "--query", "Saved"]);
+    let result = CLI.run(&["-vv", "inspect", db.path(), "--query", "Saved"]);
     assert!(result.status.success());
     let diagnostics = String::from_utf8(result.stderr).unwrap();
     for private in [db.path(), "Saved", "NeverRunMe"] {
@@ -113,16 +114,16 @@ fn saved_query_mode_conflicts_and_non_query_names_do_not_fall_back_to_other_insp
     ] {
         let mut args = vec!["inspect", db.path(), "--query", "Saved"];
         args.extend(options);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2), "{args:?}");
         assert!(result.stdout.is_empty());
     }
     for name in ["Items", "missing"] {
-        let result = cli_support::run(&["inspect", db.path(), "--query", name]);
+        let result = CLI.run(&["inspect", db.path(), "--query", name]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
-    let result = cli_support::run(&["inspect", db.path(), "--query", "Empty"]);
+    let result = CLI.run(&["inspect", db.path(), "--query", "Empty"]);
     assert!(result.status.success());
     assert!(
         String::from_utf8(result.stdout)
@@ -140,7 +141,7 @@ fn late_system_table_corruption_publishes_no_query_metadata() {
         4,
     );
     let db = Database::new(bytes);
-    let result = cli_support::run(&["inspect", db.path(), "--query", "Saved"]);
+    let result = CLI.run(&["inspect", db.path(), "--query", "Saved"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
@@ -188,7 +189,7 @@ fn saved_select_command_prints_owned_syntax_without_resolving_or_running_calls()
         for prefix in [vec![], vec!["-vv"]] {
             let mut args = prefix;
             args.extend(["query", "saved", "--database", db.path(), "sAvEd"]);
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert!(
                 result.status.success(),
                 "{}",
@@ -251,11 +252,11 @@ fn saved_select_requires_explicit_arguments_and_rejects_execution_or_write_optio
             db.path(),
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2), "{args:?}");
         assert!(result.stdout.is_empty());
     }
-    let help = cli_support::run(&["query", "saved", "--help"]);
+    let help = CLI.run(&["query", "saved", "--help"]);
     assert!(help.status.success());
     let text = String::from_utf8(help.stdout).unwrap();
     assert!(text.contains("without executing"));
@@ -267,12 +268,12 @@ fn saved_select_requires_explicit_arguments_and_rejects_execution_or_write_optio
 fn saved_select_failures_remain_buffered_and_never_fall_back_to_raw_or_execution_modes() {
     let db = Database::new(select_database());
     for name in ["Items", "missing", "Empty"] {
-        let result = cli_support::run(&["query", "saved", "--database", db.path(), name]);
+        let result = CLI.run(&["query", "saved", "--database", db.path(), name]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
     let opaque = Database::new(fixture::database());
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "-vv",
         "query",
         "saved",
@@ -293,7 +294,7 @@ fn saved_select_failures_remain_buffered_and_never_fall_back_to_raw_or_execution
         7,
     );
     let corrupt = Database::new(bytes);
-    let result = cli_support::run(&["query", "saved", "--database", corrupt.path(), "Saved"]);
+    let result = CLI.run(&["query", "saved", "--database", corrupt.path(), "Saved"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
@@ -303,7 +304,7 @@ fn saved_select_command_retains_the_registered_examples_leading_digit_source_nam
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let before = std::fs::read(&path).unwrap();
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "saved",
         "--database",
@@ -346,7 +347,7 @@ fn saved_parameter_declarations_print_without_values_or_prompts_and_unknown_type
             ],
             0x80000000,
         ));
-        let result = cli_support::run(&["-vv", "query", "saved", "--database", db.path(), "Saved"]);
+        let result = CLI.run(&["-vv", "query", "saved", "--database", db.path(), "Saved"]);
         if flag == 4 || flag == 0 {
             assert!(
                 result.status.success(),

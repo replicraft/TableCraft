@@ -1,4 +1,4 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 #[path = "database_collation/union_numeric.rs"]
 mod union_numeric;
@@ -7,7 +7,8 @@ use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture {
@@ -67,7 +68,7 @@ impl Fixture {
             "database",
         ];
         args.extend(extra);
-        run(&args)
+        CLI.run(&args)
     }
 }
 impl Drop for Fixture {
@@ -98,7 +99,7 @@ fn database_policy_drives_queries_and_selected_indexes_without_becoming_default(
         String::from_utf8_lossy(&result.stderr)
     );
     assert_eq!(result.stdout, b"Eq\tMatchValue\tFound\nTRUE\tTRUE\t5\n");
-    let absent = run(&[
+    let absent = CLI.run(&[
         "query",
         "run",
         "SELECT 'a'='A' AS R",
@@ -146,7 +147,7 @@ fn database_policy_requires_native_input_accepts_collection_flags_and_rejects_wr
             "database",
         ],
     ] {
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
     }
@@ -165,7 +166,7 @@ fn database_policy_requires_native_input_accepts_collection_flags_and_rejects_wr
         );
         assert_eq!(result.stdout, b"N\n38\n");
     }
-    let result = run(&["query", "run", "--help"]);
+    let result = CLI.run(&["query", "run", "--help"]);
     assert!(result.status.success());
     assert!(
         String::from_utf8(result.stdout)
@@ -210,7 +211,7 @@ fn unknown_field_orders_allow_projection_but_never_silently_compare() {
         assert!(!rejected.status.success());
         assert!(rejected.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&rejected.stderr).contains(fixture.path()));
-        let override_result = run(&[
+        let override_result = CLI.run(&[
             "query",
             "run",
             "SELECT NBR_VALUE='2' AS R FROM ROULETTE_TB WHERE ORDR_NBR=1",

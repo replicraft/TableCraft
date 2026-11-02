@@ -9,7 +9,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::inspect_v1;
-use tablecraft_testkit::access::genuine_ordinary_insert_feff::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert_feff::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

@@ -1,6 +1,6 @@
 //! Actual prior independent page/placement owners, with new row/key inputs.
 use super::{Family, PAGE, Row, frames, keys};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(super) fn original(
     rows: &[Row],

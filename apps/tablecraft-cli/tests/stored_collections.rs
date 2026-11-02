@@ -1,4 +1,6 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn explicit_attachment_allowances_require_the_decoded_native_view_and_valid_sizes() {
@@ -43,7 +45,7 @@ fn explicit_attachment_allowances_require_the_decoded_native_view_and_valid_size
             "3145728",
         ],
     ] {
-        let result = support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8_lossy(&result.stderr).contains("--attachment-bytes"));
@@ -53,9 +55,9 @@ fn explicit_attachment_allowances_require_the_decoded_native_view_and_valid_size
 #[test]
 fn stored_collection_modes_require_one_explicit_table_and_exclude_other_modes() {
     for option in ["--attachments", "--version-history"] {
-        let help = support::run(&["inspect", "--help"]);
+        let help = CLI.run(&["inspect", "--help"]);
         assert!(String::from_utf8(help.stdout).unwrap().contains(option));
-        let missing = support::run(&["inspect", "missing.accdb", option, "Field"]);
+        let missing = CLI.run(&["inspect", "missing.accdb", option, "Field"]);
         assert_eq!(missing.status.code(), Some(2));
         assert!(missing.stdout.is_empty());
         assert!(String::from_utf8_lossy(&missing.stderr).contains("--table"));
@@ -69,7 +71,7 @@ fn stored_collection_modes_require_one_explicit_table_and_exclude_other_modes() 
             "--relationships",
             "--catalog",
         ] {
-            let result = support::run(&[
+            let result = CLI.run(&[
                 "inspect",
                 "missing.accdb",
                 "--table",
@@ -89,7 +91,7 @@ fn stored_collection_modes_require_one_explicit_table_and_exclude_other_modes() 
             ("--attachments", "Other"),
             ("--version-history", "Other"),
         ] {
-            let result = support::run(&[
+            let result = CLI.run(&[
                 "inspect",
                 "missing.accdb",
                 "--table",

@@ -3,7 +3,7 @@ use crate::{EditError, NativeEditPlan, RowInsert, WriteBlocker};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_text_cardinality as sources;
+use tablecraft_testkit::fixtures::access::genuine_text_cardinality as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(229);
 

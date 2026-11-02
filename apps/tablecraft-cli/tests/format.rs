@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn format_states_keep_control_precedence_and_failed_stdout_atomic() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Len(Format(CLng(CVErr(11)),'0')) AS N,Len(Format(CStr(CVErr(11)),'@')) AS T",
@@ -26,7 +26,7 @@ fn format_states_keep_control_precedence_and_failed_stdout_atomic() {
             ("Format(CVErr(11),'0',1/0)", "division by zero"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql, "--number-format", "en-US"]);
+            let result = CLI.run(&["query", mode, &sql, "--number-format", "en-US"]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(
@@ -40,13 +40,14 @@ fn format_states_keep_control_precedence_and_failed_stdout_atomic() {
 #[test]
 fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Format(1234,'#,##0.00') AS N,Format(-12,'0;(0)') AS S,Format(23,,1,1) AS D,Format(Null,'0;0;0;\"missing\"') AS Z",
-            "--number-format",
-            "en-US",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Format(1234,'#,##0.00') AS N,Format(-12,'0;(0)') AS S,Format(23,,1,1) AS D,Format(Null,'0;0;0;\"missing\"') AS Z",
+                "--number-format",
+                "en-US",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -70,7 +71,7 @@ fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
             "Format(1,Null)",
             "Format(*)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -86,13 +87,14 @@ fn custom_format_sections_and_optional_slots_execute_in_both_query_commands() {
 #[test]
 fn date_serial_numeric_formats_do_not_need_calendar_text_settings() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Format(#2025-01-01 12:00:00#,'0.00'),Format(#1899-12-29 06:00:00#,'General Number')",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Format(#2025-01-01 12:00:00#,'0.00'),Format(#1899-12-29 06:00:00#,'General Number')",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -115,13 +117,14 @@ fn date_serial_numeric_formats_do_not_need_calendar_text_settings() {
 #[test]
 fn interleaved_numeric_masks_preserve_literal_positions_and_buffer_later_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Format(12345,'00-00'),Format(12.345,'0.0\"x\"0'),Format(1,'0#'),Eval(\"Format(12,'00-00')\")",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Format(12345,'00-00'),Format(12.345,'0.0\"x\"0'),Format(1,'0#'),Eval(\"Format(12,'00-00')\")",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -138,7 +141,7 @@ fn interleaved_numeric_masks_preserve_literal_positions_and_buffer_later_failure
             row.iter().collect::<Vec<_>>(),
             ["\"123-45\"", "\"12,3x5\"", "\"01\"", "\"00-12\""]
         );
-        let failed = run(&[
+        let failed = CLI.run(&[
             "query",
             mode,
             "SELECT Format(12,'00-00'),1/0",

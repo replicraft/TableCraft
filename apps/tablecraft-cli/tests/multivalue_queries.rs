@@ -1,19 +1,19 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-use cli_support::run;
 use std::{
     fs,
     io::Write,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const FORMAT_VERSION_OFFSET: usize = 20;
 const PAGE_BYTES: usize = 4096;
@@ -56,7 +56,7 @@ fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changin
         let mut bytes = links_fixture::populated();
         bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Score.Value AS V FROM Items ORDER BY Id,V",
@@ -71,7 +71,7 @@ fn explicit_multivalue_queries_flatten_all_priority_ace_profiles_without_changin
         );
         assert_eq!(result.stdout, b"Id\tV\n1\t100\n1\t101\n2\t200\n3\tNULL\n");
         assert!(result.stderr.is_empty());
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Count(Score.Value) AS N FROM Items GROUP BY Id ORDER BY Id",
@@ -100,7 +100,7 @@ fn invalid_scope_and_selected_index_never_publish_partial_results() {
             "--multivalues",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -118,12 +118,12 @@ fn invalid_scope_and_selected_index_never_publish_partial_results() {
     ] {
         let mut args = vec!["query", "run", sql, "--database", database.path()];
         args.extend(options);
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert!(!output.status.success(), "{sql}");
         assert!(output.stdout.is_empty(), "{sql}");
     }
     // Unprojected ordering members already drive aligned child expansion.
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items WHERE Score.Value=100 ORDER BY Score.Value",
@@ -159,7 +159,7 @@ fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
                 &b"N\n1\n"[..],
             ),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -190,7 +190,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
         bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes.clone());
         let sql = "SELECT Id,Score.FileData AS Data FROM Items";
-        let raw = run(&[
+        let raw = CLI.run(&[
             "query",
             "run",
             sql,
@@ -219,7 +219,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             .as_bytes()
         );
 
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             sql,
@@ -237,7 +237,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             result.stdout,
             b"Id\tData\n1\t0x000102ff\n1\tNULL\n2\t0x\n3\tNULL\n"
         );
-        let hidden = run(&[
+        let hidden = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Score.FileData AS Data FROM Items WHERE Score.FileFlags<0",
@@ -252,30 +252,32 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             String::from_utf8_lossy(&hidden.stderr)
         );
         assert_eq!(hidden.stdout, b"Id\tData\n1\t0x000102ff\n2\t0x\n");
-        let joined = run(&[
-            "query",
-            "run",
-            "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL",
-            "--database",
-            database.path(),
-            "--collections",
-            "--decoded-attachments",
-        ]);
+        let joined = CLI.run(&[
+                "query",
+                "run",
+                "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE A.Score.FileFlags<0 AND B.Score.FileData IS NULL",
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ],
+        );
         assert!(
             joined.status.success(),
             "{}",
             String::from_utf8_lossy(&joined.stderr)
         );
         assert_eq!(joined.stdout, b"Parent\tOther\n1\t1\n");
-        let mixed = run(&[
-            "query",
-            "run",
-            "SELECT A.Id AS Parent,A.Score.FileData AS Data,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL ORDER BY A.Id",
-            "--database",
-            database.path(),
-            "--collections",
-            "--decoded-attachments",
-        ]);
+        let mixed = CLI.run(&[
+                "query",
+                "run",
+                "SELECT A.Id AS Parent,A.Score.FileData AS Data,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL ORDER BY A.Id",
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ],
+        );
         assert!(
             mixed.status.success(),
             "{}",
@@ -289,7 +291,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "TRANSFORM Count(*) SELECT Id FROM Items WHERE Score.FileData IS NULL GROUP BY Id PIVOT Id",
             "TRANSFORM Count(A.Score.FileData) SELECT A.Id FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE B.Score.FileData IS NULL GROUP BY A.Id PIVOT A.Id IN (1,2,3)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -305,45 +307,48 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             );
             assert_eq!(result.stdout, b"Id\t1\t2\t3\n1\t1\tNULL\tNULL\n");
         }
-        let nested = run(&[
-            "query",
-            "run",
-            "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE EXISTS(SELECT 1 WHERE A.Score.FileData IS NULL)",
-            "--database",
-            database.path(),
-            "--collections",
-            "--decoded-attachments",
-        ]);
+        let nested = CLI.run(&[
+                "query",
+                "run",
+                "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id WHERE EXISTS(SELECT 1 WHERE A.Score.FileData IS NULL)",
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ],
+        );
         assert!(
             nested.status.success(),
             "{}",
             String::from_utf8_lossy(&nested.stderr)
         );
         assert_eq!(nested.stdout, b"Parent\tOther\n1\t1\n");
-        let joined_children = run(&[
-            "query",
-            "run",
-            "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id AND A.Score.FileData IS NOT NULL ORDER BY A.Id",
-            "--database",
-            database.path(),
-            "--collections",
-            "--decoded-attachments",
-        ]);
+        let joined_children = CLI.run(&[
+                "query",
+                "run",
+                "SELECT A.Id AS Parent,B.Id AS Other FROM Items AS A INNER JOIN Items AS B ON A.Id=B.Id AND A.Score.FileData IS NOT NULL ORDER BY A.Id",
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ],
+        );
         assert!(
             joined_children.status.success(),
             "{}",
             String::from_utf8_lossy(&joined_children.stderr)
         );
         assert_eq!(joined_children.stdout, b"Parent\tOther\n1\t1\n2\t2\n");
-        let aligned_hidden = run(&[
-            "query",
-            "run",
-            "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NULL AND Score.FileFlags<0)",
-            "--database",
-            database.path(),
-            "--collections",
-            "--decoded-attachments",
-        ]);
+        let aligned_hidden = CLI.run(&[
+                "query",
+                "run",
+                "SELECT Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NULL AND Score.FileFlags<0)",
+                "--database",
+                database.path(),
+                "--collections",
+                "--decoded-attachments",
+            ],
+        );
         assert!(
             aligned_hidden.status.success(),
             "{}",
@@ -356,7 +361,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
         ] {
             let mut command = vec!["query", "run", sql, "--database", database.path()];
             command.extend(options);
-            let result = run(&command);
+            let result = CLI.run(&command);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
@@ -374,7 +379,7 @@ fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
             "SELECT TOP 1 A.Id FROM Items AS A INNER JOIN Items AS B ON False AND A.Score.FileData IS NOT NULL",
             "SELECT TOP 1 Id FROM Items WHERE EXISTS(SELECT 1 WHERE Score.FileData IS NOT NULL AND Score.FileFlags<0)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -394,7 +399,7 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
         let mut bytes = attachment_fixture::database();
         bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id,Count(Score.FileType) AS N FROM Items GROUP BY Id ORDER BY Id",
@@ -410,7 +415,7 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
         assert_eq!(result.stdout, b"Id\tN\n1\t1\n2\t1\n3\t0\n");
         {
             let sql = "SELECT * FROM Items";
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 sql,
@@ -423,7 +428,7 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
         }
     }
     let database = Database::new(links_fixture::populated());
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Score.Value AS V FROM Items",
@@ -457,7 +462,7 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
             "--multivalues",
         ],
     ] {
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
     }
@@ -481,7 +486,7 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
             bytes[at..at + 4].copy_from_slice(&order);
         }
         let database = Database::new(bytes);
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id FROM Items WHERE Score.FileType='FIELD/TYPE'",
@@ -497,7 +502,7 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"Id\n1\n");
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Count(Score.FileData) AS N FROM Items",
@@ -514,7 +519,7 @@ fn database_collation_resolves_collection_members_and_buffers_unknown_policy_fai
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"N\n2\n");
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Score.FileURL='x' FROM Items",
@@ -540,7 +545,7 @@ fn attachment_presence_criteria_work_across_priority_profiles_without_payload_de
             ("Score IS NOT NULL", &b"Id\n1\n2\n"[..]),
         ] {
             let sql = format!("SELECT Id FROM Items WHERE {predicate} ORDER BY Id");
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 &sql,
@@ -555,7 +560,7 @@ fn attachment_presence_criteria_work_across_priority_profiles_without_payload_de
             );
             assert_eq!(result.stdout, expected);
         }
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id FROM Items WHERE Score IS NULL OR 1/0",
@@ -575,7 +580,7 @@ fn domain_presence_counts_parents_and_buffers_errors_across_priority_profiles() 
         bytes[FORMAT_VERSION_OFFSET] = code;
         let database = Database::new(bytes);
         let sql = "SELECT DCount('*','Items','Score IS NULL') AS Missing,DCount('*','Items','Score IS NOT NULL') AS Present,DSum('Id','Items','Score IS NOT NULL') AS Total";
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             sql,
@@ -590,7 +595,7 @@ fn domain_presence_counts_parents_and_buffers_errors_across_priority_profiles() 
         );
         assert_eq!(result.stdout, b"Missing\tPresent\tTotal\n1\t2\t3\n");
 
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 1,DLookup('Id','Items','Score IS NOT NULL OR 1/0')",
@@ -612,7 +617,7 @@ fn composed_attachment_presence_keeps_scalar_calls_domain_criteria_and_buffering
         "CBool(Score IS NULL)",
     ] {
         let sql = format!("SELECT Id FROM Items WHERE {predicate}");
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             &sql,
@@ -627,7 +632,7 @@ fn composed_attachment_presence_keeps_scalar_calls_domain_criteria_and_buffering
         );
         assert_eq!(result.stdout, b"Id\n3\n");
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT DCount('*','Items','IIf(Score IS NULL,True,False)') AS N",
@@ -642,7 +647,7 @@ fn composed_attachment_presence_keeps_scalar_calls_domain_criteria_and_buffering
     );
     assert_eq!(result.stdout, b"N\n1\n");
 
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items WHERE IIf(Score IS NULL,True,1/0)",
@@ -679,7 +684,7 @@ fn bare_multivalue_queries_publish_parent_lists_and_keep_hidden_criteria_complet
                     &b"Score\tN\tNextId\n[]\t3\t4\n[200]\t2\t3\n[100, 101]\t1\t2\n"[..],
                 ),
             ] {
-                let output = run(&["query", "run", sql, "--database", database.path(), flag]);
+                let output = CLI.run(&["query", "run", sql, "--database", database.path(), flag]);
                 assert!(
                     output.status.success(),
                     "{}",
@@ -709,7 +714,7 @@ fn bare_list_output_distinguishes_null_members_duplicates_and_empty_lists() {
     bytes[CHILD_DATA_PAGE * PAGE_BYTES..(CHILD_DATA_PAGE + 1) * PAGE_BYTES]
         .copy_from_slice(&support::data_page(CHILD_DEFINITION_PAGE, &rows));
     let database = Database::new(bytes);
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT Id,Score FROM Items ORDER BY Id",
@@ -742,11 +747,11 @@ fn unsupported_list_operations_and_output_exhaustion_publish_no_prefix() {
         if sql != "SELECT Id,Score FROM Items" {
             args.push("--multivalues");
         }
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert!(!output.status.success(), "{sql}");
         assert!(output.stdout.is_empty(), "{sql}");
     }
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT Id,Score FROM Items ORDER BY Id",

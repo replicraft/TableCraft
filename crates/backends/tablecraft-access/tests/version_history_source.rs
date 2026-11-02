@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -9,7 +9,7 @@ mod compression;
 mod fixture;
 #[path = "version_history_source/mixed.rs"]
 mod mixed;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[path = "version_history_source/visible_memo.rs"]
 mod visible_memo;
 

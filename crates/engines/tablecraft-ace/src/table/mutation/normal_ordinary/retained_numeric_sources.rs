@@ -4,7 +4,7 @@ use sha2::{Digest, Sha256};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_retained_numeric;
+use tablecraft_testkit::fixtures::access::genuine_retained_numeric;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

@@ -13,7 +13,7 @@ use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::genuine_recursive_retirement as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_recursive_retirement as fixtures;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(2_000_000_000, 10_000_000, 2_000_000_000)

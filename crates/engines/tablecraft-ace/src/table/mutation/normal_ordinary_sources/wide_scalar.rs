@@ -8,7 +8,7 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_wide_insert as sources;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(215);
 

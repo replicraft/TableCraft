@@ -5,13 +5,13 @@ mod agile_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 
-use cli_support::run;
 use std::{fs, path::PathBuf, process::Output};
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const FORMAT_OFFSET: usize = 20;
 const PAGE_BYTES: usize = 4096;
@@ -55,7 +55,7 @@ impl Database {
             arguments.extend(["--recomputed-column", "Fresh", "Items", column]);
         }
         arguments.extend_from_slice(extra);
-        run(&arguments)
+        CLI.run(&arguments)
     }
 }
 
@@ -251,7 +251,7 @@ fn duplicate_columns_existing_names_and_inconsistent_tables_are_refused() {
         &["Id"],
         &["--recomputed-column", "Fresh", "Other", "Id"],
     ));
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items",
@@ -267,7 +267,7 @@ fn duplicate_columns_existing_names_and_inconsistent_tables_are_refused() {
 
 #[test]
 fn help_and_argument_refusals_expose_explicit_local_views() {
-    let help = success(run(&["query", "run", "--help"]));
+    let help = success(CLI.run(&["query", "run", "--help"]));
     let help = String::from_utf8(help).unwrap();
     assert!(help.contains("--recomputed-column <VIEW> <TABLE> <COLUMN>"));
 
@@ -288,7 +288,7 @@ fn help_and_argument_refusals_expose_explicit_local_views() {
             "Id",
         ];
         arguments.extend(extra);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(String::from_utf8_lossy(&output.stderr).contains("cannot be used with"));
         failure(output);
     }

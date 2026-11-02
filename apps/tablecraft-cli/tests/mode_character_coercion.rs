@@ -1,16 +1,18 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_mode_and_character_slots_share_explicit_numeric_policy() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Asc(Chr('65,5')),AscW(ChrW('65,5')),AscB(ChrB('65,5')),StrComp('10','2','0,5'),InStr(1,'abc','b','0,5'),Replace('banana','an','X','2,5','2,5','0,5')",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Asc(Chr('65,5')),AscW(ChrW('65,5')),AscB(ChrB('65,5')),StrComp('10','2','0,5'),InStr(1,'abc','b','0,5'),Replace('banana','an','X','2,5','2,5','0,5')",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -27,7 +29,7 @@ fn cli_mode_and_character_slots_share_explicit_numeric_policy() {
             row.iter().collect::<Vec<_>>(),
             ["66", "66", "66", "-1", "2", "\"XXa\""]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Asc(Chr('128'))",
@@ -42,7 +44,7 @@ fn cli_mode_and_character_slots_share_explicit_numeric_policy() {
             "SELECT 99,ChrW(55296)",
             "SELECT StrComp(NULL,1/0,'bad')",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

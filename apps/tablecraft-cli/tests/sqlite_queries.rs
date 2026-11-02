@@ -1,10 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -36,7 +37,7 @@ impl Fixture {
         self.path.to_str().unwrap()
     }
     fn query(&self, sql: &str) -> std::process::Output {
-        run(&["query", "run", "--sqlite", self.path(), sql])
+        CLI.run(&["query", "run", "--sqlite", self.path(), sql])
     }
 }
 impl Drop for Fixture {
@@ -60,7 +61,7 @@ fn sqlite_queries_use_access_top_concat_parameters_and_join_semantics() {
         output.stdout,
         b"ID\tCaption\n3\t\"\"\"three!\"\"\"\n2\t\"\"\"two!\"\"\"\n"
     );
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "--sqlite",
@@ -85,7 +86,7 @@ fn sqlite_queries_use_access_top_concat_parameters_and_join_semantics() {
 fn sqlite_snapshots_use_host_general_policy_without_native_sqlite_collation() {
     let fixture = Fixture::new();
     for policy in ["general-legacy", "general-2010"] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "--sqlite",
@@ -131,6 +132,6 @@ fn sqlite_errors_are_buffered_redacted_and_never_execute_writes() {
             "SELECT * FROM Items",
         ];
         arguments.extend(extra);
-        assert_eq!(run(&arguments).status.code(), Some(2));
+        assert_eq!(CLI.run(&arguments).status.code(), Some(2));
     }
 }

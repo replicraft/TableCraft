@@ -1,11 +1,12 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn verbose_diagnostics_keep_stdout_and_omit_query_payloads() {
     let sql = "SELECT 'private-value-91' AS [private-column-37]";
-    let quiet = run(&["query", "run", sql]);
-    let verbose = run(&["-v", "query", "run", sql]);
+    let quiet = CLI.run(&["query", "run", sql]);
+    let verbose = CLI.run(&["-v", "query", "run", sql]);
     assert!(quiet.status.success() && verbose.status.success());
     assert!(quiet.stderr.is_empty());
     assert_eq!(quiet.stdout, verbose.stdout);
@@ -21,7 +22,7 @@ fn verbose_diagnostics_keep_stdout_and_omit_query_payloads() {
     for payload in [sql, "private-value-91", "private-column-37"] {
         assert!(!logs.contains(payload));
     }
-    let failure = run(&["-v", "query", "run", "SELECT 1 / 0 AS [private-error-12]"]);
+    let failure = CLI.run(&["-v", "query", "run", "SELECT 1 / 0 AS [private-error-12]"]);
     assert_eq!(failure.status.code(), Some(2));
     assert!(failure.stdout.is_empty());
     let logs = String::from_utf8(failure.stderr).unwrap();
@@ -34,8 +35,8 @@ fn trace_detail_omits_native_paths_and_names() {
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let path = path.to_str().unwrap();
     let sql = "SELECT TOP 1 ORDR_NBR FROM ROULETTE_TB ORDER BY ORDR_NBR";
-    let debug = run(&["-v", "query", "run", "--database", path, sql]);
-    let trace = run(&["-vv", "query", "run", "--database", path, sql]);
+    let debug = CLI.run(&["-v", "query", "run", "--database", path, sql]);
+    let trace = CLI.run(&["-vv", "query", "run", "--database", path, sql]);
     assert!(debug.status.success() && trace.status.success());
     assert_eq!(debug.stdout, trace.stdout);
     let debug = String::from_utf8(debug.stderr).unwrap();

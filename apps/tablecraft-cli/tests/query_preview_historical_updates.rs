@@ -1,5 +1,5 @@
 //! Real SQL UPDATE consumes the exact engine-owned historical literal model.
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/src/table/mutation/fixed/historical_columns/model.rs"]
 mod model;
 

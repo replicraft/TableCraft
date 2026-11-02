@@ -1,7 +1,7 @@
 //! SOURCE-only barrier and CI anchors for independently qualified Rust goldens.
 use sha2::{Digest, Sha256};
 use std::{fs, path::PathBuf};
-use tablecraft_testkit::access::canonical_creation::{CASES, Source, source};
+use tablecraft_testkit::fixtures::access::canonical_creation::{CASES, Source, source};
 
 fn checked_sources() -> [Source; 6] {
     let frozen_hashes = [

@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn rgb_checks_integer_channels_before_saturation_and_keeps_stdout_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&["query", mode, "SELECT RGB(32767,32767,32767) AS C"]);
+        let result = CLI.run(&["query", mode, "SELECT RGB(32767,32767,32767) AS C"]);
         assert!(result.status.success());
         assert_eq!(result.stdout, b"C\n16777215\n");
 
@@ -17,7 +17,7 @@ fn rgb_checks_integer_channels_before_saturation_and_keeps_stdout_buffered() {
             ("RGB(-32768,0,0)", "invalid arithmetic domain"),
             ("RGB(32768,1/0,0)", "division by zero"),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -34,7 +34,7 @@ fn rgb_checks_integer_channels_before_saturation_and_keeps_stdout_buffered() {
 #[test]
 fn packed_color_queries_work_in_both_paths_without_runtime_context() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT RGB(1,2,3) AS Packed,QBColor(4) AS DarkRed,RGB(999,0,0) AS Clamped",
@@ -73,7 +73,7 @@ fn packed_color_queries_work_in_both_paths_without_runtime_context() {
             "IIf(False,QBColor(16),0)",
             "RGB(1,2,3),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -91,7 +91,7 @@ fn palette_integer_conversion_errors_remain_buffered_and_differ_from_domain_fail
             ("32767", "invalid arithmetic domain"),
             ("-32768", "invalid arithmetic domain"),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,QBColor({input})"),

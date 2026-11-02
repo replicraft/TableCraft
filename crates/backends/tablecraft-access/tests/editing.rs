@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 use std::io::Cursor;
 use tablecraft_access::{NativeEditError, NativeEditor, editing::sql};

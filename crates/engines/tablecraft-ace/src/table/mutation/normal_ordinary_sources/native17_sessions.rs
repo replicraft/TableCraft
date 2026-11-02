@@ -4,7 +4,7 @@ use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_native17_sessions;
+use tablecraft_testkit::fixtures::access::canonical_native17_sessions;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

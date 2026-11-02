@@ -2,7 +2,7 @@
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_mixed_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_mixed_before_change as model;
 
 fn create(path: &Path, bytes: &[u8]) {
     let mut file = fs::OpenOptions::new()

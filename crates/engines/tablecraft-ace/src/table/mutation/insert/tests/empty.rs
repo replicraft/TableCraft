@@ -4,7 +4,7 @@ use crate::{RowInsert, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::insert_seed as source_model;
+use tablecraft_testkit::fixtures::access::insert_seed as source_model;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;

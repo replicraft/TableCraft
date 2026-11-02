@@ -10,7 +10,7 @@ use crate::{
 };
 use std::io::Cursor;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 const PAGE: usize = 4096;
 const FRONTIER: u32 = 512;

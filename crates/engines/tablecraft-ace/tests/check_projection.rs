@@ -1,8 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod composite;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as composite;
 
 use std::{
     collections::BTreeMap,

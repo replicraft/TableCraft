@@ -1,7 +1,7 @@
 //! All-NULL contributions preserve secondary bytes despite ordinary row growth.
 use super::*;
 use crate::table::mutation::insert::{counters, tests::multiple_indexes::model as indexes};
-use tablecraft_testkit::access::multiple_indexes as source_indexes;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_indexes;
 
 fn insertion() -> source_indexes::Row {
     source_indexes::Row {

@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn guidfromstring_returns_byte_array_shape_and_buffers_errors() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA') AS G,VarType(GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA')) AS T,IsArray(GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA')) AS A",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA') AS G,VarType(GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA')) AS T,IsArray(GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA')) AS A",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -40,7 +41,7 @@ fn guidfromstring_returns_byte_array_shape_and_buffers_errors() {
             "VBA.GUIDFromString('invalid')",
             "GUIDFromString('6B29FC40-CA47-1067-B31D-00DD010662DA'),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -50,11 +51,12 @@ fn guidfromstring_returns_byte_array_shape_and_buffers_errors() {
 #[test]
 fn stringfromguid_uses_shared_literal_text_format_and_buffers_refused_calls() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT StringFromGUID(GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')),VarType(StringFromGUID(GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')))",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT StringFromGUID(GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')),VarType(StringFromGUID(GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')))",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -84,7 +86,7 @@ fn stringfromguid_uses_shared_literal_text_format_and_buffers_refused_calls() {
             "VBA.StringFromGUID(1)",
             "StringFromGUID(GUIDFromString('00000000-0000-0000-0000-000000000000')),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -97,7 +99,7 @@ fn guid_structure_equality_runs_in_both_cli_modes_and_buffers_refused_ordering()
     let bytes = "GUIDFromString('00112233-4455-6677-8899-aabbccddeeff')";
     let sql = format!("SELECT {literal}={bytes} AS E,{bytes}<>{literal} AS N");
     for mode in ["eval", "run"] {
-        let result = run(&["query", mode, &sql]);
+        let result = CLI.run(&["query", mode, &sql]);
         assert!(
             result.status.success(),
             "{}",
@@ -111,7 +113,7 @@ fn guid_structure_equality_runs_in_both_cli_modes_and_buffers_refused_ordering()
             format!("IIf(False,{literal}=GUIDFromString('bad'),True)"),
         ] {
             let sql = format!("SELECT {expression}");
-            let refused = run(&["query", mode, &sql]);
+            let refused = CLI.run(&["query", mode, &sql]);
             assert_eq!(refused.status.code(), Some(2));
             assert!(refused.stdout.is_empty());
         }

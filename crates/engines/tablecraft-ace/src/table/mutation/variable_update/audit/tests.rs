@@ -9,8 +9,8 @@ use crate::table::mutation::page_update::stage;
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 const PAGE_BYTES: usize = 4096;
 const ROOT_PAGE: usize = 12;

@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn both_cli_paths_use_explicit_windows_and_keep_the_documented_default() {
@@ -14,7 +15,7 @@ fn both_cli_paths_use_explicit_windows_and_keep_the_documented_default() {
         ] {
             let mut args = vec!["query", mode, sql];
             args.extend(extra);
-            let result = run(&args);
+            let result = CLI.run(&args);
             assert!(
                 result.status.success(),
                 "{}",
@@ -28,7 +29,7 @@ fn both_cli_paths_use_explicit_windows_and_keep_the_documented_default() {
 #[test]
 fn invalid_window_flags_fail_before_native_io_and_errors_remain_buffered() {
     for value in ["198", "10000", "65536", "wrong"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT DateSerial(49,1,1)",
@@ -41,7 +42,7 @@ fn invalid_window_flags_fail_before_native_io_and_errors_remain_buffered() {
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8_lossy(&result.stderr).contains("100-year window"));
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "eval",
         "SELECT 1 AS Before,DateSerial(NULL,1,1)",
@@ -50,7 +51,7 @@ fn invalid_window_flags_fail_before_native_io_and_errors_remain_buffered() {
     ]);
     assert!(!result.status.success());
     assert!(result.stdout.is_empty());
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Year(DateSerial(99,1,1)) AS N",

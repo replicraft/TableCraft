@@ -6,7 +6,7 @@ use crate::{
 };
 use std::cell::Cell;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access as literal;
+use tablecraft_testkit::fixtures::access as literal;
 
 const PAGE: usize = 4096;
 

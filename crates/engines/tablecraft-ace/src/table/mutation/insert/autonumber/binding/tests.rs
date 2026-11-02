@@ -8,7 +8,7 @@ use crate::{
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::insert_seed as source_original;
+use tablecraft_testkit::fixtures::access::insert_seed as source_original;
 
 const LIMITS: [u64; 3] = [256 * 1024 * 1024, 100_000, 100_000_000];
 

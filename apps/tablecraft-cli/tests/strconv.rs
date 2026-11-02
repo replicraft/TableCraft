@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn strconv_expression_state_failures_stay_eager_and_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT LenB(StrConv(CVar(MidB('😀',1,1)),0)),StrConv(CStr(CVErr(11)),2,1033)",
@@ -23,7 +23,7 @@ fn strconv_expression_state_failures_stay_eager_and_buffered() {
             ("StrConv(CVErr(11),0,1/0)", "division by zero"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql]);
+            let result = CLI.run(&["query", mode, &sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(
@@ -50,26 +50,28 @@ fn row(bytes: &[u8]) -> Vec<String> {
 #[test]
 fn strconv_casing_and_raw_string_encoding_work_in_both_query_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT StrConv('hELLO wORLD',3,1033) AS P,StrConv(ChrB(128),64,1033) AS U,LenB(StrConv('é€',128,1033)) AS B,VarType(StrConv('€',128,1033)) AS T",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT StrConv('hELLO wORLD',3,1033) AS P,StrConv(ChrB(128),64,1033) AS U,LenB(StrConv('é€',128,1033)) AS B,VarType(StrConv('€',128,1033)) AS T",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(row(&result.stdout), ["\"Hello World\"", "\"€\"", "2", "8"]);
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT StrConv('i',1,1033) AS E,StrConv('i',1) AS T,AscB(StrConv('€',128,1033)) AS W,AscB(StrConv('€',128)) AS C",
-            "--case-locale",
-            "tr",
-            "--character-code-page",
-            "1251",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT StrConv('i',1,1033) AS E,StrConv('i',1) AS T,AscB(StrConv('€',128,1033)) AS W,AscB(StrConv('€',128)) AS C",
+                "--case-locale",
+                "tr",
+                "--character-code-page",
+                "1251",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -92,7 +94,7 @@ fn strconv_refusals_never_publish_partial_rows() {
             "StrConv('x',1,1033,1/0)",
             "StrConv(,1)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -102,7 +104,7 @@ fn strconv_refusals_never_publish_partial_rows() {
 #[test]
 fn explicit_japanese_widening_precedes_hiragana_in_both_query_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT StrConv('ｶﾞﾊﾟｳﾞ ABC',36,1041) AS S,LenB(StrConv('ｶﾞ',36,1041)) AS B",
@@ -120,7 +122,7 @@ fn explicit_japanese_widening_precedes_hiragana_in_both_query_commands() {
             "StrConv('ｶﾞ',100,1041)",
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let refused = run(&["query", mode, &sql]);
+            let refused = CLI.run(&["query", mode, &sql]);
             assert!(!refused.status.success());
             assert!(refused.stdout.is_empty());
         }

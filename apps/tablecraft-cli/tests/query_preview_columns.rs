@@ -1,8 +1,8 @@
 //! Actual SQL multi-column commands over the source-first nullable tuple owner.
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../crates/backends/tablecraft-access/src/engineering/editor/tests/batch/model.rs"]
 mod model;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{fs, io::Cursor, path::Path, process::Command};
 use tablecraft_ace::read_table;

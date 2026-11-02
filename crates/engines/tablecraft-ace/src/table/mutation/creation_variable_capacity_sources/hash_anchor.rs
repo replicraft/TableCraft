@@ -1,6 +1,6 @@
 //! Ordinary CI anchors for the independently exported complete capacity images.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_variable_capacity_creation;
+use tablecraft_testkit::fixtures::access::canonical_variable_capacity_creation;
 
 #[test]
 fn variable_capacity_originals_retain_two_exported_whole_image_hashes() {

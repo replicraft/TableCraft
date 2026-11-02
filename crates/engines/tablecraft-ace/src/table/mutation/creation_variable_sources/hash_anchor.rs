@@ -1,6 +1,6 @@
 //! CI anchors distinguish positive creation sources from the reader-only alias.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_variable_creation;
+use tablecraft_testkit::fixtures::access::canonical_variable_creation;
 
 fn assert_hash(bytes: &[u8], expected: &str, id: &str) {
     assert_eq!(bytes.len(), 36_864);

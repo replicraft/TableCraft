@@ -10,7 +10,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 95;

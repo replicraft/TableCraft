@@ -11,7 +11,7 @@ use std::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_creation_defaults::{self as sources, Source};
+use tablecraft_testkit::fixtures::access::canonical_creation_defaults::{self as sources, Source};
 
 const SCOPE: CatalogScope = CatalogScope::new(219);
 

@@ -7,7 +7,7 @@ use crate::table::mutation::{
         tests::{long_value_inserts::growth::model as growth, multiple_indexes::model as ordinary},
     },
 };
-use tablecraft_testkit::access::multiple_indexes as source_ordinary;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_ordinary;
 
 fn prepared_growth(
     code: u8,

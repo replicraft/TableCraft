@@ -5,7 +5,7 @@ use std::io::Cursor;
 use tablecraft_ace::{FixedScalarUpdate, NativeFixedIntentGroup, NativeImage, NativeUpdateIntent};
 
 use tablecraft_core::values::{Currency, Value};
-use tablecraft_testkit::access::genuine_wide_update::{self as source, Case};
+use tablecraft_testkit::fixtures::access::genuine_wide_update::{self as source, Case};
 
 #[path = "wide_indexed_update/recovery.rs"]
 mod recovery;

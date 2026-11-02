@@ -1,14 +1,13 @@
 //! Actual user-facing engineering-copy workflows over qualified literal sources.
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "write_previews/model.rs"]
 mod model;
 #[path = "write_previews/set_file.rs"]
 mod set_file;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     fs,

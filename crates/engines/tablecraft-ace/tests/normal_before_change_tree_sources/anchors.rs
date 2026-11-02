@@ -1,6 +1,6 @@
 //! First-export pins, frozen before retained-tree normal writer execution.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_tree_before_change::{Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_tree_before_change::{Recipe, source};
 
 const PINS: &[(u8, Recipe, &str, &str)] = &[
     (

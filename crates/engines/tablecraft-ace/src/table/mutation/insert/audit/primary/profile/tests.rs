@@ -3,7 +3,7 @@ use super::*;
 use crate::NativeImage;
 use tablecraft_core::{limits::ResourceBudget, values::Guid};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes as model;
+use tablecraft_testkit::fixtures::access::multiple_indexes as model;
 
 pub(super) fn with_reader(run: impl FnOnce(&mut Reader<'_, Cursor<&[u8]>>)) {
     let source = model::source(6, false, false);

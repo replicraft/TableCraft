@@ -4,7 +4,7 @@ use crate::{RowInsert, inspect_table_index_counter, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::insert_seed as source_base;
+use tablecraft_testkit::fixtures::access::insert_seed as source_base;
 
 pub(super) mod model;
 

@@ -5,7 +5,9 @@ use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::{canonical_creation, canonical_native17_creation, data_page};
+use tablecraft_testkit::fixtures::access::{
+    canonical_creation, canonical_native17_creation, data_page,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(223);
 

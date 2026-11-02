@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn row(bytes: &[u8]) -> Vec<String> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -17,7 +19,7 @@ fn casing_is_explicit_in_eval_and_run_with_contextual_output() {
     for mode in ["eval", "run"] {
         for (locale, lower, upper) in [("und", "ii\u{307}iı", "IİII"), ("tr", "ıiiı", "IİİI")]
         {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 "SELECT LCase('Iİiı'),UCase('Iİiı'),LCase(NULL),UCase('straße'),LCase('ΟΣ')",
@@ -41,11 +43,11 @@ fn casing_is_explicit_in_eval_and_run_with_contextual_output() {
             );
         }
         for expression in ["LCase('x')", "UCase('')"] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
-        let result = run(&["query", mode, "SELECT LCase(NULL),UCase(NULL)"]);
+        let result = CLI.run(&["query", mode, "SELECT LCase(NULL),UCase(NULL)"]);
         assert!(result.status.success());
         assert_eq!(row(&result.stdout), ["NULL", "NULL"]);
     }
@@ -62,7 +64,7 @@ fn invalid_calls_and_locale_options_do_not_publish_rows() {
             "UCase(*)",
             "IIf(False,LCase(1/0),'x')",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -73,7 +75,7 @@ fn invalid_calls_and_locale_options_do_not_publish_rows() {
             assert!(result.stdout.is_empty());
         }
         for locale in ["en_US", "en-US-u-co-phonebk", ""] {
-            let result = run(&["query", mode, "SELECT 1", "--case-locale", locale]);
+            let result = CLI.run(&["query", mode, "SELECT 1", "--case-locale", locale]);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }

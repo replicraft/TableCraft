@@ -2,6 +2,7 @@
 
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
+- [Shared test fixtures and support](TESTKIT.md)
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
 - [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
 - [Physical secondary-index creation SOURCE qualification](ACE16_SECONDARY_INDEX_CREATION.md)

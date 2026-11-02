@@ -3,15 +3,14 @@
 #[allow(dead_code)]
 #[path = "ace16_fixed_split_contract/model.rs"]
 mod fixed_model;
-use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ace16_split_int32_contract/model.rs"]
 mod root_model;
 #[allow(dead_code)]
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "ace16_index_map_growth_contract/authority.rs"]
 mod authority;

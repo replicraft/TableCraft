@@ -1,7 +1,7 @@
 //! Literal next-INSERT images derived from the existing independent split image.
 use super::super::split::model as split;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE: usize = 4096;
 

@@ -9,7 +9,7 @@ use std::{
 use tablecraft_ace::{IndexCheckStatus, check_table, read_table, read_table_index};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_creation_integral_primary as wide, canonical_creation_primary as i32_sources,
 };
 

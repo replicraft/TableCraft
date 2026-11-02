@@ -1,14 +1,16 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn null_tests_consume_raw_strings_in_both_hosts() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IsNull(ChrW(55296)) AS A,ChrB(65) IS NOT NULL AS B,IsNull(ChrW(55296)+NULL) AS C,CStr(LeftB('😀',1)) IS NULL AS D",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsNull(ChrW(55296)) AS A,ChrB(65) IS NOT NULL AS B,IsNull(ChrW(55296)+NULL) AS C,CStr(LeftB('😀',1)) IS NULL AS D",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -21,7 +23,7 @@ fn null_tests_consume_raw_strings_in_both_hosts() {
             "ChrW(NULL) IS NULL",
             "IsNull(ChrW(55296)+(1/0))",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -40,11 +42,12 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn numeric_inspection_works_in_both_paths_and_failures_publish_nothing() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IsNumeric(0) AS N,IsNumeric(False) AS B,IsNumeric(NULL) AS Z,IsNumeric(#2026-10-20#) AS D",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsNumeric(0) AS N,IsNumeric(False) AS B,IsNumeric(NULL) AS Z,IsNumeric(#2026-10-20#) AS D",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -57,13 +60,14 @@ fn numeric_inspection_works_in_both_paths_and_failures_publish_nothing() {
                 vec!["TRUE", "TRUE", "FALSE", "FALSE"]
             ]
         );
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IsNumeric('53') AS A,IsNumeric('45 Help') AS B,IsNumeric('$1,234.50') AS C,IsNumeric('1e999') AS D",
-            "--number-format",
-            "en-us",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsNumeric('53') AS A,IsNumeric('45 Help') AS B,IsNumeric('$1,234.50') AS C,IsNumeric('1e999') AS D",
+                "--number-format",
+                "en-us",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -83,7 +87,7 @@ fn numeric_inspection_works_in_both_paths_and_failures_publish_nothing() {
             "VBA.IsNumeric(1)",
             "IIf(False,IsNumeric('1'),0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -93,15 +97,16 @@ fn numeric_inspection_works_in_both_paths_and_failures_publish_nothing() {
 #[test]
 fn date_inspection_uses_shared_flags_and_buffers_eager_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IsDate('04/28/2014') AS D,IsDate('13/32/2014') AS X,IsDate(NULL) AS N,IsDate('Feb 29') AS L,IsDate(#2026-10-20#) AS T",
-            "--date-format",
-            "en-us",
-            "--reference-year",
-            "2024",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsDate('04/28/2014') AS D,IsDate('13/32/2014') AS X,IsDate(NULL) AS N,IsDate('Feb 29') AS L,IsDate(#2026-10-20#) AS T",
+                "--date-format",
+                "en-us",
+                "--reference-year",
+                "2024",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -122,11 +127,11 @@ fn date_inspection_uses_shared_flags_and_buffers_eager_failures() {
             "IsDate(1,1/0)",
             "VBA.IsDate(1)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT 1,IsDate('Feb 29')",
@@ -141,7 +146,7 @@ fn date_inspection_uses_shared_flags_and_buffers_eager_failures() {
 #[test]
 fn recognition_handles_error_data_but_preserves_buffered_operational_failure() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT IsNumeric(CVErr(1)) AS N,IsDate(CVErr(1)) AS D,IsNumeric(CLng(CVErr(1))) AS C",
@@ -155,7 +160,7 @@ fn recognition_handles_error_data_but_preserves_buffered_operational_failure() {
             table(&result.stdout),
             [vec!["N", "D", "C"], vec!["FALSE", "FALSE", "TRUE"]]
         );
-        let result = run(&["query", mode, "SELECT 1,IsDate(IIf(True,CVErr(1),1/0))"]);
+        let result = CLI.run(&["query", mode, "SELECT 1,IsDate(IIf(True,CVErr(1),1/0))"]);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8_lossy(&result.stderr).contains("division by zero"));
@@ -170,7 +175,7 @@ fn guid_inspection_has_byte_array_shape_and_bounds_in_both_cli_hosts() {
          LBound({guid}) AS L,UBound({guid}) AS U"
     );
     for mode in ["eval", "run"] {
-        let result = run(&["query", mode, &sql]);
+        let result = CLI.run(&["query", mode, &sql]);
         assert!(
             result.status.success(),
             "{}",
@@ -185,7 +190,7 @@ fn guid_inspection_has_byte_array_shape_and_bounds_in_both_cli_hosts() {
         );
         for expression in [format!("UBound({guid},2)"), format!("UBound({guid},1/0)")] {
             let sql = format!("SELECT {expression}");
-            let refused = run(&["query", mode, &sql]);
+            let refused = CLI.run(&["query", mode, &sql]);
             assert_eq!(refused.status.code(), Some(2));
             assert!(refused.stdout.is_empty());
         }

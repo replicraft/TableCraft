@@ -2,7 +2,7 @@ use super::*;
 use proptest::prelude::*;
 use std::io::Cursor;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_048_576, 1000, 100_000)
@@ -204,7 +204,7 @@ fn database_with_properties(properties: &[u8]) -> Vec<u8> {
             (0, item),
         ],
     );
-    let mut bytes = tablecraft_testkit::access::mutation_fixture::database();
+    let mut bytes = tablecraft_testkit::fixtures::access::mutation_fixture::database();
     bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
     bytes
 }

@@ -7,7 +7,7 @@ use tablecraft_core::{
     values::{Currency, LegacyDateTime, Value},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_content::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_content::{self as model, Case};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

@@ -9,7 +9,7 @@ use crate::{
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_creation as sources;
+use tablecraft_testkit::fixtures::access::canonical_creation as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(123);
 

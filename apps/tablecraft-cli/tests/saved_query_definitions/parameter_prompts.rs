@@ -10,7 +10,7 @@ fn inline_punctuation_prompts_bind_as_names_instead_of_field_or_control_paths() 
         ("NeverRunMe()", "NeverRunMe()=long:2"),
     ] {
         let sql = format!("PARAMETERS [{name}] LONG; SELECT [{name}] AS Chosen");
-        let result = cli_support::run(&["query", "run", &sql, "--param", binding]);
+        let result = CLI.run(&["query", "run", &sql, "--param", binding]);
         assert!(
             result.status.success(),
             "{}",
@@ -24,7 +24,7 @@ fn inline_punctuation_prompts_bind_as_names_instead_of_field_or_control_paths() 
 fn bracketed_assignment_names_preserve_text_values_and_reject_ambiguous_or_malformed_bindings() {
     for (name, binding) in [("P", "P=text:a=b:c"), ("P=Q", "[P=Q]=text:a=b:c")] {
         let sql = format!("PARAMETERS [{name}] TEXT; SELECT [{name}] AS Chosen");
-        let result = cli_support::run(&["query", "run", &sql, "--param", binding]);
+        let result = CLI.run(&["query", "run", &sql, "--param", binding]);
         assert!(
             result.status.success(),
             "{}",
@@ -44,7 +44,7 @@ fn bracketed_assignment_names_preserve_text_values_and_reject_ambiguous_or_malfo
         for binding in bindings {
             args.extend(["--param", binding]);
         }
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -81,7 +81,7 @@ fn native_punctuation_prompts_run_saved_and_named_and_never_prompt_while_inspect
         ],
         0,
     ));
-    let inert = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+    let inert = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
     assert!(inert.status.success());
     for query in [vec!["--saved", "Saved"], vec!["SELECT * FROM Saved"]] {
         let mut args = vec!["query", "run"];
@@ -92,7 +92,7 @@ fn native_punctuation_prompts_run_saved_and_named_and_never_prompt_while_inspect
             "--param",
             "[Enter No. of items]=long:2",
         ]);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -100,7 +100,7 @@ fn native_punctuation_prompts_run_saved_and_named_and_never_prompt_while_inspect
         );
         assert_eq!(result.stdout, b"Chosen\n2\n3\n");
     }
-    let missing = cli_support::run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
+    let missing = CLI.run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
     assert_eq!(missing.status.code(), Some(2));
     assert!(missing.stdout.is_empty());
 }
@@ -144,7 +144,7 @@ fn unicode_native_prompts_run_saved_and_named_with_exact_bindings_and_buffered_f
                 bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
             }
             let db = Database::new(bytes);
-            let inert = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+            let inert = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
             assert!(
                 inert.status.success(),
                 "{}",
@@ -155,7 +155,7 @@ fn unicode_native_prompts_run_saved_and_named_with_exact_bindings_and_buffered_f
                 let mut args = vec!["query", "run"];
                 args.extend(query);
                 args.extend(["--database", db.path(), "--param", &assignment]);
-                let result = cli_support::run(&args);
+                let result = CLI.run(&args);
                 assert!(
                     result.status.success(),
                     "{}",
@@ -163,12 +163,11 @@ fn unicode_native_prompts_run_saved_and_named_with_exact_bindings_and_buffered_f
                 );
                 assert_eq!(result.stdout, b"Chosen\n2\n3\n");
                 args.extend(["--param", &assignment]);
-                let duplicate = cli_support::run(&args);
+                let duplicate = CLI.run(&args);
                 assert_eq!(duplicate.status.code(), Some(2));
                 assert!(duplicate.stdout.is_empty());
             }
-            let missing =
-                cli_support::run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
+            let missing = CLI.run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
             assert_eq!(missing.status.code(), Some(2));
             assert!(missing.stdout.is_empty());
         }

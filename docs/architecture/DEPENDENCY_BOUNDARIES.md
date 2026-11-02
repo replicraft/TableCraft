@@ -1,7 +1,7 @@
 # Enforced dependency boundaries
 
 [The checker](../../scripts/check_dependency_boundaries.py) uses locked/offline
-Cargo metadata and an explicit allowlist for the fifteen existing packages. It
+Cargo metadata and an explicit allowlist for the existing packages. It
 checks every declared workspace edge, including optional, renamed, target-specific,
 build and development dependencies. Libraries cannot import application packages;
 unreviewed packages/local dependencies fail rather than silently inheriting access.
@@ -24,12 +24,23 @@ inspection imports formats directly. Generic I/O gains no format knowledge.
 package dependencies. ACE retains native encryption policy, KDF/page mapping,
 header rewriting and preservation. The engine consumes crypto directly.
 
-`tablecraft-testkit` owns independent raw fixtures. Its core dependency supplies
-the working `Row::values` carrier conversion shared by native and host tests;
-it imports no production engine, adapter, parser or byte layouts.
-Its ACE, Access and CLI consumers use development dependencies; the guard rejects
-normal and build-dependency edges, including renamed/optional declarations.
-Production codecs must not consume these independent expected-byte builders.
+`tablecraft-testkit` owns independent raw fixtures and shared test machinery.
+Default `fixtures/access` uses Core carriers and the UUID byte-order utility;
+independent expected bytes stay separate from production encoders. Optional `formats-fixtures` supplies the
+working CAB fixture builder. Feature-gated `support/ace`, `support/query`,
+`support/access` and `support/cli` own shared observations and scenarios.
+Reviewed subsystem dependencies must be optional normal dependencies of the
+testkit. The guard rejects arbitrary subsystem edges and mandatory/build/dev
+support dependencies. All incoming testkit edges remain development-only,
+including renamed/optional declarations; libraries cannot import the CLI app.
+
+These test dependencies may point back to the subsystem under test. They do not
+enter its production dependency closure. Access forwards its existing offline
+feature to its development helper so minimal tests keep the helper disabled;
+ACE's base reader observer enables no journal feature. Query Source fixtures
+serve integration tests. Unit tests retain private glue for their own crate's
+types; external normal-crate types cannot replace those private types implicitly.
+See the [testkit guide](../testing/TESTKIT.md) for features and platform scope.
 
 Access also consumes the existing expression crate directly for its working
 `GeneralCollation` implementation of the backend-neutral `Collation` contract.

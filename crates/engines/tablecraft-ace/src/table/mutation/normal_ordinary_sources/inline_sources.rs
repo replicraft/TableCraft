@@ -4,7 +4,7 @@ use crate::{NativeImage, check_table, check_table_constraints, read_table};
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Cursor, io::Write, path::Path};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_ordinary_inline::{self as model, Source};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_inline::{self as model, Source};
 
 fn source(header: u8, case: model::Case) -> Source {
     let mut source = model::source(case);

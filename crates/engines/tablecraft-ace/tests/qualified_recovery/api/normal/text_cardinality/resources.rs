@@ -4,7 +4,7 @@ use super::{budget, cases, deletes, inserts, scope};
 use std::{array, cell::Cell, io::Cursor};
 use tablecraft_ace::{EditError, InspectError, NativeImage, RecoverableEditError};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::genuine_text_cardinality::Case;
+use tablecraft_testkit::fixtures::access::genuine_text_cardinality::Case;
 
 fn plan(
     case: &Case,

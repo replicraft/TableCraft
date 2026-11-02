@@ -1,6 +1,5 @@
 //! Reuse genuine owned envelope constructors; qualify readers before refusals.
-#[path = "../../../../../crates/backends/tablecraft-access/tests/support/deployment.rs"]
-mod deployment_fixture;
+use tablecraft_testkit::fixtures::formats::deployment as deployment_fixture;
 #[path = "../../../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
 

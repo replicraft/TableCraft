@@ -3,7 +3,7 @@ use super::model::{
     BITMAP_HEADER, DATA, DIRECTORY, EOF, GLOBAL_BITMAP, MAP_BYTES, MAPS, Model, PAGE, PER_PAGE,
     ROOTS, ROWS, TABLE, row_range,
 };
-use tablecraft_testkit::access::map_growth::model::number;
+use tablecraft_testkit::fixtures::access::map_growth::model::number;
 
 const ENTRY: usize = 480;
 const MASK: usize = 27;

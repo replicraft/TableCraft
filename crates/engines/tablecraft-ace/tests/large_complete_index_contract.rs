@@ -1,11 +1,9 @@
 //! Explicit complete index requests preserve count, ownership and quota checks.
-use tablecraft_testkit::access::mutation_fixture as base;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod composite_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as composite_fixture;
 #[path = "large_index_selections/fixture.rs"]
 mod fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "large_complete_index_contract/complete.rs"]
 mod complete;

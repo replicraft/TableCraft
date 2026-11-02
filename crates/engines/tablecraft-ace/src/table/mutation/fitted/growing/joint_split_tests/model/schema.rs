@@ -1,6 +1,6 @@
 //! Literal physical owners, aliases, column metadata and declaration grammar.
 use super::{Family, ROWS, base};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(super) fn definition(family: Family, descending: bool) -> Vec<u8> {
     let mut page = base::definition(

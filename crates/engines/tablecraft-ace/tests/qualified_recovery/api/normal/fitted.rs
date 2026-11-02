@@ -10,7 +10,9 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_ordinary_fitted::{self as sources, Case, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_fitted::{
+    self as sources, Case, Recipe,
+};
 
 fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), scope(), &mut budget(), &|| false).unwrap()

@@ -3,7 +3,7 @@ use std::{collections::BTreeSet, io::Cursor};
 use tablecraft_ace::{IndexCheckStatus, NativeImage, RuleCheckStatus};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::secondary_index as model;
+use tablecraft_testkit::fixtures::access::secondary_index as model;
 
 const PAGE: usize = 4096;
 

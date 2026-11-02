@@ -6,7 +6,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_before_change::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_before_change::{self as model, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(19);
 const ORIGINAL: [[i32; 2]; 3] = [[1, 10], [2, 20], [3, 30]];

@@ -8,7 +8,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_nullable_index_before_change as original,
     canonical_nullable_index_id_before_change as model,
 };

@@ -1,14 +1,7 @@
 //! Independent raw fixtures shared by private unit-test modules.
 // Path-included fixture modules receive their private raw-builder namespace here.
 #[cfg(feature = "ace16-write-preview")]
-use tablecraft_testkit::access as support;
-
-pub(crate) mod tuples;
-
-#[cfg(feature = "ace16-write-preview")]
-#[allow(dead_code)]
-#[path = "../tests/mutation/index_fixture.rs"]
-pub(crate) mod index_fixture;
+use tablecraft_testkit::fixtures::access as support;
 
 #[cfg(feature = "ace16-write-preview")]
 #[allow(dead_code)]

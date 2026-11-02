@@ -1,6 +1,6 @@
 use super::super::inspect::payload_fixture;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::wide_properties as fixture;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::wide_properties as fixture;
 
 pub(crate) const PAGE: usize = 4096;
 pub(crate) const ORIGINAL_ROWS: [[i32; 2]; 3] = [[1, 10], [2, 20], [3, 30]];

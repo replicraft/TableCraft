@@ -5,7 +5,7 @@ use crate::{IndexCheckStatus, IndexConstraintViolation, check_table, check_table
 use model::{PAGE, ROOT};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 mod model;
 

@@ -5,7 +5,7 @@ use tablecraft_ace::{IndexCheckStatus, RuleCheckStatus, check_table, check_table
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::ExclusiveFile;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[test]
 fn qualify_durable_jet4_original_and_expected_before_publication() {

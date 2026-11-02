@@ -1,10 +1,11 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn character_and_format_error_states_keep_explicit_conversion_and_buffered_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Chr(CLng(CVErr(65))) AS C,FormatNumber(CLng(CVErr(11)),0) AS N",
@@ -36,7 +37,7 @@ fn character_and_format_error_states_keep_explicit_conversion_and_buffered_failu
             ("FormatCurrency(CVErr(11))", "type mismatch"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql, "--number-format", "en-US"]);
+            let result = CLI.run(&["query", mode, &sql, "--number-format", "en-US"]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(

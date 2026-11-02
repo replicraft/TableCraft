@@ -13,7 +13,7 @@ use tablecraft_ace::{
     inspect_table_index_counter, read_table, read_table_index,
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_normal_autonumber as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_normal_autonumber as fixtures;
 
 fn sources() -> fixtures::Sources {
     fixtures::Sources::load(|raw, wanted| {

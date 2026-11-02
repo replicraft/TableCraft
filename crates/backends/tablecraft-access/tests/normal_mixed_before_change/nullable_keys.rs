@@ -12,7 +12,7 @@ use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
 use tablecraft_query::UpdateError;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_mixed_before_change::Update,
     canonical_nullable_index_id_before_change as id_model,
     canonical_nullable_key_before_change::{self as score_model, Recipe},

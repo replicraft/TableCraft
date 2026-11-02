@@ -1,19 +1,13 @@
 //! Two independently declared NUMERIC domains coexist in one physical key.
 use super::{model, original};
-use model::{PAGE, Settings, numeric_fixture};
+use model::{PAGE, Settings};
 use std::{collections::BTreeSet, io::Cursor};
 use tablecraft_core::values::{Decimal, Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
-#[allow(dead_code)]
-mod fixture {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/decimal_composite_indexes/fixture.rs"
-    ));
-}
+use tablecraft_testkit::fixtures::access::index_tuples::decimal_fixture as fixture;
 
 #[derive(Clone)]
 struct Row {

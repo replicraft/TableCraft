@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -13,7 +15,7 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 fn explicit_code_pages_work_in_scalar_and_query_commands_without_a_default() {
     for mode in ["eval", "run"] {
         for (page, expected) in [("1252", "\"ÀÀ\""), ("1251", "\"АА\"")] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 "SELECT String(2,192) AS C,String(2,'é') AS T",
@@ -38,7 +40,7 @@ fn explicit_code_pages_work_in_scalar_and_query_commands_without_a_default() {
             if let Some(page) = page {
                 args.extend(["--character-code-page", page]);
             }
-            let result = run(&args);
+            let result = CLI.run(&args);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
@@ -46,7 +48,7 @@ fn explicit_code_pages_work_in_scalar_and_query_commands_without_a_default() {
 }
 #[test]
 fn unsupported_settings_fail_before_database_io_and_inspection_stays_inert() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT String(1,128)",
@@ -70,7 +72,7 @@ fn unsupported_settings_fail_before_database_io_and_inspection_stays_inert() {
         ],
         vec!["inspect", "missing.accdb", "--character-code-page", "1252"],
     ] {
-        let result = run(&command);
+        let result = CLI.run(&command);
         assert!(!result.status.success());
         assert!(String::from_utf8_lossy(&result.stderr).contains("unexpected argument"));
     }

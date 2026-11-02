@@ -1,19 +1,87 @@
-# Shared engineering fixtures
+# Shared test fixtures and support
 
-`tablecraft-testkit`, under `crates/engineering/`, owns working independent raw
-Jet/ACE fixture builders used by ACE, Access and CLI tests. Its `access` module
-builds literal catalog records, DATA pages and small database images, and writes
-little-endian test words. Its core-values dependency supplies the actual shared
-literal-row `Value` conversion; it imports no production parser, encoder, format
-constants, engine or adapter.
+`tablecraft-testkit`, under `crates/engineering/tablecraft-testkit`, owns shared
+fixture data and test machinery. Workspace consumers use it through
+`dev-dependencies`; production engines, adapters and applications do not acquire
+it as a normal dependency. The crate has no application-package dependency.
 
-All three consumers declare it under `dev-dependencies`. The dependency guard
-rejects a non-development dependency on this crate. Tests import the builders
-directly from `tablecraft_testkit::access`; the former ACE test helper is removed,
-with no compatibility re-export. Production code cannot obtain fixtures through
-the normal dependency graph.
+## Ownership
 
-## Extraction check
+```text
+src/
+├── fixtures/
+│   ├── access/                 independent images, requests and literal pins
+│   └── formats/deployment.rs   independent raw CAB construction
+└── support/
+    ├── ace/sentinel.rs         shared native read observations
+    ├── query/multivalue.rs     query Source, DTO and assertion machinery
+    ├── access/owned_growth.rs  retained adapter-session workflows
+    ├── cli/mod.rs              headless process runner with explicit executable
+    └── cli/owned_growth.rs     process, save and readback workflows
+```
+
+Import the actual owner directly, for example
+`tablecraft_testkit::fixtures::access::genuine_owned_growth` or
+`tablecraft_testkit::support::access::owned_growth`. Do not leave forwarding
+modules or reexports at the former engine, adapter or CLI helper locations.
+New shared machinery belongs in the corresponding testkit folder; a helper used
+by only one test can remain with that test until sharing is useful.
+
+## Optional subsystem support
+
+The default feature set is empty. Raw fixtures depend only on
+`tablecraft-core` carriers and the existing UUID byte-order utility. They do not
+call production encoders or readers to
+produce their expected bytes. Tests opt into the support they actually use:
+
+| Feature | Module | Working boundary |
+| --- | --- | --- |
+| `formats-fixtures` | `fixtures::formats` | Independent compressed and uncompressed CAB construction |
+| `ace-support` | `support::ace` | Native engine inspection |
+| `query-support` | `support::query` | Backend-neutral query Source and execution contracts |
+| `access-support` | `support::access` | Real Access adapter, offline session and filesystem contracts |
+| `cli-support` | `support::cli` | Executable process, filesystem and output observations |
+
+The Access support module is available on macOS and Linux, matching its retained
+offline-session test boundary. Optional support dependencies belong to the
+engineering testkit and are enabled for test consumers. A consumer may forward
+its matching capability feature to the dev-dependency support feature; that does
+not make the testkit a production dependency.
+
+Each CLI integration target configures a testkit `Runner` once with
+`Runner::new(env!("CARGO_BIN_EXE_tablecraft"))` and calls `CLI.run(args)`.
+The headless runner removes `DISPLAY` and `WAYLAND_DISPLAY` before launching the
+process. The owned-growth workflow accepts an explicit `&Path` executable at
+its calling test. The dependency crate neither resolves the Cargo executable
+variable nor imports the CLI application. Source images, expected images and marker values
+also remain explicit inputs. Adapter workflows similarly receive the caller's
+catalog scope rather than assuming a shared identity.
+
+## Preserve independent evidence
+
+Sharing transport, callbacks, leases and readback loops does not merge the
+contracts exercised by native proof, adapter sessions and CLI publication. Keep
+named tests, fixture families, both header variants, resource and cancellation
+controls, receipts, exact output and namespace assertions at their applicable
+boundaries.
+
+Literal raw records, index keys, journal wires, whole-image expectations and
+source hashes remain independent of production serializers and mutation code.
+A shared pin loader can bind the same immutable fixture at several boundaries;
+it cannot replace an independent byte replay or establish write permission.
+Keep source qualification, constraint-negative exclusions and mutation outcomes
+explicit when consolidating metadata. Never generate the expected side of a test
+with the producer it checks.
+
+See the [fixture policy](FIXTURES.md) for provenance and qualification requirements.
+
+## Historical extraction evidence
+
+Earlier receipts retain the paths and hashes from their recorded revisions.
+The current fixture namespace is `fixtures::access`; historical evidence is not
+rewritten by this organization change.
+
+### Extraction check
 
 The [27 October receipt](results/testkit-builder-equivalence-2026-10-27.json)
 records a standalone comparison against the committed former ACE helper. After
@@ -34,7 +102,7 @@ calls. It establishes extraction equivalence for these builders and inputs; it
 does not establish native Access behavior or merge independent compatibility
 proofs into one qualification.
 
-## Python artifact reuse
+### Python artifact reuse
 
 `scripts/compat_artifacts.py` separately provides the working
 `ArtifactStore(root).path`, `.pin` and `.load` operations used directly by the
@@ -50,9 +118,9 @@ were archived before edits; historical receipt pins still describe those exact
 earlier versions. There is no Rust compatibility crate or wrapper API for this
 Python reuse.
 
-## Secondary-index source owners (30 October 2026)
+### Secondary-index source owners (30 October 2026)
 
-`access::secondary_index` supplies the actual authored BEFORE and complete
+`fixtures::access::secondary_index` supplies the actual authored BEFORE and complete
 expected creation images to native and host tests. Its pure seed, definition/map
 and KEY/ROW framing dependencies also moved into the testkit. Existing ACE INSERT
 expected algorithms remain in ACE with direct imports; there are no forwarding

@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cvar_retains_null_text_and_numeric_subtypes_in_both_query_paths() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT CVar(Null) AS N,CVar('001') AS T,VarType(CVar(CByte(255))) AS B,VarType(CVar(CInt(-1))) AS I,VarType(CVar(CSng(1.5))) AS S,VarType(CVar(#2026-10-21#)) AS D",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT CVar(Null) AS N,CVar('001') AS T,VarType(CVar(CByte(255))) AS B,VarType(CVar(CInt(-1))) AS I,VarType(CVar(CSng(1.5))) AS S,VarType(CVar(#2026-10-21#)) AS D",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -41,7 +42,7 @@ fn cvar_retains_null_text_and_numeric_subtypes_in_both_query_paths() {
             "IIf(False,CVar(1/0),0)",
             "CVar(1),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }

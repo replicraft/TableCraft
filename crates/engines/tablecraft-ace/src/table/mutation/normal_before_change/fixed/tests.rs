@@ -6,7 +6,7 @@ use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_indexed_before_change as ordinary, canonical_indexed_mixed_before_change as mixed,
     canonical_mixed_before_change as original,
 };

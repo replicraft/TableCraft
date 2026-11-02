@@ -1,13 +1,24 @@
+//! Shared query-test Source mechanics; expected query rows stay in each suite.
+#![allow(dead_code)]
 use std::cell::{Cell, RefCell};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_db::{MultivalueList, ProjectedRow};
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, PreparationOptions, QueryError, QueryValue, Source,
     prepare_with_options,
-    source::{ExternalSourceRequest, MultivalueVisitor, ResolvedExternalSource, SourceKey},
+    source::{
+        ExternalSourceRequest, MultivalueVisitor, ResolvedExternalSource, SourceKey,
+        TextCollationId,
+    },
 };
 use tablecraft_schema::{Column, ScalarType, SchemaName};
 use tablecraft_sql::{parse_query, query::Query};
+
+#[derive(Clone, Copy)]
+enum TextPolicyCallback {
+    Default,
+    Metadata,
+}
 
 #[derive(Clone)]
 pub struct Parent {
@@ -55,10 +66,17 @@ pub struct Table {
 }
 
 impl Table {
+    pub fn text_lists(name: &'static str, rows: Vec<Parent>) -> Self {
+        let mut table = Self::new(name, rows);
+        table.elements[1] = Column::new("B".into(), ScalarType::Text, false).unwrap();
+        table.reordered = table.elements.iter().rev().cloned().collect();
+        table
+    }
+
     pub fn new(name: &'static str, rows: Vec<Parent>) -> Self {
         let elements = vec![
             Column::new("A".into(), ScalarType::Int32, true).unwrap(),
-            Column::new("B".into(), ScalarType::Text, false).unwrap(),
+            Column::new("B".into(), ScalarType::Int32, true).unwrap(),
         ];
         Self {
             name,
@@ -81,6 +99,8 @@ impl Table {
 
 pub struct Data<'a> {
     pub tables: Vec<Table>,
+    pub policies: Vec<Option<TextCollationId>>,
+    policy_callback: TextPolicyCallback,
     pub definitions: Vec<(&'static str, Query)>,
     pub external: Vec<(&'static str, u128, &'a dyn Source)>,
     pub active: Cell<bool>,
@@ -98,6 +118,8 @@ impl Data<'_> {
     pub fn new(tables: Vec<Table>) -> Self {
         Self {
             tables,
+            policies: vec![],
+            policy_callback: TextPolicyCallback::Default,
             definitions: vec![],
             external: vec![],
             active: Cell::new(false),
@@ -112,9 +134,9 @@ impl Data<'_> {
         }
     }
 
-    pub fn fixture() -> Self {
+    pub fn join_fixture() -> Self {
         Self::new(vec![
-            Table::new(
+            Table::text_lists(
                 "L",
                 vec![
                     Parent::new(1, 7, &[Some(10), Some(10), None], "L0"),
@@ -122,7 +144,7 @@ impl Data<'_> {
                     Parent::new(2, 7, &[Some(20)], "L2"),
                 ],
             ),
-            Table::new(
+            Table::text_lists(
                 "R",
                 vec![
                     Parent::new(1, 9, &[Some(100), None], "R0"),
@@ -130,11 +152,44 @@ impl Data<'_> {
                     Parent::new(3, 7, &[], "R2"),
                 ],
             ),
-            Table::new(
+            Table::text_lists(
                 "S",
                 vec![
                     Parent::new(7, 0, &[Some(700)], "S0"),
                     Parent::new(9, 0, &[Some(900)], "S1"),
+                ],
+            ),
+        ])
+    }
+
+    pub fn derived_fixture() -> Self {
+        let mut data = Self::mixed_fixture();
+        data.policy_callback = TextPolicyCallback::Metadata;
+        data
+    }
+
+    pub fn with_policy_metadata(tables: Vec<Table>) -> Self {
+        let mut data = Self::new(tables);
+        data.policy_callback = TextPolicyCallback::Metadata;
+        data
+    }
+
+    pub fn mixed_fixture() -> Self {
+        Self::new(vec![
+            Table::new(
+                "L",
+                vec![
+                    parent(1, &[Some(7), Some(7), None], &[Some(2), Some(3)]),
+                    parent(2, &[], &[Some(4)]),
+                    parent(3, &[None], &[]),
+                    parent(4, &[Some(9)], &[Some(5), Some(6)]),
+                ],
+            ),
+            Table::new(
+                "R",
+                vec![
+                    parent(1, &[Some(10), Some(11)], &[Some(20)]),
+                    parent(5, &[None], &[]),
                 ],
             ),
         ])
@@ -156,6 +211,19 @@ impl Data<'_> {
 }
 
 impl Source for Data<'_> {
+    fn multivalue_text_collations(
+        &self,
+        _: &str,
+    ) -> Result<&[Option<TextCollationId>], QueryError> {
+        match self.policy_callback {
+            TextPolicyCallback::Default => Ok(&[]),
+            TextPolicyCallback::Metadata => {
+                self.metadata();
+                Ok(&self.policies)
+            }
+        }
+    }
+
     fn columns(&self, name: &str) -> Result<&[Column], QueryError> {
         self.metadata();
         Ok(&self.table(name)?.columns)
@@ -298,6 +366,7 @@ pub fn execute(
 pub enum Expected {
     Scalar(Value),
     List(Vec<Value>),
+    Absent,
 }
 
 pub fn scalar(value: i32) -> Expected {
@@ -320,8 +389,102 @@ pub fn assert_rows(result: &CollectionQueryResult, expected: &[Vec<Expected>]) {
                 (QueryValue::Multivalue(actual), Expected::List(expected)) => {
                     assert_eq!(actual.values(), expected)
                 }
+                (QueryValue::AbsentMultivalue, Expected::Absent) => {}
                 _ => panic!("typed result changed scalar/list shape"),
             }
         }
     }
+}
+
+pub fn parent(id: i32, a: &[Option<i32>], b: &[Option<i32>]) -> Parent {
+    let values = |items: &[Option<i32>]| {
+        items
+            .iter()
+            .map(|value| value.map_or(Value::Null, Value::Int32))
+            .collect()
+    };
+    Parent {
+        scalars: vec![Value::Int32(id), Value::Int32(id * 10)],
+        lists: vec![values(a), values(b)],
+    }
+}
+
+pub fn expanded(values: &[Value]) -> Vec<Value> {
+    if values.is_empty() {
+        vec![Value::Null]
+    } else {
+        values.to_vec()
+    }
+}
+
+pub fn stored(value: Value) -> Expected {
+    Expected::Scalar(value)
+}
+
+pub fn single_fixture(bits: &[u32]) -> Data<'static> {
+    let mut data = Data::mixed_fixture();
+    let table = &mut data.tables[0];
+    table.elements[0] = Column::new("A".into(), ScalarType::Single, true).unwrap();
+    table.reordered = table.elements.iter().rev().cloned().collect();
+    table.rows = vec![Parent {
+        scalars: vec![Value::Int32(1), Value::Int32(10)],
+        lists: vec![
+            bits.iter()
+                .map(|bits| Value::Single(tablecraft_core::values::Single::from_bits(*bits)))
+                .collect(),
+            vec![Value::Int32(20), Value::Int32(21)],
+        ],
+    }];
+    data
+}
+
+pub fn text_fixture() -> Data<'static> {
+    let mut data = Data::derived_fixture();
+    let table = &mut data.tables[0];
+    table.elements = ["A", "B"]
+        .map(|name| Column::new(name.into(), ScalarType::Text, true).unwrap())
+        .to_vec();
+    table.reordered = table.elements.iter().rev().cloned().collect();
+    table.rows = vec![Parent {
+        scalars: vec![Value::Int32(1), Value::Int32(10)],
+        lists: vec![
+            vec![Value::Text("a".into()), Value::Text("A".into())],
+            vec![Value::Text("a".into()), Value::Text("z".into())],
+        ],
+    }];
+    data.policies = vec![
+        Some(TextCollationId::from_host(11)),
+        Some(TextCollationId::from_host(22)),
+    ];
+    data
+}
+
+pub fn wide_list_fixture() -> Data<'static> {
+    let mut data = Data::derived_fixture();
+    let table = &mut data.tables[0];
+    table.columns.truncate(1);
+    table.unavailable = vec![SchemaName::new("A".into()).unwrap()];
+    table.elements.truncate(1);
+    table.reordered = table.elements.clone();
+    table.rows.truncate(1);
+    table.rows[0].scalars.truncate(1);
+    table.rows[0].lists.truncate(1);
+    data
+}
+
+pub fn maximum_scalar_fixture() -> Data<'static> {
+    let mut data = Data::derived_fixture();
+    let table = &mut data.tables[0];
+    table.columns = (0..256)
+        .map(|index| Column::new(format!("C{index}"), ScalarType::Int32, false).unwrap())
+        .collect();
+    table.unavailable.clear();
+    table.elements.clear();
+    table.reordered.clear();
+    table.rows = vec![Parent {
+        scalars: (0..256).map(Value::Int32).collect(),
+        lists: vec![],
+    }];
+    table.plain = true;
+    data
 }

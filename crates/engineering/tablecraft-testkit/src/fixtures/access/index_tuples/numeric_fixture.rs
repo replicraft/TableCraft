@@ -1,7 +1,4 @@
-use super::{
-    base,
-    support::{data_page, put16, put32},
-};
+use super::super::{data_page, mutation_fixture as base, put16, put32};
 use std::cmp::Ordering;
 
 pub fn compare_cell(kind: u8, left: Option<i64>, right: Option<i64>) -> Ordering {

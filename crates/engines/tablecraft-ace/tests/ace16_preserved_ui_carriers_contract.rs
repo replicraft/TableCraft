@@ -2,7 +2,7 @@
 //! Source-first passive UI carriers and exact Boolean engineering consumers.
 #[path = "ace16_preserved_ui_carriers_contract/api.rs"]
 mod api;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "complex_schema/fixture.rs"]
@@ -21,7 +21,7 @@ mod source;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const SCOPE: CatalogScope = CatalogScope::new(1);
 

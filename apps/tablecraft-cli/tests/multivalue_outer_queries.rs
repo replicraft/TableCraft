@@ -1,6 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -12,11 +11,12 @@ mod linked_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
-use cli_support::run;
 use std::{fs, io::Write, path::PathBuf};
 use tempfile::TempDir;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 struct Database {
     directory: TempDir,
@@ -61,7 +61,7 @@ fn absent_parent_empty_list_and_stored_null_child_have_distinct_cli_spellings() 
         for mode in ["--multivalues", "--collections"] {
             let sql = "SELECT a.Id AS Id,a.Score AS L,b.Score AS R FROM Items a \
                        LEFT JOIN Items b ON a.Id=b.Id+1 ORDER BY a.Id";
-            let result = run(&["query", "run", sql, "--database", database.path(), mode]);
+            let result = CLI.run(&["query", "run", sql, "--database", database.path(), mode]);
 
             assert!(
                 result.status.success(),
@@ -84,7 +84,7 @@ fn right_and_nested_outer_joins_keep_absence_through_derived_outputs() {
     let sql = "SELECT Q.Id,Q.L,Q.R,Q.L AS Again FROM \
                (SELECT b.Id,a.Score AS L,b.Score AS R FROM Items a \
                 RIGHT JOIN Items b ON a.Id+1=b.Id) Q ORDER BY Q.Id";
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         sql,
@@ -108,7 +108,7 @@ fn right_and_nested_outer_joins_keep_absence_through_derived_outputs() {
     let sql = "SELECT a.Id AS Id,b.Score AS B,c.Score AS C FROM Items a \
                LEFT JOIN (Items b LEFT JOIN Items c ON b.Id+5=c.Id) \
                ON a.Id+5=b.Id ORDER BY a.Id";
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         sql,
@@ -153,7 +153,7 @@ fn outer_join_eager_errors_and_output_limits_keep_stdout_empty() {
             "--multivalues",
         ];
         args.extend(flags);
-        let result = run(&args);
+        let result = CLI.run(&args);
 
         assert!(!result.status.success(), "{sql}");
         assert!(result.stdout.is_empty(), "{sql}");

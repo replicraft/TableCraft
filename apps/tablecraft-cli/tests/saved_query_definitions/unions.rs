@@ -33,7 +33,7 @@ fn bytes(first: &str, second: &str, flags: i16) -> Vec<u8> {
 #[test]
 fn saved_union_printing_execution_and_named_resolution_remain_explicit() {
     let db = Database::new(bytes("SELECT 1 AS N", "SELECT 1 UNION ALL SELECT 2", 2));
-    let result = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+    let result = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
     assert!(
         result.status.success(),
         "{}",
@@ -53,7 +53,7 @@ fn saved_union_printing_execution_and_named_resolution_remain_explicit() {
             db.path(),
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -71,12 +71,12 @@ fn saved_union_owner_cycles_and_inert_functions_never_execute_implicitly() {
     ] {
         let db = Database::new(bytes(first, "SELECT 2", flags));
         assert!(
-            cli_support::run(&["query", "saved", "--database", db.path(), "Saved"])
+            CLI.run(&["query", "saved", "--database", db.path(), "Saved"])
                 .status
                 .success()
         );
         assert!(
-            cli_support::run(&["inspect", db.path(), "--query", "Saved"])
+            CLI.run(&["inspect", db.path(), "--query", "Saved"])
                 .status
                 .success()
         );
@@ -90,7 +90,7 @@ fn saved_union_owner_cycles_and_inert_functions_never_execute_implicitly() {
                 db.path(),
             ],
         ] {
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
@@ -106,12 +106,12 @@ fn saved_union_owner_cycles_and_inert_functions_never_execute_implicitly() {
             vec!["query", "saved", "--database", db.path(), "Saved"],
             vec!["query", "run", "--database", db.path(), "--saved", "Saved"],
         ] {
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
         assert!(
-            cli_support::run(&["inspect", db.path(), "--query", "Saved"])
+            CLI.run(&["inspect", db.path(), "--query", "Saved"])
                 .status
                 .success()
         );

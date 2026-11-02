@@ -2,7 +2,7 @@
 mod index;
 
 use super::{multiple_indexes as frames, mutation_fixture as base};
-use crate::access as raw;
+use crate::fixtures::access as raw;
 use std::collections::BTreeSet;
 
 pub const PAGE: usize = 4096;

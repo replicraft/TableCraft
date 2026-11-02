@@ -11,7 +11,7 @@ use std::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_normal_autonumber as sources;
+use tablecraft_testkit::fixtures::access::canonical_normal_autonumber as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(231);
 

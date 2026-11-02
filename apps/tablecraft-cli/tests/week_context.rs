@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,15 +14,16 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn system_calendar_options_keep_omitted_defaults_and_sql_overrides() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT DatePart('w',#2026-10-20#,0) AS W,DatePart('w',#2026-10-20#) AS D,DatePart('ww',#2021-01-01#,0,0) AS N,DatePart('ww',#2021-01-01#,,) AS O,DateDiff('ww',#2026-10-18#,#2026-10-19#,0,0) AS X,DateDiff('ww',#2026-10-18#,#2026-10-19#) AS Y,DateDiff('ww',#2026-10-18#,#2026-10-19#,1,1) AS Z",
-            "--first-day-of-week",
-            "2",
-            "--first-week-of-year",
-            "2",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT DatePart('w',#2026-10-20#,0) AS W,DatePart('w',#2026-10-20#) AS D,DatePart('ww',#2021-01-01#,0,0) AS N,DatePart('ww',#2021-01-01#,,) AS O,DateDiff('ww',#2026-10-18#,#2026-10-19#,0,0) AS X,DateDiff('ww',#2026-10-18#,#2026-10-19#) AS Y,DateDiff('ww',#2026-10-18#,#2026-10-19#,1,1) AS Z",
+                "--first-day-of-week",
+                "2",
+                "--first-week-of-year",
+                "2",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -45,7 +48,7 @@ fn missing_host_policy_null_options_and_invalid_flags_publish_nothing() {
             "DateDiff('ww',#2026-10-18#,#2026-10-19#,0,0)",
             "DatePart('ww',#2021-01-01#,0,1/0)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -56,11 +59,11 @@ fn missing_host_policy_null_options_and_invalid_flags_publish_nothing() {
             assert!(result.stdout.is_empty());
         }
         for rule in ["0", "4", "four-day"] {
-            let result = run(&["query", mode, "SELECT 1", "--first-week-of-year", rule]);
+            let result = CLI.run(&["query", mode, "SELECT 1", "--first-week-of-year", rule]);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
     }
-    let result = run(&["query", "parse", "SELECT 1", "--first-week-of-year", "2"]);
+    let result = CLI.run(&["query", "parse", "SELECT 1", "--first-week-of-year", "2"]);
     assert!(!result.status.success());
 }

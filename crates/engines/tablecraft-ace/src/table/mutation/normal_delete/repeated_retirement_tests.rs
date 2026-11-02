@@ -4,7 +4,7 @@ use crate::{EditError, NativeEditPlan, RowDelete};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_repeated_retirement::{self as fixtures, Case};
+use tablecraft_testkit::fixtures::access::genuine_repeated_retirement::{self as fixtures, Case};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(2_000_000_000, 10_000_000, 2_000_000_000)

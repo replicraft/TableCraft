@@ -1,12 +1,11 @@
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
 
-use cli_support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn native_text_limits_are_bounded_and_database_scoped_before_io() {
     for value in ["0", "16777217", "4294967295"] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT 1",
@@ -19,12 +18,12 @@ fn native_text_limits_are_bounded_and_database_scoped_before_io() {
         assert!(output.stdout.is_empty());
         assert!(String::from_utf8_lossy(&output.stderr).contains("invalid value"));
     }
-    let output = run(&["query", "run", "SELECT 1", "--native-text-bytes", "1048577"]);
+    let output = CLI.run(&["query", "run", "SELECT 1", "--native-text-bytes", "1048577"]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
     assert!(String::from_utf8_lossy(&output.stderr).contains("--database"));
 
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT 1",
@@ -49,7 +48,7 @@ fn larger_generated_query_text_keeps_query_and_output_allowances_separate() {
         "--execution-steps",
         "10000000",
     ];
-    let output = run(&options);
+    let output = CLI.run(&options);
     assert!(
         output.status.success(),
         "{}",
@@ -58,7 +57,7 @@ fn larger_generated_query_text_keeps_query_and_output_allowances_separate() {
     assert_eq!(output.stdout, b"N\n1048577\n");
     let mut low = options.to_vec();
     low.extend(["--execution-bytes", "1000"]);
-    let output = run(&low);
+    let output = CLI.run(&low);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
 }

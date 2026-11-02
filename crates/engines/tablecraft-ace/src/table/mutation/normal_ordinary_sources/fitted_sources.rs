@@ -3,7 +3,9 @@ use crate::{NativeImage, check_table, check_table_constraints, read_table};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_fitted::{self as model, Case, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_fitted::{
+    self as model, Case, Recipe,
+};
 
 const PAGE: usize = 4096;
 const SCOPE: CatalogScope = CatalogScope::new(127);

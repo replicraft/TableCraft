@@ -43,7 +43,7 @@ fn saved_derived_sources_execute_explicitly_and_never_publish_partial_rows_or_ru
         ("SELECT NeverRunMe(Id) AS Id FROM Items;", false),
     ] {
         let db = Database::new(saved(text));
-        let inspect = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+        let inspect = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
         assert!(
             inspect.status.success(),
             "{}",
@@ -53,7 +53,7 @@ fn saved_derived_sources_execute_explicitly_and_never_publish_partial_rows_or_ru
             let mut args = vec!["query", "run"];
             args.extend(query);
             args.extend(["--database", db.path()]);
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             if accepted {
                 assert!(
                     result.status.success(),

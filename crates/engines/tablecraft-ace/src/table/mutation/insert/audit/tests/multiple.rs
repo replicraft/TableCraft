@@ -1,7 +1,7 @@
 //! Healthy full images separate physical inventory and byte authority forgeries.
 use super::*;
 use crate::table::mutation::insert::{counters, tests::multiple_indexes::model as indexes};
-use tablecraft_testkit::access::multiple_indexes as source_indexes;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_indexes;
 
 fn requested() -> Vec<RowInsert> {
     [

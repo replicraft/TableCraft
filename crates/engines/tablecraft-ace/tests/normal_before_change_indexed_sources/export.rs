@@ -1,7 +1,7 @@
 //! Explicit original/expected export, never a production native writer.
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
-use tablecraft_testkit::access::canonical_indexed_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_indexed_before_change as model;
 
 fn create(path: &Path, bytes: &[u8]) {
     let mut file = fs::OpenOptions::new()

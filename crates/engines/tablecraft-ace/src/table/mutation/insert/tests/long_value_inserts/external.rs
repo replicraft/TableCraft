@@ -4,7 +4,7 @@ use crate::{EditError, InspectError, LongValueCheckStatus, RowInsert, check_tabl
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes as source_frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_frames;
 
 const LVAL: u32 = 16;
 const EOF: u32 = 18;

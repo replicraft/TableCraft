@@ -1,10 +1,10 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod model;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use model::{budget, capture, requests, table};
 use tablecraft_ace::{

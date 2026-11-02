@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,7 +14,7 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn character_functions_work_in_both_query_paths_with_exact_carriers_and_buffered_errors() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Chr(65) AS A,Asc('Apple') AS B,ChrW(8364) AS C,AscW('😀') AS D",
@@ -29,7 +31,7 @@ fn character_functions_work_in_both_query_paths_with_exact_carriers_and_buffered
                 vec!["\"A\"", "65", "\"€\"", "-10179"]
             ]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Chr(128) AS A,Asc('€') AS B",
@@ -55,11 +57,11 @@ fn character_functions_work_in_both_query_paths_with_exact_carriers_and_buffered
             "Chr(256)",
             "Chr(65,1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT 1,Asc('中')",

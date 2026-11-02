@@ -1,15 +1,13 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod decimal_fixture;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
-use fixture as base;
 use std::{cell::RefCell, io::Cursor};
 use tablecraft_access::NativeSource;
 use tablecraft_ace::TableSnapshotLimits;

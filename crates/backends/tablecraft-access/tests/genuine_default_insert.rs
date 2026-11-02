@@ -11,7 +11,9 @@ use tablecraft_db::{EditableTable, InsertValue, InsertableTable, OmittingInserta
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_default_insert::{self as sources, RECIPES, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_default_insert::{
+    self as sources, RECIPES, Recipe,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(201);
 

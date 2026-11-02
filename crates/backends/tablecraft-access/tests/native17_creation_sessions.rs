@@ -11,7 +11,7 @@ use tablecraft_db::{DeletableTable, EditableTable, InsertableTable};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_native17_sessions;
+use tablecraft_testkit::fixtures::access::canonical_native17_sessions;
 
 const SCOPE: CatalogScope = CatalogScope::new(204);
 

@@ -4,7 +4,7 @@ use crate::table::mutation::insert::tests::{
     multiple_indexes::model as frames,
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::multiple_indexes as source_frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_frames;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;

@@ -16,7 +16,9 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_indexed_before_change::{self as corpus, Case, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_indexed_before_change::{
+    self as corpus, Case, Recipe,
+};
 
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
 

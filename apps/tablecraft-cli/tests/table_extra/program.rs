@@ -155,7 +155,7 @@ fn explicit_macro_program_cli_matches_all_prefrozen_node_and_span_rows() {
     for code in [5, 6] {
         for source in program_fixtures::sources() {
             let database = super::Database::new(carrier(source, code));
-            let output = super::cli_support::run(&[
+            let output = super::CLI.run(&[
                 "inspect",
                 database.path(),
                 "--table",
@@ -265,7 +265,7 @@ fn macro_program_flags_refuse_before_open_and_low_native_pools_emit_no_stdout() 
     ] {
         let mut arguments = vec!["inspect", "never-open-program-fixture.accdb"];
         arguments.extend(flags);
-        let output = super::cli_support::run(&arguments);
+        let output = super::CLI.run(&arguments);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         let error = String::from_utf8(output.stderr).unwrap();
@@ -275,7 +275,7 @@ fn macro_program_flags_refuse_before_open_and_low_native_pools_emit_no_stdout() 
     let source = &program_fixtures::sources()[0];
     let database = super::Database::new(carrier(source, 6));
     for flag in ["--native-bytes", "--native-steps"] {
-        let output = super::cli_support::run(&[
+        let output = super::CLI.run(&[
             "inspect",
             database.path(),
             "--table",
@@ -312,7 +312,7 @@ fn later_illformed_program_never_publishes_earlier_structural_rows() {
         ),
     ]);
     let database = super::Database::new(local_table(payload_fixture::inline(&raw), false));
-    let output = super::cli_support::run(&[
+    let output = super::CLI.run(&[
         "inspect",
         database.path(),
         "--table",

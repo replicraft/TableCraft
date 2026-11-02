@@ -9,7 +9,7 @@ use tablecraft_ace::{
 use tablecraft_io::journal::{
     JournalError, RecoveryOutcome, inspect_v2, prepare_resizable_expected,
 };
-use tablecraft_testkit::access::genuine_eof_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_eof_insert::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

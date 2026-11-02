@@ -9,7 +9,7 @@ use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tablecraft_ace::{InsertFieldValue, NativeImage, OmittedRowInsert, read_table};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::creation_date_defaults as fixtures;
+use tablecraft_testkit::fixtures::access::creation_date_defaults as fixtures;
 
 fn sources() -> fixtures::Sources {
     fixtures::Sources::load(|raw, wanted| {

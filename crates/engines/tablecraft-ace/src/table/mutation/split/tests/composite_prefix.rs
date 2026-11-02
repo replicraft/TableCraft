@@ -4,10 +4,7 @@ use crate::{
     EditError, FixedScalarUpdate, IndexCheckStatus, check_table, check_table_constraints,
     read_table, read_table_index,
     table::{indexes::IndexDataPatch, mutation::gates},
-    test_support::{
-        split_model::{budget, capture},
-        tuples::{decimal_fixture, mixed_fixture, numeric_fixture},
-    },
+    test_support::split_model::{budget, capture},
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
@@ -15,7 +12,10 @@ use tablecraft_core::{
     values::{Guid, Value},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::{
+    decimal_fixture, mixed_fixture, numeric_fixture,
+};
 
 const PAGE: usize = 4096;
 const ROOT: usize = 14;

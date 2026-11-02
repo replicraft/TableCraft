@@ -2,8 +2,8 @@
 use super::model;
 use crate::RowInsert;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::insert_seed as source_model;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::insert_seed as source_model;
 
 const PAGE: usize = 4096;
 

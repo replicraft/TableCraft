@@ -1,7 +1,7 @@
 #[allow(dead_code)]
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "stored_index_projection/fixture.rs"]
 mod indexed;
 use std::{
@@ -20,7 +20,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const BYTES: u64 = 64 * 1024 * 1024;
 

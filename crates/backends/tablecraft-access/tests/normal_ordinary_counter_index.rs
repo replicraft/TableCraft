@@ -16,7 +16,9 @@ use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::UpdateError;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_ordinary_indexed::{self as sources, Case, Source};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{
+    self as sources, Case, Source,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(121);
 

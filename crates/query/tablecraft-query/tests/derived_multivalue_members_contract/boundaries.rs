@@ -6,7 +6,7 @@ use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, prepare};
 
 #[test]
 fn selected_inner_errors_and_eof_failures_precede_outer_member_filtering_and_top() {
-    let data = Data::fixture();
+    let data = Data::derived_fixture();
     for prefix in ["SELECT", "SELECT TOP 1"] {
         let sql = format!(
             "{prefix} Q.X.Value FROM (SELECT A AS X,1 \\ (Id-4) AS Boom FROM L) Q WHERE False"
@@ -37,7 +37,7 @@ fn selected_inner_errors_and_eof_failures_precede_outer_member_filtering_and_top
 
 #[test]
 fn all_observed_cancellation_points_and_cumulative_pools_leave_the_plan_reusable() {
-    let data = Data::fixture();
+    let data = Data::derived_fixture();
     let plan = prepare(
         &syntax("SELECT Q.X,Q.X.Value FROM (SELECT A AS X FROM L) Q"),
         &data,
@@ -126,7 +126,7 @@ fn all_observed_cancellation_points_and_cumulative_pools_leave_the_plan_reusable
 fn owned<'a>(value: i32) -> Data<'a> {
     let mut row = parent(1, &[Some(value)], &[Some(value + 1)]);
     row.scalars[1] = Value::Int32(value * 10);
-    let mut data = Data::new(vec![Table::new("T", vec![row])]);
+    let mut data = Data::with_policy_metadata(vec![Table::new("T", vec![row])]);
     data.definitions
         .push(("Owned", syntax("SELECT Id,A AS X FROM T")));
     data

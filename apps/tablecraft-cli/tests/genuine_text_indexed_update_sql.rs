@@ -1,7 +1,7 @@
 #![cfg(any(target_os = "macos", target_os = "linux"))]
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_text_indexed_update as sources;
+use tablecraft_testkit::fixtures::access::genuine_text_indexed_update as sources;
 
 #[test]
 #[ignore = "requires qualified Text Source, fitting writer and original literal outcomes"]

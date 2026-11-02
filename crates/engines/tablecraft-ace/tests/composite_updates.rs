@@ -1,13 +1,11 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "composite_updates/capacity.rs"]
 mod capacity;
 #[path = "composite_updates/model.rs"]
 mod model;
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 #[path = "composite_updates/trees.rs"]
 mod trees;
 

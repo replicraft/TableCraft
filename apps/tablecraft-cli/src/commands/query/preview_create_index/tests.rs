@@ -10,7 +10,7 @@ use tablecraft_access::AccessInputError;
 #[cfg(unix)]
 use tablecraft_ace::InspectError;
 #[cfg(unix)]
-use tablecraft_testkit::access::secondary_index as model;
+use tablecraft_testkit::fixtures::access::secondary_index as model;
 
 #[test]
 fn durable_flag_is_scoped_to_explicit_publication_consumers() {

@@ -2,7 +2,7 @@
 mod cursor;
 #[path = "table_pages/faults.rs"]
 mod faults;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "table_pages/large_long_values.rs"]
 mod large_long_values;
 #[path = "table_pages/large_sources.rs"]
@@ -25,7 +25,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const TABLE_DEFINITION: usize = 10;

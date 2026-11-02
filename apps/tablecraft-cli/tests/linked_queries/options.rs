@@ -13,7 +13,7 @@ mod complex_fixture;
 mod history_fixture;
 
 use super::{
-    Database, linked_fixture, run, support, target_fixture as base, target_fixture as fixture,
+    CLI, Database, linked_fixture, support, target_fixture as base, target_fixture as fixture,
 };
 
 const PAGE_BYTES: usize = 4096;
@@ -61,7 +61,7 @@ fn encrypted_target_uses_explicit_password_even_when_root_is_plaintext() {
         }
         let mut correct = selected.clone();
         correct.extend(["-p", "public linked password"]);
-        let output = run(&correct);
+        let output = CLI.run(&correct);
         assert!(
             output.status.success(),
             "{}",
@@ -75,7 +75,7 @@ fn encrypted_target_uses_explicit_password_even_when_root_is_plaintext() {
         for arguments in [selected, wrong] {
             // Captured noninteractive stdin must not hang or publish before
             // an explicitly selected encrypted target is authenticated.
-            let output = run(&arguments);
+            let output = CLI.run(&arguments);
             assert!(!output.status.success());
             assert!(output.stdout.is_empty());
             assert!(
@@ -107,12 +107,12 @@ fn stored_calculation_opt_in_reaches_target_and_never_recomputes_cached_values()
         if streaming {
             selected.extend(["--stream", "--batch-rows", "1"]);
         }
-        let refused = run(&selected);
+        let refused = CLI.run(&selected);
         assert!(!refused.status.success());
         assert!(refused.stdout.is_empty());
 
         selected.push("--stored-calculations");
-        let output = run(&selected);
+        let output = CLI.run(&selected);
         assert!(
             output.status.success(),
             "{}",
@@ -142,13 +142,13 @@ fn collections_opt_in_reaches_target_history_members_beyond_multivalue_mode() {
         if let Some(option) = option {
             refused.push(option);
         }
-        let output = run(&refused);
+        let output = CLI.run(&refused);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
     let mut allowed = arguments.to_vec();
     allowed.push("--collections");
-    let output = run(&allowed);
+    let output = CLI.run(&allowed);
     assert!(
         output.status.success(),
         "{}",
@@ -231,7 +231,7 @@ fn database_policy_uses_target_field_order_and_root_literal_default_independentl
                 arguments.extend(["--stream", "--batch-rows", "1"]);
             }
 
-            let output = run(&arguments);
+            let output = CLI.run(&arguments);
             assert!(
                 output.status.success(),
                 "{}",

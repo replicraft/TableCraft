@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn euro_queries_execute_optional_slots_and_buffer_errors_in_both_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT EuroConvert(1.2,'DEM','EUR'),EuroConvert(1.47,'FRF','DEM'),EuroConvert(1000,'FRF','DEM',True,3),EuroConvert(1.2,'DEM','EUR',,)",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT EuroConvert(1.2,'DEM','EUR'),EuroConvert(1.47,'FRF','DEM'),EuroConvert(1000,'FRF','DEM',True,3),EuroConvert(1.2,'DEM','EUR',,)",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -37,7 +38,7 @@ fn euro_queries_execute_optional_slots_and_buffer_errors_in_both_commands() {
             "EuroConvert(Null,'DEM','EUR',1/0)",
             "EuroConvert(*)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -47,7 +48,7 @@ fn euro_queries_execute_optional_slots_and_buffer_errors_in_both_commands() {
 #[test]
 fn financial_numeric_text_uses_explicit_policy_and_keeps_failures_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Pmt('0','10','1000') AS P,EuroConvert('1,5','EUR','EUR','1','3,5') AS E",
@@ -60,7 +61,7 @@ fn financial_numeric_text_uses_explicit_policy_and_keeps_failures_buffered() {
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"P\tE\n-100\t1.5\n");
-        let failure = run(&["query", mode, "SELECT 1,Pmt('0','10','1000')"]);
+        let failure = CLI.run(&["query", mode, "SELECT 1,Pmt('0','10','1000')"]);
         assert_eq!(failure.status.code(), Some(2));
         assert!(failure.stdout.is_empty());
         assert!(String::from_utf8_lossy(&failure.stderr).contains("number-format"));

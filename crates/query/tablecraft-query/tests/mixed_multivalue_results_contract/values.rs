@@ -6,7 +6,7 @@ use tablecraft_query::{OutputType, QueryError, QueryValue, prepare};
 #[test]
 fn every_displayed_child_repeats_the_original_complete_list() {
     for declared in [false, true] {
-        let data = Data::fixture();
+        let data = Data::mixed_fixture();
         let mut expected = Vec::new();
         for row in &data.tables[0].rows {
             for value in expanded(&row.lists[0]) {
@@ -29,7 +29,7 @@ fn every_displayed_child_repeats_the_original_complete_list() {
 
 #[test]
 fn same_displayed_member_filters_rows_while_independent_hidden_member_filters_parents() {
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     let parent = &data.tables[0].rows[0];
     let whole = &parent.lists[0];
     let sql = "SELECT A,A.Value AS One FROM L WHERE A.Value=7";
@@ -59,7 +59,7 @@ fn same_displayed_member_filters_rows_while_independent_hidden_member_filters_pa
 
 #[test]
 fn independent_displayed_collections_form_products_without_trimming_either_list() {
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     let mut expected = Vec::new();
     for parent in &data.tables[0].rows {
         for a in expanded(&parent.lists[0]) {
@@ -83,7 +83,7 @@ fn independent_displayed_collections_form_products_without_trimming_either_list(
 #[test]
 fn outer_matches_expand_before_joining_and_missing_parents_remain_absent() {
     for kind in ["LEFT", "RIGHT"] {
-        let data = Data::fixture();
+        let data = Data::mixed_fixture();
         let mut expected = Vec::new();
         let mut matched_right = vec![false; data.tables[1].rows.len()];
         for left in &data.tables[0].rows {
@@ -135,7 +135,7 @@ fn outer_matches_expand_before_joining_and_missing_parents_remain_absent() {
 
 #[test]
 fn named_derived_aliases_sort_and_top_the_expanded_rows_without_expanding_again() {
-    let mut data = Data::fixture();
+    let mut data = Data::mixed_fixture();
     data.definitions.push((
         "ExpandedRows",
         syntax("SELECT Id,A AS Whole,A.Value AS One FROM L"),

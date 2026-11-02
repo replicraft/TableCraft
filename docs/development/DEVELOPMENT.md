@@ -24,7 +24,7 @@ verifier retains its explicit optional Git-object check.
 ## Shared native fixture builders
 
 The independent Wide-MR2 fixture encoders now have one shared owner in
-`tablecraft-testkit::access::wide_properties`, including the original unchanged
+`tablecraft-testkit::fixtures::access::wide_properties`, including the original unchanged
 golden and the event-property assembly used by both native carriers and rich
 source fixtures. The Required source constructor also has one pure owner;
 native and adapter consumers use it directly. Inverse checks preserve the

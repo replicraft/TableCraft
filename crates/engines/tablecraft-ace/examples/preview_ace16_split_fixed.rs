@@ -90,14 +90,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 #[allow(dead_code)]
-#[path = "../tests/mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[cfg(test)]
 #[allow(dead_code)]
 #[path = "../tests/ace16_split_int32/model.rs"]
 mod model;
 #[cfg(test)]
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[cfg(test)]
 #[path = "preview_ace16_split_fixed/tests.rs"]
 mod tests;

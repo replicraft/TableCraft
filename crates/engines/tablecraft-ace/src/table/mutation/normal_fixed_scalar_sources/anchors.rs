@@ -1,6 +1,6 @@
 //! Original image/request pins frozen before normal typed producer execution.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_fixed_before_change::{self as model, Cell};
+use tablecraft_testkit::fixtures::access::canonical_fixed_before_change::{self as model, Cell};
 
 fn integer(hash: &mut Sha256, value: usize) {
     hash.update((value as u64).to_le_bytes());

@@ -12,7 +12,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_before_change::{self as model, Recipe},
     canonical_mixed_before_change as legacy,
 };

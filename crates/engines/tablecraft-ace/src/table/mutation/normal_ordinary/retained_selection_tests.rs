@@ -4,7 +4,7 @@ use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_retained_numeric;
+use tablecraft_testkit::fixtures::access::genuine_retained_numeric;
 
 const SCOPE: CatalogScope = CatalogScope::new(136);
 

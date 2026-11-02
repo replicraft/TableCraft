@@ -23,7 +23,7 @@ use tablecraft_model::CatalogScope;
 use tablecraft_query::InsertError;
 use tablecraft_schema::{FieldConstraintViolation, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_creation_defaults as sources;
+use tablecraft_testkit::fixtures::access::canonical_creation_defaults as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(220);
 

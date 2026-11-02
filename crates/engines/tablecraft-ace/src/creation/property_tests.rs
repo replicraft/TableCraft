@@ -5,7 +5,9 @@ use super::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::{DecimalConstraints, FieldConstraintViolation, ScalarType};
-use tablecraft_testkit::access::canonical_creation_properties::{self as sources, Violation};
+use tablecraft_testkit::fixtures::access::canonical_creation_properties::{
+    self as sources, Violation,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

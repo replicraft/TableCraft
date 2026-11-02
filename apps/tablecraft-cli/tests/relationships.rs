@@ -1,9 +1,10 @@
-mod support;
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture {
@@ -39,12 +40,12 @@ impl Drop for Fixture {
 #[test]
 fn relationship_cli_reports_declarations_with_no_active_content_or_writes() {
     let fixture = Fixture::new();
-    let output = run(&["inspect", fixture.path(), "--relationships"]);
+    let output = CLI.run(&["inspect", fixture.path(), "--relationships"]);
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
     assert!(text.contains("TAG_GRP_TBTAG_NME_TB\tTAG_GRP_TB\tTAG_NME_TB\t0x00000000\tTRUE\tFALSE\tRestrict\tRestrict\t0\tTAG_GRP_ID\tTAG_GRP_ID\n"));
-    let verbose = run(&["-vv", "inspect", fixture.path(), "--relationships"]);
+    let verbose = CLI.run(&["-vv", "inspect", fixture.path(), "--relationships"]);
     let diagnostics = String::from_utf8(verbose.stderr).unwrap();
     assert!(!diagnostics.contains("TAG_GRP_TB"));
     assert!(!diagnostics.contains(fixture.path()));
@@ -60,7 +61,7 @@ fn relationships_conflict_with_other_inspection_modes_before_reading() {
     ] {
         let mut arguments = vec!["inspect", fixture.path(), "--relationships"];
         arguments.extend(other);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }

@@ -36,7 +36,7 @@ fn stored_bracketed_names_bind_parameters_and_publish_literal_headers() {
         let mut args = vec!["query", "run"];
         args.extend(query);
         args.extend(["--database", db.path(), "--param", "Enter a minimum=long:2"]);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -44,7 +44,7 @@ fn stored_bracketed_names_bind_parameters_and_publish_literal_headers() {
         );
         assert_eq!(result.stdout, b"Chosen Key\n2\n3\n");
     }
-    let result = cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+    let result = CLI.run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }

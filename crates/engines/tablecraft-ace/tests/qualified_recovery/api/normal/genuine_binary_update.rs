@@ -8,7 +8,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1, prepare_expected};
-use tablecraft_testkit::access::genuine_binary_update::{self as source, Case};
+use tablecraft_testkit::fixtures::access::genuine_binary_update::{self as source, Case};
 
 fn cases() -> Vec<Case> {
     source::load_all(|raw, hash| {

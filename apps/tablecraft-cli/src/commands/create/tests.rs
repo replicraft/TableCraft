@@ -5,8 +5,8 @@ use std::{fs, io, path::Path};
 use tablecraft_access::creation::CreationError;
 use tablecraft_ace::CreateDatabaseError;
 use tablecraft_io::publication::PublicationError;
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::{
     canonical_catalog_names,
     canonical_creation::{self, Case},
 };

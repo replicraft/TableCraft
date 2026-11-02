@@ -1,7 +1,7 @@
 //! Literal rows, key weights and complete images; no mutation encoder is called.
 use super::base;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub const PAGE: usize = 4096;
 const ROOTS: [usize; 3] = [13, 15, 16];

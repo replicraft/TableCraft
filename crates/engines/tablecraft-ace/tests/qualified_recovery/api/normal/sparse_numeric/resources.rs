@@ -7,7 +7,7 @@ use tablecraft_ace::{
     RecoverableNativeInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::qualified_sparse_numeric::Case;
+use tablecraft_testkit::fixtures::access::qualified_sparse_numeric::Case;
 
 enum Planned {
     Insert(RecoverableNativeInsertPlan),

@@ -8,7 +8,7 @@ use crate::{
 };
 use model::source as source_model;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 fn original(shared: bool) -> Vec<u8> {
     let mut bytes = source_model::source(6, 1);

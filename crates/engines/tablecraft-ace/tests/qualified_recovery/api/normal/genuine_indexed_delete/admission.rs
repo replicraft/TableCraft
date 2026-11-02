@@ -3,7 +3,7 @@ use super::{budget, fixtures, image, scope};
 use fixtures::Recipe;
 use std::io::Cursor;
 use tablecraft_ace::{RowDelete, read_table};
-use tablecraft_testkit::access::genuine_indexed_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_indexed_delete as sources;
 
 fn refused_before_plan(original: &[u8], changed: &[u8]) {
     assert_ne!(changed, original);
