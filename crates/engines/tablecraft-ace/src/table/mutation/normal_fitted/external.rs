@@ -1,5 +1,6 @@
-//! Reuse an existing exclusive external value without allocating or retiring rows.
+//! Original-bound retained payload edits and complete-page retirement composition.
 mod admission;
+mod mixed;
 pub(super) mod proof;
 mod retirement;
 pub(super) mod stage;
@@ -27,9 +28,12 @@ pub(super) fn preflight(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    if retirement::selected(groups, bound, budget, cancelled)? {
-        retirement::stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+    if mixed::selected(groups, bound, budget, cancelled)? {
+        mixed::stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+    } else if retirement::selected(groups, bound, budget, cancelled)? {
+        retirement::stage::capture(image, source, groups, bound, false, budget, cancelled)
+            .map(|_| ())
     } else {
-        stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+        stage::capture(image, source, groups, bound, false, budget, cancelled).map(|_| ())
     }
 }

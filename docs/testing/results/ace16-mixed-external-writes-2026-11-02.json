@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Normal mixed whole-page LVAL retirement and retained payload changes",
+  "status": "portable acceptance passed",
+  "counts": {
+    "literal_ordered_commits": 32,
+    "ordered_result_relative_noops": 32,
+    "named_empty_commits": 8,
+    "unique_targetless_intent_refusals": 4,
+    "direct_literal_proofs": 32,
+    "direct_refusals": 672,
+    "native_recovery_contexts": 480,
+    "committed_mixture_refusals": 128,
+    "forged_journal_refusals": 576,
+    "public_resource_contexts": 32,
+    "typed_saves": 32,
+    "sql_saves": 16,
+    "retained_empty_saves": 48,
+    "retained_stale_refusals": 48,
+    "cli_saves_readbacks": 16
+  },
+  "verification": "backend-write-batch-2026-11-02.json",
+  "source_qualification": "ace16-mixed-external-prefix-sources-2026-11-02.json",
+  "native_access_save_reopen": "unrun",
+  "scope_limits": "See the owning write contract; counts do not establish general native compatibility."
+}

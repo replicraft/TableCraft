@@ -30,8 +30,8 @@ const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const INVALID_PREFIX_BYTES: usize = size_of::<u32>();
 
 pub(in crate::table::mutation::normal_fitted::external) struct Prepared {
-    values: Vec<Retiring>,
-    pages: Vec<Page>,
+    pub(in crate::table::mutation::normal_fitted::external) values: Vec<Retiring>,
+    pub(in crate::table::mutation::normal_fitted::external) pages: Vec<Page>,
     rows: usize,
 }
 
@@ -40,6 +40,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn capture(
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
     bound: &Bound,
+    retiring_only: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared, EditError> {
@@ -78,10 +79,12 @@ pub(in crate::table::mutation::normal_fitted::external) fn capture(
             if !field.is_ordinary_long_value() {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
-            // Mixed retained-descriptor changes require a separately qualified
-            // parent-composition law; this branch never retries another planner.
-            let replacement =
-                replacement(cell.value).ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?;
+            let Some(replacement) = replacement(cell.value) else {
+                if retiring_only {
+                    continue;
+                }
+                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+            };
             let from = *layout
                 .offsets
                 .get(field.field.variable)
@@ -184,7 +187,7 @@ fn parents(
     Ok(patches)
 }
 
-fn pages_and_maps(
+pub(in crate::table::mutation::normal_fitted::external) fn pages_and_maps(
     image: &NativeImage,
     source: &Source,
     pages: &[Page],
@@ -281,7 +284,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
-    let prepared = capture(image, source, groups, bound, budget, cancelled)?;
+    let prepared = capture(image, source, groups, bound, false, budget, cancelled)?;
     let mut patches = parents(source, &prepared.values, budget, cancelled)?;
     let retirement = pages_and_maps(image, source, &prepared.pages, budget, cancelled)?;
     let count = patches

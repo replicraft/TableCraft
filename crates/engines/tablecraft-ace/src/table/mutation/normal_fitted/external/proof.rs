@@ -44,11 +44,26 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
+    if super::mixed::selected(groups, bound, budget, cancelled)? {
+        return super::mixed::proof::reconstruct(image, source, groups, bound, budget, cancelled);
+    }
     if super::retirement::selected(groups, bound, budget, cancelled)? {
         return super::retirement::proof::reconstruct(
             image, source, groups, bound, budget, cancelled,
         );
     }
+    retained(image, source, groups, bound, false, budget, cancelled)
+}
+
+pub(super) fn retained(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    bound: &Bound,
+    retained_only: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
     let schema = source.table.schema();
     let mut expected = record_serialization::copy(image.as_bytes(), budget, cancelled)?;
     let mut changed_rows = 0_usize;
@@ -79,6 +94,9 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
                 return Err(EditError::Conflict);
             }
             if binding::equal(cell.expected, cell.value, budget, cancelled)? {
+                continue;
+            }
+            if retained_only && super::retirement::replacement(cell.value).is_some() {
                 continue;
             }
             let Target::Variable { column } = bound.targets[assignment.group] else {

@@ -850,3 +850,6 @@ mod wide_root_promotion;
 
 #[path = "normal/increment_multi.rs"]
 mod increment_multi;
+
+#[path = "normal/external_lval_mixed.rs"]
+mod external_lval_mixed;

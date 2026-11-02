@@ -33,15 +33,17 @@ const SINGLE_TAG: u32 = 0x4000_0000;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 
 pub(super) struct Change {
+    pub(super) ordinal: usize,
+    pub(super) column: usize,
     descriptor: usize,
-    tagged: u32,
+    pub(super) tagged: u32,
     trace: Traced,
     payload: Vec<u8>,
 }
 
 pub(super) struct Prepared {
-    changes: Vec<Change>,
-    rows: usize,
+    pub(super) changes: Vec<Change>,
+    pub(super) rows: usize,
 }
 
 pub(super) fn capture(
@@ -49,6 +51,7 @@ pub(super) fn capture(
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
     bound: &Bound,
+    retained_only: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared, EditError> {
@@ -78,6 +81,9 @@ pub(super) fn capture(
                 return Err(EditError::Conflict);
             }
             if binding::equal(cell.expected, cell.value, budget, cancelled)? {
+                continue;
+            }
+            if retained_only && super::retirement::replacement(cell.value).is_some() {
                 continue;
             }
             let Target::Variable { column } = bound.targets[assignment.group] else {
@@ -178,6 +184,8 @@ pub(super) fn capture(
                 return Err(EditError::Preservation);
             }
             changes.push(Change {
+                ordinal: selected.ordinal,
+                column,
                 descriptor: original.offset + start,
                 tagged: tag | length,
                 trace: traced,
@@ -253,10 +261,25 @@ pub(in crate::table::mutation::normal_fitted) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
+    if super::mixed::selected(groups, bound, budget, cancelled)? {
+        return super::mixed::stage::prepare(image, source, groups, bound, budget, cancelled);
+    }
     if super::retirement::selected(groups, bound, budget, cancelled)? {
         return super::retirement::stage::prepare(image, source, groups, bound, budget, cancelled);
     }
-    let prepared = capture(image, source, groups, bound, budget, cancelled)?;
+    let prepared = capture(image, source, groups, bound, false, budget, cancelled)?;
+    let rows = prepared.rows;
+    let patches = payloads(image, prepared, true, budget, cancelled)?;
+    Ok((patches, rows))
+}
+
+pub(super) fn payloads(
+    image: &NativeImage,
+    prepared: Prepared,
+    descriptors: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Patch>, EditError> {
     let mut patches = binding::vector(prepared.changes.len(), budget)?;
     for change in prepared.changes {
         check(budget, cancelled)?;
@@ -329,17 +352,19 @@ pub(in crate::table::mutation::normal_fitted) fn prepare(
         if offset != change.payload.len() {
             return Err(EditError::Preservation);
         }
-        let before = image
-            .as_bytes()
-            .get(change.descriptor..change.descriptor + WORD_BYTES)
-            .ok_or(EditError::Preservation)?;
-        reserve_patch(&mut patches, budget)?;
-        patches.push(Patch {
-            offset: change.descriptor,
-            before: record_serialization::copy(before, budget, cancelled)?,
-            after: record_serialization::copy(&change.tagged.to_le_bytes(), budget, cancelled)?,
-        });
+        if descriptors {
+            let before = image
+                .as_bytes()
+                .get(change.descriptor..change.descriptor + WORD_BYTES)
+                .ok_or(EditError::Preservation)?;
+            reserve_patch(&mut patches, budget)?;
+            patches.push(Patch {
+                offset: change.descriptor,
+                before: record_serialization::copy(before, budget, cancelled)?,
+                after: record_serialization::copy(&change.tagged.to_le_bytes(), budget, cancelled)?,
+            });
+        }
     }
     check(budget, cancelled)?;
-    Ok((patches, prepared.rows))
+    Ok(patches)
 }
