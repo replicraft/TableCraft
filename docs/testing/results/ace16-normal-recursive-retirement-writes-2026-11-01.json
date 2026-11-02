@@ -1,0 +1,376 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal retained height-two Int32 leaf/internal-parent retirement",
+  "source_manifest_sha256": "6b95d378b8ae5ba9b61dc462d469a31773c01d810bc083fa8331486ccd7b26b7",
+  "production_checkpoint_sha256": "c7011d3f089090c739c67530505f9cd633b73feb6dff924ade6fb15f78101a4b",
+  "acceptance_checkpoint_sha256": "ac71825341936e501f1090170603026be5f08da7519e11d8a7066dcb0f997998",
+  "focused_first": [
+    {
+      "name": "repeated-source-eight",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "repeated_retirement_sources::repeated_retirement_sources_match_independent_raw_replay_and_current_native_admission",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "text-new-key-source",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "text_new_key::new_text_family_update_keeps_history_and_has_complete_readonly_source",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "recursive-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_delete::recursive_retirement_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "3"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "recursive-preview-siblings",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "siblings::preview_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "recursive-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_recursive_retirement::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "5"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "recursive-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_recursive_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "recursive-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_recursive_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false
+    }
+  ],
+  "cli_budget_followup": [
+    {
+      "name": "recursive-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_recursive_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "old-preview-audit",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "tree::siblings::audit::tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "old-height-one-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_delete::node_retirement_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "old-height-one-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_node_retirement::node_retirement_commits_both_original_orders_and_preserves_full_alias_history",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "old-noncontracting-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_retained_node_delete::retained_node_deletion_commits_both_orders_and_preserves_full_fence_identity",
+        "--",
+        "--exact",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    }
+  ],
+  "coverage": {
+    "native_literal_commits": 8,
+    "native_empty_original_plans": 4,
+    "native_stale_missing_refusals": 8,
+    "full_public_resource_contexts": 8,
+    "direct_literal_proofs": 12,
+    "direct_forgeries": 84,
+    "authored_unlinked_level_controls": 4,
+    "recovery_contexts": 36,
+    "protected_journal_image_refusals": 228,
+    "retained_typed_sql_saves": 12,
+    "retained_empty_followons": 12,
+    "cli_saves_and_readbacks": 8
+  },
+  "review_corrections_before_first_matching_run": [
+    "Write derived tail after untouched-source page framing.",
+    "Preserve optional originally unlinked internal levels.",
+    "Admit observed original parent prefix2 within full present-I32 key/ROW bound9."
+  ],
+  "first_runtime_failure": {
+    "phase": "CLI Planning",
+    "cause": "Default cumulative Bytes exhausted with3152 remaining.",
+    "correction": "Only acceptance invocation uses explicit work bytes/steps1b. Defaults, source laws and expected images unchanged."
+  },
+  "native_microsoft_access_save_reopen": "UNRUN",
+  "full_backend": "INCOMPLETE",
+  "log_sha256": {
+    "recursive-direct": "799d495dabf917cf98ad4a765e73d975379ec88b5c9cd9191c03d0b6d88337cd",
+    "recursive-preview-siblings": "2a98a5fe6b65cfbc9cef95fe3e6b54f0ea78901e19a01c86dc3c294afbc3a68c",
+    "recursive-native": "b474ba1ffccf8bd689ee29c9a9b9ccf985d897e3d53e216767226dfa8948a79e",
+    "recursive-host": "1d966fc5041608a176dbd7d40b72260db80073445ec83612f3d34cb56666945c",
+    "recursive-cli-followup": "dc2e7dd9bc7c397f3d9c1abb1f4911a8d47e17b83a80582dcd38c32eba164c9b"
+  }
+}

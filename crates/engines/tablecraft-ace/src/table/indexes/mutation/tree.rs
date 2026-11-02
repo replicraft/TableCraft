@@ -5,7 +5,7 @@
 mod contraction;
 #[cfg(feature = "ace16-write-preview")]
 mod partition;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod siblings;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use siblings::{SiblingAudit, audit_siblings};

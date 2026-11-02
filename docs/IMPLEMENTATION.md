@@ -1,5 +1,16 @@
 # Implementation status
 
+## Height-two native retirement
+
+Normal [recursive Int32 retirement](access/writes/NORMAL_RECURSIVE_NODE_RETIREMENT.md)
+now retires leaves and an exhausted internal parent while retaining a nonempty
+height-two root. Eight native commits, repeated/mixed recovery and 228 protected
+journal refusals, independent proof/resource checks, twelve typed/SQL saves plus
+empty follow-ons and eight CLI saves/readbacks pass. Existing NODE/preview paths
+and strict standalone profiles pass. The large fixture needs explicit CLI work
+budgets; the default-budget refusal remains in the record. Repeated one-child
+and empty-root mutation remain next; native Access qualification is unrun.
+
 ## Compressed Text write sources
 
 Fitting indexed UPDATE now proves original

@@ -1,5 +1,7 @@
 //! Contraction qualifies complete original internal chains, then repairs survivors.
+#[cfg(feature = "ace16-write-preview")]
 mod audit;
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use audit::audit_siblings;
 
 use super::{Tree, raw_page};
@@ -32,7 +34,9 @@ pub(in crate::table) struct SiblingAudit {
     root: u32,
     physical: u32,
     levels: Vec<Level>,
+    #[cfg(feature = "ace16-write-preview")]
     pages: Vec<u32>,
+    #[cfg(feature = "ace16-write-preview")]
     empty_root: bool,
 }
 
@@ -62,7 +66,9 @@ impl Tree {
             root: self.number,
             physical: index.data_number(),
             levels,
+            #[cfg(feature = "ace16-write-preview")]
             pages: Vec::new(),
+            #[cfg(feature = "ace16-write-preview")]
             empty_root: false,
         };
         self.collect_siblings(image, &mut result, budget, cancelled)?;
@@ -100,14 +106,17 @@ impl Tree {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         check(budget, cancelled)?;
-        budget
-            .charge_allocation(1, size_of::<u32>() as u64)
-            .map_err(InspectError::from)?;
-        result
-            .pages
-            .try_reserve(1)
-            .map_err(|_| InspectError::Allocation)?;
-        result.pages.push(self.number);
+        #[cfg(feature = "ace16-write-preview")]
+        {
+            budget
+                .charge_allocation(1, size_of::<u32>() as u64)
+                .map_err(InspectError::from)?;
+            result
+                .pages
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
+            result.pages.push(self.number);
+        }
         if self.children.is_empty() {
             return Ok(());
         }
@@ -151,7 +160,12 @@ impl SiblingAudit {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        self.empty_root = empty_root;
+        #[cfg(feature = "ace16-write-preview")]
+        {
+            self.empty_root = empty_root;
+        }
+        #[cfg(not(feature = "ace16-write-preview"))]
+        let _ = empty_root;
         for level in &self.levels {
             check(budget, cancelled)?;
             if !level.linked {
@@ -211,3 +225,6 @@ impl SiblingAudit {
         }))
     }
 }
+
+#[cfg(all(test, feature = "ace16-write-preview"))]
+mod preview_tests;
