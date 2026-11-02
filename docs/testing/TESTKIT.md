@@ -11,9 +11,11 @@ it as a normal dependency. The crate has no application-package dependency.
 src/
 ├── fixtures/
 │   ├── access/                 independent images, requests and literal pins
+│   │   └── tcna2.rs            independent original-presence wire grammar
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
+    ├── ace/resources.rs        public planner budget/cancellation assertions
     ├── query/multivalue.rs     query Source, DTO and assertion machinery
     ├── access/owned_growth.rs  retained adapter-session workflows
     ├── cli/mod.rs              headless process runner with explicit executable
@@ -26,6 +28,15 @@ Import the actual owner directly, for example
 modules or reexports at the former engine, adapter or CLI helper locations.
 New shared machinery belongs in the corresponding testkit folder; a helper used
 by only one test can remain with that test until sharing is useful.
+
+`support::ace::resources::assert_public_boundary` measures each caller's actual
+public planner, then checks exact budgets, each one-less budget and entry/middle/
+terminal cancellation. Callers retain input construction, typed error projection
+and fixture-specific result assertions. The helper does not substitute internal
+cost formulas. `fixtures::access::tcna2::original_presence_wire` shares only the
+independent literal test grammar; callers retain their original rows, source
+bindings and exact expected frame lengths. Neither helper imports a production
+encoder or turns a fixture into write permission.
 
 ## Optional subsystem support
 

@@ -44,44 +44,21 @@ fn requests(case: &fixtures::Case, empty: bool) -> Vec<OmittedRowInsert> {
 }
 
 fn wire(case: &fixtures::Case, empty: bool) -> Vec<u8> {
-    let mut row = Vec::new();
-    if !empty {
-        row.extend_from_slice(&[0; 4]);
-        row.extend_from_slice(&3_u32.to_le_bytes());
-        for field in case.presence() {
-            let (tag, payload) = match field {
-                None => (8, Vec::new()),
-                Some(Value::Null) => (0, Vec::new()),
-                Some(Value::Boolean(value)) => (1, vec![u8::from(value)]),
-                Some(Value::Int32(value)) => (2, value.to_le_bytes().to_vec()),
-                Some(Value::Int64(value)) => (3, value.to_le_bytes().to_vec()),
-                Some(Value::Text(value)) => (6, value.into_bytes()),
-                Some(Value::Binary(value)) => (7, value),
-                _ => panic!("closed literal companion carriers"),
-            };
-            row.extend_from_slice(&[tag, 0, 0, 0]);
-            row.extend_from_slice(&(payload.len() as u32).to_le_bytes());
-            row.extend_from_slice(&payload);
-        }
-        let length = row.len() as u32;
-        row[..4].copy_from_slice(&length.to_le_bytes());
-    }
-    let mut raw = Vec::from(*b"TCNA0002");
-    raw.extend_from_slice(&[0; 4]);
-    raw.extend_from_slice(&[2, 0, 0, 0]);
-    raw.extend_from_slice(&(case.before.len() as u64).to_le_bytes());
     let mut digest = Sha256::new();
     digest.update(b"TCNI0001:BEFORE\0");
     digest.update((case.before.len() as u64).to_le_bytes());
     digest.update(&case.before);
-    raw.extend_from_slice(&digest.finalize());
-    for field in [case.table.len() as u32, u32::from(!empty), 0] {
-        raw.extend_from_slice(&field.to_le_bytes());
-    }
-    raw.extend_from_slice(case.table.as_bytes());
-    raw.extend_from_slice(&row);
-    let length = raw.len() as u32;
-    raw[8..12].copy_from_slice(&length.to_le_bytes());
+    let rows = if empty {
+        Vec::new()
+    } else {
+        vec![case.presence()]
+    };
+    let raw = tablecraft_testkit::fixtures::access::tcna2::original_presence_wire(
+        case.table,
+        case.before.len(),
+        digest.finalize().into(),
+        rows,
+    );
     let expected = if empty {
         if case.family == fixtures::Family::Middle {
             76
