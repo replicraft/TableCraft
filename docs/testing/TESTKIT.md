@@ -15,6 +15,7 @@ src/
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
+    ├── ace/page_reads.rs       byte-exact read-position counter for six consumers
     ├── ace/resources.rs        public planner budget/cancellation assertions
     ├── query/multivalue.rs     query Source, DTO and assertion machinery
     ├── access/owned_growth.rs  retained adapter-session workflows
@@ -37,6 +38,15 @@ cost formulas. `fixtures::access::tcna2::original_presence_wire` shares only the
 independent literal test grammar; callers retain their original rows, source
 bindings and exact expected frame lengths. Neither helper imports a production
 encoder or turns a fixture into write permission.
+
+`support::ace::page_reads::PageReads` owns the shared seekable read counter used
+by native catalog/row/page/projection and adapter browsing tests. It records actual
+read starts, so callers can assert that unselected pages were never read. The
+helper moved byte-for-byte from engine test support; six existing targets now
+import this owner directly. Access tests enable the existing `ace-support` dev
+feature for these consumers. The default testkit and production dependencies
+remain unchanged. Its [acceptance record](results/shared-page-read-support-2026-11-02.json)
+covers all six consumers, strict checks, minimal features and dependency guards.
 
 ## Optional subsystem support
 

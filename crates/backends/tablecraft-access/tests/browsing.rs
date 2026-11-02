@@ -9,6 +9,7 @@ use tablecraft_ace::InspectError;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::support::ace::page_reads;
 
 #[test]
 fn library_inventory_and_pages_are_usable_without_cli_or_query_evaluation() {
@@ -86,9 +87,6 @@ fn operations_share_budget_and_cancellation_instead_of_resetting_controls() {
         Err(InspectError::Cancelled)
     ));
 }
-
-#[path = "../../../engines/tablecraft-ace/tests/support/page_reads.rs"]
-mod page_reads;
 
 fn with_linked_tables() -> Vec<u8> {
     const PAGE_BYTES: usize = 4096;

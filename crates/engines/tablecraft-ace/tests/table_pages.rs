@@ -13,9 +13,6 @@ mod map_fixture;
 mod maps;
 #[path = "table_pages/materialize.rs"]
 mod materialize;
-#[path = "support/page_reads.rs"]
-mod page_reads;
-use page_reads::PageReads;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use support::{data_page, put16, put32};
@@ -26,6 +23,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::support::ace::page_reads::PageReads;
 
 const PAGE_BYTES: usize = 4096;
 const TABLE_DEFINITION: usize = 10;

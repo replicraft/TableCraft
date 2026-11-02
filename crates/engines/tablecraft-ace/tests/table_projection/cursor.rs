@@ -2,8 +2,7 @@ use super::*;
 use tablecraft_ace::TableCursor;
 #[path = "../large_maps/fixture.rs"]
 mod map_fixture;
-#[path = "../support/page_reads.rs"]
-mod page_reads;
+use tablecraft_testkit::support::ace::page_reads;
 
 const DATA_PAGE: usize = 12;
 const SCOPE: CatalogScope = CatalogScope::new(1);
