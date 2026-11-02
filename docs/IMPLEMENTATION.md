@@ -5,8 +5,9 @@
 Normal [wider numeric root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now splits qualified ascending and descending Int64/Currency secondary roots in
 one complete-row INSERT, retaining a fitting Int32 primary and existing DATA
-capacity. Eight literal outcomes now include atomic two-row primary-prefix growth.
-Direct proof, journal recovery, twelve typed/SQL saves, 32 cold restarts and the
+capacity. Twelve literal outcomes now include atomic two-row primary-prefix
+growth and 157-row fresh-leaf compression. Direct proof, journal recovery,
+sixteen typed/SQL saves, 48 cold restarts and the
 existing four CLI saves/readbacks pass. Partial map mixtures, committed
 mixed-image refusals and resource/cancellation controls pass. Broader
 allocation/split combinations and native Access

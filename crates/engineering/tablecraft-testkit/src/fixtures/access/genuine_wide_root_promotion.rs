@@ -157,6 +157,158 @@ impl Case {
         wire
     }
 
+    fn reference(&self, id: usize) -> u32 {
+        let ordinal = id - 1;
+        let group = if ordinal < 194 {
+            0
+        } else if ordinal < 388 {
+            1
+        } else {
+            2
+        };
+        (self.data[group] as u32) << 8 | (ordinal - [0, 194, 388][group]) as u32
+    }
+
+    fn index_wire(&self, id: usize, physical: usize) -> Vec<u8> {
+        let units = if physical == 0 {
+            id as i64
+        } else if id <= 400 {
+            0
+        } else {
+            i64::MAX - (id - 401) as i64
+        };
+        let mut bytes = vec![if physical == 2 { 0x80 } else { 0x7f }];
+        let mut value = if physical == 0 {
+            ((units as u32) ^ 0x8000_0000).to_be_bytes().to_vec()
+        } else {
+            ((units as u64) ^ 0x8000_0000_0000_0000)
+                .to_be_bytes()
+                .to_vec()
+        };
+        if physical == 2 {
+            for byte in &mut value {
+                *byte = !*byte;
+            }
+        }
+        bytes.extend(value);
+        bytes.extend_from_slice(&self.reference(id).to_be_bytes());
+        bytes
+    }
+
+    fn require_frame(&self, page: &[u8], ids: &[usize], physical: usize, prefix: usize) {
+        assert_eq!(page.len(), 4096);
+        assert_eq!(
+            u16::from_le_bytes(page[24..26].try_into().unwrap()) as usize,
+            prefix
+        );
+        let ends: Vec<_> = page[27..480]
+            .iter()
+            .enumerate()
+            .flat_map(|(byte, value)| {
+                (0..8).filter_map(move |bit| (value & (1 << bit) != 0).then_some(byte * 8 + bit))
+            })
+            .collect();
+        assert_eq!(ends.len(), ids.len());
+        let first = self.index_wire(ids[0], physical);
+        let mut start = 0;
+        for (ordinal, (&id, end)) in ids.iter().zip(ends).enumerate() {
+            let mut full = if ordinal == 0 {
+                Vec::new()
+            } else {
+                first[..prefix].to_vec()
+            };
+            assert!(start < end && end < 3616);
+            full.extend_from_slice(&page[480 + start..480 + end]);
+            assert_eq!(full, self.index_wire(id, physical));
+            start = end;
+        }
+        assert_eq!(
+            u16::from_le_bytes(page[2..4].try_into().unwrap()) as usize,
+            3616 - start
+        );
+    }
+
+    /// Check pinned literal framing before any producer; no production key helper.
+    pub fn assert_literal_layout(&self) {
+        let count = 400 + self.inserted;
+        let td = self.definition * 4096;
+        assert_eq!(&self.after[td + 16..td + 20], &(count as u32).to_le_bytes());
+        for (physical, old) in [400, 1, 1].into_iter().enumerate() {
+            let at = td + 67 + 12 * physical;
+            assert_eq!(
+                &self.after[at..at + 4],
+                &((old + self.inserted) as u32).to_le_bytes()
+            );
+        }
+        let data = self.data[2] * 4096;
+        assert_eq!(
+            &self.after[data + 12..data + 14],
+            &((12 + self.inserted) as u16).to_le_bytes()
+        );
+        assert_eq!(
+            &self.after[data + 2..data + 4],
+            &((3830 - self.inserted * 21) as u16).to_le_bytes()
+        );
+        let primary_prefix = if self.inserted == 1 { 0 } else { 3 };
+        let primary_active = count * 9 - primary_prefix * (count - 1);
+        let at = self.roots[0] * 4096;
+        self.require_frame(
+            &self.after[at..at + 4096],
+            &(1..=count).collect::<Vec<_>>(),
+            0,
+            primary_prefix,
+        );
+        assert_eq!(
+            &self.after[at + 480 + primary_active..at + 4096],
+            &self.before[at + 480 + primary_active..at + 4096]
+        );
+        let middle = count / 2;
+        for physical in 1..3 {
+            let ids: Vec<usize> = if physical == 1 {
+                (1..=400).chain((401..=count).rev()).collect()
+            } else {
+                (401..=count).chain(1..=400).collect()
+            };
+            assert_eq!(ids.len(), count);
+            let fence_id = ids[middle - 1];
+            let right = self.eof + (physical - 1) * 2;
+            let left = right + 1;
+            let prefix = if self.inserted == 157 {
+                if physical == 1 { 1 } else { 9 }
+            } else {
+                0
+            };
+            for (number, previous, next, population, shared) in [
+                (left, 0, right, &ids[..middle], 0),
+                (right, left, 0, &ids[middle..], prefix),
+            ] {
+                let page = &self.after[number * 4096..(number + 1) * 4096];
+                assert_eq!(&page[..2], &[4, 1]);
+                assert_eq!(&page[4..8], &(self.definition as u32).to_le_bytes());
+                assert_eq!(&page[12..16], &(previous as u32).to_le_bytes());
+                assert_eq!(&page[16..20], &(next as u32).to_le_bytes());
+                self.require_frame(page, population, physical, shared);
+                let active = population.len() * 13 - shared * (population.len() - 1);
+                assert!(page[480 + active..].iter().all(|byte| *byte == 0));
+            }
+            let root = self.roots[physical] * 4096;
+            assert_eq!(&self.after[root..root + 2], &[3, 1]);
+            assert_eq!(self.after[root + 26], 1);
+            assert_eq!(
+                &self.after[root + 20..root + 24],
+                &(right as u32).to_le_bytes()
+            );
+            assert_eq!(&self.after[root + 24..root + 26], &[0, 0]);
+            let mut fence = self.index_wire(fence_id, physical);
+            fence.extend_from_slice(&(left as u32).to_be_bytes());
+            assert_eq!(&self.after[root + 480..root + 497], fence);
+            assert_eq!(
+                &self.after[root + 497..root + 4096],
+                &self.before[root + 497..root + 4096]
+            );
+        }
+    }
+
     /// Literal source-bound corruption locations, shared by independent proof and recovery checks.
     pub fn forgery_offsets(&self) -> Vec<usize> {
         let td = self.definition * 4096;
@@ -179,8 +331,22 @@ impl Case {
             self.roots[0] * 4096 + 2,
             self.roots[0] * 4096 + 28,
         ];
-        if self.inserted == 2 {
+        if self.inserted >= 2 {
             offsets.extend([data + 40, data + 3830, data + 3836, data + 3848]);
+        }
+        if self.inserted == 157 {
+            // Fresh right halves exercise actual compacted ROW suffixes.
+            offsets.extend([
+                data + 350,
+                data + 885,
+                data + 891,
+                data + 903,
+                self.eof * 4096 + 24,
+                self.eof * 4096 + 501,
+                (self.eof + 2) * 4096 + 24,
+                (self.eof + 2) * 4096 + 493,
+                (self.eof + 2) * 4096 + 497,
+            ]);
         }
         for root in &self.roots[1..] {
             offsets.extend([
@@ -270,7 +436,7 @@ pub(super) fn from_images(
     mut before: impl FnMut(u8) -> Vec<u8>,
     mut after: impl FnMut(u8, &str) -> Vec<u8>,
 ) -> Vec<Case> {
-    assert!((1..=2).contains(&inserted));
+    assert!(matches!(inserted, 1 | 2 | 157));
     let cases = vec![
         Case {
             inserted,

@@ -4,7 +4,8 @@
 
 [Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now passes complete-image, recovery, retained-session and CLI acceptance for
-qualified Int64/Currency secondary splits and two-row primary-prefix growth with
+qualified Int64/Currency secondary splits, primary-prefix growth and larger
+fresh-leaf compression with
 existing DATA capacity. Typed complete and original-presence batches now share
 the existing retained journal lifecycle. [Multi-index Increment insertion](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 and [mixed Memo/OLE updates](access/writes/NORMAL_EXTERNAL_LONG_MIXED.md) also pass

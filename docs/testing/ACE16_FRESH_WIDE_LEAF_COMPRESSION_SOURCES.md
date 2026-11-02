@@ -3,7 +3,9 @@
 Six independent files now pass eight native read contexts and six exact inert
 Jackcess reports. Four changed images each insert 157 complete rows into a
 400-row source, under two header variants and Int64/Currency carriers. This
-qualifies prospective sources; matching 157-row writes remain unrun.
+qualifies prospective sources. The [normal writer](../access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
+now has separate 157-row mutation acceptance; the source receipt retains its
+historical phase status.
 
 Frozen request laws precede construction. IDs 401 through 557 retain written
 order; wider values are MAX minus ordinal and markers are ID times 17. Existing

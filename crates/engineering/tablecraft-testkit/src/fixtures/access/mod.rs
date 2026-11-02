@@ -346,3 +346,5 @@ pub mod genuine_increment_multi;
 pub mod genuine_wide_primary_prefix_growth;
 
 pub mod tcna2;
+
+pub mod genuine_wide_leaf_compression;

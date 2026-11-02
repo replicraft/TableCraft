@@ -61,12 +61,38 @@ pub(super) fn node<P: RetainedProfile, const N: usize>(
     repack::borrowed_page::<P, N>(&initial, entries, profile, budget, cancelled)
 }
 
+pub(super) struct LeafHeader {
+    pub owner: u32,
+    pub links: (u32, u32),
+}
+
 pub(super) fn leaf<P: RetainedProfile, const N: usize>(
     owner: u32,
     previous: u32,
     next: u32,
     entries: &[Entry<&P::Key>],
     profile: &P,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    leaf_with_policy::<P, N>(
+        &LeafHeader {
+            owner,
+            links: (previous, next),
+        },
+        entries,
+        profile,
+        repack::PrefixPolicy::Existing,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn leaf_with_policy<P: RetainedProfile, const N: usize>(
+    header: &LeafHeader,
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    policy: repack::PrefixPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -84,11 +110,13 @@ pub(super) fn leaf<P: RetainedProfile, const N: usize>(
     initial.resize(PAGE_BYTES, 0);
     initial[0] = LEAF;
     initial[VERSION_OFFSET] = 1;
-    initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()].copy_from_slice(&owner.to_le_bytes());
+    initial[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&header.owner.to_le_bytes());
     initial[PREVIOUS_OFFSET..PREVIOUS_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&previous.to_le_bytes());
-    initial[NEXT_OFFSET..NEXT_OFFSET + size_of::<u32>()].copy_from_slice(&next.to_le_bytes());
-    repack::borrowed_page::<P, N>(&initial, entries, profile, budget, cancelled)
+        .copy_from_slice(&header.links.0.to_le_bytes());
+    initial[NEXT_OFFSET..NEXT_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&header.links.1.to_le_bytes());
+    repack::borrowed_page_with_policy::<P, N>(&initial, entries, profile, policy, budget, cancelled)
 }
 
 pub(super) fn root<P: RetainedProfile, const N: usize>(
