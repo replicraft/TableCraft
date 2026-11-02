@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-01",
+  "scope": "Repeated retirement and genuinely new Text key source qualification only",
+  "native_source_checks": [
+    {
+      "name": "repeated-source-eight",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "repeated_retirement_sources::repeated_retirement_sources_match_independent_raw_replay_and_current_native_admission",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "text-new-key-source",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "text_new_key::new_text_family_update_keeps_history_and_has_complete_readonly_source",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    }
+  ],
+  "repeated_retirement": {
+    "source_views": 8,
+    "sdk_inert_observations": 16,
+    "manifest_sha256": "f1ae6fcee2deed2418ce9a0b9e883757d842a004b2223cc63c76cbfa2b0ac855",
+    "qualification_sha256": "c2b1ad29aff8473a864b41b7a2b8de65a6ca391685b27dccdefe778a780f70f1",
+    "checks": "Original one-child sources, singleton leaf retirement, sole original tail-leaf survivor and same-page empty root; exact maps/residuals/history/EOF and complete native Source."
+  },
+  "new_text_key": {
+    "source_views": 6,
+    "sdk_inert_reads": 6,
+    "literal_reconstructions": 4,
+    "source_contexts": 8,
+    "manifest_sha256": "3b22d4be6b6730dce7f19da23e103c794818e86380ceb24f8a9d6da09a6cea43",
+    "checks": "Replacement to previously absent ss native key, both General versions, original histories preserved, independent raw components and full Source."
+  },
+  "matching_case_execution": "NO repeated-retirement writer or new-key Text UPDATE executed at source qualification.",
+  "native_microsoft_access_save_reopen": "UNRUN"
+}
