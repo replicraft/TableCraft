@@ -1,5 +1,16 @@
 # Implementation status
 
+## Repeated native retirement
+
+Normal [height-two retirement](access/writes/NORMAL_RECURSIVE_NODE_RETIREMENT.md)
+now handles qualified one-child originals and demotes a wholly exhausted root
+to an empty leaf. Sixteen native commits, 72 recovery contexts, 456 forged journal
+refusals, independent proof/resource checks, 24 retained saves with empty
+follow-ons and sixteen CLI saves/readbacks pass. A Chain expectation incorrectly
+reused older residual bytes; the proof rejected it. Fresh source-relative images
+passed independent/native reads before corrected replay, and the older images
+remain explicit negative controls. Native Access qualification remains unrun.
+
 ## Explicit empty-Text field policies
 
 The existing normal Text INSERT route now passes separately qualified
@@ -31,7 +42,8 @@ journal refusals, independent proof/resource checks, twelve typed/SQL saves plus
 empty follow-ons and eight CLI saves/readbacks pass. Existing NODE/preview paths
 and strict standalone profiles pass. The large fixture needs explicit CLI work
 budgets; the default-budget refusal remains in the record. Repeated one-child
-and empty-root mutation remain next; native Access qualification is unrun.
+and empty-root mutation now pass separately above; native Access qualification
+is unrun.
 
 ## Compressed Text write sources
 

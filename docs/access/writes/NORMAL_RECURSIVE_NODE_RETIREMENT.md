@@ -33,8 +33,27 @@ initial budget refusal is retained in the
 [execution record](../../testing/results/ace16-normal-recursive-retirement-writes-2026-11-01.json).
 Defaults and expected images were unchanged.
 
-Repeated retirement from a one-child original and all-descendant deletion remain
-separate work. Their [eight source views](../../testing/results/ace16-repeated-retirement-new-text-key-sources-2026-11-01.json)
-already pass read-only checks; source qualification does not enable mutation.
+## Repeated retirement and an empty root
+
+The normal route now also consumes qualified one-child height-two originals.
+Further singleton-leaf removal retains the root and internal parent; deleting
+the singleton tail leaves one bounded original leaf under that parent. Removing
+all descendants from this one-child original demotes the same root to an empty
+leaf and retires its descendants. Nonempty child promotion stays closed.
+
+The independent proof retains each retired page's current source bytes outside
+its retirement header. A second deletion cannot restore older residual bytes
+merely because the resulting tree has equivalent readable contents. Fresh
+source-relative Chain AFTERs passed four-view native and eight-report independent
+reader checks before matching mutation. The older all-empty images remain
+explicit negative controls for that transition; their original source pairing
+is still valid.
+
+Sixteen literal native commits, 72 recovery contexts, 456 forged journal-image
+refusals, six older-history recovery refusals, direct proof/resource controls,
+24 retained typed/SQL saves plus empty follow-ons and sixteen CLI saves/readbacks
+pass. See the [repeated-retirement record](../../testing/results/ace16-repeated-recursive-retirement-writes-2026-11-01.json)
+for original failures, corrected source qualification and replay evidence.
+
 Nullable/DESC trees, arbitrary heights, nonempty root promotion and DATA-page
 retirement remain outside this profile. Native Access save/reopen remains unrun.

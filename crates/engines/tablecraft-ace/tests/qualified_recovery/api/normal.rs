@@ -810,5 +810,8 @@ mod genuine_recursive_retirement;
 #[path = "normal/normal_autonumber.rs"]
 mod normal_autonumber;
 
+#[path = "normal/genuine_repeated_retirement.rs"]
+mod genuine_repeated_retirement;
+
 #[path = "normal/text_azl.rs"]
 mod text_azl;
