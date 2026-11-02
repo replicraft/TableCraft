@@ -69,9 +69,6 @@ pub(super) fn capture<'a>(
             return Err(CreateDatabaseError::Declaration);
         }
         let default = columns.default_literal(position);
-        if default.is_some() && columns.scalar(position) != ScalarType::Int32 {
-            return Err(CreateDatabaseError::Declaration);
-        }
         let literal = default
             .map(|value| Literal::capture(value, budget, cancelled))
             .transpose()?;
@@ -179,8 +176,8 @@ impl Writer<'_, '_> {
         self.put(&[PROPERTY_DDL, PROPERTY_MEMO])?;
         self.short(index)?;
         self.short(literal.payload_bytes())?;
-        for byte in literal.ascii() {
-            self.put(&u16::from(*byte).to_le_bytes())?;
+        for unit in literal.units() {
+            self.put(&unit.to_le_bytes())?;
         }
         Ok(())
     }

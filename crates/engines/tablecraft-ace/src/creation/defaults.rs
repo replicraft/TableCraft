@@ -1,18 +1,18 @@
-//! Bounded canonical Int32/NULL declaration text; no expression evaluator.
+//! Bounded canonical constant declarations, without an expression evaluator.
 use super::CreateDatabaseError;
-use crate::{InspectError, header::check};
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use crate::header::check;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
-const MAX_INT32_LITERAL_BYTES: usize = 11;
-const DECIMAL_RADIX: u32 = 10;
-const NULL_LITERAL: &[u8] = b"Null";
+const MAX_NUMBER_BYTES: usize = 21;
+const MAX_EXPRESSION_UNITS: usize = 255;
+const DECIMAL_RADIX: u64 = 10;
+const CURRENCY_SCALE: u64 = 10_000;
+const CURRENCY_FRACTION_DIGITS: usize = 4;
+const QUOTE: u16 = b'"' as u16;
 
 pub(super) struct Literal {
-    bytes: [u8; MAX_INT32_LITERAL_BYTES],
-    start: usize,
+    units: [u16; MAX_EXPRESSION_UNITS],
+    length: usize,
 }
 
 impl Literal {
@@ -22,47 +22,114 @@ impl Literal {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CreateDatabaseError> {
         check(budget, cancelled)?;
-        let mut result = Self {
-            bytes: [0; MAX_INT32_LITERAL_BYTES],
-            start: MAX_INT32_LITERAL_BYTES,
-        };
-        let Value::Int32(value) = value else {
-            if !matches!(value, Value::Null) {
-                return Err(CreateDatabaseError::Carrier);
-            }
-            budget
-                .charge(Resource::Steps, NULL_LITERAL.len() as u64)
-                .map_err(InspectError::from)?;
-            result.start -= NULL_LITERAL.len();
-            result.bytes[result.start..].copy_from_slice(NULL_LITERAL);
-            return Ok(result);
-        };
-        // unsigned_abs handles MIN without negating a signed value. At most
-        // ten decimal digits plus one sign fit this fixed, nonallocating buffer.
+        match value {
+            Value::Null => Self::word(b"Null", budget, cancelled),
+            Value::Boolean(true) => Self::word(b"True", budget, cancelled),
+            Value::Boolean(false) => Self::word(b"False", budget, cancelled),
+            Value::Int32(value) => Self::number(i64::from(*value), false, budget, cancelled),
+            Value::Int64(value) => Self::number(*value, false, budget, cancelled),
+            Value::Currency(value) => Self::number(value.scaled(), true, budget, cancelled),
+            Value::Text(value) => Self::text(value, budget, cancelled),
+            _ => Err(CreateDatabaseError::Carrier),
+        }
+    }
+
+    fn word(
+        word: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        let mut units = [0; MAX_EXPRESSION_UNITS];
+        let mut length = 0;
+        for byte in word {
+            Self::push(&mut units, &mut length, u16::from(*byte), budget, cancelled)?;
+        }
+        Ok(Self { units, length })
+    }
+
+    fn number(
+        value: i64,
+        currency: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        let mut bytes = [0; MAX_NUMBER_BYTES];
+        let mut start = MAX_NUMBER_BYTES;
         let mut magnitude = value.unsigned_abs();
+        if currency {
+            // The stored scaled integer is authoritative, including MIN. No
+            // floating point conversion, locale or display formatting is used.
+            let mut fraction = magnitude % CURRENCY_SCALE;
+            magnitude /= CURRENCY_SCALE;
+            for _ in 0..CURRENCY_FRACTION_DIGITS {
+                check(budget, cancelled)?;
+                start -= 1;
+                bytes[start] = b'0' + (fraction % DECIMAL_RADIX) as u8;
+                fraction /= DECIMAL_RADIX;
+            }
+            check(budget, cancelled)?;
+            start -= 1;
+            bytes[start] = b'.';
+        }
         loop {
             check(budget, cancelled)?;
-            result.start -= 1;
-            result.bytes[result.start] = b'0' + (magnitude % DECIMAL_RADIX) as u8;
+            start -= 1;
+            bytes[start] = b'0' + (magnitude % DECIMAL_RADIX) as u8;
             magnitude /= DECIMAL_RADIX;
             if magnitude == 0 {
                 break;
             }
         }
-        if *value < 0 {
+        if value < 0 {
             check(budget, cancelled)?;
-            result.start -= 1;
-            result.bytes[result.start] = b'-';
+            start -= 1;
+            bytes[start] = b'-';
         }
         check(budget, cancelled)?;
-        Ok(result)
+        Self::word(&bytes[start..], budget, cancelled)
     }
 
-    pub fn ascii(&self) -> &[u8] {
-        &self.bytes[self.start..]
+    fn text(
+        text: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        // The same expression ceiling is enforced by the actual omitted INSERT
+        // resolver. Bounded stack storage avoids a hidden formatting allocation.
+        let mut units = [0; MAX_EXPRESSION_UNITS];
+        let mut length = 0;
+        Self::push(&mut units, &mut length, QUOTE, budget, cancelled)?;
+        for unit in text.encode_utf16() {
+            Self::push(&mut units, &mut length, unit, budget, cancelled)?;
+            if unit == QUOTE {
+                Self::push(&mut units, &mut length, QUOTE, budget, cancelled)?;
+            }
+        }
+        Self::push(&mut units, &mut length, QUOTE, budget, cancelled)?;
+        Ok(Self { units, length })
+    }
+
+    fn push(
+        units: &mut [u16; MAX_EXPRESSION_UNITS],
+        length: &mut usize,
+        unit: u16,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), CreateDatabaseError> {
+        check(budget, cancelled)?;
+        let destination = units
+            .get_mut(*length)
+            .ok_or(CreateDatabaseError::Declaration)?;
+        *destination = unit;
+        *length += 1;
+        Ok(())
+    }
+
+    pub fn units(&self) -> impl Iterator<Item = u16> + '_ {
+        self.units[..self.length].iter().copied()
     }
 
     pub fn payload_bytes(&self) -> usize {
-        self.ascii().len() * size_of::<u16>()
+        self.length * size_of::<u16>()
     }
 }

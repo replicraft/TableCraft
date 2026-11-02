@@ -38,24 +38,20 @@ fn explicit_default_request_retains_null_presence_and_exact_int32_without_coerci
         ));
     }
     let null = Value::Null;
-    for scalar in [
-        ScalarType::Boolean,
-        ScalarType::Int16,
-        ScalarType::Int64,
-        ScalarType::Text,
-        ScalarType::Binary,
-        ScalarType::Currency,
-    ] {
+    for scalar in [ScalarType::Int16, ScalarType::Text, ScalarType::Binary] {
         assert!(matches!(
             CreateColumn::new("Other", scalar).with_default_literal(&null),
             Err(CreateDatabaseError::Declaration)
         ));
     }
+    let text = CreateColumn::short_text("Other", 8)
+        .unwrap()
+        .with_default_literal(&null)
+        .unwrap();
+    assert!(std::ptr::eq(text.default_literal().unwrap(), &null));
     assert!(matches!(
-        CreateColumn::short_text("Other", 8)
-            .unwrap()
-            .with_default_literal(&null),
-        Err(CreateDatabaseError::Declaration)
+        CreateColumn::new("Flag", ScalarType::Boolean).with_default_literal(&null),
+        Err(CreateDatabaseError::Carrier)
     ));
 }
 
