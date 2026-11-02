@@ -7,7 +7,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_indexed_mixed_before_change::{
+use tablecraft_testkit::fixtures::access::canonical_indexed_mixed_before_change::{
     self as model, Case, Recipe,
 };
 

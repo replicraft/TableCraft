@@ -9,8 +9,8 @@ use tablecraft_core::{
     values::{Double, Value},
 };
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::{
     canonical_creation, canonical_fixed_creation, canonical_fixed_float_creation,
 };
 

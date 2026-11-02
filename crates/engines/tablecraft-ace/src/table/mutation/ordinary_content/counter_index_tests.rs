@@ -4,7 +4,7 @@ use crate::{NativeImage, read_table};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_indexed as sources;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed as sources;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

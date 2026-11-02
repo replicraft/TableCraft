@@ -16,7 +16,7 @@ use tablecraft_ace::{
     RowInsert, inspect_table_index_counter, read_table, read_table_index,
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_desc_nullable_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_desc_nullable_insert as sources;
 
 fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), scope(), &mut budget(), &|| false).unwrap()

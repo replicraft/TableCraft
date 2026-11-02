@@ -1,5 +1,5 @@
 //! SOURCE-only registration precedes explicit inventory command calls.
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "guard_preparation/guard_sources.rs"]
 mod guard_sources;
@@ -8,4 +8,4 @@ mod inspect;
 #[path = "macro_inventory/sources.rs"]
 mod sources;
 
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;

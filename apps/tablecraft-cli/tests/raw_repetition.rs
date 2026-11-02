@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn string_constructs_observable_units_without_weakening_final_publication() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT LenB(String(3,ChrW(55296))) AS B,AscW(String(2,'😀')) AS U,LenB(String(0,'😀')) AS Z,String(ChrB(65),NULL) AS N",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT LenB(String(3,ChrW(55296))) AS B,AscW(String(2,'😀')) AS U,LenB(String(0,'😀')) AS Z,String(ChrB(65),NULL) AS N",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -21,7 +22,7 @@ fn string_constructs_observable_units_without_weakening_final_publication() {
             "SELECT LenB(String(0,ChrB(65)))",
             "SELECT LenB(String(2,ChrW(55296))),1/0",
         ] {
-            let result = run(&["query", command, sql]);
+            let result = CLI.run(&["query", command, sql]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty(), "{sql}");
         }

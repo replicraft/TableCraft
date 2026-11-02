@@ -1,7 +1,7 @@
 //! Real SQL and typed commands consume independent whole-row literal owners.
 #[path = "query_preview_multiple_variables/api.rs"]
 mod api;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model.rs"]
 #[allow(dead_code)]
 mod frames;

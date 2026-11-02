@@ -1,8 +1,9 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use rusqlite::{Connection, params};
 use std::{fs, path::PathBuf, process::Output};
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const INPUT_ROWS: i64 = 1_100;
 
@@ -44,7 +45,7 @@ impl Fixture {
     }
 
     fn query(&self, sql: &str) -> Output {
-        run(&[
+        CLI.run(&[
             "query",
             "run",
             "--sqlite",

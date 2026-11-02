@@ -1,9 +1,9 @@
 #[path = "calculated_storage/fixture.rs"]
 mod calculated_fixture;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::io::{Cursor, Read, Seek, SeekFrom};
 use tablecraft_ace::{

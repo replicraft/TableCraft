@@ -6,8 +6,9 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
-#[path = "../../support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -121,7 +122,7 @@ fn observed_macro_inventory_cli_reports_twenty_sources_without_body_text() {
         for case in model::CASES {
             let source = model::source(code, case);
             let database = Database::new(source.bytes);
-            let output = cli_support::run(&[
+            let output = CLI.run(&[
                 "inspect",
                 database.path(),
                 "--table",
@@ -162,7 +163,7 @@ fn observed_macro_inventory_cli_reports_twenty_sources_without_body_text() {
 fn observed_macro_inventory_cli_keeps_table_rendering_and_refuses_detail_conflicts() {
     let source = model::source(6, model::Case::EventAndNamed);
     let database = Database::new(source.bytes);
-    let table = cli_support::run(&[
+    let table = CLI.run(&[
         "--format",
         "table",
         "inspect",
@@ -194,7 +195,7 @@ fn observed_macro_inventory_cli_keeps_table_rendering_and_refuses_detail_conflic
     assert!(!text.contains("FutureAction"));
 
     for other in ["--macro-program", "--macro-xml"] {
-        let refused = cli_support::run(&[
+        let refused = CLI.run(&[
             "inspect",
             "missing-inventory-source.accdb",
             "--table",
@@ -211,7 +212,7 @@ fn observed_macro_inventory_cli_keeps_table_rendering_and_refuses_detail_conflic
                 .contains("cannot be used with")
         );
     }
-    let missing = cli_support::run(&[
+    let missing = CLI.run(&[
         "inspect",
         "missing-inventory-source.accdb",
         "--macro-inventory",
@@ -224,7 +225,7 @@ fn observed_macro_inventory_cli_keeps_table_rendering_and_refuses_detail_conflic
             .contains("--extra")
     );
 
-    let limited = cli_support::run(&[
+    let limited = CLI.run(&[
         "inspect",
         database.path(),
         "--table",

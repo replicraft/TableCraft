@@ -11,7 +11,7 @@ use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::journal::RecoveryOutcome;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_mixed_before_change::{self as model, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_mixed_before_change::{self as model, Recipe};
 
 #[test]
 fn mixed_handles_are_snapshot_local_after_commit_and_foreign_capture() {

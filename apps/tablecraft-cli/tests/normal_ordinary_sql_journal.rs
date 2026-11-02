@@ -6,7 +6,7 @@ use std::{
     process::{Command, Output},
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_ordinary_content::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_content::{self as model, Case};
 
 fn run(path: &Path, journal: &Path, sql: &str) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

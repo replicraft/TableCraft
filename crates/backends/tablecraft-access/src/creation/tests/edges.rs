@@ -9,8 +9,8 @@ use tablecraft_io::{
     IoError,
     publication::{PublicationError, RequiredOutput},
 };
-use tablecraft_testkit::access::canonical_creation::{self, Case};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_creation::{self, Case};
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
 #[test]
 fn creation_receipt_retains_the_captured_parent_after_textual_path_retargeting() {

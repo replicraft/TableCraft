@@ -25,6 +25,7 @@ tablecraft-expressions = { workspace = true, features = ["sql"] }
 thiserror.workspace = true
 
 [dev-dependencies]
+tablecraft-testkit = { workspace = true, features = ["query-support"] }
 proptest.workspace = true
 
 [[bench]]

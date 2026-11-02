@@ -1,17 +1,11 @@
 //! Independent Decimal fixtures supply FIELD and KEY bytes; framing stays shared.
 use std::collections::BTreeSet;
 use tablecraft_core::values::{Decimal, Guid, Value};
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::multiple_indexes as frames;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
-#[allow(dead_code)]
-pub(super) mod numeric_fixture {
-    include!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/tests/composite_indexes/fixture.rs"
-    ));
-}
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 #[allow(dead_code)]
 mod decimal_fixture {

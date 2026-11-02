@@ -6,7 +6,7 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::canonical_ordinary_inline::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_inline::{self as model, Case};
 
 fn update(path: &Path, journal: &Path) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

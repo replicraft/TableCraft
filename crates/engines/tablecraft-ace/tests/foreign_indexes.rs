@@ -1,8 +1,7 @@
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[path = "foreign_indexes/reads.rs"]
 mod reads;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{InspectError, inspect_foreign_index_links, inspect_table_indexes};

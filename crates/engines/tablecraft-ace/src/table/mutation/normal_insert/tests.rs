@@ -8,7 +8,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_ordinary_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert::{self as sources, Case};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

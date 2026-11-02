@@ -6,7 +6,7 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::genuine_normal_autonumber as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_normal_autonumber as fixtures;
 
 fn insert(path: &Path, bundle: &Path) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

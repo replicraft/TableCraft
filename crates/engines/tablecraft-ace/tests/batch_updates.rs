@@ -1,16 +1,15 @@
 #![cfg(feature = "ace16-write-preview")]
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "foreign_updates/fixture.rs"]
 mod foreign_fixture;
 #[path = "mask_updates/fixture.rs"]
 mod mask_fixture;
 #[path = "batch_updates/multiple_tables.rs"]
 mod multiple_tables;
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 #[path = "batch_updates/rules.rs"]
 mod rules;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};

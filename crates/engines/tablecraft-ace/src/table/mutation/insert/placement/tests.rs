@@ -7,8 +7,8 @@ use crate::{
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::LimitError;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::map_growth::model::declaration_end;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::map_growth::model::declaration_end;
 
 const PAGE: usize = 4096;
 const DATA: [usize; 5] = [12, 15, 16, 17, 18];

@@ -1,5 +1,4 @@
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
@@ -7,16 +6,17 @@ mod linked_fixture;
 mod options;
 #[path = "linked_queries/progressive.rs"]
 mod progressive;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as target_fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 
-use cli_support::run;
 use std::{
     fs,
     io::Write,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -74,7 +74,7 @@ fn explicit_paths_route_priority_profiles_without_opening_stored_paths() {
             target[4..20].copy_from_slice(b"Standard ACE DB\0");
         }
         let target = Database::new(target);
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Id, Score FROM Linked WHERE Id >= 2 ORDER BY Id",
@@ -103,7 +103,7 @@ fn links_remain_inert_without_mapping_and_fail_without_publishing_rows() {
         Some("Items"),
         None,
     ));
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT 1 AS Answer",
@@ -113,7 +113,7 @@ fn links_remain_inert_without_mapping_and_fail_without_publishing_rows() {
     assert!(output.status.success());
     assert_eq!(output.stdout, b"Answer\n1\n");
 
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT * FROM Linked",
@@ -154,7 +154,7 @@ fn invalid_explicit_mappings_and_provider_links_publish_nothing() {
             root.path(),
         ];
         arguments.extend(extra);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -165,7 +165,7 @@ fn invalid_explicit_mappings_and_provider_links_publish_nothing() {
         Some("Items"),
         Some("ODBC;"),
     ));
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "run",
         "SELECT * FROM Linked",
@@ -182,7 +182,7 @@ fn invalid_explicit_mappings_and_provider_links_publish_nothing() {
 
 #[test]
 fn link_help_and_argument_dependencies_are_explicit() {
-    let output = run(&["query", "run", "--help"]);
+    let output = CLI.run(&["query", "run", "--help"]);
     assert!(output.status.success());
     assert!(
         String::from_utf8(output.stdout)
@@ -219,7 +219,7 @@ fn link_help_and_argument_dependencies_are_explicit() {
             "target.accdb",
         ],
     ] {
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -241,7 +241,7 @@ fn selected_link_indexes_reach_target_and_never_silently_fall_back() {
         ("MissingIndex", false),
         ("Number", true),
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Count(*) AS N FROM Linked",

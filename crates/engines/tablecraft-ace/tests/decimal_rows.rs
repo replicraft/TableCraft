@@ -7,7 +7,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000)

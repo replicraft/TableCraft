@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "saved_select/crosstabs.rs"]
 mod crosstabs;
 #[path = "saved_select/derived.rs"]
@@ -30,7 +30,7 @@ mod parameter_prompts;
 mod parameters;
 #[path = "saved_select/qualified_fields.rs"]
 mod qualified_fields;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[path = "saved_select/unions.rs"]
 mod unions;
 #[path = "saved_select/wildcards.rs"]

@@ -8,7 +8,7 @@ use tablecraft_ace::{
     inspect_table_index_counter, qualify_native_insert_recovery, read_table, read_table_index,
 };
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_retained_node_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_retained_node_insert::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|bytes, expected| {

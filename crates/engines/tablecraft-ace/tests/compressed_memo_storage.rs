@@ -1,9 +1,9 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "long_value_storage_contract/model.rs"]
 mod model;
 #[allow(dead_code)]
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use tablecraft_ace::LongValueCheckStatus;
 use tablecraft_core::values::Value;

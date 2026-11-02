@@ -3,13 +3,13 @@
 #[allow(dead_code)]
 #[path = "ace16_cascading_delete_contract/model.rs"]
 mod cascade_model;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "ace16_restrict_delete_contract/model.rs"]
 mod restrict_model;
 #[path = "ace16_cascade_key_facts_contract/tuple.rs"]
 mod tuple;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[path = "ace16_set_null_delete_contract/model.rs"]
 mod model;

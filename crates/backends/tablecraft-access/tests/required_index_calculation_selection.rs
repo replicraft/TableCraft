@@ -1,6 +1,6 @@
 //! Independent selection/cache controls over original stored-cache literals.
 use base as fixture;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
@@ -16,7 +16,7 @@ mod modern_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
 mod old_attachment;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::cell::Cell;
 use std::io::Cursor;

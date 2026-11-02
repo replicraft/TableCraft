@@ -1,17 +1,17 @@
-use cli_support::run;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
     let sql = "SELECT 1,CInt(32767)+CInt(1)";
-    let default = run(&["query", "run", sql]);
+    let default = CLI.run(&["query", "run", sql]);
     assert!(default.status.success());
-    let strict = run(&["query", "run", sql, "--declared-integral"]);
+    let strict = CLI.run(&["query", "run", sql, "--declared-integral"]);
     assert_eq!(strict.status.code(), Some(2));
     assert!(strict.stdout.is_empty());
     assert!(String::from_utf8_lossy(&strict.stderr).contains("overflow"));
-    let variant = run(&[
+    let variant = CLI.run(&[
         "query",
         "run",
         "SELECT Q.N+CInt(1) AS N FROM (SELECT CVar(CInt(32767)) AS N) AS Q",
@@ -23,7 +23,7 @@ fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
         String::from_utf8_lossy(&variant.stderr)
     );
     assert_eq!(variant.stdout, b"N\n32768\n");
-    let unknown = run(&[
+    let unknown = CLI.run(&[
         "query",
         "run",
         "SELECT First(CInt(32767))+CInt(1)",
@@ -37,12 +37,13 @@ fn declared_integral_flag_preserves_defaults_and_keeps_failures_buffered() {
 #[test]
 fn unknown_fixed_width_results_do_not_need_a_widening_declaration() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&[
-            "query",
-            "run",
-            "SELECT Count(*)+CInt(1) AS A,First(CInt(-32768)) Mod CInt(-1) AS B,-First(CByte(255)) AS C",
-            flag,
-        ]);
+        let result = CLI.run(&[
+                "query",
+                "run",
+                "SELECT Count(*)+CInt(1) AS A,First(CInt(-32768)) Mod CInt(-1) AS B,-First(CByte(255)) AS C",
+                flag,
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -50,7 +51,7 @@ fn unknown_fixed_width_results_do_not_need_a_widening_declaration() {
         );
         assert_eq!(result.stdout, b"A\tB\tC\n2\t0\t-255\n");
 
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 1,First(CLngLng(9223372036854775807))+CInt(1)",
@@ -65,11 +66,11 @@ fn unknown_fixed_width_results_do_not_need_a_widening_declaration() {
 #[test]
 fn declared_integral_flag_is_scoped_to_query_execution() {
     for mode in ["eval", "parse", "saved", "update"] {
-        let result = run(&["query", mode, "SELECT 1", "--declared-integral"]);
+        let result = CLI.run(&["query", mode, "SELECT 1", "--declared-integral"]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
-    let help = run(&["query", "run", "--help"]);
+    let help = CLI.run(&["query", "run", "--help"]);
     assert!(help.status.success());
     assert!(String::from_utf8_lossy(&help.stdout).contains("--declared-arithmetic"));
     assert!(String::from_utf8_lossy(&help.stdout).contains("declared-integral"));
@@ -78,23 +79,23 @@ fn declared_integral_flag_is_scoped_to_query_execution() {
 #[test]
 fn declared_comparisons_distinguish_variant_categories_and_buffer_failures() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N", flag]);
+        let result = CLI.run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N", flag]);
         assert!(
             result.status.success(),
             "{}",
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"N\nTRUE\n");
-        let failure = run(&["query", "run", "SELECT CVar(1)<CVar('bad'),1/0", flag]);
+        let failure = CLI.run(&["query", "run", "SELECT CVar(1)<CVar('bad'),1/0", flag]);
         assert_eq!(failure.status.code(), Some(2));
         assert!(failure.stdout.is_empty());
         assert!(String::from_utf8_lossy(&failure.stderr).contains("division by zero"));
     }
-    let default = run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N"]);
+    let default = CLI.run(&["query", "run", "SELECT CVar(1)<CVar('bad') AS N"]);
     assert_eq!(default.status.code(), Some(2));
     assert!(default.stdout.is_empty());
     assert!(String::from_utf8_lossy(&default.stderr).contains("number-format"));
-    let ordinary = run(&[
+    let ordinary = CLI.run(&[
         "query",
         "run",
         "SELECT CVar(1)=CVar('1') AS N",
@@ -108,7 +109,7 @@ fn declared_comparisons_distinguish_variant_categories_and_buffer_failures() {
 #[test]
 fn like_and_null_check_categories_reach_the_cli() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let variant = run(&[
+        let variant = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(-32768)\\('abc' LIKE CVar('a*')) AS N",
@@ -124,7 +125,7 @@ fn like_and_null_check_categories_reach_the_cli() {
             String::from_utf8_lossy(&variant.stderr)
         );
         assert_eq!(variant.stdout, b"N\n32768\n");
-        let scalar = run(&[
+        let scalar = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(-32768)\\('abc' LIKE 'a*') AS N",
@@ -137,7 +138,7 @@ fn like_and_null_check_categories_reach_the_cli() {
         assert_eq!(scalar.status.code(), Some(2));
         assert!(scalar.stdout.is_empty());
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
-        let null = run(&[
+        let null = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(-32768)\\IsNull(CVar(NULL))",
@@ -151,12 +152,13 @@ fn like_and_null_check_categories_reach_the_cli() {
 
 #[test]
 fn list_range_and_subquery_categories_reach_the_cli() {
-    let variant = run(&[
-        "query",
-        "run",
-        "SELECT CInt(-32768)\\(CVar(1) IN (1,2)) AS N,CInt(-32768)\\(1 BETWEEN CVar(0) AND 2) AS R,CInt(-32768)\\(CVar(1)=ALL(SELECT 1 WHERE False)) AS Q",
-        "--declared-arithmetic",
-    ]);
+    let variant = CLI.run(&[
+            "query",
+            "run",
+            "SELECT CInt(-32768)\\(CVar(1) IN (1,2)) AS N,CInt(-32768)\\(1 BETWEEN CVar(0) AND 2) AS R,CInt(-32768)\\(CVar(1)=ALL(SELECT 1 WHERE False)) AS Q",
+            "--declared-arithmetic",
+        ],
+    );
     assert!(
         variant.status.success(),
         "{}",
@@ -165,7 +167,7 @@ fn list_range_and_subquery_categories_reach_the_cli() {
     assert_eq!(variant.stdout, b"N\tR\tQ\n32768\t32768\t32768\n");
     for expression in ["1 IN (1,2)", "EXISTS(SELECT CVar(NULL))"] {
         let sql = format!("SELECT CInt(-32768)\\({expression})");
-        let scalar = run(&["query", "run", &sql, "--declared-arithmetic"]);
+        let scalar = CLI.run(&["query", "run", &sql, "--declared-arithmetic"]);
         assert_eq!(scalar.status.code(), Some(2));
         assert!(scalar.stdout.is_empty());
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
@@ -184,7 +186,7 @@ fn rounded_operand_declarations_keep_scalar_overflow_and_variant_widening() {
         ("CInt(-32768)\\CVar(CDate(-1))", true),
     ] {
         let sql = format!("SELECT {expression} AS N");
-        let result = run(&["query", "run", &sql, "--declared-integral"]);
+        let result = CLI.run(&["query", "run", &sql, "--declared-integral"]);
         assert_eq!(
             result.status.success(),
             succeeds,
@@ -209,7 +211,7 @@ fn static_subquery_categories_survive_empty_results() {
             "(SELECT CVar(CInt(1)) WHERE False)=ALL(SELECT CInt(0) WHERE False)",
         ] {
             let sql = format!("SELECT CInt(-32768)\\({predicate}) AS N");
-            let result = run(&["query", "run", &sql, flag]);
+            let result = CLI.run(&["query", "run", &sql, flag]);
             assert!(
                 result.status.success(),
                 "{sql}: {}",
@@ -217,7 +219,7 @@ fn static_subquery_categories_survive_empty_results() {
             );
             assert_eq!(result.stdout, b"N\n32768\n");
         }
-        let scalar = run(&[
+        let scalar = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CInt(-32768)\\(CInt(1)=ALL(SELECT CInt(1) WHERE False))",
@@ -234,12 +236,12 @@ fn declared_date_envelope_overflow_is_buffered_and_variant_can_widen() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
         for expression in ["CDate(2958465)+1", "-CDate(2958465)"] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", "run", &sql, flag]);
+            let result = CLI.run(&["query", "run", &sql, flag]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(String::from_utf8_lossy(&result.stderr).contains("overflow"));
         }
-        let variant = run(&["query", "run", "SELECT CVDate(2958465)+1 AS N", flag]);
+        let variant = CLI.run(&["query", "run", "SELECT CVDate(2958465)+1 AS N", flag]);
         assert!(
             variant.status.success(),
             "{}",
@@ -252,7 +254,7 @@ fn declared_date_envelope_overflow_is_buffered_and_variant_can_widen() {
 #[test]
 fn declared_mixed_text_selects_type_mismatch_before_date_numeric_conversion() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let scalar = run(&[
+        let scalar = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CDate(2958465)+'1,0'",
@@ -263,7 +265,7 @@ fn declared_mixed_text_selects_type_mismatch_before_date_numeric_conversion() {
         assert_eq!(scalar.status.code(), Some(2));
         assert!(scalar.stdout.is_empty());
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("type mismatch"));
-        let variant = run(&[
+        let variant = CLI.run(&[
             "query",
             "run",
             "SELECT CDate(2958465)+CVar('1,0') AS N",
@@ -283,7 +285,7 @@ fn declared_mixed_text_selects_type_mismatch_before_date_numeric_conversion() {
 #[test]
 fn effective_numeric_comparisons_are_explicit_and_keep_output_buffered() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(2)='1.5' AS N",
@@ -297,7 +299,7 @@ fn effective_numeric_comparisons_are_explicit_and_keep_output_buffered() {
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"N\nTRUE\n");
-        let overflow = run(&[
+        let overflow = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CByte(1)='256'",
@@ -314,7 +316,7 @@ fn effective_numeric_comparisons_are_explicit_and_keep_output_buffered() {
 #[test]
 fn date_numeric_predicates_keep_effective_types_and_buffer_range_failures() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT CDate(1)=CInt(1) AS N,CDate(-0.25)=CDec(0.25) AS D",
@@ -326,7 +328,7 @@ fn date_numeric_predicates_keep_effective_types_and_buffer_range_failures() {
             String::from_utf8_lossy(&result.stderr)
         );
         assert_eq!(result.stdout, b"N\tD\nTRUE\tFALSE\n");
-        let overflow = run(&["query", "run", "SELECT 1,CDate(1)=CLng(2958466)", flag]);
+        let overflow = CLI.run(&["query", "run", "SELECT 1,CDate(1)=CLng(2958466)", flag]);
         assert_eq!(overflow.status.code(), Some(2));
         assert!(overflow.stdout.is_empty());
         assert!(String::from_utf8_lossy(&overflow.stderr).contains("overflow"));
@@ -336,7 +338,7 @@ fn date_numeric_predicates_keep_effective_types_and_buffer_range_failures() {
 #[test]
 fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let variant = run(&[
+        let variant = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(-32768)\\Left('-1x',2) AS N,CVar(65)<Chr(65) AS C",
@@ -350,11 +352,11 @@ fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
             String::from_utf8_lossy(&variant.stderr)
         );
         assert_eq!(variant.stdout, b"N\tC\n32768\tTRUE\n");
-        let scalar = run(&["query", "run", "SELECT 1,CInt(-32768)\\Val('-1')", flag]);
+        let scalar = CLI.run(&["query", "run", "SELECT 1,CInt(-32768)\\Val('-1')", flag]);
         assert_eq!(scalar.status.code(), Some(2));
         assert!(scalar.stdout.is_empty());
         assert!(String::from_utf8_lossy(&scalar.stderr).contains("overflow"));
-        let dollar = run(&[
+        let dollar = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CVar(65)<Chr$(65)",
@@ -365,7 +367,7 @@ fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
         assert_eq!(dollar.status.code(), Some(2));
         assert!(dollar.stdout.is_empty());
         assert!(String::from_utf8_lossy(&dollar.stderr).contains("requires a collation"));
-        let compared = run(&[
+        let compared = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CVar(65)<Chr$(65)",
@@ -383,7 +385,7 @@ fn text_return_categories_and_chr_dollar_are_preserved_at_the_cli() {
 #[test]
 fn context_return_categories_reach_empty_subqueries_without_activating_them() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let variant = run(&[
+        let variant = CLI.run(&[
             "query",
             "run",
             "SELECT CInt(-32768)\\(0=ALL(SELECT Error(1) WHERE False)) AS N",
@@ -395,7 +397,7 @@ fn context_return_categories_reach_empty_subqueries_without_activating_them() {
             String::from_utf8_lossy(&variant.stderr)
         );
         assert_eq!(variant.stdout, b"N\n32768\n");
-        let scalar = run(&[
+        let scalar = CLI.run(&[
             "query",
             "run",
             "SELECT 1,CInt(-32768)\\(0=ALL(SELECT CurrentUser() WHERE False))",
@@ -410,12 +412,13 @@ fn context_return_categories_reach_empty_subqueries_without_activating_them() {
 #[test]
 fn unknown_negation_uses_agreement_without_assigning_a_category() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&[
-            "query",
-            "run",
-            "SELECT -First(CInt(2)) AS I,-First(CLng(-2147483647)) AS L,CDbl(-First(CDate(-0.25))) AS D",
-            flag,
-        ]);
+        let result = CLI.run(&[
+                "query",
+                "run",
+                "SELECT -First(CInt(2)) AS I,-First(CLng(-2147483647)) AS L,CDbl(-First(CDate(-0.25))) AS D",
+                flag,
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -430,7 +433,7 @@ fn unknown_negation_uses_agreement_without_assigning_a_category() {
             "SELECT 1,(-First(CInt(2)))+CInt(-32767)",
             "SELECT -Q.N FROM (SELECT CInt(2) AS N UNION ALL SELECT CInt(-32768)) AS Q",
         ] {
-            let failure = run(&["query", "run", sql, flag]);
+            let failure = CLI.run(&["query", "run", sql, flag]);
             assert_eq!(failure.status.code(), Some(2), "{sql}");
             assert!(failure.stdout.is_empty(), "{sql}");
             assert!(
@@ -444,14 +447,15 @@ fn unknown_negation_uses_agreement_without_assigning_a_category() {
 #[test]
 fn unknown_binary_arithmetic_uses_agreement_and_keeps_late_failures_buffered() {
     for flag in ["--declared-arithmetic", "--declared-integral"] {
-        let result = run(&[
-            "query",
-            "run",
-            "SELECT First(CInt(2))+CInt(3) AS I,First(CSng(1.25))*CInt(2) AS S,First(CInt(7))\\'2.5' AS Q",
-            "--number-format",
-            "en-us",
-            flag,
-        ]);
+        let result = CLI.run(&[
+                "query",
+                "run",
+                "SELECT First(CInt(2))+CInt(3) AS I,First(CSng(1.25))*CInt(2) AS S,First(CInt(7))\\'2.5' AS Q",
+                "--number-format",
+                "en-us",
+                flag,
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -471,7 +475,7 @@ fn unknown_binary_arithmetic_uses_agreement_and_keeps_late_failures_buffered() {
                 "declaration is unknown",
             ),
         ] {
-            let failure = run(&["query", "run", sql, "--number-format", "en-us", flag]);
+            let failure = CLI.run(&["query", "run", sql, "--number-format", "en-us", flag]);
             assert_eq!(failure.status.code(), Some(2), "{sql}");
             assert!(failure.stdout.is_empty(), "{sql}");
             assert!(
@@ -490,7 +494,7 @@ fn declared_mixed_plus_uses_categories_under_both_flag_names() {
             ("CVar('2')+CInt(3)", b"N\n5\n".as_slice()),
             ("('2'+CVar(3))+1", b"N\n24\n".as_slice()),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "--format",
                 "tsv",
                 "query",
@@ -509,7 +513,7 @@ fn declared_mixed_plus_uses_categories_under_both_flag_names() {
             assert_eq!(result.stdout, expected);
         }
 
-        let refused = run(&[
+        let refused = CLI.run(&[
             "query",
             "run",
             "SELECT 1,'2'+CInt(3)",

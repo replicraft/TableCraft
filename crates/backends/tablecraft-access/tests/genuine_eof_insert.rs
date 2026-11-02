@@ -21,7 +21,7 @@ use tablecraft_io::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_eof_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_eof_insert as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(195);
 

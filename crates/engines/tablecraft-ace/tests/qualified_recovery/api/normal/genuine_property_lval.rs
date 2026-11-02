@@ -10,7 +10,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_property_lval::{self as sources, Case, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_property_lval::{self as sources, Case, Recipe};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

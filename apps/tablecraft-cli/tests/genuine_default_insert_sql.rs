@@ -6,7 +6,9 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::genuine_default_insert::{self as sources, RECIPES, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_default_insert::{
+    self as sources, RECIPES, Recipe,
+};
 
 fn verify(raw: &[u8], expected: &str) {
     let actual = Sha256::digest(raw)

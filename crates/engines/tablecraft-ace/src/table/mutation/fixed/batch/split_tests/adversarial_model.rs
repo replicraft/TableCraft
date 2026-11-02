@@ -2,8 +2,8 @@
 use super::model::{self, Case, PAGE, Row, Shape};
 use crate::FixedScalarUpdate;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub(super) fn assignments(case: &Case, right: bool) -> Vec<FixedScalarUpdate> {
     case.original
@@ -111,7 +111,7 @@ pub(super) fn two_tables(code: u8) -> Vec<u8> {
     frames::install(
         &mut bytes,
         18,
-        &tablecraft_testkit::access::mutation_fixture::definition(
+        &tablecraft_testkit::fixtures::access::mutation_fixture::definition(
             &[("Id", 4, 0, 4), ("Score", 4, 4, 4)],
             3,
             19 << 8,

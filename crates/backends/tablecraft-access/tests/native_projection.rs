@@ -4,8 +4,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 const PAGE_BYTES: usize = 4096;
 const OWNER_PAGE: usize = 10;
@@ -84,8 +83,7 @@ fn native_queries_preserve_unavailable_names_without_null_placeholders() {
     }
 }
 
-#[path = "../../../engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[test]
 fn indexed_mixed_scalar_views_translate_dense_constraint_positions() {
     for descending in [false, true] {

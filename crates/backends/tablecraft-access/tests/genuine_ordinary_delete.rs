@@ -11,7 +11,7 @@ use tablecraft_db::{DeletableTable, EditableTable};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_ordinary_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_ordinary_delete as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(154);
 

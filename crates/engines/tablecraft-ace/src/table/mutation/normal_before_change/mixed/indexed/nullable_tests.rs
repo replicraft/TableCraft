@@ -7,7 +7,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_nullable_index_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_nullable_index_before_change as model;
 
 const SCOPE: CatalogScope = CatalogScope::new(104);
 
@@ -135,7 +135,9 @@ fn normal_route_preserves_previously_admitted_nullable_index_updates() {
 fn qualified_present_id_keeps_legacy_proof_and_actual_null_target_boundaries() {
     for header in [5, 6] {
         let companion =
-            tablecraft_testkit::access::canonical_nullable_index_id_before_change::source(header);
+            tablecraft_testkit::fixtures::access::canonical_nullable_index_id_before_change::source(
+                header,
+            );
         let requests = [Int32Update::new(0, 1, 7)];
         let plan = image(&companion.before)
             .plan_recoverable_int32_updates(

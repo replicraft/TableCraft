@@ -6,7 +6,7 @@ use tablecraft_core::{
     values::{Decimal, Value},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::{self as sources, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(217);
 

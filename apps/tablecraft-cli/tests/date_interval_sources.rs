@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_date_interval_sources_share_explicit_policies_and_buffer_failures() {
@@ -8,7 +9,7 @@ fn cli_date_interval_sources_share_explicit_policies_and_buffer_failures() {
         "DatePart('h','-1,25'),DateDiff('h','-1,25',0)"
     );
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             sql,
@@ -36,7 +37,7 @@ fn cli_date_interval_sources_share_explicit_policies_and_buffer_failures() {
             "SELECT 99,DateDiff('d',NULL,'2025-01-01')",
             "SELECT 99,DateAdd('bad',NULL,1/0)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }
@@ -53,7 +54,7 @@ fn interval_error_states_keep_eager_arguments_and_progressive_week_validation() 
             ("DateAdd('bad',CVErr(1),0)", "invalid date interval"),
             ("DateDiff('d',CVErr(1),0,8,CVErr(1))", "domain"),
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(String::from_utf8_lossy(&result.stderr).contains(error));

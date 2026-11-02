@@ -1,7 +1,9 @@
 //! Child of the actual normal_fixed_sql_journal integration test; reuse its runner.
 use super::{model, run};
 use std::fs;
-use tablecraft_testkit::access::{canonical_mixed_before_change as mixed, mutation_fixture};
+use tablecraft_testkit::fixtures::access::{
+    canonical_mixed_before_change as mixed, mutation_fixture,
+};
 
 fn refuses_without_effects(before: &[u8], sql: &str) {
     let root = tempfile::tempdir().unwrap();

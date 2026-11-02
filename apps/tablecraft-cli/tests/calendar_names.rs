@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,15 +14,16 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn names_optional_slots_and_first_day_override_work_in_both_paths() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT MonthName(3) AS M,MonthName(3,True) AS A,MonthName(1,) AS O,WeekdayName(1) AS D,WeekdayName(1,,1) AS S,WeekdayName(1,True,0) AS B,WeekdayName(1,,) AS N",
-            "--date-format",
-            "de-de",
-            "--first-day-of-week",
-            "2",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT MonthName(3) AS M,MonthName(3,True) AS A,MonthName(1,) AS O,WeekdayName(1) AS D,WeekdayName(1,,1) AS S,WeekdayName(1,True,0) AS B,WeekdayName(1,,) AS N",
+                "--date-format",
+                "de-de",
+                "--first-day-of-week",
+                "2",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -41,7 +44,7 @@ fn names_optional_slots_and_first_day_override_work_in_both_paths() {
                 ]
             ]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT MonthName(1.5,True),WeekdayName(7,True,7)",
@@ -75,7 +78,7 @@ fn missing_policy_invalid_arguments_and_flag_values_publish_nothing() {
             "MonthName(1/0)",
             "IIf(False,MonthName(1/0),'x')",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -85,31 +88,32 @@ fn missing_policy_invalid_arguments_and_flag_values_publish_nothing() {
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
-        let result = run(&["query", mode, "SELECT 1,MonthName(1)"]);
+        let result = CLI.run(&["query", mode, "SELECT 1,MonthName(1)"]);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
         for day in ["0", "8", "Monday"] {
-            let result = run(&["query", mode, "SELECT 1", "--first-day-of-week", day]);
+            let result = CLI.run(&["query", mode, "SELECT 1", "--first-day-of-week", day]);
             assert!(!result.status.success());
             assert!(result.stdout.is_empty());
         }
     }
-    let result = run(&["query", "parse", "SELECT 1", "--first-day-of-week", "2"]);
+    let result = CLI.run(&["query", "parse", "SELECT 1", "--first-day-of-week", "2"]);
     assert!(!result.status.success());
 }
 
 #[test]
 fn numeric_text_controls_use_explicit_number_policy_and_buffer_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT MonthName('10'),MonthName('2.5000000000000000000000000000000001','True'),WeekdayName('1','False','2')",
-            "--date-format",
-            "en-us",
-            "--number-format",
-            "en-us",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT MonthName('10'),MonthName('2.5000000000000000000000000000000001','True'),WeekdayName('1','False','2')",
+                "--date-format",
+                "en-us",
+                "--number-format",
+                "en-us",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -125,7 +129,7 @@ fn numeric_text_controls_use_explicit_number_policy_and_buffer_failures() {
             "WeekdayName('1','False','bad')",
             "MonthName('1',1/0)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -137,7 +141,7 @@ fn numeric_text_controls_use_explicit_number_policy_and_buffer_failures() {
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT MonthName('1')",

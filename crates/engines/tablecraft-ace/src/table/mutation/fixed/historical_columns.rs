@@ -10,7 +10,7 @@ use model::{Case, PAGE};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

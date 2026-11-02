@@ -12,7 +12,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_before_change::{self as model, Case, Recipe},
     canonical_nullable_fixed_int32_before_change as nullable,
 };

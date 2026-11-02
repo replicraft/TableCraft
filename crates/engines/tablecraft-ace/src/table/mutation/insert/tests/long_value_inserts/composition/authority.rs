@@ -9,7 +9,7 @@ use crate::{
     format::reader::Reader,
     table::mutation::{append::State, map_authority::Owner, variable_split::metadata::Metadata},
 };
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 const PAGE: usize = 4096;
 

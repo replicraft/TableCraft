@@ -8,7 +8,9 @@ use crate::{
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_fitted::{self as model, Case, Recipe, Refusal};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_fitted::{
+    self as model, Case, Recipe, Refusal,
+};
 
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
 const SCOPE: CatalogScope = CatalogScope::new(129);
@@ -189,8 +191,8 @@ fn ordinary_fitted_capacity_and_conflict_sources_refuse_with_the_original_typed_
                 RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::Column))
             );
         }
-        let mut counter = tablecraft_testkit::access::canonical_ordinary_indexed::source(
-            tablecraft_testkit::access::canonical_ordinary_indexed::Case::VariablePrimary,
+        let mut counter = tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::source(
+            tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::Case::VariablePrimary,
         );
         counter.bytes[20] = header;
         let original = vec![
@@ -381,7 +383,9 @@ fn ordinary_fitted_planning_pays_exact_pools_and_cancels_at_entry_middle_and_ter
 #[test]
 fn readonly_counter_with_only_variable_targets_uses_fitted_capability_and_mask_only_empty_text() {
     use tablecraft_core::values::Value;
-    use tablecraft_testkit::access::canonical_variable_creation::{self as variable, Case};
+    use tablecraft_testkit::fixtures::access::canonical_variable_creation::{
+        self as variable, Case,
+    };
 
     for header in [5, 6] {
         let source = variable::source(Case::NullAndEmpty);

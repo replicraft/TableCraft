@@ -4,7 +4,7 @@ use crate::{LongValueCheckStatus, check_table_long_values};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes as source_frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_frames;
 
 const CONTAINER: u32 = 18;
 const FIRST_BODY: u32 = 19;

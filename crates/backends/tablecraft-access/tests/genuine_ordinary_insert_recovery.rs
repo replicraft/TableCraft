@@ -18,7 +18,7 @@ use tablecraft_io::{
     },
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_ordinary_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(160);
 

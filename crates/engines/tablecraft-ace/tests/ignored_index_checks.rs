@@ -1,25 +1,21 @@
-use tablecraft_testkit::access::mutation_fixture as base;
 #[path = "ignored_index_checks/boundaries.rs"]
 mod boundaries;
 #[path = "ignored_index_checks/fixture.rs"]
 mod corpus;
 #[allow(dead_code)]
-#[path = "decimal_composite_indexes/fixture.rs"]
-mod decimal_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::decimal_fixture;
 #[path = "ignored_index_checks/fixed.rs"]
 mod fixed;
 #[allow(dead_code)]
 #[path = "ignored_null_indexes/fixture.rs"]
 mod ignored_page;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[allow(dead_code)]
-#[path = "composite_indexes/fixture.rs"]
-mod numeric_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 #[path = "ignored_index_checks/payloads.rs"]
 mod payloads;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[path = "ignored_index_checks/tuples.rs"]
 mod tuples;
 

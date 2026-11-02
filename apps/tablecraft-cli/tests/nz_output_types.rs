@@ -1,12 +1,12 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn nz_default_text_participates_in_union_conversion_and_keeps_atomic_policy_failures() {
     let sql =
         "SELECT TypeName(D.V) AS Kind,D.V FROM (SELECT Nz(NULL) AS V UNION ALL SELECT 7) AS D";
-    let result = run(&["query", "run", sql, "--number-format", "invariant"]);
+    let result = CLI.run(&["query", "run", sql, "--number-format", "invariant"]);
     assert!(
         result.status.success(),
         "{}",
@@ -33,7 +33,7 @@ fn nz_default_text_participates_in_union_conversion_and_keeps_atomic_policy_fail
         "SELECT 1,CInt(NULL)",
         "SELECT 1,Nz(7,CInt(NULL))",
     ] {
-        let result = run(&["query", "run", sql]);
+        let result = CLI.run(&["query", "run", sql]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }

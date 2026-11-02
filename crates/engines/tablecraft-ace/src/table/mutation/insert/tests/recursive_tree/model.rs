@@ -1,8 +1,8 @@
 //! Independent recursive INSERT rows, tree frames and complete images.
 use crate::RowInsert;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as literal;
-use tablecraft_testkit::access::insert_seed as base;
+use tablecraft_testkit::fixtures::access as literal;
+use tablecraft_testkit::fixtures::access::insert_seed as base;
 
 pub(super) const PAGE: usize = 4096;
 

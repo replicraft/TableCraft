@@ -1,7 +1,7 @@
 //! Literal event registries and complete expected images, before any dispatch change.
 use super::super::physical_sources::model as original;
 use crate::preservation::table_extra::tests::multievent_sources as programs;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 const NAMESPACE: &str = "http://schemas.microsoft.com/office/accessservices/2009/11/application";
 const SET_GROUP: &str = "<Action Name=\"SetField\"><Argument Name=\"Field\">Group</Argument><Argument Name=\"Value\">[Score]</Argument></Action>";

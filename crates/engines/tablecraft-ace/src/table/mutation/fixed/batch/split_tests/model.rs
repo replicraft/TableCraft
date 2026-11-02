@@ -1,6 +1,6 @@
 //! Literal nullable populations and complete UPDATE images, without planner codecs.
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub const PAGE: usize = 4096;
 const ROWS: usize = 500;

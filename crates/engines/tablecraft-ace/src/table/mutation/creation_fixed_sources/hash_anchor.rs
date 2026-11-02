@@ -1,6 +1,6 @@
 //! Ordinary CI anchor for the five originals frozen before generic creation.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_fixed_creation;
+use tablecraft_testkit::fixtures::access::canonical_fixed_creation;
 
 #[test]
 fn fixed_creation_sources_remain_bound_to_exported_original_hashes() {

@@ -43,7 +43,7 @@ uuid.workspace = true
 jiff.workspace = true
 
 [dev-dependencies]
-tablecraft-testkit.workspace = true
+tablecraft-testkit = { workspace = true, features = ["ace-support"] }
 # Independent fixture encoders and digest goldens stay outside production.
 aes.workspace = true
 cbc.workspace = true

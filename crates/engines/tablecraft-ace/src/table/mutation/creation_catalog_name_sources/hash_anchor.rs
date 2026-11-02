@@ -1,6 +1,6 @@
 //! Ordinary CI anchors for independent catalog-name originals, not repaired output.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_catalog_names;
+use tablecraft_testkit::fixtures::access::canonical_catalog_names;
 
 #[test]
 fn catalog_name_sources_retain_all_four_exported_original_hashes() {

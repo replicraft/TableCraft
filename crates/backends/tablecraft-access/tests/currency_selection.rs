@@ -1,13 +1,13 @@
 #[path = "../../../engines/tablecraft-ace/tests/currency_indexes/fixture.rs"]
 mod currency_fixture;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::io::Cursor;
 use tablecraft_access::NativeSource;

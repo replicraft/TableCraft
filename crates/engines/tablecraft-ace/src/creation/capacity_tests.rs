@@ -2,8 +2,8 @@
 use super::{CreateColumn, create_ace16_database};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::canonical_variable_capacity_creation;
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_variable_capacity_creation;
 
 #[test]
 fn variable_creation_matches_both_independent_capacity_boundary_images() {

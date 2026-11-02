@@ -7,8 +7,8 @@ use crate::InspectError;
 use std::cell::Cell;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::{DecimalConstraints, ScalarType};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::{
     canonical_creation as fixed, canonical_multiple_creation as multiple,
     canonical_variable_creation as variable,
 };

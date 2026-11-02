@@ -9,7 +9,7 @@ use std::{
 use tablecraft_access::AccessInputError;
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::mutation_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn arguments(sql: &str, input: &str, output: &str, kind: &str, required: bool) -> Arguments {
     let mut values = vec![

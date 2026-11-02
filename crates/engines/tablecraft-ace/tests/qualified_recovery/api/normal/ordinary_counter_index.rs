@@ -13,7 +13,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_ordinary_indexed::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{self as sources, Case};
 
 const POOLS: [Resource; 3] = [Resource::Bytes, Resource::Rows, Resource::Steps];
 

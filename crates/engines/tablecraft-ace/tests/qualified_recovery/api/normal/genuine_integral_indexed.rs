@@ -14,7 +14,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::{Currency, Value};
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_integral_indexed as sources;
+use tablecraft_testkit::fixtures::access::genuine_integral_indexed as sources;
 
 fn cases() -> Vec<sources::Case> {
     sources::load_all(|raw, expected| {

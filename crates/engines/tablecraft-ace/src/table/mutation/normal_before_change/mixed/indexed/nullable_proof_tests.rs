@@ -3,7 +3,7 @@ use super::prove;
 use crate::{EditError, Int32Update, NativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_nullable_key_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_nullable_key_before_change as model;
 
 const SCOPE: CatalogScope = CatalogScope::new(111);
 

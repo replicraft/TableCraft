@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_numeric_date_sources_use_serials_and_buffer_null_or_eager_failures() {
@@ -8,7 +9,7 @@ fn cli_numeric_date_sources_use_serials_and_buffer_null_or_eager_failures() {
             "SELECT FormatNumber(#1899-12-29 06:00:00#),",
             "FormatPercent(CDate(-0.25)),FormatCurrency(#2025-01-01 12:00:00#)"
         );
-        let result = run(&["query", mode, sql, "--number-format", "en-US"]);
+        let result = CLI.run(&["query", mode, sql, "--number-format", "en-US"]);
         assert!(
             result.status.success(),
             "{}",
@@ -29,7 +30,7 @@ fn cli_numeric_date_sources_use_serials_and_buffer_null_or_eager_failures() {
             "SELECT 99,FormatNumber(NULL)",
             "SELECT 99,FormatNumber(#2025-01-01#),1/0",
         ] {
-            let result = run(&["query", mode, sql, "--number-format", "en-US"]);
+            let result = CLI.run(&["query", mode, sql, "--number-format", "en-US"]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

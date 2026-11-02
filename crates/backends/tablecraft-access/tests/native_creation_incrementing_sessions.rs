@@ -14,7 +14,7 @@ use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_normal_autonumber as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_normal_autonumber as fixtures;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

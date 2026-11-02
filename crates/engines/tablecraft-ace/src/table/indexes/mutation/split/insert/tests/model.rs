@@ -1,8 +1,8 @@
 //! Independent source and complete-frame goldens for one primary-leaf split.
 use super::*;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::map_growth::model::declaration_end;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::map_growth::model::declaration_end;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 pub(super) const TABLE: usize = 10;

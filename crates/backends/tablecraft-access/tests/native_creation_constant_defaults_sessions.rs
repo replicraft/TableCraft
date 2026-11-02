@@ -25,7 +25,7 @@ use tablecraft_schema::{FieldConstraintViolation, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
 
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::creation_constant_defaults as fixtures;
+use tablecraft_testkit::fixtures::access::creation_constant_defaults as fixtures;
 
 const SCOPE: CatalogScope = CatalogScope::new(227);
 

@@ -13,7 +13,7 @@ fn query(root: &Database, target: &Database, sql: &str, options: &[&str]) -> Out
         target.path(),
     ];
     arguments.extend_from_slice(options);
-    run(&arguments)
+    CLI.run(&arguments)
 }
 
 #[test]

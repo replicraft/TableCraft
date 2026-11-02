@@ -2,7 +2,7 @@
 //! Explicit creation selectors followed by the existing omitted INSERT command.
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_normal_autonumber as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_normal_autonumber as fixtures;
 
 #[test]
 #[ignore = "requires source14 before matching creator and normal generation"]

@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_constructor_components_use_number_policy_without_date_policy() {
@@ -9,7 +10,7 @@ fn cli_constructor_components_use_number_policy_without_date_policy() {
         "Hour(TimeSerial('1,5','-0,5','0'))"
     );
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             sql,
@@ -36,7 +37,7 @@ fn cli_constructor_components_use_number_policy_without_date_policy() {
             "SELECT 99,TimeSerial('1.5',0,0)",
             "SELECT 99,DateSerial(NULL,1,1/0)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }
@@ -52,12 +53,12 @@ fn constructor_error_data_keeps_eager_component_evaluation_and_buffered_failures
             ("DateSerial(NULL,CVErr(1),1)", "NULL"),
             ("DateSerial(9999,13,CVErr(1))", "type mismatch"),
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(String::from_utf8_lossy(&result.stderr).contains(error));
         }
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Year(DateSerial(CLng(CVErr(2001)),1,1)) AS Y",

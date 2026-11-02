@@ -1,10 +1,11 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn help_states_actual_capabilities_without_a_display() {
     for args in [&[][..], &["--help"][..], &["-h"][..]] {
-        let output = run(args);
+        let output = CLI.run(args);
         assert!(output.status.success());
         assert!(output.stderr.is_empty());
         let text = String::from_utf8(output.stdout).unwrap();
@@ -17,7 +18,7 @@ fn help_states_actual_capabilities_without_a_display() {
 #[test]
 fn version_matches_package_metadata() {
     for flag in ["--version", "-V"] {
-        let output = run(&[flag]);
+        let output = CLI.run(&[flag]);
         assert!(output.status.success());
         assert!(output.stderr.is_empty());
         assert_eq!(
@@ -35,7 +36,7 @@ fn unsupported_commands_and_extra_arguments_fail_without_success_output() {
         &["--unknown"][..],
         &["unexpected", "extra"][..],
     ] {
-        let output = run(args);
+        let output = CLI.run(args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(String::from_utf8(output.stderr).unwrap().contains("error:"));
@@ -44,7 +45,7 @@ fn unsupported_commands_and_extra_arguments_fail_without_success_output() {
 
 #[test]
 fn query_parse_prints_owned_normalized_sql_without_a_database() {
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "parse",
         "PARAMETERS [Minimum score] Long; SELECT Code FROM Samples WHERE Code > [Minimum score]",
@@ -55,7 +56,7 @@ fn query_parse_prints_owned_normalized_sql_without_a_database() {
         String::from_utf8(output.stdout).unwrap(),
         "PARAMETERS [Minimum score] LONG; SELECT [Code] FROM [Samples] WHERE ([Code] > [Minimum score]);\n"
     );
-    let output = run(&["query", "parse", "UPDATE Samples SET Code = 1"]);
+    let output = CLI.run(&["query", "parse", "UPDATE Samples SET Code = 1"]);
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
@@ -69,7 +70,7 @@ fn query_parse_rejects_invalid_sql_and_limits_without_partial_output() {
         "SELECT * FROM Samples; DELETE FROM Samples",
         &"x".repeat(65_537),
     ] {
-        let output = run(&["query", "parse", sql]);
+        let output = CLI.run(&["query", "parse", sql]);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(
@@ -78,7 +79,7 @@ fn query_parse_rejects_invalid_sql_and_limits_without_partial_output() {
                 .starts_with("error:")
         );
     }
-    let help = run(&["query", "parse", "--help"]);
+    let help = CLI.run(&["query", "parse", "--help"]);
     assert!(help.status.success());
     assert!(
         String::from_utf8(help.stdout)

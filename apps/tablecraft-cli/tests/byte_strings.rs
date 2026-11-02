@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn byte_state_control_order_and_late_failures_keep_stdout_atomic() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT InStrB(1,NULL,CVErr(11),0) AS N,AscB(ChrB(CLng(CVErr(65)))) AS C",
@@ -24,7 +24,7 @@ fn byte_state_control_order_and_late_failures_keep_stdout_atomic() {
             ("LeftB(CVErr(11),1/0)", "division by zero"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql]);
+            let result = CLI.run(&["query", mode, &sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(
@@ -38,13 +38,14 @@ fn byte_state_control_order_and_late_failures_keep_stdout_atomic() {
 #[test]
 fn utf16_byte_observations_are_not_utf8_or_ansi_counts() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Len('é中🦀') AS Units,LenB('é中🦀') AS Bytes,AscB('中') AS FirstByte,VarType(LenB('x')) AS L,VarType(AscB('x')) AS A,LenB(Null) AS N",
-            "--character-code-page",
-            "1252",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Len('é中🦀') AS Units,LenB('é中🦀') AS Bytes,AscB('中') AS FirstByte,VarType(LenB('x')) AS L,VarType(AscB('x')) AS A,LenB(Null) AS N",
+                "--character-code-page",
+                "1252",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -74,7 +75,7 @@ fn utf16_byte_observations_are_not_utf8_or_ansi_counts() {
             "LenB('x',1/0)",
             "LenB('x'),1/0",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -84,11 +85,12 @@ fn utf16_byte_observations_are_not_utf8_or_ansi_counts() {
 #[test]
 fn raw_byte_strings_are_lossless_inside_calls_and_strict_at_stdout() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT LenB(ChrB(255)) AS L,AscB(RightB('🦀',3)) AS A,LenB(CVar(MidB('🦀',2,2))) AS M,VarType(ChrB(0)) AS V,IsArray(ChrB(0)) AS B",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT LenB(ChrB(255)) AS L,AscB(RightB('🦀',3)) AS A,LenB(CVar(MidB('🦀',2,2))) AS M,VarType(ChrB(0)) AS V,IsArray(ChrB(0)) AS B",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -108,7 +110,7 @@ fn raw_byte_strings_are_lossless_inside_calls_and_strict_at_stdout() {
             "ChrB(-1)",
             "LeftB('A',1,1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -118,11 +120,12 @@ fn raw_byte_strings_are_lossless_inside_calls_and_strict_at_stdout() {
 #[test]
 fn binary_instrb_finds_byte_positions_without_publishing_raw_strings() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT InStrB(1,'A中🦀','🦀',0) AS U,InStrB(1,'A',ChrB(0),0) AS Z,InStrB(1,RightB('🦀',3),ChrB(216),0) AS R",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT InStrB(1,'A中🦀','🦀',0) AS U,InStrB(1,'A',ChrB(0),0) AS Z,InStrB(1,RightB('🦀',3),ChrB(216),0) AS R",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -139,7 +142,7 @@ fn binary_instrb_finds_byte_positions_without_publishing_raw_strings() {
             "InStrB(1,Null,'A',1/0)",
             "InStrB(0,'A','A',0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

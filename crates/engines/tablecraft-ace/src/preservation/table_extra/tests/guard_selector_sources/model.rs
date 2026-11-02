@@ -1,5 +1,5 @@
 use super::super::{guard_sources::model as original, inspect::payload_fixture};
-use tablecraft_testkit::access::wide_properties as fixture;
+use tablecraft_testkit::fixtures::access::wide_properties as fixture;
 
 pub(crate) const ALPHA_BODY: &str = "<Statements><Action Name=\"RaiseError\"><Argument Name=\"Number\">71</Argument><Argument Name=\"Description\">alpha</Argument></Action></Statements>";
 pub(crate) const BETA_BODY: &str = "<Statements><Action Name=\"RaiseError\"><Argument Name=\"Number\">73</Argument><Argument Name=\"Description\">beta</Argument></Action></Statements>";

@@ -4,7 +4,7 @@ use crate::{NativeEditPlan, RowInsert};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::qualified_sparse_numeric as sources;
+use tablecraft_testkit::fixtures::access::qualified_sparse_numeric as sources;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

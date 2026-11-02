@@ -6,7 +6,7 @@ use crate::{
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_external_lval_update;
+use tablecraft_testkit::fixtures::access::genuine_external_lval_update;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

@@ -2,12 +2,14 @@
 mod checks;
 #[path = "inspect/encryption.rs"]
 mod encryption;
-mod support;
 use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Fixture(PathBuf);
 impl Fixture {
@@ -43,7 +45,7 @@ fn image() -> Vec<u8> {
 fn header_inspection_is_read_only_and_reports_only_qualified_metadata() {
     let bytes = image();
     let fixture = Fixture::new(&bytes);
-    let output = run(&["inspect", fixture.path()]);
+    let output = CLI.run(&["inspect", fixture.path()]);
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     assert_eq!(
@@ -56,7 +58,7 @@ fn header_inspection_is_read_only_and_reports_only_qualified_metadata() {
     encoded[0x299..0x29b].copy_from_slice(&9u16.to_le_bytes());
     encoded[0x29b..0x2a4].copy_from_slice(b"\x04\0\x04\0\x40\0\0\0x");
     let fixture = Fixture::new(&encoded);
-    let output = run(&["inspect", fixture.path()]);
+    let output = CLI.run(&["inspect", fixture.path()]);
     assert!(output.status.success());
     assert!(String::from_utf8_lossy(&output.stdout).contains("Encoded pages\ttrue"));
 }
@@ -64,12 +66,12 @@ fn header_inspection_is_read_only_and_reports_only_qualified_metadata() {
 fn bad_inputs_and_open_failures_have_no_success_output_or_path_payloads() {
     for bytes in [vec![0; 10], vec![0; 3 * 4096]] {
         let fixture = Fixture::new(&bytes);
-        let output = run(&["inspect", fixture.path()]);
+        let output = CLI.run(&["inspect", fixture.path()]);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&output.stderr).contains(fixture.path()));
     }
-    let output = run(&["inspect", "private-missing-db-secret.accdb"]);
+    let output = CLI.run(&["inspect", "private-missing-db-secret.accdb"]);
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
     assert!(!String::from_utf8_lossy(&output.stderr).contains("secret"));
@@ -83,7 +85,7 @@ fn catalog_inventory_reads_a_disposable_example_copy_and_preserves_native_metada
     )
     .unwrap();
     let fixture = Fixture::new(&original);
-    let output = run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
+    let output = CLI.run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
@@ -118,12 +120,12 @@ fn catalog_failures_never_publish_a_partial_header() {
     encoded[0x29b..0x2a4].copy_from_slice(b"\x04\0\x04\0\x40\0\0\0x");
     for bytes in [image(), newer, encoded] {
         let fixture = Fixture::new(&bytes);
-        let output = run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
+        let output = CLI.run(&["inspect", fixture.path(), "--catalog", "--show-system"]);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&output.stderr).contains(fixture.path()));
     }
-    let help = run(&["inspect", "--help"]);
+    let help = CLI.run(&["inspect", "--help"]);
     assert!(help.status.success());
     assert!(String::from_utf8_lossy(&help.stdout).contains("--catalog"));
 }
@@ -136,13 +138,13 @@ fn table_schema_inspection_reports_supported_and_unsupported_fields_without_rows
     )
     .unwrap();
     let fixture = Fixture::new(&bytes);
-    let output = run(&["inspect", fixture.path(), "--table", "ROULETTE_TB"]);
+    let output = CLI.run(&["inspect", fixture.path(), "--table", "ROULETTE_TB"]);
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).unwrap(),
         "Table\tROULETTE_TB\nDeclared rows\t38\nScalar columns\tSupported carriers; rows not inspected\nUnsupported columns\t0\nColumn\tNative type\tStorage bytes\tFlags\tExtended flags\tScalar carrier\nORDR_NBR\t4\t4\t0x03\t0x00\tInt32\nNBR_VALUE\t10\t4\t0x02\t0x00\tText\nCOLOR_ID\t4\t4\t0x03\t0x00\tInt32\nText column\tSort LCID\tSort version\tSort variant\tSort family\nNBR_VALUE\t1033\t0\t0x00\tGeneral legacy\n"
     );
-    let output = run(&["inspect", fixture.path(), "--table", "MSysResources"]);
+    let output = CLI.run(&["inspect", fixture.path(), "--table", "MSysResources"]);
     assert!(output.status.success());
     assert!(
         String::from_utf8(output.stdout)
@@ -159,7 +161,7 @@ fn table_schema_inspection_reports_supported_and_unsupported_fields_without_rows
             "ROULETTE_TB",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
     }

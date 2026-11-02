@@ -3,8 +3,8 @@ use super::{CreateDatabaseError, create_ace16_int32_database};
 use crate::InspectError;
 use std::cell::Cell;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_testkit::access::canonical_creation::{self, CASES, Case};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_creation::{self, CASES, Case};
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 16_000_000)

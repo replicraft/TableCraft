@@ -12,7 +12,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::genuine_normal_autonumber as fixtures;
+use tablecraft_testkit::fixtures::access::genuine_normal_autonumber as fixtures;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)
@@ -163,7 +163,7 @@ fn explicit_increment_declarations_refuse_wrong_types_defaults_and_nonempty_init
 
 #[test]
 fn unspecified_increment_keeps_manual_primary_and_complete_initial_values_unchanged() {
-    use tablecraft_testkit::access::canonical_creation_primary as manual;
+    use tablecraft_testkit::fixtures::access::canonical_creation_primary as manual;
     let columns = [
         CreateColumn::new("Id", ScalarType::Int32)
             .with_primary_key("PrimaryId")

@@ -3,7 +3,9 @@ use super::{budget, columns, sources};
 use tablecraft_ace::{CreateColumn, CreateTable, create_ace16_database_tables};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::{canonical_creation, canonical_native17_creation, data_page};
+use tablecraft_testkit::fixtures::access::{
+    canonical_creation, canonical_native17_creation, data_page,
+};
 
 fn page(bytes: &[u8], number: usize) -> &[u8] {
     &bytes[number * 4096..(number + 1) * 4096]

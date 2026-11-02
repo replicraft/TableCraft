@@ -65,7 +65,7 @@ fn saved_and_named_external_selects_use_the_explicit_target_across_priority_prof
     for profile in [1, 2, 5, 6] {
         let root = Database::new(database(profile, "Score", None));
         let remote = Database::new(target(profile));
-        let inert = cli_support::run(&["query", "saved", "--database", root.path(), "Saved"]);
+        let inert = CLI.run(&["query", "saved", "--database", root.path(), "Saved"]);
         assert!(inert.status.success(), "{:?}", inert);
         assert_eq!(
             inert.stdout,
@@ -85,7 +85,7 @@ fn saved_and_named_external_selects_use_the_explicit_target_across_priority_prof
                 "remote",
                 remote.path(),
             ]);
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert!(result.status.success(), "{:?}", result);
             assert_eq!(result.stdout, b"Chosen\n100\n200\n300\n");
             assert!(result.stderr.is_empty());
@@ -98,7 +98,7 @@ fn saved_external_metadata_never_grants_an_implicit_open_or_provider_connection(
     let remote = Database::new(target(6));
     for connection in [None, Some(""), Some("ODBC;DATABASE=private")] {
         let root = Database::new(database(6, "Score", connection));
-        let inert = cli_support::run(&["query", "saved", "--database", root.path(), "Saved"]);
+        let inert = CLI.run(&["query", "saved", "--database", root.path(), "Saved"]);
         assert!(inert.status.success(), "{:?}", inert);
 
         for mapping in [vec![], vec!["--external", "Remote", remote.path()]] {
@@ -112,7 +112,7 @@ fn saved_external_metadata_never_grants_an_implicit_open_or_provider_connection(
                 root.path(),
             ];
             args.extend(mapping);
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             let diagnostics = String::from_utf8_lossy(&result.stderr);
@@ -122,7 +122,7 @@ fn saved_external_metadata_never_grants_an_implicit_open_or_provider_connection(
         }
 
         if connection.is_some() {
-            let result = cli_support::run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 "--saved",
@@ -161,7 +161,7 @@ fn saved_external_late_errors_and_exhausted_allowances_publish_no_rows() {
             remote.path(),
         ];
         args.extend(extra);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2), "{:?}", result);
         assert!(result.stdout.is_empty());
     }

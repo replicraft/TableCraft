@@ -1,5 +1,5 @@
 //! Original literal fixed-row/key/page model; no production encoding helpers.
-use super::{engine, index_fixture, support};
+use super::{engine, support};
 use engine::{
     Ace16WritePreview, EditError, IndexCheckStatus, Int32Update, NativeImage, check_table,
     read_table, read_table_index,
@@ -7,6 +7,7 @@ use engine::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 pub const PAGE: usize = 4096;
 pub const ROOT: usize = 13;

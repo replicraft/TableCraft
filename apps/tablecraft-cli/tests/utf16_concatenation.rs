@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn concatenation_retains_raw_units_and_buffers_final_publication_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT ChrW(55357)&ChrW(56832) AS Face,Len(ChrW(55296)&NULL) AS Units,Nz(NULL)&'x' AS Empty",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT ChrW(55357)&ChrW(56832) AS Face,Len(ChrW(55296)&NULL) AS Units,Nz(NULL)&'x' AS Empty",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -30,7 +31,7 @@ fn concatenation_retains_raw_units_and_buffers_final_publication_failures() {
             "ChrW(55296)&CVErr(1)",
             "ChrW(55296)&(1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

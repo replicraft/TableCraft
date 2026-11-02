@@ -1,7 +1,5 @@
-use super::{
-    numeric_fixture,
-    support::{data_page, put16},
-};
+use super::super::{data_page, put16};
+use super::numeric_fixture;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Cell {

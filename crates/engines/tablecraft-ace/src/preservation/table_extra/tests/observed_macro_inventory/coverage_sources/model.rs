@@ -1,7 +1,7 @@
 //! Additive catalog/payload originals built with the actual literal owners.
 use super::super::super::{guard_sources::model as original, inspect::payload_fixture};
 use super::super::model as observed;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 const PAGE_BYTES: usize = 4096;
 const HEADER_VERSION_OFFSET: usize = 20;

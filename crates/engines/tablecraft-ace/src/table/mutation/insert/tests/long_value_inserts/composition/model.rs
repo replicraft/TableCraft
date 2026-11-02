@@ -6,8 +6,8 @@ use crate::read_table;
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes as frames;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table::mutation::insert::tests::long_value_inserts) enum MemoMaps {

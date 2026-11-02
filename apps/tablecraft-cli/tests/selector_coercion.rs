@@ -1,16 +1,18 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn query_selectors_share_explicit_text_and_intrinsic_date_coercions() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IIf('0,25',1,0),Switch('False',1,'2,5',2),Choose('2,5',1,2,3),IIf(#1899-12-30#,1,0),IIf(#1899-12-30 06:00:00#,1,0),Choose(#1900-01-01 12:00:00#,1,2,3),IsError(IIf('1',CVErr(2001),0))",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IIf('0,25',1,0),Switch('False',1,'2,5',2),Choose('2,5',1,2,3),IIf(#1899-12-30#,1,0),IIf(#1899-12-30 06:00:00#,1,0),Choose(#1900-01-01 12:00:00#,1,2,3),IsError(IIf('1',CVErr(2001),0))",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -32,7 +34,7 @@ fn query_selectors_share_explicit_text_and_intrinsic_date_coercions() {
             "SELECT Switch('1',1)",
             "SELECT Choose('1',1)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }
@@ -42,7 +44,7 @@ fn query_selectors_share_explicit_text_and_intrinsic_date_coercions() {
             "SELECT Choose('bad',1,1/0)",
             "SELECT IIf(CVErr(0),1,0)",
         ] {
-            let result = run(&["query", mode, sql, "--number-format", "en-US"]);
+            let result = CLI.run(&["query", mode, sql, "--number-format", "en-US"]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

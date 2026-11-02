@@ -1,6 +1,6 @@
 //! Literal MR2 declarations composed with actual independent record/image owners.
 use super::super::ordinary_rows::{fixture, model::Row};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub const PAGE: usize = 4096;
 

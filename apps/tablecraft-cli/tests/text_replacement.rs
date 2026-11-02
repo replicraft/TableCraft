@@ -1,5 +1,7 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn table(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -12,11 +14,12 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn replacement_streams_to_buffered_results_and_keeps_access_suffix_rules() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT Replace('banana','an','X') AS A,Replace('banana','an','X',3,1) AS B,Replace('😀x😀','😀','é',3) AS C,Replace('aaaa','aa','a',,,) AS D",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT Replace('banana','an','X') AS A,Replace('banana','an','X',3,1) AS B,Replace('😀x😀','😀','é',3) AS C,Replace('aaaa','aa','a',,,) AS D",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -36,7 +39,7 @@ fn replacement_streams_to_buffered_results_and_keeps_access_suffix_rules() {
             "Replace('😀x','x','y',2)",
             "Replace('a','a','x',1,-1,NULL)",
         ] {
-            let result = run(&["query", command, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", command, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }
@@ -44,7 +47,7 @@ fn replacement_streams_to_buffered_results_and_keeps_access_suffix_rules() {
 }
 #[test]
 fn selected_ordinal_provider_handles_replacement_without_locale_fallback() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Replace('banana','an','X',,,2) AS A,Replace('banana','an','X',,1,-1) AS B",
@@ -60,7 +63,7 @@ fn selected_ordinal_provider_handles_replacement_without_locale_fallback() {
         table(&result.stdout),
         [vec!["A", "B"], vec!["\"bXXa\"", "\"bXana\""]]
     );
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT 1,Replace('A','a','x',,,1)",
@@ -74,11 +77,12 @@ fn selected_ordinal_provider_handles_replacement_without_locale_fallback() {
 #[test]
 fn retained_replacement_is_observable_and_final_unicode_stays_strict() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT AscW(Replace('😀',ChrW(55357),'')) AS Code,LenB(Replace('😀','z','',2,0)) AS Bytes,Replace(ChrW(55296)&'a','a',ChrW(56320)) AS Repaired",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT AscW(Replace('😀',ChrW(55357),'')) AS Code,LenB(Replace('😀','z','',2,0)) AS Bytes,Replace(ChrW(55296)&'a','a',ChrW(56320)) AS Repaired",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -96,7 +100,7 @@ fn retained_replacement_is_observable_and_final_unicode_stays_strict() {
             "SELECT LenB(Replace(ChrW(55296),'a','b')),1/0",
             "SELECT LenB(Replace(ChrB(65),'a','b'))",
         ] {
-            let result = run(&["query", command, sql]);
+            let result = CLI.run(&["query", command, sql]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty(), "{sql}");
         }

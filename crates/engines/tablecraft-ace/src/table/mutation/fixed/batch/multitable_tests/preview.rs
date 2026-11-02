@@ -12,8 +12,8 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 struct Updates {
     left: Vec<FixedScalarUpdate>,

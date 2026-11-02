@@ -12,7 +12,9 @@ use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_mixed_before_change::{self as model, Case, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_mixed_before_change::{
+    self as model, Case, Recipe,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(102);
 

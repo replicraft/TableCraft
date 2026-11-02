@@ -6,19 +6,19 @@ use tablecraft_query::{ExecutionOptions, QueryError, QueryLimits, prepare};
 
 #[test]
 fn eager_displayed_errors_and_invalid_suffixes_never_publish_a_complete_prefix() {
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     let sql = "SELECT TOP 1 A,10 \\ (A.Value-9) AS Boom FROM L";
     assert_eq!(
         execute(sql, &data, false).err(),
         Some(QueryError::Evaluation(EvalError::DivisionByZero))
     );
 
-    let mut data = Data::fixture();
+    let mut data = Data::mixed_fixture();
     data.tables[0].rows[0].lists[0].push(Value::Text("bad suffix".into()));
     let sql = "SELECT A,A.Value FROM L WHERE A.Value=7";
     assert_eq!(execute(sql, &data, false).err(), Some(QueryError::Source));
 
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     data.fail_table.set(Some("L"));
     let plan = prepare(&syntax("SELECT A,A.Value FROM L"), &data).unwrap();
     assert_eq!(
@@ -35,7 +35,7 @@ fn eager_displayed_errors_and_invalid_suffixes_never_publish_a_complete_prefix()
 
 #[test]
 fn cumulative_product_limits_cancellation_and_ignored_rejections_remain_sticky() {
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     let plan = prepare(&syntax("SELECT A,A.Value,B,B.Value FROM L"), &data).unwrap();
     let checkpoints = Cell::new(0);
     let observe = || {
@@ -113,7 +113,7 @@ fn cumulative_product_limits_cancellation_and_ignored_rejections_remain_sticky()
 
 #[test]
 fn scalar_services_and_remaining_typed_shapes_keep_their_explicit_boundaries() {
-    let data = Data::fixture();
+    let data = Data::mixed_fixture();
     let plan = prepare(&syntax("SELECT A,A.Value FROM L"), &data).unwrap();
     assert_eq!(
         plan.execute(&data, &[], Default::default()).err(),
@@ -139,7 +139,7 @@ fn scalar_services_and_remaining_typed_shapes_keep_their_explicit_boundaries() {
             QueryError::Unsupported,
         ),
     ] {
-        let data = Data::fixture();
+        let data = Data::mixed_fixture();
         assert_eq!(execute(sql, &data, false).err(), Some(error), "{sql}");
         assert!(data.scans.borrow().is_empty(), "{sql}");
     }

@@ -39,7 +39,7 @@ fn query(root: &Database, target: &Database, sql: &str, extra: &[&str]) -> Outpu
         target.path(),
     ];
     arguments.extend_from_slice(extra);
-    run(&arguments)
+    CLI.run(&arguments)
 }
 
 fn success(output: Output) -> Vec<u8> {
@@ -131,7 +131,7 @@ fn linked_eager_failures_retain_only_previously_completed_tsv_batches() {
 #[test]
 fn streaming_does_not_open_unmapped_or_chained_stored_paths() {
     let (root, _) = databases(6);
-    let unmapped = run(&[
+    let unmapped = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Linked",

@@ -14,7 +14,7 @@ use std::{
     path::Path,
     process::{Command, Output},
 };
-use tablecraft_testkit::access::secondary_index as model;
+use tablecraft_testkit::fixtures::access::secondary_index as model;
 
 fn run(database: &Path, output: &Path, statement: &str) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

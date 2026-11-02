@@ -4,7 +4,7 @@ use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_catalog_names as names, canonical_creation as integers,
     canonical_fixed_creation as fixed, canonical_fixed_float_creation as ieee,
     canonical_multiple_creation as multiple, canonical_native17_creation as native17,
@@ -324,7 +324,7 @@ fn malformed_native17_footer_pairs_and_present_code_never_gain_normal_source() {
     duplicate[32..42].copy_from_slice(&name);
     rows.push((0, duplicate));
     let payload = rows.iter().map(|(_, row)| row.len()).sum::<usize>();
-    let mut page = tablecraft_testkit::access::data_page(2, &rows);
+    let mut page = tablecraft_testkit::fixtures::access::data_page(2, &rows);
     page[2..4].copy_from_slice(&((4096 - 14 - 18 - payload) as u16).to_le_bytes());
     alias[data..data + 4096].copy_from_slice(&page);
     alias[td + 16..td + 20].copy_from_slice(&9_u32.to_le_bytes());

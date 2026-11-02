@@ -222,9 +222,9 @@ fn duplicate_and_foreign_typed_handles_refuse_before_creating_any_bundle() {
 #[test]
 fn readable_ace_outside_closed_content_does_not_grant_typed_writes() {
     let root = tempfile::tempdir().unwrap();
-    let case = tablecraft_testkit::access::secondary_index::source(
+    let case = tablecraft_testkit::fixtures::access::secondary_index::source(
         6,
-        tablecraft_testkit::access::secondary_index::Population::Distinct,
+        tablecraft_testkit::fixtures::access::secondary_index::Population::Distinct,
         false,
     );
     let database = root.path().join("ordinary.accdb");

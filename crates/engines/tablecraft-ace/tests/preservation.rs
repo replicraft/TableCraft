@@ -1,4 +1,4 @@
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor, path::Path};
 use tablecraft_ace::{DependencyCoverage, InspectError, NativeImage, read_table};

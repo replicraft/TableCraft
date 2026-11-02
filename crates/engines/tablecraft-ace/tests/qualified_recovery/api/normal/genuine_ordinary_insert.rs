@@ -72,7 +72,7 @@ fn complete_insert_commits_preserve_original_row_and_append_literal_visible_reco
         assert_eq!(table.rows().len(), 2);
         assert_eq!(
             table.rows()[1],
-            tablecraft_testkit::access::genuine_ordinary_insert::values()
+            tablecraft_testkit::fixtures::access::genuine_ordinary_insert::values()
         );
         assert_eq!(
             table.rows()[0],

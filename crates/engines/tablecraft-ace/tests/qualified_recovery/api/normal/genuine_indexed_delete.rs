@@ -12,7 +12,7 @@ use tablecraft_ace::{
     EditError, IndexCheckStatus, NativeImage, NativeIntentError, RecoverableEditError, RowDelete,
     check_table, inspect_table_index_counter, read_table, read_table_index,
 };
-use tablecraft_testkit::access::genuine_indexed_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_indexed_delete as sources;
 
 fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), scope(), &mut budget(), &|| false).unwrap()

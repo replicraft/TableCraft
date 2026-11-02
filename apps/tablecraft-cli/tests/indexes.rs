@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn automatic_index_queries_match_explicit_ordered_results_and_validate_arguments() {
@@ -7,8 +8,8 @@ fn automatic_index_queries_match_explicit_ordered_results_and_validate_arguments
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let path = path.to_str().unwrap();
     let sql = "SELECT TOP 3 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR>4 ORDER BY ORDR_NBR DESC";
-    let normal = run(&["query", "run", "--database", path, sql]);
-    let automatic = run(&[
+    let normal = CLI.run(&["query", "run", "--database", path, sql]);
+    let automatic = CLI.run(&[
         "-v",
         "query",
         "run",
@@ -37,7 +38,7 @@ fn automatic_index_queries_match_explicit_ordered_results_and_validate_arguments
         ],
         vec!["query", "run", "--sqlite", path, "--auto-index", "SELECT 1"],
     ] {
-        assert_eq!(run(&args).status.code(), Some(2));
+        assert_eq!(CLI.run(&args).status.code(), Some(2));
     }
 }
 #[test]
@@ -45,7 +46,7 @@ fn index_inspection_is_explicit_bounded_and_inert() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let path = path.to_str().unwrap();
-    let result = run(&["inspect", path, "--table", "ROULETTE_TB", "--indexes"]);
+    let result = CLI.run(&["inspect", path, "--table", "ROULETTE_TB", "--indexes"]);
     assert!(
         result.status.success(),
         "{}",
@@ -53,7 +54,10 @@ fn index_inspection_is_explicit_bounded_and_inert() {
     );
     assert_eq!(result.stdout,b"Table\tROULETTE_TB\nIndex\tLogical\tPhysical\tRoot page\tType\tFlags\tPrimary\tUnique\tRequired key\tIgnore NULLs\tColumn\tDescending\nCOLOR_ID\t0\t0\t729\t0\t0x80\tFALSE\tFALSE\tFALSE\tFALSE\tCOLOR_ID\tFALSE\nNumber\t1\t1\t730\t0\t0x81\tFALSE\tTRUE\tFALSE\tFALSE\tNBR_VALUE\tFALSE\nORDR_NBR\t2\t2\t731\t0\t0x81\tFALSE\tTRUE\tFALSE\tFALSE\tORDR_NBR\tFALSE\n");
     assert!(result.stderr.is_empty());
-    assert_eq!(run(&["inspect", path, "--indexes"]).status.code(), Some(2));
+    assert_eq!(
+        CLI.run(&["inspect", path, "--indexes"]).status.code(),
+        Some(2)
+    );
 }
 
 #[test]
@@ -62,8 +66,8 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let path = path.to_str().unwrap();
     let sql = "SELECT TOP 3 ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > 4 ORDER BY ORDR_NBR DESC";
-    let normal = run(&["query", "run", "--database", path, sql]);
-    let indexed = run(&[
+    let normal = CLI.run(&["query", "run", "--database", path, sql]);
+    let indexed = CLI.run(&[
         "-v",
         "query",
         "run",
@@ -82,7 +86,7 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
     assert_eq!(normal.stdout, indexed.stdout);
     assert!(String::from_utf8_lossy(&indexed.stderr).contains("indexed table completed"));
     assert!(String::from_utf8_lossy(&indexed.stderr).contains("native selected scan completed"));
-    let text_indexed = run(&[
+    let text_indexed = CLI.run(&[
         "query",
         "run",
         "--database",
@@ -99,7 +103,7 @@ fn indexed_queries_are_explicit_and_retain_query_semantics() {
     );
     assert_eq!(text_indexed.stdout, normal.stdout);
     assert_eq!(
-        run(&[
+        CLI.run(&[
             "query",
             "run",
             "--index",
@@ -139,7 +143,7 @@ fn constrained_cli_queries_preserve_parameter_null_and_eager_error_contracts() {
             b"ORDR_NBR\n".as_slice(),
         ),
     ] {
-        let output = run(&[args.as_slice(), &[sql, "--param", parameter]].concat());
+        let output = CLI.run(&[args.as_slice(), &[sql, "--param", parameter]].concat());
         assert!(
             output.status.success(),
             "{}",
@@ -147,11 +151,13 @@ fn constrained_cli_queries_preserve_parameter_null_and_eager_error_contracts() {
         );
         assert_eq!(output.stdout, expected);
     }
-    let output = run(&[
-        args.as_slice(),
-        &["SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > 100 AND 1 / 0 = 0"],
-    ]
-    .concat());
+    let output = CLI.run(
+        &[
+            args.as_slice(),
+            &["SELECT ORDR_NBR FROM ROULETTE_TB WHERE ORDR_NBR > 100 AND 1 / 0 = 0"],
+        ]
+        .concat(),
+    );
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
 }

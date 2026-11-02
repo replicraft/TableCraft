@@ -1,5 +1,5 @@
 //! Literal map rows, chunk pages and complete images fixed before preview calls.
-use tablecraft_testkit::access::multiple_indexes as source_frames;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_frames;
 mod indirect;
 
 use super::super::{Family, PAGE, external, frames, original};

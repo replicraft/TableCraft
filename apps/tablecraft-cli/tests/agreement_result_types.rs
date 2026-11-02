@@ -1,7 +1,8 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::path::Path;
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn unknown_arithmetic_composes_with_union_conversion_in_both_cli_profiles() {
@@ -21,7 +22,7 @@ fn unknown_arithmetic_composes_with_union_conversion_in_both_cli_profiles() {
             if declared {
                 args.push("--declared-arithmetic");
             }
-            let result = run(&args);
+            let result = CLI.run(&args);
             assert!(
                 result.status.success(),
                 "{}",
@@ -39,7 +40,7 @@ fn unknown_arithmetic_composes_with_union_conversion_in_both_cli_profiles() {
 
 #[test]
 fn union_conversion_never_permits_unknown_widening_or_partial_stdout() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT First(CInt(32767))+CInt(1) AS V UNION ALL SELECT CCur(4)",

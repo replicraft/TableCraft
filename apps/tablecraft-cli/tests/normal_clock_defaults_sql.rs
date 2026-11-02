@@ -2,7 +2,9 @@
 //! Existing journal-insert automatically owns a clock; --clock only fixes input.
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::normal_clock_defaults::{self as fixtures, Function, Recipe};
+use tablecraft_testkit::fixtures::access::normal_clock_defaults::{
+    self as fixtures, Function, Recipe,
+};
 
 fn sources() -> fixtures::Sources {
     fixtures::Sources::load(|raw, wanted| {

@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;
 #[path = "complex_links/fixture.rs"]
@@ -6,7 +6,7 @@ mod links_fixture;
 #[path = "complex_links/signed.rs"]
 mod signed;
 use links_fixture::populated;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::io::Cursor;
 use tablecraft_ace::{

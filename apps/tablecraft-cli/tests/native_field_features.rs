@@ -1,8 +1,7 @@
-#[path = "support/mod.rs"]
-mod cli_support;
 use fixture as base;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
@@ -16,6 +15,8 @@ use std::{
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Database(PathBuf, Vec<u8>);
@@ -37,7 +38,7 @@ impl Database {
         Self(path, bytes)
     }
     fn inspect(&self) -> std::process::Output {
-        cli_support::run(&[
+        CLI.run(&[
             "inspect",
             self.0.to_str().unwrap(),
             "--table",
@@ -59,7 +60,7 @@ fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
         "--stored-calculation",
         "Score",
     ];
-    let result = cli_support::run(&args);
+    let result = CLI.run(&args);
     assert!(
         result.status.success(),
         "{}",
@@ -74,7 +75,7 @@ fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
         u16::from_le_bytes(broken[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap()) as usize;
     broken[12 * 4096 + second + 6] = 1;
     let db = Database::from_bytes(broken);
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "inspect",
         db.0.to_str().unwrap(),
         "--table",
@@ -96,7 +97,7 @@ fn stored_calculation_inspection_is_explicit_and_buffers_late_failures() {
             "Score",
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -130,7 +131,7 @@ fn stored_boolean_and_text_inspection_preserves_null_empty_and_buffers_unknown_p
         let db = Database::from_bytes(calculated_scalar_fixture::database(
             6, kind, capacity, false, &payloads,
         ));
-        let result = cli_support::run(&[
+        let result = CLI.run(&[
             "inspect",
             db.0.to_str().unwrap(),
             "--table",
@@ -156,7 +157,7 @@ fn stored_boolean_and_text_inspection_preserves_null_empty_and_buffers_unknown_p
         u16::from_le_bytes(bytes[12 * 4096 + 16..12 * 4096 + 18].try_into().unwrap()) as usize;
     bytes[12 * 4096 + second + 6 + 20] = 1;
     let db = Database::from_bytes(bytes);
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "inspect",
         db.0.to_str().unwrap(),
         "--table",
@@ -172,7 +173,7 @@ fn stored_boolean_and_text_inspection_preserves_null_empty_and_buffers_unknown_p
 fn complex_links_are_explicit_and_orphans_fail_without_partial_output() {
     let bytes = links_fixture::populated();
     let db = Database::from_bytes(bytes.clone());
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "inspect",
         db.0.to_str().unwrap(),
         "--table",
@@ -194,7 +195,7 @@ fn complex_links_are_explicit_and_orphans_fail_without_partial_output() {
         u16::from_le_bytes(broken[22 * 4096 + 16..22 * 4096 + 18].try_into().unwrap()) as usize;
     support::put32(&mut broken, 22 * 4096 + second + 2, 999);
     let db = Database::from_bytes(broken);
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "inspect",
         db.0.to_str().unwrap(),
         "--table",
@@ -216,7 +217,7 @@ fn complex_links_are_explicit_and_orphans_fail_without_partial_output() {
             "Score",
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -258,7 +259,7 @@ fn malformed_declaration_fails_without_partial_feature_output() {
             "--properties",
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -276,7 +277,7 @@ fn complex_schema_mode_resolves_references_and_rejects_corrupt_mapping_without_o
         "Items",
         "--complex",
     ];
-    let result = cli_support::run(&args);
+    let result = CLI.run(&args);
     assert!(
         result.status.success(),
         "{}",
@@ -289,7 +290,7 @@ fn complex_schema_mode_resolves_references_and_rejects_corrupt_mapping_without_o
     );
     db.1 = complex_fixture::with_mappings(vec![complex_fixture::mapping(7, 99, 20, 17)]);
     std::fs::write(&db.0, &db.1).unwrap();
-    let result = cli_support::run(&args);
+    let result = CLI.run(&args);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }

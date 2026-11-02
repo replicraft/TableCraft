@@ -4,7 +4,7 @@ use crate::table::mutation::insert::tests::{
     ordinary_rows::{fixture, model::Row},
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 const PAGE: usize = 4096;
 const DEFINITION: usize = 10 * PAGE;

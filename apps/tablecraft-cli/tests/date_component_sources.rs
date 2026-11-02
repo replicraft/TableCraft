@@ -1,11 +1,12 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_component_sources_use_explicit_date_number_policies_and_buffer_failures() {
     for mode in ["eval", "run"] {
         let sql = "SELECT Year('2024-02-29'),Month('2024-02-29'),Hour('45658,5'),Hour(-1.25)";
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             sql,
@@ -32,7 +33,7 @@ fn cli_component_sources_use_explicit_date_number_policies_and_buffer_failures()
             "SELECT 99,Year(2958466)",
             "SELECT 99,Year(NULL),1/0",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

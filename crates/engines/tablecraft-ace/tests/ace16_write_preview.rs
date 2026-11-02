@@ -1,9 +1,7 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 use std::io::Cursor;
 use tablecraft_ace::{EditError, Int32Update, NativeImage, WriteBlocker, check_table, read_table};

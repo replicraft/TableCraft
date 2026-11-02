@@ -6,7 +6,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
 };
-use tablecraft_testkit::access::canonical_before_change::{self as model, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_before_change::{self as model, Recipe};
 
 const HEX_DIGITS_PER_BYTE: usize = 2;
 

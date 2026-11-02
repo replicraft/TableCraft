@@ -7,7 +7,7 @@ use tablecraft_ace::{
     RecoverableEditError, RecoverableNativeEditPlan, SlotScalarUpdate,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_testkit::access::genuine_text_storage_carriers::Case;
+use tablecraft_testkit::fixtures::access::genuine_text_storage_carriers::Case;
 
 fn plan(
     case: &Case,

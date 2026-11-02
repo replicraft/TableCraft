@@ -4,7 +4,7 @@ use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{IndexCheckStatus, check_table, check_table_constraints};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[derive(Parser)]
 struct Invocation {

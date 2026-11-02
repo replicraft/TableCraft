@@ -15,7 +15,9 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_ordinary_indexed_targets::{self as sources, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed_targets::{
+    self as sources, Recipe,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(123);
 

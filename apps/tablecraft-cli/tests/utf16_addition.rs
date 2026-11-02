@@ -1,17 +1,18 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn string_addition_retains_units_but_keeps_numeric_and_null_dispatch() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT ChrW(55357)+ChrW(56832) AS Face,ChrW(55296)+NULL AS N,CStr(LeftB('12',4)+1) AS Amount",
-            "--number-format",
-            "invariant",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT ChrW(55357)+ChrW(56832) AS Face,ChrW(55296)+NULL AS N,CStr(LeftB('12',4)+1) AS Amount",
+                "--number-format",
+                "invariant",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -33,7 +34,7 @@ fn string_addition_retains_units_but_keeps_numeric_and_null_dispatch() {
             "(ChrW(55296)+NULL)+(1/0)",
             "LeftB('12',4)+1",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

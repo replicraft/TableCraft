@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn error_data_has_explicit_query_consumers_and_is_never_a_null_result_cell() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT IsError(CVErr(2001)),TypeName(CVar(CVErr(2001))),VarType(CVErr(2001)),CLng(CVErr(65535)),IIf(False,CVErr(1),7)",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT IsError(CVErr(2001)),TypeName(CVar(CVErr(2001))),VarType(CVErr(2001)),CLng(CVErr(65535)),IIf(False,CVErr(1),7)",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -26,7 +27,7 @@ fn error_data_has_explicit_query_consumers_and_is_never_a_null_result_cell() {
             row.iter().collect::<Vec<_>>(),
             ["TRUE", "\"Error\"", "10", "65535", "7"]
         );
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT CVErr(2001),Null,2001,'#ERROR(2001)',IIf(True,CVErr(0),0)",
@@ -57,7 +58,7 @@ fn error_data_has_explicit_query_consumers_and_is_never_a_null_result_cell() {
             "CInt(CVErr(65535))",
             "CVErr(*)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -66,11 +67,12 @@ fn error_data_has_explicit_query_consumers_and_is_never_a_null_result_cell() {
 
 #[test]
 fn encounter_aggregate_error_cells_reach_cli_without_catching_late_failures() {
-    let result = run(&[
-        "query",
-        "run",
-        "SELECT First(CVErr(Code)),Last(CVErr(Code)),IsError(First(CVErr(Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
-    ]);
+    let result = CLI.run(&[
+            "query",
+            "run",
+            "SELECT First(CVErr(Code)),Last(CVErr(Code)),IsError(First(CVErr(Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
+        ],
+    );
     assert!(
         result.status.success(),
         "{}",
@@ -87,14 +89,15 @@ fn encounter_aggregate_error_cells_reach_cli_without_catching_late_failures() {
         row.iter().collect::<Vec<_>>(),
         ["#ERROR(1)", "#ERROR(2)", "TRUE"]
     );
-    let result = run(&[
-        "query",
-        "run",
-        "SELECT First(IIf(Code=1,CVErr(Code),1/(2-Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
-    ]);
+    let result = CLI.run(&[
+            "query",
+            "run",
+            "SELECT First(IIf(Code=1,CVErr(Code),1/(2-Code))) FROM (SELECT 1 AS Code UNION ALL SELECT 2) AS Q",
+        ],
+    );
     assert!(!result.status.success());
     assert!(result.stdout.is_empty());
-    let result = run(&["query", "eval", "SELECT First(CVErr(1))"]);
+    let result = CLI.run(&["query", "eval", "SELECT First(CVErr(1))"]);
     assert!(!result.status.success());
     assert!(result.stdout.is_empty());
 }

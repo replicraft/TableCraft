@@ -4,8 +4,8 @@ use super::*;
 use crate::inspect_table_schema;
 use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as literal;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as literal;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const TABLE: usize = 10 * PAGE;

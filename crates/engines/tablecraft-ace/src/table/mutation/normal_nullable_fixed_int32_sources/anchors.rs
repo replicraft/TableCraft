@@ -1,6 +1,6 @@
 //! First original image and nullable user-request pins, before producer calls.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_nullable_fixed_int32_before_change::{
+use tablecraft_testkit::fixtures::access::canonical_nullable_fixed_int32_before_change::{
     self as model, Recipe,
 };
 

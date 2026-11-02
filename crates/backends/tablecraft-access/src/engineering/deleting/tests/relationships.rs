@@ -8,8 +8,8 @@ use tablecraft_ace::{
 use tablecraft_model::CatalogScope;
 use tablecraft_query::DeleteError;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[allow(dead_code)]
 #[path = "../../../../../../engines/tablecraft-ace/tests/ace16_cascading_delete_contract/model.rs"]

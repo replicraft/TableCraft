@@ -1,6 +1,6 @@
 #[allow(dead_code)]
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[cfg(feature = "ace16-write-preview")]
 #[allow(dead_code)]

@@ -20,7 +20,7 @@ use tablecraft_db::{
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_before_change as positive, canonical_fixed_before_change as positive_fixed,
     canonical_ordinary_content::{self as sources, Case, Source, Table},
     mutation_fixture,

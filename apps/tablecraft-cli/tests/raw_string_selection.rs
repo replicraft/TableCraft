@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn lossless_selectors_work_in_both_hosts_and_buffer_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT LenB(Nz(ChrW(55296),ChrB(65))) AS N,LenB(Choose(2,ChrW(55296),ChrB(65))) AS C,VarType(Switch(True,ChrW(55296))) AS S,IsNull(Switch(True,NULL,True,ChrW(55296))) AS Z",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT LenB(Nz(ChrW(55296),ChrB(65))) AS N,LenB(Choose(2,ChrW(55296),ChrB(65))) AS C,VarType(Switch(True,ChrW(55296))) AS S,IsNull(Switch(True,NULL,True,ChrW(55296))) AS Z",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -23,7 +24,7 @@ fn lossless_selectors_work_in_both_hosts_and_buffer_failures() {
             "Nz('ok',ChrW(65536))",
             "Choose(1,ChrW(55296),ChrB(65))",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }

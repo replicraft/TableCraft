@@ -3,9 +3,9 @@ use super::super::ordinary_rows::fixture;
 use super::super::passive_defaults::model as properties;
 use properties::{Property, field};
 use tablecraft_core::values::{ExtendedDateTime, LegacyDateTime, Value};
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 pub(super) const PAGE: usize = 4096;
 

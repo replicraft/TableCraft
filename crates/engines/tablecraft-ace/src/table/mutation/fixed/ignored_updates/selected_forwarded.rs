@@ -1,5 +1,5 @@
 //! Independent complete images patch final payloads while retaining logical ROWs.
-use tablecraft_testkit::access::multiple_indexes as model;
+use tablecraft_testkit::fixtures::access::multiple_indexes as model;
 mod authority;
 use super::{PAGE, assert_image, budget, capture, example, qualify};
 use crate::table::mutation::insert::tests::ignored_index_inserts::model as forwarding;

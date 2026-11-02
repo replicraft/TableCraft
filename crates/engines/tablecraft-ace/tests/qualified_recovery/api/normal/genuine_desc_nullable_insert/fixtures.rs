@@ -3,7 +3,7 @@ use super::budget;
 use sha2::{Digest, Sha256};
 use tablecraft_ace::{NativeInsertIntent, RowInsert};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_desc_nullable_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_desc_nullable_insert as sources;
 
 pub(super) fn cases() -> Vec<sources::Case> {
     sources::load_all(|raw, expected| {

@@ -1,7 +1,7 @@
 //! Explicit create-exclusive SOURCE and literal SQL/request export.
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_fixed_before_change::Cell, canonical_fixed_sql_before_change as model,
 };
 

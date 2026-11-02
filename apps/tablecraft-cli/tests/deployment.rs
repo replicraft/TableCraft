@@ -1,10 +1,10 @@
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod crypto;
-#[path = "../../../crates/backends/tablecraft-access/tests/support/deployment.rs"]
-mod fixture;
-mod support;
 use std::{fs, path::Path};
-use support::run;
+use tablecraft_testkit::fixtures::formats::deployment as fixture;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
@@ -26,20 +26,20 @@ fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
                 .join(format!("example-{encrypted}-{compressed}.accdc"));
             fs::write(&path, &bytes).unwrap();
             let path = path.to_str().unwrap();
-            let inspection = run(&["inspect", path]);
+            let inspection = CLI.run(&["inspect", path]);
             assert!(inspection.status.success(), "{:?}", inspection.stderr);
             assert!(
                 String::from_utf8_lossy(&inspection.stdout)
                     .contains("Package signature\tNot verified")
             );
-            let tables = run(&["tables", path, "--count", "-p", "public test password"]);
+            let tables = CLI.run(&["tables", path, "--count", "-p", "public test password"]);
             assert!(
                 tables.status.success(),
                 "encrypted={encrypted}, compressed={compressed}: {}",
                 String::from_utf8_lossy(&tables.stderr),
             );
             assert!(String::from_utf8_lossy(&tables.stdout).contains("ROULETTE_TB\tUser\t38"));
-            let query = run(&[
+            let query = CLI.run(&[
                 "query",
                 "run",
                 "SELECT TOP 2 * FROM ROULETTE_TB",
@@ -48,7 +48,7 @@ fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
                 "-p",
                 "public test password",
             ]);
-            let rows = run(&[
+            let rows = CLI.run(&[
                 "rows",
                 path,
                 "ROULETTE_TB",
@@ -64,7 +64,7 @@ fn packaged_plain_and_encrypted_databases_feed_the_same_read_commands() {
             if encrypted {
                 for flags in [&[][..], &["-p", "wrong"][..]] {
                     let args = [&["rows", path, "ROULETTE_TB"][..], flags].concat();
-                    let result = run(&args);
+                    let result = CLI.run(&args);
                     assert_eq!(result.status.code(), Some(2));
                     assert!(result.stdout.is_empty());
                 }
@@ -86,21 +86,21 @@ fn inspection_and_inventory_keep_explicit_container_allowances_bounded() {
     let path = path.to_str().unwrap();
 
     for command in ["inspect", "tables"] {
-        let admitted = run(&[command, path, "--native-bytes", "33554432"]);
+        let admitted = CLI.run(&[command, path, "--native-bytes", "33554432"]);
         assert!(admitted.status.success(), "{:?}", admitted.stderr);
 
-        let exhausted = run(&[command, path, "--native-bytes", "1"]);
+        let exhausted = CLI.run(&[command, path, "--native-bytes", "1"]);
         assert_eq!(exhausted.status.code(), Some(2));
         assert!(exhausted.stdout.is_empty());
 
         for amount in ["0", "268435457"] {
-            let refused = run(&[command, "missing.accdc", "--native-bytes", amount]);
+            let refused = CLI.run(&[command, "missing.accdc", "--native-bytes", amount]);
             assert_eq!(refused.status.code(), Some(2));
             assert!(refused.stdout.is_empty());
             assert!(String::from_utf8_lossy(&refused.stderr).contains("invalid value"));
         }
     }
-    let rows = run(&[
+    let rows = CLI.run(&[
         "rows",
         path,
         "ROULETTE_TB",
@@ -110,7 +110,7 @@ fn inspection_and_inventory_keep_explicit_container_allowances_bounded() {
         "33554432",
     ]);
     assert!(rows.status.success(), "{:?}", rows.stderr);
-    let exhausted = run(&["rows", path, "ROULETTE_TB", "--native-bytes", "1"]);
+    let exhausted = CLI.run(&["rows", path, "ROULETTE_TB", "--native-bytes", "1"]);
     assert_eq!(exhausted.status.code(), Some(2));
     assert!(exhausted.stdout.is_empty());
 

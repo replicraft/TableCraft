@@ -9,7 +9,9 @@ use super::{
 use crate::{CreatedDatabase, IndexConstraintViolation};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_creation_integral_primary::{self as sources, Family};
+use tablecraft_testkit::fixtures::access::canonical_creation_integral_primary::{
+    self as sources, Family,
+};
 
 fn columns(family: Family) -> [CreateColumn<'static>; 2] {
     let scalar = match family {

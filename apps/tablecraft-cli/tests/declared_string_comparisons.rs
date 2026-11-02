@@ -1,8 +1,8 @@
-#[path = "support/mod.rs"]
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::process::Output;
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 fn query(sql: &str, declared: bool) -> Output {
     let mut arguments = vec![
@@ -17,7 +17,7 @@ fn query(sql: &str, declared: bool) -> Output {
     if declared {
         arguments.push("--declared-arithmetic");
     }
-    run(&arguments)
+    CLI.run(&arguments)
 }
 
 #[test]
@@ -120,7 +120,7 @@ fn declared_string_conversion_and_late_operand_errors_remain_buffered() {
             "--declared-arithmetic",
         ];
         arguments.extend(options);
-        let result = run(&arguments);
+        let result = CLI.run(&arguments);
         assert_eq!(result.status.code(), Some(2), "{:?}", result);
         assert!(result.stdout.is_empty());
     }

@@ -14,7 +14,7 @@ fn null() -> Expected {
 fn left_and_right_keep_parent_absence_separate_from_empty_and_null_children() {
     for declared in [false, true] {
         for kind in ["LEFT", "RIGHT"] {
-            let mut data = Data::fixture();
+            let mut data = Data::join_fixture();
             data.tables[1].rows[2].lists[0] = vec![Value::Null];
             let left = &data.tables[0].rows;
             let right = &data.tables[1].rows;
@@ -52,7 +52,7 @@ fn left_and_right_keep_parent_absence_separate_from_empty_and_null_children() {
 
 #[test]
 fn nested_missing_subtrees_keep_each_list_slot_absent() {
-    let data = Data::fixture();
+    let data = Data::join_fixture();
     let mut expected = Vec::new();
     for l in &data.tables[0].rows {
         let mut matched = false;
@@ -76,7 +76,7 @@ fn nested_missing_subtrees_keep_each_list_slot_absent() {
 
 #[test]
 fn wildcard_and_named_derived_boundaries_preserve_presence_and_metadata() {
-    let mut data = Data::fixture();
+    let mut data = Data::join_fixture();
     data.definitions.push((
         "ProjectedRows",
         syntax("SELECT L.Id,L.A AS Kept,R.B AS Maybe FROM L LEFT JOIN R ON L.Id=R.Id"),
@@ -162,7 +162,7 @@ fn hidden_membership_filters_do_not_confuse_absent_and_empty_parents() {
             vec![(0, Some(1)), (1, Some(1)), (3, Some(2))],
         ),
     ] {
-        let mut data = Data::fixture();
+        let mut data = Data::join_fixture();
         data.tables[0].rows.push(Parent::new(3, 0, &[None], "L3"));
         let mut expected = Vec::new();
         for (left, right) in pairs {
@@ -178,7 +178,7 @@ fn hidden_membership_filters_do_not_confuse_absent_and_empty_parents() {
     // Presence tests belong to named collections. Bare scalar multivalue
     // outputs do not acquire that separate predicate capability through a join.
     for predicate in ["R.A IS NULL", "R.A IS NOT NULL"] {
-        let data = Data::fixture();
+        let data = Data::join_fixture();
         let sql = format!("SELECT L.A,R.A FROM L LEFT JOIN R ON L.Id=R.Id WHERE {predicate}");
         assert_eq!(
             execute(&sql, &data, false).err(),

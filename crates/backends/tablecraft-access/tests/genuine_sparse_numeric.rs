@@ -11,7 +11,7 @@ use tablecraft_db::{DeletableTable, EditableTable, InsertableTable, UpdateProfil
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::qualified_sparse_numeric as sources;
+use tablecraft_testkit::fixtures::access::qualified_sparse_numeric as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(201);
 

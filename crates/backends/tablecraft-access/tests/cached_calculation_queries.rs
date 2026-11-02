@@ -3,7 +3,7 @@
 mod calculated_fixture;
 #[path = "cached_calculation_queries/carriers.rs"]
 mod carriers;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "cached_calculation_queries/hyperlink.rs"]
 mod hyperlink;
 #[allow(dead_code)]
@@ -12,7 +12,7 @@ mod memo_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     cell::Cell,

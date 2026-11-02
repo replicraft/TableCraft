@@ -3,10 +3,9 @@
 #[allow(dead_code)]
 #[path = "ace16_encoded_delete_contract/model.rs"]
 mod encoded_model;
-use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 mod model {
     pub use super::encoded_model::{Model, budget, capture, entries, wire};
@@ -45,7 +44,7 @@ mod model {
         writable(super::encoded_model::composite())
     }
 }
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use model::{Model, budget, capture, entries, wire};
 use std::io::Cursor;

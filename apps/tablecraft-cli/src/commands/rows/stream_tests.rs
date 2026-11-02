@@ -3,7 +3,7 @@ use std::{
     cell::Cell,
     io::{self, Cursor},
 };
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 fn new_browser() -> NativeBrowser<'static, Cursor<Vec<u8>>> {
     NativeBrowser::new(

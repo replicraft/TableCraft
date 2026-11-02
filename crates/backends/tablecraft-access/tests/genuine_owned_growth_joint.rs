@@ -11,7 +11,7 @@ use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Upd
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_owned_growth_joint as source;
+use tablecraft_testkit::fixtures::access::genuine_owned_growth_joint as source;
 
 const SCOPE: CatalogScope = CatalogScope::new(148);
 

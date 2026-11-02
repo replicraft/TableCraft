@@ -11,7 +11,9 @@ use tablecraft_ace::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_before_change::{Case, RECIPES, Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_before_change::{
+    Case, RECIPES, Recipe, source,
+};
 
 const ADMITTED: [Recipe; 5] = [
     Recipe::Sequential,

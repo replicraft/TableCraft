@@ -1,7 +1,7 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor};
 

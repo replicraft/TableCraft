@@ -1,14 +1,13 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
 #[allow(dead_code)]
-#[path = "../../tests/mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_encoded_delete_contract/model.rs"]
 mod model;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_page_updates_contract/model.rs"]
 mod page_model;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_variable_updates_contract/model.rs"]
 mod variable_model;

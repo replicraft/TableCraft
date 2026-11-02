@@ -1,8 +1,8 @@
 //! Immutable capture/source certification and retained non-fixed policy refusals.
 mod api;
 use support as raw;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 #[allow(dead_code)]
 #[path = "../../../../../tests/complex_schema/fixture.rs"]

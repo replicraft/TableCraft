@@ -24,7 +24,7 @@ impl Collation for FailingComparison<'_> {
 
 #[test]
 fn complete_source_validation_and_eager_on_errors_precede_filters_or_top() {
-    let data = Data::fixture();
+    let data = Data::join_fixture();
     let sql = "SELECT TOP 1 L.A,R.A FROM L LEFT JOIN R ON L.Id=R.Id AND 1/(R.K-7)>0 WHERE False";
     assert_eq!(
         execute(sql, &data, false).err(),
@@ -32,7 +32,7 @@ fn complete_source_validation_and_eager_on_errors_precede_filters_or_top() {
     );
     assert_eq!(*data.scans.borrow(), ["L", "R"]);
 
-    let data = Data::fixture();
+    let data = Data::join_fixture();
     let provider = FailingComparison {
         active: &data.active,
         calls: Cell::new(0),
@@ -58,7 +58,7 @@ fn complete_source_validation_and_eager_on_errors_precede_filters_or_top() {
     assert_eq!(provider.calls.get(), 1);
     assert_eq!(*data.scans.borrow(), ["L", "R"]);
 
-    let mut data = Data::fixture();
+    let mut data = Data::join_fixture();
     data.tables[0].rows.clear();
     data.fail_table.set(Some("R"));
     let result = execute(
@@ -81,7 +81,7 @@ fn unsupported_collection_shapes_refuse_before_collection_cursors_even_with_fals
         "SELECT DISTINCT L.A FROM L LEFT JOIN R ON L.Id=R.Id WHERE False",
         "SELECT L.A FROM L LEFT JOIN R ON L.A=R.A WHERE False",
     ] {
-        let data = Data::fixture();
+        let data = Data::join_fixture();
         assert_eq!(
             execute(sql, &data, false).err(),
             Some(QueryError::Unsupported),
@@ -93,7 +93,7 @@ fn unsupported_collection_shapes_refuse_before_collection_cursors_even_with_fals
 
 #[test]
 fn shared_quotas_every_observed_cancel_checkpoint_and_plan_reuse_keep_results_private() {
-    let data = Data::fixture();
+    let data = Data::join_fixture();
     let query = syntax("SELECT L.A,R.A,L.Id FROM L LEFT JOIN R ON L.Id=R.Id");
     let plan = prepare(&query, &data).unwrap();
     let checks = Cell::new(0);
@@ -167,7 +167,7 @@ fn shared_quotas_every_observed_cancel_checkpoint_and_plan_reuse_keep_results_pr
 
 #[test]
 fn swallowed_visitor_failures_and_late_source_errors_do_not_publish_or_cache_prefixes() {
-    let mut data = Data::fixture();
+    let mut data = Data::join_fixture();
     data.tables[0].rows[0].lists[1] = vec![Value::Text("x".repeat(16384))];
     data.swallow.set(true);
     let plan = prepare(

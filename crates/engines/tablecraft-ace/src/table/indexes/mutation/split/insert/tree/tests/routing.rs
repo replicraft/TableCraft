@@ -1,12 +1,11 @@
 use super::*;
-use crate::{
-    IndexCheckStatus, TableCheck, check_table, check_table_constraints, test_support::index_fixture,
-};
+use crate::{IndexCheckStatus, TableCheck, check_table, check_table_constraints};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::map_growth::model::declaration_end;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::map_growth::model::declaration_end;
 
 const PAGE: usize = 4096;
 

@@ -4,8 +4,8 @@ use crate::creation::CreationDestination;
 use std::fs;
 use tablecraft_ace::CreateColumn;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
-use tablecraft_testkit::access::canonical_native17_creation as native17;
-use tablecraft_testkit::access::canonical_variable_creation;
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_variable_creation;
 
 #[test]
 fn typed_service_publishes_five_complete_variable_source_images() {

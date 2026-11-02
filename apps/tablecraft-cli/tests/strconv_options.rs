@@ -1,16 +1,18 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_strconv_options_share_checked_numeric_profiles() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT StrConv('ABC','1,5','1033'),AscB(StrConv('é','129','1033')),StrConv('ABC',CDate(1.5),CDate(1033))",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT StrConv('ABC','1,5','1033'),AscB(StrConv('é','129','1033')),StrConv('ABC',CDate(1.5),CDate(1033))",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -31,7 +33,7 @@ fn cli_strconv_options_share_checked_numeric_profiles() {
             "SELECT 99,StrConv('ABC','1','1033')",
             "SELECT StrConv(NULL,'bad',1/0)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

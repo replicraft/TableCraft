@@ -20,7 +20,9 @@ use tablecraft_db::{DeletableTable, EditableTable, InsertableTable};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_creation_integral_primary::{self as sources, Family};
+use tablecraft_testkit::fixtures::access::canonical_creation_integral_primary::{
+    self as sources, Family,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(223);
 

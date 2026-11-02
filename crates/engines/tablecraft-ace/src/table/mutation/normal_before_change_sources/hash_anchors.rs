@@ -1,7 +1,7 @@
 //! Ordinary CI anchors, registered only after actual export hashes are frozen.
 use super::export::{digest_hex, identity};
 use std::io::Write;
-use tablecraft_testkit::access::canonical_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_before_change as model;
 
 // Actual export hashes were frozen before registering this CI child.
 const REQUESTS_SHA256: &str = "9df70b9fe37e589ddce930d08aa222adad3039cd68ff84695a50c7548a800899";

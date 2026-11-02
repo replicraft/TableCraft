@@ -1,7 +1,7 @@
 //! Authored full-width rows retain deleted storage without inventing its types.
 use super::base;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(super) const PAGE: usize = 4096;
 

@@ -8,10 +8,8 @@ mod omissions;
 #[path = "query_preview_inserts/typed_omissions.rs"]
 mod typed_omissions;
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
-#[allow(dead_code)]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "write_previews/model.rs"]
 #[allow(dead_code)]
 mod model;
@@ -22,7 +20,7 @@ use std::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE: usize = 4096;
 

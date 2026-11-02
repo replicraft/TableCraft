@@ -5,7 +5,7 @@ use tablecraft_query::{OutputType, prepare};
 #[test]
 fn same_origin_aliases_zip_by_child_position_without_comparing_payloads() {
     for declared in [false, true] {
-        let data = Data::fixture();
+        let data = Data::derived_fixture();
         let mut expected = Vec::new();
         for parent in &data.tables[0].rows {
             for value in expanded(&parent.lists[0]) {
@@ -28,7 +28,7 @@ fn same_origin_aliases_zip_by_child_position_without_comparing_payloads() {
 
 #[test]
 fn independently_bound_named_self_join_references_form_a_product_despite_equal_payloads() {
-    let mut data = Data::fixture();
+    let mut data = Data::derived_fixture();
     data.definitions
         .push(("Bundle", syntax("SELECT Id,A AS X FROM L")));
     let parent = &data.tables[0].rows[0];
@@ -53,7 +53,7 @@ fn independently_bound_named_self_join_references_form_a_product_despite_equal_p
 
 #[test]
 fn renamed_aliases_share_visible_alignment_but_separate_hidden_atoms_keep_membership_semantics() {
-    let mut data = Data::fixture();
+    let mut data = Data::derived_fixture();
     data.definitions
         .push(("Origin", syntax("SELECT Id,A AS X,A AS Y FROM L")));
     data.definitions
@@ -88,7 +88,7 @@ fn renamed_aliases_share_visible_alignment_but_separate_hidden_atoms_keep_member
 
 #[test]
 fn explicit_outer_expansion_does_not_reuse_an_inner_child_iterator() {
-    let data = Data::fixture();
+    let data = Data::derived_fixture();
     let parent = &data.tables[0].rows[0];
     let mut expected = Vec::new();
     for old_child in &parent.lists[0] {
@@ -110,7 +110,7 @@ fn explicit_outer_expansion_does_not_reuse_an_inner_child_iterator() {
 
 #[test]
 fn missing_parent_empty_list_and_null_child_survive_retained_member_access() {
-    let mut data = Data::fixture();
+    let mut data = Data::derived_fixture();
     data.tables[1].rows.push(parent(2, &[], &[]));
     data.tables[1].rows.push(parent(3, &[None], &[]));
     let sql = "SELECT Q.Id,Q.Whole,Q.Whole.Value FROM \

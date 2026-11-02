@@ -1,7 +1,7 @@
 //! Independent growing-record sources and complete expected images.
 use super::super::model;
 use model::{Family, PAGE, Recipe, Row};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 #[derive(Clone, Copy)]
 pub enum Destination {

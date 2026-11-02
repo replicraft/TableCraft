@@ -1,8 +1,7 @@
 //! Complete read-only CAB extraction into explicit host-owned storage.
 #[path = "deployment_spooled/mod.rs"]
 mod boundaries;
-#[path = "support/deployment.rs"]
-mod fixture;
+use tablecraft_testkit::fixtures::formats::deployment as fixture;
 
 use std::{
     cell::Cell,

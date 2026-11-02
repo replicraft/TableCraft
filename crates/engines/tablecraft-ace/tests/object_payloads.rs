@@ -1,7 +1,7 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "object_payloads/fixture.rs"]
 mod payload_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{InspectError, NativeImage, PayloadPresence};

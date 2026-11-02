@@ -5,7 +5,7 @@ use crate::{
     test_support::encoded::{model, split_model},
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE: usize = 4096;
 const DATA: [usize; 5] = [12, 15, 16, 17, 18];

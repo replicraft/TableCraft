@@ -7,19 +7,20 @@ fn local_and_two_external_tables_keep_distinct_values_across_profiles() {
         let root = Database::new(image(profile, 10));
         let first = Database::new(image(profile, 100));
         let second = Database::new(image(profile, 1000));
-        let output = run(&[
-            "query",
-            "run",
-            "SELECT l.Id,l.Score+a.Score+b.Score AS Total FROM Items AS l INNER JOIN [alpha].[Items] AS a ON l.Id=a.Id INNER JOIN [beta].[Items] AS b ON a.Id=b.Id ORDER BY l.Id",
-            "--database",
-            root.path(),
-            "--external",
-            "alpha",
-            first.path(),
-            "--external",
-            "beta",
-            second.path(),
-        ]);
+        let output = CLI.run(&[
+                "query",
+                "run",
+                "SELECT l.Id,l.Score+a.Score+b.Score AS Total FROM Items AS l INNER JOIN [alpha].[Items] AS a ON l.Id=a.Id INNER JOIN [beta].[Items] AS b ON a.Id=b.Id ORDER BY l.Id",
+                "--database",
+                root.path(),
+                "--external",
+                "alpha",
+                first.path(),
+                "--external",
+                "beta",
+                second.path(),
+            ],
+        );
         assert!(output.status.success(), "{:?}", output);
         assert!(output.stderr.is_empty());
         assert_eq!(output.stdout, b"Id\tTotal\n1\t1110\n2\t2220\n3\t3330\n");
@@ -40,7 +41,7 @@ fn per_table_tokens_preserve_punctuation_and_exact_mapping_case() {
             r"SELECT Sum(Score) AS Total FROM [C:\temp\Database1.accdb].[Items]",
         ),
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             sql,
@@ -64,7 +65,7 @@ fn per_table_tokens_preserve_punctuation_and_exact_mapping_case() {
             root.path(),
         ];
         arguments.extend(mappings);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -75,19 +76,20 @@ fn explicit_prefix_overrides_global_in_without_changing_nested_lexical_owner() {
     let root = Database::new(image(6, 10));
     let first = Database::new(image(6, 100));
     let second = Database::new(image(6, 1000));
-    let output = run(&[
-        "query",
-        "run",
-        "SELECT a.Id,a.Score+b.Score AS Total,(SELECT Sum(Score) FROM Items) AS RootTotal FROM Items AS a,[other].[Items] AS b IN 'default' WHERE a.Id=b.Id ORDER BY a.Id",
-        "--database",
-        root.path(),
-        "--external",
-        "default",
-        first.path(),
-        "--external",
-        "other",
-        second.path(),
-    ]);
+    let output = CLI.run(&[
+            "query",
+            "run",
+            "SELECT a.Id,a.Score+b.Score AS Total,(SELECT Sum(Score) FROM Items) AS RootTotal FROM Items AS a,[other].[Items] AS b IN 'default' WHERE a.Id=b.Id ORDER BY a.Id",
+            "--database",
+            root.path(),
+            "--external",
+            "default",
+            first.path(),
+            "--external",
+            "other",
+            second.path(),
+        ],
+    );
     assert!(output.status.success(), "{:?}", output);
     assert!(output.stderr.is_empty());
     assert_eq!(
@@ -116,14 +118,14 @@ fn qualified_target_retains_password_handling() {
     ];
     let mut correct = arguments.to_vec();
     correct.extend(["-p", "public qualified password"]);
-    let output = run(&correct);
+    let output = CLI.run(&correct);
     assert!(output.status.success(), "{:?}", output);
     assert_eq!(output.stdout, b"Total\n600\n");
 
     let mut wrong = arguments.to_vec();
     wrong.extend(["-p", "wrong password"]);
     for arguments in [arguments.to_vec(), wrong] {
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
         assert!(
@@ -141,7 +143,7 @@ fn per_table_index_failures_do_not_fall_back_to_sequential_reads() {
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let target = Database::new(fs::read(path).unwrap());
     for (index, success) in [("ORDR_NBR", true), ("MissingIndex", false)] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT Count(*) AS N FROM [remote].[ROULETTE_TB]",
@@ -201,7 +203,7 @@ fn qualified_reads_preserve_buffered_late_failure_and_shared_allowances() {
             target.path(),
         ];
         arguments.extend(limits);
-        let output = run(&arguments);
+        let output = CLI.run(&arguments);
         assert!(!output.status.success());
         assert!(output.stdout.is_empty());
     }
@@ -212,7 +214,7 @@ fn qualified_update_cannot_edit_a_same_named_local_table_or_create_an_output() {
     let root = Database::new(image(1, 10));
     let destination = root.path.with_extension("qualified-output.mdb");
     assert!(!destination.exists());
-    let output = run(&[
+    let output = CLI.run(&[
         "query",
         "update",
         "UPDATE [remote].[Items] SET Score=Score+7 WHERE Id=2",

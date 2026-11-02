@@ -21,7 +21,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::insert_seed as model;
+use tablecraft_testkit::fixtures::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const PRIMARY: usize = 13 * PAGE;

@@ -1,6 +1,6 @@
 //! Literal records, complete key/ROW streams and image effects for two owners.
 use std::collections::BTreeSet;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     self as raw,
     multiple_indexes::{
         Case, PAGE, Row, framing, install, leaf, map, map_page, record, root, source, wires,

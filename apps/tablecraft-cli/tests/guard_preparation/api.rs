@@ -20,8 +20,9 @@ use tablecraft_model::CatalogScope;
 use tablecraft_query::{DeleteError, InsertError, UpdateError};
 use tablecraft_sql::{ParseLimits, parse_query};
 
-#[path = "../support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -195,7 +196,7 @@ impl Database {
         for (kind, name) in properties {
             args.extend(["--guard-property", kind, name]);
         }
-        cli_support::run(&args)
+        CLI.run(&args)
     }
 }
 

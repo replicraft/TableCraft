@@ -1,7 +1,7 @@
 #![cfg(any(target_os = "macos", target_os = "linux"))]
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_wide_node_update::{self as source, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_wide_node_update::{self as source, Recipe};
 
 #[test]
 #[ignore = "requires qualified retained wider NODE UPDATE sources"]

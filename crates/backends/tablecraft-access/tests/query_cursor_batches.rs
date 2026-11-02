@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
 use std::{
@@ -11,7 +11,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE_BYTES: u64 = 4096;
 const LATE_DATA_PAGE: u64 = map_fixture::FIRST_DATA_PAGE as u64 + 5000;

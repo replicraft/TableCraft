@@ -1,7 +1,7 @@
 //! Actual literal two-owner sources and shared KEY/ROW page framing.
 use super::insert_seed as original;
 use super::mutation_fixture as base;
-use crate::access as raw;
+use crate::fixtures::access as raw;
 use tablecraft_core::values::Value;
 
 pub const PAGE: usize = 4096;

@@ -9,7 +9,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_fixed_before_change as sources;
+use tablecraft_testkit::fixtures::access::canonical_fixed_before_change as sources;
 
 #[test]
 fn fixed_group_metadata_refuses_duplicate_rows_without_reordering_distinct_requests() {

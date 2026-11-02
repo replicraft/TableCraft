@@ -4,7 +4,7 @@ use super::proof;
 use crate::{EditError, Int32Update, NativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_before_change::{Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_before_change::{Recipe, source};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

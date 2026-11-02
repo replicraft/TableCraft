@@ -1,6 +1,7 @@
-//! Engineering-only independent raw fixture builders.
+//! Development-only independent fixtures and shared test machinery.
 //!
-//! This package has no dependency on a production engine, adapter or its byte
-//! layouts. Literal test bytes remain independent of production constants.
-//! Workspace consumers may depend on it only for development and testing.
-pub mod access;
+//! Raw fixtures use core carriers and keep their literal byte expectations
+//! independent of production codecs. Optional support modules observe real
+//! subsystem APIs. Workspace consumers use this crate only in dev-dependencies.
+pub mod fixtures;
+pub mod support;

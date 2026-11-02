@@ -4,7 +4,7 @@ use sha2::{Digest, Sha256};
 use std::{env, fs, path::PathBuf};
 use tablecraft_ace::{NativeInsertIntent, RowInsert};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_ordinary_insert as first;
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert as first;
 
 pub(super) struct Case {
     pub before: Vec<u8>,

@@ -1,13 +1,13 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn decimal_constraints_reach_parameters_subqueries_and_union_without_rescaling() {
     for spelling in ["DECIMAL", "NUMERIC"] {
         let sql =
             format!("PARAMETERS P {spelling}(4,2); SELECT (SELECT P) AS Exact UNION ALL SELECT P");
-        let output = run(&["query", "run", &sql, "--param", "P=decimal:1.20"]);
+        let output = CLI.run(&["query", "run", &sql, "--param", "P=decimal:1.20"]);
         assert!(
             output.status.success(),
             "{}",
@@ -27,7 +27,7 @@ fn decimal_precision_scale_and_carrier_failures_publish_no_prefix() {
         "P=long:1",
         "P=double:1.2",
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "PARAMETERS P DECIMAL(4,2); SELECT 1 AS Prefix,P",
@@ -44,7 +44,7 @@ fn decimal_precision_scale_and_carrier_failures_publish_no_prefix() {
         "DECIMAL(256,0)",
     ] {
         let sql = format!("PARAMETERS P {declaration}; SELECT 1,P");
-        let output = run(&["query", "run", &sql, "--param", "P=decimal:1.20"]);
+        let output = CLI.run(&["query", "run", &sql, "--param", "P=decimal:1.20"]);
         assert_eq!(output.status.code(), Some(2), "{declaration}");
         assert!(output.stdout.is_empty());
     }

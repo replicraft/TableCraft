@@ -9,9 +9,9 @@ use crate::preservation::table_extra::TableExtraCoverage;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as base;
-use tablecraft_testkit::access::wide_properties as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::wide_properties as fixture;
 
 fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(

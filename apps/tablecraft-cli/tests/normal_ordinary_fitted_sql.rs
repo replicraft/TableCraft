@@ -7,7 +7,7 @@ use std::{
     process::{Command, Output},
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_ordinary_fitted::{self as sources, Recipe};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_fitted::{self as sources, Recipe};
 
 fn update(path: &Path, journal: &Path, sql: &str) -> Output {
     Command::new(env!("CARGO_BIN_EXE_tablecraft"))

@@ -1,6 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -12,11 +11,12 @@ mod linked_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
-use cli_support::run;
 use std::{fs, io::Write, path::PathBuf};
 use tempfile::TempDir;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const PAGE_BYTES: usize = 4096;
 const CHILD_DATA_PAGE: usize = 22;
@@ -62,7 +62,7 @@ fn native_derived_members_render_full_lists_duplicates_nulls_and_empty_parents()
     for code in [2, 5, 6] {
         let database = Database::new(join_fixture::with_null_parent(code));
         for mode in ["--multivalues", "--collections"] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 "SELECT Q.Id,Q.Whole,Q.Whole.Value AS One FROM \
@@ -93,7 +93,7 @@ fn native_derived_members_render_full_lists_duplicates_nulls_and_empty_parents()
 #[test]
 fn derived_absent_parent_and_authorized_external_members_remain_distinct() {
     let database = Database::new(join_fixture::with_null_parent(6));
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Q.Id,Q.Whole,Q.Whole.Value AS One FROM \
@@ -118,7 +118,7 @@ fn derived_absent_parent_and_authorized_external_members_remain_distinct() {
     );
 
     let target = Database::new(join_fixture::database(6, 1000));
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Q.Whole,Q.Whole.Value AS One FROM \
@@ -168,7 +168,7 @@ fn derived_eager_failures_corrupt_children_and_limits_publish_no_stdout_prefix()
             "--multivalues",
         ];
         args.extend(flags);
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
         assert!(
@@ -180,7 +180,7 @@ fn derived_eager_failures_corrupt_children_and_limits_publish_no_stdout_prefix()
     let mut bytes = join_fixture::database(6, 0);
     bytes[CHILD_DATA_PAGE * PAGE_BYTES] = 0;
     let corrupt = Database::new(bytes);
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Q.Whole,Q.Whole.Value FROM (SELECT Score AS Whole FROM Items) Q",

@@ -7,7 +7,7 @@ use tablecraft_ace::{
     NativeUpdateProfile, RecoverableEditError,
 };
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_nullable_index_id_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_nullable_index_id_before_change as model;
 
 fn requests(case: &model::Case) -> Vec<Int32Update> {
     vec![Int32Update::new(

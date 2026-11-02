@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_like_timing_returns_early_results_instead_of_unreached_pattern_errors() {
@@ -20,7 +21,7 @@ fn cli_like_timing_returns_early_results_instead_of_unreached_pattern_errors() {
             if declared {
                 args.push("--declared-arithmetic");
             }
-            let output = run(&args);
+            let output = CLI.run(&args);
             assert!(
                 output.status.success(),
                 "{}",
@@ -51,7 +52,7 @@ fn cli_reached_pattern_and_eager_operand_errors_still_buffer_stdout() {
                 "division by zero",
             ),
         ] {
-            let output = run(&[
+            let output = CLI.run(&[
                 "query",
                 "run",
                 &sql,

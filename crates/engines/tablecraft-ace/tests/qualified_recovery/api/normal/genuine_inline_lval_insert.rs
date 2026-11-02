@@ -12,7 +12,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_inline_lval_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_inline_lval_insert as sources;
 
 fn cases() -> Vec<sources::Case> {
     sources::load_all(|raw, expected| {

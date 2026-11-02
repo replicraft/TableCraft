@@ -6,9 +6,9 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::insert_seed as source_model;
-use tablecraft_testkit::access::insert_seed::PAGE;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::insert_seed as source_model;
+use tablecraft_testkit::fixtures::access::insert_seed::PAGE;
 
 #[test]
 fn passive_defaults_preserve_full_explicit_rows_and_empty_batches() {

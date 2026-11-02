@@ -13,7 +13,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{DeletableTable, EditableTable, InsertableTable, SnapshotError};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_compound_root_split as sources;
+use tablecraft_testkit::fixtures::access::genuine_compound_root_split as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(225);
 

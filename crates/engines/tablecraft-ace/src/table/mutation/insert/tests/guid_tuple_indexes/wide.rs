@@ -7,9 +7,9 @@ use crate::RowInsert;
 use std::io::Cursor;
 use tablecraft_core::values::{Guid, Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 const PAGE: usize = 4096;
 const GUIDS: usize = 10;

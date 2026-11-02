@@ -47,7 +47,7 @@ mod tests {
     };
     use std::cell::Cell;
     use tablecraft_core::limits::{Resource, ResourceBudget};
-    use tablecraft_testkit::access::insert_seed;
+    use tablecraft_testkit::fixtures::access::insert_seed;
 
     const LIMITS: [u64; 3] = [256 * 1024 * 1024, 100_000, 100_000_000];
 

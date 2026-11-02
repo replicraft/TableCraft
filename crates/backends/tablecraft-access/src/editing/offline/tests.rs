@@ -15,7 +15,7 @@ use tablecraft_io::{
     journal::{RecoveryOutcome, filesystem::OfflineJournalPair, inspect_v1},
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

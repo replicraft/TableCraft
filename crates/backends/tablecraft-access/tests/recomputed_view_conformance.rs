@@ -2,8 +2,8 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[path = "recomputed_view_conformance/fixtures.rs"]
 mod fixtures;

@@ -5,11 +5,11 @@ use crate::{
 };
 use std::{cell::Cell, io::Cursor};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as raw_source;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as raw_source;
 
 pub(in crate::table::mutation) mod model;
-use tablecraft_testkit::access::multiple_indexes::{Case, PAGE, Row};
+use tablecraft_testkit::fixtures::access::multiple_indexes::{Case, PAGE, Row};
 
 fn run(case: &Case, rows: &[Row]) -> Vec<u8> {
     original::checked(&case.before, case.rows.len(), 4);

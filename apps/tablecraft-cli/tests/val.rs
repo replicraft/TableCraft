@@ -1,14 +1,16 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn numeric_prefixes_execute_in_both_paths_and_errors_do_not_leak_output() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Val(' 2 45 7') AS A,Val('&HFFFF') AS B,Val('24 and 57') AS C,Val('1.23455@') AS D",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Val(' 2 45 7') AS A,Val('&HFFFF') AS B,Val('24 and 57') AS C,Val('1.23455@') AS D",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -31,7 +33,7 @@ fn numeric_prefixes_execute_in_both_paths_and_errors_do_not_leak_output() {
             "Val('1e400')",
             "Val('1',1/0)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expr}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expr}")]);
             assert!(!result.status.success(), "{expr}");
             assert!(result.stdout.is_empty(), "{expr}");
         }

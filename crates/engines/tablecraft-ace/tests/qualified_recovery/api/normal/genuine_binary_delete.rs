@@ -15,7 +15,7 @@ use tablecraft_ace::{
     inspect_table_index_counter, qualify_native_delete_recovery, read_table, read_table_index,
 };
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_binary_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_binary_delete as sources;
 
 fn image(raw: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(raw), scope(), &mut budget(), &|| false).unwrap()

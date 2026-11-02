@@ -1,14 +1,17 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn standard_tsv_reader_recovers_display_cells_without_null_text_ambiguity() {
-    let output = support::run(&[
-        "--format",
-        "tsv",
-        "query",
-        "eval",
-        "SELECT NULL AS Missing, '' AS Empty, 'NULL' AS TextNull, '雪\tline\n\"quote' AS [Quoted Header]",
-    ]);
+    let output = CLI.run(&[
+            "--format",
+            "tsv",
+            "query",
+            "eval",
+            "SELECT NULL AS Missing, '' AS Empty, 'NULL' AS TextNull, '雪\tline\n\"quote' AS [Quoted Header]",
+        ],
+    );
     assert!(output.status.success(), "{:?}", output.stderr);
     assert!(output.stderr.is_empty());
     let mut reader = csv::ReaderBuilder::new()

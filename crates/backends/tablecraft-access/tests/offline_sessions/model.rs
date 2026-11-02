@@ -1,5 +1,5 @@
 //! Literal original and successive complete images, independent of session code.
-use tablecraft_testkit::access::mutation_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 pub fn original() -> Vec<u8> {
     mutation_fixture::database()

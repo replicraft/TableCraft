@@ -1,7 +1,7 @@
 //! SOURCE gates precede explicit guard service and command checks.
 #[path = "guard_preparation/api.rs"]
 mod api;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "guard_preparation/guard_sources.rs"]
 mod guard_sources;
 #[path = "guard_preparation/inspect.rs"]
@@ -13,7 +13,7 @@ use tablecraft_ace::{
     InspectError, MacroProgramCoverage, MacroProgramNodeKind, MacroProgramProfile,
     TableExtraCoverage,
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[test]
 fn qualify_guard_host_ordinary_sources_before_commands() {

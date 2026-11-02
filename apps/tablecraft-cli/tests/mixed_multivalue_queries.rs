@@ -1,6 +1,5 @@
-use tablecraft_testkit::access::mutation_fixture as base;
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::support::cli::Runner;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
 mod complex_fixture;
@@ -12,11 +11,12 @@ mod linked_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
-use cli_support::run;
 use std::{fs, io::Write, path::PathBuf};
 use tempfile::TempDir;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 struct Database {
     directory: TempDir,
@@ -60,7 +60,7 @@ fn native_complete_lists_repeat_for_displayed_duplicates_nulls_and_empty_placeho
         let database = Database::new(join_fixture::with_null_parent(code));
         for mode in ["--multivalues", "--collections"] {
             let sql = "SELECT Id,Score,Score.Value AS One FROM Items";
-            let result = run(&["query", "run", sql, "--database", database.path(), mode]);
+            let result = CLI.run(&["query", "run", sql, "--database", database.path(), mode]);
             assert!(
                 result.status.success(),
                 "{}",
@@ -78,7 +78,7 @@ fn native_complete_lists_repeat_for_displayed_duplicates_nulls_and_empty_placeho
             assert!(result.stderr.is_empty());
         }
         let sql = "SELECT Score,Score.Value AS One FROM Items WHERE Score.Value=101";
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             sql,
@@ -104,7 +104,7 @@ fn joined_hidden_criteria_and_outer_absence_keep_complete_display_lists() {
     let database = Database::new(join_fixture::database(6, 0));
     let sql = "SELECT a.Score AS Whole,a.Score.Value AS One,b.Score AS Peer FROM Items a \
                INNER JOIN Items b ON a.Id<b.Id WHERE b.Score.Value=200";
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         sql,
@@ -125,7 +125,7 @@ fn joined_hidden_criteria_and_outer_absence_keep_complete_display_lists() {
 
     let sql = "SELECT a.Id AS Id,b.Score AS Whole,b.Score.Value AS One FROM Items a \
                LEFT JOIN Items b ON a.Id=b.Id+1 WHERE a.Id=1";
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         sql,
@@ -146,7 +146,7 @@ fn derived_sort_top_and_eager_failures_keep_the_current_buffered_contract() {
     let database = Database::new(join_fixture::database(6, 0));
     let sql = "SELECT TOP 2 Whole,One FROM \
                (SELECT Score AS Whole,Score.Value AS One FROM Items) Q ORDER BY One DESC";
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         sql,
@@ -191,7 +191,7 @@ fn derived_sort_top_and_eager_failures_keep_the_current_buffered_contract() {
             "--multivalues",
         ];
         args.extend(flags);
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert!(!result.status.success(), "{sql}");
         assert!(result.stdout.is_empty(), "{sql}");
         assert!(String::from_utf8_lossy(&result.stderr).contains(reason));

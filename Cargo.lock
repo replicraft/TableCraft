@@ -1695,6 +1695,7 @@ dependencies = [
  "tablecraft-expressions",
  "tablecraft-schema",
  "tablecraft-sql",
+ "tablecraft-testkit",
  "thiserror",
  "tracing",
 ]
@@ -1738,7 +1739,19 @@ dependencies = [
 name = "tablecraft-testkit"
 version = "0.1.0"
 dependencies = [
+ "flate2",
+ "sha2",
+ "tablecraft-access",
+ "tablecraft-ace",
  "tablecraft-core",
+ "tablecraft-db",
+ "tablecraft-io",
+ "tablecraft-model",
+ "tablecraft-query",
+ "tablecraft-schema",
+ "tablecraft-sql",
+ "tempfile",
+ "uuid",
 ]
 
 [[package]]

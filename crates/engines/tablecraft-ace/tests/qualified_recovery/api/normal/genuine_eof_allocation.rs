@@ -11,7 +11,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, V2State, inspect_v2};
-use tablecraft_testkit::access::genuine_eof_allocation::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_eof_allocation::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

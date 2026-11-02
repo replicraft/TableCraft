@@ -1,9 +1,10 @@
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod fixture;
-mod support;
 use rc4::{KeyInit, StreamCipher};
 use std::{fs, path::Path};
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 fn plain() -> Vec<u8> {
     fs::read(
@@ -26,7 +27,7 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
         let mut previous = None;
         for round in 0..2 {
             let encrypted = directory.path().join(format!("added-{code}-{round}.db"));
-            let result = run(&[
+            let result = CLI.run(&[
                 "encryption",
                 "add",
                 input.to_str().unwrap(),
@@ -46,7 +47,7 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
                 assert_ne!(bytes, previous);
             }
             previous = Some(bytes);
-            let query = run(&[
+            let query = CLI.run(&[
                 "query",
                 "run",
                 "SELECT Count(*) AS Total FROM ROULETTE_TB",
@@ -62,7 +63,7 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
             );
             assert_eq!(query.stdout, b"Total\n38\n");
             let refused = directory.path().join("refused.db");
-            let result = run(&[
+            let result = CLI.run(&[
                 "encryption",
                 "add",
                 encrypted.to_str().unwrap(),
@@ -73,7 +74,7 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
             ]);
             assert_eq!(result.status.code(), Some(2));
             assert!(!refused.exists());
-            let result = run(&[
+            let result = CLI.run(&[
                 "encryption",
                 "remove",
                 encrypted.to_str().unwrap(),
@@ -85,7 +86,7 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
             assert_eq!(result.status.code(), Some(2));
             assert!(!refused.exists());
             let removed = directory.path().join(format!("removed-{code}-{round}.db"));
-            let result = run(&[
+            let result = CLI.run(&[
                 "encryption",
                 "remove",
                 encrypted.to_str().unwrap(),
@@ -130,13 +131,13 @@ fn invalid_add_credentials_and_existing_outputs_never_publish_a_copy() {
             output.to_str().unwrap(),
         ];
         command.extend(args);
-        let result = run(&command);
+        let result = CLI.run(&command);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         assert!(!output.exists());
     }
     fs::write(&output, b"keep existing output").unwrap();
-    let result = run(&[
+    let result = CLI.run(&[
         "encryption",
         "add",
         input.to_str().unwrap(),
@@ -190,7 +191,7 @@ fn agile_rewrites_reopen_all_read_profiles_preserving_pages_and_sources() {
             let output = directory
                 .path()
                 .join(format!("changed-{code}-{round}.accdb"));
-            let result = run(&[
+            let result = CLI.run(&[
                 "encryption",
                 "change-password",
                 input,
@@ -213,7 +214,7 @@ fn agile_rewrites_reopen_all_read_profiles_preserving_pages_and_sources() {
                 assert_ne!(first, after, "fresh salts/verifiers required");
             }
             first_changed = Some(after);
-            let query = run(&[
+            let query = CLI.run(&[
                 "query",
                 "run",
                 "SELECT Count(*) AS Total FROM ROULETTE_TB",
@@ -228,7 +229,7 @@ fn agile_rewrites_reopen_all_read_profiles_preserving_pages_and_sources() {
                 String::from_utf8_lossy(&query.stderr)
             );
             assert_eq!(query.stdout, b"Total\n38\n");
-            let old = run(&[
+            let old = CLI.run(&[
                 "tables",
                 output.to_str().unwrap(),
                 "-p",
@@ -238,7 +239,7 @@ fn agile_rewrites_reopen_all_read_profiles_preserving_pages_and_sources() {
             assert!(old.stdout.is_empty());
         }
         let output = directory.path().join(format!("removed-{code}.accdb"));
-        let result = run(&[
+        let result = CLI.run(&[
             "encryption",
             "remove",
             input,
@@ -255,7 +256,7 @@ fn agile_rewrites_reopen_all_read_profiles_preserving_pages_and_sources() {
         let after = fs::read(&output).unwrap();
         assert_eq!(after[20..24], encrypted[20..24]); // retain compatibility subversion one
         assert_eq!(&after[4096..], &plain[4096..]);
-        let query = run(&[
+        let query = CLI.run(&[
             "query",
             "run",
             "SELECT Count(*) AS Total FROM ROULETTE_TB",
@@ -279,7 +280,7 @@ fn jet_encoding_and_password_changes_round_trip_without_losing_native_records() 
     let original = jet_image();
     fs::write(&input, &original).unwrap();
     let changed = directory.path().join("changed.mdb");
-    let result = run(&[
+    let result = CLI.run(&[
         "encryption",
         "change-password",
         input.to_str().unwrap(),
@@ -294,7 +295,7 @@ fn jet_encoding_and_password_changes_round_trip_without_losing_native_records() 
         String::from_utf8_lossy(&result.stderr)
     );
     let removed = directory.path().join("removed.mdb");
-    let wrong = run(&[
+    let wrong = CLI.run(&[
         "encryption",
         "remove",
         changed.to_str().unwrap(),
@@ -305,7 +306,7 @@ fn jet_encoding_and_password_changes_round_trip_without_losing_native_records() 
     ]);
     assert_eq!(wrong.status.code(), Some(2));
     assert!(!removed.exists());
-    let result = run(&[
+    let result = CLI.run(&[
         "encryption",
         "remove",
         changed.to_str().unwrap(),
@@ -323,7 +324,7 @@ fn jet_encoding_and_password_changes_round_trip_without_losing_native_records() 
     expected[4..20].copy_from_slice(b"Standard Jet DB\0");
     expected[20] = 1;
     assert_eq!(fs::read(&removed).unwrap(), expected);
-    let result = run(&["tables", removed.to_str().unwrap(), "--count"]);
+    let result = CLI.run(&["tables", removed.to_str().unwrap(), "--count"]);
     assert!(result.status.success());
     assert!(String::from_utf8_lossy(&result.stdout).contains("ROULETTE_TB\tUser\t38"));
     assert_eq!(fs::read(input).unwrap(), original);
@@ -355,7 +356,7 @@ fn failed_rewrites_never_publish_outputs_overwrite_files_or_expose_credentials()
             output.to_str().unwrap(),
         ];
         args.extend(extra);
-        let result = run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         assert!(!output.exists());
@@ -364,7 +365,7 @@ fn failed_rewrites_never_publish_outputs_overwrite_files_or_expose_credentials()
         assert!(!text.contains("private-source"));
     }
     fs::write(&output, b"preserve existing bytes").unwrap();
-    let result = run(&[
+    let result = CLI.run(&[
         "encryption",
         "remove",
         input.to_str().unwrap(),
@@ -430,7 +431,7 @@ fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
             "replacement",
         ],
     ] {
-        let result = run(&arguments);
+        let result = CLI.run(&arguments);
         assert!(
             result.status.success(),
             "{}",
@@ -463,7 +464,7 @@ fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
         assert_eq!(left, right, "Agile password change must retain ciphertext");
     }
 
-    let query = run(&[
+    let query = CLI.run(&[
         "query",
         "run",
         "SELECT Count(*) AS Total FROM ROULETTE_TB",

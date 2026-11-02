@@ -6,10 +6,48 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
-description = "Independent raw fixtures shared by TableCraft tests"
+description = "Independent fixtures and feature-gated shared test support"
+
+[features]
+default = []
+formats-fixtures = ["dep:flate2"]
+ace-support = ["dep:tablecraft-ace", "dep:tablecraft-model"]
+query-support = [
+    "dep:tablecraft-query",
+    "dep:tablecraft-db",
+    "dep:tablecraft-schema",
+    "dep:tablecraft-sql",
+]
+access-support = [
+    "dep:tablecraft-access",
+    "dep:tablecraft-db",
+    "dep:tablecraft-io",
+    "dep:tablecraft-model",
+    "dep:tablecraft-sql",
+    "dep:sha2",
+    "dep:tempfile",
+]
+cli-support = ["dep:sha2", "dep:tempfile"]
 
 [dependencies]
+# Independent fixture carriers; available without subsystem support features.
 tablecraft-core.workspace = true
+uuid.workspace = true
+
+# Real query, engine and adapter observations used only by test consumers.
+tablecraft-ace = { workspace = true, optional = true }
+tablecraft-query = { workspace = true, optional = true }
+tablecraft-access = { workspace = true, optional = true, features = ["offline-write-session"] }
+tablecraft-db = { workspace = true, optional = true }
+tablecraft-io = { workspace = true, optional = true, features = ["filesystem-journal"] }
+tablecraft-model = { workspace = true, optional = true }
+tablecraft-schema = { workspace = true, optional = true }
+tablecraft-sql = { workspace = true, optional = true }
+
+# Shared fixture verification and process/filesystem scenarios.
+flate2 = { workspace = true, optional = true }
+sha2 = { workspace = true, optional = true }
+tempfile = { workspace = true, optional = true }
 
 [lints]
 workspace = true

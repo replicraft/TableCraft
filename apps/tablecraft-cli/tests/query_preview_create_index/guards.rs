@@ -1,6 +1,5 @@
 //! Positive readable envelope qualification before explicit rewrite refusals.
-#[path = "../../../../crates/backends/tablecraft-access/tests/support/deployment.rs"]
-mod deployment_fixture;
+use tablecraft_testkit::fixtures::formats::deployment as deployment_fixture;
 #[path = "../../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod encrypted_fixture;
 
@@ -12,7 +11,7 @@ use std::{
 };
 use tablecraft_access::AccessInput;
 use tablecraft_ace::{EncryptedSource, IndexCheckStatus};
-use tablecraft_testkit::access::secondary_index as model;
+use tablecraft_testkit::fixtures::access::secondary_index as model;
 
 const PASSWORD: &str = "public test password";
 

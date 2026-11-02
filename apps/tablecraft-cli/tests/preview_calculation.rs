@@ -4,16 +4,16 @@ mod agile_fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 
 #[path = "preview_calculation/iif.rs"]
 mod iif;
 
-use cli_support::run;
 use std::{fs, path::PathBuf, process::Output};
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 const FORMAT_OFFSET: usize = 20;
 const PAGE_BYTES: usize = 4096;
@@ -55,7 +55,7 @@ impl Database {
             "Score",
         ];
         args.extend_from_slice(extra);
-        run(&args)
+        CLI.run(&args)
     }
 }
 
@@ -84,7 +84,7 @@ fn explicit_preview_recomputes_stale_null_caches_without_changing_read_policy() 
         assert_success(&output);
         assert_eq!(output.stdout, b"Recomputed\n2\n4\n6\n");
 
-        let cached = run(&[
+        let cached = CLI.run(&[
             "--format",
             "tsv",
             "query",
@@ -96,7 +96,7 @@ fn explicit_preview_recomputes_stale_null_caches_without_changing_read_policy() 
         ]);
         assert_success(&cached);
         assert_eq!(cached.stdout, b"Score\n999\nNULL\n41\n");
-        let ordinary = run(&[
+        let ordinary = CLI.run(&[
             "query",
             "run",
             "SELECT Score FROM Items",
@@ -122,7 +122,7 @@ fn unselected_corrupt_cache_does_not_become_a_recomputation_dependency() {
     let output = database.preview(&[]);
     assert_success(&output);
     assert_eq!(output.stdout, b"Recomputed\n2\n");
-    let stored = run(&[
+    let stored = CLI.run(&[
         "query",
         "run",
         "SELECT Score FROM Items",
@@ -231,7 +231,7 @@ fn encrypted_preview_uses_global_password_options_and_keeps_ciphertext_unchanged
 
 #[test]
 fn preview_help_and_required_arguments_expose_the_separate_preview_boundary() {
-    let output = run(&["query", "preview-calculation", "--help"]);
+    let output = CLI.run(&["query", "preview-calculation", "--help"]);
     assert_success(&output);
     let help = String::from_utf8(output.stdout).unwrap();
     for expected in [
@@ -245,7 +245,7 @@ fn preview_help_and_required_arguments_expose_the_separate_preview_boundary() {
     ] {
         assert!(help.contains(expected), "{expected}");
     }
-    let missing = run(&["query", "preview-calculation", "Items", "Score"]);
+    let missing = CLI.run(&["query", "preview-calculation", "Items", "Score"]);
     assert!(!missing.status.success());
     assert!(missing.stdout.is_empty());
 }

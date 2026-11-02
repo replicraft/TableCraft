@@ -3,13 +3,13 @@
 mod calculated_fixture;
 #[path = "calculation_preview/dependencies.rs"]
 mod dependencies;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_memos/fixture.rs"]
 mod memo_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::{
     cell::Cell,

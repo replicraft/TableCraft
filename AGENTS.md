@@ -201,7 +201,12 @@ old import path. Keep re-exports that define a genuine public API boundary.
 `tablecraft-formats` owns inert package/template codecs; Access retains native
 payload qualification and query adapters. `tablecraft-crypto` owns checked
 shared primitives; native encryption policy and preservation remain in ACE.
-`tablecraft-testkit` is development-only, independent of production codecs.
+`tablecraft-testkit` owns shared test machinery as a development-only dependency.
+Keep independent raw builders in `fixtures/` and API/process observations in
+feature-gated `support/` domain folders. Raw fixtures use core carriers without
+production codecs; optional support modules may call their reviewed subsystem
+APIs. Consumers import the real owner directly. Private proof and unit-crate type
+glue stays with its subsystem; reusable machinery belongs in the testkit.
 Keep query-neutral row/collection views in DB and query-specific Source contracts
 in query. See the [ownership contracts](docs/architecture/ARCHITECTURE.md).
 
@@ -371,6 +376,15 @@ application work. Prioritize observed application outcomes; the
 [corpus policy](docs/testing/ACCESS_APPLICATIONS.md) separates open, preservation,
 execution, editing and native save/reopen evidence. A candidate inventory or
 requirements document is not a qualified fixture or passing application test.
+
+Before adding tests, reuse existing fixture loaders and layer-local scenario
+helpers when the same setup and observations already exist. Keep distinct cases,
+source profiles and engine/recovery/host boundaries explicit. Share repeated test
+plumbing rather than copying whole suites. Execute identical commands against
+the same original bytes once unless another precondition or state differs. Keep
+independently authored byte oracles separate from the production encoders they
+verify. Do not introduce a generic test framework solely to remove a few lines of
+useful local setup.
 
 Do not copy third-party code or fixtures without provenance and license review.
 Record fixture sources, hashes and notices in [FIXTURES.md](docs/testing/FIXTURES.md).

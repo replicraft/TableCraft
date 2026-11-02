@@ -1,10 +1,10 @@
 //! Independent generated-ID records, metadata and complete physical-index images.
 use std::collections::BTreeSet;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::insert_seed as original;
-use tablecraft_testkit::access::multiple_indexes as frames;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::insert_seed as original;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 pub const PAGE: usize = 4096;
 pub const DEFINITION: usize = 10 * PAGE;

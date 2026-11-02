@@ -5,7 +5,7 @@ use std::{
 use tablecraft_ace::{InspectError, NativeImage, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[derive(Clone, Copy)]
 enum Mode {

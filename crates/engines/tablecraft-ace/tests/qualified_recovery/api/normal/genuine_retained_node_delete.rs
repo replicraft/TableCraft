@@ -12,7 +12,7 @@ use tablecraft_ace::{
     NativeDeleteIntent, NativeImage, RowDelete, inspect_table_index_counter, read_table,
     read_table_index,
 };
-use tablecraft_testkit::access::genuine_retained_node_delete::{self as fixtures, Case};
+use tablecraft_testkit::fixtures::access::genuine_retained_node_delete::{self as fixtures, Case};
 
 fn cases() -> Vec<Case> {
     fixtures::load_all(|raw, wanted| {

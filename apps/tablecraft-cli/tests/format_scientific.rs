@@ -1,6 +1,6 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn scientific_scaling_sections_and_profiles_execute_in_both_commands() {
@@ -15,13 +15,14 @@ fn scientific_scaling_sections_and_profiles_execute_in_both_commands() {
                 ["\"1,23E+04\"", "\"123,46\"", "\"100\"", "\"1,23e004\""],
             ),
         ] {
-            let result = run(&[
-                "query",
-                mode,
-                "SELECT Format(12345,'Scientific'),Format(123456,'0,.00'),Format(100000000,'##0,,'),Format(12345,'0.00e-000')",
-                "--number-format",
-                profile,
-            ]);
+            let result = CLI.run(&[
+                    "query",
+                    mode,
+                    "SELECT Format(12345,'Scientific'),Format(123456,'0,.00'),Format(100000000,'##0,,'),Format(12345,'0.00e-000')",
+                    "--number-format",
+                    profile,
+                ],
+            );
             assert!(
                 result.status.success(),
                 "{}",
@@ -42,7 +43,7 @@ fn scientific_scaling_sections_and_profiles_execute_in_both_commands() {
             "Format(1,'0E+00E+0')",
             "Format(Null,'0E+00',1/0)",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),

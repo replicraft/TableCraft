@@ -1,9 +1,6 @@
-use tablecraft_testkit::access as native_support;
 // The independent golden builder uses its owner's support module name.
-use native_support as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 use std::{
     fs,

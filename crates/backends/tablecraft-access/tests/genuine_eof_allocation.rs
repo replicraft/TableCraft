@@ -15,7 +15,7 @@ use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_eof_allocation::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_eof_allocation::{self as sources, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(151);
 

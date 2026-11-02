@@ -5,7 +5,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     self as support,
     insert_seed::{HISTORY, PAGE, inline, install, leaf, row},
 };

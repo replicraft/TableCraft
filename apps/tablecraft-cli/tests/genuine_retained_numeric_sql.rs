@@ -2,7 +2,7 @@
 
 use sha2::{Digest, Sha256};
 use std::{fmt::Write as _, fs, process::Command};
-use tablecraft_testkit::access::genuine_retained_numeric as sources;
+use tablecraft_testkit::fixtures::access::genuine_retained_numeric as sources;
 
 fn verify(raw: &[u8], expected: &str) {
     let actual = Sha256::digest(raw)

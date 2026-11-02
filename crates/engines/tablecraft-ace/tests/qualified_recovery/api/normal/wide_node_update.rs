@@ -4,7 +4,9 @@ use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tablecraft_ace::{FixedScalarUpdate, NativeFixedIntentGroup, NativeImage, NativeUpdateIntent};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_wide_node_update::{self as source, Case, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_wide_node_update::{
+    self as source, Case, Recipe,
+};
 
 #[path = "wide_node_update/recovery.rs"]
 mod recovery;

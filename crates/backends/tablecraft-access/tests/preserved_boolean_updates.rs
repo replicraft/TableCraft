@@ -1,7 +1,7 @@
 #![cfg(feature = "ace16-write-preview")]
 
 //! SOURCE-only rich-table projection gate before frontend preservation APIs.
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "../../../engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
 #[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
@@ -22,7 +22,7 @@ use short_text_model as text_model;
 use support as raw;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const SCOPE: CatalogScope = CatalogScope::new(1);
 

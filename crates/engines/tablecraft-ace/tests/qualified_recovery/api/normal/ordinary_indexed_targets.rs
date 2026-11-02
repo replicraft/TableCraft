@@ -10,7 +10,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_ordinary_indexed_targets::{
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed_targets::{
     self as sources, Case, Recipe, Refusal,
 };
 

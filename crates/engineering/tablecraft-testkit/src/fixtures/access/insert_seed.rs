@@ -1,7 +1,7 @@
 //! Original ordinary INSERT seed construction, without producer code.
 use super::map_growth;
 use super::mutation_fixture as base;
-use crate::access as support;
+use crate::fixtures::access as support;
 
 pub const PAGE: usize = 4096;
 pub const HISTORY: u32 = 17;

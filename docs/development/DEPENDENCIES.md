@@ -27,6 +27,19 @@ features and library ownership are unchanged; no registry package, version,
 feature default or third-party license is added. The root-owned offline lockfile
 refresh and dependency guard validate the additional local development edge.
 
+## Shared test support (2 November 2026)
+
+`tablecraft-testkit` now organizes independent Access/format fixtures under
+`fixtures/` and optional ACE/query/Access/CLI machinery under `support/`. Its new
+optional local edges use existing workspace declarations; SHA-256, temporary
+files, UUID byte ordering and compression reuse already adopted dependencies.
+Each consumer keeps a development dependency. Default raw Access fixtures use
+Core carriers and the UUID utility without production codecs; CLI support takes
+the executable from the test host. The lockfile changes local
+workspace edges without changing registry versions or checksums. See the
+[testkit guide](../testing/TESTKIT.md) and
+[dependency policy](../architecture/DEPENDENCY_BOUNDARIES.md).
+
 ## Workspace ownership extraction (27 October 2026)
 
 Three working local packages now separate existing responsibilities:

@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn query_literals_use_us_dates_and_times_without_a_regional_text_policy() {
@@ -14,7 +15,7 @@ fn query_literals_use_us_dates_and_times_without_a_regional_text_policy() {
                 "SELECT Month(#1/2/2026#) AS M,Day(#1/2/2026#) AS D,Hour(#2:24PM#) AS H,CDbl(#12/29/1899 06:00:00#) AS N,Year(#7-Mar-2017#) AS Y",
             ];
             arguments.extend(options);
-            let result = run(&arguments);
+            let result = CLI.run(&arguments);
             assert!(
                 result.status.success(),
                 "{}",
@@ -29,7 +30,7 @@ fn query_literals_use_us_dates_and_times_without_a_regional_text_policy() {
             "SELECT 1,#32/13/2026#",
             "SELECT 1,#12/31/2024 24:00#",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
         }
@@ -39,7 +40,7 @@ fn query_literals_use_us_dates_and_times_without_a_regional_text_policy() {
 #[test]
 fn sql_literal_extension_does_not_change_iso_typed_parameter_admission() {
     let sql = "PARAMETERS P DATETIME; SELECT Month(P) AS M,Day(#1/2/2026#) AS D";
-    let result = run(&["query", "run", sql, "--param", "P=date:2026-01-02"]);
+    let result = CLI.run(&["query", "run", sql, "--param", "P=date:2026-01-02"]);
     assert!(
         result.status.success(),
         "{}",
@@ -47,7 +48,7 @@ fn sql_literal_extension_does_not_change_iso_typed_parameter_admission() {
     );
     assert_eq!(result.stdout, b"M\tD\n1\t2\n");
 
-    let result = run(&["query", "run", sql, "--param", "P=date:1/2/2026"]);
+    let result = CLI.run(&["query", "run", sql, "--param", "P=date:1/2/2026"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
@@ -55,13 +56,14 @@ fn sql_literal_extension_does_not_change_iso_typed_parameter_admission() {
 #[test]
 fn sql_token_years_keep_the_fixed_mapping_beside_explicit_constructor_windows() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Year(#1/2/29#) AS A,Year(#1/2/30#) AS B,Year(#1/2/49#) AS C,Year(DateSerial(49,1,2)) AS D,Day(#31/12/26#) AS E",
-            "--two-digit-year-max",
-            "2049",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Year(#1/2/29#) AS A,Year(#1/2/30#) AS B,Year(#1/2/49#) AS C,Year(DateSerial(49,1,2)) AS D,Day(#31/12/26#) AS E",
+                "--two-digit-year-max",
+                "2049",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -77,15 +79,16 @@ fn sql_token_years_keep_the_fixed_mapping_beside_explicit_constructor_windows() 
 #[test]
 fn explicit_reference_year_resolves_sql_tokens_and_keeps_runtime_text_policy_separate() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Year(#Mar 7#) AS Y,Day(#29/2#) AS D,Year(#1/2/49#) AS Fixed,Hour(#Mar 7 6:05 PM#) AS H",
-            "--reference-year",
-            "2024",
-            "--date-format",
-            "de-de",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Year(#Mar 7#) AS Y,Day(#29/2#) AS D,Year(#1/2/49#) AS Fixed,Hour(#Mar 7 6:05 PM#) AS H",
+                "--reference-year",
+                "2024",
+                "--date-format",
+                "de-de",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -93,7 +96,7 @@ fn explicit_reference_year_resolves_sql_tokens_and_keeps_runtime_text_policy_sep
         );
         assert_eq!(result.stdout, b"Y\tD\tFixed\tH\n2024\t29\t1949\t18\n");
 
-        let result = run(&["query", mode, "SELECT 1,#2/29#", "--reference-year", "2023"]);
+        let result = CLI.run(&["query", mode, "SELECT 1,#2/29#", "--reference-year", "2023"]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }

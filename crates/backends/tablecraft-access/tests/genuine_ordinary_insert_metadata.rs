@@ -15,7 +15,7 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::InsertableTable;
 use tablecraft_io::{ExclusiveFile, IoError};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::genuine_ordinary_insert as sources;
+use tablecraft_testkit::fixtures::access::genuine_ordinary_insert as sources;
 
 const SCOPE: CatalogScope = CatalogScope::new(162);
 

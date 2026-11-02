@@ -25,7 +25,9 @@ use tablecraft_io::{
     },
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{genuine_eof_insert as eof, genuine_indexed_insert as indexed};
+use tablecraft_testkit::fixtures::access::{
+    genuine_eof_insert as eof, genuine_indexed_insert as indexed,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(196);
 

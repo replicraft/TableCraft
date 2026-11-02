@@ -17,7 +17,9 @@ use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_tree_before_change::{Case, RECIPES, Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_tree_before_change::{
+    Case, RECIPES, Recipe, source,
+};
 
 #[derive(Clone, Copy, Debug)]
 enum Transport {

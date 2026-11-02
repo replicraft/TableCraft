@@ -2,10 +2,10 @@
 mod calculated_fixture;
 #[path = "calculated_storage/extended_carriers.rs"]
 mod extended_carriers;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "calculated_storage/scalar_fixture.rs"]
 mod scalar_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use proptest::prelude::*;
 use std::io::Cursor;

@@ -331,3 +331,6 @@ pub mod genuine_wide_node_update;
 pub mod genuine_external_lval_update;
 
 pub mod genuine_external_lval_continuation;
+
+pub mod index_fixture;
+pub mod index_tuples;

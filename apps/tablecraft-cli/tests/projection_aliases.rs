@@ -1,7 +1,8 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
 use std::{fs, path::PathBuf};
-use support::run;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn written_aliases_compose_through_the_query_command() {
@@ -9,7 +10,7 @@ fn written_aliases_compose_through_the_query_command() {
         "SELECT CInt(1)+CInt(2) AS FirstValue, ",
         "CCur(FirstValue) AS MoneyValue, VarType(MoneyValue) AS Kind",
     );
-    let result = run(&["query", "run", sql, "--declared-arithmetic"]);
+    let result = CLI.run(&["query", "run", sql, "--declared-arithmetic"]);
 
     assert!(
         result.status.success(),
@@ -34,7 +35,7 @@ fn native_correlated_aliases_retain_nulls_and_original_database_bytes() {
         "r.ORDR_NBR-PreviousOrder AS Gap FROM ROULETTE_TB r ",
         "WHERE r.ORDR_NBR<=3 ORDER BY r.ORDR_NBR",
     );
-    let result = run(&["query", "run", sql, "--database", path.to_str().unwrap()]);
+    let result = CLI.run(&["query", "run", sql, "--database", path.to_str().unwrap()]);
 
     assert!(
         result.status.success(),
@@ -57,7 +58,7 @@ fn alias_errors_keep_buffered_output_empty() {
         "SELECT 1 AS HiddenValue, (SELECT HiddenValue) AS NestedValue",
         "SELECT 1 AS PriorValue, 1/(PriorValue-1) AS Failure",
     ] {
-        let result = run(&["query", "run", sql]);
+        let result = CLI.run(&["query", "run", sql]);
 
         assert_eq!(result.status.code(), Some(2), "{sql}");
         assert!(result.stdout.is_empty(), "{sql}");
@@ -75,7 +76,7 @@ fn grouped_aliases_feed_later_native_calculations() {
         "TotalRows+1 AS NextTotal FROM ROULETTE_TB WHERE ORDR_NBR<=3 ",
         "GROUP BY ORDR_NBR Mod 2 ORDER BY Parity",
     );
-    let result = run(&["query", "run", sql, "--database", path.to_str().unwrap()]);
+    let result = CLI.run(&["query", "run", sql, "--database", path.to_str().unwrap()]);
 
     assert!(
         result.status.success(),
@@ -99,8 +100,8 @@ fn progressive_aliases_match_buffered_results_and_keep_only_completed_batches() 
         "FROM ROULETTE_TB WHERE ORDR_NBR<=3",
     );
     let args = ["query", "run", sql, "--database", path.to_str().unwrap()];
-    let buffered = run(&args);
-    let streamed = run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
+    let buffered = CLI.run(&args);
+    let streamed = CLI.run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
 
     for result in [&buffered, &streamed] {
         assert!(
@@ -123,8 +124,8 @@ fn progressive_aliases_match_buffered_results_and_keep_only_completed_batches() 
         "--database",
         path.to_str().unwrap(),
     ];
-    let buffered = run(&args);
-    let streamed = run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
+    let buffered = CLI.run(&args);
+    let streamed = CLI.run(&[args.as_slice(), &["--stream", "--batch-rows", "1"]].concat());
 
     assert_eq!(buffered.status.code(), Some(2));
     assert!(buffered.stdout.is_empty());

@@ -1,14 +1,14 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[path = "text_locale/expanded.rs"]
 mod expanded;
 
-use support::run;
-
 fn query(sql: &str, options: &[&str]) -> std::process::Output {
     let mut arguments = vec!["query", "run", sql];
     arguments.extend_from_slice(options);
-    run(&arguments)
+    CLI.run(&arguments)
 }
 
 #[test]

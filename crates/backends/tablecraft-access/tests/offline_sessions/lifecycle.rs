@@ -134,9 +134,9 @@ fn closed_sql_and_ace_normal_write_refusals_keep_targets_unchanged() {
     failure.into_session().release().unwrap();
 
     // Existing public independently qualified ACE source owner; no header patch.
-    let case = tablecraft_testkit::access::secondary_index::source(
+    let case = tablecraft_testkit::fixtures::access::secondary_index::source(
         6,
-        tablecraft_testkit::access::secondary_index::Population::Distinct,
+        tablecraft_testkit::fixtures::access::secondary_index::Population::Distinct,
         false,
     );
     let ace = root.path().join("ordinary.accdb");

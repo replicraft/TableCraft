@@ -22,7 +22,7 @@ use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::creation_date_defaults::{self as fixtures, Case};
+use tablecraft_testkit::fixtures::access::creation_date_defaults::{self as fixtures, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(231);
 

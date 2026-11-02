@@ -7,7 +7,7 @@ use tablecraft_ace::{
 use tablecraft_io::journal::{
     JournalError, RecoveryOutcome, V2State, inspect_v2, prepare_resizable_expected,
 };
-use tablecraft_testkit::access::genuine_eof_allocation::Case;
+use tablecraft_testkit::fixtures::access::genuine_eof_allocation::Case;
 
 fn text(output: &mut Vec<u8>, value: &[u8]) {
     output.extend_from_slice(&[6, 0, 0, 0]);

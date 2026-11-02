@@ -7,8 +7,8 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::map_growth::model as source_model;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::map_growth::model as source_model;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

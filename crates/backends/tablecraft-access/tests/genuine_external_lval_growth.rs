@@ -16,7 +16,7 @@ use tablecraft_db::{
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     genuine_external_lval_continuation as sources, genuine_external_lval_update::Case,
 };
 

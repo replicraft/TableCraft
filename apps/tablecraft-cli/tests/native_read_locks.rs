@@ -1,12 +1,12 @@
-#[path = "support/mod.rs"]
-mod cli_support;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod crypto;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
-use cli_support::run;
 use std::fs;
 use tablecraft_io::{ExclusiveFile, SharedFile};
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 fn commands<'a>(path: &'a str, output: &'a str) -> Vec<Vec<&'a str>> {
     vec![
@@ -55,7 +55,7 @@ fn cooperating_exclusive_writers_block_native_reads_before_output_or_copy_creati
         let writer = ExclusiveFile::open(&path).unwrap();
 
         for command in commands(path.to_str().unwrap(), output.to_str().unwrap()) {
-            let result = run(&command);
+            let result = CLI.run(&command);
             assert_eq!(result.status.code(), Some(2), "{command:?}");
             assert!(result.stdout.is_empty(), "{command:?}");
             assert!(
@@ -68,7 +68,7 @@ fn cooperating_exclusive_writers_block_native_reads_before_output_or_copy_creati
         writer.close().unwrap();
         assert_eq!(fs::read(&path).unwrap(), bytes);
 
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id FROM Items ORDER BY Id",
@@ -92,7 +92,7 @@ fn shared_readers_coexist_and_failed_reads_release_cli_locks() {
     let bytes = fixture::database();
     fs::write(&path, &bytes).unwrap();
     let reader = SharedFile::open(&path).unwrap();
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items ORDER BY Id",
@@ -118,7 +118,7 @@ fn shared_readers_coexist_and_failed_reads_release_cli_locks() {
             path.to_str().unwrap(),
         ],
     ] {
-        let result = run(&command);
+        let result = CLI.run(&command);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         ExclusiveFile::open(&path).unwrap().close().unwrap();
@@ -145,7 +145,7 @@ fn encrypted_sources_refuse_busy_before_credentials_and_release_after_password_e
         "--database",
         path.to_str().unwrap(),
     ];
-    let result = run(&command);
+    let result = CLI.run(&command);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
     assert!(String::from_utf8_lossy(&result.stderr).contains("lock is busy"));
@@ -156,7 +156,7 @@ fn encrypted_sources_refuse_busy_before_credentials_and_release_after_password_e
         if let Some(password) = password {
             arguments.extend(["-p", password]);
         }
-        let result = run(&arguments);
+        let result = CLI.run(&arguments);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         ExclusiveFile::open(&path).unwrap().close().unwrap();
@@ -165,7 +165,7 @@ fn encrypted_sources_refuse_busy_before_credentials_and_release_after_password_e
     let reader = SharedFile::open(&path).unwrap();
     let mut arguments = command.to_vec();
     arguments.extend(["-p", "public test password"]);
-    let result = run(&arguments);
+    let result = CLI.run(&arguments);
     assert!(
         result.status.success(),
         "{}",

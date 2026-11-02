@@ -8,7 +8,7 @@ use tablecraft_ace::{
     RecoverableEditError, RowDelete, qualify_native_delete_recovery, read_table,
 };
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_forwarded_delete::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_forwarded_delete::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|bytes, expected| {

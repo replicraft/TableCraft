@@ -1,6 +1,6 @@
 //! Source-bound native field numbers, two physical tuples and four aliases.
 use super::{Family, base};
-use tablecraft_testkit::access as raw;
+use tablecraft_testkit::fixtures::access as raw;
 
 pub(super) fn definition(rows: usize, family: Family, descending: bool) -> Vec<u8> {
     let fields = [

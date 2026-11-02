@@ -3,7 +3,7 @@ use super::{Storage, budget, fixtures, journals, scope};
 use journals::Marker;
 use tablecraft_ace::{NativeRecoveryQualificationError, qualify_native_insert_recovery};
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_desc_nullable_insert::Case;
+use tablecraft_testkit::fixtures::access::genuine_desc_nullable_insert::Case;
 
 fn replay(case: &Case, count: usize, expected_after: &[u8], marker: Marker, initial: Vec<u8>) {
     let committed = matches!(marker, Marker::Committed);

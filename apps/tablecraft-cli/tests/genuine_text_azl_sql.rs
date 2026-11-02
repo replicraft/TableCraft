@@ -2,7 +2,7 @@
 
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
-use tablecraft_testkit::access::genuine_text_azl::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_text_azl::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

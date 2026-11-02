@@ -1,10 +1,9 @@
 #![cfg(feature = "ace16-write-preview")]
 
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access::index_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 #[path = "ace16_split_int32_contract/guards.rs"]
 mod guards;

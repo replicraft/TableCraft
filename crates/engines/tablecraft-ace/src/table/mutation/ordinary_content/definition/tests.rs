@@ -5,7 +5,7 @@ use sha2::{Digest, Sha256};
 use std::{cell::Cell, io::Cursor, path::Path};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::{
+use tablecraft_testkit::fixtures::access::{
     canonical_creation as plain,
     canonical_ordinary_indexed::{self as indexed, Case},
 };

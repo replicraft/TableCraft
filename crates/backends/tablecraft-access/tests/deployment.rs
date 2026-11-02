@@ -1,9 +1,8 @@
-#[path = "support/deployment.rs"]
-mod fixture;
 use std::io::{Cursor, Read};
 use tablecraft_access::{AccessInput, AccessInputError};
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_testkit::fixtures::formats::deployment as fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 10000, 10000)

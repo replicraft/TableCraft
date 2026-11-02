@@ -1,6 +1,6 @@
 //! An explicit typed empty-Text policy, never an inferred database default.
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::insert_seed::PAGE;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::insert_seed::PAGE;
 
 fn name(text: &str) -> Vec<u8> {
     let bytes = text

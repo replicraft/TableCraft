@@ -54,7 +54,7 @@ fn explicit_saved_execution_uses_parameters_and_existing_presentation() {
         if explicit_bytes {
             args.extend(["--native-bytes", "67108864"]);
         }
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",
@@ -66,7 +66,7 @@ fn explicit_saved_execution_uses_parameters_and_existing_presentation() {
             assert!(!diagnostics.contains(payload));
         }
     }
-    let bordered = cli_support::run(&[
+    let bordered = CLI.run(&[
         "--format",
         "table",
         "query",
@@ -80,8 +80,7 @@ fn explicit_saved_execution_uses_parameters_and_existing_presentation() {
     ]);
     assert!(bordered.status.success());
     assert!(String::from_utf8(bordered.stdout).unwrap().starts_with('┌'));
-    let missing_parameter =
-        cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+    let missing_parameter = CLI.run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
     assert_eq!(missing_parameter.status.code(), Some(2));
     assert!(missing_parameter.stdout.is_empty());
 }
@@ -110,11 +109,11 @@ fn saved_execution_requires_explicit_exclusive_native_input_and_never_runs_unkno
             db.path(),
         ],
     ] {
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert_eq!(result.status.code(), Some(2), "{args:?}");
         assert!(result.stdout.is_empty());
     }
-    let reconstruction = cli_support::run(&["query", "saved", "Saved", "--database", db.path()]);
+    let reconstruction = CLI.run(&["query", "saved", "Saved", "--database", db.path()]);
     assert!(reconstruction.status.success());
     assert!(
         String::from_utf8(reconstruction.stdout)
@@ -160,7 +159,7 @@ fn sql_and_explicit_saved_inputs_follow_nested_sources_and_reject_cycles() {
             let mut args = vec!["query", "run"];
             args.extend(input);
             args.extend(["--database", db.path()]);
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             if cycle {
                 assert_eq!(result.status.code(), Some(2));
                 assert!(result.stdout.is_empty());
@@ -211,8 +210,7 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         ("IIf([Id]>1,[Id],0)", &b"Chosen\n3\n2\n0\n"[..]),
     ] {
         let db = Database::new(saved(expression, false));
-        let result =
-            cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+        let result = CLI.run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
         assert!(
             result.status.success(),
             "{}",
@@ -234,8 +232,7 @@ fn saved_builtins_use_the_shared_evaluator_and_unselected_calls_cannot_activate_
         "IIf(True,[Id],NeverRunMe([Id]))",
     ] {
         let db = Database::new(saved(expression, false));
-        let result =
-            cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+        let result = CLI.run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -249,7 +246,7 @@ fn stored_database_policy_also_applies_to_explicit_saved_execution() {
         bytes[110 + i] = [9, 4, 0, 1][i] ^ mask;
     }
     let db = Database::new(bytes);
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "--saved",

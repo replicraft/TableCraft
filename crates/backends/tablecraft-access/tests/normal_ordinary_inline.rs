@@ -15,7 +15,9 @@ use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_ordinary_inline::{self as sources, Case, Source};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_inline::{
+    self as sources, Case, Source,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(121);
 const PAGE: usize = 4096;

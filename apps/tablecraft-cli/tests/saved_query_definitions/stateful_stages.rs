@@ -38,7 +38,7 @@ fn database() -> Database {
 fn explicit_saved_grouping_and_named_aggregate_consumers_share_streaming_semantics() {
     let db = database();
     for batch in ["1", "2"] {
-        let direct = cli_support::run(&[
+        let direct = CLI.run(&[
             "query",
             "run",
             "--saved",
@@ -62,7 +62,7 @@ fn explicit_saved_grouping_and_named_aggregate_consumers_share_streaming_semanti
             if streaming {
                 args.extend(["--stream", "--batch-rows", batch]);
             }
-            let result = cli_support::run(&args);
+            let result = CLI.run(&args);
             assert!(
                 result.status.success(),
                 "{}",

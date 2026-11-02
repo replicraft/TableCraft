@@ -3,7 +3,7 @@
 use sha2::{Digest, Sha256};
 use std::{fs, process::Command};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_indexed_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_indexed_delete as sources;
 
 fn verify(raw: &[u8], expected: &str) {
     let digest = Sha256::digest(raw)

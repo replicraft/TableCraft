@@ -7,7 +7,7 @@ use tablecraft_ace::{
     EditError, InspectError, NativeImage, RecoverableEditError, RecoverableNativeCompleteInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::Case;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::Case;
 
 // The public boundary includes image capture, original TCNA intent binding,
 // complete Source admission, DATA placement/staging, fresh proof and final

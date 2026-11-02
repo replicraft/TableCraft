@@ -1,14 +1,15 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn date_average_cli_projects_serial_means_and_retains_atomic_failures() {
-    let result = run(&[
-        "query",
-        "run",
-        "SELECT Avg(Moment) AS M,TypeName(Avg(Moment)) AS Kind FROM (SELECT #2024-01-01# AS Moment UNION ALL SELECT NULL UNION ALL SELECT #2024-01-03#) AS T",
-    ]);
+    let result = CLI.run(&[
+            "query",
+            "run",
+            "SELECT Avg(Moment) AS M,TypeName(Avg(Moment)) AS Kind FROM (SELECT #2024-01-01# AS Moment UNION ALL SELECT NULL UNION ALL SELECT #2024-01-03#) AS T",
+        ],
+    );
     assert!(
         result.status.success(),
         "{}",
@@ -26,7 +27,7 @@ fn date_average_cli_projects_serial_means_and_retains_atomic_failures() {
         ["45293", "\"Double\""]
     );
 
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT 1,Avg(#2024-01-01#+1/(N-2)) FROM (SELECT 1 AS N UNION ALL SELECT 2) AS T",

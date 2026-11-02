@@ -28,7 +28,7 @@ fn saved_native_key_order_controls_headers_and_rows_without_rewriting_inert_insp
         ],
         0,
     ));
-    let report = cli_support::run(&["inspect", db.path(), "--query", "Saved"]);
+    let report = CLI.run(&["inspect", db.path(), "--query", "Saved"]);
     assert!(report.status.success());
     let report = String::from_utf8(report.stdout).unwrap();
     assert!(report.find("\"Id+100\"").unwrap() < report.find("\"Id\"").unwrap());
@@ -36,7 +36,7 @@ fn saved_native_key_order_controls_headers_and_rows_without_rewriting_inert_insp
         let mut args = vec!["query", "run"];
         args.extend(query);
         args.extend(["--database", db.path()]);
-        let result = cli_support::run(&args);
+        let result = CLI.run(&args);
         assert!(
             result.status.success(),
             "{}",

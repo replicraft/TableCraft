@@ -1,6 +1,6 @@
 #[path = "browsing/cursor.rs"]
 mod cursor;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
 use std::io::Cursor;
@@ -8,7 +8,7 @@ use tablecraft_access::{NativeBrowser, TablePageRequest};
 use tablecraft_ace::InspectError;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 #[test]
 fn library_inventory_and_pages_are_usable_without_cli_or_query_evaluation() {

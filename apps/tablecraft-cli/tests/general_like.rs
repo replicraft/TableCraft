@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn general_like_supports_utf16_counts_and_literal_or_class_expansions() {
@@ -10,7 +11,7 @@ fn general_like_supports_utf16_counts_and_literal_or_class_expansions() {
             let sql = format!(
                 "SELECT '😀' LIKE '{one}' AS OneUnit,'😀' LIKE '{one}{one}' AS TwoUnits,'ss' LIKE 'ß' AS Literal,'ss' LIKE '[ß]' AS ClassValue,'æ' LIKE 'a[]e' AS EmptyGroup,'abc' LIKE '[a-z]' AS WholeWord,'a' LIKE 'a ' AS SpaceValue,'ABC' LIKE 'a{many}' AS PrefixValue"
             );
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 &sql,
@@ -27,7 +28,7 @@ fn general_like_supports_utf16_counts_and_literal_or_class_expansions() {
             assert_eq!(result.stdout,b"OneUnit\tTwoUnits\tLiteral\tClassValue\tEmptyGroup\tWholeWord\tSpaceValue\tPrefixValue\nFALSE\tTRUE\tTRUE\tTRUE\tTRUE\tFALSE\tFALSE\tTRUE\n");
         }
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT '😀' LIKE '?' AS R,'ss' LIKE 'ß' AS E",
@@ -43,15 +44,16 @@ fn general_like_supports_utf16_counts_and_literal_or_class_expansions() {
 #[test]
 fn negated_class_prefixes_nulls_and_bad_patterns_have_explicit_results() {
     for policy in ["general-legacy", "general-2010"] {
-        let result = run(&[
-            "query",
-            "run",
-            "SELECT 'ss' LIKE '[!ß]*' AS Excluded,'ss' LIKE '[!b]' AS Allowed,NULL LIKE '[z-a]' AS NullValue,'ss' NOT LIKE '[ß]' AS Negated",
-            "--collation",
-            policy,
-            "--like-mode",
-            "ansi89",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                "run",
+                "SELECT 'ss' LIKE '[!ß]*' AS Excluded,'ss' LIKE '[!b]' AS Allowed,NULL LIKE '[z-a]' AS NullValue,'ss' NOT LIKE '[ß]' AS Negated",
+                "--collation",
+                policy,
+                "--like-mode",
+                "ansi89",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -63,7 +65,7 @@ fn negated_class_prefixes_nulls_and_bad_patterns_have_explicit_results() {
         );
         for pattern in ["[z-a]", "[!]", "[a-b-c]"] {
             let sql = format!("SELECT 1 AS BeforeValue,'private-value' LIKE '{pattern}' AS R");
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 &sql,
@@ -84,7 +86,7 @@ fn full_literals_retain_long_suffixes_without_prefix_index_or_space_coercion() {
     let left = "L=text:".to_owned() + &"x".repeat(1024) + "a";
     let right = "R=text:".to_owned() + &"x".repeat(1024) + "A";
     for policy in ["general-legacy", "general-2010"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "PARAMETERS L TEXT,R TEXT; SELECT L LIKE R AS R",
@@ -129,7 +131,7 @@ fn cumulative_like_limit_discards_previously_evaluated_rows() {
             source(count)
         );
         for policy in ["general-legacy", "general-2010"] {
-            let output = run(&[
+            let output = CLI.run(&[
                 "query",
                 "run",
                 &sql,
@@ -163,7 +165,7 @@ fn ordinary_contains_searches_prune_impossible_spans_within_unchanged_limits() {
         for (pattern, expected) in [("*a*", true), ("*[a-z]*", true), ("*z*", false)] {
             let source = "a".repeat(128);
             let sql = format!("SELECT '{source}' LIKE '{pattern}' AS R");
-            let output = run(&[
+            let output = CLI.run(&[
                 "query",
                 "run",
                 &sql,

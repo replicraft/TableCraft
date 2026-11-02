@@ -4,8 +4,8 @@ use crate::{RowInsert, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as source_frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_frames;
 
 const PAGE: usize = 4096;
 

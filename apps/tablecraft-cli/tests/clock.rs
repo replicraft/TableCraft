@@ -1,6 +1,8 @@
-mod support;
 use std::process::Command;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
+
 fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
     csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -13,13 +15,14 @@ fn rows(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn fixed_clock_projects_exact_components_and_truncates_before_midnight() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Year(Now()) AS Y,Month(Date()) AS M,Day(Date()) AS D,Hour(Time()) AS H,Minute(Now()) AS N,Second(Time()) AS S",
-            "--clock",
-            "2024-02-29T23:59:59.999999999",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Year(Now()) AS Y,Month(Date()) AS M,Day(Date()) AS D,Hour(Time()) AS H,Minute(Now()) AS N,Second(Time()) AS S",
+                "--clock",
+                "2024-02-29T23:59:59.999999999",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -48,7 +51,7 @@ fn invalid_calls_and_readings_publish_nothing_and_inert_parse_has_no_clock_flag(
             "VBA.Timer()",
             "Timer$()",
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),
@@ -66,12 +69,12 @@ fn invalid_calls_and_readings_publish_nothing_and_inert_parse_has_no_clock_flag(
             "2026-10-20T12:00:00+01:00",
             "2026-10-20T12:00:00-01:00",
         ] {
-            let result = run(&["query", mode, "SELECT 1", "--clock", reading]);
+            let result = CLI.run(&["query", mode, "SELECT 1", "--clock", reading]);
             assert!(!result.status.success(), "{reading}");
             assert!(result.stdout.is_empty());
         }
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "parse",
         "SELECT Now()",
@@ -161,7 +164,7 @@ fn timer_uses_fractional_fixed_readings_and_buffers_late_failures() {
             assert_eq!(actual, expected.parse::<f32>().unwrap());
         }
 
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Timer(),1/0",

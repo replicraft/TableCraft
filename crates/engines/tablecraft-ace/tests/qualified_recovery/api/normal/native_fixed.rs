@@ -7,7 +7,7 @@ use tablecraft_ace::{
     qualify_native_update_recovery,
 };
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_fixed_before_change::{self as model, Case};
+use tablecraft_testkit::fixtures::access::canonical_fixed_before_change::{self as model, Case};
 
 fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), scope(), &mut budget(), &|| false).unwrap()

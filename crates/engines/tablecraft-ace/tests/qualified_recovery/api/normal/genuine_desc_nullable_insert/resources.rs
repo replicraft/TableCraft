@@ -6,7 +6,7 @@ use tablecraft_ace::{
     EditError, InspectError, NativeImage, RecoverableEditError, RecoverableNativeInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_testkit::access::genuine_desc_nullable_insert::Case;
+use tablecraft_testkit::fixtures::access::genuine_desc_nullable_insert::Case;
 
 /// The measured public boundary includes image capture, original-intent binding,
 /// complete Source/index admission, staging, fresh proof and plan publication.

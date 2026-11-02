@@ -1,20 +1,16 @@
-use super::fixture as base;
 use super::*;
 #[allow(dead_code)]
-#[path = "../decimal_composite_indexes/fixture.rs"]
-mod decimal_composite;
+use tablecraft_testkit::fixtures::access::index_tuples::decimal_fixture as decimal_composite;
 #[allow(dead_code)]
 #[path = "../decimal_indexes/fixture.rs"]
 mod decimal_fixture;
 #[allow(dead_code)]
-#[path = "../guid_composite_indexes/fixture.rs"]
-mod guid_composite;
+use tablecraft_testkit::fixtures::access::index_tuples::mixed_fixture as guid_composite;
 #[allow(dead_code)]
 #[path = "../guid_indexes/fixture.rs"]
 mod guid_fixture;
 #[allow(dead_code)]
-#[path = "../composite_indexes/fixture.rs"]
-mod numeric_fixture;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 fn compare(bytes: Vec<u8>) {
     let mut budget = ResourceBudget::new(32 * 1024 * 1024, 16_384, 1_000_000);

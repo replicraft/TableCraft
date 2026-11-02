@@ -1,6 +1,6 @@
 //! First untouched-NULL key source and written request pins, before producer calls.
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::canonical_nullable_key_before_change::{Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_nullable_key_before_change::{Recipe, source};
 
 const PINS: &[(u8, Recipe, &str, &str)] = &[
     (

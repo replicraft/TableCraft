@@ -1,14 +1,16 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn integer_operators_and_final_predicates_work_through_cli_commands() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT CByte(128) Or CByte(1),CInt(1) And CInt(2),Not CLng(0),CByte(1) Imp CByte(2),True Xor False",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT CByte(128) Or CByte(1),CInt(1) And CInt(2),Not CLng(0),CByte(1) Imp CByte(2),True Xor False",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -25,15 +27,16 @@ fn integer_operators_and_final_predicates_work_through_cli_commands() {
             row.iter().collect::<Vec<_>>(),
             ["129", "0", "-1", "254", "TRUE"]
         );
-        let failure = run(&["query", mode, "SELECT 1,0 And (1/0)"]);
+        let failure = CLI.run(&["query", mode, "SELECT 1,0 And (1/0)"]);
         assert!(!failure.status.success());
         assert!(failure.stdout.is_empty());
     }
-    let result = run(&[
-        "query",
-        "run",
-        "SELECT ID FROM (SELECT 1 AS ID UNION ALL SELECT 2 UNION ALL SELECT 3) AS A WHERE ID And 2 ORDER BY ID",
-    ]);
+    let result = CLI.run(&[
+            "query",
+            "run",
+            "SELECT ID FROM (SELECT 1 AS ID UNION ALL SELECT 2 UNION ALL SELECT 3) AS A WHERE ID And 2 ORDER BY ID",
+        ],
+    );
     assert!(
         result.status.success(),
         "{}",
@@ -50,7 +53,7 @@ fn integer_operators_and_final_predicates_work_through_cli_commands() {
 
 #[test]
 fn stable_logical_descriptors_feed_existing_union_widening() {
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT N,VarType(N) FROM (SELECT Not CByte(1) AS N UNION ALL SELECT CInt(-2)) AS Q",

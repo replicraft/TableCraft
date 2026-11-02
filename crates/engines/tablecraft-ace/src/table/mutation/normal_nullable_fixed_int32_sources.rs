@@ -4,7 +4,7 @@ use crate::{NativeImage, RuleCheckStatus, check_table, check_table_constraints, 
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::canonical_nullable_fixed_int32_before_change::{
+use tablecraft_testkit::fixtures::access::canonical_nullable_fixed_int32_before_change::{
     self as model, Recipe,
 };
 

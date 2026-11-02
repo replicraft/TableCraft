@@ -16,7 +16,7 @@ use tablecraft_io::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_before_change::{Recipe, source};
+use tablecraft_testkit::fixtures::access::canonical_before_change::{Recipe, source};
 
 const ADMITTED: [Recipe; 5] = [
     Recipe::Sequential,

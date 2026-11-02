@@ -1,12 +1,13 @@
 #[path = "../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod fixture;
-mod support;
 use std::{
     fs,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Input {
@@ -46,7 +47,7 @@ impl Drop for Input {
 fn global_password_supports_inventory_rows_queries_and_detailed_inspection() {
     for code in [2, 3, 5, 6] {
         let input = Input::new(code);
-        let tables = run(&[
+        let tables = CLI.run(&[
             "-p",
             "public 😀 password",
             "tables",
@@ -59,7 +60,7 @@ fn global_password_supports_inventory_rows_queries_and_detailed_inspection() {
             String::from_utf8_lossy(&tables.stderr)
         );
         assert!(String::from_utf8_lossy(&tables.stdout).contains("ROULETTE_TB\tUser\t38"));
-        let rows = run(&[
+        let rows = CLI.run(&[
             "rows",
             input.path(),
             "ROULETTE_TB",
@@ -74,7 +75,7 @@ fn global_password_supports_inventory_rows_queries_and_detailed_inspection() {
             String::from_utf8_lossy(&rows.stderr)
         );
         assert_eq!(String::from_utf8(rows.stdout).unwrap().lines().count(), 4);
-        let query = run(&[
+        let query = CLI.run(&[
             "query",
             "run",
             "SELECT Count(*) AS Total FROM ROULETTE_TB",
@@ -91,7 +92,7 @@ fn global_password_supports_inventory_rows_queries_and_detailed_inspection() {
             String::from_utf8_lossy(&query.stderr)
         );
         assert_eq!(query.stdout, b"Total\n38\n");
-        let check = run(&[
+        let check = CLI.run(&[
             "inspect",
             input.path(),
             "--table",
@@ -117,14 +118,14 @@ fn raw_inspection_needs_no_password_and_failed_credentials_never_publish_data_or
         vec!["inspect", input.path()],
         vec!["encryption", "inspect", input.path()],
     ] {
-        let result = run(&command);
+        let result = CLI.run(&command);
         assert!(result.status.success());
     }
-    let absent = run(&["tables", input.path()]);
+    let absent = CLI.run(&["tables", input.path()]);
     assert_eq!(absent.status.code(), Some(2));
     assert!(absent.stdout.is_empty());
     assert!(String::from_utf8_lossy(&absent.stderr).contains("database password is required"));
-    let wrong = run(&[
+    let wrong = CLI.run(&[
         "-vvv",
         "--password",
         "private-sentinel-password",
@@ -138,7 +139,7 @@ fn raw_inspection_needs_no_password_and_failed_credentials_never_publish_data_or
     assert!(error.contains("incorrect database password"));
     assert!(!error.contains("private-sentinel"));
     assert!(!error.contains(input.path()));
-    let limited = run(&[
+    let limited = CLI.run(&[
         "query",
         "run",
         "SELECT * FROM ROULETTE_TB",

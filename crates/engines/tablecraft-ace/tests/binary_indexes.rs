@@ -1,6 +1,3 @@
-#[allow(dead_code)]
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
 use std::io::Cursor;
 use std::ops::Bound::{Excluded, Included, Unbounded};
 use tablecraft_ace::{
@@ -13,7 +10,9 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+#[allow(dead_code)]
+use tablecraft_testkit::fixtures::access::index_fixture;
 
 const PAGE_BYTES: usize = 4096;
 const INDEX_PAGE: usize = 13;

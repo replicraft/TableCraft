@@ -1,15 +1,16 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn iif_preserves_lossless_branches_and_eager_failures_in_both_hosts() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT LenB(IIf(True,ChrW(55296),ChrB(65))) AS A,VarType(IIf(False,ChrW(55296),ChrB(65))) AS B,IIf(False,ChrW(55296),'ok') AS C",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT LenB(IIf(True,ChrW(55296),ChrB(65))) AS A,VarType(IIf(False,ChrW(55296),ChrB(65))) AS B,IIf(False,ChrW(55296),'ok') AS C",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -22,7 +23,7 @@ fn iif_preserves_lossless_branches_and_eager_failures_in_both_hosts() {
             "LenB(IIf(False,ChrW(65536),ChrB(65)))",
             "IIf(True,ChrW(55296),'ok')",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2), "{expression}");
             assert!(result.stdout.is_empty(), "{expression}");
         }
@@ -32,7 +33,7 @@ fn iif_preserves_lossless_branches_and_eager_failures_in_both_hosts() {
 #[test]
 fn decimal_error_conversion_refuses_buffered_results_and_accepts_explicit_codes() {
     for mode in ["eval", "run"] {
-        let result = run(&["query", mode, "SELECT CDec(CLng(CVErr(2001))) AS N"]);
+        let result = CLI.run(&["query", mode, "SELECT CDec(CLng(CVErr(2001))) AS N"]);
         assert!(result.status.success());
         assert_eq!(result.stdout, b"N\n2001\n");
 
@@ -40,7 +41,7 @@ fn decimal_error_conversion_refuses_buffered_results_and_accepts_explicit_codes(
             ("CDec(CVErr(0))", "expression type mismatch"),
             ("CDec(IIf(True,CVErr(1),1/0))", "division by zero"),
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(String::from_utf8_lossy(&result.stderr).contains(diagnostic));
@@ -51,13 +52,14 @@ fn decimal_error_conversion_refuses_buffered_results_and_accepts_explicit_codes(
 #[test]
 fn choose_indices_round_through_single_in_scalar_and_query_execution() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Choose(1.49999999,1,2) AS A,Choose('2.50000001',1,2,3) AS B,IsNull(Choose(0.50000001,1)) AS C,IsNull(Choose(1e30,1)) AS D",
-            "--number-format",
-            "invariant",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Choose(1.49999999,1,2) AS A,Choose('2.50000001',1,2,3) AS B,IsNull(Choose(0.50000001,1)) AS C,IsNull(Choose(1e30,1)) AS D",
+                "--number-format",
+                "invariant",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -69,7 +71,7 @@ fn choose_indices_round_through_single_in_scalar_and_query_execution() {
             ("Choose('1e1000',1)", "numeric overflow"),
             ("Choose(1e100,1,1/0)", "division by zero"),
         ] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 mode,
                 &format!("SELECT 1,{expression}"),

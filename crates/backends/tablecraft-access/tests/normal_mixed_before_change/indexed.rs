@@ -12,7 +12,7 @@ use tablecraft_db::{CellUpdate, EditableTable, SnapshotError, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::canonical_indexed_mixed_before_change::{
+use tablecraft_testkit::fixtures::access::canonical_indexed_mixed_before_change::{
     self as model, Case, Recipe,
 };
 

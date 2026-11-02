@@ -10,7 +10,7 @@ use tablecraft_core::values::Value;
 use tablecraft_io::journal::{
     JournalError, RecoveryOutcome, inspect_image, prepare_resizable_expected,
 };
-use tablecraft_testkit::access::genuine_root_split::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_root_split::{self as sources, Case};
 
 fn hash(bytes: &[u8]) -> String {
     Sha256::digest(bytes)

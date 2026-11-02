@@ -10,8 +10,8 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access::canonical_catalog_names;
-use tablecraft_testkit::access::canonical_native17_creation as native17;
+use tablecraft_testkit::fixtures::access::canonical_catalog_names;
+use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(16 * 1024 * 1024, 100_000, 16_000_000)

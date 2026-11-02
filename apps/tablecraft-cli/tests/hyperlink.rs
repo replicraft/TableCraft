@@ -1,11 +1,11 @@
-mod support;
+use tablecraft_testkit::support::cli::Runner;
 
-use support::run;
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn hyperlink_selector_text_and_state_order_keep_output_buffered() {
     for mode in ["eval", "run"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             mode,
             "SELECT Len(HyperlinkPart('show#u#s#tip','2.5')) AS N",
@@ -24,7 +24,7 @@ fn hyperlink_selector_text_and_state_order_keep_output_buffered() {
             ("HyperlinkPart(CVErr(11),1/0)", "division by zero"),
         ] {
             let sql = format!("SELECT 1,{expression}");
-            let result = run(&["query", mode, &sql]);
+            let result = CLI.run(&["query", mode, &sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
             assert!(
@@ -38,11 +38,12 @@ fn hyperlink_selector_text_and_state_order_keep_output_buffered() {
 #[test]
 fn hyperlink_query_selectors_preserve_components_without_following_addresses() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT HyperlinkPart('name#https://example.invalid#anchor#tip',0) AS D,HyperlinkPart('name#https://example.invalid#anchor#tip',5) AS F,HyperlinkPart(Null,2) AS N",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT HyperlinkPart('name#https://example.invalid#anchor#tip',0) AS D,HyperlinkPart('name#https://example.invalid#anchor#tip',5) AS F,HyperlinkPart(Null,2) AS N",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -73,7 +74,7 @@ fn hyperlink_query_selectors_preserve_components_without_following_addresses() {
             "HyperlinkPart('x',0),1/0",
             "VBA.HyperlinkPart('x',2)",
         ] {
-            let result = run(&["query", mode, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", mode, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }

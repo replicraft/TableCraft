@@ -1,8 +1,8 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../tests/ace16_long_value_updates_contract/model.rs"]
 mod model;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use super::*;
 use std::{

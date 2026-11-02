@@ -1,8 +1,9 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 fn successful(sql: &str, policy: &str) -> Vec<u8> {
-    let output = run(&["query", "run", sql, "--collation", policy]);
+    let output = CLI.run(&["query", "run", sql, "--collation", policy]);
     assert!(
         output.status.success(),
         "{}",
@@ -59,7 +60,7 @@ fn explicit_general_policies_control_scalar_and_relational_comparison() {
         );
     }
     assert_eq!(successful("SELECT 'a'='A ' AS R", "ordinal"), b"R\nFALSE\n");
-    let absent = run(&["query", "run", "SELECT 'a'='A ' AS R"]);
+    let absent = CLI.run(&["query", "run", "SELECT 'a'='A ' AS R"]);
     assert!(!absent.status.success());
     assert!(absent.stdout.is_empty());
 }
@@ -70,7 +71,7 @@ fn general_profiles_retain_full_long_text_values_including_parameter_suffixes() 
     let right = "x".repeat(1024) + "b";
     let equivalent = "x".repeat(1024) + "A  ";
     for policy in ["general-legacy", "general-2010"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "PARAMETERS L TEXT, R TEXT, E TEXT; SELECT L<R AS Less,L=E AS Equal",
@@ -108,7 +109,7 @@ fn cumulative_comparison_exhaustion_and_unsupported_search_publish_no_partial_re
     let left = format!("P=text:{}", "a".repeat(4096));
     let right = format!("Q=text:{}", "A".repeat(4096));
     for policy in ["general-legacy", "general-2010"] {
-        let exhausted = run(&[
+        let exhausted = CLI.run(&[
             "query",
             "run",
             &sql,
@@ -122,7 +123,7 @@ fn cumulative_comparison_exhaustion_and_unsupported_search_publish_no_partial_re
         assert!(!exhausted.status.success());
         assert!(exhausted.stdout.is_empty());
         assert!(String::from_utf8_lossy(&exhausted.stderr).contains("limit"));
-        let search = run(&[
+        let search = CLI.run(&[
             "query",
             "run",
             "SELECT InStr(1,'a','A',1) AS R",
@@ -131,7 +132,7 @@ fn cumulative_comparison_exhaustion_and_unsupported_search_publish_no_partial_re
         ]);
         assert!(!search.status.success());
         assert!(search.stdout.is_empty());
-        let update = run(&[
+        let update = CLI.run(&[
             "query",
             "update",
             "UPDATE T SET ID=1",
@@ -153,7 +154,7 @@ fn general_like_uses_explicit_utf16_wildcards() {
     for policy in ["general-legacy", "general-2010"] {
         for (mode, pattern) in [("ansi89", "a*"), ("ansi92", "a%")] {
             let sql = format!("SELECT 'ABC' LIKE '{pattern}' AS R,'😀' LIKE '?' AS OneUnit");
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 &sql,

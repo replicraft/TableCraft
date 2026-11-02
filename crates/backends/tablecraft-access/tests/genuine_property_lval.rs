@@ -17,7 +17,7 @@ use tablecraft_db::{
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_property_lval::{self as sources, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_property_lval::{self as sources, Recipe};
 
 const SCOPE: CatalogScope = CatalogScope::new(135);
 

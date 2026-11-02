@@ -4,8 +4,8 @@ use std::io::Cursor;
 use tablecraft_ace::{InspectError, read_table, read_table_projection};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 
 const PAGE_BYTES: usize = 4096;
 const OWNER_PAGE: usize = 10;

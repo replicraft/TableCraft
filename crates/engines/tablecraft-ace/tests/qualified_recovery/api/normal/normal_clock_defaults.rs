@@ -19,7 +19,7 @@ use tablecraft_expressions::{
     EvalError,
     functions::dates::clock::{Clock, ClockReading},
 };
-use tablecraft_testkit::access::normal_clock_defaults::{self as fixtures, Case, Field};
+use tablecraft_testkit::fixtures::access::normal_clock_defaults::{self as fixtures, Case, Field};
 
 fn sources() -> fixtures::Sources {
     fixtures::Sources::load(|raw, wanted| {

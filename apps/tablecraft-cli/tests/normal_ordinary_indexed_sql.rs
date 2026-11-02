@@ -6,8 +6,10 @@ use std::{
     process::{Command, Output},
 };
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::canonical_ordinary_indexed::{self as model, Case, Source};
-use tablecraft_testkit::access::canonical_ordinary_indexed_targets as targets;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{
+    self as model, Case, Source,
+};
+use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed_targets as targets;
 
 const PAGE: usize = 4096;
 

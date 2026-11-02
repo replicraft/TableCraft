@@ -1,7 +1,7 @@
 //! Explicit exclusive export of frozen sources and original typed requests.
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
-use tablecraft_testkit::access::canonical_fixed_before_change::{self as model, Cell};
+use tablecraft_testkit::fixtures::access::canonical_fixed_before_change::{self as model, Cell};
 
 fn create(path: &Path, bytes: &[u8]) {
     let mut file = fs::OpenOptions::new()

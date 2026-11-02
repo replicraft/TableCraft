@@ -12,7 +12,7 @@ use model::{Family, Shape};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 500_000_000)

@@ -7,7 +7,7 @@ use tablecraft_ace::{InspectError, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 fn copy() -> Cursor<Vec<u8>> {
     Cursor::new(
         std::fs::read(

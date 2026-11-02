@@ -2,8 +2,8 @@
 use super::budget;
 use sha2::{Digest, Sha256};
 use tablecraft_ace::{NativeDeleteIntent, RowDelete};
-use tablecraft_testkit::access::genuine_indexed_delete as sources;
-pub(super) use tablecraft_testkit::access::genuine_indexed_delete::{Case, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_indexed_delete as sources;
+pub(super) use tablecraft_testkit::fixtures::access::genuine_indexed_delete::{Case, Recipe};
 
 pub(super) fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

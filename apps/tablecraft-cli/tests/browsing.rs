@@ -1,7 +1,7 @@
 #[path = "browsing/count_all.rs"]
 mod count_all;
 use fixture as base;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
 mod attachment_fixture;
@@ -23,7 +23,7 @@ use std::{
     process::{Command, Output},
     sync::atomic::{AtomicU64, Ordering},
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct FileCopy {

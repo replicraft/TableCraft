@@ -1,5 +1,6 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_week_options_use_explicit_number_syntax_and_buffer_failures() {
@@ -10,7 +11,7 @@ fn cli_week_options_use_explicit_number_syntax_and_buffer_failures() {
         "Format(#2021-01-01#,'w ww','2,5','1,5')"
     );
     for mode in ["eval", "run"] {
-        let result = run(&["query", mode, sql, "--number-format", "de-DE"]);
+        let result = CLI.run(&["query", mode, sql, "--number-format", "de-DE"]);
         assert!(
             result.status.success(),
             "{}",
@@ -29,7 +30,7 @@ fn cli_week_options_use_explicit_number_syntax_and_buffer_failures() {
             "SELECT 99,DatePart('ww',NULL,'8',1/0)",
             "SELECT 99,Format(NULL,'0','8',1/0)",
         ] {
-            let result = run(&["query", mode, query]);
+            let result = CLI.run(&["query", mode, query]);
             assert!(!result.status.success(), "{query}");
             assert!(result.stdout.is_empty());
         }

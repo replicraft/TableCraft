@@ -6,7 +6,7 @@ use tablecraft_ace::{
     Int32Update, NativeImage, NativeUpdateProfile, qualify_native_update_recovery,
 };
 use tablecraft_io::journal::{RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::canonical_nullable_index_before_change as model;
+use tablecraft_testkit::fixtures::access::canonical_nullable_index_before_change as model;
 
 #[test]
 fn nullable_unchanged_index_original_intent_requalifies_pending_and_committed_journals() {

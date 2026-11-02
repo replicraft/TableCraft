@@ -1,6 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as fixture;
-#[path = "mutation/index_fixture.rs"]
-mod index_fixture;
+use tablecraft_testkit::fixtures::access::index_fixture;
 #[path = "index_projection/profiles.rs"]
 mod profiles;
 use std::{io::Cursor, ops::Bound};
@@ -10,7 +8,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 const PAGE_BYTES: usize = 4096;
 const DEFINITION_PAGE: usize = 10;

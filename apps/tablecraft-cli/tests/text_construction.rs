@@ -1,14 +1,16 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn repetition_error_data_keeps_null_results_and_atomic_operational_failures() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT String(NULL,CVErr(11)) AS A,String(CVErr(11),NULL) AS B,String(2,CStr(CVErr(11))) AS C",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT String(NULL,CVErr(11)) AS A,String(CVErr(11),NULL) AS B,String(2,CStr(CVErr(11))) AS C",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -26,7 +28,7 @@ fn repetition_error_data_keeps_null_results_and_atomic_operational_failures() {
             "SELECT 1,String(CVErr(11),1/0)",
             "SELECT 1,String(NULL,CStr(NULL))",
         ] {
-            let result = run(&["query", command, sql]);
+            let result = CLI.run(&["query", command, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty(), "{sql}");
         }
@@ -45,11 +47,12 @@ fn table(bytes: &[u8]) -> Vec<Vec<String>> {
 #[test]
 fn construction_and_reversal_share_buffered_scalar_and_query_output() {
     for command in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            command,
-            "SELECT Space(3) AS A,String(5,42) AS B,String(3,'éx') AS C,StrReverse('é中') AS D,Space(NULL) AS N,String(2,NULL) AS M",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                command,
+                "SELECT Space(3) AS A,String(5,42) AS B,String(3,'éx') AS C,StrReverse('é中') AS D,Space(NULL) AS N,String(2,NULL) AS M",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -71,7 +74,7 @@ fn construction_and_reversal_share_buffered_scalar_and_query_output() {
             "StrReverse(NULL)",
             "Space(2147483647)",
         ] {
-            let result = run(&["query", command, &format!("SELECT 1,{expression}")]);
+            let result = CLI.run(&["query", command, &format!("SELECT 1,{expression}")]);
             assert!(!result.status.success(), "{expression}");
             assert!(result.stdout.is_empty());
         }

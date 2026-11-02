@@ -1,4 +1,4 @@
-use tablecraft_testkit::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "composite_constraints/boolean.rs"]
 mod boolean;
 #[path = "composite_constraints/currency.rs"]
@@ -7,7 +7,7 @@ mod currency;
 mod decimal;
 #[path = "composite_constraints/guid.rs"]
 mod guid;
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
 
 use std::io::Cursor;
 use support::{data_page, put16, put32};

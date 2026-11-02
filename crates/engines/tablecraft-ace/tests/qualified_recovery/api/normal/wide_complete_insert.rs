@@ -12,7 +12,7 @@ use tablecraft_ace::{
     NativeEofInsertIntent, NativeImage, NativeInsertIntent, RowInsert, read_table,
 };
 use tablecraft_core::values::{Decimal, Value};
-use tablecraft_testkit::access::canonical_ordinary_wide_insert::Case;
+use tablecraft_testkit::fixtures::access::canonical_ordinary_wide_insert::Case;
 
 fn image(raw: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(raw), scope(), &mut budget(), &|| false).unwrap()

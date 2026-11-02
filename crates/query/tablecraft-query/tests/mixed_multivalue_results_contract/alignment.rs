@@ -16,7 +16,7 @@ struct Named {
 impl Named {
     fn new() -> Self {
         Self {
-            data: Data::fixture(),
+            data: Data::mixed_fixture(),
             unavailable: ["B", "A", "Files", "Other"]
                 .map(|name| SchemaName::new(name.into()).unwrap())
                 .to_vec(),

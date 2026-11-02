@@ -1,16 +1,18 @@
-mod support;
-use support::run;
+use tablecraft_testkit::support::cli::Runner;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn cli_replacement_counts_preserve_suffixes_and_buffer_conversion_failures() {
     for mode in ["eval", "run"] {
-        let result = run(&[
-            "query",
-            mode,
-            "SELECT Replace('banana','an','X','2,5','2,5'),Replace('banana','an','X',CDate(2.5),CDate(-0.5))",
-            "--number-format",
-            "de-DE",
-        ]);
+        let result = CLI.run(&[
+                "query",
+                mode,
+                "SELECT Replace('banana','an','X','2,5','2,5'),Replace('banana','an','X',CDate(2.5),CDate(-0.5))",
+                "--number-format",
+                "de-DE",
+            ],
+        );
         assert!(
             result.status.success(),
             "{}",
@@ -28,7 +30,7 @@ fn cli_replacement_counts_preserve_suffixes_and_buffer_conversion_failures() {
             "SELECT 99,Replace('abc','a','b','1')",
             "SELECT 99,Replace(NULL,'a','b','bad',1/0)",
         ] {
-            let result = run(&["query", mode, sql]);
+            let result = CLI.run(&["query", mode, sql]);
             assert!(!result.status.success(), "{sql}");
             assert!(result.stdout.is_empty());
         }

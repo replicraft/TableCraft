@@ -5,7 +5,7 @@ use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tablecraft_ace::read_table;
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_compound_eof::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_compound_eof::{self as sources, Case};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

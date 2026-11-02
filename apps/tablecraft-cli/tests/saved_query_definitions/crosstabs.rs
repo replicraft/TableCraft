@@ -52,7 +52,7 @@ fn crosstab(flags: i16, transform: &str, pivot: &str) -> Vec<u8> {
 #[test]
 fn native_crosstab_printing_and_explicit_execution_share_the_owned_query_path() {
     let db = Database::new(crosstab(0, "Count(*)", "Id IN (3,1,4)"));
-    let result = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+    let result = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
     assert!(
         result.status.success(),
         "{}",
@@ -62,7 +62,7 @@ fn native_crosstab_printing_and_explicit_execution_share_the_owned_query_path() 
         String::from_utf8(result.stdout).unwrap(),
         "TRANSFORM Count(*) AS [Measure] SELECT 0 AS [Bucket] FROM [Items] GROUP BY 0 PIVOT [Id] IN (3, 1, 4);\n"
     );
-    let result = cli_support::run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
+    let result = CLI.run(&["query", "run", "--database", db.path(), "--saved", "Saved"]);
     assert!(
         result.status.success(),
         "{}",
@@ -73,7 +73,7 @@ fn native_crosstab_printing_and_explicit_execution_share_the_owned_query_path() 
         "Bucket\t3\t1\t4\n0\t1\t1\tNULL\n"
     );
     // Literal fixed headings bind as metadata without a discovery scan.
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT * FROM Saved",
@@ -96,17 +96,17 @@ fn crosstab_owner_functions_and_invalid_fragments_remain_inert_or_buffered_error
         (0, "Count(*)", "Id ORDER BY 1", false),
     ] {
         let db = Database::new(crosstab(flags, transform, pivot));
-        let result = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+        let result = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
         assert_eq!(result.status.success(), reconstruct);
         if !reconstruct {
             assert!(result.stdout.is_empty());
         }
         assert!(
-            cli_support::run(&["inspect", db.path(), "--query", "Saved"])
+            CLI.run(&["inspect", db.path(), "--query", "Saved"])
                 .status
                 .success()
         );
-        let result = cli_support::run(&[
+        let result = CLI.run(&[
             "-vv",
             "query",
             "run",
@@ -127,14 +127,14 @@ fn crosstab_owner_functions_and_invalid_fragments_remain_inert_or_buffered_error
 #[test]
 fn fixed_named_crosstab_projection_does_not_hide_later_unreturned_cell_errors() {
     let db = Database::new(crosstab(0, "Sum(1/(Id-2))", "Id IN (1,2,3)"));
-    let inert = cli_support::run(&["query", "saved", "--database", db.path(), "Saved"]);
+    let inert = CLI.run(&["query", "saved", "--database", db.path(), "Saved"]);
     assert!(inert.status.success());
     for sql in [
         "SELECT Bucket FROM Saved",
         "SELECT Bucket FROM Saved WHERE Bucket<0",
         "SELECT TOP 1 Bucket FROM Saved",
     ] {
-        let result = cli_support::run(&["query", "run", sql, "--database", db.path()]);
+        let result = CLI.run(&["query", "run", sql, "--database", db.path()]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -147,7 +147,7 @@ fn named_crosstabs_keep_fixed_headers_through_joins_and_inner_top() {
         "SELECT s.[3],s.[4] FROM Saved AS s",
         "SELECT a.[3],b.[4] FROM Saved AS a INNER JOIN Saved AS b ON a.Bucket=b.Bucket",
     ] {
-        let result = cli_support::run(&["query", "run", sql, "--database", db.path()]);
+        let result = CLI.run(&["query", "run", sql, "--database", db.path()]);
         assert!(
             result.status.success(),
             "{}",
@@ -160,7 +160,7 @@ fn named_crosstabs_keep_fixed_headers_through_joins_and_inner_top() {
 #[test]
 fn stored_crosstab_top_executes_and_omitted_cell_errors_remain_buffered() {
     let db = Database::new(crosstab(16, "Count(*)", "Id IN (3,1,4)"));
-    let result = cli_support::run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
+    let result = CLI.run(&["query", "run", "--saved", "Saved", "--database", db.path()]);
     assert!(
         result.status.success(),
         "{}",
@@ -170,7 +170,7 @@ fn stored_crosstab_top_executes_and_omitted_cell_errors_remain_buffered() {
         String::from_utf8(result.stdout).unwrap(),
         "Bucket\t3\t1\t4\n0\t1\t1\tNULL\n"
     );
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "TRANSFORM Sum(1/(Id-2)) SELECT TOP 1 Id FROM Items GROUP BY Id ORDER BY Id PIVOT Id",

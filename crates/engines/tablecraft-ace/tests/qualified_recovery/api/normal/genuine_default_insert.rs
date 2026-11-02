@@ -13,7 +13,9 @@ use tablecraft_ace::{
 };
 use tablecraft_core::values::Value;
 use tablecraft_io::journal::{JournalError, RecoveryOutcome, inspect_v1};
-use tablecraft_testkit::access::genuine_default_insert::{self as sources, Case, RECIPES, Recipe};
+use tablecraft_testkit::fixtures::access::genuine_default_insert::{
+    self as sources, Case, RECIPES, Recipe,
+};
 
 fn cases() -> Vec<Case> {
     sources::load_all(|raw, expected| {

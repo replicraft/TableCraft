@@ -18,7 +18,7 @@ use tablecraft_expressions::{
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::normal_clock_defaults::{self as fixtures, Field};
+use tablecraft_testkit::fixtures::access::normal_clock_defaults::{self as fixtures, Field};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)

@@ -1,7 +1,7 @@
 //! Source-literal witnesses and TCND bytes; no native mutation implementation.
 use sha2::{Digest, Sha256};
 use tablecraft_core::values::Value;
-use tablecraft_testkit::access::genuine_binary_delete as sources;
+use tablecraft_testkit::fixtures::access::genuine_binary_delete as sources;
 
 pub use sources::{Case, Recipe};
 

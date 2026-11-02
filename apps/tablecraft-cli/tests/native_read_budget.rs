@@ -1,15 +1,15 @@
-#[path = "support/mod.rs"]
-mod cli_support;
-use tablecraft_testkit::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::support::cli::Runner;
 #[path = "../../../crates/engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
-use cli_support::run;
 use std::{
     fs,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
-use tablecraft_testkit::access as support;
+use tablecraft_testkit::fixtures::access as support;
+
+const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Database {
@@ -47,11 +47,11 @@ fn explicit_native_bytes_enable_large_queries_in_all_priority_profiles() {
         }
         let db = Database::new(bytes);
         let sql = "SELECT TOP 3 Id FROM Items ORDER BY Id DESC";
-        let default = run(&["query", "run", sql, "--database", db.path()]);
+        let default = CLI.run(&["query", "run", sql, "--database", db.path()]);
         assert_eq!(default.status.code(), Some(2));
         assert!(default.stdout.is_empty());
         assert!(String::from_utf8_lossy(&default.stderr).contains("Bytes resource limit exceeded"));
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             sql,
@@ -80,7 +80,7 @@ fn native_byte_range_and_command_scope_are_validated_before_io() {
         "64MiB",
         "1.5",
     ] {
-        let output = run(&[
+        let output = CLI.run(&[
             "query",
             "run",
             "SELECT 1",
@@ -128,7 +128,7 @@ fn native_byte_range_and_command_scope_are_validated_before_io() {
             "67108864",
         ],
     ] {
-        let output = run(&args);
+        let output = CLI.run(&args);
         assert_eq!(output.status.code(), Some(2));
         assert!(output.stdout.is_empty());
         assert!(String::from_utf8_lossy(&output.stderr).contains("error:"));
@@ -139,7 +139,7 @@ fn native_byte_range_and_command_scope_are_validated_before_io() {
 #[test]
 fn minimum_allowance_is_applied_and_maximum_is_accepted_without_changing_rows() {
     let db = Database::new(fixture::database());
-    let tiny = run(&[
+    let tiny = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items",
@@ -151,7 +151,7 @@ fn minimum_allowance_is_applied_and_maximum_is_accepted_without_changing_rows() 
     assert_eq!(tiny.status.code(), Some(2));
     assert!(tiny.stdout.is_empty());
     assert!(String::from_utf8_lossy(&tiny.stderr).contains("Bytes resource limit exceeded"));
-    let maximum = run(&[
+    let maximum = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items ORDER BY Id",
@@ -175,7 +175,7 @@ fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
         ("--native-steps", vec!["0", "100000001", "-1", "many"]),
     ] {
         for value in values {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 "SELECT 1",
@@ -197,7 +197,7 @@ fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
         ] {
             let mut args = prefix;
             args.extend([name, "100000"]);
-            let result = run(&args);
+            let result = CLI.run(&args);
             assert_eq!(result.status.code(), Some(2));
             assert!(result.stdout.is_empty());
             assert!(
@@ -211,7 +211,7 @@ fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
 #[test]
 fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profiles() {
     let db = Database::new(fixture::database());
-    let expected = run(&[
+    let expected = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items ORDER BY Id",
@@ -219,7 +219,7 @@ fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profi
         db.path(),
     ]);
     assert!(expected.status.success());
-    let actual = run(&[
+    let actual = CLI.run(&[
         "query",
         "run",
         "SELECT Id FROM Items ORDER BY Id",
@@ -237,7 +237,7 @@ fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profi
     );
     assert_eq!(actual.stdout, expected.stdout);
     for name in ["--native-rows", "--native-steps"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT Id FROM Items",
@@ -254,14 +254,14 @@ fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profi
 #[test]
 fn execution_work_is_explicitly_bounded_and_separate_from_native_work() {
     for value in ["0", "100000001", "-1", "many"] {
-        let result = run(&["query", "run", "SELECT 1", "--execution-steps", value]);
+        let result = CLI.run(&["query", "run", "SELECT 1", "--execution-steps", value]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
-    let result = run(&["query", "run", "SELECT 1", "--execution-steps", "10000000"]);
+    let result = CLI.run(&["query", "run", "SELECT 1", "--execution-steps", "10000000"]);
     assert!(result.status.success());
     assert_eq!(result.stdout, b"Expr1\n1\n");
-    let result = run(&["query", "run", "SELECT 1", "--execution-steps", "1"]);
+    let result = CLI.run(&["query", "run", "SELECT 1", "--execution-steps", "1"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
 }
@@ -273,7 +273,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
         ("--execution-rows", "1000000"),
     ] {
         for value in ["0", "-1", "many", "18446744073709551616"] {
-            let result = run(&[
+            let result = CLI.run(&[
                 "query",
                 "run",
                 "SELECT 1",
@@ -290,7 +290,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
             );
             assert!(!String::from_utf8_lossy(&result.stderr).contains("database I/O failed"));
         }
-        let result = run(&["query", "run", "SELECT 1 AS A", flag, maximum]);
+        let result = CLI.run(&["query", "run", "SELECT 1 AS A", flag, maximum]);
         assert!(
             result.status.success(),
             "{}",
@@ -298,7 +298,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
         );
         assert_eq!(result.stdout, b"A\n1\n");
 
-        let result = run(&["query", "run", "SELECT 1 UNION ALL SELECT 2", flag, "1"]);
+        let result = CLI.run(&["query", "run", "SELECT 1 UNION ALL SELECT 2", flag, "1"]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
         assert!(String::from_utf8_lossy(&result.stderr).contains("resource limit exceeded"));
@@ -307,7 +307,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
         ("--execution-bytes", "268435457"),
         ("--execution-rows", "1000001"),
     ] {
-        let result = run(&["query", "run", "SELECT 1", flag, value]);
+        let result = CLI.run(&["query", "run", "SELECT 1", flag, value]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
     }
@@ -316,7 +316,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
 #[test]
 fn native_value_allowance_requires_database_and_validates_its_own_range() {
     for value in ["0", "33554433", "-1", "many"] {
-        let result = run(&[
+        let result = CLI.run(&[
             "query",
             "run",
             "SELECT 1",
@@ -329,7 +329,7 @@ fn native_value_allowance_requires_database_and_validates_its_own_range() {
         assert!(result.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&result.stderr).contains("database I/O failed"));
     }
-    let result = run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "SELECT 1",

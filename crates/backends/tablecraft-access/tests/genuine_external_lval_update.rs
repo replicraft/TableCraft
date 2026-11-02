@@ -17,7 +17,7 @@ use tablecraft_db::{
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::access::genuine_external_lval_update::{self as sources, Case};
+use tablecraft_testkit::fixtures::access::genuine_external_lval_update::{self as sources, Case};
 
 const SCOPE: CatalogScope = CatalogScope::new(193);
 

@@ -1,5 +1,5 @@
 //! Independent SOURCE and complete-image expectations for omitted UPDATE keys.
-use tablecraft_testkit::access::multiple_indexes as source_model;
+use tablecraft_testkit::fixtures::access::multiple_indexes as source_model;
 mod boundaries;
 mod forwarded;
 mod selected_forwarded;
@@ -16,8 +16,8 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access::multiple_indexes::Case;
-use tablecraft_testkit::access::multiple_indexes::PAGE;
+use tablecraft_testkit::fixtures::access::multiple_indexes::Case;
+use tablecraft_testkit::fixtures::access::multiple_indexes::PAGE;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)

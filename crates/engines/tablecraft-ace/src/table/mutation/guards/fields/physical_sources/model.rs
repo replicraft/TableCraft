@@ -1,8 +1,8 @@
 //! Independent complete images from original source plus literal macro semantics.
 use crate::preservation::table_extra::tests::guard_sources::model as programs;
 use crate::table::mutation::fixed::batch::split_tests::model as original;
-use tablecraft_testkit::access as raw;
-use tablecraft_testkit::access::multiple_indexes as frames;
+use tablecraft_testkit::fixtures::access as raw;
+use tablecraft_testkit::fixtures::access::multiple_indexes as frames;
 
 pub(in crate::table::mutation::guards::fields) const PAGE: usize = 4096;
 pub(in crate::table::mutation::guards::fields) const TARGET: usize = 300;

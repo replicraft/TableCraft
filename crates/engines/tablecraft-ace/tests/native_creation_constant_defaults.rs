@@ -13,7 +13,7 @@ use tablecraft_core::{
 use tablecraft_schema::ScalarType;
 
 use sha2::{Digest, Sha256};
-use tablecraft_testkit::access::creation_constant_defaults as fixtures;
+use tablecraft_testkit::fixtures::access::creation_constant_defaults as fixtures;
 
 const LIMITS: [u64; 3] = [1_000_000_000, 1_000_000, 1_000_000_000];
 

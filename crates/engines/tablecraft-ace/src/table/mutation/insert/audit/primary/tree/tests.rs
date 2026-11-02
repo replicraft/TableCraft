@@ -13,8 +13,8 @@ use crate::table::mutation::insert::preflight;
 use crate::table::mutation::insert::prepare;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::access as support;
-use tablecraft_testkit::access::insert_seed as model;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::insert_seed as model;
 
 const PAGE: usize = 4096;
 const ROOT: usize = 13;

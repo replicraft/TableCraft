@@ -6,7 +6,7 @@ fn registered_object_list_reconstructs_without_enabling_its_vba_functions() {
         .join("../../docs/examples/Access_Example_VBA.accdb");
     let original = std::fs::read(&path).unwrap();
     let database = path.to_str().unwrap();
-    let saved = cli_support::run(&[
+    let saved = CLI.run(&[
         "query",
         "saved",
         "--database",
@@ -23,7 +23,7 @@ fn registered_object_list_reconstructs_without_enabling_its_vba_functions() {
     assert!(sql.contains("GetObjectTypeName([Type])"), "{sql}");
     assert!(sql.contains("GetObjectDescription([Name])"), "{sql}");
 
-    let result = cli_support::run(&[
+    let result = CLI.run(&[
         "query",
         "run",
         "--database",
