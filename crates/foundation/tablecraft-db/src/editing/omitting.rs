@@ -24,3 +24,16 @@ pub trait OmittingInsertableTable: InsertableTable {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error>;
 }
+
+/// Atomic ordered original-presence rows, planned through one backend action.
+/// This adds no SQL syntax, clock provider or generated-value permission.
+pub trait OmittingInsertableBatch: OmittingInsertableTable {
+    /// Consume complete-width presence rows in written order. A successful plan
+    /// represents the whole batch; refusal must not publish a partial action.
+    fn plan_insert_rows_with_omissions(
+        self,
+        rows: Vec<Vec<InsertValue>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error>;
+}

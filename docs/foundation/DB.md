@@ -109,6 +109,22 @@ needed defaults under its explicit policy, then enforces its constraints.
 A generated companion schema excludes only its backend-bound generated field;
 absence never guesses that field or selects identity generation.
 
+`CompleteInsertableBatch` and `OmittingInsertableBatch` add optional consuming
+ordered batch capabilities. The former receives complete `Vec<Value>` rows; the
+latter retains each original supplied/omitted field through `InsertValue`.
+Neither grants a schema, default, generated-value or SQL-syntax permission.
+The concrete backend must qualify every original row and return one plan for
+the complete batch. Planning does not persist a first-row prefix.
+
+The native journal inserter and retained offline inserter consume both contracts.
+They check all row widths before allocating native envelopes, move owned payloads
+without cloning, charge allocations and poll cancellation, then delegate once to
+the existing TCNA4 or TCNA2 engine planner. A successful retained preparation
+returns the existing `StagedInsert`; failures use the same consuming session
+failure path. One session, lease, journal and receipt cover the complete action.
+The single-row SQL/CLI grammar remains unchanged. These interfaces do not imply
+that arbitrary native table layouts or concurrent Access clients support writes.
+
 The [presence-bearing planner](../query/INSERT_OMISSIONS.md) allows named subsets,
 binds identities before evaluating expressions in written order, and invokes one
 consuming finish. Positional VALUES remain complete-width. The original complete

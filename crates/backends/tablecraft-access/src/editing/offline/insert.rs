@@ -1,4 +1,7 @@
 //! Complete-row typed and SQL INSERT over the same retained target lease.
+mod batch;
+mod complete_batch;
+
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SessionState};
 use crate::editing::{
