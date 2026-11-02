@@ -136,3 +136,9 @@ mod recursive_retirement_tests;
 
 #[cfg(test)]
 mod repeated_retirement_sources;
+
+#[cfg(test)]
+mod repeated_retirement_tests;
+
+#[cfg(test)]
+mod tail_chain_sources;

@@ -49,7 +49,7 @@ pub(super) fn patches(
     let root = header(image, &tree)?;
     reader.work(keys.len() + tree.children().len())?;
     if tree.height() != 2
-        || tree.children().len() != 2
+        || !(1..=2).contains(&tree.children().len())
         || root.tail.get() != 0
         || root.prefix.get() != 0
         || profile.descending
@@ -67,8 +67,8 @@ pub(super) fn patches(
             survivors += 1;
         }
     }
-    // This tranche qualifies retained, nonempty height-two roots only.
-    if survivors == 0 {
+    // Empty-root demotion is qualified from a sole original internal child.
+    if survivors == 0 && tree.children().len() != 1 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     for parent in tree.children() {
@@ -76,14 +76,18 @@ pub(super) fn patches(
         reader.work(parent.children().len())?;
         let raw = header(image, parent)?;
         if parent.height() != 1
-            || parent.children().len() < 2
+            || parent.children().is_empty()
             || usize::from(raw.prefix.get()) > PRESENT_ENTRY_BYTES
             || raw.tail.get()
-                != parent
-                    .children()
-                    .last()
-                    .ok_or(EditError::Preservation)?
-                    .number()
+                != if parent.children().len() == 1 {
+                    0
+                } else {
+                    parent
+                        .children()
+                        .last()
+                        .ok_or(EditError::Preservation)?
+                        .number()
+                }
             || parent
                 .children()
                 .iter()
@@ -112,7 +116,10 @@ pub(super) fn patches(
         reader.budget,
         reader.cancelled,
     )?;
-    if maximum.is_none() || !remaining.is_empty() || state.removed != references.len() {
+    if maximum.is_none() != (survivors == 0)
+        || !remaining.is_empty()
+        || state.removed != references.len()
+    {
         return Err(EditError::Preservation);
     }
     retirement::leaf_links(
@@ -124,7 +131,7 @@ pub(super) fn patches(
     )?;
     siblings.repair(
         image,
-        false,
+        maximum.is_none(),
         &output.retired,
         &mut output.patches,
         reader.budget,

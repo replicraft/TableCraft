@@ -1,0 +1,130 @@
+{
+  "date": "2026-11-01",
+  "scope": "Repeated Int32 leaf/parent retirement and exhausted root demotion",
+  "production_checkpoint_sha256": "567e668e2cbdb1598d1bc91a5627876295c58cde9dd6679485b114f7fd69b584",
+  "original_acceptance_checkpoint_sha256": "38fa6b2237741e69b2e720f16f04c900313330431535f532404b1056432337d9",
+  "corrected_chain_acceptance_checkpoint_sha256": "edeffa458dfe6c79738300ad3fc73821f8c435777ee10414cd23ad54353b6619",
+  "original_source_gate_commit": "dfb11e6b",
+  "actual_chain_source": {
+    "manifest_sha256": "4a13807a080ba04d27f462a9d9db2b1d07cc4e1b2d64aaa4ef1da5ff21f5b752",
+    "independent_result_sha256": "803ea06fe6ea06db631d338d6994bc499894af713c4988b38e9d0410cb10af8a",
+    "new_views": 4,
+    "inert_sdk_reports": 8,
+    "native_gate_passed": 1,
+    "native_gate_log_sha256": "2eba004bbb97e3de639cd2aabc7e8889c05e876c7fae6f697e33f4f2e14690d2"
+  },
+  "tests": [
+    {
+      "name": "repeat-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_delete::repeated_retirement_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "3"
+      ],
+      "accepted": true,
+      "log_sha256": "30a5a408719895bd9268d2525052db0fc1fa8bb951c0ee7bb3ac8107a9b4d8fb"
+    },
+    {
+      "name": "repeat-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_repeated_retirement::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "6"
+      ],
+      "accepted": true,
+      "log_sha256": "d1416c49abd81a137faf41ef7f2937a1b871a225799fe6ed38a9dbd532537421"
+    },
+    {
+      "name": "repeat-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_repeated_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "log_sha256": "45a46085e5dffa121d08b396ed8a5a38773fa5a61688f2c94032aa393226ea7a"
+    },
+    {
+      "name": "repeat-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_repeated_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "log_sha256": "e053b976c49bd9ab9071fffc751b5a7f1c469936742b5a4fb3a71b44d5cf050e"
+    }
+  ],
+  "coverage": {
+    "positive_request_contexts": 8,
+    "literal_native_commits": 16,
+    "empty_native_requests": 8,
+    "stale_missing_row_refusals": 16,
+    "direct_real_empty_proofs": 24,
+    "direct_forgeries": 168,
+    "old_semantically_equal_history_refusals": 2,
+    "same_token_recovery_contexts": 72,
+    "forged_journal_contexts": 456,
+    "old_history_journal_refusals": 6,
+    "resource_contexts": 16,
+    "typed_sql_saves": 24,
+    "typed_sql_empty_follow_ons": 24,
+    "cli_saves_and_readbacks": 16
+  },
+  "retained_failures": [
+    "Initial direct proof correctly rejected Chain/header5: old all-empty AFTER preserved opaque bytes from the older 798-live-row BEFORE, not the actual 470-live-row chain BEFORE.",
+    "Preserved original producer/proof and all eight old images. Fresh source-relative chain AFTERs passed independent construction, inert SDK and full native Source before matching replay. Earlier targets now remain explicit direct and framed recovery negatives.",
+    "Four-view native gate first compile lacked Node.next; restored the field used by its constructor/checks. Second source-only gate passed without source changes."
+  ],
+  "cli_allowance": "Explicit work-bytes/work-steps 1000000000 for the 149184 historical-slot fixture; defaults unchanged.",
+  "qualification": "Portable independent evidence; native Microsoft Access save/reopen remains unrun.",
+  "combined_validation_record": "ace16-increment-text-retirement-batch-checks-2026-11-01.json"
+}

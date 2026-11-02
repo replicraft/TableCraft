@@ -49,8 +49,10 @@ recursive and wider-key splits and native Access save/reopen remain work.
 passes native/session/CLI acceptance.
 [Height-two retirement](access/writes/NORMAL_RECURSIVE_NODE_RETIREMENT.md) now
 also passes native, recovery, retained-session and CLI acceptance. Repeated
-one-child and exhausted-root mutation remain next; their source views already
-pass separate read checks.
+one-child retirement and exhausted-root demotion now pass those same connected
+checks, with source-relative chain history and older-image negative controls.
+Nullable/DESC retirement, arbitrary heights and nonempty child promotion remain
+work.
 
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and

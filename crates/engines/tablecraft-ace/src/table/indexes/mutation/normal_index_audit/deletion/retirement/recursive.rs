@@ -8,7 +8,10 @@ use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{bytes::u32_at, page::PAGE_BYTES},
     header::check,
-    table::indexes::header::IndexHeader,
+    table::indexes::{
+        header::{IndexHeader, LEVEL_OFFSET},
+        page::LEAF,
+    },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -19,6 +22,7 @@ const LEVELS: usize = 3;
 
 struct Replay<'source, 'output, 'budget> {
     image: &'source NativeImage,
+    root: u32,
     original: &'source [Vec<u8>],
     removed: &'source [u32],
     expected: &'output mut [u8],
@@ -120,7 +124,27 @@ impl Replay<'_, '_, '_> {
             kept.last().map(|&(_, maximum)| maximum)
         };
         if maximum.is_none() {
-            self.retired.push(node.number);
+            if node.number != self.root {
+                self.retired.push(node.number);
+                return Ok(None);
+            }
+            // Only a wholly empty root demotes. No nonempty child promotion.
+            wire::write_page(
+                self.image,
+                node,
+                &entries,
+                self.expected,
+                self.budget,
+                self.cancelled,
+            )?;
+            let base = node.number as usize * PAGE_BYTES;
+            self.budget
+                .charge(Resource::Steps, (ROW_BYTES + 2 * size_of::<u8>()) as u64)
+                .map_err(InspectError::from)?;
+            self.expected[base + std::mem::offset_of!(IndexHeader, kind)] = LEAF;
+            self.expected[base + LEVEL_OFFSET] = 0;
+            self.expected[base + TAIL_AT..base + TAIL_AT + ROW_BYTES].fill(0);
+            self.levels[0].push(node.number);
             return Ok(None);
         }
 
@@ -164,8 +188,8 @@ fn qualify(
         )
         .map_err(InspectError::from)?;
     if root.height != 2
-        || root.children.len() != 2
-        || root.entries.len() != 2
+        || !(1..=2).contains(&root.children.len())
+        || root.entries.len() != root.children.len()
         || root.prefix != 0
         || u32_at(
             image.as_bytes(),
@@ -184,16 +208,21 @@ fn qualify(
             .map_err(InspectError::from)?;
         if parent.height != 1
             || parent.prefix > PRESENT_I32_BYTES
-            || parent.children.len() < 2
-            || parent.entries.len() + 1 != parent.children.len()
+            || parent.children.is_empty()
+            || parent.entries.len() + usize::from(parent.children.len() > 1)
+                != parent.children.len()
             || u32_at(
                 image.as_bytes(),
                 parent.number as usize * PAGE_BYTES + TAIL_AT,
-            )? != parent
-                .children
-                .last()
-                .ok_or(EditError::Preservation)?
-                .number
+            )? != if parent.children.len() == 1 {
+                0
+            } else {
+                parent
+                    .children
+                    .last()
+                    .ok_or(EditError::Preservation)?
+                    .number
+            }
             || parent.children.iter().any(|child| {
                 child.height != 0 || !child.children.is_empty() || child.entries.is_empty()
             })
@@ -219,7 +248,9 @@ pub(super) fn reconstruct(
     }
     tree.original(original, budget, cancelled)?;
     qualify(tree, image, original, budget, cancelled)?;
-    if removed.len() >= original.len() {
+    if removed.len() > original.len()
+        || removed.len() == original.len() && tree.root.children.len() != 1
+    {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
 
@@ -231,6 +262,7 @@ pub(super) fn reconstruct(
     ];
     let mut replay = Replay {
         image,
+        root: tree.root.number,
         original,
         removed,
         expected,
@@ -247,7 +279,7 @@ pub(super) fn reconstruct(
         .budget
         .charge(Resource::Steps, replay.retired.len() as u64)
         .map_err(InspectError::from)?;
-    if maximum.is_none()
+    if maximum.is_none() != (removed.len() == original.len())
         || replay.position != original.len()
         || replay.removed_count != removed.len()
         || replay.retired.is_empty()
