@@ -16,6 +16,9 @@ impl Runtime<'_, '_> {
         summary: &mut StreamSummary,
         visitor: &mut dyn FnMut(&[Value]) -> Result<(), E>,
     ) -> Result<(), StreamError<E>> {
+        if !arm.read.sort.is_empty() {
+            return self.progressive_sorted_top_rows(arm, union_types, bindings, summary, visitor);
+        }
         if arm.read.distinct {
             return self.progressive_distinct_rows(arm, union_types, bindings, summary, visitor);
         }

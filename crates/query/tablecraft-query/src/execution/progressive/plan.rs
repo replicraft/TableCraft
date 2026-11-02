@@ -87,6 +87,9 @@ impl Runtime<'_, '_> {
             self.progressive_distinct_profile(read)?;
         }
         let input = self.progressive_input(&select.source)?;
+        if !read.sort.is_empty() && self.progressive_stateful_input(&input)? {
+            return Err(QueryError::Unsupported);
+        }
         let group_lookup = self.progressive_group_lookup(select)?;
         arms.push(ProgressiveArm {
             read,

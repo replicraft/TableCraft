@@ -374,8 +374,10 @@ unsupported. Min/Max use the existing comparison rules.
 
 ## Explicit unsupported cases
 
-Action/DDL/make-table statements and
-external IN and OWNERACCESS are rejected before scans. So are identity,
+Action/DDL/make-table statements and OWNERACCESS are rejected before scans.
+Explicit external IN sources use the metadata-only
+[host binding contract](EXTERNAL_QUERY_SOURCES.md); an unbound selector is refused
+rather than opening stored paths or silently choosing a source. So are identity,
 object/unsupported complex-field access and scalar function
 calls outside the explicit NULL/conditional, numeric, text and date built-ins (including VBA/UDFs). Other Access built-ins, locale conversions and
 GUID/binary ordering remain absent. Qualified date/GUID literal materialization

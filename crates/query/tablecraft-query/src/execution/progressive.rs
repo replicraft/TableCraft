@@ -9,6 +9,7 @@ mod plan;
 mod publication;
 mod retained;
 mod rows;
+mod sorted_top;
 mod stages;
 mod text_groups;
 
@@ -65,14 +66,18 @@ impl PreparedQuery {
     /// Unordered positive TOP counts limit publication while all rows are still
     /// read and evaluated through checked EOF. Flat UNION ALL combines admitted
     /// arms through the ordinary UNION result conversions. Global and proven
-    /// Boolean/integral/NULL grouped Count, Sum, Avg, Min and Max retain one state
-    /// per occurrence and group. Group keys and aggregate operands run per row;
+    /// Boolean/integral/Currency/Decimal/NULL and qualified Text grouped Count,
+    /// Sum, Avg, Min and Max retain state per occurrence and group. Group keys and aggregate operands run per row;
     /// checked EOF precedes final projections. Min/Max retain resolver-dependent
     /// String candidates under the cumulative budget. Other aggregates are refused.
-    /// Sorts, TOP PERCENT,
-    /// duplicate-eliminating sets, other grouping keys, HAVING,
-    /// joins, inner stateful/set reads, collections,
-    /// subqueries, domain calls, Eval and volatile functions are refused before
+    /// Positive sorted TOP on row-local arms retains complete projected rows and
+    /// ordering keys through EOF, then uses stable strict ordering and all ties.
+    /// Its Text policies and comparison failures use the buffered terminal service;
+    /// retained input is charged, and this mode does not promise early output.
+    /// Eligible terminal HAVING and fixed-carrier DISTINCT use their existing
+    /// complete-input services. Other sorts, TOP PERCENT, other grouping keys,
+    /// joins, inner set reads, collections, subqueries, domain calls, Eval and
+    /// volatile functions are refused before
     /// scanning, even for empty inputs. The source must explicitly implement
     /// progressive projection; this never falls back to buffered retrieval.
     /// Captured external bindings are resolved only through the operation root;

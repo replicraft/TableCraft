@@ -1,5 +1,20 @@
 # Implementation status
 
+## Progressive sorted TOP
+
+Explicit progressive queries now accept positive sorted TOP on admitted row-local
+terminal SELECTs and static row-local input chains. They retain the complete
+projected population through checked EOF and reuse buffered stable strict sorting,
+including every boundary tie, explicit Text policies and eager expression errors.
+The existing exact DISTINCT profile composes with this operation. This is bounded
+terminal retention, with no constant-memory or early-publication guarantee.
+Eight focused functions, existing terminal regressions, the completed query test
+batch and strict checks pass; preserved first failures and narrow corrections are
+in the [acceptance record](testing/results/progressive-sorted-top-2026-11-02.json).
+Sorted aggregates/groups, stateful sorted inputs, TOP PERCENT and broader sort
+shapes remain outside the progressive profile. Native Access comparison remains
+unrun. See [progressive execution](query/PROGRESSIVE_QUERIES.md).
+
 ## Coordinated wider root promotion
 
 Normal [wider numeric root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)

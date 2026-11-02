@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable progressive sorted TOP acceptance passed; native Access comparison unrun",
+  "scope": {
+    "input": "admitted row-local progressive SELECT and static row-local derived/named chains",
+    "terminal": "positive sorted TOP with stable boundary ties and existing exact DISTINCT profile",
+    "semantics": "complete projected population uses buffered projection, strict sort and TOP services after checked EOF",
+    "memory": "complete terminal retention under cumulative budgets; no candidate heap or constant-memory claim",
+    "refusals": [
+      "sorting without positive TOP",
+      "TOP PERCENT",
+      "sorted aggregates/groups",
+      "stateful sorted input chains",
+      "inner sorting",
+      "root UNION ordering"
+    ]
+  },
+  "acceptance": {
+    "new_functions": 8,
+    "first_focused_run": "63 passed, one reserved Position identifier parse failure; only SQL identifier references bracketed, expected results unchanged",
+    "corrected_function": {
+      "name": "sorted-top-identifier-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "progressive_queries",
+        "sorted_top::sorted_top_keeps_all_boundary_ties_in_stable_source_order_after_eof"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true,
+      "log_sha256": "d6b06fdff05a3646d12d810eacbd23e99ed5c0090af7c10ca2b4f056893798d3"
+    },
+    "terminal_regressions": {
+      "name": "sorted-top-terminal-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "progressive_distinct",
+        "--test",
+        "progressive_derived_values",
+        "--test",
+        "progressive_stateful_stage_values",
+        "--test",
+        "progressive_text_group_policies"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        12,
+        12,
+        11,
+        8
+      ],
+      "expected_functions": null,
+      "accepted": true,
+      "log_sha256": "44ab8ddaa3b4cfc8b9d07e2ae25d48832a376f23b063a98912780b49ab6085bd"
+    },
+    "broad_query_run": {
+      "completed_targets_before_unrelated_failure": 227,
+      "passed_functions_before_failure": 1601,
+      "passing_siblings_in_failed_japanese_target": 6,
+      "corrected_japanese_function": {
+        "name": "japanese-boundary-second",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "strconv_japanese",
+          "boundaries::lossy_unicode_aliases_undefined_tokens_and_invalid_raw_sources_are_refused"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "expected_functions": 1,
+        "accepted": true,
+        "log_sha256": "13f360fff4ab3508f54ab2a5bc87cf17bda76cb21a38b1ce6c071d70fea3d365"
+      },
+      "remaining_targets": 39,
+      "remaining_functions": 171,
+      "description": "Japanese F0 40 concatenation expectation contradicted the existing decoder and same-test ChrW case; test only corrected in separate commit. No codec or native NLS change."
+    },
+    "checks": [
+      {
+        "name": "query-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "34d0c6c55b682ff559d26affd82d80a0f52214885e2012f22b7025621f397f9e"
+      },
+      {
+        "name": "fmt-first",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "boundaries-first",
+        "argv": [
+          "python3",
+          "scripts/check_dependency_boundaries.py"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "path": ".cache/marker-sorted-batch-20261102/results-first.json",
+      "bytes": 434,
+      "sha256": "33776d12967dc9ec6fa8e5d9164703a814f0c40ce51ea262360aeece54b2358c"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/sorted-top-progressive-first.log",
+      "bytes": 8458,
+      "sha256": "448b28082935e950e9a064008044d1ef1f6ec22068a2adb88f1d77243f3d7264"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/sorted-identifier-successor.json",
+      "bytes": 547,
+      "sha256": "ac131ff23a75aca4a557992a637a3c9c3ef35c55ec989bcfc61e85ecf30da65d"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/results-second.json",
+      "bytes": 3756,
+      "sha256": "f309326e7fe320244e5e5dfb257133f0ee495dba63a1789bc9aef287ef566149"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/final-results-first.json",
+      "bytes": 2484,
+      "sha256": "3a3e29bac3ff843f1121dfaf25325303c533f38b3e19c23030c21e5986160203"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/query-regressions-first.log",
+      "bytes": 200233,
+      "sha256": "5dade3a9bcc061fe68da1a5af6cab38ed5405107defcec4ddf4766358c5ea3d8"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/query-successors-install-first.json",
+      "bytes": 904,
+      "sha256": "1f8b6899bef1524c084923124b8b2403024286f4f915803f9a8403600ace0f17"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/final-results-second.json",
+      "bytes": 8279,
+      "sha256": "2a494ca0ed39ee7103ab61c804226487365ae3f5004ab1f6f065419d675e86b6"
+    },
+    {
+      "path": ".cache/marker-sorted-batch-20261102/query-remaining-first.log",
+      "bytes": 23894,
+      "sha256": "75e7b5988685ed4b54effb54dda086c2f29c2006d8c84f59570b66351894ba6a"
+    }
+  ],
+  "native_qualification": "No Microsoft Access execution or save/reopen comparison performed."
+}

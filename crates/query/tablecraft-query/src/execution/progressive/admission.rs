@@ -31,6 +31,9 @@ impl Runtime<'_, '_> {
             // registry is separate from deferred selected aggregates.
             self.progressive_having_aggregates(having)?;
         }
+        for (expression, _) in &read.sort {
+            self.progressive_expression(expression, false, 1, &mut aggregates)?;
+        }
         Ok((select, aggregates))
     }
 
@@ -39,7 +42,7 @@ impl Runtime<'_, '_> {
         read: &'p ReadPlan,
     ) -> Result<&'p SelectPlan, QueryError> {
         let select = self.progressive_shape(read)?;
-        if read.distinct {
+        if read.distinct || !read.sort.is_empty() {
             return Err(QueryError::Unsupported);
         }
         if select.aggregate || select.having.is_some() {
@@ -64,7 +67,11 @@ impl Runtime<'_, '_> {
         let ReadNode::Select(select) = &read.node else {
             return Err(QueryError::Unsupported);
         };
-        if !read.sort.is_empty()
+        if (!read.sort.is_empty()
+            && (!matches!(read.top, Some((count, false)) if count > 0)
+                || select.aggregate
+                || !select.group.is_empty()
+                || select.having.is_some()))
             || read.top.is_some_and(|(_, percent)| percent)
             || !select.record_keys.is_empty()
             || select.parent.is_some()
@@ -129,7 +136,8 @@ impl Runtime<'_, '_> {
             | Expr::Field { depth: 0, .. }
             | Expr::Parameter(_)
             | Expr::CurrentUser
-            | Expr::Projected(_) => Ok(()),
+            | Expr::Projected(_)
+            | Expr::Output(..) => Ok(()),
             Expr::Unary(_, value)
             | Expr::IsNull(value, _)
             | Expr::DateCall(_, value)
@@ -199,7 +207,6 @@ impl Runtime<'_, '_> {
             Expr::Multivalue { .. }
             | Expr::DomainCall(..)
             | Expr::Field { .. }
-            | Expr::Output(..)
             | Expr::CollectionItem { .. }
             | Expr::CollectionEmpty(..)
             | Expr::ParentPresence { .. }

@@ -28,8 +28,24 @@ at its written position, and consumers preserve its retained carrier/declaration
 and text policy. Alias references do not bypass the complete arm admission check
 or introduce new WHERE/aggregate/subquery scopes.
 
-Admission rejects ordering, TOP PERCENT, DISTINCT/active DISTINCTROW, other
-grouping key families, nonaggregate HAVING,
+Positive sorted TOP is also admitted on row-local terminal SELECT arms, including
+static row-local input chains. It retains complete projected rows and ordering
+keys through checked EOF, then uses the ordinary stable strict sort and TOP
+service. All boundary ties survive in encounter order. Text ordering uses the
+same explicit collation/resolver and complete key-policy population as buffered
+execution; dynamic keys use the same strict comparison failures. No row is
+published from this arm until EOF and ordering succeed. This is a complete
+terminal sort under cumulative budgets, not a bounded candidate heap or an
+implicit buffered source scan. Projection, alias and sort expressions remain
+eager for every qualifying row, including rows later omitted by TOP. Allocation,
+row, comparison and output budgets never refill; retaining a large population or
+publishing many ties can refuse instead of returning an incomplete success.
+
+Terminal DISTINCT remains admitted for its proven Boolean/integral/Currency/
+Decimal/NULL profile and composes with this row-local sort before TOP. Admission
+rejects sorting without positive TOP, sorted aggregate/grouped arms and stateful
+input chains, inner sorting, TOP PERCENT, other DISTINCT families/active DISTINCTROW,
+other grouping key families, nonaggregate HAVING,
 duplicate-eliminating UNION/crosstabs, joins/products, inner set stages,
 subqueries, domains, collections, Eval and volatile
 clock/random calls. Rejection
@@ -39,6 +55,11 @@ ordinary query availability. Single-table DISTINCTROW remains inactive and
 preserves duplicate rows, as in buffered execution. Metadata-only `output_names()`
 supplies ordinary read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
+
+Sorted TOP's [acceptance record](../testing/results/progressive-sorted-top-2026-11-02.json)
+records eight focused tests, retained terminal regressions and broad query checks.
+It preserves the first test failures and their narrow corrections separately from
+native Access qualification.
 
 ## Global COUNT
 
