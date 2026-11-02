@@ -3,6 +3,8 @@ mod ace_profile;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod append;
 mod apply;
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+mod autonumber_counter;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod create_index_tests;
 mod data_ownership;

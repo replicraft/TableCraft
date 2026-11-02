@@ -125,6 +125,40 @@ fn reconstruct_records(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, Vec<u32>), EditError> {
     let encoded = encode(image, source, requests, budget, cancelled)?;
+    reconstruct_encoded(
+        image,
+        source,
+        requests,
+        encoded,
+        retain_references,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn reconstruct_incrementing(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    let shape =
+        records::layout::capture_incrementing(source.table.schema(), column, budget, cancelled)?;
+    let encoded = encode_with_shape(image, source, requests, shape, budget, cancelled)?;
+    reconstruct_encoded(image, source, requests, encoded, true, budget, cancelled)
+}
+
+fn reconstruct_encoded(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    encoded: Vec<Vec<u8>>,
+    retain_references: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
     let (mut capacities, space) = capacities(image, source, budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 
@@ -237,6 +271,18 @@ pub(super) fn encode(
 ) -> Result<Vec<Vec<u8>>, EditError> {
     let schema = source.table.schema();
     let shape = records::layout::capture_actions(schema, budget, cancelled)?;
+    encode_with_shape(image, source, requests, shape, budget, cancelled)
+}
+
+fn encode_with_shape(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    shape: records::layout::Shape,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<u8>>, EditError> {
+    let schema = source.table.schema();
     budget
         .charge_allocation(requests.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;

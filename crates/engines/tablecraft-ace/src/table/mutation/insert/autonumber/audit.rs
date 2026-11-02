@@ -1,14 +1,14 @@
 //! Reconstruct generation from original requests and TD bytes, never expanded rows.
-use super::{
-    AutoNumberRowInsert, IncrementingAutoNumber,
-    counter::{Plan, Source},
-};
+use super::{AutoNumberRowInsert, IncrementingAutoNumber};
 use crate::table::mutation::insert_defaults::values::copy_value;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::page::PAGE_BYTES,
     header::check,
-    table::mutation::insert::{RowInsert, primary_column},
+    table::mutation::{
+        autonumber_counter::{Plan, Source},
+        insert::{RowInsert, primary_column},
+    },
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;

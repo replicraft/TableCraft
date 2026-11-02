@@ -30,9 +30,9 @@ const WIRE_BYTES: usize = 9;
 const PRESENT_MARKER: u8 = 0x7f;
 const SIGN_FLIP: u32 = 0x8000_0000;
 
-struct RequestedRows<'a> {
-    requests: &'a [RowInsert],
-    references: &'a [u32],
+pub(in crate::table::mutation::normal_insert) struct RequestedRows<'a> {
+    pub(in crate::table::mutation::normal_insert) requests: &'a [RowInsert],
+    pub(in crate::table::mutation::normal_insert) references: &'a [u32],
 }
 
 pub(in crate::table::mutation::normal_insert) fn prove(
@@ -179,7 +179,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     Ok(())
 }
 
-fn reconstruct_index(
+pub(in crate::table::mutation::normal_insert) fn reconstruct_index(
     image: &NativeImage,
     source: &Source,
     index: &NativeIndex,

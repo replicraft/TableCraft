@@ -17,6 +17,9 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary_insert.omitted.plan").entered();
         let source = super::capture_source(&self, table, budget, cancelled)?;
+        if super::incrementing::mode::selected(source.table.schema(), budget, cancelled)? {
+            return super::incrementing::plan(self, source, table, requests, budget, cancelled);
+        }
         // Qualify the real complete ordinary declaration even for an empty
         // operation, before inspecting a needed default or allocating a row.
         // Generated/calculated/unsupported fields cannot enter through NULL.

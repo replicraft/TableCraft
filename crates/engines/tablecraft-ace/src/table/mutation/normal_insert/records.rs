@@ -100,6 +100,28 @@ pub(super) fn encode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<u8>>, EditError> {
     let variables = record_insertion::layout::variables_actions(schema, budget, cancelled)?;
+    encode_with_variables(schema, requests, &variables, budget, cancelled)
+}
+
+pub(super) fn encode_incrementing(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<u8>>, EditError> {
+    let variables =
+        record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+    encode_with_variables(schema, requests, &variables, budget, cancelled)
+}
+
+fn encode_with_variables(
+    schema: &TableSchema,
+    requests: &[RowInsert],
+    variables: &[usize],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Vec<u8>>, EditError> {
     budget
         .charge_allocation(requests.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;
@@ -113,7 +135,7 @@ pub(super) fn encode(
             .map_err(InspectError::from)?;
         rows.push(record_insertion::build::build_with(
             schema,
-            &variables,
+            variables,
             request.values(),
             budget,
             cancelled,

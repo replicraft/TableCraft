@@ -3,7 +3,7 @@ use super::{
     Ace16AutoNumberInsertPreview, AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber,
     RowInsert, Staged, autonumber, finish_with, gates, prepare_with, preview, record,
 };
-use crate::table::mutation::insert_defaults::values::copy_value;
+use crate::table::mutation::{autonumber_counter, insert_defaults::values::copy_value};
 use crate::{EditError, InspectError, NativeImage, TableCheck, WriteBlocker, header::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -73,7 +73,7 @@ pub(super) fn prepare(
     let source = autonumber::counter::bind(image, checked, policy, budget, cancelled)?;
     let profile =
         record::Profile::bind_incrementing(checked.schema(), source.column, budget, cancelled)?;
-    let plan = autonumber::counter::prepare(source, requests.len(), budget, cancelled)?;
+    let plan = autonumber_counter::prepare(source, requests.len(), budget, cancelled)?;
     let rows = normalize(
         checked.schema().columns().len(),
         source.column,

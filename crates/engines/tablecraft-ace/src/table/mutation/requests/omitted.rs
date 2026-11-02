@@ -5,12 +5,13 @@ use tablecraft_core::values::Value;
 pub enum InsertFieldValue {
     /// An exact value, including explicit stored NULL.
     Supplied(Value),
-    /// Resolve this ordinary field's source default or nullable NULL fallback.
+    /// Resolve the field's qualified source default, nullable fallback or
+    /// native Increment declaration. Omission alone grants no generation policy.
     Omitted,
 }
 
-/// One presence-bearing row in native order, or in the explicitly selected
-/// incrementing companion order. Generation is never inferred from an omission.
+/// One presence-bearing row in native order. Native metadata and original
+/// presence are checked together; generation is never inferred from omission alone.
 pub struct OmittedRowInsert {
     values: Vec<InsertFieldValue>,
 }

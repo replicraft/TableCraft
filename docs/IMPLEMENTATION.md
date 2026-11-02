@@ -1,5 +1,18 @@
 # Implementation status
 
+## Native Increment insertion
+
+Normal omitted-field INSERT now consumes qualified native Int32 Increment
+AutoNumber declarations through the existing typed/SQL sessions and CLI.
+[The contract](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md) retains exact
+original presence, complete source/property checks and TCNA2 recovery. Four
+native commits, direct proof/forgery, resource/recovery controls, eight retained
+saves and four CLI saves/readbacks pass. Random/unknown declarations, explicit
+IDs/NULL and exhaustion remain precise refusals. Fresh generated declarations
+and native Access save/reopen remain separate work. The combined batch passes
+1,169 engine, 79 adapter and 104 CLI unit tests, strict lint and standalone
+minimal/journal/preview profiles.
+
 ## Height-two native retirement
 
 Normal [recursive Int32 retirement](access/writes/NORMAL_RECURSIVE_NODE_RETIREMENT.md)

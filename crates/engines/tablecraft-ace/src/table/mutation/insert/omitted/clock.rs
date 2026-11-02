@@ -5,6 +5,7 @@ use super::{
     InsertFieldValue, Original, Prepared, ResolvedRow, constant::Bound, declaration, reserve,
 };
 use crate::table::mutation::{
+    autonumber_counter,
     insert::{autonumber, primary_column, record},
     insert_defaults::{clock as default_clock, values::copy_value},
 };
@@ -98,7 +99,7 @@ pub(in crate::table::mutation::insert) fn bind<'a>(
     // Reuse the exact generation range owner before any host read. Its output
     // is only a preflight here; final staging and audit bind the original again.
     if let Some(source) = generated {
-        autonumber::counter::prepare(source, original.requests().len(), budget, cancelled)?;
+        autonumber_counter::prepare(source, original.requests().len(), budget, cancelled)?;
         record::Profile::bind_incrementing(schema, source.column, budget, cancelled)?;
     } else {
         primary_column::resolve(checked, budget, cancelled)?;

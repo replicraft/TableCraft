@@ -26,6 +26,11 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
+    if super::super::incrementing::mode::selected(source.table.schema(), budget, cancelled)? {
+        return super::super::incrementing::proof::prove(
+            plan, scope, table, requests, budget, cancelled,
+        );
+    }
     super::super::records::qualify(source.table.schema(), &[], budget, cancelled)?;
     let resolved =
         insert_defaults::derive(&image, source.table.schema(), requests, budget, cancelled)?;
