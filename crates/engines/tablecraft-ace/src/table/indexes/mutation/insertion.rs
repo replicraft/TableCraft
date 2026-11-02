@@ -25,13 +25,16 @@ use super::{IndexDataPatch, NumericKey, profile::SingleProfile};
 use crate::table::indexes::binary::BinaryProfile;
 #[cfg(feature = "journal")]
 use crate::table::indexes::binary::{self, BinaryIndexSelection};
+#[cfg(feature = "journal")]
+use crate::table::indexes::text;
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+use crate::table::indexes::text::TextProfile;
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::indexes::{
     composite::{DecimalColumns, DecimalValue, MixedValue},
     decimal::DecimalProfile,
     encoded_tuple::EncodedTupleProfile,
     guid::GuidProfile,
-    text::TextProfile,
 };
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::mutation::append::State;
@@ -400,6 +403,13 @@ pub(in crate::table) fn prepare_existing(
         }
     }
     let (position, column) = field.ok_or(EditError::Preservation)?;
+    if column.scalar_type() == Some(ScalarType::Text) {
+        let profile = Preserved(TextProfile::new(position, column, key.descending())?);
+        let prepared = preparation::prepare::<_, { text::MAX_ENTRY_BYTES }>(
+            image, checked, index, profile, requests, budget, cancelled,
+        )?;
+        return prepared.finish_fitting::<{ text::MAX_ENTRY_BYTES }>(budget, cancelled);
+    }
     if column.scalar_type() == Some(ScalarType::Binary) {
         let profile = Preserved(BinaryProfile {
             column: position,

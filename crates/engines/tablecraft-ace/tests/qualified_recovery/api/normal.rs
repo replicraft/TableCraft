@@ -794,3 +794,6 @@ mod genuine_node_retirement;
 
 #[path = "normal/text_update.rs"]
 mod text_update;
+
+#[path = "normal/text_cardinality.rs"]
+mod text_cardinality;

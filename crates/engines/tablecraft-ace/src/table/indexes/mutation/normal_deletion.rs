@@ -1,5 +1,6 @@
 //! Existing-page typed deletions below normal admission and journal packaging.
 mod binary;
+mod text;
 mod tree;
 use super::{
     IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack,
@@ -67,6 +68,18 @@ pub(in crate::table) fn patches(
             .iter()
             .position(|field| field.number() == key.number())
             .ok_or(InspectError::Malformed)?;
+        if schema.columns()[column].scalar_type() == Some(ScalarType::Text) {
+            text::patches(
+                image,
+                &mut reader,
+                index,
+                schema,
+                column,
+                references,
+                &mut result.patches,
+            )?;
+            continue;
+        }
         if schema.columns()[column].scalar_type() == Some(ScalarType::Binary) {
             binary::patches(
                 image,

@@ -1,8 +1,8 @@
-//! Actual action Source consumers and still-closed public mutation boundaries.
+//! Actual action Source consumers and operation-specific mutation proof boundaries.
 use super::{SCOPE, budget, hash};
 use crate::{
-    EditError, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage, RecoverableEditError,
-    RowDelete, RowInsert, SlotScalarUpdate, WriteBlocker, inspect_table_schema,
+    EditError, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage, RowDelete, RowInsert,
+    SlotScalarUpdate, WriteBlocker, inspect_table_schema,
     table::mutation::{
         fixed_records::indexed::CheckedIndexes, no_required_programs::NoRequiredTablePrograms,
         normal_actions, normal_ordinary,
@@ -135,10 +135,14 @@ fn unknown_text_declarations_aliases_and_map_roles_refuse_full_action_source() {
 }
 
 #[test]
-#[ignore = "requires pinned originals; same-image certificate and old mutation refusals"]
-fn text_action_certificate_stays_bound_and_non_text_mutations_remain_closed() {
+#[ignore = "requires pinned originals; same-image certificate and independent cardinality proofs"]
+fn text_action_certificate_stays_bound_and_cardinality_uses_its_own_proof() {
     let expected_cases =
         tablecraft_testkit::access::genuine_text_indexed_update::load_all(|raw, digest| {
+            assert_eq!(hash(raw), digest)
+        });
+    let cardinality_cases =
+        tablecraft_testkit::access::genuine_text_cardinality::load_all(|raw, digest| {
             assert_eq!(hash(raw), digest)
         });
     let mut contexts = 0;
@@ -162,20 +166,27 @@ fn text_action_certificate_stays_bound_and_non_text_mutations_remain_closed() {
             certificate.require_source(&foreign, &foreign_schema, &mut budget(), &|| false),
             Err(EditError::Preservation)
         ));
-        assert!(matches!(
-            CheckedIndexes::capture_actions(&original, table, &mut budget(), &|| false),
-            Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-        ));
+        let facts =
+            CheckedIndexes::capture_actions(&original, table, &mut budget(), &|| false).unwrap();
+        facts
+            .require_source(&original, source.table.schema(), &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(facts.checked().rows(), 24);
+        assert_eq!(facts.checked().indexes().len(), 4);
         assert!(matches!(
             normal_ordinary::capture(&original, table, &mut budget(), &|| false),
             Err(EditError::Unsupported(WriteBlocker::ActiveContent))
         ));
         for empty in [false, true] {
             let ordinals = if empty { Vec::new() } else { vec![0] };
-            assert!(matches!(
-                original.prepare_ordinary_row_deletes(table, &ordinals, &mut budget(), &|| false),
-                Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            ));
+            let prepared = original
+                .prepare_ordinary_row_deletes(table, &ordinals, &mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(prepared.len(), ordinals.len());
+            for (request, ordinal) in prepared.iter().zip(&ordinals) {
+                assert_eq!(request.row(), *ordinal);
+                assert_eq!(request.expected_bytes(), source.records[*ordinal].data);
+            }
             let updates = if empty {
                 Vec::new()
             } else {
@@ -223,29 +234,41 @@ fn text_action_certificate_stays_bound_and_non_text_mutations_remain_closed() {
                     Value::Text("a".into()),
                 ])]
             };
-            let error = image(&bytes)
+            let plan = image(&bytes)
                 .plan_recoverable_ordinary_complete_row_inserts(table, rows, &mut budget(), &|| {
                     false
                 })
-                .err()
                 .unwrap();
-            assert!(matches!(
-                error,
-                RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            ));
+            let expected = cardinality_cases
+                .iter()
+                .find(|case| {
+                    case.header == bytes[20]
+                        && case.table == table
+                        && case.recipe == if empty { "empty-insert" } else { "insert-a" }
+                })
+                .unwrap();
+            assert_eq!(plan.before_bytes(), bytes);
+            assert_eq!(plan.after_bytes(), expected.after);
+            assert_eq!(plan.inserted_rows(), usize::from(!empty));
             let deletes = if empty {
                 Vec::new()
             } else {
                 vec![RowDelete::new(0, source.records[0].data.clone())]
             };
-            let error = image(&bytes)
+            let plan = image(&bytes)
                 .plan_recoverable_ordinary_row_deletes(table, deletes, &mut budget(), &|| false)
-                .err()
                 .unwrap();
-            assert!(matches!(
-                error,
-                RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            ));
+            let expected = cardinality_cases
+                .iter()
+                .find(|case| {
+                    case.header == bytes[20]
+                        && case.table == table
+                        && case.recipe == if empty { "empty-delete" } else { "delete-null" }
+                })
+                .unwrap();
+            assert_eq!(plan.before_bytes(), bytes);
+            assert_eq!(plan.after_bytes(), expected.after);
+            assert_eq!(plan.deleted_rows(), usize::from(!empty));
         }
         assert_eq!(original.as_bytes(), bytes);
         contexts += 1;

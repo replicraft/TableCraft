@@ -1,7 +1,9 @@
 //! Fresh raw Text/DATA key proof; producer profiles and key arrays are never inputs.
-mod keys;
 
 use super::super::{binding, proof as data_proof};
+use crate::table::indexes::mutation::normal_index_audit::text::{
+    Key, original_value, requested, sort, wire,
+};
 use crate::{
     EditError, FittedColumnUpdates, InspectError, NativeEditPlan, NativeImage, NativeIndex,
     format::{bytes::u16_at, data_type::SHORT_TEXT, page::PAGE_BYTES},
@@ -12,7 +14,6 @@ use crate::{
         record_serialization::proof::equal,
     },
 };
-use keys::{Key, original_value, requested, sort, wire};
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;

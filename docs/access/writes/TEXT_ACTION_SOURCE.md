@@ -26,7 +26,8 @@ map/DATA controls, a foreign-image certificate denial and current public mutatio
 refusals. The initial read-only patch kept Text UPDATE/INSERT/DELETE planners
 closed. The separately qualified [fitting UPDATE writer](NORMAL_TEXT_INDEX_UPDATE.md)
 now consumes this Source with its own action facts, binding and proof;
-INSERT/DELETE remain separate follow-ons.
+the separate [INSERT/DELETE writer](NORMAL_TEXT_INDEX_CARDINALITY.md) now also
+consumes it with its own ownership and whole-image proof.
 
 These are local source/preservation checks. Native Access save/reopen and Windows
 qualification remain unrun.
