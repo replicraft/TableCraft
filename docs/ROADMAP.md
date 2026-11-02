@@ -7,7 +7,9 @@ native, proof/recovery, retained-session and CLI checks for fitting root leaves.
 Retained NODE partitions, wider splits and broader schema combinations remain
 work. [Inline Memo/OLE UPDATE](access/writes/NORMAL_INLINE_LONG_UPDATE.md) now
 passes the same connected checks under complete inline-only storage authority.
-External reuse/allocation remains work.
+[External Memo/OLE reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md) now passes
+native proof/recovery, retained-session and CLI checks without allocating or
+retiring chunks. External growth, NULL/empty transitions and allocation remain work.
 [Captured Date/Now defaults](access/writes/NORMAL_CLOCK_DEFAULTS.md) now pass
 native/retained-session/CLI and cold replay checks under the initial two-field
 unindexed profile. Broader default/identity/index composition and native Access

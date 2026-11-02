@@ -78,6 +78,11 @@ fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
+    if super::external::selected(image, source, &bound, budget, cancelled)? {
+        return super::external::proof::reconstruct(
+            image, source, groups, &bound, budget, cancelled,
+        );
+    }
     super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
     let schema = source.table.schema();
     let mut expected = record_serialization::copy(image.as_bytes(), budget, cancelled)?;
@@ -229,3 +234,6 @@ fn reconstruct(
 
 #[cfg(test)]
 mod inline_tests;
+
+#[cfg(test)]
+mod external_tests;

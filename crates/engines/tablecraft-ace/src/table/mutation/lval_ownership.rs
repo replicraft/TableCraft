@@ -3,7 +3,8 @@ mod profile;
 
 use super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-use crate::table::mutation::map_authority::{Census, Owner, RecordIdentity};
+use crate::table::mutation::map_authority::RecordIdentity;
+use crate::table::mutation::map_authority::{Census, Owner};
 use crate::{
     InspectError, NativeImage, NativeIndex, TableSchema,
     format::{
@@ -28,9 +29,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 struct Claim {
     page: u32,
-    #[cfg(feature = "ace16-write-preview")]
     definition: u32,
-    #[cfg(feature = "ace16-write-preview")]
     column: usize,
 }
 
@@ -45,7 +44,6 @@ pub(in crate::table::mutation) struct Inventory {
     claims: Vec<Claim>,
     live: Vec<Claim>,
     protected: Vec<u32>,
-    #[cfg(feature = "ace16-write-preview")]
     maps: Option<Census>,
 }
 
@@ -66,9 +64,7 @@ fn append_claim(
         .map_err(|_| InspectError::Allocation)?;
     claims.push(Claim {
         page,
-        #[cfg(feature = "ace16-write-preview")]
         definition: _schema.definition_page(),
-        #[cfg(feature = "ace16-write-preview")]
         column: _column,
     });
 
@@ -124,6 +120,7 @@ impl Inventory {
             claims: Vec::new(),
             live: Vec::new(),
             protected: Vec::new(),
+            maps: None,
         };
         let maps = map_authority::capture_catalog(
             image,
@@ -152,6 +149,7 @@ impl Inventory {
             reads: 0,
         };
         maps.protect_storage(&mut result.protected, &mut reader)?;
+        result.maps = Some(maps);
         Ok(result)
     }
 
@@ -499,7 +497,6 @@ impl Inventory {
             )
     }
 
-    #[cfg(feature = "ace16-write-preview")]
     pub fn require_exclusive(
         &self,
         schema: &TableSchema,

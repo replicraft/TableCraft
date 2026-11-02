@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal external Memo/OLE reuse UPDATE",
+  "qualification": "Portable independent source and matching writer/host/CLI evidence. Native Microsoft Access save/reopen remains unrun.",
+  "source_gate_commit": "9eda6976",
+  "source_record": "ace16-retained-reuse-companion-source-gates-2026-11-01.json",
+  "combined_validation_record": "ace16-retained-external-write-batch-checks-2026-11-01.json",
+  "tests": [
+    {
+      "name": "external-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "normal_fitted::proof::external_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "2b03c31ac8854c85fc703b54ace795c8f58314476a0e86a2c819d94ca8a4a7b6"
+    },
+    {
+      "name": "external-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "normal::external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "accepted": true,
+      "log_sha256": "0cdc5bc0e5be847ac9980abc2c8c0bb5a8d6020a1ab650a625d0465516e52835"
+    },
+    {
+      "name": "external-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "log_sha256": "2191f10bf81a67e9b5414f87e958d9536ce29b3ea8ef6991fa4a87b40f46745e"
+    },
+    {
+      "name": "external-host-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "log_sha256": "d03c729dfb4472b88e5d3702c119d00fa17b7418d1203ac70685a2a78afcc046"
+    },
+    {
+      "name": "external-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "3b42db06fed2593ba3d6c3b5ad60162d905333c17d2204e01e5004fb804950bd"
+    }
+  ],
+  "production_checkpoints_sha256": [
+    "5f4030ef8ff45d5c1a76416bb4b77c437bbbba00f3e05bd349988469a57e3cc7",
+    "bd90b16e7bcf29088b3e3914f5321919b1ca1983af8840314ee02a54fd6c10e5",
+    "df5e38e2ec588e0e48c0c034ea5303c8e8822392b1984ddfafc0eb9c01931ceb"
+  ],
+  "acceptance_checkpoint_sha256": "a93109f1e4f2223a6901a83ac2c4331aa78d73d5301ebe262eec8ae35a594f0d",
+  "coverage": {
+    "native_literal_commits": 28,
+    "recovery_contexts": 120,
+    "forged_after_refusals": 112,
+    "topology_and_stale_refusals": 20,
+    "direct_literal_proofs": 28,
+    "direct_forged_refusals": 140,
+    "public_resource_contexts": 8,
+    "typed_saves": 28,
+    "sql_saves": 12,
+    "same_lease_empty_followons": 40,
+    "cli_saves_with_readbacks": 12
+  },
+  "retained_corrections": [
+    "Removed unused InspectError and Resource imports after first direct compilation; behavior and independent images unchanged.",
+    "First host execution stopped because authored SQL used reserved Memo without brackets. Corrected host/CLI SQL to [Memo]; first failure retained and complete host rerun passed."
+  ]
+}

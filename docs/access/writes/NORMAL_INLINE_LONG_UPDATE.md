@@ -23,7 +23,8 @@ protected; no-op requests preserve the original storage representation.
 
 Auto selection chooses fitting only when all long targets fit. Needed growth
 and explicit growth requests with a long target refuse before staging. External
-reuse/allocation and long-value retirement remain unfinished work.
+[reuse](NORMAL_EXTERNAL_LONG_UPDATE.md) has a separate checked route. External
+allocation and long-value retirement remain unfinished work.
 
 The 28 source contexts passed native and independent readers before matching
 writes. Twenty-six literal native commits, independent proof/forgery,

@@ -1,5 +1,15 @@
 # Implementation status
 
+## External Memo/OLE reuse updates
+
+Normal [external long-value reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md)
+now retains original single/chained references while replacing or safely
+shortening their payloads through TCNI5/V1. Twenty-eight literal native commits,
+120 recovery contexts, direct proof/forgery/resource controls, 40 typed/SQL saves
+with 40 empty follow-ons and twelve CLI saves/readbacks pass. Complete catalog,
+column-map and LVAL ownership checks preserve existing orphan rows. Growth,
+retirement, NULL/empty transitions and native Access saves remain work.
+
 ## Captured native Date/Now defaults
 
 Normal [clock-default INSERT](access/writes/NORMAL_CLOCK_DEFAULTS.md) now captures

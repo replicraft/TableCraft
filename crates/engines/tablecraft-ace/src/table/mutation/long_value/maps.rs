@@ -1,9 +1,9 @@
 //! One represented-byte ledger for column LVAL and ordinary descriptor placement.
-use super::super::{EditError, WriteBlocker};
+use super::super::{EditError, WriteBlocker, storage_scope::Scope};
 use crate::{
     InspectError, LongValueMapReferences, NativeImage, TableSchema,
     format::{
-        allocation::{self, GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
+        allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
         bytes::u32_at,
         definition,
         layout::TABLE_FREE_MAP_OFFSET,
@@ -29,57 +29,12 @@ pub(super) struct Edit {
     pub after: u8,
 }
 
-pub(in crate::table::mutation) struct Scope {
-    pub owned: RepresentedMap,
-    pub hint: RepresentedMap,
-    pub pages: Vec<u32>,
-    pub hint_reference: u32,
-}
-
 pub(super) struct Maps {
     pub ordinary: Scope,
     pub long_value: Scope,
     pub global: RepresentedMap,
     pub original_eof: u32,
     pub edits: Vec<Edit>,
-}
-
-impl Scope {
-    pub(in crate::table::mutation) fn capture(
-        reader: &mut Reader<'_, Cursor<&[u8]>>,
-        owned_reference: u32,
-        hint_reference: u32,
-        role: MapRole,
-        global: &RepresentedMap,
-    ) -> Result<Self, EditError> {
-        if owned_reference == 0 || hint_reference == 0 || owned_reference == hint_reference {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
-        let owned = RepresentedMap::read(reader, owned_reference, MapRole::Owned)?;
-        let hint = RepresentedMap::read(reader, hint_reference, role)?;
-        owned.require_allocated_storage(reader, global)?;
-        hint.require_allocated_storage(reader, global)?;
-        let pages = allocation::pages(reader, owned_reference)?;
-        let candidates = allocation::pages(reader, hint_reference)?;
-        let levels = pages.len().checked_ilog2().unwrap_or(0) as usize + 1;
-        for candidate in candidates {
-            reader.tick()?;
-            reader.work(levels)?;
-            if pages.binary_search(&candidate).is_err() {
-                return Err(InspectError::Malformed.into());
-            }
-        }
-        for &number in &pages {
-            global.require_allocated(reader, number)?;
-        }
-
-        Ok(Self {
-            owned,
-            hint,
-            pages,
-            hint_reference,
-        })
-    }
 }
 
 impl Maps {
