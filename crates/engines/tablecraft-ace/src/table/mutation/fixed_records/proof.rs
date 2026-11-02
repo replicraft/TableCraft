@@ -1,7 +1,10 @@
 //! Independent original authority for preserved joint fixed-field candidates.
 #[cfg(feature = "ace16-write-preview")]
 use super::copy;
-use super::{indexed::CheckedIndexes, name_work, unique};
+use super::{
+    indexed::{CheckedIndexes, IndexTargets},
+    name_work, unique,
+};
 #[cfg(feature = "ace16-write-preview")]
 use crate::table::mutation::preserved_source as source;
 use crate::table::mutation::{
@@ -175,9 +178,57 @@ pub(in crate::table::mutation) fn reconstruct_original(
 
 fn reconstruct(
     original: &Source,
-    mut expected: Vec<u8>,
+    expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     indexed: Option<&CheckedIndexes<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    reconstruct_with_targets(
+        original,
+        expected,
+        groups,
+        indexed.map(|facts| facts as &dyn IndexTargets),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn reconstruct_integral_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::integral_updates::IntegralUpdates<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    check(budget, cancelled)?;
+    groups.first().ok_or(EditError::Preservation)?;
+    if expected.len() != original.image.as_bytes().len() {
+        return Err(EditError::Preservation);
+    }
+    indexed.require_source(
+        original.image,
+        original.source.table.schema(),
+        budget,
+        cancelled,
+    )?;
+    reconstruct_with_targets(
+        original.source,
+        expected,
+        groups,
+        Some(indexed),
+        budget,
+        cancelled,
+    )
+}
+
+fn reconstruct_with_targets(
+    original: &Source,
+    mut expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: Option<&dyn IndexTargets>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
@@ -322,7 +373,7 @@ fn reconstruct(
 fn select<'a>(
     original: &'a Source,
     group: &FixedColumnUpdates<'_>,
-    indexed: Option<&CheckedIndexes<'_>>,
+    indexed: Option<&dyn IndexTargets>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound<'a>, EditError> {

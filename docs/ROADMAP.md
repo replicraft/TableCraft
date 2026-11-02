@@ -2,10 +2,12 @@
 
 ## Current product priority
 
-The next wider indexed UPDATE, inline Memo/OLE UPDATE and Date/Now default
-writers now have [independently qualified native sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
-Native Source admission and inert SDK checks pass before matching mutation;
-implementation/recovery/session acceptance remains the next step.
+[Wider numeric index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md) now passes
+native, proof/recovery, retained-session and CLI checks for fitting root leaves.
+Retained NODE partitions, wider splits and broader schema combinations remain
+work. Inline Memo/OLE UPDATE and Date/Now default writers have
+[independently qualified native sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md);
+matching writer acceptance remains their next step.
 
 [Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now passes native, recovery, retained-session and CLI checks using original

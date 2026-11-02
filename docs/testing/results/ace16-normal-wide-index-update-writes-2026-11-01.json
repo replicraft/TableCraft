@@ -1,0 +1,147 @@
+{
+  "date": "2026-11-01",
+  "combined_validation_record": "ace16-wide-inline-clock-batch-checks-2026-11-01.json",
+  "qualification": "Portable independent source/native/SDK evidence. Native Microsoft Access save/reopen and Windows behavior comparisons remain unrun.",
+  "scope": "Normal fitting single-column Int32/Int64/Currency indexed UPDATE",
+  "production_checkpoint_sha256": "a279244893228f8c9ec588a99cde6bfd63440f0f0591c77c6c297bbbaa4f43be",
+  "acceptance_checkpoint_sha256": "058392af743b23b3cc183369a5efb05b55ea79fcbc58284813fffccbdc4196b3",
+  "source_gate_commit": "68ac92ec",
+  "source_manifest_sha256": "cb2c3e3956793c0df9b02da14269ef660796aae47fe492561a4fced37f460c00",
+  "tests": [
+    {
+      "name": "wide-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_ordinary::wide::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "first",
+      "log_sha256": "83b7ee3a283e9cbcafa8a93c9c43d6fea447f3446dc9c8354f7d2e6817dc1aef"
+    },
+    {
+      "name": "wide-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_ordinary::wide::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "35e2c530904f7d0cdd731a3eaedeaab338b4bc839feea0301867154fb4e7e18f"
+    },
+    {
+      "name": "wide-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_indexed_update::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        6
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "93d872ffdbf696cfe08773bb570d4b9cac42e0fb2cdee9992430aa83f460b4c3"
+    },
+    {
+      "name": "wide-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_wide_update",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "c54829b4529caf701ebea447d8112e6b6d84bb44432be037cb7d070656f549de"
+    },
+    {
+      "name": "wide-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_wide_update",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "c1021b4dae48c40fad6cb492e59a185ca6c50a9acaaf876b454f97aed75ab130"
+    }
+  ],
+  "coverage": {
+    "literal_native_commits": 96,
+    "empty_native_plans": 8,
+    "independently_frozen_forward_wires": 48,
+    "direct_real_and_empty_proofs": 144,
+    "direct_causal_refusals": 224,
+    "pending_mixed_rollbacks": 44,
+    "committed_mixed_refusals": 88,
+    "forged_journal_refusals": 200,
+    "full_public_resource_contexts": 16,
+    "typed_saves": 48,
+    "sql_saves": 8,
+    "stale_handle_refusals": 52,
+    "cli_saves_and_readbacks": 8
+  },
+  "retained_correction": "First compile correctly required BytePatch for spans::Patch methods. Restored the necessary trait import removed by private cleanup; source, producer semantics and expectations unchanged.",
+  "unchanged": [
+    "TCNI4 wire",
+    "V1 checked journal",
+    "existing CheckedIndexes consumers",
+    "original histories, inactive tails, maps and EOF"
+  ]
+}

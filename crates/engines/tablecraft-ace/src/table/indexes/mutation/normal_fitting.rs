@@ -115,7 +115,7 @@ pub(in crate::table) fn patches(
     Ok(patches)
 }
 
-fn rewrite<P: WriteProfile, const N: usize>(
+pub(super) fn rewrite<P: WriteProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     index: &NativeIndex,
