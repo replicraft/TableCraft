@@ -800,3 +800,6 @@ mod text_cardinality;
 
 #[path = "normal/creation_date_defaults.rs"]
 mod creation_date_defaults;
+
+#[path = "normal/text_storage_carriers.rs"]
+mod text_storage_carriers;

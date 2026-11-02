@@ -12,9 +12,11 @@ now passes independently sourced native, recovery, retained-session and CLI
 acceptance for nonunique root leaves. Fitting
 [Text INSERT/DELETE](access/writes/NORMAL_TEXT_INDEX_CARDINALITY.md) now passes
 native, recovery, retained-session and CLI checks, with undeclared empty-string
-INSERT permission still refused. Explicit AllowZeroLength sources,
-marked/compressed carriers, deeper trees and native Access save/reopen remain
-active follow-ons.
+INSERT permission still refused.
+[Compressed/marked Text UPDATE sources](access/writes/TEXT_STORAGE_CARRIER_WRITES.md)
+now pass separate native, recovery, retained-session and CLI checks. Explicit
+AllowZeroLength sources, deeper trees and native Access save/reopen remain active
+follow-ons.
 
 Normal INSERT now also fits retained single-Int32 interior trees, resolves
 qualified constant defaults from original omitted-field requests, and stores

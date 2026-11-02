@@ -306,3 +306,5 @@ pub mod genuine_text_cardinality;
 
 /// Frozen exact legacy DATE default source values and pins.
 pub mod creation_date_defaults;
+
+pub mod genuine_text_storage_carriers;

@@ -1,0 +1,217 @@
+{
+  "date": "2026-11-01",
+  "scope": "Fitting indexed Text writes over compressed and marked original storage",
+  "source_manifest_sha256": "0d61509009096cfea8b18a86880c8ff29a35415813e5759376bc20e5db6e31ec",
+  "tests": [
+    {
+      "name": "carrier-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "text::carrier",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        5
+      ],
+      "accepted": true,
+      "log_sha256": "94140900a5a835fd4bce2215edd3bc485b302faccba8612116f7dea8a84fd99a"
+    },
+    {
+      "name": "carrier-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_storage_carriers::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true,
+      "log_sha256": "65634b1d475aa2dccc15f8ca195c8c8900ed9b9cd828ec8416c34f179fd0edcd"
+    },
+    {
+      "name": "carrier-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_text_storage_carriers",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "99d1d36c52e2902c1edcff25b12689d11ddac078d05518cf8795885c2ecbba33"
+    },
+    {
+      "name": "carrier-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_text_storage_carriers_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "4e287c5715c5f4f8e875601016c4c7c04245c86a3c1bcb199c8d4375331599b2"
+    }
+  ],
+  "coverage": {
+    "native_literal_commits": 16,
+    "pending_partial_committed_recovery_contexts": 48,
+    "committed_mixed_refusals": 16,
+    "native_after_forgeries": 64,
+    "direct_real_noop_empty_proofs": 48,
+    "direct_forgeries": 160,
+    "stale_original_carriers": 16,
+    "public_resource_modes": 12,
+    "retained_typed_sql_saves": 32,
+    "cli_saves_and_readbacks": 16
+  },
+  "production_delta": "Independent allocation-free original-storage binder only; Source, metadata, encoder, serializer, history and intent unchanged.",
+  "first_integration_failure": "Formatter required explicit path for resource child under the path-qualified integration parent; installed child path corrected without changing frozen source or expected files.",
+  "native_microsoft_access_save_reopen": "UNRUN",
+  "full_backend": "INCOMPLETE",
+  "checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "plain-proof-regression",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "::text::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0
+    }
+  ],
+  "plain_text_regression_functions": 13,
+  "verification_scope": "Focused carrier tests and prior plain proof regressions plus strict profiles; broad1166/79/104 unit batch passed immediately before this narrow binder change and was not rerun."
+}

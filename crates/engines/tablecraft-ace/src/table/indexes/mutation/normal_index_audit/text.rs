@@ -1,4 +1,6 @@
 //! Physical Text marker/digest/ROW framing, separate from producer TextProfile.
+mod carrier;
+
 use crate::{
     EditError, InspectError, NativeColumn, TableSchema, encode_text_index_key,
     format::{layout::INDEX_KEY_BYTES, page::PAGE_BYTES, row::MASK_BITS},
@@ -62,22 +64,7 @@ pub(in crate::table) fn original_value<'value>(
     let Value::Text(text) = observed else {
         return Err(EditError::Preservation);
     };
-    if !payload.len().is_multiple_of(size_of::<u16>()) {
-        return Err(EditError::Preservation);
-    }
-    let mut units = text.encode_utf16();
-    for bytes in payload.as_chunks::<{ size_of::<u16>() }>().0 {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, size_of::<u16>() as u64)
-            .map_err(InspectError::from)?;
-        if units.next() != Some(u16::from_le_bytes(*bytes)) {
-            return Err(EditError::Preservation);
-        }
-    }
-    if units.next().is_some() {
-        return Err(EditError::Preservation);
-    }
+    carrier::require_payload(payload, text, budget, cancelled)?;
     Ok(observed)
 }
 

@@ -10,9 +10,9 @@ leaves with zero prefix/sibling/tail, and complete owned INDEX membership. Physi
 aliases coalesce. Required/unique Text indexes, other locales, NODEs, splits,
 allocation remain separate work. Fitting
 [Text INSERT/DELETE](NORMAL_TEXT_INDEX_CARDINALITY.md) has separate admission and
-evidence. Original Text values in
-this first profile must use plain UTF16LE; compressed and marked carriers require
-separate source/proof qualification.
+evidence. The original profile used plain UTF16LE; the separate
+[storage-carrier qualification](TEXT_STORAGE_CARRIER_WRITES.md) now covers
+compressed and marked originals without changing metadata or key encoders.
 
 Every named group binds before staging, including empty groups. Exact stale
 expectations distinguish `a` from `A` even when native index weights match. New
