@@ -1,0 +1,1532 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-01",
+  "status": "completed",
+  "baseline": {
+    "commit": "f3697466",
+    "rust_test_support_physical_lines": 488010,
+    "rust_test_support_files": 2638,
+    "literal_test_attribute_source_occurrences": 7447,
+    "literal_ignore_attribute_source_occurrences": 555,
+    "python_test_files": 12,
+    "python_test_physical_lines": 1307
+  },
+  "method": {
+    "whole_file_matching": "byte hashes",
+    "function_minimum_physical_lines": 12,
+    "block_minimum_substantive_lines": 20,
+    "active_function_candidate_groups": 120,
+    "active_block_candidate_pairs": 460,
+    "matched_physical_lines_both_sides_merged_ranges": 30542,
+    "byte_identical_active_whole_files": 0
+  },
+  "cleanup_inventory_snapshot": {
+    "physical_test_support_lines": 486697,
+    "test_support_files": 2644,
+    "literal_test_attributes": 7447,
+    "literal_ignore_attributes": 555,
+    "candidate_function_groups": 105,
+    "candidate_block_pairs": 446
+  },
+  "shared_owners": [
+    "tablecraft_testkit::support::ace::sentinel",
+    "tablecraft_testkit::support::query::multivalue",
+    "tablecraft_testkit::support::access::owned_growth",
+    "tablecraft_testkit::support::cli::owned_growth",
+    "tablecraft_testkit::support::cli::Runner",
+    "tablecraft_testkit::fixtures::formats::deployment"
+  ],
+  "preserved_boundaries": [
+    "Independent raw records, keys, journal wires and whole-image expectations remain separate from production encoders.",
+    "Source qualification, engine plans/proofs, recovery, adapter sessions and CLI publication remain distinct.",
+    "All named tests remain; one duplicate comma-join SQL row was removed from the outer suite while the inner copy and both LEFT-specific negatives remain.",
+    "Query list types, nullability, populations, expected rows, callback modes and fault hooks remain distinct."
+  ],
+  "redundant_empty_plan_executions": {
+    "before": 88,
+    "after": 32,
+    "dense_original_contexts": 12,
+    "wide_primary_original_contexts": 4,
+    "principal_cases_preserved": 44
+  },
+  "intermediate_scope_measurements": {
+    "query_support_before_lines": 1451,
+    "query_shared_support_after_lines": 490,
+    "sentinel_copied_lines_removed": 456,
+    "host_workflow_initial_lines_removed": 86,
+    "host_testkit_relocation_lines_added_before_module_composition": 1,
+    "cli_runner_configurations": 134,
+    "cli_runner_calls": 855,
+    "cli_test_attribute_occurrences_preserved": 474,
+    "not_additive_final_suite_accounting": true
+  },
+  "verification": {
+    "initial_focused_checks": [
+      {
+        "name": "fmt-first",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "typed_multivalue_join_contract-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--locked",
+          "--test",
+          "typed_multivalue_join_contract"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          10
+        ],
+        "accepted": true
+      },
+      {
+        "name": "typed_multivalue_outer_contract-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--locked",
+          "--test",
+          "typed_multivalue_outer_contract"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          8
+        ],
+        "accepted": true
+      },
+      {
+        "name": "mixed_multivalue_results_contract-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--locked",
+          "--test",
+          "mixed_multivalue_results_contract"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          10
+        ],
+        "accepted": true
+      },
+      {
+        "name": "derived_multivalue_members_contract-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--locked",
+          "--test",
+          "derived_multivalue_members_contract"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          12
+        ],
+        "accepted": true
+      },
+      {
+        "name": "genuine_marker_property_and_readonly_ole_views_qualify_before_any_writer-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "genuine_marker_property_and_readonly_ole_views_qualify_before_any_writer",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "genuine_sentinel_owned_growth_sources_read_before_any_new_writer-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "genuine_sentinel_owned_growth_sources_read_before_any_new_writer",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "genuine_forwarded_second_edit_sources_read_before_any_writer-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "genuine_forwarded_second_edit_sources_read_before_any_writer",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "genuine_alternate_preowned_data_sources_and_growth_read_before_any_writer-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "genuine_alternate_preowned_data_sources_and_growth_read_before_any_writer",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "alternate_owned_second_sources_read_before_any_writer-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "alternate_owned_second_sources_read_before_any_writer",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "tablecraft-access-genuine_owned_growth-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-access",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_owned_growth",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "tablecraft-access-genuine_alternate_owned-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-access",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_alternate_owned",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "tablecraft-cli-genuine_owned_growth_sql-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_owned_growth_sql",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "tablecraft-cli-genuine_alternate_owned_sql-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_alternate_owned_sql",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "query-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--locked",
+          "--test",
+          "typed_multivalue_join_contract",
+          "--test",
+          "typed_multivalue_outer_contract",
+          "--test",
+          "mixed_multivalue_results_contract",
+          "--test",
+          "derived_multivalue_members_contract",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "ace-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--lib",
+          "--tests",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "access-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-access",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_owned_growth",
+          "--test",
+          "genuine_alternate_owned",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "cli-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--locked",
+          "--test",
+          "genuine_owned_growth_sql",
+          "--test",
+          "genuine_alternate_owned_sql",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "boundaries-first",
+        "argv": [
+          "python3",
+          "scripts/check_dependency_boundaries.py"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      }
+    ],
+    "followup_checks": [
+      {
+        "name": "fmt-followup",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "outer-distinct-once",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--locked",
+          "--test",
+          "typed_multivalue_outer_contract",
+          "unsupported_collection_shapes_refuse_before_collection_cursors_even_with_false_filters"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "dense-empty-once",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "dense_empty_and_all_null_indexes_retain_literal_carriers_histories_and_wires",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "wide-empty-once",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "wide_primary_actions_retain_exact_original_carriers_histories_and_wires",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "accepted": true
+      },
+      {
+        "name": "native-followup-strict",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      }
+    ],
+    "support_checks_preserving_failed_attempts": [
+      {
+        "name": "support-fmt-final",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "support-testkit-default",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-testkit",
+          "--no-default-features",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "support-engine-minimal",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-ace",
+          "--no-default-features",
+          "--lib",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "support-access-minimal",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-access",
+          "--no-default-features",
+          "--lib",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      {
+        "name": "support-strict-final",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-testkit",
+          "-p",
+          "tablecraft-ace",
+          "-p",
+          "tablecraft-access",
+          "-p",
+          "tablecraft-query",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 101,
+        "passed_functions": [],
+        "accepted": false
+      },
+      {
+        "name": "support-strict-second",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-testkit",
+          "-p",
+          "tablecraft-ace",
+          "-p",
+          "tablecraft-access",
+          "-p",
+          "tablecraft-query",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 101,
+        "passed_functions": [],
+        "accepted": false
+      }
+    ],
+    "dependency_guard_tests": {
+      "passed": 17,
+      "evidence": "support-boundary-tests-first.log"
+    },
+    "testkit_all_features_library_check": {
+      "status": "passed",
+      "evidence": "testkit-all-second.log"
+    },
+    "final_combined_verification": {
+      "status": "passed",
+      "strict_all_targets_all_features": {
+        "name": "support-strict-third",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-testkit",
+          "-p",
+          "tablecraft-ace",
+          "-p",
+          "tablecraft-access",
+          "-p",
+          "tablecraft-query",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "accepted": true
+      },
+      "final_batch": [
+        {
+          "name": "support-fmt-sixth",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "accepted": true
+        },
+        {
+          "name": "support-cli-suite-tail-second",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "utf16_concatenation",
+            "--test",
+            "utf16_observations",
+            "--test",
+            "val",
+            "--test",
+            "value_parameters",
+            "--test",
+            "variant_errors",
+            "--test",
+            "week_context",
+            "--test",
+            "week_options",
+            "--test",
+            "weekday",
+            "--test",
+            "write_previews",
+            "--test",
+            "write_update_files",
+            "--test",
+            "year_windows"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            2,
+            1,
+            3,
+            8,
+            5,
+            2
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-engine-units",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1171
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-query-contracts",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-query",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "typed_multivalue_join_contract",
+            "--test",
+            "typed_multivalue_outer_contract",
+            "--test",
+            "mixed_multivalue_results_contract",
+            "--test",
+            "derived_multivalue_members_contract"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            12,
+            10,
+            10,
+            8
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-engine-fixtures",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "mutation",
+            "--test",
+            "composite_indexes",
+            "--test",
+            "decimal_composite_indexes",
+            "--test",
+            "guid_composite_indexes",
+            "--test",
+            "ace16_fixed_split_contract",
+            "--test",
+            "ace16_encoded_delete_contract",
+            "--test",
+            "ace16_encoded_split_contract",
+            "--test",
+            "ace16_index_map_growth_contract"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            8,
+            9,
+            8,
+            9,
+            7,
+            7,
+            6,
+            25
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-access-cab",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "deployment",
+            "--test",
+            "deployment_spooled"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            5,
+            13
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-genuine_marker_property_and_readonly_ole_views_qualify_before_any_writer",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "genuine_marker_property_and_readonly_ole_views_qualify_before_any_writer",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-genuine_sentinel_owned_growth_sources_read_before_any_new_writer",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "genuine_sentinel_owned_growth_sources_read_before_any_new_writer",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-genuine_forwarded_second_edit_sources_read_before_any_writer",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "genuine_forwarded_second_edit_sources_read_before_any_writer",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-genuine_alternate_preowned_data_sources_and_growth_read_before_any_writer",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "genuine_alternate_preowned_data_sources_and_growth_read_before_any_writer",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-alternate_owned_second_sources_read_before_any_writer",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--lib",
+            "alternate_owned_second_sources_read_before_any_writer",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-tablecraft-access-genuine_owned_growth",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_owned_growth",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-tablecraft-access-genuine_alternate_owned",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_alternate_owned",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-tablecraft-cli-genuine_owned_growth_sql",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_owned_growth_sql",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-tablecraft-cli-genuine_alternate_owned_sql",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-cli",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "genuine_alternate_owned_sql",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-dense_empty_and_all_null_indexes_retain_literal_carriers_histories_and_wires",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "dense_empty_and_all_null_indexes_retain_literal_carriers_histories_and_wires",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-wide_primary_actions_retain_exact_original_carriers_histories_and_wires",
+          "argv": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--test",
+            "qualified_recovery",
+            "wide_primary_actions_retain_exact_original_carriers_histories_and_wires",
+            "--",
+            "--ignored"
+          ],
+          "exit": 0,
+          "passed_functions": [
+            1
+          ],
+          "accepted": true
+        },
+        {
+          "name": "support-boundary-tests",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "scripts",
+            "-p",
+            "test_dependency_boundaries.py"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "accepted": true
+        },
+        {
+          "name": "support-boundaries",
+          "argv": [
+            "python3",
+            "scripts/check_dependency_boundaries.py"
+          ],
+          "exit": 0,
+          "passed_functions": [],
+          "accepted": true
+        }
+      ],
+      "corrected_cli_expectations_strict": {
+        "status": "passed",
+        "log": "support-cli-expectations-strict.log"
+      },
+      "cli_integration_targets": {
+        "expected": 211,
+        "passed": 211,
+        "missing": [],
+        "method": "Union of successful target results in the stopped broad run and focused tail continuations. Private-fixture ignores remain ignores.",
+        "logs": [
+          "support-cli-suite-second.log",
+          "support-cli-suite-tail.log",
+          "support-cli-suite-tail-second.log"
+        ]
+      }
+    },
+    "stale_cli_help_assertion": {
+      "observed": "Full CLI run failed the obsolete assertion that in-place CLI edits were unimplemented.",
+      "correction": "Retain the GUI limitation assertion and assert the documented journal update/recovery capability.",
+      "status": "corrected and passed"
+    },
+    "cli_byte_join_expectations": {
+      "status": "corrected and passed",
+      "contract": "Existing odd-byte String join implementation; no production behavior change.",
+      "positive_result": "LenB of two joined one-byte fragments is 2 for both + and &.",
+      "retained": "Invalid final Unicode publication, eager errors, NULL and numeric dispatch controls."
+    },
+    "stopped_cli_attempts": [
+      {
+        "name": "support-cli-suite",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 101,
+        "passed_functions": [
+          104,
+          2,
+          1,
+          2,
+          3,
+          30,
+          1,
+          4,
+          2,
+          3,
+          2,
+          2,
+          2,
+          1,
+          1
+        ],
+        "accepted": false
+      },
+      {
+        "name": "support-cli-suite-second",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 101,
+        "passed_functions": [
+          104,
+          2,
+          1,
+          2,
+          3,
+          30,
+          1,
+          4,
+          2,
+          3,
+          2,
+          2,
+          2,
+          1,
+          1,
+          5,
+          4,
+          3,
+          2,
+          3,
+          1,
+          3,
+          3,
+          1,
+          1,
+          7,
+          1,
+          1,
+          2,
+          4,
+          3,
+          3,
+          2,
+          4,
+          3,
+          1,
+          2,
+          17,
+          2,
+          3,
+          2,
+          3,
+          2,
+          2,
+          2,
+          1,
+          6,
+          4,
+          2,
+          8,
+          17,
+          1,
+          2,
+          1,
+          4,
+          2,
+          1,
+          1,
+          1,
+          4,
+          5,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          20,
+          3,
+          2,
+          4,
+          11,
+          5,
+          2,
+          3,
+          8,
+          3,
+          4,
+          2,
+          13,
+          1,
+          6,
+          3,
+          3,
+          1,
+          3,
+          3,
+          12,
+          1,
+          6,
+          4,
+          11,
+          8,
+          3,
+          2,
+          0,
+          0,
+          5,
+          0,
+          2,
+          2,
+          2,
+          2,
+          4,
+          2,
+          3,
+          4,
+          2,
+          1,
+          1,
+          3,
+          2,
+          31,
+          14,
+          58,
+          5,
+          2,
+          2,
+          7,
+          4,
+          6,
+          2,
+          27,
+          7,
+          4,
+          27,
+          1,
+          1,
+          1,
+          1,
+          1,
+          2,
+          1,
+          1,
+          1,
+          1,
+          4,
+          2,
+          1,
+          1,
+          10,
+          2,
+          2,
+          1,
+          1,
+          1,
+          9,
+          39,
+          14,
+          1,
+          2,
+          3,
+          3,
+          2,
+          3,
+          4,
+          2,
+          1,
+          1,
+          4,
+          1,
+          2,
+          13,
+          2,
+          8,
+          2,
+          3,
+          1,
+          1,
+          4
+        ],
+        "accepted": false
+      },
+      {
+        "name": "support-cli-suite-tail",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "utf16_addition",
+          "--test",
+          "utf16_concatenation",
+          "--test",
+          "utf16_observations",
+          "--test",
+          "val",
+          "--test",
+          "value_parameters",
+          "--test",
+          "variant_errors",
+          "--test",
+          "week_context",
+          "--test",
+          "week_options",
+          "--test",
+          "weekday",
+          "--test",
+          "write_previews",
+          "--test",
+          "write_update_files",
+          "--test",
+          "year_windows"
+        ],
+        "exit": 101,
+        "passed_functions": [
+          1
+        ],
+        "accepted": false
+      }
+    ],
+    "workspace_all_targets_all_features": {
+      "status": "passed",
+      "log": "support-workspace-check-second.log"
+    },
+    "local_documentation_links": {
+      "status": "passed",
+      "checked": 7427,
+      "missing": 0
+    }
+  },
+  "limits": [
+    "Physical lines include blank lines, comments and fixture literals.",
+    "Attribute counts are source occurrences, not unique or executed cases.",
+    "Automated clone groups are review candidates, not removable semantic coverage.",
+    "Archived documentation and private scratch are excluded from active inventory.",
+    "Short or rewritten duplicates may evade matching.",
+    "Static inverse comparisons do not replace runtime validation.",
+    "No native Access compatibility claim follows from this cleanup."
+  ],
+  "evidence": [
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/active-summary.json",
+      "sha256": "0ec832e579ef47bb611631c41b52b4fcb51474103478b586a597c5e9062c631b"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/final-active-summary.json",
+      "sha256": "94587de6272148bc9aa3f570e59305070bdc0bc5ad4ae34af3e520afb33d0082"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/checks-first-results.json",
+      "sha256": "d847c25a9f6d9be48223960eb81f8c86eaa5c983da8e3144c7cac79c224de054"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/checks-followup-results.json",
+      "sha256": "f7d5fa59af76bd079a02faceede90dbc1bc62ae5c82804ed67fd15caab6d240f"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-results.json",
+      "sha256": "0d8a287831550c59343511a3f4354afd6b713ec3ebec622e070921ad1812573d"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-continuation-results.json",
+      "sha256": "1be8cac178282c026002617b4c9bd54d07d82c363ce38ed56ed13f71d6b9ba57"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-boundary-tests-first.log",
+      "sha256": "166f7694d618f5e9a0c932b96472c2ea1e435786e179ddfb9b9c577c9b045f44"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/testkit-all-second.log",
+      "sha256": "b00df0f59adfaf66303e95f996bfba32dcba138e4afbea0d1a762a86634ee435"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/runner-config/comparison-first.json",
+      "sha256": "a9d1a681227f2cbc99998b856b680f0f40073ff4a4905d81e7b4bb57474aa7c2"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/runner-config/accounting-first.json",
+      "sha256": "720d14a70c03f5459155980289d54468bdd073fa2969a1d4008b35f1174b55f3"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/testkit-helper-move/comparison-first.json",
+      "sha256": "a4648e903d143c8e4ea58917419a970582acdf095bd048af13dd6eb80d4a3a67"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/final-inventory-last/active-summary.json",
+      "sha256": "a71ffef571cf3c94d8bf846ee5e7cf27831b7feb2dc75db2fa0b9e44e00d51de"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/final-inventory-complete/active-summary.json",
+      "sha256": "934c85a8441cac63cbd97ef4c1608d8f39740d9950ebac1e88ea63b6fc570c4e"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-sixth-results.json",
+      "sha256": "9f02bfd0a6ab348e13e1f9efabc74c49554694237cd29a96dc476abff581a78c"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-third-results.json",
+      "sha256": "bd431f975733613dac35e3ccd8bddd7dbbdb4c104f71e732560ff12cb252a3cb"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-fourth-results.json",
+      "sha256": "472440166c2ec518c1bfdba9815c9939904886a87d4e417953f489e5770ffbe5"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-final-fifth-results.json",
+      "sha256": "c95340387a713cb4a5331d141d055dfa6d46ab2205ff74fcabe60a7f7794f8d3"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-cli-expectations-strict.log",
+      "sha256": "647ab55e393d7886c79c90666bc2237f12f74ffa4a6a7b6adf94fd73c87ee811"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-workspace-check-second.log",
+      "sha256": "f9c3b39230378b33e8cf31734123e432841b7d5d57ac02afdeb72516c02b8076"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-cli-suite-second.log",
+      "sha256": "120e4c599081611335a890715c29c762f5d302d7af5e556d2e483bfa717d4c0c"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-cli-suite-tail.log",
+      "sha256": "4eb2cc27cb9948a3ca72aa436ecf6049748b0e15b44304e4b57f3c7e9301ce0f"
+    },
+    {
+      "private_relative_path": ".cache/test-duplication-audit-20261101/support-cli-suite-tail-second.log",
+      "sha256": "a524f2cefb4d0f384637a6622b30a20c30ff0f0c86bcbd7bfd145e0017eac2cd"
+    }
+  ],
+  "completed_date": "2026-11-02",
+  "implementation_commits": [
+    "41ff9917d7c3489c63b33706a89f2aa8fd1d5d97",
+    "6a4d24448d158dfe65f0103383fe20218b42e514"
+  ]
+}

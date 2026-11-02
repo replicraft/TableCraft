@@ -73,7 +73,8 @@ Keep source qualification, constraint-negative exclusions and mutation outcomes
 explicit when consolidating metadata. Never generate the expected side of a test
 with the producer it checks.
 
-See the [fixture policy](FIXTURES.md) for provenance and qualification requirements.
+See the [duplication audit](TEST_DUPLICATION_AUDIT.md) for the consolidation scope
+and the [fixture policy](FIXTURES.md) for provenance and qualification requirements.
 
 ## Historical extraction evidence
 
