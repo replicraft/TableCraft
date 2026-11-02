@@ -4,6 +4,7 @@ pub(in crate::table::mutation) mod indexed;
 pub(in crate::table::mutation) mod owned_growth;
 mod proof;
 pub(in crate::table::mutation) mod stage;
+pub(in crate::table::mutation) mod text;
 
 use crate::{
     EditError, FileFormat, FittedColumnUpdates, InspectError, NativeColumn, NativeEditPlan,
@@ -61,7 +62,7 @@ impl NativeImage {
                     indexed |= key.number() == field.number();
                 }
             }
-            if !indexed || field.native_type() == SHORT_BINARY {
+            if !indexed || matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT) {
                 return Ok(true);
             }
         }
@@ -80,6 +81,9 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.ordinary.fitted.table").entered();
         if indexed::capability_selected(self, table, budget, cancelled)? {
             return indexed::check_table(self, table, budget, cancelled);
+        }
+        if text::capability_selected(self, table, budget, cancelled)? {
+            return text::check_table(self, table, budget, cancelled);
         }
         let source = normal_ordinary::capture(self, table, budget, cancelled)?;
         for (column, field) in source.table.schema().columns().iter().enumerate() {
@@ -122,6 +126,9 @@ impl NativeImage {
         check(budget, cancelled)?;
         if indexed::selected(&self, table, groups, budget, cancelled)? {
             return indexed::plan(self, table, groups, budget, cancelled);
+        }
+        if text::selected(&self, table, groups, budget, cancelled)? {
+            return text::plan(self, table, groups, budget, cancelled);
         }
         let source = normal_ordinary::capture(&self, table, budget, cancelled)?;
         let (patches, changed_rows) = stage::prepare(&self, &source, groups, budget, cancelled)?;

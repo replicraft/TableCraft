@@ -1,0 +1,34 @@
+# Fitting indexed Short Text updates
+
+Normal fitted UPDATE now maintains qualified nonunique General Legacy/2010 Short
+Text root leaves through the existing native, retained-session and CLI services.
+Original TCNI5 requests and V1 recovery use the same planner and fresh proof.
+
+Admission requires complete normal action Source checks, no required table
+programs, exact General metadata, manual variable Short Text, single-key root
+leaves with zero prefix/sibling/tail, and complete owned INDEX membership. Physical
+aliases coalesce. Required/unique Text indexes, other locales, NODEs, splits,
+allocation and Text INSERT/DELETE remain separate work. Original Text values in
+this first profile must use plain UTF16LE; compressed and marked carriers require
+separate source/proof qualification.
+
+Every named group binds before staging, including empty groups. Exact stale
+expectations distinguish `a` from `A` even when native index weights match. New
+values must fit the retained record capacity. Existing native General weights
+produce replacement keys with both semantic and serialized forms; unchanged
+keys retain their original bytes. The complete original record population,
+protected siblings, allocation, historical counters, inactive tails and EOF
+remain covered by fresh independent whole-image proof.
+
+The proof reads original NULL bits, offsets and UTF16 units, constructs native
+markers, overflow framing, ROW suffixes and complete page frames independently,
+and does not consume producer key arrays or patches. Unknown metadata and
+incomplete coverage refuse before publication.
+
+The execution record distinguishes source/SDK evidence, native engine tests and
+actual host saves from Microsoft Access qualification. Native Access save/reopen
+remains unrun.
+
+The [execution record](../../testing/results/ace16-normal-text-index-update-writes-2026-11-01.json)
+records 44 native commits, recovery/forgery/resource controls, eight retained
+typed/SQL saves and four CLI saves/readbacks, including first failures and fixes.

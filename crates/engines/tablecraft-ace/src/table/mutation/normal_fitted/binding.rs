@@ -1,7 +1,7 @@
 //! Original target metadata and paid request directory, never stage authority.
 use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeImage, WriteBlocker,
-    format::data_type::SHORT_BINARY,
+    format::data_type::{SHORT_BINARY, SHORT_TEXT},
     header::check,
     table::mutation::{
         fixed_records, preserved_source::Source, record_serialization::storage, rows,
@@ -72,7 +72,7 @@ pub(in crate::table::mutation) fn all(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
-    all_with(source, groups, false, budget, cancelled)
+    all_with(source, groups, None, budget, cancelled)
 }
 
 pub(super) fn all_indexed_binary(
@@ -81,13 +81,22 @@ pub(super) fn all_indexed_binary(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
-    all_with(source, groups, true, budget, cancelled)
+    all_with(source, groups, Some(SHORT_BINARY), budget, cancelled)
+}
+
+pub(super) fn all_indexed_text(
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Bound, EditError> {
+    all_with(source, groups, Some(SHORT_TEXT), budget, cancelled)
 }
 
 fn all_with(
     source: &Source,
     groups: &[FittedColumnUpdates<'_>],
-    indexed_binary: bool,
+    indexed_native: Option<u8>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
@@ -169,7 +178,7 @@ fn all_with(
                     for key in index.columns() {
                         check(budget, cancelled)?;
                         if key.number() == field.number()
-                            && !(indexed_binary && field.native_type() == SHORT_BINARY)
+                            && indexed_native != Some(field.native_type())
                         {
                             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
                         }

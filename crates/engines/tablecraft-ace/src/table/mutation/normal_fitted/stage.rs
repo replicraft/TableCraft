@@ -77,6 +77,25 @@ pub(super) fn prepare_indexed_binary(
     )
 }
 
+pub(super) fn prepare_indexed_text(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Patch>, usize), EditError> {
+    let bound = binding::all_indexed_text(source, groups, budget, cancelled)?;
+    prepare_bound(
+        image,
+        source,
+        groups,
+        RecordPolicy::FittedDeclared,
+        bound,
+        budget,
+        cancelled,
+    )
+}
+
 fn prepare_bound(
     image: &NativeImage,
     source: &Source,

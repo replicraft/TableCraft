@@ -6,6 +6,8 @@ pub(in crate::table) mod normal_binary_update;
 pub(in crate::table) mod normal_fitting;
 #[cfg(feature = "journal")]
 pub(in crate::table) mod normal_index_audit;
+#[cfg(feature = "journal")]
+pub(in crate::table) mod normal_text_update;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) use combined::index_delete_update_patches;
 mod composite;

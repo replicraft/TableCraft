@@ -1,0 +1,185 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal fitting indexed General Text UPDATE",
+  "sources": {
+    "manifest_sha256": "710051d16eefd9c7a08709b67f8291c7938f09b4bd2a971115c2b970f577868a",
+    "independent_images": 34,
+    "request_contexts": 44
+  },
+  "results": [
+    {
+      "name": "update-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_fitted::text::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "passed_test_functions": 2,
+      "log_sha256": "37e658732cd45dde045a9fc94ffcb64c1a50dc98b0e0db1af10a7041869e42ff"
+    },
+    {
+      "name": "update-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_update::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "passed_test_functions": 3,
+      "log_sha256": "c97dc8214a84e962adab551456f01aaa5d060b3b30e9d7bd68d60c7d3ed9b7bc"
+    },
+    {
+      "name": "update-access",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_text_indexed_update",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "passed_test_functions": 1,
+      "log_sha256": "e3c3293201e237e4d6349b0ae323b3ad6c324d55d513f3cf86f09f5597792b8b"
+    },
+    {
+      "name": "update-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_text_indexed_update_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true,
+      "passed_test_functions": 1,
+      "log_sha256": "629d1c8ed3541e79e80d67fffac154fc09c975131b51add035fc6543399e2af2"
+    }
+  ],
+  "coverage": {
+    "native_commits": 44,
+    "initial_recovery_contexts": 12,
+    "committed_mixed_refusals": 4,
+    "direct_literal_proofs": 44,
+    "direct_protected_forgeries": 44,
+    "direct_eager_stale_denials": 12,
+    "full_public_resource_contexts": 4,
+    "retained_typed_sql_saves": 8,
+    "retained_stale_handle_denials": 8,
+    "cli_saves_and_readbacks": 4
+  },
+  "first_failures": [
+    {
+      "phase": "format",
+      "cause": "Resource child needed explicit path below the existing path-qualified integration parent.",
+      "correction": "Added explicit child path; immutable private draft retained."
+    },
+    {
+      "phase": "compile",
+      "cause": "Draft reverted existing retirement module visibility and imported private PAGE_VERSION.",
+      "correction": "Restored existing retirement declaration and shared PAGE_VERSION at table visibility."
+    },
+    {
+      "phase": "native planning",
+      "cause": "Comparison-only replacement key had empty serialized wire.",
+      "correction": "Use existing row_key_with_wire for replacements; independent source/expected files unchanged."
+    },
+    {
+      "phase": "strict lint",
+      "cause": "Constant chunks_exact loop in independent raw UTF16 proof.",
+      "correction": "Use as_chunks and direct fixed-array decode; payload alignment and charges unchanged; both direct tests replayed."
+    },
+    {
+      "phase": "journal-only compile",
+      "cause": "Existing Text row serialization helper and into_bytes were preview-only.",
+      "correction": "Enable existing helpers for journal consumers; journal-only and preview-only strict checks pass."
+    }
+  ],
+  "qualification": {
+    "native_engine": "PASS",
+    "retained_access_adapter": "PASS",
+    "cli": "PASS",
+    "native_microsoft_access_save_reopen": "UNRUN",
+    "full_backend": "INCOMPLETE"
+  },
+  "checks": {
+    "all_feature_all_target_strict": "PASS",
+    "minimal": "PASS",
+    "journal_only_strict": "PASS",
+    "preview_only_strict": "PASS",
+    "format": "PASS",
+    "documentation_targets": 7325,
+    "missing_documentation_targets": 0,
+    "dependency_boundaries": "PASS"
+  },
+  "followup": [
+    {
+      "name": "proof-array-cleanup",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_fitted::text::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    },
+    {
+      "name": "source-admission-migration",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::text_update::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "accepted": true
+    }
+  ]
+}

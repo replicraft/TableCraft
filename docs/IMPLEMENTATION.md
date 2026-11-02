@@ -1,5 +1,16 @@
 # Implementation status
 
+## Indexed General Text updates
+
+Normal fitting [Short Text UPDATE](access/writes/NORMAL_TEXT_INDEX_UPDATE.md)
+now maintains qualified nonunique General Legacy/2010 root leaves through native
+plans, retained typed/SQL sessions and CLI saves. Forty-four literal native
+commits, direct whole-image proofs, recovery/forgery/resource controls, eight
+session saves and four CLI saves/readbacks pass. The execution record retains
+the initial compile and serialization failures and their corrections. Broader
+Text carriers, cardinality changes, topology changes and native Access
+save/reopen remain separate work.
+
 ## Constant defaults and NODE retirement
 
 Fresh creation now authors exact Boolean, Int64, Currency and quoted Short Text
@@ -15,8 +26,9 @@ eighteen typed/SQL saves with empty follow-ons and twelve CLI saves/readbacks
 pass. Earlier non-retiring NODE regressions pass.
 
 [Read-only General Text Source](access/writes/TEXT_ACTION_SOURCE.md) passes
-36 complete source contexts and 84 malformed/unsupported controls while Text
-mutation remains closed. The historical refusal is retained separately.
+36 complete source contexts and 84 malformed/unsupported controls. Its initial
+mutation refusals remain historical evidence; the separately qualified UPDATE
+writer above now consumes it.
 
 Strict all-feature/all-target, minimal, journal-only, preview-only and dependency
 checks pass. The broad engine run passed 1,164 units and found one obsolete

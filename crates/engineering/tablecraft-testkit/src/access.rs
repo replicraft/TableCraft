@@ -299,3 +299,5 @@ pub mod creation_constant_defaults;
 
 /// Independently qualified NODE retirement sources and literal requests.
 pub mod genuine_node_retirement;
+
+pub mod genuine_text_indexed_update;

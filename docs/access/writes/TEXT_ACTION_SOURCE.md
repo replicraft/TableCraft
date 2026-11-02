@@ -23,8 +23,10 @@ from body/module/Extra absence. Its code and first receipt remain unchanged in
 history. Current tests explicitly replace that historical boundary with actual
 Source-positive checks over 36 table contexts, plus 84 malformed/unknown/alias/
 map/DATA controls, a foreign-image certificate denial and current public mutation
-refusals. The initial read-only patch keeps Text UPDATE/INSERT/DELETE planners
-closed; later qualified writers require separate admission and evidence.
+refusals. The initial read-only patch kept Text UPDATE/INSERT/DELETE planners
+closed. The separately qualified [fitting UPDATE writer](NORMAL_TEXT_INDEX_UPDATE.md)
+now consumes this Source with its own action facts, binding and proof;
+INSERT/DELETE remain separate follow-ons.
 
 These are local source/preservation checks. Native Access save/reopen and Windows
 qualification remain unrun.

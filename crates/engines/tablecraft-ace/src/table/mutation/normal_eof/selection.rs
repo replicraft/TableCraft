@@ -37,6 +37,14 @@ impl NativeImage {
             )?;
             return Ok(OrdinaryVariablePlanKind::Fitted);
         }
+        if crate::table::mutation::normal_fitted::text::selected(
+            self, table, groups, budget, cancelled,
+        )? {
+            crate::table::mutation::normal_fitted::text::preflight(
+                self, table, groups, budget, cancelled,
+            )?;
+            return Ok(OrdinaryVariablePlanKind::Fitted);
+        }
         let source = normal_ordinary::capture(self, table, budget, cancelled)?;
         // Complete old fitting preflight, including empty groups and stale
         // carriers, precedes native17/EOF qualification. Global15 stays fitted.
