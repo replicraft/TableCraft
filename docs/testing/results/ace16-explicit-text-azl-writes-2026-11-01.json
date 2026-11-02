@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-01",
+  "scope": "Explicit native Text AllowZeroLength true and false insertion acceptance",
+  "source_manifest_sha256": "d1a0b4a2420d666b6fff24a16a49842a93555be80f9c33fa4eebac908f543219",
+  "source_gate_commit": "3fca06ec",
+  "source_views": 14,
+  "positive_request_contexts": 20,
+  "acceptance_checkpoint_sha256": "4667c48bd41e2ad8de9bab53140bb10a5b4a3144a6e7cc995e8281773ba013e7",
+  "tests": [
+    {
+      "name": "azl-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::indexed::proof::text::azl_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "a2b93818bb354f7c8903f8870d5d05f5834e21389e4cd3214eb12ce9265d646b"
+    },
+    {
+      "name": "azl-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_azl::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "3"
+      ],
+      "accepted": true,
+      "phase": "fourth",
+      "log_sha256": "ff612e56832976979a310d575994a1991735e76c4327e6bbd8a3a1482ad08141"
+    },
+    {
+      "name": "azl-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_text_azl",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "2"
+      ],
+      "accepted": true,
+      "phase": "fifth",
+      "log_sha256": "25e41f898ebbfa8fb2814f62115957c9958791f2bd06597a379a005f4336e945"
+    },
+    {
+      "name": "azl-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_text_azl_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "fifth",
+      "log_sha256": "3cc2898e01cea7971459333bba912bb3d0f2b1126f2e70919017ce5635dd4cd9"
+    },
+    {
+      "name": "azl-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_text_azl_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "2"
+      ],
+      "accepted": true,
+      "log_sha256": "748e3c212e5fef7ed73374a0ca0e1a7435c1a74a881b3a64d009241bf967b03b"
+    }
+  ],
+  "coverage": {
+    "literal_native_commits_including_empty": 20,
+    "native_false_empty_string_denials": 4,
+    "direct_proofs": 20,
+    "direct_forgeries": 80,
+    "same_token_recovery_contexts": 48,
+    "forged_journal_contexts": 48,
+    "resource_contexts": 20,
+    "typed_sql_saves": 24,
+    "typed_sql_empty_follow_ons": 24,
+    "typed_sql_false_empty_string_denials": 8,
+    "cli_saves_and_readbacks": 12,
+    "cli_empty_follow_ons": 12,
+    "cli_false_empty_string_denials": 4
+  },
+  "initial_failures": [
+    "Native/adapter acceptance imported FieldConstraintViolation through ACE; corrected to its actual schema owner without a reexport.",
+    "CLI refusal expected a Debug enum name; the executable correctly prints the typed error Display text field disallows zero-length text. Diagnostic failure retained; corrected full two-function replay passed."
+  ],
+  "production_changes": "None; tests exercise existing explicit policy checks.",
+  "preserved_boundary": "Absent AllowZeroLength does not acquire empty-string permission.",
+  "qualification": "Independent source/native/inert SDK evidence; native Microsoft Access save/reopen unrun.",
+  "combined_validation_record": "ace16-increment-text-retirement-batch-checks-2026-11-01.json"
+}

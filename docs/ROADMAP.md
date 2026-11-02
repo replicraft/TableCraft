@@ -21,8 +21,9 @@ native, recovery, retained-session and CLI checks, with undeclared empty-string
 INSERT permission still refused.
 [Compressed/marked Text UPDATE sources](access/writes/TEXT_STORAGE_CARRIER_WRITES.md)
 now pass separate native, recovery, retained-session and CLI checks. Explicit
-AllowZeroLength sources, deeper trees and native Access save/reopen remain active
-follow-ons.
+[AllowZeroLength true/false sources](access/writes/EXPLICIT_TEXT_AZL.md) now
+pass native/session/CLI checks without widening absent-property permission.
+Deeper Text trees and native Access save/reopen remain active follow-ons.
 
 Normal INSERT now also fits retained single-Int32 interior trees, resolves
 qualified constant defaults from original omitted-field requests, and stores
