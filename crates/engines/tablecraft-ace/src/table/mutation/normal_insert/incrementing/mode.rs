@@ -2,8 +2,8 @@
 use crate::{
     EditError, InspectError, NativeImage, PropertyGroupKind, TableSchema, WriteBlocker,
     format::{
-        data_type::INT32,
-        layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG, FIXED_FLAG, UPDATABLE_FLAG},
+        data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
+        layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG},
         page::PAGE_BYTES,
     },
     header::check,
@@ -15,9 +15,7 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const LONG_WIDTH: usize = size_of::<i32>();
-const GENERATED_LONG_FLAGS: u8 = AUTO_NUMBER_FLAG | FIXED_FLAG | UPDATABLE_FLAG;
-const ORDINARY_LONG_FLAGS: u8 = FIXED_FLAG | UPDATABLE_FLAG;
+const LOCAL_INDEX_KIND_MAX: u8 = 1;
 const MEMO_PROPERTY: u8 = 12;
 const DDL_PROPERTY: u8 = 1;
 const RANDOM_DEFAULT: &str = "GenUniqueID()";
@@ -35,10 +33,12 @@ pub(in crate::table::mutation::normal_insert) fn selected(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
     let mut generated = false;
+
     for field in schema.columns() {
         check(budget, cancelled)?;
         generated |= field.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0;
     }
+
     Ok(generated)
 }
 
@@ -48,6 +48,21 @@ pub(super) fn inspect(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Mode, EditError> {
+    let mut generated = None;
+
+    for (position, field) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        if field.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0
+            && generated.replace(position).is_some()
+        {
+            return Ok(Mode::Unknown);
+        }
+    }
+
+    let Some(generated) = generated else {
+        return Ok(Mode::Unknown);
+    };
+
     let properties = inspect_table_properties(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -61,6 +76,7 @@ pub(super) fn inspect(
     if properties.object_id() != schema.object_id() || properties.name() != schema.name() {
         return Err(EditError::Preservation);
     }
+
     if properties.raw_bytes().is_empty() {
         if !properties.groups().is_empty() {
             return Err(EditError::Preservation);
@@ -79,10 +95,11 @@ pub(super) fn inspect(
     if group.kind() != PropertyGroupKind::Column
         || !group
             .name()
-            .eq_ignore_ascii_case(schema.columns()[0].name())
+            .eq_ignore_ascii_case(schema.columns()[generated].name())
     {
         return Ok(Mode::Unknown);
     }
+
     let [property] = group.properties() else {
         return Ok(Mode::Unknown);
     };
@@ -99,6 +116,7 @@ pub(super) fn inspect(
     {
         return Ok(Mode::Random);
     }
+
     check(budget, cancelled)?;
     Ok(Mode::Unknown)
 }
@@ -110,57 +128,80 @@ pub(super) fn capture(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<autonumber_counter::Source, EditError> {
     let schema = source.table.schema();
-    if schema.columns().len() != 2
-        || schema.layout.max_columns != 2
-        || schema.layout.variable_slots != 0
-        || schema.layout.fixed_end != 2 + 2 * LONG_WIDTH
+
+    if schema.columns().is_empty()
+        || schema.layout.max_columns != schema.columns().len()
         || schema.layout.physical_indexes != 1
-        || schema.layout.logical_indexes != 1
+        || schema.layout.logical_indexes != source.indexes.indexes().len()
     {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
+
+    let mut generated = None;
+
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
-        if field.native_type() != INT32
-            || !field.fixed()
-            || field.number() != position
-            || field.storage_length() != LONG_WIDTH
-            || field.field.offset != position * LONG_WIDTH
-            || field.extended_flags() != 0
-            || field.complex_type_id().is_some()
-            || field.flags()
-                != if position == 0 {
-                    GENERATED_LONG_FLAGS
-                } else {
-                    ORDINARY_LONG_FLAGS
-                }
+        if field.number() != position
+            || !matches!(
+                field.native_type(),
+                BOOLEAN | INT32 | INT64 | CURRENCY | DATE_TIME | SHORT_TEXT | SHORT_BINARY
+            )
+        {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        if field.flags() & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG) != 0
+            && generated.replace(position).is_some()
         {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
     }
-    let [index] = source.indexes.indexes() else {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    };
-    let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-    let [key] = index.columns() else {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    };
-    if key.number() != 0
-        || key.descending()
-        || !constraints.primary_key()
-        || !constraints.unique()
-        || !constraints.required()
-        || constraints.ignore_nulls()
-        || image
-            .as_bytes()
-            .get(index.root_page() as usize * PAGE_BYTES)
-            != Some(&LEAF)
-    {
+
+    let column = generated.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    let counter = autonumber_counter::capture(image, schema, column, budget, cancelled)?;
+    record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+
+    // All logical aliases must name the same actual physical owner. One is
+    // primary; ordinary required/unique aliases do not need primary kind 1.
+    let first = source
+        .indexes
+        .indexes()
+        .first()
+        .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
+    let mut primaries = 0;
+
+    for index in source.indexes.indexes() {
+        check(budget, cancelled)?;
+        let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+        let [key] = index.columns() else {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        };
+        if index.data_number() != first.data_number()
+            || index.root_page() != first.root_page()
+            || index.usage_map() != first.usage_map()
+            || index.flags() != first.flags()
+            || index.native_type() > LOCAL_INDEX_KIND_MAX
+            || key.number() != schema.columns()[column].number()
+            || key.descending()
+            || !constraints.unique()
+            || !constraints.required()
+            || constraints.ignore_nulls()
+            || image
+                .as_bytes()
+                .get(index.root_page() as usize * PAGE_BYTES)
+                != Some(&LEAF)
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        primaries += usize::from(constraints.primary_key());
+    }
+
+    if primaries != 1 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
+
     if inspect(image, schema, budget, cancelled)? != Mode::Increment {
         return Err(EditError::Unsupported(WriteBlocker::Properties));
     }
-    record_insertion::layout::incrementing_variables(schema, 0, budget, cancelled)?;
-    autonumber_counter::capture(image, schema, 0, budget, cancelled)
+
+    Ok(counter)
 }

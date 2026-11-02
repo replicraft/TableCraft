@@ -1,0 +1,506 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "connected_increment_companion_writes_passed",
+  "scope": {
+    "generated_field": "one actual declared Int32 Increment position",
+    "companions": [
+      "Boolean",
+      "Int32",
+      "Int64",
+      "Currency",
+      "legacy Date",
+      "Short Text",
+      "Short Binary"
+    ],
+    "index": "one physical ascending required unique primary root leaf with consistent logical aliases",
+    "original_presence_retained": true,
+    "intent_and_recovery": "existing TCNA2/profile2 and CheckedV1"
+  },
+  "source_qualification": {
+    "path": ".cache/ace16-normal-autonumber-companions-next-20261101/after-source/readonly-execution-first.json",
+    "bytes": 3920,
+    "sha256": "20ba2738e044cabf7d35fb8dbbbc12ff396838f71e830b670b8cba36ad65cea2"
+  },
+  "counts": {
+    "native_commits": 20,
+    "native_empty_plans": 20,
+    "literal_wire_contexts": 40,
+    "precise_presence_and_carrier_refusals": 92,
+    "signed_exhaustion_refusals": 20,
+    "healthy_last_zero_collisions": 14,
+    "direct_literal_proofs": 40,
+    "direct_refusals": 208,
+    "recovery_contexts": 120,
+    "journal_forgeries": 168,
+    "resource_contexts": 40,
+    "typed_saves": 20,
+    "honest_sql_saves": 12,
+    "stale_handle_refusals": 24,
+    "retained_explicit_generated_null_refusals": 32,
+    "cli_saves_and_readbacks": 12,
+    "cli_explicit_generated_null_refusals": 12
+  },
+  "native_function_coverage": {
+    "passed": 6,
+    "functions": [
+      "api::normal::increment_companions::companion_presence_commits_twenty_exact_images_and_preserves_twenty_empty_sources",
+      "api::normal::increment_companions::recovery::full_and_causally_mixed_increment_targets_recover_repeat_and_confirm",
+      "api::normal::increment_companions::recovery::protected_source_bytes_and_generated_counter_association_refuse_before_effects",
+      "api::normal::increment_companions::resources::full_increment_and_empty_plans_have_exact_pools_and_cancellation",
+      "api::normal::increment_companions::source_relative_collision_and_signed_exhaustion_are_precise",
+      "api::normal::increment_companions::supplied_generated_values_missing_companions_carriers_and_empty_text_refuse"
+    ],
+    "method": "Five functions passed in the initial native batch; the corrected binding negative passed in a focused continuation. No successful functions were rerun solely for the test input correction."
+  },
+  "verification": [
+    {
+      "name": "increment-direct-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_insert::incrementing::companion_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true
+    },
+    {
+      "name": "increment-binding-negative-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::increment_companions::supplied_generated_values_missing_companions_carriers_and_empty_text_refuse",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true
+    },
+    {
+      "name": "increment-native-regression-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::normal_autonumber",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "increment-unit-regression-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_insert::incrementing::tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true
+    },
+    {
+      "name": "retained-sessions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_increment_companion_sessions",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2,
+        1
+      ],
+      "expected_functions": 3,
+      "accepted": true
+    },
+    {
+      "name": "cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_increment_companion_sql",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1,
+        1
+      ],
+      "expected_functions": 2,
+      "accepted": true
+    },
+    {
+      "name": "retained-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_autonumber_sessions",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2,
+        2,
+        1
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "cli-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_autonumber_sql",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1,
+        1,
+        1
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-default-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-journal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-preview-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "native-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "access-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_increment_companion_sessions",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "cli-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "normal_increment_companion_sql",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "fmt-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    }
+  ],
+  "preserved_attempts": {
+    "joint_compile_failure_before_tests": {
+      "path": ".cache/backend-write-batch-20261102/increment-direct-first.log",
+      "bytes": 1398,
+      "sha256": "0bb7ce00b6def359bd101c288ca97da1ca861e86ee1809ed877e3185943f15aa"
+    },
+    "initial_native_attempt_five_passed_one_failed": {
+      "path": ".cache/backend-write-batch-20261102/increment-native-first.log",
+      "bytes": 2074,
+      "sha256": "e739345dd6f3fc33517f69608baded5e2b0f311cc60eed2bbdc53dd26d031183"
+    },
+    "ignored_regression_selection_zero_executed_not_a_pass": {
+      "path": ".cache/backend-write-batch-20261102/increment-unit-regression-first.log",
+      "bytes": 509,
+      "sha256": "a862984d71be11a56620e4dcdca946769c5fc103a15773ffbba38aa21e598da4"
+    },
+    "test_input_correction": {
+      "path": ".cache/ace16-normal-autonumber-companions-next-20261101/acceptance-connected/legal-carrier-successor/successor-checkpoint.json",
+      "bytes": 4822,
+      "sha256": "a6689c962db75c7a10cf22644ab95083161352130e324a0a0c5a28cf4a8f5c52"
+    },
+    "explanation": "The Byte negative is rejected by TCNA2 before field binding. Protocol-representable wrong carriers now exercise the intended exact schema refusal; original source/AFTER bytes and producer semantics are unchanged."
+  },
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-autonumber-companions-next-20261101/implementation-draft/readability-successor/successor-checkpoint.json",
+      "bytes": 3289,
+      "sha256": "49f395427688c77b516a0f5dafd9aef323ceae59361767f9e920366fdb73877e"
+    },
+    {
+      "path": ".cache/ace16-normal-autonumber-companions-next-20261101/acceptance-connected/first-connected-private-checkpoint.json",
+      "bytes": 5375,
+      "sha256": "6f72c7203c458f41935236d8a3675e37541f0154194f5e8bc6c60073197ce678"
+    },
+    {
+      "path": ".cache/ace16-normal-autonumber-companions-next-20261101/acceptance-connected/legal-carrier-successor/successor-checkpoint.json",
+      "bytes": 4822,
+      "sha256": "a6689c962db75c7a10cf22644ab95083161352130e324a0a0c5a28cf4a8f5c52"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/install-first.json",
+      "bytes": 8359,
+      "sha256": "3a07b44f70314729a69b1a5c12169bc5fa34dc585c3d6f3026dba0a2f7a855e5"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/map-module-visibility-successor.json",
+      "bytes": 442,
+      "sha256": "57e5a4e1868dd563c072623776ce6472cb974ab70ca0b56f152138e2f0470f5e"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-first.json",
+      "bytes": 392,
+      "sha256": "c75fed2769b75baa326041d00f95776709f0b3dc01548c3cbc66f8463a7064b0"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-second.json",
+      "bytes": 1253,
+      "sha256": "700311d21336b3b0adb48b7cf86e3954a918ddce5851e15a166a506a1a6c4712"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-third.json",
+      "bytes": 1647,
+      "sha256": "bd991e4e622fb412d670c8e782b93ef09716cee5063233972960e2aca487408e"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-fourth.json",
+      "bytes": 7493,
+      "sha256": "f9c0fd0040c8fcf0d631e0316144f835f98d6c1cde1f67bcaf4f97ac35cbd8df"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/increment-direct-second.log",
+      "bytes": 683,
+      "sha256": "9aed187227f9f97b569732e4618c5b0446595a17ec821414773d615f92b6987e"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/increment-binding-negative-second.log",
+      "bytes": 541,
+      "sha256": "ab8695a6415b2f1674b0b06f4b78436826cf41f0d0d7421cd7cccf310d06e7b1"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/retained-sessions-first.log",
+      "bytes": 2766,
+      "sha256": "8e1378f6cab77aa751f6a31d3006fd6f11e0cf135c51d8887b24984195aa0171"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/cli-first.log",
+      "bytes": 3939,
+      "sha256": "6e61064a33fce0d4712b82aff5bf16108ee58aadde5bf8ae44df43972d6f96c4"
+    }
+  ],
+  "limits": [
+    "Positive companion source coverage is Text, Binary, Boolean/Int64 and the genuine middle-position declaration; implementation carrier support is broader than these specific observed schemas.",
+    "SQL and CLI cover12 honest cases. Non-NULL Binary/Int64 assignments are typed coverage; no new SQL literal or coercion is claimed.",
+    "Multiple physical indexes, broader default/property composition, allocation and Random generation remain work.",
+    "Native Microsoft Access save/reopen remains unrun."
+  ]
+}

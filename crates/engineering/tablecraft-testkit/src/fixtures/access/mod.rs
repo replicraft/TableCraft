@@ -334,3 +334,5 @@ pub mod genuine_external_lval_continuation;
 
 pub mod index_fixture;
 pub mod index_tuples;
+
+pub mod genuine_increment_companions;

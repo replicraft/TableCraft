@@ -1,7 +1,10 @@
 //! Fresh original presence and independent signed arithmetic; no staged keys.
 use crate::{
     EditError, InsertFieldValue, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
-    RowInsert, WriteBlocker, header::check,
+    RowInsert, WriteBlocker,
+    format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
+    header::check,
+    table::mutation::{insert_defaults::values::copy_value, record_insertion::properties},
 };
 use std::io::Cursor;
 use tablecraft_core::{
@@ -23,6 +26,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     {
         return Err(EditError::Preservation);
     }
+
     let image = NativeImage::capture(
         &mut Cursor::new(plan.before_bytes()),
         scope,
@@ -31,6 +35,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
     let counter = super::mode::capture(&image, &source, budget, cancelled)?;
+
     // Derive from the exact original word with wider arithmetic independently
     // of the producer's counter::prepare vector and checked-add loop.
     let delta = i64::try_from(original.len()).map_err(|_| EditError::AutoNumberExhausted)?;
@@ -39,26 +44,53 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     let mut rows = super::vector(original.len(), budget, cancelled)?;
     for (ordinal, request) in original.iter().enumerate() {
         check(budget, cancelled)?;
-        let [
-            InsertFieldValue::Omitted,
-            InsertFieldValue::Supplied(Value::Int32(score)),
-        ] = request.values()
-        else {
+        if request.values().len() != source.table.schema().columns().len() {
             return Err(EditError::Unsupported(WriteBlocker::Column));
-        };
+        }
         let step = i64::try_from(ordinal + 1).map_err(|_| EditError::AutoNumberExhausted)?;
         let value = i32::try_from(i64::from(counter.last) + step)
             .map_err(|_| EditError::AutoNumberExhausted)?;
-        let mut values = super::vector(2, budget, cancelled)?;
-        values.push(Value::Int32(value));
-        values.push(Value::Int32(*score));
+        let mut values = super::vector(request.values().len(), budget, cancelled)?;
+        for (position, (field, original)) in source
+            .table
+            .schema()
+            .columns()
+            .iter()
+            .zip(request.values())
+            .enumerate()
+        {
+            check(budget, cancelled)?;
+            if position == counter.column {
+                if !matches!(original, InsertFieldValue::Omitted) {
+                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                }
+                values.push(Value::Int32(value));
+            } else {
+                let InsertFieldValue::Supplied(supplied) = original else {
+                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                };
+                match (field.native_type(), supplied) {
+                    (BOOLEAN, Value::Boolean(_))
+                    | (INT32, Value::Int32(_) | Value::Null)
+                    | (INT64, Value::Int64(_) | Value::Null)
+                    | (CURRENCY, Value::Currency(_) | Value::Null)
+                    | (DATE_TIME, Value::DateTime(_) | Value::Null)
+                    | (SHORT_TEXT, Value::Text(_) | Value::Null)
+                    | (SHORT_BINARY, Value::Binary(_) | Value::Null) => {}
+                    _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+                }
+                values.push(copy_value(supplied, budget, cancelled)?);
+            }
+        }
         rows.push(RowInsert::new(values));
     }
+    properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
     let (facts, optional) =
         super::super::indexed::qualify(&image, &source, table, &rows, budget, cancelled)?;
     if optional {
         return Err(EditError::Preservation);
     }
+
     let (mut expected, references) = super::super::proof::reconstruct_incrementing(
         &image,
         &source,
@@ -67,9 +99,11 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         budget,
         cancelled,
     )?;
-    let [index] = source.indexes.indexes() else {
-        return Err(EditError::Preservation);
-    };
+    let index = source
+        .indexes
+        .indexes()
+        .first()
+        .ok_or(EditError::Preservation)?;
     super::super::indexed::proof::reconstruct_index(
         &image,
         &source,
@@ -103,6 +137,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     {
         return Err(EditError::Preservation);
     }
+
     check(budget, cancelled)?;
     Ok(())
 }
