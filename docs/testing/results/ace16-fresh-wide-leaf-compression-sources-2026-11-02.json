@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "source/read qualification only; matching157-row writers unrun",
+  "source_files": 6,
+  "native_selected_contexts": 8,
+  "sdk_reports": 6,
+  "matching_producer_calls": 0,
+  "source_manifest": {
+    "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/source/expected-first/manifest.json",
+    "bytes": 4699,
+    "sha256": "829bc8ff6f0f1a33c5b52e214cd81ee60bf22a879c18c471333a1c59a59ab97c"
+  },
+  "native_prerequisite": {
+    "pin": {
+      "path": ".cache/backend-next-writers-20261102/leaf-compression-native-first.json",
+      "bytes": 578,
+      "sha256": "7ca6dcf7b7d64cfa0ea79f14d2f6571040e6f382362716d7583cd5b0a82856ec"
+    },
+    "record": {
+      "name": "leaf-compression-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "wider_leaf_compression_source_eight_contexts_replay_complete_images_before_mutation",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true,
+      "log_sha256": "d05fb029e8ccc219dd4e56a6d7c7ea5bee00904e1025584d39e5447504c5741a",
+      "passed": true,
+      "selected_contexts": 8,
+      "matching_producer_calls": 0,
+      "SDK_calls": 0
+    }
+  },
+  "sdk_aggregate": {
+    "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/source/readonly-sdk-execution-first.json",
+    "bytes": 1785,
+    "sha256": "5d7fe8045e84b26bc8b85b9294023209dfe813883ace90fe778eb414aa724b46"
+  },
+  "original_closure": {
+    "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/source/code-first-freeze.json",
+    "bytes": 6530,
+    "sha256": "ace5bce6bb2649e8b8c17cf1a195586bdea6340a0a602381a609d77cb4593624"
+  },
+  "binding_successor": {
+    "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/source/selector-binding-successor/successor-checkpoint.json",
+    "bytes": 2708,
+    "sha256": "3f535c2b559c40493f816ef7a1b212141c08d0bc62ed12bdd3ad1385e50e3f9d"
+  },
+  "views": [
+    {
+      "id": "h5-before",
+      "header": 5,
+      "tables": [
+        "Int64Keys",
+        "CurrencyKeys"
+      ],
+      "image": "h5-before.accdb",
+      "report": "h5-before.stdout"
+    },
+    {
+      "id": "h6-before",
+      "header": 6,
+      "tables": [
+        "Int64Keys",
+        "CurrencyKeys"
+      ],
+      "image": "h6-before.accdb",
+      "report": "h6-before.stdout"
+    },
+    {
+      "id": "h5-Int64Keys-compressed-halves",
+      "header": 5,
+      "tables": [
+        "Int64Keys"
+      ],
+      "image": "h5-Int64Keys-compressed-halves.accdb",
+      "report": "h5-Int64Keys-compressed-halves.stdout",
+      "proof": "h5-Int64Keys-compressed-halves.proof.json"
+    },
+    {
+      "id": "h5-CurrencyKeys-compressed-halves",
+      "header": 5,
+      "tables": [
+        "CurrencyKeys"
+      ],
+      "image": "h5-CurrencyKeys-compressed-halves.accdb",
+      "report": "h5-CurrencyKeys-compressed-halves.stdout",
+      "proof": "h5-CurrencyKeys-compressed-halves.proof.json"
+    },
+    {
+      "id": "h6-Int64Keys-compressed-halves",
+      "header": 6,
+      "tables": [
+        "Int64Keys"
+      ],
+      "image": "h6-Int64Keys-compressed-halves.accdb",
+      "report": "h6-Int64Keys-compressed-halves.stdout",
+      "proof": "h6-Int64Keys-compressed-halves.proof.json"
+    },
+    {
+      "id": "h6-CurrencyKeys-compressed-halves",
+      "header": 6,
+      "tables": [
+        "CurrencyKeys"
+      ],
+      "image": "h6-CurrencyKeys-compressed-halves.accdb",
+      "report": "h6-CurrencyKeys-compressed-halves.stdout",
+      "proof": "h6-CurrencyKeys-compressed-halves.proof.json"
+    }
+  ],
+  "native_access_save_reopen": "unrun"
+}

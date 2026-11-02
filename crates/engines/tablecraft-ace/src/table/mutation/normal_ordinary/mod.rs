@@ -179,3 +179,6 @@ mod wide_root_promotion_sources;
 
 #[cfg(test)]
 mod wide_primary_prefix_sources;
+
+#[cfg(test)]
+mod wide_leaf_compression_sources;
