@@ -1,5 +1,7 @@
 //! Metadata-only insertion; complete native admission occurs at finish.
+mod batch;
 mod clock;
+mod complete_batch;
 mod plan;
 
 use super::Error;
