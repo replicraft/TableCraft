@@ -59,6 +59,17 @@ pub(super) fn reconstruct_indexed_binary(
     reconstruct(image, source, groups, bound, budget, cancelled)
 }
 
+pub(super) fn reconstruct_indexed_text(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FittedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    let bound = binding::all_indexed_text(source, groups, budget, cancelled)?;
+    reconstruct(image, source, groups, bound, budget, cancelled)
+}
+
 fn reconstruct(
     image: &NativeImage,
     source: &Source,

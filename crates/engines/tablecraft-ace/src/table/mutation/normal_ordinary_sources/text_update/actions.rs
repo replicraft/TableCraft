@@ -136,7 +136,11 @@ fn unknown_text_declarations_aliases_and_map_roles_refuse_full_action_source() {
 
 #[test]
 #[ignore = "requires pinned originals; same-image certificate and old mutation refusals"]
-fn text_action_certificate_never_transfers_between_images_or_grants_public_mutation() {
+fn text_action_certificate_stays_bound_and_non_text_mutations_remain_closed() {
+    let expected_cases =
+        tablecraft_testkit::access::genuine_text_indexed_update::load_all(|raw, digest| {
+            assert_eq!(hash(raw), digest)
+        });
     let mut contexts = 0;
     for (bytes, table, _) in originals() {
         let original = image(&bytes);
@@ -188,19 +192,29 @@ fn text_action_certificate_never_transfers_between_images_or_grants_public_mutat
                 &|| false,
             )
             .unwrap();
-            let error = image(&bytes)
+            // Source read qualification alone did not grant this operation.
+            // The separately installed fitting writer now requalifies its own
+            // original carriers, key family and independent whole-image proof.
+            let plan = image(&bytes)
                 .plan_recoverable_ordinary_fitted_updates(
                     table,
                     vec![group],
                     &mut budget(),
                     &|| false,
                 )
-                .err()
                 .unwrap();
-            assert!(matches!(
-                error,
-                RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::ActiveContent))
-            ));
+            let expected = expected_cases
+                .iter()
+                .find(|case| {
+                    case.header == bytes[20] && case.table == table && case.recipe == "case-carrier"
+                })
+                .unwrap();
+            assert_eq!(plan.before_bytes(), bytes);
+            assert_eq!(
+                plan.after_bytes(),
+                if empty { &bytes } else { &expected.after }
+            );
+            assert_eq!(plan.changed_rows(), usize::from(!empty));
             let rows = if empty {
                 Vec::new()
             } else {

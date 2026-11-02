@@ -791,3 +791,6 @@ mod compound_root_split;
 
 #[path = "normal/genuine_node_retirement.rs"]
 mod genuine_node_retirement;
+
+#[path = "normal/text_update.rs"]
+mod text_update;

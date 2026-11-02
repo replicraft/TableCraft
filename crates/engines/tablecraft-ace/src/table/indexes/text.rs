@@ -29,7 +29,7 @@ const PAYLOAD_END: u8 = 0;
 #[derive(Eq, PartialEq)]
 pub(super) struct TextKey(Vec<u8>);
 
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 impl TextKey {
     pub(super) fn into_bytes(self) -> Vec<u8> {
         self.0

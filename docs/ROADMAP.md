@@ -2,6 +2,11 @@
 
 ## Current product priority
 
+The fitting [General Text UPDATE route](access/writes/NORMAL_TEXT_INDEX_UPDATE.md)
+now passes independently sourced native, recovery, retained-session and CLI
+acceptance for nonunique root leaves. Text INSERT/DELETE, marked/compressed
+carriers, deeper trees and native Access save/reopen remain active follow-ons.
+
 Normal INSERT now also fits retained single-Int32 interior trees, resolves
 qualified constant defaults from original omitted-field requests, and stores
 qualified inline Memo/OLE values through the existing offline sessions and CLI.
