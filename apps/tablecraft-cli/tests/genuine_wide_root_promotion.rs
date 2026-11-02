@@ -68,3 +68,40 @@ fn cli_explicit_scalar_promotions_publish_exact_whole_images_and_retained_scalar
     }
     assert_eq!(commits, 4);
 }
+
+#[test]
+#[ignore = "requires qualified prefix3 originals; SQL append-query grammar remains refused"]
+fn cli_multirow_append_query_refuses_before_journal_or_target_effects() {
+    let cases = tablecraft_testkit::fixtures::access::genuine_wide_primary_prefix_growth::load_all(
+        |bytes, expected| {
+            let actual: String = Sha256::digest(bytes)
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect();
+            assert_eq!(actual, expected);
+        },
+    );
+    for case in cases {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("target.accdb");
+        let bundle = directory.path().join("journal");
+        fs::write(&path, &case.before).unwrap();
+        let output = CLI.run(&[
+            "query",
+            "journal-insert",
+            &case.unsupported_batch_sql(),
+            "--database",
+            path.to_str().unwrap(),
+            "--journal",
+            bundle.to_str().unwrap(),
+        ]);
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains("query feature is not implemented")
+        );
+        assert_eq!(fs::read(&path).unwrap(), case.before);
+        assert!(!bundle.exists());
+        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+    }
+}

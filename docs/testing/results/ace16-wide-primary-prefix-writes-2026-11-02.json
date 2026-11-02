@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Normal simultaneous wider root promotion with two-row primary prefix growth",
+  "status": "portable acceptance passed",
+  "counts": {
+    "literal_commits_including_four_prior_single_rows": 8,
+    "direct_literal_proofs": 8,
+    "pending_recovery_shapes": 112,
+    "committed_mixture_refusals": 16,
+    "public_resource_contexts": 8,
+    "typed_saves": 8,
+    "sql_single_row_saves": 4,
+    "cold_host_contexts": 32,
+    "existing_cli_single_row_saves": 4,
+    "cli_multirow_shape_refusals": 4
+  },
+  "verification": "backend-write-batch-2026-11-02.json",
+  "source_qualification": "ace16-mixed-external-prefix-sources-2026-11-02.json",
+  "native_access_save_reopen": "unrun",
+  "scope_limits": "See the owning write contract; counts do not establish general native compatibility."
+}

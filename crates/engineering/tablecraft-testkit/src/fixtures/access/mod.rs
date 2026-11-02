@@ -343,4 +343,6 @@ pub mod genuine_external_lval_mixed;
 
 pub mod genuine_increment_multi;
 
+pub mod genuine_wide_primary_prefix_growth;
+
 pub mod tcna2;

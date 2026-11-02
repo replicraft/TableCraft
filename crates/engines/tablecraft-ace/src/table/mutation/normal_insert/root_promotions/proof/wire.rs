@@ -1,7 +1,7 @@
 //! Manual frame replay from original seeds; no shared page serializer is called.
 use super::keys::{self, Key};
 use crate::{
-    EditError, InspectError,
+    EditError, InspectError, WriteBlocker,
     format::{bytes::u16_at, page::PAGE_BYTES},
     header::check,
 };
@@ -11,6 +11,83 @@ const MASK_AT: usize = 27;
 const ENTRIES: usize = 480;
 const MASK_BYTES: usize = ENTRIES - MASK_AT;
 const MAX_WIRE: usize = 13;
+const ROW_BYTES: usize = size_of::<u32>();
+const MARKER_BYTES: usize = size_of::<u8>();
+
+/// Derive the fitting policy from a raw seed and independently reconstructed
+/// keys. No serializer, prepared prefix or producer population is consumed.
+pub(super) fn fitting(
+    page: &mut [u8],
+    keys: &[Key],
+    profile: (bool, bool),
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    let original = usize::from(u16_at(page, 24)?);
+    let (wide, descending) = profile;
+    let key_bytes = MARKER_BYTES
+        + if wide {
+            size_of::<i64>()
+        } else {
+            size_of::<i32>()
+        };
+    let wire_bytes = key_bytes + ROW_BYTES;
+    let total = keys
+        .len()
+        .checked_mul(wire_bytes)
+        .ok_or(InspectError::StructureLimit)?;
+    let capacity = PAGE_BYTES - ENTRIES;
+    if original == 0 && total <= capacity {
+        // An empty shared prefix is valid for every population. Preserve the
+        // original/fresh zero seed without paying for an unnecessary key scan.
+        return frame(page, keys, profile, 0, budget, cancelled);
+    }
+    let first_key = keys.first().copied().ok_or(EditError::Preservation)?;
+    budget
+        .charge(Resource::Steps, wire_bytes as u64)
+        .map_err(InspectError::from)?;
+    let (first, length) = keys::wire(first_key, wide, descending);
+    if length != wire_bytes {
+        return Err(EditError::Preservation);
+    }
+    let mut common = key_bytes;
+    for key in keys {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, (2 * wire_bytes) as u64)
+            .map_err(InspectError::from)?;
+        let (encoded, length) = keys::wire(*key, wide, descending);
+        if length != wire_bytes {
+            return Err(EditError::Preservation);
+        }
+        common = first[..common]
+            .iter()
+            .zip(&encoded[..common])
+            .take_while(|(left, right)| left == right)
+            .count();
+    }
+    let followers = keys.len().checked_sub(1).ok_or(EditError::Preservation)?;
+    let mut prefix = original.min(common);
+    let saved = prefix
+        .checked_mul(followers)
+        .ok_or(InspectError::StructureLimit)?;
+    if total.checked_sub(saved).ok_or(EditError::Preservation)? > capacity {
+        prefix = common;
+    }
+    let active = total
+        .checked_sub(
+            prefix
+                .checked_mul(followers)
+                .ok_or(InspectError::StructureLimit)?,
+        )
+        .ok_or(EditError::Preservation)?;
+    if active > capacity {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    check(budget, cancelled)?;
+    frame(page, keys, profile, prefix, budget, cancelled)
+}
 
 pub(super) fn frame(
     page: &mut [u8],
@@ -105,7 +182,7 @@ pub(super) fn leaves(
         };
         page[12..16].copy_from_slice(&previous.to_le_bytes());
         page[16..20].copy_from_slice(&next.to_le_bytes());
-        frame(page, population, (true, descending), 0, budget, cancelled)?;
+        fitting(page, population, (true, descending), budget, cancelled)?;
     }
     Ok(result)
 }
