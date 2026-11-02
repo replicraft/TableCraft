@@ -189,3 +189,6 @@ mod retained_binary_marker_tests;
 
 #[cfg(test)]
 mod generated_companion_original_sources;
+
+#[cfg(test)]
+mod generated_companion_update_sources;

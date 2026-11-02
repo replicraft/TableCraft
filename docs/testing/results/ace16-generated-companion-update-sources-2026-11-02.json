@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "independent source construction, native read/Source gate and inert reader qualification passed; actual writes remain separate",
+  "source_views": 12,
+  "originals": 4,
+  "source_artifacts": 51,
+  "families": [
+    "SDK-authored Numbered header 5/6 with middle generated Id and deleted high slot",
+    "authored Items header 5/6 with preserved GenUniqueID declaration; not native Random generation evidence"
+  ],
+  "requests": [
+    "Numbered two-row Score changes in either order",
+    "Items single-row Score change",
+    "Score NULL preserving inactive bytes",
+    "no-op and named-empty requests reuse originals"
+  ],
+  "preservation": "All bytes outside explicit Score payloads or presence bit unchanged, including IDs, LAST/history, deleted rows, indexes/aliases, maps, defaults, catalog and EOF.",
+  "counts": {
+    "native_read_views": 12,
+    "independent_reader_reports": 30,
+    "compiler_calls": 1,
+    "saved_inventory_files": 66,
+    "copied_saved_controls": 16,
+    "receipt_denials": 19,
+    "plan_denials": 7,
+    "raw_role_denials": 32
+  },
+  "native_checks": [
+    {
+      "name": "source-gate",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::generated_companion_update_sources::generated_companion_score_sources_preserve_counters_defaults_and_full_canonical_source",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "4a43cdac2a5a40be9a6d697f0371a0b3121f8f09b773dfe1022b91e3cb5daff3"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "--tests",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "f77a173ab65c322ea77473ff51647c6e8d6c9710c91b7eb49d332680edf3e4a2"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/first-complete-private-checkpoint.json",
+      "bytes": 2514,
+      "sha256": "b9829f14b355a27eda346b5a8070a8c6db86b0cf31832f48d41212e365387ec4"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/ADVANCED_FIELDS_SOURCE_REVIEW_FIRST.json",
+      "bytes": 2201,
+      "sha256": "6a25681b24fee9e48016da5082852ad47e2c6ab32638cacdeba1f7de21724f07"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/saved-evidence-successor/successor-checkpoint.json",
+      "bytes": 2446,
+      "sha256": "b3724591e02cb22e707bcc3846dc49277e829638e0e417b75fd4b7dbafe45e5f"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/saved-evidence-successor/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2474,
+      "sha256": "3a7edf439c3b0f4402c4ca98410d4fac7e3292c5bcdf4afc999cc56fc1aa5c6c"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/delegated-pure-first/result.json",
+      "bytes": 1543,
+      "sha256": "e6c603978ba9964ce1cb0064a35740e299e9851fe998bc01d950d3b3f547cf35"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/expected-first/manifest.json",
+      "bytes": 11996,
+      "sha256": "55cb6e02acf6caa93dad011fdcaad8f07465a3f4e4c3bed4beeb624edebaf912"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/root-emission-first/installation.json",
+      "bytes": 603,
+      "sha256": "c25a08e3697c1675d66dea56cc75f54b414f5d1878728a6c5c4b94c90d2bc343"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/root-native-first/result.json",
+      "bytes": 1156,
+      "sha256": "08b540fb736cd1b2c6c0b552b2fcf42f250bb66c078fe7270995b2afb114eaa6"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/readonly-qualification-first.json",
+      "bytes": 2616,
+      "sha256": "46af29b96c2f743a16ab8416ba795f3ff6147cb09586ea6246b3b5e6f78f69c1"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/source/saved-verification-first.json",
+      "bytes": 1033,
+      "sha256": "6f287ddd6b06a438cf1783a1c37a9472a443805ba80cd34b270ae6151fec53b8"
+    }
+  ],
+  "preexecution_correction": "A review found missing exact saved SDK inventory and symlink rejection. Preserved verifier-only successor resolves those checks before execution; source laws, model, reports, observer and constructor remain unchanged.",
+  "effects": {
+    "mutation_planner_calls": 0,
+    "generated_values": 0,
+    "stored_expression_evaluations": 0
+  },
+  "native_access_qualification": "unrun; SDK getter reports do not establish Microsoft Access execution or save compatibility"
+}
