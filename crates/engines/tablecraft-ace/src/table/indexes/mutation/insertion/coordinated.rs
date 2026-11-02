@@ -78,9 +78,10 @@ pub(in crate::table) fn prepare(
             return Err(EditError::Preservation);
         }
         for half in [&entries[..middle], &entries[middle..]] {
-            if !repack::borrowed_fits_fresh::<_, ENTRY_BUFFER>(
+            if !repack::borrowed_fits_fresh_with_policy::<_, ENTRY_BUFFER>(
                 half,
                 &prepared.profile,
+                repack::PrefixPolicy::KeyComponent,
                 budget,
                 cancelled,
             )? {
@@ -103,21 +104,25 @@ pub(in crate::table) fn prepare(
             budget,
             cancelled,
         )?;
-        let right_page = pages::leaf::<_, ENTRY_BUFFER>(
-            checked.schema().definition_page(),
-            left,
-            0,
+        let right_page = pages::leaf_with_policy::<_, ENTRY_BUFFER>(
+            &pages::LeafHeader {
+                owner: checked.schema().definition_page(),
+                links: (left, 0),
+            },
             &entries[middle..],
             &prepared.profile,
+            repack::PrefixPolicy::KeyComponent,
             budget,
             cancelled,
         )?;
-        let left_page = pages::leaf::<_, ENTRY_BUFFER>(
-            checked.schema().definition_page(),
-            0,
-            right,
+        let left_page = pages::leaf_with_policy::<_, ENTRY_BUFFER>(
+            &pages::LeafHeader {
+                owner: checked.schema().definition_page(),
+                links: (0, right),
+            },
             &entries[..middle],
             &prepared.profile,
+            repack::PrefixPolicy::KeyComponent,
             budget,
             cancelled,
         )?;

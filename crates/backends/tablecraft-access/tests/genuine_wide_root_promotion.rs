@@ -41,6 +41,12 @@ fn typed_and_explicit_scalar_sql_promotions_preserve_literal_images_leases_recei
     );
     let mut commits = 0;
     let mut stale = 0;
+    cases.extend(
+        tablecraft_testkit::fixtures::access::genuine_wide_leaf_compression::load_all(verify),
+    );
+    for case in &cases {
+        case.assert_literal_layout();
+    }
     for case in cases {
         for sql in [false, true] {
             if sql && case.inserted != 1 {
@@ -148,7 +154,7 @@ fn typed_and_explicit_scalar_sql_promotions_preserve_literal_images_leases_recei
             stale += 1;
         }
     }
-    assert_eq!((commits, stale), (12, 12));
+    assert_eq!((commits, stale), (16, 16));
 }
 
 #[test]
@@ -164,6 +170,12 @@ fn wider_promotion_cold_restarts_use_actual_tcna4_v2_host_recovery_and_retired_c
     cases.extend(
         tablecraft_testkit::fixtures::access::genuine_wide_primary_prefix_growth::load_all(verify),
     );
+    cases.extend(
+        tablecraft_testkit::fixtures::access::genuine_wide_leaf_compression::load_all(verify),
+    );
+    for case in &cases {
+        case.assert_literal_layout();
+    }
     for case in cases {
         let mut digest = Sha256::new();
         digest.update(b"TCNI0001:BEFORE\0");
@@ -274,7 +286,7 @@ fn wider_promotion_cold_restarts_use_actual_tcna4_v2_host_recovery_and_retired_c
             }
         }
     }
-    assert_eq!(contexts, 32);
+    assert_eq!(contexts, 48);
 }
 
 #[test]

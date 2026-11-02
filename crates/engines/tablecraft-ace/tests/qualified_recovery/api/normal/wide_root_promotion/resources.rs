@@ -46,5 +46,5 @@ fn wide_promotions_full_public_pools_exact_one_less_and_entry_middle_terminal_ca
         );
         contexts += 1;
     }
-    assert_eq!(contexts, 8);
+    assert_eq!(contexts, 12);
 }

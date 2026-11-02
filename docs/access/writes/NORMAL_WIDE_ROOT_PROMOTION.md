@@ -26,12 +26,12 @@ BEFORE and the retained requests. It compares the complete image and captures
 fresh final Source. TCNA4 retains its complete-row wire format and existing V2
 recovery; no caller-supplied split mode or preview conversion grants permission.
 
-Eight literal commits (four single rows and four atomic two-row batches) pass
-direct and journal acceptance. Recovery checks include 112 pending partial-image
+Twelve literal commits (four single rows, four two-row batches and four
+157-row batches) pass direct and journal acceptance. Recovery checks include 168 pending partial-image
 shapes, distinct GLOBAL-only
 and INDEX-owned-only map states, committed mixed-image refusals, cold host
 restarts, forgeries and exact resource/cancellation controls. Existing Int32 root
-split regressions pass. Twelve typed/SQL host saves, 32 cold restarts and the
+split regressions pass. Sixteen typed/SQL host saves, 48 cold restarts and the
 existing four CLI saves/readbacks pass. `CompleteInsertableBatch` performs the
 two-row typed saves atomically; SQL/CLI multi-row append shapes still refuse.
 The
@@ -41,6 +41,15 @@ preceded matching writes.
 The paired source uses MAX/MAX-1 and requires a three-byte primary prefix. It
 does not replace the different historical MAX/MAX request with another golden.
 See the [prefix execution record](../../testing/results/ace16-wide-primary-prefix-writes-2026-11-02.json).
+
+The larger independently qualified batch requires fresh ascending leaf prefixes
+0/1 and descending prefixes 0/9. Coordinated fresh leaves explicitly bound shared
+prefixes to the native marker/value component, excluding ROW. Existing repack
+entry points retain their full sort-key and unused single-entry child-prefix
+behavior. The first larger matching run failed preservation because that legacy
+policy selected prefix 11. A three-owner policy correction matches all frozen
+images without changing source bytes, requests or independent proof. See the
+[larger batch record](../../testing/results/ace16-fresh-wide-leaf-compression-writes-2026-11-02.json).
 
 DATA plus wider-index allocation, nullable/compound keys,
 retained wider NODE insertion, recursive splits and map expansion remain separate

@@ -11,6 +11,36 @@ use super::{IndexDataPatch, encoding, profile::WriteProfile};
 use crate::{EditError, InspectError, WriteBlocker, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+/// The default preserves full sort-key and single-entry child-prefix behavior.
+/// Coordinated normal fresh leaves share only the key component, excluding ROW.
+#[derive(Clone, Copy)]
+pub(super) enum PrefixPolicy {
+    Existing,
+    #[cfg(feature = "journal")]
+    KeyComponent,
+}
+
+impl PrefixPolicy {
+    fn bound<const N: usize>(
+        self,
+        encoded: &encoding::Encoded<N>,
+        single: bool,
+    ) -> Result<usize, InspectError> {
+        match self {
+            Self::Existing => Ok(if single {
+                encoded.length
+            } else {
+                encoded.key_length
+            }),
+            #[cfg(feature = "journal")]
+            Self::KeyComponent => encoded
+                .key_length
+                .checked_sub(super::super::page::ROW_BYTES)
+                .ok_or(InspectError::Malformed),
+        }
+    }
+}
+
 const FREE_OFFSET: usize = std::mem::offset_of!(IndexHeader, free);
 const PREFIX_OFFSET: usize = std::mem::offset_of!(IndexHeader, prefix);
 const BITMAP_START: usize = size_of::<IndexHeader>();
@@ -26,6 +56,7 @@ pub(super) fn page<P: WriteProfile, const N: usize>(
     page_with::<_, N>(
         original,
         entries,
+        PrefixPolicy::Existing,
         |entry| encoding::entry::<P, N>(entry, profile),
         budget,
         cancelled,
@@ -43,6 +74,7 @@ pub(super) fn retained_page<P: RetainedProfile, const N: usize>(
     page_with::<_, N>(
         original,
         entries,
+        PrefixPolicy::Existing,
         |entry| encoding::retained_entry::<P, N>(entry, profile),
         budget,
         cancelled,
@@ -57,9 +89,29 @@ pub(super) fn borrowed_page<P: RetainedProfile, const N: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    borrowed_page_with_policy::<P, N>(
+        original,
+        entries,
+        profile,
+        PrefixPolicy::Existing,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+pub(super) fn borrowed_page_with_policy<P: RetainedProfile, const N: usize>(
+    original: &[u8],
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    policy: PrefixPolicy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
     page_with::<_, N>(
         original,
         entries,
+        policy,
         |entry| encoding::borrowed_entry::<P, N>(entry, profile),
         budget,
         cancelled,
@@ -78,6 +130,7 @@ pub(super) fn borrowed_fits<P: RetainedProfile, const N: usize>(
     borrowed_fits_with_seed::<P, N>(
         entries,
         usize::from(header.prefix.get()),
+        PrefixPolicy::Existing,
         profile,
         budget,
         cancelled,
@@ -91,13 +144,32 @@ pub(super) fn borrowed_fits_fresh<P: RetainedProfile, const N: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
-    borrowed_fits_with_seed::<P, N>(entries, 0, profile, budget, cancelled)
+    borrowed_fits_with_seed::<P, N>(
+        entries,
+        0,
+        PrefixPolicy::Existing,
+        profile,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(super) fn borrowed_fits_fresh_with_policy<P: RetainedProfile, const N: usize>(
+    entries: &[Entry<&P::Key>],
+    profile: &P,
+    policy: PrefixPolicy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    borrowed_fits_with_seed::<P, N>(entries, 0, policy, profile, budget, cancelled)
 }
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 fn borrowed_fits_with_seed<P: RetainedProfile, const N: usize>(
     entries: &[Entry<&P::Key>],
     seed: usize,
+    policy: PrefixPolicy,
     profile: &P,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -105,6 +177,7 @@ fn borrowed_fits_with_seed<P: RetainedProfile, const N: usize>(
     let layout = measure(
         entries,
         seed,
+        policy,
         &|entry| encoding::borrowed_entry::<P, N>(entry, profile),
         budget,
         cancelled,
@@ -120,6 +193,7 @@ struct Layout {
 fn measure<K, const N: usize>(
     entries: &[Entry<K>],
     original_prefix: usize,
+    policy: PrefixPolicy,
     encode: &impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -138,13 +212,9 @@ fn measure<K, const N: usize>(
             .ok_or(InspectError::StructureLimit)?;
         if position == 0 {
             first = encoded.bytes;
-            common = if entries.len() == 1 {
-                encoded.length
-            } else {
-                encoded.key_length
-            };
+            common = policy.bound(&encoded, entries.len() == 1)?;
         } else {
-            common = common.min(encoded.key_length);
+            common = common.min(policy.bound(&encoded, false)?);
             common = first[..common]
                 .iter()
                 .zip(&encoded.bytes[..common])
@@ -165,6 +235,7 @@ fn measure<K, const N: usize>(
 fn page_with<K, const N: usize>(
     original: &[u8],
     entries: &[Entry<K>],
+    policy: PrefixPolicy,
     encode: impl Fn(&Entry<K>) -> Result<encoding::Encoded<N>, InspectError>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -176,6 +247,7 @@ fn page_with<K, const N: usize>(
     let Layout { prefix, length } = measure(
         entries,
         usize::from(header.prefix.get()),
+        policy,
         &encode,
         budget,
         cancelled,
@@ -350,6 +422,7 @@ mod tests {
             child: 0,
         }
     }
+
     #[test]
     fn literal_nullable_page_updates_exact_free_bitmap_payload_and_preserves_padding() {
         let original = original();
@@ -390,6 +463,7 @@ mod tests {
         assert_eq!(patches_out[0].offset, 13 * 4096 + 2);
         assert_eq!(patches_out[1].offset, 13 * 4096 + 27);
     }
+
     #[test]
     fn compressed_capacity_uses_a_valid_common_prefix_and_rejects_a_required_split() {
         let original = original();
@@ -413,6 +487,7 @@ mod tests {
             Some(EditError::Unsupported(WriteBlocker::IndexedColumn))
         );
     }
+
     #[test]
     fn single_node_entry_retains_a_valid_unused_prefix_through_child_bytes() {
         let mut original = original();
@@ -438,6 +513,7 @@ mod tests {
             original
         );
     }
+
     #[test]
     fn invalid_patch_geometry_and_cancellation_return_no_repacked_page() {
         let original = original();

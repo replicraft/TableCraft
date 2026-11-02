@@ -25,6 +25,14 @@ fn cases() -> Vec<Case> {
             |raw, expected| assert_eq!(hash(raw), expected),
         ),
     );
+    cases.extend(
+        tablecraft_testkit::fixtures::access::genuine_wide_leaf_compression::load_all(
+            |raw, expected| assert_eq!(hash(raw), expected),
+        ),
+    );
+    for case in &cases {
+        case.assert_literal_layout();
+    }
     cases
 }
 
@@ -132,7 +140,7 @@ fn wider_promotions_commit_single_and_prefix_compressed_batch_tcna4_v2_images() 
         assert_eq!((target.storage.writes, target.resizes), (writes, resizes));
         commits += 1;
     }
-    assert_eq!(commits, 8);
+    assert_eq!(commits, 12);
 }
 
 #[test]
@@ -234,7 +242,7 @@ fn wider_promotion_pending_partial_tails_and_true_mixed_old_pages_rollback_exact
             contexts += 1;
         }
     }
-    assert_eq!(contexts, 112);
+    assert_eq!(contexts, 168);
 }
 
 #[test]
@@ -319,7 +327,7 @@ fn wider_promotion_committed_mixtures_and_forged_children_maps_histories_are_eff
         ));
         assert_eq!(log.bytes.get_ref(), &saved);
     }
-    assert_eq!(committed_refusals, 16);
+    assert_eq!(committed_refusals, 24);
     assert!(forgeries >= 240);
 }
 
@@ -466,6 +474,6 @@ fn wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_
         }
         contexts += 1;
     }
-    assert_eq!(contexts, 8);
+    assert_eq!(contexts, 12);
     assert_eq!(duplicate_contexts, 4);
 }

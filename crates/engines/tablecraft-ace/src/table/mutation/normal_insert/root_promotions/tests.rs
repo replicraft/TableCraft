@@ -30,6 +30,20 @@ fn cases() -> Vec<Case> {
             },
         ),
     );
+    cases.extend(
+        tablecraft_testkit::fixtures::access::genuine_wide_leaf_compression::load_all(
+            |bytes, expected| {
+                let actual: String = Sha256::digest(bytes)
+                    .iter()
+                    .map(|byte| format!("{byte:02x}"))
+                    .collect();
+                assert_eq!(actual, expected);
+            },
+        ),
+    );
+    for case in &cases {
+        case.assert_literal_layout();
+    }
     cases
 }
 
@@ -37,7 +51,7 @@ fn cases() -> Vec<Case> {
 #[ignore = "requires four independently qualified literal wider promotion AFTERs"]
 fn literal_wider_root_promotions_prove_without_stage_or_prepared_index_facts() {
     let cases = cases();
-    assert_eq!(cases.len(), 8);
+    assert_eq!(cases.len(), 12);
     for case in cases {
         let requests: Vec<_> = case
             .insert_values()

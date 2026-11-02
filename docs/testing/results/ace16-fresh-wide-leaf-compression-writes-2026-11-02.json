@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable complete-image and retained-host acceptance passed; native Access save/reopen unrun",
+  "counts": {
+    "literal_native_commits": 12,
+    "new157_row_outcomes": 4,
+    "direct_functions": 2,
+    "native_functions": 5,
+    "pending_rollback_shapes": 168,
+    "committed_mixture_refusals": 24,
+    "public_resource_contexts": 12,
+    "typed_saves": 12,
+    "sql_single_row_saves": 4,
+    "cold_host_contexts": 48
+  },
+  "source_qualification": "ace16-fresh-wide-leaf-compression-sources-2026-11-02.json",
+  "preserved_first_failure": {
+    "receipt": {
+      "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/matching-first/results-first.json",
+      "bytes": 974,
+      "sha256": "ed547982bb5adda2e765f88fcd606b4ceb1f0f0f5e1217b468de062d1aa29575"
+    },
+    "records": [
+      {
+        "name": "fresh-compression-direct-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "root_promotions::tests",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          2
+        ],
+        "expected_functions": 2,
+        "accepted": true,
+        "log_sha256": "03c80dabe9c850421fb8260b16bcaaacfa50846d7db96ebba9b2d43d255b8e7a"
+      },
+      {
+        "name": "fresh-compression-native-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "api::normal::wide_root_promotion",
+          "--",
+          "--ignored"
+        ],
+        "exit": 101,
+        "passed_functions": [],
+        "expected_functions": 5,
+        "accepted": false,
+        "log_sha256": "3f75b761de7aea7c3c7160fdf0315cd0cab6083373a488ad4f5f380862bffa73"
+      }
+    ],
+    "cause": "Legacy serializer common prefix included two ROW bytes (11); independently qualified coordinated fresh-leaf policy requires marker/value only (9). All five native functions failed Preservation when reaching new cases; literal manual proof passed."
+  },
+  "correction": {
+    "checkpoint": {
+      "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/producer-policy-successor/first-private-checkpoint.json",
+      "bytes": 2561,
+      "sha256": "bb59deadb7c2da10012d768ab12b22650bbcfc8f2136643b7c2d4fc30c80f8c1"
+    },
+    "review": {
+      "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/producer-policy-successor/VALUE_SEMANTICS_REVIEW_FIRST.json",
+      "bytes": 2743,
+      "sha256": "8c08e6bec6afc064870aa070f6023a86ae21c2c3aa8a973410ddd1c03e02add2"
+    },
+    "source_oracle_changes": 0,
+    "independent_proof_changes": 0,
+    "legacy_serializer_policy": "preserved",
+    "new_policy": "only coordinated fresh fit/leaf writes exclude ROW"
+  },
+  "matching_successor": {
+    "receipt": {
+      "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/matching-first/results-second.json",
+      "bytes": 992,
+      "sha256": "8ed06271ec5cdf09cd4fd61a83ef687f22b1afe82aabdd59c73311f1fd0124b9"
+    },
+    "records": [
+      {
+        "name": "fresh-compression-native-second",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "api::normal::wide_root_promotion",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          5
+        ],
+        "expected_functions": 5,
+        "accepted": true,
+        "log_sha256": "ab300e451e8ecb4c5205645061ad98e49a1b6fea95a974804238b6bbdbd67eb0"
+      },
+      {
+        "name": "fresh-compression-host-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-access",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "genuine_wide_root_promotion",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          3
+        ],
+        "expected_functions": 3,
+        "accepted": true,
+        "log_sha256": "ddcf12c2b05acccce506cadadc021ccd22255cc351bf17d6bad3ded0040f9f57"
+      }
+    ]
+  },
+  "final_checks": {
+    "receipt": {
+      "path": ".cache/ace16-normal-wide-leaf-compression-next-20261102/matching-first/final-results-first.json",
+      "bytes": 3875,
+      "sha256": "c15ab4d7a48543bf2820aa0c3f4f6c6781a8ba836ae4cf33cd07b9cff8c705b0"
+    },
+    "records": [
+      {
+        "name": "legacy-i32-root-commit-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "qualified_recovery",
+          "api::normal::root_split::complete_root_splits_commit_tcna4_v2_and_confirm_without_writes_or_resize",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          1
+        ],
+        "expected_functions": 1,
+        "accepted": true,
+        "log_sha256": "a4a18406bc28c27c75258f6f281d72e336d80b276cb208095035ce4667fe29c6"
+      },
+      {
+        "name": "legacy-wide-cli-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "genuine_wide_root_promotion",
+          "--",
+          "--ignored"
+        ],
+        "exit": 0,
+        "passed_functions": [
+          2
+        ],
+        "expected_functions": 2,
+        "accepted": true,
+        "log_sha256": "16e41787c5ad5ba2b9e369b9dcdb8ca00265bc537fdf3fbae68e6f9ec582055d"
+      },
+      {
+        "name": "ace-default-first",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-ace",
+          "--no-default-features",
+          "--lib",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "c69a8c00e5574692621dcd76031f5579b2cd7c7c9482ed4e17022d6e4899a2f1"
+      },
+      {
+        "name": "ace-journal-first",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-ace",
+          "--no-default-features",
+          "--features",
+          "journal",
+          "--lib",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "bae27674e26d964094e7f60d120f8b2152718f88127c102f71bc27c616633a1b"
+      },
+      {
+        "name": "ace-preview-first",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-ace",
+          "--no-default-features",
+          "--features",
+          "ace16-write-preview",
+          "--lib",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "c5b1765b2cd45025bf6218bb896782991b42387803de1d2e84bec84618eaf4ef"
+      },
+      {
+        "name": "native-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-ace",
+          "-p",
+          "tablecraft-testkit",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "6aa66f288f7ad59b1ab51c2f50ffdee6a0f35f17733549ef78609a0da3f8aa49"
+      },
+      {
+        "name": "host-strict-first",
+        "argv": [
+          "cargo",
+          "clippy",
+          "-p",
+          "tablecraft-access",
+          "--all-features",
+          "--test",
+          "genuine_wide_root_promotion",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "efaa90cdf8b0ba0529c8405f40cfd00f950df4fedee55d271aaef43d9e391b87"
+      },
+      {
+        "name": "fmt-first",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "boundaries-first",
+        "argv": [
+          "python3",
+          "scripts/check_dependency_boundaries.py"
+        ],
+        "exit": 0,
+        "passed_functions": [],
+        "expected_functions": null,
+        "accepted": true,
+        "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      }
+    ]
+  },
+  "legacy_single_node_prefix": {
+    "path": ".cache/ace16-normal-target-relative-update-next-20261102/source/root-native-first/legacy-single-node-prefix-first.json",
+    "bytes": 640,
+    "sha256": "c2b0ee5207b0684abd41df36d17d5a0414f1a5e0c83c0c276a9bdffc20bcba5a"
+  },
+  "scope": "Qualified manual three-field numeric profile and represented allocation; not general recursive/writable native compatibility."
+}
