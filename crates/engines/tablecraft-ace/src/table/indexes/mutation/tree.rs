@@ -1,7 +1,7 @@
 //! Retain page topology. Equal-cardinality updates retain counts and fixed byte
 //! layout; nullable and composite changes repack only admitted existing regions.
 //! The completed source check establishes ownership, ordering and row coverage.
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod contraction;
 #[cfg(feature = "ace16-write-preview")]
 mod partition;
@@ -15,7 +15,7 @@ mod deletion;
 pub(super) mod population;
 #[cfg(feature = "ace16-write-preview")]
 mod replacement;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(super) use contraction::Contraction;
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(super) use deletion::Deletion;
@@ -54,12 +54,12 @@ impl Tree {
         self.number
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(super) fn count(&self) -> usize {
         self.count
     }
 
-    #[cfg(feature = "ace16-write-preview")]
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(super) fn height(&self) -> u8 {
         self.height
     }

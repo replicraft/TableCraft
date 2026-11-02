@@ -47,8 +47,8 @@ pub(in crate::table) use replacement::{
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod retained;
-#[cfg(feature = "ace16-write-preview")]
-mod retirement;
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub(in crate::table) mod retirement;
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod row_key;
 #[cfg(feature = "ace16-write-preview")]

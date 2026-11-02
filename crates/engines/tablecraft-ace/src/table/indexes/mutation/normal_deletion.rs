@@ -1,7 +1,10 @@
 //! Existing-page typed deletions below normal admission and journal packaging.
 mod binary;
 mod tree;
-use super::{IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack};
+use super::{
+    IndexDataPatch, NumericKey, encoding, leaf_removal, profile::SingleProfile, repack,
+    retirement::RetiredPage,
+};
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{page::PAGE_BYTES, reader::Reader},
@@ -10,6 +13,13 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
+
+/// Working physical changes and original-derived retirement facts. The normal
+/// caller still owns complete Source, writable-map qualification and proof.
+pub(in crate::table) struct Deletions {
+    pub patches: Vec<IndexDataPatch>,
+    pub retired: Vec<RetiredPage>,
+}
 
 /// The caller holds complete ordinary Source, checked typed declarations,
 /// catalog-wide exclusive INDEX ownership and live-LVAL exclusion. Only the
@@ -20,9 +30,12 @@ pub(in crate::table) fn patches(
     references: &[u32],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<IndexDataPatch>, EditError> {
+) -> Result<Deletions, EditError> {
     let _span = tracing::debug_span!("native.ordinary.delete.index_patches").entered();
-    let mut result = Vec::new();
+    let mut result = Deletions {
+        patches: Vec::new(),
+        retired: Vec::new(),
+    };
     let schema = checked.schema();
     let mut source = image.reader();
     let mut reader = Reader {
@@ -62,7 +75,7 @@ pub(in crate::table) fn patches(
                 schema,
                 column,
                 references,
-                &mut result,
+                &mut result.patches,
             )?;
             continue;
         }
@@ -120,7 +133,7 @@ pub(in crate::table) fn patches(
             original,
             &after,
             index.root_page(),
-            &mut result,
+            &mut result.patches,
             reader.budget,
             cancelled,
         )?;

@@ -121,3 +121,6 @@ mod binary_tests;
 
 #[cfg(test)]
 mod node_retirement_sources;
+
+#[cfg(test)]
+mod node_retirement_tests;

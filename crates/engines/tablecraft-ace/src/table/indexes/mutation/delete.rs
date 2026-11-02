@@ -145,6 +145,7 @@ pub(super) fn finish_tree<P: RetainedProfile, const N: usize>(
         let mut siblings = tree.sibling_chains(image, index, reader.budget, reader.cancelled)?;
         let mut remaining = keys;
         let mut state = Contraction {
+            bounded_single_child: false,
             profile,
             references,
             index,

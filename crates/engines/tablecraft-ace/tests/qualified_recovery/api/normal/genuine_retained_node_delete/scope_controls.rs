@@ -5,25 +5,40 @@ use tablecraft_ace::{EditError, RecoverableEditError, RowDelete, WriteBlocker, r
 
 #[test]
 #[ignore = "requires four independent native/SDK-qualified retained NODE source images"]
-fn emptying_an_original_child_refuses_without_retirement_or_sequential_fallback() {
-    let mut refused = 0;
+fn emptying_original_children_matches_separately_qualified_retirement_sources() {
+    use sha2::{Digest, Sha256};
+    use tablecraft_testkit::access::genuine_node_retirement as retirement;
+
+    let expected = retirement::load_all(|raw, wanted| {
+        let actual = Sha256::digest(raw)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        assert_eq!(actual, wanted);
+    });
+    let mut accepted = 0;
     for case in cases() {
-        for removed in [302, 800] {
+        for (removed, recipe) in [
+            (302, retirement::Recipe::Left),
+            (800, retirement::Recipe::All),
+        ] {
+            let qualified = expected
+                .iter()
+                .find(|source| source.before == case.before && source.recipe == recipe)
+                .unwrap();
             let requests = (0..removed)
                 .map(|ordinal| RowDelete::new(ordinal, fixtures::record(ordinal)))
                 .collect();
-            let error = image(&case.before)
+            let plan = image(&case.before)
                 .plan_recoverable_ordinary_row_deletes("Items", requests, &mut budget(), &|| false)
-                .err()
-                .expect("emptying a non-root leaf requires separately qualified retirement");
-            assert!(matches!(
-                error,
-                RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
-            ));
-            refused += 1;
+                .unwrap();
+            assert_eq!(plan.before_bytes(), case.before);
+            assert_eq!(plan.after_bytes(), qualified.after);
+            assert_eq!(plan.deleted_rows(), removed);
+            accepted += 1;
         }
     }
-    assert_eq!(refused, 4);
+    assert_eq!(accepted, 4);
 }
 
 #[test]

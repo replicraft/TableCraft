@@ -9,7 +9,11 @@ use crate::{
     },
     header::check,
     table::{
-        indexes::{header::IndexHeader, page::ENTRY_START},
+        indexes::{
+            header::IndexHeader,
+            mutation::retirement::{RetiredPage, RetirementTable, audit_global, audit_retirements},
+            page::ENTRY_START,
+        },
         mutation::preserved_source::Source,
         record_layout,
     },
@@ -294,6 +298,7 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
     let admission = Admission::capture(image, source, budget, cancelled)?;
     let removed = references(source, deletes, budget, cancelled)?;
     let checked = admission.facts.checked();
+    let mut retired: Vec<RetiredPage> = Vec::new();
     for (position, checked_index) in checked.indexes().iter().enumerate() {
         check(budget, cancelled)?;
         let index = checked_index.index();
@@ -359,7 +364,49 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
                 wire.extend_from_slice(key.wire());
                 population.push(wire);
             }
-            tree.reconstruct_deletions(image, &population, &removed, expected, budget, cancelled)?;
+            if tree.retirement_required(&population, &removed, budget, cancelled)? {
+                let pages = tree.reconstruct_retirements(
+                    image,
+                    &population,
+                    &removed,
+                    expected,
+                    budget,
+                    cancelled,
+                )?;
+                budget
+                    .charge_allocation(pages.len() as u64, size_of::<RetiredPage>() as u64)
+                    .map_err(InspectError::from)?;
+                budget
+                    .charge(
+                        Resource::Steps,
+                        retired
+                            .len()
+                            .checked_mul(size_of::<RetiredPage>())
+                            .ok_or(InspectError::StructureLimit)? as u64,
+                    )
+                    .map_err(InspectError::from)?;
+                retired
+                    .try_reserve_exact(pages.len())
+                    .map_err(|_| InspectError::Allocation)?;
+                for number in pages {
+                    check(budget, cancelled)?;
+                    retired.push(RetiredPage {
+                        number,
+                        physical: index.data_number(),
+                        usage: index.usage_map(),
+                        root: index.root_page(),
+                    });
+                }
+            } else {
+                tree.reconstruct_deletions(
+                    image,
+                    &population,
+                    &removed,
+                    expected,
+                    budget,
+                    cancelled,
+                )?;
+            }
             continue;
         }
         original(before, &keys, budget, cancelled)?;
@@ -383,6 +430,24 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
             .get_mut(start..end)
             .ok_or(EditError::Preservation)?;
         write_leaf(before, page, &retained, budget, cancelled)?;
+    }
+    if !retired.is_empty() {
+        super::maps::reconstruct(image, checked, &retired, expected, budget, cancelled)?;
+        let table = RetirementTable {
+            schema: checked.schema(),
+            indexes: checked.indexes(),
+            retired: &retired,
+        };
+        audit_global(image.as_bytes(), expected, &[table], budget, cancelled)?;
+        audit_retirements(
+            image.as_bytes(),
+            expected,
+            image.catalog().catalog().scope(),
+            checked.schema().name(),
+            &retired,
+            budget,
+            cancelled,
+        )?;
     }
     check(budget, cancelled)?;
     Ok(())

@@ -1,8 +1,7 @@
 //! Causal tests of the extracted global proof; table/sibling proofs remain separate.
 use super::audit_global;
 use crate::EditError;
-use crate::table::indexes::mutation::RetiredPage;
-use crate::table::indexes::mutation::RetirementTable;
+use crate::table::indexes::mutation::retirement::{RetiredPage, RetirementTable};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;

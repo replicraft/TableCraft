@@ -1,6 +1,7 @@
 //! Original Int32 trees and typed root leaves with exclusive mutation roles.
 mod binary;
 mod integral;
+mod maps;
 mod proof;
 
 use crate::{
@@ -13,7 +14,11 @@ use crate::{
     table::{
         indexes::{
             header::IndexHeader,
-            mutation::{IndexDataPatch, normal_deletion, normal_index_audit::Ownership},
+            mutation::{
+                IndexDataPatch, normal_deletion,
+                normal_index_audit::Ownership,
+                retirement::{RetirementTable, compose},
+            },
             page::{LEAF, NODE},
         },
         mutation::{
@@ -197,13 +202,29 @@ pub(super) fn patches(
 ) -> Result<Vec<IndexDataPatch>, EditError> {
     let admission = Admission::capture(image, source, budget, cancelled)?;
     let references = references(source, deletes, budget, cancelled)?;
-    normal_deletion::patches(
+    let mut result = normal_deletion::patches(
         image,
         admission.facts.checked(),
         &references,
         budget,
         cancelled,
-    )
+    )?;
+    if !result.retired.is_empty() {
+        maps::require_rewrites(
+            image,
+            admission.facts.checked(),
+            &result.retired,
+            budget,
+            cancelled,
+        )?;
+        let table = RetirementTable {
+            schema: admission.facts.checked().schema(),
+            indexes: admission.facts.checked().indexes(),
+            retired: &result.retired,
+        };
+        compose(image, &[table], &mut result.patches, budget, cancelled)?;
+    }
+    Ok(result.patches)
 }
 
 pub(super) use proof::reconstruct;
