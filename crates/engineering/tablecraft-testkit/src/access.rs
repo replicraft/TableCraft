@@ -308,3 +308,6 @@ pub mod genuine_text_cardinality;
 pub mod creation_date_defaults;
 
 pub mod genuine_text_storage_carriers;
+
+pub mod canonical_creation_autonumber;
+pub mod canonical_normal_autonumber;

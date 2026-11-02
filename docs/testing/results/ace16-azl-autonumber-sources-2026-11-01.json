@@ -1,0 +1,105 @@
+{
+  "date": "2026-11-01",
+  "scope": "Explicit AllowZeroLength and AutoNumber read-only source qualification",
+  "native_checks": [
+    {
+      "name": "autonumber-read-source",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "table::mutation::normal_ordinary_sources::normal_autonumber::increment_counter_and_random_default_sources_are_read_without_generation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "azl-read-source",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "table::mutation::normal_ordinary_sources::text_azl::explicit_azl_originals_and_literal_inserts_have_complete_property_and_action_source",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "autonumber-export",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "table::mutation::normal_ordinary_sources::normal_autonumber::export_increment_and_random_default_sources",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true
+    }
+  ],
+  "azl": {
+    "unique_source_images": 14,
+    "literal_reconstructions": 20,
+    "selected_table_contexts": 20,
+    "sdk_inert_reads": 14,
+    "source_manifest_sha256": "d1a0b4a2420d666b6fff24a16a49842a93555be80f9c33fa4eebac908f543219",
+    "qualification_sha256": "a6dcd523b7b7273d91ffa460b8498dd87f5219c43a8501d763a2af7448359a2a",
+    "false_empty_request_outcomes": "No AFTER constructed; actual mutation refusal must be separately tested."
+  },
+  "autonumber": {
+    "source_views": 14,
+    "sdk_inert_reads": 14,
+    "sdk_writer_calls": 0,
+    "source_manifest_sha256": "0dc97dd513b0e4f98502b28eb824bfdc957c10379710ff1936886eb3c000f8cd",
+    "sdk_aggregate_sha256": "f1c02559a1e52431498522b42a54e4b3bb0db0d52a5dd12210c3fdcc15d2cfa5",
+    "coverage": "Raw flags/LAST, complete rows/keys/history and absent, GenUniqueID or unknown DefaultValue property bags.",
+    "mode_scope": "No generation detector, creator or normal generated INSERT called. Historical native Random witness is not ACE16 execution evidence."
+  },
+  "first_failures": [
+    "AZL original SDK builder used void setTextSortOrder in assignment chain; immutable corrected-source successor retained the first compile failure.",
+    "AutoNumber native test incorrectly required an MR2 signature for an absent property bag; corrected to require exact raw/group absence plus full Source, and strict MR2 framing for present bags. No source bytes changed."
+  ],
+  "checks": {
+    "format": "PASS",
+    "journal_only_library_and_test_strict_clippy": "PASS"
+  },
+  "matching_new_mutation_producers": "NOT INSTALLED OR RUN",
+  "native_microsoft_access_save_reopen": "UNRUN"
+}
