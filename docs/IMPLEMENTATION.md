@@ -1,5 +1,31 @@
 # Implementation status
 
+## Constant defaults and NODE retirement
+
+Fresh creation now authors exact Boolean, Int64, Currency and quoted Short Text
+defaults alongside Int32/NULL. Existing omission-aware typed/SQL sessions consume
+them without resolver or transaction-codec changes. Twenty saves/readbacks,
+source-complete creators, resource/cancellation and constraint refusals pass; see
+[constant defaults](access/writes/CONSTANT_CREATION_DEFAULTS.md).
+
+Normal height-one Int32 [NODE child retirement](access/writes/NORMAL_NODE_RETIREMENT.md)
+now uses original membership, exact map authority and fresh independent proof.
+Twelve native commits, repeated/mixed recovery, full-public resource controls,
+eighteen typed/SQL saves with empty follow-ons and twelve CLI saves/readbacks
+pass. Earlier non-retiring NODE regressions pass.
+
+[Read-only General Text Source](access/writes/TEXT_ACTION_SOURCE.md) passes
+36 complete source contexts and 84 malformed/unsupported controls while Text
+mutation remains closed. The historical refusal is retained separately.
+
+Strict all-feature/all-target, minimal, journal-only, preview-only and dependency
+checks pass. The broad engine run passed 1,164 units and found one obsolete
+wide-primary error expectation; its corrected Carrier assertion passed without
+production changes. Adapter/CLI/recovery runs pass 79/104/90 functions. The
+[execution record](testing/results/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
+keeps that failure and correction explicit. Native Access save/reopen remains
+unrun; deeper retirement and Text/Date follow-ons remain work.
+
 ## Compound DATA and INDEX allocation
 
 Normal complete-row INSERT now composes one EOF DATA reservation with two INDEX
