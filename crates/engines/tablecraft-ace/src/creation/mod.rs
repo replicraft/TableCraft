@@ -1,4 +1,5 @@
 //! Bounded fresh ACE 16 database serialization, separate from edit authority.
+mod autonumber;
 mod build;
 mod column;
 mod database;

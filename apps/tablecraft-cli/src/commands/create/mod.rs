@@ -1,6 +1,7 @@
 //! Explicit fresh native construction; no imported-source edit permission.
 mod args;
 mod error;
+mod incrementing;
 mod input;
 mod primary;
 mod report;
@@ -26,6 +27,11 @@ pub(crate) fn execute(
     let _span = tracing::debug_span!("cli.create_database").entered();
     if password.is_some() {
         return Err(Error::Password);
+    }
+    if arguments.incrementing.is_some() && arguments.primary_key.is_empty() {
+        return Err(Error::Input(
+            "--incrementing requires an explicit --primary-key",
+        ));
     }
     let mut budget = arguments.budget();
     let cancelled = || false;
@@ -58,6 +64,9 @@ pub(crate) fn execute(
             &mut budget,
             &cancelled,
         )?;
+        if let Some(selector) = arguments.incrementing.as_deref() {
+            incrementing::bind(&mut columns, selector, &mut budget, &cancelled)?;
+        }
         Some(columns)
     };
     let destination = CreationDestination::capture(&arguments.path, &mut budget, &cancelled)

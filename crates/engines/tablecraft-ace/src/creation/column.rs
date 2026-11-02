@@ -8,7 +8,7 @@ const SHORT_LIMIT: usize = 255;
 /// One borrowed native declaration for fresh database creation.
 ///
 /// Names and complete row/declaration compatibility are validated per operation.
-/// Only explicit supported field policies/defaults are optional; native flags,
+/// Only explicit supported field policies/defaults and Increment declarations are optional; native flags,
 /// offsets and mutation authority are not supplied.
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
@@ -18,6 +18,7 @@ pub struct CreateColumn<'a> {
     allow_zero_length: Option<bool>,
     default_literal: Option<&'a Value>,
     primary_key_name: Option<&'a str>,
+    incrementing: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -62,6 +63,7 @@ impl<'a> CreateColumn<'a> {
             allow_zero_length: None,
             default_literal: None,
             primary_key_name: None,
+            incrementing: false,
         }
     }
 
@@ -80,6 +82,7 @@ impl<'a> CreateColumn<'a> {
             allow_zero_length: None,
             default_literal: None,
             primary_key_name: None,
+            incrementing: false,
         })
     }
 
@@ -95,6 +98,7 @@ impl<'a> CreateColumn<'a> {
             allow_zero_length: None,
             default_literal: None,
             primary_key_name: None,
+            incrementing: false,
         })
     }
 
@@ -107,6 +111,7 @@ impl<'a> CreateColumn<'a> {
             allow_zero_length: None,
             default_literal: None,
             primary_key_name: None,
+            incrementing: false,
         }
     }
 
@@ -133,6 +138,9 @@ impl<'a> CreateColumn<'a> {
     /// must preserve every original bit or preparation refuses before publication.
     /// Clock, generated and executable expressions remain outside this API.
     pub fn with_default_literal(mut self, value: &'a Value) -> Result<Self, CreateDatabaseError> {
+        if self.incrementing {
+            return Err(CreateDatabaseError::Declaration);
+        }
         let compatible = match self.declaration {
             Declaration::Fixed(ScalarType::Boolean) => matches!(value, Value::Boolean(_)),
             Declaration::Fixed(ScalarType::Int32) => matches!(value, Value::Int32(_) | Value::Null),
@@ -158,7 +166,7 @@ impl<'a> CreateColumn<'a> {
         self.default_literal
     }
 
-    /// Declare one manual ascending Int32, Int64 or Currency primary key.
+    /// Declare one ascending Int32, Int64 or Currency primary key.
     ///
     /// The operation validates the identifier, uniqueness, non-NULL initial keys
     /// and physical fit. No page, map, native flags or generated values are supplied.
@@ -171,6 +179,28 @@ impl<'a> CreateColumn<'a> {
         }
         self.primary_key_name = Some(name);
         Ok(self)
+    }
+
+    /// Explicitly declare a fresh LONG Increment field, without issuing IDs.
+    ///
+    /// The operation currently requires an empty two-LONG table, this field
+    /// first with an explicit primary key, and no optional policies/defaults.
+    /// Complete initial rows are never rewritten or interpreted as generation.
+    pub fn with_incrementing_autonumber(mut self) -> Result<Self, CreateDatabaseError> {
+        if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32))
+            || self.default_literal.is_some()
+            || self.required.is_some()
+            || self.allow_zero_length.is_some()
+        {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        self.incrementing = true;
+        Ok(self)
+    }
+
+    /// Explicit creation metadata, not an imported-field mutation permission.
+    pub const fn incrementing_autonumber(self) -> bool {
+        self.incrementing
     }
 
     /// Original explicit primary identifier; absence creates no index.

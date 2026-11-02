@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-01",
+  "scope": "Explicit empty Int32 Increment primary creation and first normal omitted insertion",
+  "production_checkpoint_sha256": "cfe660342bee9945b87e29bcc4678512ae142ba1b980174eac478f93f9b36353",
+  "acceptance_checkpoint_sha256": "6b7ccd992863934d8f56a1a5dc4d2e75afa816658923d81761a71d7c55e878ea",
+  "source_sdk_receipt_sha256": "f1c02559a1e52431498522b42a54e4b3bb0db0d52a5dd12210c3fdcc15d2cfa5",
+  "tests": [
+    {
+      "name": "creation-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "native_creation_incrementing",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        5
+      ],
+      "accepted": true,
+      "phase": "first",
+      "log_sha256": "0f819d094414b7f4e462d21e1f6f2178c5d60cb81ed7a70fd8cf696704bfeded"
+    },
+    {
+      "name": "creation-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "native_creation_incrementing_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "first",
+      "log_sha256": "8281142de91dabfd23e116282011293282442e38918273952c277d9614060346"
+    },
+    {
+      "name": "creation-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "creation_incrementing",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "phase": "first",
+      "log_sha256": "d04939b2e9404b39e1ad0c952d043885bc64b4bfb5ee745f5ce6da11e9902366"
+    },
+    {
+      "name": "old-creation-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "native_creation"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "first",
+      "log_sha256": "a2ac36ea174909dd2190799280fae603e3f30055da696e639cebc70afd35dd73"
+    },
+    {
+      "name": "old-creation-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        45
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "3e0141b7d8a1b8f4de9791365614417b7d0dbb3fdf6314c76ac9e85266b9c1f8"
+    },
+    {
+      "name": "old-creation-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--bin",
+        "tablecraft",
+        "commands::create::"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        16
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "c401d1c580710a53721b334ccb9c03afca1d052fa2a9234c5a72318e466a6c54"
+    }
+  ],
+  "retained_command_failure": "The first regression invocation named a nonexistent native_creation integration target. The actual existing creation unit module selector subsequently passed45 tests, without production changes.",
+  "scope_boundary": "Single/multiple-one builders and both builder orders match the qualified h5 empty whole image. Two-table tests independently compare selected page components and are not a complete independently qualified multi-table image.",
+  "qualification": "Portable independent evidence; native Microsoft Access save/reopen unrun.",
+  "combined_validation_record": "ace16-creation-and-write-source-checks-2026-11-01.json"
+}
