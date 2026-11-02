@@ -170,3 +170,6 @@ mod wide_node_original_sources;
 
 #[cfg(test)]
 mod wide_node_update_sources;
+
+#[cfg(test)]
+mod wide_split_original_sources;
