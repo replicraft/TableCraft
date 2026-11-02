@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-01",
+  "scope": "Read-only SelectedActions General Text Source qualification; no Text mutation kernel installed",
+  "source_record": "ace16-text-index-update-sources-2026-11-01.json",
+  "actual_source_table_contexts": 36,
+  "malformed_or_unsupported_controls": 84,
+  "foreign_image_and_current_mutation_refusals": true,
+  "passed_functions": 3,
+  "receipt": {
+    "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/text-readonly-source-first.log",
+    "bytes": 951,
+    "sha256": "3bbe4162ad44a8cdbadb7f6548c31e7b736ec602b6c53d3ab550569ecf10f464"
+  },
+  "checkpoint": {
+    "path": ".cache/ace16-normal-text-indexed-update-next-20261101/source-admission-draft/first-private-checkpoint.json",
+    "bytes": 4269,
+    "sha256": "7741d07aa15fec9c5b49bdd2101d640e19218ef5cbf377553c09b9e21d70709d"
+  },
+  "first_refusal_receipt": {
+    "path": ".cache/ace16-default-text-source-gates-20261101/text-native-current-boundary-first.log",
+    "bytes": 427,
+    "sha256": "dbc36805b30cfa0bb7e1bec39b088212873beff070d24417f6f188a99dfe8a09"
+  },
+  "source_images_or_SDK_receipts_changed": false,
+  "historical_boundary_migrated_explicitly": true,
+  "Text_mutation_producer_installed": false,
+  "strict_all_feature_all_target": true,
+  "minimal_and_isolated_feature_profiles": true,
+  "batch_results": [
+    {
+      "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/broad-first-results.json",
+      "bytes": 1316,
+      "sha256": "54030ef46548cb4926f9c6ddc299c7b60680acc49abe5986a79e66875ae7f90d"
+    },
+    {
+      "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/broad-second-results.json",
+      "bytes": 2278,
+      "sha256": "556956fb910d431fdbfdae0f170c7c992621a71e0f2e144f1fc2be30b3b2424a"
+    }
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN"
+}
