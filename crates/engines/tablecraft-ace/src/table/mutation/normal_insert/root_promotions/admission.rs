@@ -1,6 +1,6 @@
 //! Full original facts and catalog/LVAL ownership precede coordinated planning.
 use crate::{
-    EditError, InspectError, NativeImage, RowInsert, WriteBlocker,
+    EditError, NativeImage, RowInsert, WriteBlocker,
     header::check,
     table::{
         indexes::mutation::{insertion, normal_index_audit::Ownership},
@@ -21,22 +21,6 @@ pub(super) fn qualify<'image>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<CheckedIndexes<'image>, EditError> {
     if !super::selection::selected(image, source, requests, budget, cancelled)? {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-    }
-    // This source-qualified policy retains the primary's prefix0 framing.
-    // The shared fitting repacker may otherwise choose new compression. That
-    // distinct storage policy needs independent source/proof qualification.
-    check(budget, cancelled)?;
-    let count = source
-        .records
-        .len()
-        .checked_add(requests.len())
-        .ok_or(InspectError::StructureLimit)?;
-    let primary_wire = size_of::<u8>() + size_of::<i32>() + size_of::<u32>();
-    let active = count
-        .checked_mul(primary_wire)
-        .ok_or(InspectError::StructureLimit)?;
-    if active > crate::format::page::PAGE_BYTES - crate::table::indexes::page::ENTRY_START {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;

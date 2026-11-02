@@ -19,11 +19,20 @@ fn hash(bytes: &[u8]) -> String {
 }
 
 fn cases() -> Vec<Case> {
-    sources::load_all(|raw, expected| assert_eq!(hash(raw), expected))
+    let mut cases = sources::load_all(|raw, expected| assert_eq!(hash(raw), expected));
+    cases.extend(
+        tablecraft_testkit::fixtures::access::genuine_wide_primary_prefix_growth::load_all(
+            |raw, expected| assert_eq!(hash(raw), expected),
+        ),
+    );
+    cases
 }
 
 fn requests(case: &Case) -> Vec<RowInsert> {
-    vec![RowInsert::new(case.values())]
+    case.insert_values()
+        .into_iter()
+        .map(RowInsert::new)
+        .collect()
 }
 
 fn image(raw: &[u8]) -> NativeImage {
@@ -36,7 +45,7 @@ fn wire(case: &Case, id: i32) -> Vec<u8> {
     hash.update((case.before.len() as u64).to_le_bytes());
     hash.update(&case.before);
     let binding: [u8; 32] = hash.finalize()[..].try_into().unwrap();
-    case.wire(binding, id, i64::MAX, 6817)
+    case.wire_rows(binding, id)
 }
 
 fn intent(case: &Case, id: i32) -> NativeCompleteInsertIntent {
@@ -65,7 +74,7 @@ fn journal(case: &Case, after: &[u8], committed: bool) -> Storage {
 
 #[test]
 #[ignore = "requires six native/SDK-qualified simultaneous wider promotion source files"]
-fn wider_promotions_commit_four_complete_original_tcna4_requests_and_v2_images() {
+fn wider_promotions_commit_single_and_prefix_compressed_batch_tcna4_v2_images() {
     let cases = cases();
     let wires: Vec<_> = cases.iter().map(|case| wire(case, 401)).collect();
     let mut commits = 0;
@@ -80,9 +89,12 @@ fn wider_promotions_commit_four_complete_original_tcna4_requests_and_v2_images()
             .unwrap();
         assert_eq!(plan.before_bytes(), case.before);
         assert_eq!(plan.after_bytes(), case.after);
-        assert_eq!(plan.inserted_rows(), 1);
+        assert_eq!(plan.inserted_rows(), case.inserted);
         assert_eq!(plan.intent().table(), case.table);
-        assert_eq!(plan.intent().rows()[0].values(), case.values());
+        assert_eq!(plan.intent().rows().len(), case.inserted);
+        for (row, values) in plan.intent().rows().iter().zip(case.insert_values()) {
+            assert_eq!(row.values(), values);
+        }
         assert_eq!(
             plan.intent().encode(&mut budget(), &|| false).unwrap(),
             expected_wire
@@ -94,7 +106,7 @@ fn wider_promotions_commit_four_complete_original_tcna4_requests_and_v2_images()
                 .unwrap()
                 .commit(&mut budget(), &|| false)
                 .unwrap(),
-            1
+            case.inserted
         );
         assert_eq!(target.storage.bytes.get_ref(), &case.after);
         assert_eq!(&log.bytes.get_ref()[..8], b"TCIMG002");
@@ -120,7 +132,7 @@ fn wider_promotions_commit_four_complete_original_tcna4_requests_and_v2_images()
         assert_eq!((target.storage.writes, target.resizes), (writes, resizes));
         commits += 1;
     }
-    assert_eq!(commits, 4);
+    assert_eq!(commits, 8);
 }
 
 #[test]
@@ -222,7 +234,7 @@ fn wider_promotion_pending_partial_tails_and_true_mixed_old_pages_rollback_exact
             contexts += 1;
         }
     }
-    assert_eq!(contexts, 56);
+    assert_eq!(contexts, 112);
 }
 
 #[test]
@@ -307,7 +319,7 @@ fn wider_promotion_committed_mixtures_and_forged_children_maps_histories_are_eff
         ));
         assert_eq!(log.bytes.get_ref(), &saved);
     }
-    assert_eq!(committed_refusals, 8);
+    assert_eq!(committed_refusals, 16);
     assert!(forgeries >= 240);
 }
 
@@ -316,10 +328,11 @@ mod resources;
 
 #[test]
 #[ignore = "requires qualified original sources for stale binding and allocation controls"]
-fn wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_or_unqualified_primary_prefix_growth()
+fn wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_or_invalid_allocation_authority()
  {
-    use tablecraft_ace::{EditError, NativeIntentError, RecoverableEditError, WriteBlocker};
+    use tablecraft_ace::{EditError, NativeIntentError, RecoverableEditError};
     let mut contexts = 0;
+    let mut duplicate_contexts = 0;
     for case in cases() {
         let plan = image(&case.before)
             .plan_recoverable_ordinary_complete_row_inserts(
@@ -350,42 +363,33 @@ fn wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_
                 )
                 .is_err()
         );
-        let mut duplicate = case.values();
-        duplicate[0] = tablecraft_core::values::Value::Int32(1);
-        let error = image(&case.before)
-            .plan_recoverable_ordinary_complete_row_inserts(
-                case.table,
-                vec![RowInsert::new(duplicate)],
-                &mut budget(),
-                &|| false,
-            )
-            .err()
-            .unwrap();
-        assert!(matches!(
-            error,
-            RecoverableEditError::Edit(EditError::Inspect(
-                tablecraft_ace::InspectError::IndexConstraint(
-                    tablecraft_ace::IndexConstraintViolation::DuplicateKey
+        if case.inserted == 1 {
+            let mut duplicate = case.values();
+            duplicate[0] = tablecraft_core::values::Value::Int32(1);
+            let error = image(&case.before)
+                .plan_recoverable_ordinary_complete_row_inserts(
+                    case.table,
+                    vec![RowInsert::new(duplicate)],
+                    &mut budget(),
+                    &|| false,
                 )
-            ))
-        ));
+                .err()
+                .unwrap();
+            assert!(matches!(
+                error,
+                RecoverableEditError::Edit(EditError::Inspect(
+                    tablecraft_ace::InspectError::IndexConstraint(
+                        tablecraft_ace::IndexConstraintViolation::DuplicateKey
+                    )
+                ))
+            ));
+            duplicate_contexts += 1;
+        }
 
-        let mut second = case.values();
-        second[0] = tablecraft_core::values::Value::Int32(402);
-        second[2] = tablecraft_core::values::Value::Int32(6834);
-        let error = image(&case.before)
-            .plan_recoverable_ordinary_complete_row_inserts(
-                case.table,
-                vec![RowInsert::new(case.values()), RowInsert::new(second)],
-                &mut budget(),
-                &|| false,
-            )
-            .err()
-            .unwrap();
-        assert!(matches!(
-            error,
-            RecoverableEditError::Edit(EditError::Unsupported(WriteBlocker::IndexedColumn))
-        ));
+        // Historical MAX/MAX two-row refusal belonged to the removed prefix0
+        // policy. Its request is not the qualified MAX/MAX-1 batch oracle.
+        // Duplicate primary keys, fixed-only APIs, stale binding and invalid
+        // original map claims remain active admission controls below.
 
         let mut changed_before = case.before.clone();
         let marker = case.data[0] * 4096 + 4096 - 19 + 14;
@@ -462,5 +466,6 @@ fn wider_promotions_preserve_fixed_legacy_boundaries_and_refuse_stale_originals_
         }
         contexts += 1;
     }
-    assert_eq!(contexts, 4);
+    assert_eq!(contexts, 8);
+    assert_eq!(duplicate_contexts, 4);
 }

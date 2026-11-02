@@ -148,11 +148,10 @@ pub(super) fn prove(
             .map_err(InspectError::from)?;
         expected[counter.byte_range()].copy_from_slice(&next.to_le_bytes());
         if physical == 0 {
-            wire::frame(
+            wire::fitting(
                 &mut expected[root..root + PAGE_BYTES],
                 &population,
                 (false, false),
-                0,
                 budget,
                 cancelled,
             )?;
