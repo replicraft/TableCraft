@@ -53,6 +53,13 @@ fn members(
     Ok(())
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CaptureMode {
+    Dense,
+    Actions,
+    IntegralUpdates,
+}
+
 impl Ownership {
     pub(in crate::table) fn capture(
         image: &NativeImage,
@@ -60,7 +67,7 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, false, budget, cancelled)
+        Self::capture_mode(image, checked, CaptureMode::Dense, budget, cancelled)
     }
 
     /// Real action callers resolve native key numbers independently of dense
@@ -72,13 +79,30 @@ impl Ownership {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_mode(image, checked, true, budget, cancelled)
+        Self::capture_mode(image, checked, CaptureMode::Actions, budget, cancelled)
+    }
+
+    /// Existing-only wider UPDATE capture owns a complete descendant graph;
+    /// INSERT/DELETE keep their separate root-leaf integral parser policy.
+    pub(in crate::table) fn capture_integral_updates(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(
+            image,
+            checked,
+            CaptureMode::IntegralUpdates,
+            budget,
+            cancelled,
+        )
     }
 
     fn capture_mode(
         image: &NativeImage,
         checked: &TableCheck,
-        actions: bool,
+        mode: CaptureMode,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -145,7 +169,7 @@ impl Ownership {
             map.require_allocated_storage(&mut reader, &global)?;
             // Retain the old dense discriminator and charged UPDATE trace.
             // Actions explicitly resolve actual native numbers, never stored IDs.
-            let typed = if actions {
+            let typed = if mode != CaptureMode::Dense {
                 reader.work(schema.columns().len())?;
                 index.columns().first().and_then(|key| {
                     schema
@@ -192,7 +216,25 @@ impl Ownership {
                         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
                     }
                 } else {
-                    Tree::capture_integral(image, index, selected, field, reader.budget, cancelled)?
+                    if mode == CaptureMode::IntegralUpdates {
+                        Tree::capture_retained_integral(
+                            image,
+                            index,
+                            selected,
+                            field,
+                            reader.budget,
+                            cancelled,
+                        )?
+                    } else {
+                        Tree::capture_integral(
+                            image,
+                            index,
+                            selected,
+                            field,
+                            reader.budget,
+                            cancelled,
+                        )?
+                    }
                 }
             } else {
                 Tree::capture(image, index, selected, reader.budget, cancelled)?

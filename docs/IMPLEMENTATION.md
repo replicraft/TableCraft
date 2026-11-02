@@ -1,5 +1,16 @@
 # Implementation status
 
+## Retained wider numeric tree updates
+
+Normal [retained Int64/Currency NODE UPDATE](access/writes/NORMAL_WIDE_NODE_UPDATE.md)
+now preserves existing topology while rewriting original leaf populations and
+full fences through TCNI4/V1. Forty literal native commits in both request orders,
+independent proof, mixed recovery/forgery/resource checks, twenty typed saves,
+four SQL no-op saves and four CLI no-op saves/readbacks pass. Complete descendant
+ownership and LVAL exclusion remain required. Existing I32/root-leaf/inline
+regressions and the shared batch checks pass. Wider splits, broader declarations
+and native Access save/reopen remain work.
+
 ## External Memo/OLE reuse updates
 
 Normal [external long-value reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md)

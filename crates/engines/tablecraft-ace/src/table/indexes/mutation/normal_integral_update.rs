@@ -1,4 +1,4 @@
-//! Existing-only typed numeric leaf UPDATE, below actual normal Source admission.
+//! Existing-only typed numeric UPDATE below actual normal Source admission.
 use super::{IndexDataPatch, IndexKeyUpdate, NumericKey, normal_fitting, profile::SingleProfile};
 use crate::{
     EditError, NativeImage, TableCheck, WriteBlocker,
@@ -8,7 +8,10 @@ use crate::{
         reader::Reader,
     },
     header::check,
-    table::indexes::{header::IndexHeader, page::LEAF},
+    table::indexes::{
+        header::IndexHeader,
+        page::{LEAF, NODE},
+    },
 };
 
 use tablecraft_core::limits::ResourceBudget;
@@ -20,6 +23,47 @@ pub(in crate::table) fn patches(
     image: &NativeImage,
     checked: &TableCheck,
     updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        checked,
+        updates,
+        Profile::RootLeaves,
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table) fn patches_tree(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        checked,
+        updates,
+        Profile::RetainedTrees,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum Profile {
+    RootLeaves,
+    RetainedTrees,
+}
+
+fn patches_with(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    selected_profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
@@ -66,15 +110,23 @@ pub(in crate::table) fn patches(
             .ok_or(EditError::Preservation)?;
         reader.work(size_of::<IndexHeader>())?;
         let header = IndexHeader::read(raw)?;
-        if header.kind != LEAF
-            || !header.qualified_for_update(0)
-            || header.prefix.get() != 0
-            || header.previous.get() != 0
-            || header.next.get() != 0
-            || header.tail.get() != 0
-        {
+        let accepted = match selected_profile {
+            Profile::RootLeaves => {
+                header.kind == LEAF
+                    && header.qualified_for_update(0)
+                    && header.prefix.get() == 0
+                    && header.previous.get() == 0
+                    && header.next.get() == 0
+                    && header.tail.get() == 0
+            }
+            Profile::RetainedTrees => matches!(header.kind, LEAF | NODE),
+        };
+        if !accepted {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
+        // The retained caller has checked every actual owned descendant. The
+        // real preparation below rechecks update stamp/height while reading
+        // affected trees, then rewrites their original fixed leaf counts.
         reader.work(updates.len())?;
         if !updates.iter().any(|update| update.column == column) {
             continue;

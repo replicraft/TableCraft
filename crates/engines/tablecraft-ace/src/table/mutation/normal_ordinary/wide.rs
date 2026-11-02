@@ -1,5 +1,6 @@
 //! Fitting fixed integral UPDATE chosen from original native index declarations.
 mod proof;
+mod tree;
 
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
@@ -46,6 +47,19 @@ pub(super) fn selected(
     Ok(wide)
 }
 
+pub(super) fn capture_indexes<'image>(
+    image: &'image NativeImage,
+    source: &Source,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IntegralUpdates<'image>, EditError> {
+    if tree::selected(image, source, budget, cancelled)? {
+        IntegralUpdates::capture_tree(image, source, budget, cancelled)
+    } else {
+        IntegralUpdates::capture(image, source, budget, cancelled)
+    }
+}
+
 pub(super) fn plan(
     image: NativeImage,
     source: Source,
@@ -54,7 +68,7 @@ pub(super) fn plan(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
-    let facts = IntegralUpdates::capture(&image, &source, budget, cancelled)?;
+    let facts = capture_indexes(&image, &source, budget, cancelled)?;
     let (bound, assignments) =
         binding::all_integral(&image, &source, groups, &facts, budget, cancelled)?;
     for (group, target) in groups.iter().zip(&bound) {
@@ -109,8 +123,11 @@ pub(super) fn plan(
             )?);
         }
     }
-    let indexes =
-        normal_integral_update::patches(&image, facts.checked(), &updates, budget, cancelled)?;
+    let indexes = if facts.retained_tree() {
+        normal_integral_update::patches_tree(&image, facts.checked(), &updates, budget, cancelled)?
+    } else {
+        normal_integral_update::patches(&image, facts.checked(), &updates, budget, cancelled)?
+    };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     for patch in &data {
         apply(
@@ -235,3 +252,7 @@ pub(super) fn compare(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+#[path = "wide/node_tests.rs"]
+mod node_tests;

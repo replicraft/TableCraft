@@ -50,6 +50,7 @@ struct Capture<'image, 'index, 'budget> {
     index: &'index NativeIndex,
     owner: u32,
     value_bytes: usize,
+    retained_integral: bool,
     owned: &'index [u32],
     visited: Vec<u32>,
     levels: Vec<Vec<Link>>,
@@ -65,7 +66,15 @@ impl Tree {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_width(image, index, owner, size_of::<i32>(), budget, cancelled)
+        Self::capture_width(
+            image,
+            index,
+            owner,
+            size_of::<i32>(),
+            false,
+            budget,
+            cancelled,
+        )
     }
 
     pub(super) fn capture_integral(
@@ -73,6 +82,29 @@ impl Tree {
         index: &NativeIndex,
         owner: u32,
         field: &NativeColumn,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_integral_with(image, index, owner, field, false, budget, cancelled)
+    }
+
+    pub(super) fn capture_retained_integral(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        field: &NativeColumn,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_integral_with(image, index, owner, field, true, budget, cancelled)
+    }
+
+    fn capture_integral_with(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        field: &NativeColumn,
+        retained_integral: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -87,7 +119,15 @@ impl Tree {
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
-        Self::capture_width(image, index, owner, size_of::<i64>(), budget, cancelled)
+        Self::capture_width(
+            image,
+            index,
+            owner,
+            size_of::<i64>(),
+            retained_integral,
+            budget,
+            cancelled,
+        )
     }
 
     fn capture_width(
@@ -95,6 +135,7 @@ impl Tree {
         index: &NativeIndex,
         owner: u32,
         value_bytes: usize,
+        retained_integral: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -119,6 +160,7 @@ impl Tree {
             index,
             owner,
             value_bytes,
+            retained_integral,
             owned: &owned,
             visited,
             levels,
@@ -153,7 +195,7 @@ impl Tree {
 
     /// Verify leaf membership and all original separator bounds. Original
     /// upper bounds are not required to equal an actual child maximum.
-    pub(super) fn original(
+    pub(in crate::table) fn original(
         &self,
         keys: &[Vec<u8>],
         budget: &mut ResourceBudget,
@@ -205,7 +247,10 @@ impl Capture<'_, '_, '_> {
         }
         let leaf = header.kind == LEAF;
         let prefix = usize::from(header.prefix.get());
-        if self.value_bytes == size_of::<i64>() && (!leaf || depth != 0 || prefix != 0) {
+        if self.value_bytes == size_of::<i64>()
+            && !self.retained_integral
+            && (!leaf || depth != 0 || prefix != 0)
+        {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         let key_bytes = self

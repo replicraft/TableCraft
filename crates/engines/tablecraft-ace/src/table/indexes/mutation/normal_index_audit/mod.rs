@@ -6,6 +6,7 @@ mod insertion;
 mod ownership;
 mod population;
 mod projected;
+pub(in crate::table) mod replacement;
 #[cfg(feature = "journal")]
 pub(in crate::table) mod text;
 mod tree;

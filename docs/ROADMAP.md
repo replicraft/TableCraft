@@ -4,8 +4,9 @@
 
 [Wider numeric index UPDATE](access/writes/NORMAL_WIDE_INDEX_UPDATE.md) now passes
 native, proof/recovery, retained-session and CLI checks for fitting root leaves.
-Retained NODE partitions, wider splits and broader schema combinations remain
-work. [Inline Memo/OLE UPDATE](access/writes/NORMAL_INLINE_LONG_UPDATE.md) now
+[Retained numeric NODE UPDATE](access/writes/NORMAL_WIDE_NODE_UPDATE.md) now
+passes those connected checks with original topology and fixed leaf counts.
+Wider splits and broader schema combinations remain work. [Inline Memo/OLE UPDATE](access/writes/NORMAL_INLINE_LONG_UPDATE.md) now
 passes the same connected checks under complete inline-only storage authority.
 [External Memo/OLE reuse](access/writes/NORMAL_EXTERNAL_LONG_UPDATE.md) now passes
 native proof/recovery, retained-session and CLI checks without allocating or
