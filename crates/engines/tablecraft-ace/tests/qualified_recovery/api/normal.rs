@@ -847,3 +847,6 @@ mod external_lval_retirement;
 
 #[path = "normal/wide_root_promotion.rs"]
 mod wide_root_promotion;
+
+#[path = "normal/increment_multi.rs"]
+mod increment_multi;

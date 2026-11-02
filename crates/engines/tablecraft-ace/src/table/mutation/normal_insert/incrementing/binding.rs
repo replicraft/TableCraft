@@ -1,19 +1,23 @@
 //! Original presence and exact supplied carriers for ordinary companions.
 use crate::{
-    EditError, InsertFieldValue, OmittedRowInsert, RowInsert, TableSchema, WriteBlocker,
+    EditError, InsertFieldValue, OmittedRowInsert, RowInsert, WriteBlocker,
     format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
     header::check,
-    table::mutation::{autonumber_counter, insert_defaults::values::copy_value},
+    table::mutation::{
+        autonumber_counter, insert_defaults::values::copy_value, preserved_source::Source,
+    },
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 pub(super) fn validate(
-    schema: &TableSchema,
+    source: &Source,
     column: usize,
     requests: &[OmittedRowInsert],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    let schema = source.table.schema();
+
     for request in requests {
         check(budget, cancelled)?;
         if request.values().len() != schema.columns().len() {
@@ -44,6 +48,19 @@ pub(super) fn validate(
             );
             if !valid {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+            if schema.layout.physical_indexes > 1 {
+                for index in source.indexes.indexes() {
+                    check(budget, cancelled)?;
+                    if index
+                        .columns()
+                        .iter()
+                        .any(|key| key.number() == field.number())
+                        && !matches!(value, Value::Int32(_))
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
+                }
             }
         }
     }

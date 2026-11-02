@@ -1,4 +1,5 @@
 //! Decode a closed source declaration; LAST never selects a generation mode.
+mod indexes;
 use crate::{
     EditError, InspectError, NativeImage, PropertyGroupKind, TableSchema, WriteBlocker,
     format::{
@@ -131,7 +132,7 @@ pub(super) fn capture(
 
     if schema.columns().is_empty()
         || schema.layout.max_columns != schema.columns().len()
-        || schema.layout.physical_indexes != 1
+        || schema.layout.physical_indexes == 0
         || schema.layout.logical_indexes != source.indexes.indexes().len()
     {
         return Err(EditError::Unsupported(WriteBlocker::Column));
@@ -160,43 +161,47 @@ pub(super) fn capture(
     let counter = autonumber_counter::capture(image, schema, column, budget, cancelled)?;
     record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
 
-    // All logical aliases must name the same actual physical owner. One is
-    // primary; ordinary required/unique aliases do not need primary kind 1.
-    let first = source
-        .indexes
-        .indexes()
-        .first()
-        .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
-    let mut primaries = 0;
+    if schema.layout.physical_indexes == 1 {
+        // All logical aliases must name the same actual physical owner. One is
+        // primary; ordinary required/unique aliases do not need primary kind 1.
+        let first = source
+            .indexes
+            .indexes()
+            .first()
+            .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
+        let mut primaries = 0;
 
-    for index in source.indexes.indexes() {
-        check(budget, cancelled)?;
-        let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
-        let [key] = index.columns() else {
-            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
-        };
-        if index.data_number() != first.data_number()
-            || index.root_page() != first.root_page()
-            || index.usage_map() != first.usage_map()
-            || index.flags() != first.flags()
-            || index.native_type() > LOCAL_INDEX_KIND_MAX
-            || key.number() != schema.columns()[column].number()
-            || key.descending()
-            || !constraints.unique()
-            || !constraints.required()
-            || constraints.ignore_nulls()
-            || image
-                .as_bytes()
-                .get(index.root_page() as usize * PAGE_BYTES)
-                != Some(&LEAF)
-        {
+        for index in source.indexes.indexes() {
+            check(budget, cancelled)?;
+            let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
+            let [key] = index.columns() else {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            };
+            if index.data_number() != first.data_number()
+                || index.root_page() != first.root_page()
+                || index.usage_map() != first.usage_map()
+                || index.flags() != first.flags()
+                || index.native_type() > LOCAL_INDEX_KIND_MAX
+                || key.number() != schema.columns()[column].number()
+                || key.descending()
+                || !constraints.unique()
+                || !constraints.required()
+                || constraints.ignore_nulls()
+                || image
+                    .as_bytes()
+                    .get(index.root_page() as usize * PAGE_BYTES)
+                    != Some(&LEAF)
+            {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            primaries += usize::from(constraints.primary_key());
+        }
+
+        if primaries != 1 {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
-        primaries += usize::from(constraints.primary_key());
-    }
-
-    if primaries != 1 {
-        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    } else {
+        indexes::capture(image, source, column, budget, cancelled)?;
     }
 
     if inspect(image, schema, budget, cancelled)? != Mode::Increment {

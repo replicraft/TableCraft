@@ -341,4 +341,6 @@ pub mod genuine_wide_root_promotion;
 
 pub mod genuine_external_lval_mixed;
 
+pub mod genuine_increment_multi;
+
 pub mod tcna2;

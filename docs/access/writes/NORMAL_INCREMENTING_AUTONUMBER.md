@@ -8,9 +8,10 @@ is involved.
 The generated field is found at its actual declared position. Ordinary companions
 can use the implemented Boolean, Int32, Int64, Currency, legacy Date, Short Text
 and Short Binary carriers, with NULL only where representable. Complete dense
-field layout and fixed/variable spans must qualify. One physical ascending,
-required unique primary root leaf remains required. Logical aliases must agree
-on that physical owner, with exactly one actual primary declaration.
+field layout and fixed/variable spans must qualify. An ascending required unique
+primary root leaf remains required. A separate qualified multiple-owner profile
+also retains present manual Int32 ascending secondary leaves. Logical aliases
+must agree on each physical owner, with exactly one actual primary declaration.
 
 Complete Source, property, constraint and record checks precede planning. Native
 AutoIncrement flags and complete inspected property absence select Increment in
@@ -50,7 +51,19 @@ coverage; these tests invent no SQL literal or coercion. See the
 [companion execution record](../../testing/results/ace16-increment-companion-writes-2026-11-02.json).
 
 [Empty Increment creation](INCREMENTING_CREATION.md) remains its separately
-qualified creator profile. Multiple physical indexes, allocation/splits,
+qualified creator profile. The
+[multiple-index source family](../../testing/ACE16_MULTI_INDEX_INCREMENT_SOURCES.md)
+now has two exact ordered batch commits, independent proof, original TCNA2/V1
+recovery, public resource controls and actual retained batch saves. `LAST = 137`
+generates 138 then 139; a long first row can occupy a later DATA page while the
+second fits an earlier page. Each physical index history changes once from its
+complete distinct population, regardless of alias count. The generated primary
+history becomes 11 and duplicate `Guard = 7` contributes one new secondary value.
+The shared `OmittingInsertableBatch` host retains one lease, journal and receipt;
+eight filesystem cold restart contexts pass. See the
+[batch execution record](../../testing/results/ace16-multi-index-increment-writes-2026-11-02.json).
+
+Nullable/descending secondary keys, retained NODEs, allocation/splits,
 ordinary default composition, Random generation, reseeding and broader field
 properties remain active work. Independent reader agreement does not establish
 native Microsoft Access save/reopen compatibility.
