@@ -21,8 +21,9 @@ The [indexed Binary UPDATE branch](access/writes/NORMAL_BINARY_INDEX_UPDATE.md)
 now passes fitting native/session/CLI acceptance. [Normal Int32 root splits](access/writes/NORMAL_ROOT_SPLIT.md)
 append two represented INDEX pages through TCNA4/V2. The [first compound DATA+INDEX allocation](access/writes/NORMAL_COMPOUND_ROOT_SPLIT.md)
 now passes literal/native/session checks. Broader compound placement,
-recursive and wider-key splits, NODE retirement and native Access save/reopen
-remain work.
+recursive and wider-key splits and native Access save/reopen remain work.
+[Height-one Int32 NODE retirement](access/writes/NORMAL_NODE_RETIREMENT.md) now
+passes native/session/CLI acceptance; deeper and repeated retirement remain next.
 
 The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and

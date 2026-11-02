@@ -1,0 +1,595 @@
+{
+  "date": "2026-11-01",
+  "scope": "Exact constant-default creation/omitted INSERT, read-only General Text Source, normal height-one Int32 NODE retirement through actual sessions and CLI",
+  "source_records": [
+    "ace16-constant-default-sources-2026-11-01.json",
+    "ace16-text-index-update-sources-2026-11-01.json",
+    "ace16-node-retirement-sources-2026-11-01.json"
+  ],
+  "source_qualification_precedes_matching_producers": true,
+  "source_expected_images_changed": false,
+  "constant_creator_full_image_contexts": 8,
+  "constant_creator_resource_cancellation_contexts": 8,
+  "constant_retained_typed_sql_commits_and_readbacks": 20,
+  "constant_required_empty_refusals": 4,
+  "constant_prepublication_expression_bound_refusal": true,
+  "Text_actual_source_contexts": 36,
+  "Text_malformed_or_unsupported_source_controls": 84,
+  "Text_mutation_producer_installed": false,
+  "retirement_native_literal_commits": 12,
+  "retirement_original_empty_plans": 6,
+  "retirement_recovery_contexts": 36,
+  "retirement_public_resource_cancellation_contexts": 12,
+  "retirement_typed_sql_commits": 18,
+  "retirement_same_lease_empty_commits": 18,
+  "retirement_cli_saves_and_readbacks": 12,
+  "prior_nonretiring_NODE_functions": 6,
+  "checks": [
+    {
+      "name": "text-readonly-source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_ordinary_sources::text_update::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/text-readonly-source-first.log",
+        "bytes": 951,
+        "sha256": "3bbe4162ad44a8cdbadb7f6548c31e7b736ec602b6c53d3ab550569ecf10f464",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1330 filtered out; finished in 2.97s"
+        ]
+      }
+    },
+    {
+      "name": "constant-creators-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "native_creation_constant_defaults",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/constant-creators-first.log",
+        "bytes": 690,
+        "sha256": "004c3991675a9e7937157d34f14598d66113a758d2fc76dea7a969b350a0b168",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+        ]
+      }
+    },
+    {
+      "name": "constant-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "native_creation_constant_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 3,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/constant-host-first.log",
+        "bytes": 818,
+        "sha256": "b8be0478022bfb3964d8680583a134d00c8062e44658b48836ecd2b5b1665003",
+        "test_results": [
+          "ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s"
+        ]
+      }
+    },
+    {
+      "name": "prior-defaults-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::default_tests::",
+        "--",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 3,
+      "actual_passed": 4,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/prior-defaults-first.log",
+        "bytes": 761,
+        "sha256": "7ca4b390299fbc40b7a27309e80e07ba95d20997cb37cbe17adaf81dfb2f2e59",
+        "test_results": [
+          "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1329 filtered out; finished in 0.03s"
+        ]
+      }
+    },
+    {
+      "name": "retirement-proof-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_delete::node_retirement_tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 2,
+      "actual_passed": 2,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/retirement-proof-first.log",
+        "bytes": 567,
+        "sha256": "7c3545bae2e9318128b4270291e1588493b5d01bd5526718aecf52608c2594f5",
+        "test_results": [
+          "ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1331 filtered out; finished in 25.13s"
+        ]
+      }
+    },
+    {
+      "name": "retirement-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_node_retirement::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 4,
+      "actual_passed": 5,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/retirement-native-first.log",
+        "bytes": 1249,
+        "sha256": "423b7621190a668ea6cbcce0481931b26cb2f4622c99b9e66eee223695d54c8c",
+        "test_results": [
+          "ok. 5 passed; 0 failed; 0 ignored; 0 measured; 216 filtered out; finished in 140.62s"
+        ]
+      }
+    },
+    {
+      "name": "retirement-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_node_retirement",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/retirement-host-first.log",
+        "bytes": 505,
+        "sha256": "eaa905ab565ef38422ad5e3a2d2e185bb29d0ab27890ac3604d450e8274a3f8f",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.31s"
+        ]
+      }
+    },
+    {
+      "name": "retirement-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "genuine_node_retirement_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/retirement-cli-first.log",
+        "bytes": 852,
+        "sha256": "ec7a8d1e2d4f9bbdd5768510e5de367b1dbd20deda048d4747669f60655eee46",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.02s"
+        ]
+      }
+    },
+    {
+      "name": "prior-node-delete-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::genuine_retained_node_delete::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 6,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/prior-node-delete-first.log",
+        "bytes": 1131,
+        "sha256": "e8e17272906f7ccb424a7e3c920f710e77b8cb6069641186621725752bd83f13",
+        "test_results": [
+          "ok. 6 passed; 0 failed; 0 ignored; 0 measured; 215 filtered out; finished in 9.26s"
+        ]
+      }
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/format-first.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "test_results": []
+      }
+    },
+    {
+      "name": "strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/strict-first.log",
+        "bytes": 526,
+        "sha256": "f363d1edf7dba23e727a47735f5e0f2f30db19a735fa64e5b920dc565837807c",
+        "test_results": []
+      }
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/minimal-first.log",
+        "bytes": 525,
+        "sha256": "d5c12623d40c7f73b8f499bd1e4505852a65e43223e69c387118a33b614faa42",
+        "test_results": []
+      }
+    },
+    {
+      "name": "ace-lib-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 101,
+      "minimum_passed": 1165,
+      "actual_passed": 0,
+      "accepted": false,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/ace-lib-first.log",
+        "bytes": 188601,
+        "sha256": "70f16c50d421ba5aac70438aa682d878ec4ba918a38cbf24f9cfb643a2c0c2b1",
+        "test_results": [
+          "FAILED. 1164 passed; 1 failed; 168 ignored; 0 measured; 0 filtered out; finished in 111.07s"
+        ]
+      }
+    },
+    {
+      "name": "wide-primary-default-expectation-second",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "creation::primary_tests::integral::wide_primary_declarations_keep_exact_carriers_no_inferred_defaults_and_existing_row_ceiling",
+        "--",
+        "--exact"
+      ],
+      "returncode": 0,
+      "minimum_passed": 1,
+      "actual_passed": 1,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/wide-primary-default-expectation-second.log",
+        "bytes": 525,
+        "sha256": "d4e4ba44673f02b8c246c2d09fdfa5defaaf4eae618f004a2b9df4394bbc793c",
+        "test_results": [
+          "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1332 filtered out; finished in 0.00s"
+        ]
+      }
+    },
+    {
+      "name": "access-lib-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0,
+      "minimum_passed": 79,
+      "actual_passed": 79,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/access-lib-first.log",
+        "bytes": 9690,
+        "sha256": "c96ab46ac51457719ebfcee9dee65e7cedec56c654d5aebe80460b49362be5af",
+        "test_results": [
+          "ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s"
+        ]
+      }
+    },
+    {
+      "name": "cli-lib-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--bins"
+      ],
+      "returncode": 0,
+      "minimum_passed": 104,
+      "actual_passed": 104,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/cli-lib-first.log",
+        "bytes": 11814,
+        "sha256": "ce3d76c6b819b93b28ed282f07ddf640e764a2f67ccf9ff15de53ca668c34fb5",
+        "test_results": [
+          "ok. 104 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s"
+        ]
+      }
+    },
+    {
+      "name": "recovery-first",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery"
+      ],
+      "returncode": 0,
+      "minimum_passed": 90,
+      "actual_passed": 90,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/recovery-first.log",
+        "bytes": 37325,
+        "sha256": "03b16042459bb97d2c70632102084a419be014e432b626a990ef8efe7cb688ff",
+        "test_results": [
+          "ok. 90 passed; 0 failed; 131 ignored; 0 measured; 0 filtered out; finished in 6.35s"
+        ]
+      }
+    },
+    {
+      "name": "journal-only-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/journal-only-first.log",
+        "bytes": 183,
+        "sha256": "7c9be7ef44aecedc3dfa65881250695e28ba6dea0e292900da98585b720749f7",
+        "test_results": []
+      }
+    },
+    {
+      "name": "preview-only-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/preview-only-first.log",
+        "bytes": 183,
+        "sha256": "6c10785a9487648b62ab47b38c430d37696f632eaa821ba4fe51356f9bb09f60",
+        "test_results": []
+      }
+    },
+    {
+      "name": "boundary-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "minimum_passed": 0,
+      "actual_passed": 0,
+      "accepted": true,
+      "receipt": {
+        "path": "/Users/dielpi/Desktop/replicraft/TableCraft/.cache/ace16-default-node-integration-20261101/boundary-first.log",
+        "bytes": 56,
+        "sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+        "test_results": []
+      }
+    }
+  ],
+  "peer_reviews": [
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/implementation-draft/VALUE_SEMANTICS_REVIEW.md",
+      "bytes": 2517,
+      "sha256": "174286ca25b0abe62094a0a17900fe06fcdf69d81c6db38c9685bda048429fe0",
+      "test_results": []
+    },
+    {
+      "path": ".cache/ace16-normal-node-retirement-next-20261101/acceptance-draft/VALUE_SEMANTICS_RESOURCE_REVIEW.md",
+      "bytes": 1103,
+      "sha256": "35c3d5d7f44fdca3ec6c96ae9e2b3c8efd23a8d03ef48cec810675d7c765117d",
+      "test_results": []
+    }
+  ],
+  "engine_unit_regression": {
+    "first_passed": 1164,
+    "first_failed": 1,
+    "corrected_test_passed": 1,
+    "production_changed_between_first_and_corrected_check": false,
+    "single_full_green_rerun_after_test_only_correction": false,
+    "explanation": "One prior wide-primary test expected Declaration because defaults were unsupported. The declaration is now supported and wrong Int32 carrier correctly returns Carrier. Updated only that expectation and its no-inferred-defaults name; the exact corrected test passed. All other 1164 units passed the original run."
+  },
+  "adapter_units": 79,
+  "cli_units": 104,
+  "default_recovery_functions": 90,
+  "strict_all_features_all_targets_minimal_journal_preview_and_boundary_guard": "PASS",
+  "integration_adjustments": [
+    "One pure testkit helper owns all default rows/literals/pins, avoiding duplicated fixture files and a concrete engine dependency in testkit.",
+    "Native CreateColumn setup remains in each actual creator/adapter integration consumer.",
+    "Historical Text Source refusal explicitly migrated after first native refusal receipt, with current mutation refusals preserved.",
+    "Older NODE child-emptying refusal now compares independently qualified LEFT/ALL images; reserved-stamp denial unchanged."
+  ],
+  "native_access_save_reopen": "UNRUN",
+  "windows_qualification": "UNRUN",
+  "remaining": [
+    "Text mutation and storage-carrier qualification",
+    "Deeper/repeated/NULL/DESC retirement and DATA-page retirement",
+    "Exact Date defaults, generated values and broader default expressions",
+    "Native Access and Windows qualification"
+  ]
+}
