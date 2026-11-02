@@ -1,5 +1,19 @@
 # Implementation status
 
+## Ordinary updates beside generated IDs
+
+The existing normal fixed UPDATE service now has independent save qualification
+for ordinary Score fields beside generated IDs. Four original schemas retain
+middle-position Increment declarations or stored GenUniqueID metadata; no generator
+or default resolver runs. Eighteen ordered native commits, independent whole-image
+proof, 78 recovery contexts, protected-byte forgeries and sixteen public resource
+cases pass. Eighteen typed and sixteen SQL retained saves, plus sixteen CLI saves,
+match the frozen files while preserving IDs, counters, deleted slots, properties,
+indexes and EOF. Generated-ID assignments still refuse, including no-op and empty
+target groups. See the [qualified profile](access/writes/NORMAL_GENERATED_COMPANION_UPDATE.md).
+This qualifies an existing producer; it adds no new insertion mode, event coverage
+or native Access save/reopen evidence.
+
 ## Explicit scalar browsing pages
 
 `read_table_projection_page` and `NativeBrowser::projected_page` now expose bounded

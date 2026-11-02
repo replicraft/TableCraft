@@ -1177,6 +1177,16 @@ This removes a whole-schema admission barrier for these targets. It does not
 qualify changing the indexed Id in this mixed profile, broader index maintenance,
 new allocation or native Access save/reopen.
 
+## Ordinary UPDATE beside generated IDs
+
+The existing normal fixed service now passes independent native, retained typed/SQL
+and CLI save/recovery checks for explicit ordinary fields beside generated IDs.
+The [qualified Score profile](access/writes/NORMAL_GENERATED_COMPANION_UPDATE.md)
+preserves LAST, histories, deleted slots, stored defaults and indexes without
+invoking generation. Generated targets remain refused even for no-op/empty intent.
+Broader generated/default insertion composition and native Access save/reopen
+remain separate work.
+
 ## Remaining local-file read/query work
 
 The explicit [arithmetic declaration profile](expressions/numeric/DECLARED_ARITHMETIC.md) now carries

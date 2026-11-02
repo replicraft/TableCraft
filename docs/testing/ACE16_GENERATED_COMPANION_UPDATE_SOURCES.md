@@ -35,9 +35,12 @@ pre-execution review corrected only the saved verifier's inventory/symlink check
 the original source/model/report/observer/constructor bytes remain preserved.
 
 See the [source result](results/ace16-generated-companion-update-sources-2026-11-02.json).
-Actual native commits, retained typed/SQL saves, recovery and Microsoft Access
-save/reopen remain separate acceptance work. Source admission does not grant
-permission to modify generated fields, bypass validation or omit required programs.
+Subsequent [actual save qualification](../access/writes/NORMAL_GENERATED_COMPANION_UPDATE.md)
+uses these unchanged images for native commits, retained typed/SQL saves, recovery
+and CLI readbacks. Its [write result](results/ace16-generated-companion-updates-2026-11-02.json)
+is separate from the earlier source-only record. Microsoft Access save/reopen
+remains unrun. Source admission does not grant permission to modify generated
+fields, bypass validation or omit required programs.
 
 ```sh
 TABLECRAFT_GENERATED_COMPANION_UPDATE_SOURCE_DIR=/absolute/path/to/expected-first \

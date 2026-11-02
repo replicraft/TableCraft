@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Existing normal fixed Score UPDATE beside preserved generated Id declarations; matching saves after independent source qualification",
+  "source_record": "ace16-generated-companion-update-sources-2026-11-02.json",
+  "source_qualification_commit": "1124bf41",
+  "source_expectations_unchanged": true,
+  "new_production_route": false,
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "catalog": "native17 NoRequired",
+    "tables": [
+      "Numbered",
+      "Items"
+    ],
+    "target": "ordinary nullable Int32 Score",
+    "intent": "TCNI0004 / Ace16OrdinaryFixed",
+    "journal": "V1",
+    "allocation": false,
+    "generated_fields_are_targets": false
+  },
+  "counts": {
+    "original_schemas": 4,
+    "source_views": 12,
+    "independent_reader_reports": 30,
+    "principal_requests": 16,
+    "ordered_native_commits": 18,
+    "direct_proof_positives": 18,
+    "direct_protected_byte_forgeries": 272,
+    "direct_wrong_counts": 16,
+    "distinct_direct_stales": 12,
+    "direct_generated_empty_refusals": 4,
+    "native_journal_forgeries": 272,
+    "recovery_marker_target_contexts": 78,
+    "recoveries_per_context": 2,
+    "committed_mismatch_refusals": 10,
+    "successful_write_free_confirmations": 68,
+    "measured_public_resource_contexts": 16,
+    "typed_saves": 18,
+    "SQL_saves": 16,
+    "stale_snapshot_refusals_after_save": 34,
+    "typed_generated_target_refusals": 16,
+    "SQL_generated_target_refusals": 16,
+    "typed_exact_carrier_refusals": 4,
+    "CLI_saves": 16,
+    "CLI_prepublication_refusals": 20
+  },
+  "executed_functions": {
+    "direct": 1,
+    "native_including_recovery_resources_and_guards": 5,
+    "retained_Access": 2,
+    "CLI": 2
+  },
+  "preservation": "Full frozen-image equality outside the selected Score payloads or presence bit; generated values/flags, LAST, counts/history, deleted slots/payloads, indexes/aliases, maps, MR2/defaults, residual bytes and EOF remain exact.",
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/acceptance-draft/first-connected-private-checkpoint.json",
+      "bytes": 8946,
+      "sha256": "3e8ef144b7defa827c654e5ec51330e4e3603b9e31c7cba3f5e4624aae5c613b"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/acceptance-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 4129,
+      "sha256": "5671e2404e25959e3d5bb3d0150f5f67a2e5334855721b1ff274d467b5d98fbe"
+    },
+    {
+      "path": ".cache/ace16-normal-generated-companion-update-next-20261102/matching-first/results-first.json",
+      "bytes": 4025,
+      "sha256": "c425f5ef6616b39963714cdae17446afd0dab684ec495ce81c42feac3ed2f047"
+    }
+  ],
+  "scoped_passing_steps": [
+    {
+      "name": "direct-first",
+      "exit": 0,
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "native-first",
+      "exit": 0,
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "access-first",
+      "exit": 0,
+      "passed_functions": [
+        2
+      ]
+    },
+    {
+      "name": "cli-first",
+      "exit": 0,
+      "passed_functions": [
+        2
+      ]
+    },
+    {
+      "name": "native-kit-strict-first",
+      "exit": 0,
+      "passed_functions": []
+    },
+    {
+      "name": "access-strict-first",
+      "exit": 0,
+      "passed_functions": []
+    },
+    {
+      "name": "cli-strict-first",
+      "exit": 0,
+      "passed_functions": []
+    },
+    {
+      "name": "kit-minimal-first",
+      "exit": 0,
+      "passed_functions": []
+    },
+    {
+      "name": "boundaries-first",
+      "exit": 0,
+      "passed_functions": []
+    },
+    {
+      "name": "format-first",
+      "exit": 0,
+      "passed_functions": []
+    }
+  ],
+  "matching_attempts": "All ten driver steps passed on their first attempt; no source or expected-image retuning.",
+  "verification_scope": "Focused direct/native/adapter/CLI acceptance; native/testkit all-target all-feature strict checks, focused adapter/CLI strict checks, testkit minimal build, dependency boundary guard and formatter. No new full-workspace suite run claimed.",
+  "native_Microsoft_Access_save_reopen": "unrun",
+  "Windows_mixed_client_locking": "unrun",
+  "native_Random_generation": "unrun",
+  "full_ACE16_compatibility_claim": false
+}
