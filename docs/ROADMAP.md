@@ -690,7 +690,11 @@ qualification remain unfinished.
 - [x] [Stateful streaming composition](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages)
   for static saved/named/derived SELECT chains, with retained intermediate values,
   independent TOP/HAVING phases and successful logical EOF before outer totals.
-  Inner UNION, sorting, joins and runtime schema discovery remain outside streaming.
+  A separate [positive sorted TOP service](query/PROGRESSIVE_QUERIES.md) now
+  retains complete row-local terminal populations through checked EOF and reuses
+  stable buffered sorting, including all boundary ties. Inner UNION, inner/stateful
+  sorting, sorted groups/aggregates, joins and runtime schema discovery remain
+  outside streaming.
 
 - [x] A separate [ordinary-row INSERT engineering preview](testing/ACE16_INSERT_PREVIEW.md)
   constructs explicit Int32/Short Binary records, visible fitted/EOF roots and
@@ -1590,7 +1594,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    explicit scalar projections and cumulative read/output controls.
    Ordinary SQL execution remains buffered; explicit
    [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
-   cursors without complete-table retention. [Explicit larger scalar snapshots](access/queries/LARGER_NATIVE_QUERIES.md)
+   cursors without complete-table retention. Explicit positive sorted TOP instead
+   retains its complete projected population under cumulative query budgets before
+   sorting and publication; no bounded-heap or early-publication guarantee applies.
+   [Explicit larger scalar snapshots](access/queries/LARGER_NATIVE_QUERIES.md)
    now preserve complete caches and independent native/query controls with 20,000-row
    comparisons. Explicit indexed loads now have independent 20,000-row comparisons across
    qualified key families, projections, typed seeks and full-cache isolation.
