@@ -1,6 +1,6 @@
 //! Normal INSERT is an outcome-aware shared-session consumer, not native editing.
 use super::{Error, InsertArguments, error::UnexpectedReceipt, report::Reports};
-use crate::native;
+use crate::{commands::clock::HostClock, native};
 use std::io::Write;
 use tablecraft_access::editing::{offline::OfflineWriteSession, sql};
 use tablecraft_ace::InspectError;
@@ -35,8 +35,9 @@ pub(super) fn run(args: InsertArguments, writer: &mut dyn Write) -> Result<(), E
             false
         })
         .map_err(Error::OfflineOpen)?;
+    let clock = HostClock::new(args.clock);
     let staged = session
-        .plan_insert(query.query(), &mut budget, &|| false)
+        .plan_insert_with_clock(query.query(), &clock, &mut budget, &|| false)
         .map_err(Error::Offline)?;
     // Complete host output allocation precedes journal setup or target effects.
     let reports = Reports::insert(staged.inserted_rows(), &mut budget).map_err(Error::Native)?;

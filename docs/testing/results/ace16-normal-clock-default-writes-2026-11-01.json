@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-01",
+  "combined_validation_record": "ace16-wide-inline-clock-batch-checks-2026-11-01.json",
+  "qualification": "Portable independent source/native/SDK evidence. Native Microsoft Access save/reopen and Windows behavior comparisons remain unrun.",
+  "scope": "Normal captured Date/Now defaults with native V1 replay and actual host consumers",
+  "production_checkpoint_sha256": "1faefef4fa826ffbd2d286b87beff4cfbe1667f717bb19f213b43da70da2840b",
+  "acceptance_checkpoint_sha256": "1ef46beb4aa55ff6b362ba835fe85a0d26a1cf3a37eef20b20fdf9f7df9d8f54",
+  "source_gate_commit": "68ac92ec",
+  "source_manifest_sha256": "14e3fe58a599a9a23b61305137d90e60a3ecff30249ed68bcba4ba4427023ebb",
+  "tests": [
+    {
+      "name": "clock-codec",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "transaction::intent::clock_insert::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "first",
+      "log_sha256": "d33e6e79ffe9d8e10cab72e09b8023a9276fa1f0b38947f9ff338ddf86006ca2"
+    },
+    {
+      "name": "clock-codec",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "transaction::intent::clock_insert::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "3c73158df7f9541aef25a477fdadb4e5d596a949603b57895b9290bf52306285"
+    },
+    {
+      "name": "clock-direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_insert::clock::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "2f520bc2bf3002c4376d760b7f0324e37b92ff2d2ad081610c7bd77eda62ec0c"
+    },
+    {
+      "name": "clock-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::normal_clock_defaults::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        6
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "0af74f96418ffb19ebbdbfb3db249b66d280068a5c55edcc4c7a494ec7e63786"
+    },
+    {
+      "name": "clock-host",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_clock_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "d3a97c615440f56f1313b1fd92842f9e77e272f5cb3b68836970ca45dec93a15"
+    },
+    {
+      "name": "clock-restart",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_clock_defaults_restart",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "026e3af5d07b451a0e342fad59d37e9f3ead94467eac4872dfcfc5e162f2b6ee"
+    },
+    {
+      "name": "clock-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "normal_clock_defaults_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "fff0e70cff74c2558caf6848ff92237a74cad9cf19a91a704d4f29384808fa84"
+    }
+  ],
+  "coverage": {
+    "inserted_literal_outcomes": 14,
+    "empty_literal_outcomes": 4,
+    "full_public_resource_contexts": 18,
+    "same_token_recovery_contexts": 84,
+    "causal_journal_refusals": 126,
+    "direct_proofs": 18,
+    "direct_causal_refusals": 150,
+    "typed_sql_saves": 24,
+    "cold_host_recovery_contexts": 16,
+    "cli_saves_and_readbacks": 12
+  },
+  "protocol": "TCNA5 captured whole-second civil reading or exact absence around unchanged original TCNA2 presence. Full envelope ceiling64MiB. V1 replay has no provider.",
+  "retained_corrections": [
+    "Private codec literal correctly retained the existing b\"original\" digest, but its new test supplied eight zero bytes. Independent hashlib using the documented TCNI0001:BEFORE domain confirmed both digests. Restored matching test input/comment, kept every golden wire byte and added equal-length wrong-BEFORE refusal.",
+    "Preserved exactly two previously committed NativeJournalInserter documentation lines while composing its clock methods.",
+    "Registered fixture under actual testkit access.rs instead of the nonexistent access/mod.rs named in the draft; no shim.",
+    "Removed unused InsertableTable import exposed by strict lint."
+  ],
+  "independent_digest_law_sha256": "b440e2b681bc54a260b016f3e69a298801f06cafcfb52aaae00034393f3a1894",
+  "host_policy": "Automatic existing HostClock for explicit CLI INSERT, optional deterministic --clock execution input; no read when unused, no resampling in replay, old library no-clock APIs unchanged.",
+  "final_cli_help": {
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "-p",
+      "tablecraft-cli",
+      "--",
+      "query",
+      "journal-insert",
+      "--help"
+    ],
+    "returncode": 0,
+    "log_sha256": "4b417f9cdcc6b9a7e32eb2faa1a3ec958325418f30ad790d48c4b4db5735e718",
+    "checked": [
+      "optional deterministic --clock",
+      "initial unindexed Int32 plus legacy Date profile",
+      "qualified root split help preserved",
+      "no engineering --default-clock enable flag"
+    ]
+  }
+}

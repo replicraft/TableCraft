@@ -8,4 +8,7 @@ pub(in crate::table::mutation) mod values;
 mod resolve;
 
 #[cfg(feature = "journal")]
+pub(in crate::table::mutation) mod declaration;
+
+#[cfg(feature = "journal")]
 pub(in crate::table::mutation) use resolve::{derive, prepare};

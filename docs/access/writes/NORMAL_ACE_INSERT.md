@@ -202,8 +202,10 @@ resource checks pass; typed and SQL sessions preserve the same complete images.
 `plan_recoverable_ordinary_omitted_row_inserts` retains original field presence.
 Supplied NULL remains supplied data. Only an omitted field selects its fresh
 DefaultValue declaration or the existing NULL fallback. Constant-literal assignment
-is bounded; clock, random and arbitrary stored expressions remain unsupported
-here. The separate [native Increment route](NORMAL_INCREMENTING_AUTONUMBER.md)
+is bounded; random and arbitrary stored expressions remain unsupported here.
+Qualified [Date/Now defaults](NORMAL_CLOCK_DEFAULTS.md) now use an explicitly
+supplied clock capability and a separate TCNA5 replay envelope; APIs without
+that capability remain ambient-free. The separate [native Increment route](NORMAL_INCREMENTING_AUTONUMBER.md)
 now consumes qualified generated declarations from the same original presence
 contract; ordinary omission alone never establishes generation mode. Complete declarations and target eligibility still
 qualify for an empty batch. Required fields without usable values and Boolean

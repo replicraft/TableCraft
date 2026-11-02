@@ -1,9 +1,9 @@
 //! Private normal mutation composition; UPDATE, DELETE and INSERT keep distinct intents.
 use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{
-    NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent,
-    NativeIntentError, NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
-    RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
+    NativeInsertIntent, NativeIntentError, NativeOmittedInsertIntent, NativeUpdateIntent,
+    PreparedNativeUpdate, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
@@ -59,6 +59,7 @@ pub(super) enum MutationIntent {
     EofInsert(NativeEofInsertIntent),
     CompleteInsert(NativeCompleteInsertIntent),
     OmittedInsert(NativeOmittedInsertIntent),
+    ClockInsert(NativeClockInsertIntent),
 }
 
 impl MutationIntent {
@@ -71,6 +72,8 @@ impl MutationIntent {
         // never retried as another action or promoted from its record prefix.
         if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
+        } else if raw.starts_with(b"TCNA0005") {
+            NativeClockInsertIntent::decode(raw, budget, cancelled).map(Self::ClockInsert)
         } else if raw.starts_with(b"TCNA0004") {
             NativeCompleteInsertIntent::decode(raw, budget, cancelled).map(Self::CompleteInsert)
         } else if raw.starts_with(b"TCNA0003") {

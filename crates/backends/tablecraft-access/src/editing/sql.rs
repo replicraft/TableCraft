@@ -6,7 +6,10 @@ mod inserting;
 #[cfg(feature = "journal")]
 pub use deleting::{RecoverableDeleteError, local_delete_table, plan_recoverable_delete};
 #[cfg(feature = "journal")]
-pub use inserting::{RecoverableInsertError, local_insert_table, plan_recoverable_insert};
+pub use inserting::{
+    RecoverableInsertError, local_insert_table, plan_recoverable_insert,
+    plan_recoverable_insert_with_clock,
+};
 
 #[cfg(feature = "journal")]
 use super::journal::{self, NativeJournalEditor};

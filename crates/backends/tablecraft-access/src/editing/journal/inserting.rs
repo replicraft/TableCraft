@@ -1,4 +1,5 @@
 //! Metadata-only insertion; complete native admission occurs at finish.
+mod clock;
 mod plan;
 
 use super::Error;
@@ -12,6 +13,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_schema::{Column, NameComparison, SchemaPolicy};
 
 const MAX_NAME_BYTES: usize = 255;
@@ -136,6 +138,33 @@ impl OmittingInsertableTable for NativeJournalInserter {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
+        self.plan_presence(values, None, budget, cancelled)
+    }
+}
+
+impl NativeJournalInserter {
+    /// Explicit host clock capability; metadata construction does not sample it.
+    pub fn plan_insert_with_omissions_and_clock(
+        self,
+        values: Vec<InsertValue>,
+        provider: &dyn Clock,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeJournalInsertPlan, Error> {
+        self.plan_presence(values, Some(provider), budget, cancelled)
+    }
+
+    pub(in crate::editing) fn with_clock(self, provider: &dyn Clock) -> clock::ClockInserter<'_> {
+        clock::ClockInserter::new(self, provider)
+    }
+
+    fn plan_presence(
+        self,
+        values: Vec<InsertValue>,
+        provider: Option<&dyn Clock>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeJournalInsertPlan, Error> {
         check(budget, cancelled)?;
         budget
             .charge_allocation(
@@ -163,6 +192,20 @@ impl OmittingInsertableTable for NativeJournalInserter {
         rows.try_reserve_exact(1)
             .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
         rows.push(OmittedRowInsert::new(native));
+        if let Some(provider) = provider
+            && self
+                .image
+                .select_native_ordinary_clock_defaults(&self.name, &rows, budget, cancelled)
+                .map_err(tablecraft_ace::RecoverableEditError::from)?
+        {
+            return self
+                .image
+                .plan_recoverable_ordinary_clock_row_inserts(
+                    &self.name, rows, provider, budget, cancelled,
+                )
+                .map(NativeJournalInsertPlan::Clock)
+                .map_err(Error::from);
+        }
         self.image
             .plan_recoverable_ordinary_omitted_row_inserts(&self.name, rows, budget, cancelled)
             .map(NativeJournalInsertPlan::Omitted)

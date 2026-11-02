@@ -5,12 +5,12 @@ use super::{
 };
 use std::path::Path;
 use tablecraft_ace::{
-    NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent,
-    NativeOmittedInsertIntent, NativeUpdateIntent, NativeUpdateProfile,
-    qualify_native_allocation_recovery, qualify_native_complete_insert_recovery,
-    qualify_native_delete_recovery, qualify_native_eof_insert_recovery,
-    qualify_native_insert_recovery, qualify_native_omitted_insert_recovery,
-    qualify_native_update_recovery,
+    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent, NativeUpdateProfile,
+    qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
+    qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
+    qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
+    qualify_native_omitted_insert_recovery, qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
@@ -84,6 +84,18 @@ impl OfflineWriteSession {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
                     let qualified = qualify_native_omitted_insert_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::ClockInsert(intent) => {
+                    let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_clock_insert_recovery(
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::Qualification)?;
@@ -212,6 +224,17 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::ClockInsert(intent) => {
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_clock_insert_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::Insert(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -296,6 +319,7 @@ impl OfflineWriteSession {
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES)
+            .max(NativeClockInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeEofInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeCompleteInsertIntent::MAX_ENCODED_BYTES) as u64;
         let result = if retired {

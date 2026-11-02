@@ -824,3 +824,6 @@ mod wide_indexed_update;
 
 #[path = "normal/inline_lval_update.rs"]
 mod inline_lval_update;
+
+#[path = "normal/normal_clock_defaults.rs"]
+mod normal_clock_defaults;

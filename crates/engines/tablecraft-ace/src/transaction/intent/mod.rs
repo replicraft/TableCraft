@@ -46,3 +46,9 @@ pub use complete::{
     NativeCompleteInsertIntent, QualifiedNativeCompleteInsertRecovery,
     RecoverableNativeCompleteInsertPlan, qualify_native_complete_insert_recovery,
 };
+
+mod clock_insert;
+pub use clock_insert::{
+    NativeClockInsertIntent, QualifiedNativeClockInsertRecovery, RecoverableNativeClockInsertPlan,
+    qualify_native_clock_insert_recovery,
+};

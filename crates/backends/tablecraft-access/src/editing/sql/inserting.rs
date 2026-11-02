@@ -5,7 +5,8 @@ use crate::editing::{
 };
 use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_db::InsertableTable;
+use tablecraft_db::OmittingInsertableTable;
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_query::{InsertError, QueryError};
 use tablecraft_sql::query::{Query, Statement};
 use thiserror::Error;
@@ -42,6 +43,33 @@ pub fn plan_recoverable_insert(
 ) -> Result<NativeJournalInsertPlan, RecoverableInsertError> {
     let table = local_insert_table(query, budget, cancelled)?;
     let inserter = NativeJournalInserter::new(image, table, budget, cancelled)?;
+    plan_bound(inserter, query, budget, cancelled)
+}
+
+/// Use an explicitly supplied host clock only for source-qualified needed defaults.
+/// Metadata capture and complete supplied requests never sample the provider.
+pub fn plan_recoverable_insert_with_clock(
+    image: NativeImage,
+    query: &Query,
+    provider: &dyn Clock,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeJournalInsertPlan, RecoverableInsertError> {
+    let table = local_insert_table(query, budget, cancelled)?;
+    let inserter =
+        NativeJournalInserter::new(image, table, budget, cancelled)?.with_clock(provider);
+    plan_bound(inserter, query, budget, cancelled)
+}
+
+fn plan_bound<I>(
+    inserter: I,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeJournalInsertPlan, RecoverableInsertError>
+where
+    I: OmittingInsertableTable<Error = journal::Error, Plan = NativeJournalInsertPlan>,
+{
     let Statement::Insert(insert) = &query.statement else {
         return Err(QueryError::Unsupported.into());
     };

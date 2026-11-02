@@ -41,16 +41,26 @@ The existing `recover-update` and `finalize-update` commands also recognize its
 separate TCND intent; neither command replays SQL.
 
 `query journal-insert` uses the [normal INSERT service](../access/writes/NORMAL_ACE_INSERT.md)
-for one complete explicit VALUES row. The initial ACE target must be unindexed
-and have no relationships involving it; defaults, AutoNumber generation and new
-Memo/OLE payloads are not supplied implicitly. The report contains inserted rows,
-with no matched-old-row count. Existing recovery and finalization commands
-recognize its separate original TCNA intent.
+for an explicit VALUES row with qualified complete or omitted-field profiles.
+Native schema, constraints, capacity and index checks choose the supported route;
+needed [constant defaults](../access/writes/CONSTANT_CREATION_DEFAULTS.md) and
+[native Increment declarations](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+retain original presence. Memo/OLE values are not invented for omitted fields.
+The report contains inserted rows with no matched-old-row count. Recovery and
+finalization recognize the original TCNA intent without replaying SQL.
 
 ```sh
 tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES (24, 'new', NULL)" \
   --database offline.accdb --journal fresh-insert-journal
 ```
+
+Stored [Date/Now defaults](../access/writes/NORMAL_CLOCK_DEFAULTS.md) in the
+qualified two-field unindexed profile use the existing host clock automatically.
+Optional `--clock LOCAL-DATETIME` supplies deterministic execution data, for
+example `--clock 2000-02-29T12:00:00`. No enable flag is required. Supplied NULL,
+unneeded defaults and recovery do not read time. Broader generated-ID/indexed
+clock-default combinations remain unsupported; other constant/Increment routes
+retain their existing profiles.
 
 ## Admission and resources
 

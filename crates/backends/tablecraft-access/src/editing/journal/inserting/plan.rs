@@ -1,6 +1,6 @@
 //! Closed actual INSERT families; omitted presence never becomes a TCNA1 body.
 use tablecraft_ace::{
-    NativeIntentError, PreparedNativeEdit, PreparedNativeUpdate,
+    NativeIntentError, PreparedNativeEdit, PreparedNativeUpdate, RecoverableNativeClockInsertPlan,
     RecoverableNativeCompleteInsertPlan, RecoverableNativeEofInsertPlan,
     RecoverableNativeInsertPlan, RecoverableNativeOmittedInsertPlan,
 };
@@ -18,6 +18,8 @@ pub enum NativeJournalInsertPlan {
     AllocateEof(RecoverableNativeEofInsertPlan),
     /// Original supplied/omitted fields, retaining the distinct TCNA0002 body.
     Omitted(RecoverableNativeOmittedInsertPlan),
+    /// Original presence and one retained civil clock input, TCNA5/V1.
+    Clock(RecoverableNativeClockInsertPlan),
 }
 
 impl NativeJournalInsertPlan {
@@ -28,6 +30,7 @@ impl NativeJournalInsertPlan {
             Self::Complete(plan) => plan.before_bytes(),
             Self::AllocateEof(plan) => plan.before_bytes(),
             Self::Omitted(plan) => plan.before_bytes(),
+            Self::Clock(plan) => plan.before_bytes(),
         }
     }
 
@@ -38,6 +41,7 @@ impl NativeJournalInsertPlan {
             Self::Complete(plan) => plan.after_bytes(),
             Self::AllocateEof(plan) => plan.after_bytes(),
             Self::Omitted(plan) => plan.after_bytes(),
+            Self::Clock(plan) => plan.after_bytes(),
         }
     }
 
@@ -48,6 +52,7 @@ impl NativeJournalInsertPlan {
             Self::Complete(plan) => plan.inserted_rows(),
             Self::AllocateEof(plan) => plan.inserted_rows(),
             Self::Omitted(plan) => plan.inserted_rows(),
+            Self::Clock(plan) => plan.inserted_rows(),
         }
     }
 
@@ -62,6 +67,7 @@ impl NativeJournalInsertPlan {
             Self::Complete(plan) => plan.intent().encode(budget, cancelled),
             Self::AllocateEof(plan) => plan.intent().encode(budget, cancelled),
             Self::Omitted(plan) => plan.intent().encode(budget, cancelled),
+            Self::Clock(plan) => plan.intent().encode(budget, cancelled),
         }
     }
 
@@ -78,6 +84,7 @@ impl NativeJournalInsertPlan {
             Self::Complete(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::AllocateEof(_) => Err(JournalError::ImageSize),
             Self::Omitted(plan) => plan.prepare(target, journal, budget, cancelled),
+            Self::Clock(plan) => plan.prepare(target, journal, budget, cancelled),
         }
     }
 
@@ -96,6 +103,9 @@ impl NativeJournalInsertPlan {
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),
             Self::Omitted(plan) => plan
+                .prepare(target, journal, budget, cancelled)
+                .map(PreparedNativeUpdate::Fixed),
+            Self::Clock(plan) => plan
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),
             Self::AllocateEof(plan) => plan
