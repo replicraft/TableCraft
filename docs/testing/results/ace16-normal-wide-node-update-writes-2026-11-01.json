@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal retained numeric NODE UPDATE",
+  "qualification": "Portable independent source and matching writer/host/CLI evidence. Native Microsoft Access save/reopen remains unrun.",
+  "source_gate_commit": "9eda6976",
+  "source_record": "ace16-retained-reuse-companion-source-gates-2026-11-01.json",
+  "combined_validation_record": "ace16-retained-external-write-batch-checks-2026-11-01.json",
+  "tests": [
+    {
+      "name": "node-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::node_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true,
+      "log_sha256": "d5490b494c1b5c6c281f50bc92e1bc119e7640f63b65860b1ac72c57fa662cae"
+    },
+    {
+      "name": "node-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "normal::wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "accepted": true,
+      "log_sha256": "972a88540b92c901629a063ada9ee9b52b87cc20db3c010d8c99751765af9fff"
+    },
+    {
+      "name": "node-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "a926e5c87bf7b4f3fab0bf2fece6c2c1251423ad9e0b75f6ddd1f024c4be4204"
+    },
+    {
+      "name": "node-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "a6d6d52e400188bcbbb8188cd1aac1887eb58ad6aa90c716bd80340b5c8ce06b"
+    }
+  ],
+  "production_checkpoint_sha256": "827d04a689910f21de6892c0cd3ddc824dfbc5cb3b44dda8c0cec177efa86cc9",
+  "acceptance_checkpoint_sha256": "f83bed955565a76ae14d5c68164023f0af1a325cee4603b9ef58007ae45a7d3b",
+  "coverage": {
+    "native_literal_commits_both_original_orders": 40,
+    "empty_plans": 4,
+    "typed_saves": 20,
+    "sql_noop_saves": 4,
+    "cli_noop_saves_with_readbacks": 4,
+    "public_resource_views": 8
+  },
+  "policy": "Stable original leaf counts and topology, full fences from final key-plus-ROW population. Explicit TableCraft fitting policy, not independent reader or native Access save byte identity.",
+  "retained_correction": "First strict batch lint rejected a nested tuple return type. Replaced it with the named Population struct and named field destructuring in both proofs; key bytes, source images and algorithms unchanged. The first lint log remains in the combined record.",
+  "retained_runner_failure": "After strict profiles passed, a runner filename-suffix replacement also changed frozen expected-first directory paths to nonexistent expected-second paths. Three direct tests stopped on missing fixture files before proof execution. Corrected only runner environment paths; source and producer stayed unchanged. The first failed log is retained in the combined record."
+}

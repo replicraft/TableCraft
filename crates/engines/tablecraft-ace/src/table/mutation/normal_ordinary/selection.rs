@@ -8,10 +8,7 @@ use crate::{
     },
     header::check,
     inspect_table_schema,
-    table::mutation::fixed_records::{
-        binding,
-        indexed::{CheckedIndexes, integral_updates::IntegralUpdates},
-    },
+    table::mutation::fixed_records::{binding, indexed::CheckedIndexes},
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
@@ -120,7 +117,7 @@ impl NativeImage {
             &[],
         )];
         if super::wide::selected(&source, budget, cancelled)? {
-            let facts = IntegralUpdates::capture(self, &source, budget, cancelled)?;
+            let facts = super::wide::capture_indexes(self, &source, budget, cancelled)?;
             binding::all_integral(self, &source, &groups, &facts, budget, cancelled)?;
             return Ok(());
         }

@@ -9,15 +9,26 @@ use crate::{
     },
     header::check,
     table::{
-        indexes::{header::IndexHeader, mutation::normal_index_audit::Ownership, page::LEAF},
+        indexes::{
+            header::IndexHeader,
+            mutation::normal_index_audit::Ownership,
+            page::{LEAF, NODE},
+        },
         mutation::{lval_ownership::Inventory, preserved_source::Source},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Profile {
+    RootLeaves,
+    RetainedTrees,
+}
+
 pub(in crate::table::mutation) struct IntegralUpdates<'image> {
     base: CheckedIndexes<'image>,
+    profile: Profile,
     pub(in crate::table::mutation) ownership: Ownership,
 }
 
@@ -38,6 +49,25 @@ impl<'image> IntegralUpdates<'image> {
     pub(in crate::table::mutation) fn capture(
         image: &'image NativeImage,
         source: &Source,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with(image, source, Profile::RootLeaves, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn capture_tree(
+        image: &'image NativeImage,
+        source: &Source,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with(image, source, Profile::RetainedTrees, budget, cancelled)
+    }
+
+    fn capture_with(
+        image: &'image NativeImage,
+        source: &Source,
+        profile: Profile,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -70,6 +100,7 @@ impl<'image> IntegralUpdates<'image> {
             }
         }
         let mut wide = false;
+        let mut has_node = false;
         budget
             .charge_allocation(checked.indexes().len() as u64, size_of::<u32>() as u64)
             .map_err(InspectError::from)?;
@@ -109,13 +140,23 @@ impl<'image> IntegralUpdates<'image> {
                 .charge(Resource::Steps, size_of::<IndexHeader>() as u64)
                 .map_err(InspectError::from)?;
             let header = IndexHeader::read(raw)?;
-            if header.kind != LEAF
-                || !header.qualified_for_update(0)
-                || header.prefix.get() != 0
-                || header.previous.get() != 0
-                || header.next.get() != 0
-                || header.tail.get() != 0
-            {
+            has_node |= header.kind == NODE;
+            let accepted = match profile {
+                Profile::RootLeaves => {
+                    header.kind == LEAF
+                        && header.qualified_for_update(0)
+                        && header.prefix.get() == 0
+                        && header.previous.get() == 0
+                        && header.next.get() == 0
+                        && header.tail.get() == 0
+                }
+                Profile::RetainedTrees => {
+                    matches!(header.kind, LEAF | NODE)
+                        && header.previous.get() == 0
+                        && header.next.get() == 0
+                }
+            };
+            if !accepted {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
             budget
@@ -128,18 +169,51 @@ impl<'image> IntegralUpdates<'image> {
                 pages.push(index.root_page());
             }
         }
-        if !wide {
+        if !wide || (profile == Profile::RetainedTrees && !has_node) {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
-        let ownership = Ownership::capture_actions(image, checked, budget, cancelled)?;
+        let ownership = match profile {
+            Profile::RootLeaves => Ownership::capture_actions(image, checked, budget, cancelled)?,
+            Profile::RetainedTrees => {
+                Ownership::capture_integral_updates(image, checked, budget, cancelled)?
+            }
+        };
         for selected in checked.indexes() {
             ownership.require(image, schema, selected.index(), budget, cancelled)?;
         }
         let inventory = Inventory::capture(image, budget, cancelled)?;
-        inventory.require_no_long_value_data_overlap(&pages, budget, cancelled)?;
+        if profile == Profile::RootLeaves {
+            inventory.require_no_long_value_data_overlap(&pages, budget, cancelled)?;
+        } else {
+            // Every descendant of every actual physical tree is mutable index
+            // storage. Roots alone cannot exclude readonly live LVAL overlap.
+            for (position, selected) in checked.indexes().iter().enumerate() {
+                check(budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, position as u64)
+                    .map_err(InspectError::from)?;
+                if checked.indexes()[..position]
+                    .iter()
+                    .any(|prior| prior.index().data_number() == selected.index().data_number())
+                {
+                    continue;
+                }
+                let tree = ownership.require(image, schema, selected.index(), budget, cancelled)?;
+                inventory.require_no_long_value_data_overlap(tree.pages(), budget, cancelled)?;
+            }
+        }
         check(budget, cancelled)?;
-        Ok(Self { base, ownership })
+        Ok(Self {
+            base,
+            profile,
+            ownership,
+        })
     }
+
+    pub(in crate::table::mutation) fn retained_tree(&self) -> bool {
+        self.profile == Profile::RetainedTrees
+    }
+
     pub(in crate::table::mutation) fn checked(&self) -> &TableCheck {
         self.base.checked()
     }
