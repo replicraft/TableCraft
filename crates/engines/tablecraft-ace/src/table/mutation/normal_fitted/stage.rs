@@ -105,6 +105,12 @@ fn prepare_bound(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
+    if super::external::selected(image, source, &bound, budget, cancelled)? {
+        if policy.prefers_growth() {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        return super::external::stage::prepare(image, source, groups, &bound, budget, cancelled);
+    }
     super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
     if bound.has_long_targets && policy.prefers_growth() {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));

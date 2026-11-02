@@ -1,4 +1,5 @@
 //! Canonical column rows grow without changing their stored declaration refs.
+use crate::table::mutation::storage_scope::Scope;
 #[cfg(test)]
 mod tests;
 
@@ -14,7 +15,6 @@ use crate::{
     },
     table::mutation::{
         append::{self, State},
-        long_value::maps::Scope,
         lval_ownership::{ColumnMapKind, Inventory},
     },
 };

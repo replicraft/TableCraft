@@ -1,0 +1,367 @@
+{
+  "date": "2026-11-01",
+  "scope": "Combined external Memo/OLE reuse and retained Int64/Currency NODE UPDATE writer validation",
+  "qualification": "Portable source, native engine, independent proof, host and CLI evidence. Native Microsoft Access comparisons remain unrun.",
+  "checks": [
+    {
+      "name": "fmt-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "first",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "first",
+      "log_sha256": "6c016fa81d89307ed19afafe32274e2602bd2c721fbc6885e2eb48d29e4e6a09"
+    },
+    {
+      "name": "fmt-second",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "524b8a7201091146f003c25d7b3e6de25fc93476f1d6f7c8c051b4fae5a6b65e"
+    },
+    {
+      "name": "minimal-second",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "041b1c62933d2387728f5fdf0b4255d5ff51b13c66e6b7424507ccdce75a8b5d"
+    },
+    {
+      "name": "journal-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "6fefc2f5f25cf4de4251c804e60b279308790d7d22b51fd9d9841ae898c00561"
+    },
+    {
+      "name": "preview-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "second",
+      "log_sha256": "d5d170c3e807aff4556089cb665957e21eb4cf1c2ab8b006b2a7451d2d1e6bcc"
+    },
+    {
+      "name": "node-direct-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::node_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "second",
+      "log_sha256": "c05516bfdef3660bcd7201e23792bd9ba9d764a19cda30bbab1b5f21eb272baf"
+    },
+    {
+      "name": "node-direct-third",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::node_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "8e8bc576b5dbdfa3d3ca54c045cb43fc7410903390ea676f55cfccfd38ef450c"
+    },
+    {
+      "name": "old-i32-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::ordinary_indexed_targets::"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        4
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "95038d1170b3369d9df0b5951d6dab2bc4b78ceec5063246a25cecb5adc2e7d6"
+    },
+    {
+      "name": "old-wide-leaf-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_indexed_update::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "5a50f784cd720b6e5e4093ad2cf0abac68cecdc18c6131e2706ae1839be66847"
+    },
+    {
+      "name": "old-inline-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::inline_lval_update::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        4
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "ffe0b996034d75f405dfb45e16de44986e37559579d52d36c239da61d763b3a8"
+    },
+    {
+      "name": "ace-units-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1171
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "10df387069aabb6cd7719b631267bb263b85caa80b5362d6555582464485fa32"
+    },
+    {
+      "name": "access-units-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--lib"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        79
+      ],
+      "accepted": true,
+      "phase": "third",
+      "log_sha256": "748b4266c2f7ec4c72d61a2019478dcea8f312a29bbf70bb17422caf4da32674"
+    },
+    {
+      "name": "cli-units-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--bin",
+        "tablecraft"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "phase": "third",
+      "log_sha256": "b1f4e774043178f70aa4a6b675c1337dfda56b69fed4d13109aa6c2344ab9bd7"
+    },
+    {
+      "name": "cli-units-third",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--bin",
+        "tablecraft"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        104
+      ],
+      "accepted": true,
+      "phase": "fourth",
+      "log_sha256": "a4f2fa132c6fe6b29093a07124c7ccddb96cdff00cc0a8df5ff2ca6d4d89524a"
+    },
+    {
+      "name": "boundaries-second",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "fourth",
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "doclinks-second",
+      "argv": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "phase": "fourth",
+      "log_sha256": "7d2076bf1c456a0efac7350df414b13d65122e5972872de386f0e0870027c23e"
+    }
+  ],
+  "retained_failures": [
+    "First strict lint rejected nested key-population tuple type. Named Population struct preserves both independently derived populations and algorithm.",
+    "Second runner accidentally changed expected-first fixture paths to expected-second with log suffix replacement. Three direct tests stopped on missing files before proofs. Corrected runner environment paths only; third direct run passes."
+  ],
+  "unrelated_regression_correction": "CLI unit run found a stale insertion-help assertion from the earlier clock/help commit. Updated only the assertion to the actual broader-index/split refusal text; 103 other tests passed on the first run.",
+  "matching_records": [
+    "ace16-normal-external-long-update-writes-2026-11-01.json",
+    "ace16-normal-wide-node-update-writes-2026-11-01.json"
+  ]
+}

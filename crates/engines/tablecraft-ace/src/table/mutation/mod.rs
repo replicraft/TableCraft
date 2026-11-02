@@ -175,3 +175,6 @@ mod insert_defaults;
 
 #[cfg(feature = "journal")]
 mod normal_actions;
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+mod storage_scope;

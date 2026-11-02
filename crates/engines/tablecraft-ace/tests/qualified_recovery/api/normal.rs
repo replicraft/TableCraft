@@ -827,3 +827,6 @@ mod inline_lval_update;
 
 #[path = "normal/normal_clock_defaults.rs"]
 mod normal_clock_defaults;
+
+#[path = "normal/external_lval_update.rs"]
+mod external_lval_update;

@@ -2,6 +2,7 @@
 use super::super::{ImageProof, reserve};
 use super::Declaration;
 use super::maps::{Allocation, Authority, Bitmap, Maps};
+use crate::table::mutation::storage_scope::Scope;
 use crate::{
     EditError, InspectError, LongValueMapReferences, TableSchema,
     format::{
@@ -11,9 +12,7 @@ use crate::{
         reader::{Reader, row_count, row_range},
         row::{MAX_SLOTS, OFFSET_MASK, ROW_COUNT_OFFSET, SLOT_BYTES, reference, slot_offset},
     },
-    table::mutation::{
-        insert::long_values::Plan, long_value::maps::Scope, lval_ownership::Inventory,
-    },
+    table::mutation::{insert::long_values::Plan, lval_ownership::Inventory},
 };
 use std::ops::Range;
 

@@ -2,9 +2,10 @@
 use super::super::EditError;
 use super::{
     admission::Prepared,
-    maps::{Family, Maps, Scope},
+    maps::{Family, Maps},
     placement::Plan,
 };
+use crate::table::mutation::storage_scope::Scope;
 use crate::{
     InspectError, NativeImage,
     format::{

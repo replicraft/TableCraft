@@ -18,6 +18,10 @@ pub(in crate::table::mutation) fn requires_growth(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, EditError> {
     let bound = binding::all(source, groups, budget, cancelled)?;
+    if super::super::external::selected(image, source, &bound, budget, cancelled)? {
+        super::super::external::preflight(image, source, groups, &bound, budget, cancelled)?;
+        return Ok(false);
+    }
     super::super::inline::qualify(image, source, groups, &bound, budget, cancelled)?;
     let schema = source.table.schema();
     let mut growth = false;
