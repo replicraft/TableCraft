@@ -1,5 +1,15 @@
 # Implementation status
 
+## Indexed Text insertion and deletion
+
+Normal fitting [Text INSERT/DELETE](access/writes/NORMAL_TEXT_INDEX_CARDINALITY.md)
+now maintains qualified nonunique General root leaves. Sixty literal native
+commits, independent proof, recovery/forgery/resource controls, 64 retained
+typed/SQL saves and 44 CLI saves/readbacks pass. Four empty-string INSERT
+requests without explicit AllowZeroLength authority remain precise refusals.
+Explicit property sources, broader storage carriers and topology changes remain
+follow-ons; native Access save/reopen is unrun.
+
 ## Indexed General Text updates
 
 Normal fitting [Short Text UPDATE](access/writes/NORMAL_TEXT_INDEX_UPDATE.md)
@@ -8,7 +18,7 @@ plans, retained typed/SQL sessions and CLI saves. Forty-four literal native
 commits, direct whole-image proofs, recovery/forgery/resource controls, eight
 session saves and four CLI saves/readbacks pass. The execution record retains
 the initial compile and serialization failures and their corrections. Broader
-Text carriers, cardinality changes, topology changes and native Access
+Text carriers, topology changes and native Access
 save/reopen remain separate work.
 
 ## Constant defaults and NODE retirement

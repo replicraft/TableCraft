@@ -2,12 +2,13 @@
 mod binary;
 mod integral;
 mod optional;
+mod text;
 mod tree;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{CURRENCY, INT64, SHORT_BINARY},
+        data_type::{CURRENCY, INT64, SHORT_BINARY, SHORT_TEXT},
         page::PAGE_BYTES,
     },
     header::check,
@@ -104,6 +105,16 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                     index,
                     rows,
                 },
+                &mut expected,
+                budget,
+                cancelled,
+            )?;
+        } else if field.is_some_and(|field| field.native_type() == SHORT_TEXT) {
+            text::reconstruct(
+                &image,
+                &source,
+                index,
+                rows,
                 &mut expected,
                 budget,
                 cancelled,

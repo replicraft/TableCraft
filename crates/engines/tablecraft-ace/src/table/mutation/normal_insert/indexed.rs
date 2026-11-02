@@ -5,7 +5,7 @@ use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowInsert, WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{CURRENCY, INT64, SHORT_BINARY},
+        data_type::{CURRENCY, INT64, SHORT_BINARY, SHORT_TEXT},
         page::PAGE_BYTES,
     },
     header::check,
@@ -251,7 +251,7 @@ fn qualify<'image>(
         let column = column.ok_or(EditError::Preservation)?;
         let field = &schema.columns()[column];
         let integral = matches!(field.native_type(), INT64 | CURRENCY);
-        if integral && !leaf {
+        if (integral || field.native_type() == SHORT_TEXT) && !leaf {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         for row in source.table.rows() {
@@ -260,7 +260,15 @@ fn qualify<'image>(
                 (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
                 (SHORT_BINARY, Some(Value::Binary(value)))
                     if value.len() <= field.storage_length() => {}
-                (_, Some(Value::Int32(_))) if !integral && field.native_type() != SHORT_BINARY => {}
+                (SHORT_TEXT, Some(Value::Text(value)))
+                    if text_fits(
+                        value,
+                        field.storage_length() / size_of::<u16>(),
+                        budget,
+                        cancelled,
+                    )? => {}
+                (_, Some(Value::Int32(_)))
+                    if !integral && !matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT) => {}
                 (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
@@ -271,7 +279,15 @@ fn qualify<'image>(
                 (INT64, Some(Value::Int64(_))) | (CURRENCY, Some(Value::Currency(_))) => {}
                 (SHORT_BINARY, Some(Value::Binary(value)))
                     if value.len() <= field.storage_length() => {}
-                (_, Some(Value::Int32(_))) if !integral && field.native_type() != SHORT_BINARY => {}
+                (SHORT_TEXT, Some(Value::Text(value)))
+                    if text_fits(
+                        value,
+                        field.storage_length() / size_of::<u16>(),
+                        budget,
+                        cancelled,
+                    )? => {}
+                (_, Some(Value::Int32(_)))
+                    if !integral && !matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT) => {}
                 (_, Some(Value::Null)) => optional_wire = true,
                 _ => return Err(EditError::Unsupported(WriteBlocker::IndexedColumn)),
             }
@@ -318,4 +334,23 @@ fn vector<T>(
         .try_reserve_exact(count)
         .map_err(|_| InspectError::Allocation)?;
     Ok(values)
+}
+
+fn text_fits(
+    value: &str,
+    maximum: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    check(budget, cancelled)?;
+    budget
+        .charge(Resource::Steps, value.len() as u64)
+        .map_err(InspectError::from)?;
+    for (position, _) in value.encode_utf16().enumerate() {
+        check(budget, cancelled)?;
+        if position >= maximum {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }

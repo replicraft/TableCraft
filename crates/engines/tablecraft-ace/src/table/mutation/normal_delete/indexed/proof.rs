@@ -3,7 +3,7 @@ use super::{Admission, references, vector};
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeIndex, RowDelete, TableSchema,
     format::{
-        data_type::{CURRENCY, INT64, SHORT_BINARY},
+        data_type::{CURRENCY, INT64, SHORT_BINARY, SHORT_TEXT},
         page::PAGE_BYTES,
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -325,6 +325,10 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
                 .iter()
                 .find(|field| field.number() == key.number())
         });
+        if field.is_some_and(|field| field.native_type() == SHORT_TEXT) {
+            super::text::reconstruct(image, source, index, &removed, expected, budget, cancelled)?;
+            continue;
+        }
         if field.is_some_and(|field| field.native_type() == SHORT_BINARY) {
             super::binary::reconstruct(
                 image, source, index, &removed, expected, budget, cancelled,

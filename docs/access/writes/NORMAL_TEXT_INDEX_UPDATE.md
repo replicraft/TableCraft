@@ -8,7 +8,9 @@ Admission requires complete normal action Source checks, no required table
 programs, exact General metadata, manual variable Short Text, single-key root
 leaves with zero prefix/sibling/tail, and complete owned INDEX membership. Physical
 aliases coalesce. Required/unique Text indexes, other locales, NODEs, splits,
-allocation and Text INSERT/DELETE remain separate work. Original Text values in
+allocation remain separate work. Fitting
+[Text INSERT/DELETE](NORMAL_TEXT_INDEX_CARDINALITY.md) has separate admission and
+evidence. Original Text values in
 this first profile must use plain UTF16LE; compressed and marked carriers require
 separate source/proof qualification.
 

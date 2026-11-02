@@ -3,8 +3,11 @@ use super::CheckedIndexes;
 use crate::{
     EditError, IndexCheckStatus, InspectError, NativeImage, WriteBlocker, check_table,
     format::{
-        data_type::{CURRENCY, INT32, INT64, MAX_SHORT_BINARY_BYTES, SHORT_BINARY},
-        layout::CALCULATED_EXT_MASK,
+        data_type::{
+            CURRENCY, INT32, INT64, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS, SHORT_BINARY,
+            SHORT_TEXT,
+        },
+        layout::{CALCULATED_EXT_MASK, UPDATABLE_FLAG},
     },
     header::check,
 };
@@ -63,6 +66,30 @@ impl<'image> CheckedIndexes<'image> {
                     if field.fixed()
                         || field.extended_flags() != 0
                         || !(1..=MAX_SHORT_BINARY_BYTES).contains(&field.storage_length())
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
+                    continue;
+                }
+                if field.native_type() == SHORT_TEXT
+                    && field.scalar_type() == Some(ScalarType::Text)
+                {
+                    let constraints = index
+                        .index()
+                        .constraints()
+                        .ok_or(InspectError::Unsupported)?;
+                    if field.fixed()
+                        || field.flags() != UPDATABLE_FLAG
+                        || field.extended_flags() != 0
+                        || field.storage_length() == 0
+                        || !field.storage_length().is_multiple_of(size_of::<u16>())
+                        || field.storage_length() / size_of::<u16>() > MAX_SHORT_TEXT_UNITS
+                        || !field
+                            .text_sort_order()
+                            .is_some_and(|order| order.general_family().is_some())
+                        || index.index().columns().len() != 1
+                        || constraints.unique()
+                        || constraints.required()
                     {
                         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
                     }

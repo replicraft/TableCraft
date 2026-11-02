@@ -1,6 +1,8 @@
 //! Original-only compressed page graph, partitions, bounds and sibling facts.
 #[cfg(feature = "journal")]
 mod binary;
+#[cfg(feature = "journal")]
+mod text;
 use super::{atoms, vector};
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeIndex, WriteBlocker,

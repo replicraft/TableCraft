@@ -5,7 +5,7 @@ use crate::{
     WriteBlocker,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
-        data_type::{CURRENCY, INT64, SHORT_BINARY},
+        data_type::{CURRENCY, INT64, SHORT_BINARY, SHORT_TEXT},
         definition,
         page::PAGE_BYTES,
         reader::Reader,
@@ -154,7 +154,7 @@ impl Ownership {
                         .find(|field| field.number() == key.number())
                         .filter(|field| {
                             matches!(field.native_type(), INT64 | CURRENCY)
-                                || field.native_type() == SHORT_BINARY
+                                || matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT)
                         })
                 })
             } else {
@@ -166,7 +166,16 @@ impl Ownership {
                 })
             };
             let tree = if let Some(field) = typed {
-                if field.native_type() == SHORT_BINARY {
+                if field.native_type() == SHORT_TEXT {
+                    #[cfg(feature = "journal")]
+                    {
+                        Tree::capture_text(image, index, selected, field, reader.budget, cancelled)?
+                    }
+                    #[cfg(not(feature = "journal"))]
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                    }
+                } else if field.native_type() == SHORT_BINARY {
                     #[cfg(feature = "journal")]
                     {
                         Tree::capture_binary(

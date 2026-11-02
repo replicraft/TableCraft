@@ -1,0 +1,303 @@
+{
+  "date": "2026-11-01",
+  "qualification": {
+    "local_engine_and_host": "PASS",
+    "native_microsoft_access_save_reopen": "UNRUN",
+    "full_backend": "INCOMPLETE"
+  },
+  "scope": "Fitting indexed General Text INSERT and DELETE",
+  "source_manifest_sha256": "afe05784c2493bbcc0f2803c132528b77424da6c53b8c72f6b26e7cdfd4e8654",
+  "independent_views": 54,
+  "request_contexts": 64,
+  "coverage": {
+    "native_literal_commits": 60,
+    "undeclared_AZL_refusals": 4,
+    "recovery_contexts": 48,
+    "after_forgery_refusals": 40,
+    "full_public_resource_contexts": 16,
+    "direct_literal_proofs": 60,
+    "direct_forgery_refusals": 56,
+    "retained_typed_sql_saves": 64,
+    "retained_AZL_refusals": 8,
+    "cli_saves_and_readbacks": 44,
+    "cli_AZL_refusals": 4
+  },
+  "tests": [
+    {
+      "name": "cardinality-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "::text::tests::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        13
+      ],
+      "accepted": true
+    },
+    {
+      "name": "cardinality-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_cardinality::text_cardinality_commits_retain_original_intents_rows_aliases_and_histories",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true
+    },
+    {
+      "name": "cardinality-date-hosts",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "genuine_text_cardinality",
+        "--test",
+        "native_creation_date_defaults_sessions",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2,
+        2
+      ],
+      "accepted": true
+    },
+    {
+      "name": "cardinality-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_text_cardinality_sql",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true
+    },
+    {
+      "name": "cardinality-admission",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib",
+        "normal_ordinary_sources::text_update::actions::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true
+    }
+  ],
+  "recovery_resource_eager_evidence": {
+    "log_sha256": "667f4b660068f067646da124702a0db36b432b43e55ddd96da4b1ac81fbf7bee",
+    "passed_functions": 3,
+    "failed_function": "Prepared witness comparison expected request order instead of documented source row order.",
+    "corrected_commit_function": {
+      "name": "cardinality-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_cardinality::text_cardinality_commits_retain_original_intents_rows_aliases_and_histories",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true
+    },
+    "single_all_green_four_function_replay": false
+  },
+  "first_failures": [
+    "Missing text module import during first compilation; added journal module/type imports.",
+    "Prepared witness assertion assumed request order; corrected only expected prepared-witness ordering.",
+    "Fixture generated 24 left-deep OR predicates beyond default depth 16; balanced the same predicates preserving left-to-right leaf order. Production limits, raw requests and expected image bytes unchanged."
+  ],
+  "combined_batch_checks": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "ace-lib",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "access-lib",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--lib"
+      ],
+      "returncode": 0
+    },
+    {
+      "name": "cli-bin",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--bin",
+        "tablecraft"
+      ],
+      "returncode": 0
+    }
+  ],
+  "combined_batch_unit_counts": {
+    "ace": 1166,
+    "access": 79,
+    "cli": 104
+  },
+  "documentation_links": {
+    "checked_targets": 7332,
+    "missing": 0
+  }
+}

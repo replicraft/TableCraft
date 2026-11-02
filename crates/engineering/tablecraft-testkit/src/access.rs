@@ -301,3 +301,5 @@ pub mod creation_constant_defaults;
 pub mod genuine_node_retirement;
 
 pub mod genuine_text_indexed_update;
+
+pub mod genuine_text_cardinality;
