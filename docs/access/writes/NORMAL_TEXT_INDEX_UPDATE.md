@@ -34,3 +34,14 @@ remains unrun.
 The [execution record](../../testing/results/ace16-normal-text-index-update-writes-2026-11-01.json)
 records 44 native commits, recovery/forgery/resource controls, eight retained
 typed/SQL saves and four CLI saves/readbacks, including first failures and fixes.
+
+## A newly introduced key family
+
+Four separately sourced UPDATE outcomes replace an existing member with `ss`,
+whose physical key was absent from the original General Legacy/Modern
+populations. The original UPDATE history words remain 7/8 across ASC, twin and
+DESC aliases. A new key family does not change this existing-member replacement
+into an INSERT history event. Six complete source views preceded matching
+mutation; four literal native commits and write-free committed confirmations
+pass without production changes. See the
+[execution record](../../testing/results/ace16-new-text-key-update-writes-2026-11-01.json).

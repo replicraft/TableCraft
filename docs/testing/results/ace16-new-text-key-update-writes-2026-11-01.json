@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-01",
+  "scope": "General Text UPDATE introducing a previously absent physical key family",
+  "source_gate_commit": "dfb11e6b",
+  "source_manifest_sha256": "3b22d4be6b6730dce7f19da23e103c794818e86380ceb24f8a9d6da09a6cea43",
+  "acceptance_checkpoint_sha256": "ebfdcfed114254b5e383a3fa3f1d376871707b0e22f5718be9f5e480f7efa290",
+  "tests": [
+    {
+      "name": "new-key-native",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--test",
+        "qualified_recovery",
+        "api::normal::text_new_key::",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "passed_functions": [
+        "1"
+      ],
+      "accepted": true,
+      "log_sha256": "50c29e74e62388188f439fae48bb82b64448250a8c8528e80106c9e485db6b7f"
+    }
+  ],
+  "coverage": {
+    "source_views": 6,
+    "native_literal_commits": 4,
+    "alias_history_checks": 32,
+    "write_free_committed_confirmations": 4
+  },
+  "source_law": "UPDATE replaces an existing original index member: the newly introduced ss key does not turn that replacement into a new-member INSERT history event. General Legacy and Modern ASC/Twin/DESC keys retain original histories7/8.",
+  "production_changes": "None; regression tests consume the existing normal indexed Text UPDATE implementation.",
+  "qualification": "Independent source/native/inert SDK evidence; native Microsoft Access save/reopen unrun.",
+  "combined_validation_record": "ace16-increment-text-retirement-batch-checks-2026-11-01.json"
+}

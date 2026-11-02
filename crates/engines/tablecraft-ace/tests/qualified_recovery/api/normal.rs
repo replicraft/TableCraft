@@ -815,3 +815,6 @@ mod genuine_repeated_retirement;
 
 #[path = "normal/text_azl.rs"]
 mod text_azl;
+
+#[path = "normal/text_new_key.rs"]
+mod text_new_key;
