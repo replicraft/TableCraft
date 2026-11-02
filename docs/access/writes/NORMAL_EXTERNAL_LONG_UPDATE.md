@@ -13,9 +13,10 @@ Fresh ordinary Source and complete LVAL checks establish actual column ownership
 map membership and catalog-wide exclusivity before selecting this route. Distinct
 slots on one same-column page are allowed; shared row references or cross-owner
 pages refuse. Existing orphan rows are preserved rather than silently reclaimed.
-Empty and no-op groups repeat admission. Changed fixed/short siblings, inline or
-NULL transitions in an external-owning target and dropped chain tails remain
-outside this route.
+Empty and no-op groups repeat admission. A separate
+[whole-page retirement route](NORMAL_EXTERNAL_LONG_RETIREMENT.md) now admits
+qualified NULL and present-empty OLE replacements. Changed fixed/short siblings,
+inline transitions and dropped retained chain tails remain outside reuse.
 
 The existing fitting stage supplies page patches through TCNI5 and checked V1
 recovery. Independent proof walks original raw descriptors, links and slot spans,

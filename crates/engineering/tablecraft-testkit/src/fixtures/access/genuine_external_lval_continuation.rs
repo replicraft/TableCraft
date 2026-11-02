@@ -356,3 +356,72 @@ pub fn load_all(mut verify: impl FnMut(&[u8], &str)) -> Vec<Case> {
     assert_eq!(cases.len(), 32);
     cases
 }
+
+fn carrier(output: &mut Vec<u8>, value: &Value) {
+    let (tag, payload) = match value {
+        Value::Null => (0, Vec::new()),
+        Value::Int32(value) => (2, value.to_le_bytes().to_vec()),
+        Value::Text(value) => (6, value.as_bytes().to_vec()),
+        Value::Binary(value) => (7, value.clone()),
+        _ => panic!("only original literal source carriers enter this wire"),
+    };
+    output.extend_from_slice(&[tag, 0, 0, 0]);
+    output.extend_from_slice(&(payload.len() as u32).to_le_bytes());
+    output.extend_from_slice(&payload);
+}
+
+pub fn intent_wire(case: &Case, before_digest: [u8; 32]) -> Vec<u8> {
+    let mut body = Vec::from(*b"Items");
+    let mut assignments = 0_u32;
+    for group in &case.groups {
+        let mut cells = Vec::new();
+        for update in &group.updates {
+            let mut cell = (update.row as u64).to_le_bytes().to_vec();
+            carrier(&mut cell, &update.expected);
+            carrier(&mut cell, &update.replacement);
+            cells.extend_from_slice(&((cell.len() + 4) as u32).to_le_bytes());
+            cells.extend_from_slice(&cell);
+            assignments += 1;
+        }
+        body.extend_from_slice(&((20 + group.column.len() + cells.len()) as u32).to_le_bytes());
+        body.extend_from_slice(&(group.column.len() as u32).to_le_bytes());
+        body.extend_from_slice(&(group.updates.len() as u32).to_le_bytes());
+        body.extend_from_slice(&[1, 0, 0, 0]);
+        body.extend_from_slice(&0_u32.to_le_bytes());
+        body.extend_from_slice(group.column.as_bytes());
+        body.extend_from_slice(&cells);
+    }
+    let mut raw = Vec::from(*b"TCNI0005");
+    raw.extend_from_slice(&((72 + body.len()) as u32).to_le_bytes());
+    raw.extend_from_slice(&[5, 0, 0, 0]);
+    raw.extend_from_slice(&(case.before.len() as u64).to_le_bytes());
+    raw.extend_from_slice(&before_digest);
+    for number in [5, case.groups.len() as u32, assignments, 0] {
+        raw.extend_from_slice(&number.to_le_bytes());
+    }
+    raw.extend_from_slice(&body);
+    raw
+}
+
+pub fn retired_pages(case: &Case) -> Vec<u32> {
+    let delta = u32::from(case.header == 6) * 17;
+    let pages = match case.recipe {
+        "clear-single-blob" | "empty-single-blob" => vec![95],
+        "clear-single-memo" => vec![96],
+        "clear-single-both" => vec![95, 96],
+        "clear-memo-chain" => vec![101, 102],
+        _ => unreachable!(),
+    };
+    pages.into_iter().map(|page| page + delta).collect()
+}
+
+/// SQL spellings exist only for the independently qualified NULL replacements.
+pub fn retirement_sql(case: &Case) -> Option<&'static str> {
+    match case.recipe {
+        "clear-single-blob" => Some("UPDATE Items SET [Blob]=NULL WHERE [ID]=3"),
+        "clear-single-memo" => Some("UPDATE Items SET [Memo]=NULL WHERE [ID]=3"),
+        "clear-single-both" => Some("UPDATE Items SET [Blob]=NULL,[Memo]=NULL WHERE [ID]=3"),
+        "clear-memo-chain" => Some("UPDATE Items SET [Memo]=NULL WHERE [ID]=5"),
+        _ => None,
+    }
+}

@@ -161,7 +161,7 @@ fn retained_external_updates_save_typed_and_real_sql_images_without_coercion() {
 
 #[test]
 #[ignore = "requires external32 source qualification and matching reuse implementation"]
-fn external_reuse_keeps_retained_receipts_and_rejects_stale_handles_and_retirement() {
+fn external_reuse_keeps_retained_receipts_and_rejects_stale_handles_and_partial_page_retirement() {
     for case in sources::load_all(verify)
         .into_iter()
         .filter(|case| case.recipe == "memo-last-tail-shrink")
@@ -185,14 +185,17 @@ fn external_reuse_keeps_retained_receipts_and_rejects_stale_handles_and_retireme
             .unwrap();
         let (mut session, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
         assert_eq!(fs::read(&path).unwrap(), case.after);
-        for value in [Value::Null, Value::Text("β".repeat(4075))] {
+        for (column, value) in [
+            ("Blob", Value::Null),
+            ("Memo", Value::Text("β".repeat(4075))),
+        ] {
             let editor = session
                 .edit_table("Items", &mut budget(), &|| false)
                 .unwrap();
             let handle = editor.snapshot().row_handle(4).unwrap();
             let failure = editor
                 .plan_updates(
-                    "Memo",
+                    column,
                     &[CellUpdate::new(handle, value)],
                     &mut budget(),
                     &|| false,

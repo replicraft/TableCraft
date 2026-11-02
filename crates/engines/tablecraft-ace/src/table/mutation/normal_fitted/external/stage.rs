@@ -253,6 +253,9 @@ pub(in crate::table::mutation::normal_fitted) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Patch>, usize), EditError> {
+    if super::retirement::selected(groups, bound, budget, cancelled)? {
+        return super::retirement::stage::prepare(image, source, groups, bound, budget, cancelled);
+    }
     let prepared = capture(image, source, groups, bound, budget, cancelled)?;
     let mut patches = binding::vector(prepared.changes.len(), budget)?;
     for change in prepared.changes {

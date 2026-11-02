@@ -1,6 +1,7 @@
 //! Reuse an existing exclusive external value without allocating or retiring rows.
 mod admission;
 pub(super) mod proof;
+mod retirement;
 pub(super) mod stage;
 
 use super::binding::Bound;
@@ -26,5 +27,9 @@ pub(super) fn preflight(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+    if retirement::selected(groups, bound, budget, cancelled)? {
+        retirement::stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+    } else {
+        stage::capture(image, source, groups, bound, budget, cancelled).map(|_| ())
+    }
 }

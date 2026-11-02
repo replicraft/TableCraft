@@ -1,0 +1,503 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "connected_external_long_whole_page_retirement_passed",
+  "scope": {
+    "requests": "NULL Memo/OLE and present-empty OLE replacements under complete selected whole-page ownership",
+    "preservation": "source-relative parent capacity and residuals; retired pages change only their four-byte invalid prefix",
+    "maps": "checked represented column-owned/candidate clears and GLOBAL free sets, coalesced from original cells",
+    "intent_and_recovery": "unchanged TCNI5/profile5 and CheckedV1"
+  },
+  "source_qualification": {
+    "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/source/qualification-first.json",
+    "bytes": 3581,
+    "sha256": "0cc699e04220beeb4a98a70363e72561e433a05662fea04989dfbcf3af1ade7f"
+  },
+  "counts": {
+    "native_changed_commits": 20,
+    "native_result_noop_empty_commits": 8,
+    "native_recovery_states": 120,
+    "native_after_forgeries": 40,
+    "shared_page_refusals": 8,
+    "stale_plan_and_intent_contexts": 4,
+    "direct_positive_proofs": 20,
+    "direct_forgeries": 48,
+    "public_resource_contexts": 8,
+    "typed_saves": 20,
+    "sql_saves": 16,
+    "same_lease_empty_followons": 4,
+    "stale_host_predecessor_commits": 4,
+    "cli_saves_and_readbacks": 16
+  },
+  "verification": [
+    {
+      "name": "retirement-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "external_retirement_fresh_proof_reconstructs_source_relative_maps_parents_and_residuals",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "expected_functions": 1,
+      "accepted": true
+    },
+    {
+      "name": "retirement-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::external_lval_retirement",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6
+      ],
+      "expected_functions": 6,
+      "accepted": true
+    },
+    {
+      "name": "external-growth-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "external-reuse-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "index-retirement-regression-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::indexes::mutation::retirement::global_audit::tests"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "expected_functions": 2,
+      "accepted": true
+    },
+    {
+      "name": "retained-sessions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_increment_companion_sessions",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2,
+        1
+      ],
+      "expected_functions": 3,
+      "accepted": true
+    },
+    {
+      "name": "cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_increment_companion_sql",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1,
+        1
+      ],
+      "expected_functions": 2,
+      "accepted": true
+    },
+    {
+      "name": "retained-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_autonumber_sessions",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2,
+        2,
+        1
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "cli-regressions-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_autonumber_sql",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1,
+        1,
+        1
+      ],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-default-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-journal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "ace-preview-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "native-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "access-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--test",
+        "normal_increment_companion_sessions",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "cli-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--test",
+        "normal_increment_companion_sql",
+        "--test",
+        "genuine_external_lval_retirement",
+        "--test",
+        "genuine_external_lval_update",
+        "--test",
+        "genuine_external_lval_growth",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "fmt-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "expected_functions": null,
+      "accepted": true
+    }
+  ],
+  "shared_machinery": {
+    "production": "existing original-cell INDEX mask kernel now directly shared with LVAL retirement through table::mutation::map_changes",
+    "test": "existing independent TCNI5 fixture grammar moved from growth tests to the actual testkit fixture owner; both test consumers import it directly",
+    "new_dependencies": []
+  },
+  "preserved_attempts": {
+    "first_compile_before_tests": {
+      "path": ".cache/backend-write-batch-20261102/increment-direct-first.log",
+      "bytes": 1398,
+      "sha256": "0bb7ce00b6def359bd101c288ca97da1ca861e86ee1809ed877e3185943f15aa"
+    },
+    "module_visibility_correction": {
+      "path": ".cache/backend-write-batch-20261102/map-module-visibility-successor.json",
+      "bytes": 442,
+      "sha256": "57e5a4e1868dd563c072623776ce6472cb974ab70ca0b56f152138e2f0470f5e"
+    },
+    "active_refusal_migration": {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/retirement-acceptance/refusal-migration/successor-checkpoint.json",
+      "bytes": 1359,
+      "sha256": "f8d5fa59416a9f36155e78e94139e4e8fb9635ee98bbfa10ec2ac61eedd22145"
+    },
+    "explanation": "The extracted helper module needed visibility to its table parent so the INDEX sibling could import it. Actual old refusals now use a shared Blob page with an unselected live slot; historical images and request laws are unchanged."
+  },
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/implementation-draft/clear-successor/first-connected-private-checkpoint.json",
+      "bytes": 6769,
+      "sha256": "0c4af1104e2be2ef98bfc6cf90599acb0e90eb201a34aa9e1c25742e9b26f4f9"
+    },
+    {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/implementation-draft/clear-successor/resource-successor/successor-checkpoint.json",
+      "bytes": 632,
+      "sha256": "2f42d493d53aede307ff5d435651e46c063559f7b94077fe1a1c4989ee8fe1aa"
+    },
+    {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/implementation-draft/clear-successor/QUERY_COMPOSITION_REVIEW_RESOURCE_SUCCESSOR.md",
+      "bytes": 499,
+      "sha256": "b2b9f8814fcc22876f7f8d222b98370d87d9c9ff0b372cce3d92999e7dca52c1"
+    },
+    {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/retirement-acceptance/first-connected-private-checkpoint.json",
+      "bytes": 4078,
+      "sha256": "1089adbb76af33056f83b401da715f1a4fa6cf26366d62d60f67f782b73cd905"
+    },
+    {
+      "path": ".cache/ace16-normal-external-lval-continuation-next-20261101/retirement-acceptance/refusal-migration/successor-checkpoint.json",
+      "bytes": 1359,
+      "sha256": "f8d5fa59416a9f36155e78e94139e4e8fb9635ee98bbfa10ec2ac61eedd22145"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/install-first.json",
+      "bytes": 8359,
+      "sha256": "3a07b44f70314729a69b1a5c12169bc5fa34dc585c3d6f3026dba0a2f7a855e5"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-second.json",
+      "bytes": 1253,
+      "sha256": "700311d21336b3b0adb48b7cf86e3954a918ddce5851e15a166a506a1a6c4712"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-third.json",
+      "bytes": 1647,
+      "sha256": "bd991e4e622fb412d670c8e782b93ef09716cee5063233972960e2aca487408e"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/results-fourth.json",
+      "bytes": 7493,
+      "sha256": "f9c0fd0040c8fcf0d631e0316144f835f98d6c1cde1f67bcaf4f97ac35cbd8df"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/retirement-direct-first.log",
+      "bytes": 464,
+      "sha256": "7ca4ff30a4c47db56900e326f7f09abdabd65619147d8cc022c7e2d24a2b9755"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/retirement-native-first.log",
+      "bytes": 1102,
+      "sha256": "cf4c8bda9a8ec6f804d7c6d5868ed9620dffceb26485b610845600cd981e80d6"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/retained-sessions-first.log",
+      "bytes": 2766,
+      "sha256": "8e1378f6cab77aa751f6a31d3006fd6f11e0cf135c51d8887b24984195aa0171"
+    },
+    {
+      "path": ".cache/backend-write-batch-20261102/cli-first.log",
+      "bytes": 3939,
+      "sha256": "6e61064a33fce0d4712b82aff5bf16108ee58aadde5bf8ae44df43972d6f96c4"
+    }
+  ],
+  "limits": [
+    "Mixed retirement with changed retained descriptors remains active follow-on work; current qualified outcomes are retirement-only.",
+    "Unselected live shared-page slots prevent retirement. This is not implicit orphan collection or secure erasure.",
+    "Empty OLE is typed coverage. SQL/CLI use actual NULL assignments.",
+    "Partial-page removal, new LVAL allocation, relocation and native Microsoft Access save/reopen remain work."
+  ]
+}

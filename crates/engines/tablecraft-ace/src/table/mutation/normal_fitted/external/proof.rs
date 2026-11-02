@@ -44,6 +44,11 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
+    if super::retirement::selected(groups, bound, budget, cancelled)? {
+        return super::retirement::proof::reconstruct(
+            image, source, groups, bound, budget, cancelled,
+        );
+    }
     let schema = source.table.schema();
     let mut expected = record_serialization::copy(image.as_bytes(), budget, cancelled)?;
     let mut changed_rows = 0_usize;

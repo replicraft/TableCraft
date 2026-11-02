@@ -22,9 +22,10 @@ expected-value checks still apply to empty and no-op requests.
 The [source family](../../testing/ACE16_EXTERNAL_CONTINUATION_WIDE_SPLIT_SOURCES.md)
 passed complete native reads and 36 inert independent-reader reports before
 matching writers. Its twelve growth outcomes cover single, chained and joint
-changes under both header variants and both Memo storage declarations. Clearing,
-whole-page retirement, row relocation and new LVAL allocation remain separate
-work. Native Microsoft Access save/reopen remains unrun.
+changes under both header variants and both Memo storage declarations.
+[Whole-page clearing/retirement](NORMAL_EXTERNAL_LONG_RETIREMENT.md) now has separate
+connected acceptance. Mixed changes, row relocation and new LVAL
+allocation remain work. Native Microsoft Access save/reopen remains unrun.
 
 Twelve changed native commits plus eight original no-op/empty commits, independent
 proof and forged-image controls, 72 recovery contexts, measured resources,
