@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-01",
+  "scope": "Recursive Int32 NODE retirement source qualification only",
+  "source_views": 6,
+  "independent_sdk_observations": 12,
+  "source_manifest_sha256": "6b95d378b8ae5ba9b61dc462d469a31773c01d810bc083fa8331486ccd7b26b7",
+  "source_result_sha256": "ece942ea9b0a4cb1387fd8baf5b3891eb16712ea196e2e40d417932f7f0e83f1",
+  "native_gate": {
+    "name": "recursive-six-source",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--lib",
+      "recursive_retirement_sources::recursive_retirement_sources_match_independent_raw_replay_and_current_native_admission",
+      "--",
+      "--include-ignored",
+      "--nocapture"
+    ],
+    "returncode": 0,
+    "passed_functions": [
+      1
+    ],
+    "accepted": true
+  },
+  "native_gate_log_sha256": "f1a9687be4c77d83c2fdf0773d0bb95060dbcbe8021a1d61a308e5ead2df4e1c",
+  "coverage": [
+    "Original height-two partitions, complete key/ROW fences and all-level sibling chains.",
+    "Exact GLOBAL/INDEX retirement-cell union and retired-page residuals.",
+    "Whole-image preservation, histories, DATA payloads, original EOF and retained bounded root.",
+    "Current complete NoRequired Source, constraints, complete owned indexes and sequential/selected rows."
+  ],
+  "matching_recursive_producer": "NOT INSTALLED OR RUN AT QUALIFICATION",
+  "native_microsoft_access_save_reopen": "UNRUN"
+}
