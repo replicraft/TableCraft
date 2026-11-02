@@ -3,8 +3,9 @@
 Normal fitting UPDATE can replace qualified nonempty external Memo/OLE payloads
 without allocating or retiring storage. Memo uses Text and OLE uses Binary.
 Original single-row and chained descriptors retain their kind, references,
-links and reserved bytes. The payload must fit every retained chunk, including
-a nonempty terminal chunk. A shorter terminal must occupy the physically last
+links and reserved bytes. The reuse profile fits every retained chunk, including a nonempty terminal
+chunk. [Terminal growth](NORMAL_EXTERNAL_LONG_GROWTH.md) can separately expand
+the last slot into its checked existing page capacity. A shorter terminal must occupy the physically last
 slot on its page; its start and page free count change together. Other row
 boundaries, freed prefix bytes and EOF remain source-relative.
 
@@ -13,8 +14,8 @@ map membership and catalog-wide exclusivity before selecting this route. Distinc
 slots on one same-column page are allowed; shared row references or cross-owner
 pages refuse. Existing orphan rows are preserved rather than silently reclaimed.
 Empty and no-op groups repeat admission. Changed fixed/short siblings, inline or
-NULL transitions in an external-owning target, growth and dropped chain tails
-remain outside this route.
+NULL transitions in an external-owning target and dropped chain tails remain
+outside this route.
 
 The existing fitting stage supplies page patches through TCNI5 and checked V1
 recovery. Independent proof walks original raw descriptors, links and slot spans,

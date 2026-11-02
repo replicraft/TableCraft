@@ -20,7 +20,7 @@ use tablecraft_core::{
 };
 
 const INLINE_BYTES: usize = 64;
-const EXTERNAL_ROW_BYTES: usize = 4076;
+pub(in crate::table::mutation) const EXTERNAL_ROW_BYTES: usize = 4076;
 #[cfg(feature = "ace16-write-preview")]
 const REFERENCE_BYTES: usize = size_of::<u32>();
 #[cfg(feature = "ace16-write-preview")]

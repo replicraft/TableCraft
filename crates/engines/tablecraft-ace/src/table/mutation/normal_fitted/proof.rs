@@ -237,3 +237,6 @@ mod inline_tests;
 
 #[cfg(test)]
 mod external_tests;
+
+#[cfg(test)]
+mod external_growth_tests;

@@ -1,5 +1,16 @@
 # Implementation status
 
+## External terminal growth
+
+Normal [external Memo/OLE terminal growth](access/writes/NORMAL_EXTERNAL_LONG_GROWTH.md)
+now expands a physically last chunk into checked existing free space through
+TCNI5/V1, preserving every original link/reference and all maps. Twelve changed
+literal native commits plus eight original no-op/empty commits, independent
+proof, mixed recovery/forgery/resource controls, sixteen typed/SQL saves with
+sixteen empty follow-ons and four CLI saves/readbacks pass. Stale-handle checks
+retain prior receipts. Clearing, page retirement, relocation, new LVAL allocation
+and native Access save/reopen remain work.
+
 ## Retained wider numeric tree updates
 
 Normal [retained Int64/Currency NODE UPDATE](access/writes/NORMAL_WIDE_NODE_UPDATE.md)
@@ -18,8 +29,8 @@ now retains original single/chained references while replacing or safely
 shortening their payloads through TCNI5/V1. Twenty-eight literal native commits,
 120 recovery contexts, direct proof/forgery/resource controls, 40 typed/SQL saves
 with 40 empty follow-ons and twelve CLI saves/readbacks pass. Complete catalog,
-column-map and LVAL ownership checks preserve existing orphan rows. Growth,
-retirement, NULL/empty transitions and native Access saves remain work.
+column-map and LVAL ownership checks preserve existing orphan rows. Terminal growth now has the separate route above; retirement, NULL/empty
+transitions and native Access saves remain work.
 
 ## Captured native Date/Now defaults
 
@@ -52,8 +63,9 @@ retained sessions and the CLI. Ninety-six native commits, independent proof and
 original wires, mixed recovery/forgery/resource controls, 56 typed/SQL saves and
 eight CLI saves/readbacks pass. Existing I32, Binary, Text, inline INSERT and
 Increment CLI routes pass focused regressions. The combined batch passes 1,171
-engine, 79 adapter and 104 CLI units and strict standalone profiles. NODE
-partitions, broader schemas and native Access save/reopen remain work.
+engine, 79 adapter and 104 CLI units and strict standalone profiles. Retained
+NODE partitions now have the separate route above; broader schemas, splits and
+native Access save/reopen remain work.
 
 ## Next write sources qualified
 

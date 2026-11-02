@@ -34,6 +34,7 @@ const TYPE_MASK: u32 = 0xc000_0000;
 const SINGLE: u32 = 0x4000_0000;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const LVAL_OWNER: &[u8; WORD_BYTES] = b"LVAL";
+const MAX_EXTERNAL_BODY_BYTES: usize = 4076;
 
 pub(in crate::table::mutation::normal_fitted) fn reconstruct(
     image: &NativeImage,
@@ -110,7 +111,7 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             };
             let old_length = (word & !TYPE_MASK) as usize;
-            if requested.is_empty() || requested.len() > old_length {
+            if requested.is_empty() {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
             let mut reference = u32_at(descriptor, WORD_BYTES)?;
@@ -163,7 +164,7 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
                     requested
                         .len()
                         .checked_sub(replaced)
-                        .filter(|n| *n != 0 && *n <= available)
+                        .filter(|n| *n != 0)
                         .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?
                 } else {
                     if replaced
@@ -174,33 +175,70 @@ pub(in crate::table::mutation::normal_fitted) fn reconstruct(
                     }
                     available
                 };
-                let released = available - needed;
-                if released != 0 && slot + 1 != row_count(&page)? {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                }
-                let base = number as usize * PAGE_BYTES;
-                let after = expected
-                    .get_mut(base..base + PAGE_BYTES)
-                    .ok_or(EditError::Preservation)?;
-                reader.work(needed + link_bytes)?;
-                // Preserve original links and freed-prefix bytes. Only the
-                // final physical row may move its start toward its fixed end.
-                if kind == 0 {
-                    after[from + released..from + released + WORD_BYTES]
-                        .copy_from_slice(&next.to_le_bytes());
-                }
-                after[from + released + link_bytes..to]
-                    .copy_from_slice(&requested[replaced..replaced + needed]);
-                if released != 0 {
+                if needed > available {
+                    let extra = needed - available;
+                    if !last
+                        || slot + 1 != row_count(&page)?
+                        || needed
+                            .checked_add(link_bytes)
+                            .is_none_or(|bytes| bytes > MAX_EXTERNAL_BODY_BYTES)
+                        || extra > usize::from(u16_at(&page, FREE_OFFSET)?)
+                    {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                    let new_start = from.checked_sub(extra).ok_or(EditError::Preservation)?;
+                    let base = number as usize * PAGE_BYTES;
+                    let after = expected
+                        .get_mut(base..base + PAGE_BYTES)
+                        .ok_or(EditError::Preservation)?;
+                    reader.work(needed + link_bytes)?;
+                    if kind == 0 {
+                        after[new_start..new_start + WORD_BYTES]
+                            .copy_from_slice(&next.to_le_bytes());
+                    }
+                    after[new_start + link_bytes..to]
+                        .copy_from_slice(&requested[replaced..replaced + needed]);
                     let free = u16_at(after, FREE_OFFSET)?
-                        .checked_add(u16::try_from(released).map_err(|_| EditError::Preservation)?)
+                        .checked_sub(u16::try_from(extra).map_err(|_| EditError::Preservation)?)
                         .ok_or(EditError::Preservation)?;
                     after[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
                         .copy_from_slice(&free.to_le_bytes());
-                    let new_start =
-                        u16::try_from(from + released).map_err(|_| EditError::Preservation)?;
-                    after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()]
-                        .copy_from_slice(&new_start.to_le_bytes());
+                    after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()].copy_from_slice(
+                        &u16::try_from(new_start)
+                            .map_err(|_| EditError::Preservation)?
+                            .to_le_bytes(),
+                    );
+                } else {
+                    let released = available - needed;
+                    if released != 0 && slot + 1 != row_count(&page)? {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
+                    let base = number as usize * PAGE_BYTES;
+                    let after = expected
+                        .get_mut(base..base + PAGE_BYTES)
+                        .ok_or(EditError::Preservation)?;
+                    reader.work(needed + link_bytes)?;
+                    // Preserve original links and freed-prefix bytes. Only the
+                    // final physical row may move its start toward its fixed end.
+                    if kind == 0 {
+                        after[from + released..from + released + WORD_BYTES]
+                            .copy_from_slice(&next.to_le_bytes());
+                    }
+                    after[from + released + link_bytes..to]
+                        .copy_from_slice(&requested[replaced..replaced + needed]);
+                    if released != 0 {
+                        let free = u16_at(after, FREE_OFFSET)?
+                            .checked_add(
+                                u16::try_from(released).map_err(|_| EditError::Preservation)?,
+                            )
+                            .ok_or(EditError::Preservation)?;
+                        after[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
+                            .copy_from_slice(&free.to_le_bytes());
+                        let new_start =
+                            u16::try_from(from + released).map_err(|_| EditError::Preservation)?;
+                        after[slot_offset(slot)..slot_offset(slot) + size_of::<u16>()]
+                            .copy_from_slice(&new_start.to_le_bytes());
+                    }
                 }
                 replaced += needed;
                 reference = next;

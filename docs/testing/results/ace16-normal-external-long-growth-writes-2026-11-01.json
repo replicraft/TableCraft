@@ -1,0 +1,311 @@
+{
+  "date": "2026-11-01",
+  "scope": "Normal terminal external Memo/OLE growth without new allocation",
+  "source_qualification_commit": "340351d4",
+  "source_manifest_sha256": "b8468b51e6d6166ea31d1700b0b2c2a3b0722cbc53494c02fb660be4aa648424",
+  "production_checkpoint_sha256": "65e7248fa32599c76d301ad96e1a5647cf05d4360d57e82f8355549a7cb25fcc",
+  "acceptance_checkpoint_sha256": "4617147a5d8b1a4d241e888d7832c5157ea158d64104a9d9c0d5561d93561f99",
+  "tests": [
+    {
+      "name": "growth-direct-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--lib",
+        "normal_fitted::proof::external_growth_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "3aa59628d1f9f6854a1daf7d52522b57398fb6b526a33c6736d08d30761f1549"
+    },
+    {
+      "name": "growth-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "normal::external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "log_sha256": "f83ff65f691007a1e4b9b7ec3df31c41612fe23bd523f109cd98375b3f1326e4"
+    },
+    {
+      "name": "growth-native-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "normal::external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6
+      ],
+      "accepted": true,
+      "log_sha256": "8adae6b3939d936fa861516698da40d6d8dcff1fb3ecaecf79bd6eada604dcf2"
+    },
+    {
+      "name": "growth-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "log_sha256": "c96f4608b8e57c3cbd9b2b7440fee1ec38e936b11949929834a4b54a1b3e9e2f"
+    },
+    {
+      "name": "growth-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_growth",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "818d9ea106ebea2c38ce3e328cac040a6af82ba1e1c62e656bf36391fae28df2"
+    },
+    {
+      "name": "reuse-native-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "normal::external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "accepted": true,
+      "log_sha256": "0cbaf1425603ceaed578cce949b230045d79f2ce4f10253168f92a4513f1b67b"
+    },
+    {
+      "name": "reuse-host-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--test",
+        "genuine_external_lval_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "accepted": true,
+      "log_sha256": "88a3941839badefb86ff1df6a4e818ec7ddfe21c80afaaf8c050b0bc69f5051b"
+    },
+    {
+      "name": "growth-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "accepted": false,
+      "log_sha256": "9be427e0a12f1bac97f1525fa1be6a919539c447a52b97c21fefc20b4ae07b36"
+    },
+    {
+      "name": "growth-fmt-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "growth-strict-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "--all-targets",
+        "--all-features",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "3eed572e668b23edf93aa441ce7a6b0ebbde438d1b7157700ac7f2282fd2108d"
+    },
+    {
+      "name": "growth-journal-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--lib",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "12d23ebfa1477af1236211b6e3a5c4229ab51aea5b19b141bad8842bde3b068a"
+    },
+    {
+      "name": "growth-preview-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--lib",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "93e304c15323742b8ee92aaa1eeaa51d895eda713539957e3e42c2e1b58165b1"
+    },
+    {
+      "name": "growth-help-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--bin",
+        "tablecraft",
+        "commands::query::journal::tests::batch::journal_help_describes_fixed_and_fitted_updates_without_obsolete_limits",
+        "--",
+        "--exact"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "5b0bdac6fa3e61ac2fa71463a91dfbd2bab6a3b6955d845c8f704a7802aab9a9"
+    }
+  ],
+  "coverage": {
+    "literal_native_growth_commits": 12,
+    "native_original_noop_empty_commits": 8,
+    "recovery_contexts": 72,
+    "forged_after_refusals": 48,
+    "capacity_refusals": 8,
+    "stale_plan_intent_refusals": 8,
+    "direct_literal_proofs": 12,
+    "direct_forged_refusals": 60,
+    "public_joint_resource_contexts": 4,
+    "typed_saves": 12,
+    "sql_saves": 4,
+    "same_lease_empty_followons": 16,
+    "stale_handle_predecessor_saves": 4,
+    "cli_saves_and_readbacks": 4
+  },
+  "retained_failures": [
+    "First native run passed five tests but a new noop test incorrectly expected zero target I/O. Existing durable image commit writes and synchronizes even an identical AFTER. Corrected only this assertion to require full byte identity and actual target writes; conflict qualifications remain effect-free. Second complete native run passes six tests.",
+    "First strict lint caught two redundant Vec<u8>.into() calls in the newly installed independent Increment source gate. Removed only those calls; generalized generator remains uninstalled, frozen sources and expected images unchanged."
+  ],
+  "active_control_migration": [
+    "Former Blob65-to-66 capacity refusal is now valid fitting growth. Historical no-AFTER source record remains unchanged; active refusal uses original Single4076-to-4077 native row cap.",
+    "Retained post-shrink Memo growth refusal now uses beta4075 characters beyond terminal row capacity. Original stale handle, prior receipt and no-file-change controls remain."
+  ],
+  "qualification": "Portable independent source/proof, native engine, host and CLI evidence. Native Microsoft Access save/reopen remains unrun. Clearing, page retirement, relocation and new LVAL allocation remain work."
+}
