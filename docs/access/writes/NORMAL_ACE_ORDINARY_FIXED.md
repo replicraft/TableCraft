@@ -69,6 +69,10 @@ permit those indexed fields as mutation targets. A separate
 [qualified numeric UPDATE route](NORMAL_WIDE_INDEX_UPDATE.md) now maintains
 fitting Int64/Currency root leaves under its own complete schema/index checks.
 
+Manual single-GUID indexes also have a separate
+[readonly Source continuation](NORMAL_RETAINED_GUID_SOURCE.md), with exact
+unrelated I32 Score plans. This supplies no GUID target or save qualification.
+
 A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
 now admits the exact native seventeen-field catalog through a strict conjunction:
 three NULL code carriers and either NULL/empty or strictly qualified nonempty

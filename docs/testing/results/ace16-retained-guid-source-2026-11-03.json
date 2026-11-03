@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Selected dense readonly GUID index Source admission, preserving full absence/membership/ownership and separate global/actions/target guards. No new mutation protocol or GUID target authority.",
+  "counts": {
+    "original_NoRequired_admitted": 6,
+    "original_canonical_Source_admitted": 6,
+    "literal_Score_recoverable_plans": 4,
+    "Actions_refusals": 4,
+    "legacy_GUID_changed_noop_empty_refusals": 12,
+    "old8_9_GUID_empty_refusals": 8,
+    "new_metadata_functions": 2,
+    "new_composition_plan_function": 1,
+    "total_passing_runtime_functions": 30
+  },
+  "admission_and_plan": [
+    {
+      "name": "declarations",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::ordinary_content::indexes::declaration::tests"
+      ],
+      "exit": 0,
+      "log_sha256": "a28eb616e9d36ead302fda7383683d75ee4c508f165ae1bc940de09b8e2210e8",
+      "passed_functions": [
+        7
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "source",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::guid_update_originals::existing_guid_originals_keep_data_keys_and_observe_source_admission",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "log_sha256": "ae25edc8828d0b51fb4858e7c24617f15919de05dce64d1b86e372c5672032be",
+      "passed_functions": [
+        1
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "score",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::guid_update_originals::score_plan::original_score_plan_preserves_every_guid_owner_and_old_target_policy",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "log_sha256": "6f606739e96ec48324dd3b8c47df1ecbea39e59ae0667a282f6d9069c5fa7190",
+      "passed_functions": [
+        1
+      ],
+      "ignored_functions": [
+        0
+      ]
+    }
+  ],
+  "default_and_build_checks": [
+    {
+      "name": "retained-ownership",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::preserved_source"
+      ],
+      "exit": 0,
+      "log_sha256": "7cb434c4aa584f4dd9b22abfd3f77110236ba78e39aafde28163cb8d83bda1e6",
+      "passed_functions": [
+        0
+      ],
+      "ignored_functions": [
+        3
+      ]
+    },
+    {
+      "name": "no-required",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::no_required_programs"
+      ],
+      "exit": 0,
+      "log_sha256": "e6b2b5f6dd09fe1191940da6151c1e307ec012f4c2aeed3c7481f0951826d11b",
+      "passed_functions": [
+        5
+      ],
+      "ignored_functions": [
+        11
+      ]
+    },
+    {
+      "name": "ordinary",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::tests"
+      ],
+      "exit": 0,
+      "log_sha256": "a873174a3057b78abb1d7dcf3d5591167d37c7b29dd8776ce027b30831753dce",
+      "passed_functions": [
+        4
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "native-ordinary",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::native_ordinary"
+      ],
+      "exit": 0,
+      "log_sha256": "f6aac7232e2ad68531db2b04c467e2b61b7743f11f67765b4d52af67e908a8cd",
+      "passed_functions": [
+        5
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "3ee08ff36341591e6856f42ef63a7c9fcf124194addcd638b568b47bc1385dbc",
+      "passed_functions": [],
+      "ignored_functions": []
+    },
+    {
+      "name": "reader-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "1f6e5b099ee1be7e5e3d7ea3fb77ee37fc650b9917dfa96d7c65be7b13778b70",
+      "passed_functions": [],
+      "ignored_functions": []
+    },
+    {
+      "name": "journal-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "8fdafd7762ac3414071e45eefd6cfb121309fb195bce1eae2ae800811ba82a28",
+      "passed_functions": [],
+      "ignored_functions": []
+    },
+    {
+      "name": "preview-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af",
+      "passed_functions": [],
+      "ignored_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": [],
+      "ignored_functions": []
+    }
+  ],
+  "explicit_retained_replay": [
+    {
+      "name": "ownership-explicit",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::preserved_source::retained_integral::ownership::tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "6e9bdb6e6a861b65ceb9c682a3a07deb66b4f0cbe550f85a7ae3f521a3013435",
+      "passed_functions": [
+        3
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "numeric-sources",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::retained_numeric_sources",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "0979551abdd254c72bf496f7e7a9bcf4361ba490dd6c3c28fcc98cf5d593daff",
+      "passed_functions": [
+        2
+      ],
+      "ignored_functions": [
+        0
+      ]
+    },
+    {
+      "name": "numeric-selection",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::retained_selection_tests",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "d9b6c2befe528a6509cff15bfab1d9b1cdfb448747b4114c0d83226b3fcb1d38",
+      "passed_functions": [
+        2
+      ],
+      "ignored_functions": [
+        0
+      ]
+    }
+  ],
+  "verification_notes": [
+    "The first ownership selector used default test filtering: zero tests ran and three were ignored. It is not passing runtime evidence. The later explicit replay supplied retained corpus inputs and passed all three ownership functions, plus two source and two selection functions.",
+    "The earlier dense-integral causal probe remains a labelled historical family diagnostic; the complete Source capture uses the current metadata dispatcher.",
+    "Score outcomes are exact recoverable plans only; no new GUID-target, sibling save, reference writer or native Access evidence is inferred."
+  ],
+  "native_Access_save_reopen": "unrun"
+}

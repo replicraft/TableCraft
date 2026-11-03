@@ -35,3 +35,11 @@ API. Correcting that call changed no production code, source or byte law.
 No GUID UPDATE save, intent profile, journal recovery or native Access save/reopen
 is qualified by this audit. A later source continuation must repeat full admission
 before any matching indexed write claims.
+
+
+## Later selected GUID Source continuation
+
+The [retained GUID Source service](../access/writes/NORMAL_RETAINED_GUID_SOURCE.md)
+now passes complete admission for all six originals and four exact unrelated
+Score plans. The baseline refusal/stage observations above remain historical;
+the old integral declaration family still stays closed to GUID keys.

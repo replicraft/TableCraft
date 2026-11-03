@@ -1,5 +1,15 @@
 # Implementation status
 
+## Ordinary Source beside unchanged GUID indexes
+
+Selected manual single-GUID keys now qualify through the retained scalar read
+family, complete membership/ownership and full program-absence proof. All six
+originals pass canonical Source admission. Four literal unrelated I32 Score plans
+retain TCNI4 and every GUID owner; Actions and old GUID-target controls still
+refuse. Thirty runtime functions and scoped strict/minimal checks pass. See the
+[Source contract](access/writes/NORMAL_RETAINED_GUID_SOURCE.md).
+This adds no GUID target, index maintenance or save/reopen qualification.
+
 ## Ordinary Byte/Int16 fixed UPDATE
 
 Exact unindexed Byte/Int16 targets now use the normal fixed service, retained

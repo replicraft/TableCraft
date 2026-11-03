@@ -434,3 +434,6 @@ fn existing_guid_originals_keep_data_keys_and_observe_source_admission() {
     }
     assert_eq!(images.len(), 6);
 }
+
+#[cfg(test)]
+mod score_plan;
