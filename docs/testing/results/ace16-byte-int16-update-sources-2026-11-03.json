@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Read/raw and complete Source admission only, no write producer or output databases. Four in-memory variants have literal byte/semantic expectations without separate external-reader interpretation.",
+  "observations": {
+    "pinned_originals": 2,
+    "in_memory_variants": 4,
+    "complete_read_raw_contexts": 6,
+    "NoRequired_admitted": 6,
+    "canonical_Source_admitted": 6
+  },
+  "execution": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::byte_int16_update::literal_byte_int16_spans_preserve_complement_and_observe_source_admission",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "a51c3dfac1af95db2aefd8f0e85a2c18968e3b264e5891c79a55057347b7c002"
+  },
+  "original_inputs": [
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "b04d36341ed843e3bf7f2b9bfabd790e9a075d1b8002ad5a53253968c3ea82ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "1375d5e7453d0603ed42226b05c2f7afa6280f88d63287e2ab73b334a0da339f"
+    }
+  ],
+  "native_Access_save_reopen": "unrun",
+  "strict_check": {
+    "name": "strict",
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-testkit",
+      "-p",
+      "tablecraft-ace",
+      "--all-targets",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "log_sha256": "27a4aa2572a88747a103f0e59542eb0698762e52ae5bd2275c7035e2f6f9c0d9"
+  }
+}

@@ -245,3 +245,5 @@ mod wide_sibling_after;
 mod ignore_null_update;
 
 mod ieee_update;
+
+mod byte_int16_update;
