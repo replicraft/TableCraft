@@ -1,9 +1,15 @@
 # GUID UPDATE sources and admission
 
-This audit separates original reads, complete source admission and mutation.
-It reuses two unindexed wide-scalar originals and four single-GUID ASC/DESC
-originals from the [earlier GUID tuple evidence](results/ace16-insert-guid-tuple-index-native-2026-10-28.json).
-No reference reader, database application constructor or write producer runs.
+This document separates original reads, complete source admission, independent
+reader interpretation and mutation. Later continuations below qualify retained
+GUID Source admission and independently authored indexed UPDATE states. Their
+passing read checks do not qualify a mutation producer.
+
+## Initial admission audit
+
+The initial audit reuses two unindexed wide-scalar originals and four single-GUID
+ASC/DESC originals from the [earlier GUID tuple evidence](results/ace16-insert-guid-tuple-index-native-2026-10-28.json).
+It runs no reference reader, database application constructor or write producer.
 
 All six originals pass complete scalar/raw-record checks. The indexed sources
 also pass manual GUID key/ROW, bitmap, owner, alias and historical-counter checks,
@@ -65,3 +71,20 @@ One focused ignored function, ACE all-target/all-feature strict lint and formatt
 passed. See the [execution record](results/ace16-indexed-guid-update-sources-2026-11-03.json).
 These are source/read premises for later mutation qualification. This gate invokes
 no writer, save or journal; Microsoft Access save/reopen remains unrun.
+
+
+## Independent reader continuation
+
+All 28 unique views also pass one inert Jackcess getter call each, using the
+existing held reader without recompiling Java or invoking its writer modes.
+Complete predicted reports match canonical GUID values, I32/Score values, physical
+ROWs, all raw record bytes, four aliases, index order, flags and history. The
+predictions derive from original reports and frozen request laws. Original reports
+roundtrip before launch; all 53 input pins are checked around each bounded child.
+
+Saved verification passes the exact 58 report/plan/receipt artifacts without
+starting children. This adds independent read interpretation of the authored
+UPDATE states, while native Microsoft Access saves and TableCraft indexed writes
+remain separate acceptance work. The execution record above retains command,
+closure, report and saved-result hashes. Original files and prior evidence remain
+unchanged; generated images and SDK artifacts remain private.
