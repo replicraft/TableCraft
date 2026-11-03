@@ -25,8 +25,10 @@ indexes, counters, maps, catalog, protected bytes and EOF remain unchanged.
 
 Original named target metadata selects the dialect. Naming Byte or Int16 selects
 `TCNI0009`/profile 9, including NULL-only, equal-value and named-empty requests.
-That selection dominates an IEEE target regardless of group order. Otherwise,
-IEEE targets retain TCNI0008 and legacy targets retain TCNI0004.
+That selection dominates an IEEE target regardless of group order. A named
+[GUID target](NORMAL_GUID_FIXED_UPDATE.md) selects cumulative TCNI0010 ahead of
+these dialects. Otherwise, IEEE targets retain TCNI0008 and legacy targets retain
+TCNI0004.
 
 TCNI9 uses the existing bounded original-group framing, BEFORE binding and
 nine-byte cells. Tags 0 through 7 retain legacy/IEEE representations. Byte tag 8

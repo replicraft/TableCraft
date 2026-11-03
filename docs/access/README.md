@@ -92,6 +92,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Wider numeric key updates with ordinary fields](writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md)
 - [Single-Int32 ignored-NULL index updates](writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md)
 - [Exact ordinary Single/Double updates](writes/NORMAL_IEEE_FIXED_UPDATE.md)
+- [Ordinary unindexed GUID fixed updates](writes/NORMAL_GUID_FIXED_UPDATE.md)
 - [Ordinary Byte/Int16 fixed updates](writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
 - [Ordinary updates beside unchanged GUID indexes](writes/NORMAL_RETAINED_GUID_SOURCE.md)
 - [Ordinary updates beside generated IDs](writes/NORMAL_GENERATED_COMPANION_UPDATE.md)

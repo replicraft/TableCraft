@@ -1,5 +1,5 @@
 use crate::transaction::intent::NativeIntentError;
-use tablecraft_core::values::{Currency, Double, LegacyDateTime, Single, Value};
+use tablecraft_core::values::{Currency, Double, Guid, LegacyDateTime, Single, Value};
 
 const TAG_BYTES: usize = size_of::<u8>();
 const PAYLOAD_AT: usize = TAG_BYTES;
@@ -16,21 +16,56 @@ const SINGLE_TAG: u8 = 6;
 const DOUBLE_TAG: u8 = 7;
 const BYTE_TAG: u8 = 8;
 const INT16_TAG: u8 = 9;
+const GUID_TAG: u8 = 10;
 pub(super) const WIDTH: usize = TAG_BYTES + PAYLOAD_BYTES;
+pub(super) const GUID_WIDTH: usize = TAG_BYTES + Guid::BYTE_LEN;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Carriers {
     Legacy,
     Ieee,
     Scalar,
+    Guid,
 }
 
 impl Carriers {
+    pub(super) const fn width(self) -> usize {
+        if matches!(self, Self::Guid) {
+            GUID_WIDTH
+        } else {
+            WIDTH
+        }
+    }
+
+    pub(super) fn validate(self, value: &Value) -> Result<(), NativeIntentError> {
+        if matches!(self, Self::Guid) {
+            encode_guid(value)?;
+        } else {
+            self.encode(value)?;
+        }
+        Ok(())
+    }
+
+    pub(super) fn decode_cell(self, raw: &[u8]) -> Result<Value, NativeIntentError> {
+        if matches!(self, Self::Guid) {
+            decode_guid(
+                raw.try_into()
+                    .map_err(|_| NativeIntentError::InvalidRecord)?,
+            )
+        } else {
+            self.decode(
+                raw.try_into()
+                    .map_err(|_| NativeIntentError::InvalidRecord)?,
+            )
+        }
+    }
+
     pub(super) fn encode(self, value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
         match self {
             Self::Legacy => encode(value),
             Self::Ieee => encode_ieee(value),
             Self::Scalar => encode_scalar(value),
+            Self::Guid => Err(NativeIntentError::InvalidRecord),
         }
     }
 
@@ -39,6 +74,7 @@ impl Carriers {
             Self::Legacy => decode(raw),
             Self::Ieee => decode_ieee(raw),
             Self::Scalar => decode_scalar(raw),
+            Self::Guid => Err(NativeIntentError::InvalidRecord),
         }
     }
 }
@@ -161,6 +197,30 @@ pub(super) fn decode_scalar(raw: &[u8; WIDTH]) -> Result<Value, NativeIntentErro
         _ => return decode_ieee(raw),
     };
     if encode_scalar(&value)? != *raw {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    Ok(value)
+}
+
+/// GUID request bytes are canonical, deliberately distinct from native DATA.
+pub(super) fn encode_guid(value: &Value) -> Result<[u8; GUID_WIDTH], NativeIntentError> {
+    let mut raw = [0; GUID_WIDTH];
+    if let Value::Guid(value) = value {
+        raw[TAG_AT] = GUID_TAG;
+        raw[PAYLOAD_AT..].copy_from_slice(&value.to_bytes());
+    } else {
+        raw[..WIDTH].copy_from_slice(&encode_scalar(value)?);
+    }
+    Ok(raw)
+}
+
+pub(super) fn decode_guid(raw: &[u8; GUID_WIDTH]) -> Result<Value, NativeIntentError> {
+    let value = if raw[TAG_AT] == GUID_TAG {
+        Value::Guid(Guid::from_bytes(raw[PAYLOAD_AT..].try_into().unwrap()))
+    } else {
+        decode_scalar(raw[..WIDTH].try_into().unwrap())?
+    };
+    if encode_guid(&value)? != *raw {
         return Err(NativeIntentError::InvalidRecord);
     }
     Ok(value)

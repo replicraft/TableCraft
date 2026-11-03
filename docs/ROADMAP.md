@@ -1216,7 +1216,18 @@ The selected dense read path now qualifies manual single-GUID definitions and
 complete retained membership without widening integral/global/Actions families.
 All originals pass full Source; four literal I32 Score plans retain the original
 GUID data and owners. See the [bounded Source continuation](access/writes/NORMAL_RETAINED_GUID_SOURCE.md).
-GUID target width/protocol/proof and physical key maintenance remain separate work.
+The unindexed GUID continuation below supplies target width/protocol/proof;
+physical GUID key maintenance remains separate work.
+
+## Ordinary unindexed GUID fixed UPDATE
+
+Exact GUID assignments now retain all 128 bits through the ordinary fixed stage,
+independent whole-image proof, typed sessions and TCNI10 journal replay. NULL clear
+preserves inactive payload; original witnesses remain exact. Six literal outcomes
+each pass native, typed and CLI saves. See the
+[current profile](access/writes/NORMAL_GUID_FIXED_UPDATE.md).
+Physical GUID index maintenance, variable composition, generation and native
+Access save/reopen remain separate work.
 
 ## Ordinary Byte/Int16 fixed UPDATE
 
@@ -1224,7 +1235,7 @@ The ordinary fixed route now admits exact unindexed small integers, preserving
 inactive NULL payloads through independent proof and TCNI9 recovery. Six literal
 header/request outcomes each pass native, typed and CLI saves, with stale/resource
 and mixed IEEE/order checks. See the [current profile](access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md).
-GUID/Decimal targets, indexed small integers, variable composition and native
+Decimal targets, indexed small integers, variable composition and native
 Access save/reopen remain work.
 
 ## Exact ordinary Single/Double UPDATE

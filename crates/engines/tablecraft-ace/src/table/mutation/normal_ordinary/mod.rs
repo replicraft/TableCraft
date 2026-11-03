@@ -102,6 +102,29 @@ impl NativeImage {
     }
 }
 
+impl NativeImage {
+    /// Exact GUID originals use the wider fixed-record specialization.
+    pub(crate) fn plan_ordinary_guid_updates(
+        self,
+        table: &str,
+        original: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let _span = tracing::debug_span!("native.ordinary.guid_fixed.plan").entered();
+        let source = capture(&self, table, budget, cancelled)?;
+        plan(
+            self,
+            source,
+            table,
+            original,
+            FixedCarriers::Guid,
+            budget,
+            cancelled,
+        )
+    }
+}
+
 fn plan(
     image: NativeImage,
     source: Source,
@@ -130,6 +153,7 @@ fn plan(
         FixedCarriers::Scalar => {
             stage::prepare_scalar(&image, &source, original, budget, cancelled)?
         }
+        FixedCarriers::Guid => stage::prepare_guid(&image, &source, original, budget, cancelled)?,
     };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     for patch in patches {
@@ -163,6 +187,7 @@ fn plan(
         FixedCarriers::Scalar => {
             proof::prove_scalar(&plan, scope, table, original, budget, cancelled)?
         }
+        FixedCarriers::Guid => proof::prove_guid(&plan, scope, table, original, budget, cancelled)?,
     }
     check(budget, cancelled)?;
     Ok(plan)
@@ -228,13 +253,19 @@ fn preflight_with_policy(
         FixedCarriers::Legacy => binding::all_normal(source, original, budget, cancelled)?,
         FixedCarriers::Ieee => binding::all_ieee(source, original, budget, cancelled)?,
         FixedCarriers::Scalar => binding::all_scalar(source, original, budget, cancelled)?,
+        FixedCarriers::Guid => binding::all_guid(source, original, budget, cancelled)?,
     };
     for (group, selected) in original.iter().zip(bound) {
         check(budget, cancelled)?;
         for update in group.updates() {
             check(budget, cancelled)?;
+            let comparison_bytes = selected
+                .width
+                .checked_mul(2)
+                .ok_or(InspectError::StructureLimit)?
+                .max(CARRIER_COMPARISON_BYTES);
             budget
-                .charge(Resource::Steps, CARRIER_COMPARISON_BYTES as u64)
+                .charge(Resource::Steps, comparison_bytes as u64)
                 .map_err(InspectError::from)?;
             let before = source
                 .table

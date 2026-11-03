@@ -6,7 +6,7 @@ use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::data_type::{
         BOOLEAN, BOOLEAN_BYTES, BYTE, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES, DOUBLE,
-        INT16, INT32, INT32_BYTES, INT64, INT64_BYTES, SINGLE,
+        GUID, GUID_BYTES, INT16, INT32, INT32_BYTES, INT64, INT64_BYTES, SINGLE,
     },
     header::check,
     table::mutation::{field, rows},
@@ -30,11 +30,16 @@ fn carrier(kind: ScalarType, value: &Value, carriers: FixedCarriers) -> bool {
             (ScalarType::Single, Value::Null | Value::Single(_))
                 | (ScalarType::Double, Value::Null | Value::Double(_))
         ))
-        || (carriers == FixedCarriers::Scalar
+        || ((carriers == FixedCarriers::Scalar || carriers.includes_guid())
             && matches!(
                 (kind, value),
                 (ScalarType::Byte, Value::Null | Value::Byte(_))
                     | (ScalarType::Int16, Value::Null | Value::Int16(_))
+            ))
+        || (carriers.includes_guid()
+            && matches!(
+                (kind, value),
+                (ScalarType::Guid, Value::Null | Value::Guid(_))
             ))
         || matches!(
             (kind, value),
@@ -99,6 +104,24 @@ pub(in crate::table::mutation) fn all_scalar(
         1,
         None,
         FixedCarriers::Scalar,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_guid(
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    all_with_targets(
+        source,
+        groups,
+        1,
+        None,
+        FixedCarriers::Guid,
         budget,
         cancelled,
     )
@@ -292,11 +315,18 @@ fn qualify_with_indexes(
         (DOUBLE, Some(ScalarType::Double)) if carriers != FixedCarriers::Legacy => {
             (ScalarType::Double, size_of::<u64>())
         }
-        (BYTE, Some(ScalarType::Byte)) if carriers == FixedCarriers::Scalar => {
+        (BYTE, Some(ScalarType::Byte))
+            if (carriers == FixedCarriers::Scalar || carriers.includes_guid()) =>
+        {
             (ScalarType::Byte, size_of::<u8>())
         }
-        (INT16, Some(ScalarType::Int16)) if carriers == FixedCarriers::Scalar => {
+        (INT16, Some(ScalarType::Int16))
+            if (carriers == FixedCarriers::Scalar || carriers.includes_guid()) =>
+        {
             (ScalarType::Int16, size_of::<i16>())
+        }
+        (GUID, Some(ScalarType::Guid)) if carriers.includes_guid() => {
+            (ScalarType::Guid, GUID_BYTES)
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };

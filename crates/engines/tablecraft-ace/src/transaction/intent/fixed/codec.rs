@@ -14,6 +14,8 @@ const IEEE_HEADER_MAGIC: &[u8; 8] = b"TCNI0008";
 const IEEE_PROFILE: u16 = 8;
 const SCALAR_HEADER_MAGIC: &[u8; 8] = b"TCNI0009";
 const SCALAR_PROFILE: u16 = 9;
+const GUID_HEADER_MAGIC: &[u8; 8] = b"TCNI0010";
+const GUID_PROFILE: u16 = 10;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -29,14 +31,34 @@ const GROUP_NAME_LENGTH_AT: usize = 0;
 const GROUP_ASSIGNMENTS_AT: usize = size_of::<u32>();
 const GROUP_RESERVED_AT: usize = GROUP_ASSIGNMENTS_AT + size_of::<u32>();
 const ROW_BYTES: usize = size_of::<u64>();
-const REPLACEMENT_AT: usize = ROW_BYTES + carrier::WIDTH;
 const GROUP_HEADER_BYTES: usize = GROUP_RESERVED_AT + size_of::<u32>();
 const UPDATE_BYTES: usize = size_of::<u64>() + carrier::WIDTH * 2;
+const GUID_UPDATE_BYTES: usize = size_of::<u64>() + carrier::GUID_WIDTH * 2;
 const COPY_BYTES: usize = 4096;
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES
     + MAX_NAME_BYTES
     + NativeImage::MAX_FIXED_BATCH_GROUPS * (GROUP_HEADER_BYTES + MAX_NAME_BYTES)
     + NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS * UPDATE_BYTES;
+pub(super) const MAX_GUID_RECORD_BYTES: usize = HEADER_BYTES
+    + MAX_NAME_BYTES
+    + NativeImage::MAX_FIXED_BATCH_GROUPS * (GROUP_HEADER_BYTES + MAX_NAME_BYTES)
+    + NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS * GUID_UPDATE_BYTES;
+
+fn update_bytes(carriers: carrier::Carriers) -> usize {
+    if matches!(carriers, carrier::Carriers::Guid) {
+        GUID_UPDATE_BYTES
+    } else {
+        UPDATE_BYTES
+    }
+}
+
+fn maximum_record_bytes(carriers: carrier::Carriers) -> usize {
+    if matches!(carriers, carrier::Carriers::Guid) {
+        MAX_GUID_RECORD_BYTES
+    } else {
+        MAX_RECORD_BYTES
+    }
+}
 
 impl NativeFixedEditIntent {
     pub(in crate::transaction::intent) const ORDINARY_MAGIC: &'static [u8; 8] =
@@ -45,6 +67,8 @@ impl NativeFixedEditIntent {
     pub(in crate::transaction::intent) const IEEE_MAGIC: &'static [u8; 8] = IEEE_HEADER_MAGIC;
 
     pub(in crate::transaction::intent) const SCALAR_MAGIC: &'static [u8; 8] = SCALAR_HEADER_MAGIC;
+
+    pub(in crate::transaction::intent) const GUID_MAGIC: &'static [u8; 8] = GUID_HEADER_MAGIC;
 
     /// Encode the exact ordered original request data, with canonical carrier padding.
     pub fn encode(
@@ -97,6 +121,20 @@ impl NativeFixedEditIntent {
         )
     }
 
+    pub(in crate::transaction::intent) fn encode_guid(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            GUID_HEADER_MAGIC,
+            GUID_PROFILE,
+            carrier::Carriers::Guid,
+            budget,
+            cancelled,
+        )
+    }
+
     fn encode_profile(
         &self,
         magic: &[u8; 8],
@@ -108,14 +146,16 @@ impl NativeFixedEditIntent {
         let _span = tracing::debug_span!("native.fixed_intent.encode").entered();
         check(budget, cancelled)?;
         let count = model::assignment_count(self.groups(), budget, cancelled)?;
+        let update_bytes = update_bytes(carriers);
+        let maximum = maximum_record_bytes(carriers);
         let mut total = HEADER_BYTES + self.table().len();
         for group in self.groups() {
             check(budget, cancelled)?;
             total = total
                 .checked_add(GROUP_HEADER_BYTES)
                 .and_then(|n| n.checked_add(group.column().len()))
-                .and_then(|n| n.checked_add(group.updates().len().checked_mul(UPDATE_BYTES)?))
-                .filter(|n| *n <= MAX_RECORD_BYTES && *n <= u32::MAX as usize)
+                .and_then(|n| n.checked_add(group.updates().len().checked_mul(update_bytes)?))
+                .filter(|n| *n <= maximum && *n <= u32::MAX as usize)
                 .ok_or(InspectError::StructureLimit)?;
         }
         budget
@@ -151,11 +191,16 @@ impl NativeFixedEditIntent {
             for update in group.updates() {
                 check(budget, cancelled)?;
                 budget
-                    .charge(Resource::Steps, UPDATE_BYTES as u64)
+                    .charge(Resource::Steps, update_bytes as u64)
                     .map_err(InspectError::from)?;
                 output.extend_from_slice(&(update.row() as u64).to_le_bytes());
-                output.extend_from_slice(&carriers.encode(update.expected())?);
-                output.extend_from_slice(&carriers.encode(update.value())?);
+                if matches!(carriers, carrier::Carriers::Guid) {
+                    output.extend_from_slice(&carrier::encode_guid(update.expected())?);
+                    output.extend_from_slice(&carrier::encode_guid(update.value())?);
+                } else {
+                    output.extend_from_slice(&carriers.encode(update.expected())?);
+                    output.extend_from_slice(&carriers.encode(update.value())?);
+                }
             }
         }
         check(budget, cancelled)?;
@@ -223,6 +268,21 @@ impl NativeFixedEditIntent {
         )
     }
 
+    pub(in crate::transaction::intent) fn decode_guid(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(
+            bytes,
+            GUID_HEADER_MAGIC,
+            GUID_PROFILE,
+            carrier::Carriers::Guid,
+            budget,
+            cancelled,
+        )
+    }
+
     fn decode_profile(
         bytes: &[u8],
         magic: &[u8; 8],
@@ -233,7 +293,7 @@ impl NativeFixedEditIntent {
     ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.fixed_intent.decode").entered();
         check(budget, cancelled)?;
-        if bytes.len() < HEADER_BYTES || bytes.len() > MAX_RECORD_BYTES {
+        if bytes.len() < HEADER_BYTES || bytes.len() > maximum_record_bytes(carriers) {
             return Err(NativeIntentError::InvalidRecord);
         }
         budget
@@ -326,6 +386,9 @@ impl NativeFixedEditIntent {
                 carrier::Carriers::Scalar => {
                     NativeFixedIntentGroup::new_ordinary_scalar(column, updates, budget, cancelled)?
                 }
+                carrier::Carriers::Guid => {
+                    NativeFixedIntentGroup::new_ordinary_guid(column, updates, budget, cancelled)?
+                }
             };
             groups.push(group);
         }
@@ -412,21 +475,23 @@ impl<'a> Cursor<'a> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<FixedScalarUpdate, NativeIntentError> {
         check(budget, cancelled)?;
+        let update_bytes = update_bytes(self.carriers);
+        let replacement_at = ROW_BYTES
+            .checked_add(self.carriers.width())
+            .ok_or(InspectError::StructureLimit)?;
         budget
-            .charge(Resource::Steps, UPDATE_BYTES as u64)
+            .charge(Resource::Steps, update_bytes as u64)
             .map_err(InspectError::from)?;
-        let raw = self.take(UPDATE_BYTES)?;
+        let raw = self.take(update_bytes)?;
         let row = usize::try_from(u64::from_le_bytes(raw[..ROW_BYTES].try_into().unwrap()))
             .map_err(|_| InspectError::StructureLimit)?;
         if row >= crate::limits::MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }
-        let expected = self
-            .carriers
-            .decode(raw[ROW_BYTES..REPLACEMENT_AT].try_into().unwrap())?;
+        let expected = self.carriers.decode_cell(&raw[ROW_BYTES..replacement_at])?;
         let replacement = self
             .carriers
-            .decode(raw[REPLACEMENT_AT..UPDATE_BYTES].try_into().unwrap())?;
+            .decode_cell(&raw[replacement_at..update_bytes])?;
         Ok(FixedScalarUpdate::new(row, expected, replacement))
     }
 }

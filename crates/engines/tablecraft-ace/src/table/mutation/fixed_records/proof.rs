@@ -15,7 +15,10 @@ use crate::table::mutation::{
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, INT16, INT32, INT64, SINGLE},
+        data_type::{
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, GUID_BYTES, INT16, INT32, INT64,
+            SINGLE,
+        },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -31,6 +34,10 @@ use tablecraft_schema::ScalarType;
 
 const WIDE_BYTES: usize = size_of::<i64>();
 const INT32_BYTES: usize = size_of::<i32>();
+const GUID_DATA_BYTE_ORDER: [usize; GUID_BYTES] =
+    [3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15];
+// Two encodings, expected/Cell comparisons and the final payload copy.
+const GUID_PAYLOAD_PASSES: usize = 5;
 
 #[derive(Clone, Copy)]
 enum Carrier {
@@ -43,6 +50,7 @@ enum Carrier {
     Double,
     Byte,
     Int16,
+    Guid,
 }
 
 struct Bound<'a> {
@@ -52,9 +60,9 @@ struct Bound<'a> {
 }
 
 #[derive(PartialEq, Eq)]
-enum Cell {
+enum Cell<const N: usize> {
     Boolean(bool),
-    Fixed(Option<[u8; WIDE_BYTES]>),
+    Fixed(Option<[u8; N]>),
 }
 
 pub(in crate::table::mutation) struct Original<'a> {
@@ -107,7 +115,7 @@ pub(in crate::table::mutation) fn prove_original(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    prove_with_policy(
+    prove_with_policy::<WIDE_BYTES>(
         original,
         expected,
         groups,
@@ -127,7 +135,7 @@ pub(in crate::table::mutation) fn prove_ieee_original(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    prove_with_policy(
+    prove_with_policy::<WIDE_BYTES>(
         original,
         expected,
         groups,
@@ -147,7 +155,7 @@ pub(in crate::table::mutation) fn prove_scalar_original(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    prove_with_policy(
+    prove_with_policy::<WIDE_BYTES>(
         original,
         expected,
         groups,
@@ -158,7 +166,27 @@ pub(in crate::table::mutation) fn prove_scalar_original(
     )
 }
 
-fn prove_with_policy(
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prove_guid_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    observed: Observed<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy::<GUID_BYTES>(
+        original,
+        expected,
+        groups,
+        observed,
+        FixedCarriers::Guid,
+        budget,
+        cancelled,
+    )
+}
+
+fn prove_with_policy<const N: usize>(
     original: Original<'_>,
     expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
@@ -179,7 +207,7 @@ fn prove_with_policy(
     let (expected, changed_rows) = if carriers == FixedCarriers::Legacy {
         reconstruct(original, expected, groups, None, budget, cancelled)?
     } else {
-        reconstruct_with_targets(
+        reconstruct_with_targets::<N>(
             original, expected, groups, None, carriers, budget, cancelled,
         )?
     };
@@ -254,7 +282,7 @@ fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
-    reconstruct_with_targets(
+    reconstruct_with_targets::<WIDE_BYTES>(
         original,
         expected,
         groups,
@@ -285,7 +313,7 @@ pub(in crate::table::mutation) fn reconstruct_integral_original(
         budget,
         cancelled,
     )?;
-    reconstruct_with_targets(
+    reconstruct_with_targets::<WIDE_BYTES>(
         original.source,
         expected,
         groups,
@@ -319,7 +347,7 @@ pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
         budget,
         cancelled,
     )?;
-    reconstruct_with_targets(
+    reconstruct_with_targets::<WIDE_BYTES>(
         original.source,
         expected,
         groups,
@@ -330,7 +358,7 @@ pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
     )
 }
 
-fn reconstruct_with_targets(
+fn reconstruct_with_targets<const N: usize>(
     original: &Source,
     mut expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
@@ -359,6 +387,9 @@ fn reconstruct_with_targets(
     for group in groups {
         check(budget, cancelled)?;
         let selected = select(original, group, indexed, carriers, budget, cancelled)?;
+        if selected.width > N {
+            return Err(EditError::Preservation);
+        }
         budget
             .charge(Resource::Steps, bound.len() as u64)
             .map_err(InspectError::from)?;
@@ -384,11 +415,14 @@ fn reconstruct_with_targets(
         let number = selected.field.number();
         for (position, request) in group.updates().iter().enumerate() {
             check(budget, cancelled)?;
+            let payload_work = if carriers.includes_guid() {
+                N.checked_mul(GUID_PAYLOAD_PASSES)
+                    .ok_or(InspectError::StructureLimit)?
+            } else {
+                selected.width * 2
+            };
             budget
-                .charge(
-                    Resource::Steps,
-                    position as u64 + (selected.width * 2) as u64,
-                )
+                .charge(Resource::Steps, position as u64 + payload_work as u64)
                 .map_err(InspectError::from)?;
             if group.updates()[..position]
                 .iter()
@@ -396,8 +430,8 @@ fn reconstruct_with_targets(
             {
                 return Err(EditError::Conflict);
             }
-            let before = encode(selected.carrier, request.expected())?;
-            let replacement = encode(selected.carrier, request.value())?;
+            let before = encode::<N>(selected.carrier, request.expected())?;
+            let replacement = encode::<N>(selected.carrier, request.value())?;
             let record = original
                 .records
                 .get(request.row())
@@ -513,12 +547,17 @@ fn select<'a>(
         (DOUBLE, Some(ScalarType::Double)) if carriers != FixedCarriers::Legacy => {
             (Carrier::Double, WIDE_BYTES)
         }
-        (BYTE, Some(ScalarType::Byte)) if carriers == FixedCarriers::Scalar => {
+        (BYTE, Some(ScalarType::Byte))
+            if (carriers == FixedCarriers::Scalar || carriers.includes_guid()) =>
+        {
             (Carrier::Byte, size_of::<u8>())
         }
-        (INT16, Some(ScalarType::Int16)) if carriers == FixedCarriers::Scalar => {
+        (INT16, Some(ScalarType::Int16))
+            if (carriers == FixedCarriers::Scalar || carriers.includes_guid()) =>
+        {
             (Carrier::Int16, size_of::<i16>())
         }
+        (GUID, Some(ScalarType::Guid)) if carriers.includes_guid() => (Carrier::Guid, GUID_BYTES),
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
     if !field.fixed()
@@ -572,8 +611,9 @@ fn select<'a>(
     })
 }
 
-fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
-    let bytes = match (carrier, value) {
+fn encode<const N: usize>(carrier: Carrier, value: &Value) -> Result<Cell<N>, EditError> {
+    let mut bytes = [0; N];
+    match (carrier, value) {
         (Carrier::Boolean, Value::Boolean(value)) => return Ok(Cell::Boolean(*value)),
         (
             Carrier::Int32
@@ -583,37 +623,66 @@ fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
             | Carrier::Single
             | Carrier::Double
             | Carrier::Byte
-            | Carrier::Int16,
+            | Carrier::Int16
+            | Carrier::Guid,
             Value::Null,
-        ) => {
-            return Ok(Cell::Fixed(None));
-        }
-        (Carrier::Int32, Value::Int32(value)) => {
-            let mut bytes = [0; WIDE_BYTES];
-            bytes[..INT32_BYTES].copy_from_slice(&value.to_le_bytes());
-            bytes
-        }
+        ) => return Ok(Cell::Fixed(None)),
         (Carrier::Byte, Value::Byte(value)) => {
-            let mut bytes = [0; WIDE_BYTES];
-            bytes[0] = *value;
-            bytes
+            *bytes.first_mut().ok_or(EditError::Preservation)? = *value;
         }
         (Carrier::Int16, Value::Int16(value)) => {
-            let mut bytes = [0; WIDE_BYTES];
-            bytes[..size_of::<i16>()].copy_from_slice(&value.to_le_bytes());
             bytes
+                .get_mut(..size_of::<i16>())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_le_bytes());
+        }
+        (Carrier::Int32, Value::Int32(value)) => {
+            bytes
+                .get_mut(..INT32_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_le_bytes());
         }
         (Carrier::Single, Value::Single(value)) => {
-            let mut bytes = [0; WIDE_BYTES];
-            bytes[..size_of::<u32>()].copy_from_slice(&value.to_bits().to_le_bytes());
             bytes
+                .get_mut(..size_of::<u32>())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_bits().to_le_bytes());
         }
-        (Carrier::Double, Value::Double(value)) => value.to_bits().to_le_bytes(),
-        (Carrier::Int64, Value::Int64(value)) => value.to_le_bytes(),
-        (Carrier::Currency, Value::Currency(value)) => value.scaled().to_le_bytes(),
-        (Carrier::DateTime, Value::DateTime(value)) => value.to_bits().to_le_bytes(),
+        (Carrier::Double, Value::Double(value)) => {
+            bytes
+                .get_mut(..WIDE_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_bits().to_le_bytes());
+        }
+        (Carrier::Int64, Value::Int64(value)) => {
+            bytes
+                .get_mut(..WIDE_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_le_bytes());
+        }
+        (Carrier::Currency, Value::Currency(value)) => {
+            bytes
+                .get_mut(..WIDE_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.scaled().to_le_bytes());
+        }
+        (Carrier::DateTime, Value::DateTime(value)) => {
+            bytes
+                .get_mut(..WIDE_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&value.to_bits().to_le_bytes());
+        }
+        (Carrier::Guid, Value::Guid(value)) => {
+            // Independent native DATA layout, not scalar_encoding or wire bytes.
+            let canonical = value.to_bytes();
+            let native = GUID_DATA_BYTE_ORDER.map(|at| canonical[at]);
+            bytes
+                .get_mut(..GUID_BYTES)
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&native);
+        }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
-    };
+    }
     Ok(Cell::Fixed(Some(bytes)))
 }
 

@@ -14,6 +14,18 @@ pub(crate) enum FixedCarriers {
     #[cfg(feature = "journal")]
     Ieee,
     Scalar,
+    #[cfg(feature = "journal")]
+    Guid,
+}
+
+impl FixedCarriers {
+    pub(in crate::table::mutation) const fn includes_guid(self) -> bool {
+        match self {
+            #[cfg(feature = "journal")]
+            Self::Guid => true,
+            _ => false,
+        }
+    }
 }
 
 pub(in crate::table::mutation) fn copy(

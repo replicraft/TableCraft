@@ -66,6 +66,25 @@ pub(super) fn prove_scalar(
     )
 }
 
+pub(super) fn prove_guid(
+    plan: &NativeEditPlan,
+    scope: CatalogScope,
+    table: &str,
+    original: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy(
+        plan,
+        scope,
+        table,
+        original,
+        FixedCarriers::Guid,
+        budget,
+        cancelled,
+    )
+}
+
 fn prove_with_policy(
     plan: &NativeEditPlan,
     scope: CatalogScope,
@@ -93,6 +112,7 @@ fn prove_with_policy(
         FixedCarriers::Legacy => proof::prove_original,
         FixedCarriers::Ieee => proof::prove_ieee_original,
         FixedCarriers::Scalar => proof::prove_scalar_original,
+        FixedCarriers::Guid => proof::prove_guid_original,
     };
     manual_proof(
         proof::Original {
@@ -144,3 +164,6 @@ mod ieee;
 
 #[cfg(test)]
 mod small_integral;
+
+#[cfg(test)]
+mod guid;

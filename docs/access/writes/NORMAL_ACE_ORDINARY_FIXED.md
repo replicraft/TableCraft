@@ -11,7 +11,8 @@ a distinct original-request record.
 
 The [Byte/Int16 continuation](NORMAL_BYTE_INT16_FIXED_UPDATE.md) uses the same
 ordinary service for exact unindexed small-integer targets. Original named targets
-select TCNI9 for Byte/Int16, TCNI8 for IEEE, and TCNI4 for legacy fields; old records
+select TCNI10 for [GUID targets](NORMAL_GUID_FIXED_UPDATE.md), TCNI9 for
+Byte/Int16, TCNI8 for IEEE, and TCNI4 for legacy fields; old records
 retain their own target and carrier checks even for named-empty requests.
 
 ## Initial global data-only family

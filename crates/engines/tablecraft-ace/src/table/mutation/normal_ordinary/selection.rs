@@ -3,7 +3,9 @@ use super::{capture, preflight, preflight_with_policy};
 use crate::{
     EditError, FileFormat, FixedColumnUpdates, NativeImage, PayloadPresence, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, INT16, INT32, INT64, SINGLE},
+        data_type::{
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, SINGLE,
+        },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
     },
     header::check,
@@ -76,7 +78,8 @@ impl NativeImage {
                 super::fixed_records::name_work(field.name(), group.column(), budget)?;
                 if field.name().eq_ignore_ascii_case(group.column()) {
                     carriers = match field.native_type() {
-                        BYTE | INT16 => FixedCarriers::Scalar,
+                        GUID => FixedCarriers::Guid,
+                        BYTE | INT16 if carriers != FixedCarriers::Guid => FixedCarriers::Scalar,
                         SINGLE | DOUBLE if carriers == FixedCarriers::Legacy => FixedCarriers::Ieee,
                         _ => carriers,
                     };
@@ -112,6 +115,7 @@ impl NativeImage {
                     | (DOUBLE, Some(ScalarType::Double))
                     | (BYTE, Some(ScalarType::Byte))
                     | (INT16, Some(ScalarType::Int16))
+                    | (GUID, Some(ScalarType::Guid))
             );
             if !supported
                 || !field.fixed()
@@ -150,6 +154,7 @@ impl NativeImage {
                 &[],
             )];
             let carriers = match field.native_type() {
+                GUID => FixedCarriers::Guid,
                 BYTE | INT16 => FixedCarriers::Scalar,
                 SINGLE | DOUBLE => FixedCarriers::Ieee,
                 _ => FixedCarriers::Legacy,

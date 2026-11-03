@@ -13,6 +13,11 @@ value is not implicitly a Single assignment. SQL must supply the appropriate
 stored carrier through its separately admitted expression rules; SQL equality
 and formatted output do not replace expected-value bit checks.
 
+Named [Byte/Int16](NORMAL_BYTE_INT16_FIXED_UPDATE.md) targets select cumulative
+TCNI9; named [GUID targets](NORMAL_GUID_FIXED_UPDATE.md) select cumulative TCNI10.
+Each later dialect retains exact IEEE bits while old TCNI8 remains closed to the
+additional target families, including empty groups.
+
 ## Native target and preservation checks
 
 Every named target qualifies before no-op filtering, including a group with no

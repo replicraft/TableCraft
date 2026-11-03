@@ -7,7 +7,10 @@ use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpda
 use crate::table::scalar_encoding;
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
-    format::row::{COLUMN_COUNT_BYTES, MASK_BITS},
+    format::{
+        data_type::GUID_BYTES,
+        row::{COLUMN_COUNT_BYTES, MASK_BITS},
+    },
     header::check,
     table::mutation::{
         patch::{BytePatch, spans},
@@ -41,14 +44,14 @@ impl RowAssignment for Selected {
     }
 }
 
-struct Payload {
+struct Payload<const N: usize> {
     offset: usize,
-    before: [u8; MAX_PAYLOAD_BYTES],
-    after: [u8; MAX_PAYLOAD_BYTES],
+    before: [u8; N],
+    after: [u8; N],
     length: usize,
 }
 
-impl BytePatch for Payload {
+impl<const N: usize> BytePatch for Payload<N> {
     fn offset(&self) -> usize {
         self.offset
     }
@@ -86,36 +89,54 @@ impl BytePatch for Mask {
     }
 }
 
-fn encode(kind: ScalarType, value: &Value) -> Result<Option<[u8; MAX_PAYLOAD_BYTES]>, EditError> {
+fn encode<const N: usize>(kind: ScalarType, value: &Value) -> Result<Option<[u8; N]>, EditError> {
     if matches!(value, Value::Null) {
         return Ok(None);
     }
-    if kind == ScalarType::Byte {
-        let encoded = scalar_encoding::encode::<{ size_of::<u8>() }>(kind, value)
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        let mut bytes = [0; MAX_PAYLOAD_BYTES];
-        bytes[..encoded.len()].copy_from_slice(&encoded);
-        return Ok(Some(bytes));
+    let mut bytes = [0; N];
+    match kind {
+        ScalarType::Byte => {
+            let raw = scalar_encoding::encode::<{ size_of::<u8>() }>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            bytes
+                .get_mut(..raw.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&raw);
+        }
+        ScalarType::Int16 => {
+            let raw = scalar_encoding::encode::<{ size_of::<i16>() }>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            bytes
+                .get_mut(..raw.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&raw);
+        }
+        ScalarType::Int32 | ScalarType::Single => {
+            let raw = scalar_encoding::encode::<{ size_of::<i32>() }>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            bytes
+                .get_mut(..raw.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&raw);
+        }
+        ScalarType::Guid => {
+            let raw = scalar_encoding::encode::<GUID_BYTES>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            bytes
+                .get_mut(..raw.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&raw);
+        }
+        _ => {
+            let raw = scalar_encoding::encode::<MAX_PAYLOAD_BYTES>(kind, value)
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            bytes
+                .get_mut(..raw.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&raw);
+        }
     }
-    if kind == ScalarType::Int16 {
-        let encoded = scalar_encoding::encode::<{ size_of::<i16>() }>(kind, value)
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        let mut bytes = [0; MAX_PAYLOAD_BYTES];
-        bytes[..encoded.len()].copy_from_slice(&encoded);
-        return Ok(Some(bytes));
-    }
-    if matches!(kind, ScalarType::Int32 | ScalarType::Single) {
-        let encoded = scalar_encoding::encode::<{ size_of::<i32>() }>(kind, value)
-            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-        let mut bytes = [0; MAX_PAYLOAD_BYTES];
-        bytes[..size_of::<i32>()].copy_from_slice(&encoded);
-        Ok(Some(bytes))
-    } else {
-        Ok(Some(
-            scalar_encoding::encode::<MAX_PAYLOAD_BYTES>(kind, value)
-                .ok_or(EditError::Unsupported(WriteBlocker::Column))?,
-        ))
-    }
+    Ok(Some(bytes))
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -127,7 +148,7 @@ pub(in crate::table::mutation) fn prepare(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all(source, groups, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -139,7 +160,7 @@ pub(in crate::table::mutation) fn prepare_normal(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_normal(source, groups, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -151,7 +172,7 @@ pub(in crate::table::mutation) fn prepare_ieee(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_ieee(source, groups, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -163,7 +184,19 @@ pub(in crate::table::mutation) fn prepare_scalar(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_scalar(source, groups, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_guid(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) = binding::all_guid(source, groups, budget, cancelled)?;
+    compose::<GUID_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -177,7 +210,7 @@ pub(in crate::table::mutation) fn prepare_indexed(
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) =
         binding::all_indexed(image, source, groups, indexed, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -191,7 +224,7 @@ pub(in crate::table::mutation) fn prepare_integral(
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) =
         binding::all_integral(image, source, groups, indexed, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -208,10 +241,10 @@ pub(in crate::table::mutation) fn prepare_i32_updates(
     }
     let (bound, capacity) =
         binding::all_i32_updates(image, source, groups, indexed, budget, cancelled)?;
-    compose(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
-fn compose(
+fn compose<const N: usize>(
     image: &NativeImage,
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
@@ -272,7 +305,7 @@ fn compose(
         .try_reserve_exact(selected.len())
         .map_err(|_| InspectError::Allocation)?;
     budget
-        .charge_allocation(capacity as u64, size_of::<Payload>() as u64)
+        .charge_allocation(capacity as u64, size_of::<Payload<N>>() as u64)
         .map_err(InspectError::from)?;
     let mut payloads = Vec::new();
     payloads
@@ -288,6 +321,9 @@ fn compose(
 
     for (group, target) in groups.iter().zip(&bound) {
         check(budget, cancelled)?;
+        if target.width > N {
+            return Err(EditError::Preservation);
+        }
         let work = group
             .updates()
             .len()
@@ -356,8 +392,8 @@ fn compose(
                         return Err(EditError::Preservation);
                     }
                     let actual = row.data.get(at..end).ok_or(InspectError::Malformed)?;
-                    let expected = encode(target.kind, update.expected())?;
-                    let replacement = encode(target.kind, update.value())?;
+                    let expected = encode::<N>(target.kind, update.expected())?;
+                    let replacement = encode::<N>(target.kind, update.value())?;
                     if (original_mask & bit != 0) != expected.is_some()
                         || expected.is_some_and(|bytes| &bytes[..target.width] != actual)
                     {
@@ -381,7 +417,7 @@ fn compose(
                     if let Some(after) =
                         replacement.filter(|bytes| &bytes[..target.width] != actual)
                     {
-                        let mut before = [0; MAX_PAYLOAD_BYTES];
+                        let mut before = [0; N];
                         before[..target.width].copy_from_slice(actual);
                         payloads.push(Payload {
                             offset: row.offset + at,
@@ -413,3 +449,6 @@ fn compose(
     check(budget, cancelled)?;
     Ok((patches, count))
 }
+
+#[cfg(all(test, feature = "journal"))]
+mod guid_tests;

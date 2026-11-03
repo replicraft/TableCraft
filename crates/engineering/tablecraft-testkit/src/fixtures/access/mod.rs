@@ -382,3 +382,5 @@ pub mod genuine_ieee_update;
 
 /// Existing exact originals and independent Byte/Int16 payload/mask spans.
 pub mod genuine_byte_int16_update;
+
+pub mod genuine_guid_update;
