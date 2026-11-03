@@ -1,9 +1,7 @@
 //! Required-index joins for decoded files and stored Memo histories.
 use super::*;
 
-#[allow(dead_code)]
-#[path = "../../../../engines/tablecraft-ace/tests/version_history/fixture.rs"]
-mod history_fixture;
+use tablecraft_testkit::fixtures::access::version_history as history_fixture;
 #[path = "modes_fixture.rs"]
 mod modes_fixture;
 

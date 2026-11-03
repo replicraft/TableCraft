@@ -365,3 +365,6 @@ pub mod attachments;
 
 /// Independent modern conceptual attachment field layouts.
 pub mod attachment_modern;
+
+/// Independent stored Memo history records and visible-field mappings.
+pub mod version_history;

@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "shared raw stored-history fixture extraction acceptance passed",
+  "owner": "tablecraft_testkit::fixtures::access::version_history",
+  "existing_consumers": 6,
+  "builder_and_Text_DATE_bytes_changed": false,
+  "production_dependency_changes": false,
+  "runtime_functions": {
+    "engine": 14,
+    "adapter": 42,
+    "CLI": 13,
+    "total": 69
+  },
+  "runtime_results": [
+    {
+      "name": "engine-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "version_history"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        14
+      ],
+      "accepted": true,
+      "log_sha256": "cd0180d1e3a386c77127323d89113d2cc6eca20e73c348c248ce9f0203c65a67"
+    },
+    {
+      "name": "access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "version_history_source",
+        "--test",
+        "external_sources",
+        "--test",
+        "linked_sources",
+        "--test",
+        "required_index_collections"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        14,
+        10,
+        8,
+        10
+      ],
+      "accepted": true,
+      "log_sha256": "444325f912d074abf877b7c4bea88d984d438bb39f16d5b970de3e5b2ff4c11b"
+    },
+    {
+      "name": "cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "linked_queries"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        13
+      ],
+      "accepted": true,
+      "log_sha256": "5dc9db1df340dad2dec342104db9af46b3850e38795928e8afc86923f784dad4"
+    }
+  ],
+  "preserved_first_lint_failure": {
+    "name": "strict-first",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--keep-going",
+      "-p",
+      "tablecraft-ace",
+      "-p",
+      "tablecraft-access",
+      "-p",
+      "tablecraft-cli",
+      "-p",
+      "tablecraft-testkit",
+      "--all-features",
+      "--all-targets",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 101,
+    "passed_functions": [],
+    "accepted": false,
+    "log_sha256": "a5ddcaaf3b674afa5f70fa4a319eb83ccd6a3aa453ecd84e1128eaa898956179"
+  },
+  "correction": "Remove obsolete complex_fixture import from required_index_collections parent and target_fixture-as-base alias from linked_sources. Actual remaining child aliases and all test bodies unchanged.",
+  "final_checks": [
+    {
+      "name": "strict-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "b5932c24cb8881176762fd41cbc86d6b6f2f8b45810a0a06af6c6c80a0e80791"
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "c2d94018ec8e6c69e838b19c28e706136702726002522cd9c1ac56874ef57a9c"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-extraction-draft/first-private-checkpoint.json",
+      "bytes": 1072,
+      "sha256": "23de8a871d1aef24f5061983ced38b2c9a05c702e42a0a0523f3069b200cf13e"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-extraction-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 1521,
+      "sha256": "424fb627afdbbf91b7a098b14180e5005bf5db735007613ff0a95a5e926e2a6e"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-root-first/installation.json",
+      "bytes": 242,
+      "sha256": "0064a74bcb20400af78e7f41f74995f76c0c5bbc16f844517628a590042ddcb1"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-root-first/results-first.json",
+      "bytes": 1876,
+      "sha256": "e25d23ec88e9971ecfafd337a125c9982a032920e97b7134dcbd56e06f016873"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-root-first/unused-import-successor.json",
+      "bytes": 817,
+      "sha256": "979326f4d2118e469afb7a74d2c00cedda4d63e4fa87745d7e1a1bf745431095"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/fixture-root-first/results-second.json",
+      "bytes": 1330,
+      "sha256": "e7243232b35f8407a90dbfb3bebc19e01c948955fec853944e1df11a7c4aab7c"
+    }
+  ],
+  "history_rewrite_note": "Author-only history repair occurred between runtime and remaining checks. File trees/index/worktree were verified unchanged; no runtime result is attributed to changed code.",
+  "qualification": "Shared test machinery only; no new native read/write or Access qualification claim."
+}

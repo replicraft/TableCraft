@@ -67,6 +67,12 @@ The [extraction record](results/shared-complex-attachment-fixtures-2026-11-02.js
 retains the complete-consumer correction, lint cleanup and 435 passing runtime
 functions across engine, adapter, CLI and private preservation checks.
 
+`fixtures::access::version_history` owns the shared independent stored-history
+builder. Six existing engine/adapter/CLI consumers import it directly; Text and
+DATE-bit inputs remain exact. The
+[extraction record](results/shared-history-fixture-2026-11-02.json) preserves the
+lint cleanup and 69 passing runtime functions, with strict and minimal checks.
+
 ## Optional subsystem support
 
 The default feature set is empty. Raw fixtures depend only on
