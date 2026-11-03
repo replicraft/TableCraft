@@ -70,7 +70,7 @@ impl Case {
     /// Independently framed TCNI0004. The caller owns the original digest kernel.
     pub fn wire(&self, binding: [u8; 32], reverse: bool) -> Vec<u8> {
         let updates = self.updates(reverse);
-        super::tcni4::single_column_original_wire(
+        super::original_fixed_wire::single_column_original_wire(
             "BinaryKeys",
             "Marker",
             &updates,

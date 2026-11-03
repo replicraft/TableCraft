@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Move literal TCNI4/8 original framing into one real independent testkit owner; six direct old-path consumers migrate, IEEE grouped fixture shares frame. Remove old tcni4 without forwarding shim. No production or image changes.",
+  "mechanical_checks": "Six consumer inverse/token preservation, IEEE fixture outside wire method unchanged, 147 old numeric envelope combinations equivalent.",
+  "runtime_functions": 13,
+  "execution": [
+    {
+      "name": "literal-wire",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "original_fixed_wire"
+      ],
+      "exit": 0,
+      "log_sha256": "764b33b20a659621efced0a4c13d06b8eca69dd1b7405bc56feda7eb1684075d",
+      "passed_functions": [
+        2
+      ]
+    },
+    {
+      "name": "actual-ieee",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::ieee_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "9230f185812536005c716e090887f047f13ca3300eb25841f2ec9a2286516fc0",
+      "passed_functions": [
+        6
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "27a4aa2572a88747a103f0e59542eb0698762e52ae5bd2275c7035e2f6f9c0d9",
+      "passed_functions": []
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "0975e83f022844ce3db60d2054b96464ce3d3e0086f69b25e9037c239f29c4da",
+      "passed_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ],
+  "existing_numeric_consumers": [
+    {
+      "name": "0",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "marker_original_batch_reverse_null_noop_and_named_empty_commit_exact_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "113730bcc27cf902fd4bd44a2d9d91f5806d394d468d019e7d11ad28b36556b4",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "1",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "explicit_score_original_order_reverse_null_noop_and_empty_commit_without_generation",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "4d63c66a1b725c3fe9c2183ea7ed5ecc0b190f7d08fb430c9c0f40d7507bf1b4",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "2",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "id_change_noop_and_named_empty_commit_exact_original_request_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "fc1b8e33306d91e3e0482b28aab805c304f3482aab27bd88a924c883a54b0908",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "3",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "ordered_original_numeric_requests_commit_exact_companion_preserving_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "bc90a6eea69c877c4b32beec974575882bbb82113b10847b2f271afc38197869",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "4",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "single_omission_changes_and_three_distinct_empty_effect_requests_commit_exact_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "94949ffabf721a0df4b344fd453f054e127e0f3ffa723bfbc569653f54489f86",
+      "passed_functions": [
+        1
+      ]
+    }
+  ]
+}

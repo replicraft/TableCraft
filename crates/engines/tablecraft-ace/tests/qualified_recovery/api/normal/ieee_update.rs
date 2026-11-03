@@ -406,7 +406,7 @@ fn ieee_literal_dialect_rejects_padding_truncation_and_legacy_carrier_expansion(
 #[ignore = "requires qualified exact IEEE originals; legacy named-empty requests carry no float tags"]
 fn legacy_named_empty_ieee_columns_decode_but_cold_qualification_refuses_before_effects() {
     use tablecraft_ace::{NativeRecoveryQualificationError, WriteBlocker};
-    use tablecraft_testkit::fixtures::access::tcni4::single_column_original_wire;
+    use tablecraft_testkit::fixtures::access::original_fixed_wire::single_column_original_wire;
 
     let mut contexts = 0;
     for case in all().into_iter().filter(|case| !case.subnormal_to_special) {
