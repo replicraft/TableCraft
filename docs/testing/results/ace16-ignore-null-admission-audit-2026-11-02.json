@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "Existing native reads/raw/history audited; NoRequired and canonical normal Source still refuse; no program-absence or normal-save qualification.",
+  "independent_images": 8,
+  "read_raw_history_contexts_passed": 12,
+  "diagnostic_functions_passed": 2,
+  "NoRequired_observations": "12 REFUSED Unsupported(ActiveContent)",
+  "canonical_Source_observations": "12 REFUSED Unsupported(ActiveContent)",
+  "causal_probe": {
+    "original_contexts": 6,
+    "admitted": [
+      "standard capture",
+      "schema",
+      "catalog",
+      "global LVAL declarations"
+    ],
+    "properties": "RAW_ABSENT in all six contexts",
+    "first_failure": "dense_integral_definition: Unsupported(ActiveContent)",
+    "final_macro_coverage_or_certificate": "not reached"
+  },
+  "corrections": [
+    "Checked u32-to-usize index conversion after compile failure.",
+    "Explicit non-NULL Range on known omitting secondary; complete primary read retained.",
+    "Unestablished positive NoRequired premise replaced by separate admission observations, keeping every independent read/raw/history assertion."
+  ],
+  "source_audit": {
+    "attempts": [
+      {
+        "attempt": "first",
+        "exit": 101,
+        "phase": "compile: physical u32 used as slice index",
+        "log": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/source-first.log",
+        "log_sha256": "117a7057fde0ceb0146c5c87887291ccab1b078b4e2fb582c5f2fd53db4b723a"
+      },
+      {
+        "attempt": "second",
+        "exit": 101,
+        "phase": "runtime: wrong All request on omitting secondary",
+        "log": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/source-second.log",
+        "log_sha256": "275356e869a78859534ed2726d2bc440d6cb4b71fc62b72b785bd169abd4c171"
+      },
+      {
+        "attempt": "third",
+        "exit": 101,
+        "phase": "runtime: unestablished positive NoRequired premise",
+        "log": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/source-third.log",
+        "log_sha256": "0afd36303c4063f91979285054fd38fc7c78ecc78d895a18ccdc42761e6eafe5"
+      },
+      {
+        "attempt": "fourth",
+        "exit": 0,
+        "phase": "read/raw/history success; admission observed separately",
+        "log": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/source-fourth.log",
+        "log_sha256": "bb7494bdc655f28dfcf3c56415c85ee00e5c03c5dd0510ec8f29718aa81f2a62"
+      }
+    ],
+    "independent_images": 8,
+    "native_read_raw_history_contexts": 12,
+    "NoRequired_observed_refusals": 12,
+    "canonical_Source_observed_refusals": 12,
+    "program_absence_qualified": false,
+    "normal_save_qualified": false,
+    "production_guards_modified": false,
+    "next_action": "Causally audit existing NoRequired phases, then qualify narrowly selected declaration support before Source or mutation admission."
+  },
+  "causal_result": {
+    "exit": 0,
+    "passed_functions": 1,
+    "contexts": 6,
+    "catalog_helpers_admitted": 6,
+    "raw_properties_absent": 6,
+    "global_LVAL_declarations_admitted": 6,
+    "first_failure_in_all_contexts": "dense_integral_definition: Unsupported(ActiveContent)",
+    "certificates_constructed": 0,
+    "planners_or_mutators": 0,
+    "native_program_absence_qualified": false,
+    "log": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/prior-stages-first.log",
+    "log_sha256": "295d43cccb00a3025a340674a05b57e5cdef226fc0d1262dafb68931960eec20"
+  },
+  "strict": {
+    "exit": 0,
+    "scope": "ACE all-features all-targets, -D warnings"
+  },
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-gate/first-private-checkpoint.json",
+      "bytes": 2954,
+      "sha256": "80de1ab8381ed5c47983bf796291c3043fe1d11598094cec592eab10915b558d"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-gate/QUERY_COMPOSITION_REVIEW_FIRST.json",
+      "bytes": 2830,
+      "sha256": "e72f8f33485279b3875ab07f4cebd5907d1cc5b37218cf7a196f74207d68cefc"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-gate/EXISTING_INPUTS_FIRST.json",
+      "bytes": 5790,
+      "sha256": "d2916011ea4eda03e3bf02dbc279b708407db2face989394c25695995ed3b665"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-gate/prior-stages-first-private-checkpoint.json",
+      "bytes": 2983,
+      "sha256": "18fa432bc9c51fde8e1a0d901ad9a7bc2d968c98ce05987bc9f8b8af13282a5c"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/installation.json",
+      "bytes": 340,
+      "sha256": "25801e4ba6efe6db7e71f72a40b4dfcbe0d060b3e18f7f5227c7a3697834551b"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/physical-index-successor.json",
+      "bytes": 471,
+      "sha256": "654ffc3a3d2caceef488d9762ab2ab2059353af9862ae0dcd69da694286d554c"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/non-null-range-successor.json",
+      "bytes": 652,
+      "sha256": "bd5441a8cb7cda3854ddda016d44ae0f766c46df2613d8f3f445c9b6c3635779"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/admission-observation-successor.json",
+      "bytes": 903,
+      "sha256": "000c50d8ed5343100e7b3431c932e9971e0ecfeb91d2cf5ec3b8eeccd3c1021e"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/results-first.json",
+      "bytes": 1704,
+      "sha256": "67a29b8066bc1ae7766a28dd47d046a3cbe33553ee989dc4d7efd446949bc79e"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/prior-stages-installation.json",
+      "bytes": 379,
+      "sha256": "1259ee9e10def14e201d6697f2164de82269bf1bd4ca64075141e1207b208a15"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/prior-stages-result.json",
+      "bytes": 552,
+      "sha256": "05332ea35ae179ad01913334d53669c432f02696f6aa5ec4ed541b799926b967"
+    },
+    {
+      "path": ".cache/ace16-normal-ignore-null-update-next-20261102/source-root-first/strict-first.log",
+      "bytes": 307,
+      "sha256": "fdb5728af5904bd5aa68a5567b4f24bad46579122a48dfba85629d3d98588aa7"
+    }
+  ],
+  "production_guard_changes": 0,
+  "source_or_expected_image_changes": 0,
+  "normal_writes": "unqualified",
+  "native_Access": "unrun",
+  "remaining": [
+    "Narrow selected read-declaration qualification",
+    "Actual full NoRequired and Source admission",
+    "Independent matching normal writes/recovery/resources/host acceptance"
+  ]
+}
