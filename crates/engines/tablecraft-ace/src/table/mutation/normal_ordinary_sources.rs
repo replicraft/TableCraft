@@ -237,3 +237,5 @@ mod external_lval_mixed;
 mod retained_binary_marker;
 
 mod binary_id_update;
+
+mod wide_sibling_originals;

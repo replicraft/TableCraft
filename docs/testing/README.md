@@ -7,6 +7,7 @@
 - [Retained Binary-index field UPDATE sources](ACE16_RETAINED_BINARY_MARKER_SOURCES.md)
 - [Test duplication audit](TEST_DUPLICATION_AUDIT.md)
 - [Wider numeric root-promotion sources](ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
+- [Wider numeric keys with ordinary siblings: originals](ACE16_WIDE_SIBLING_ORIGINALS.md)
 - [Int32 key updates beside retained Binary indexes: sources](ACE16_RETAINED_BINARY_ID_UPDATE_SOURCES.md)
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
 - [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
