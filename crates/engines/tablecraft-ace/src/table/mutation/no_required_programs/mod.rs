@@ -191,3 +191,6 @@ mod resource_tests;
 
 #[cfg(test)]
 mod action_tests;
+
+#[cfg(test)]
+mod ignore_null_prior_stages;
