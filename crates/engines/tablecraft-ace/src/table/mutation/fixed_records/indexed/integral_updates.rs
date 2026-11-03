@@ -1,7 +1,8 @@
 //! Closed wider UPDATE facts; action read coverage alone never grants a target.
 use super::{CheckedIndexes, IndexTargets};
 use crate::{
-    EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck, TableSchema, WriteBlocker,
+    EditError, IndexCheckStatus, InspectError, NativeColumn, NativeImage, TableCheck, TableSchema,
+    WriteBlocker,
     format::{
         data_type::{CURRENCY, INT32, INT64},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
@@ -88,14 +89,21 @@ impl<'image> IntegralUpdates<'image> {
         }
         for (position, field) in schema.columns().iter().enumerate() {
             check(budget, cancelled)?;
-            let size = width(field.native_type(), field.scalar_type())?;
-            if field.number() != position
-                || !field.fixed()
-                || field.storage_length() != size
-                || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
-                || field.extended_flags() != 0
-                || field.complex_type_id().is_some()
-            {
+            if profile == Profile::RetainedTrees {
+                // Preserve the qualified numeric-only retained-NODE profile.
+                let size = width(field.native_type(), field.scalar_type())?;
+                if field.number() != position
+                    || !field.fixed()
+                    || field.storage_length() != size
+                    || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+                    || field.extended_flags() != 0
+                    || field.complex_type_id().is_some()
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                }
+            } else if field.number() != position {
+                // Existing record/key replay uses dense native positions.
+                // Canonical Source already qualifies every retained scalar.
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
         }
@@ -118,11 +126,17 @@ impl<'image> IntegralUpdates<'image> {
             budget
                 .charge(Resource::Steps, schema.columns().len() as u64)
                 .map_err(InspectError::from)?;
-            let field = schema
+            let (key_position, field) = schema
                 .columns()
                 .iter()
-                .find(|field| field.number() == key.number())
+                .enumerate()
+                .find(|(_, field)| field.number() == key.number())
                 .ok_or(EditError::Preservation)?;
+            if profile == Profile::RootLeaves {
+                // These guards formerly came from the whole-column loop.
+                // Every actual key must qualify even when its owner is unchanged.
+                qualify_numeric(field, key_position)?;
+            }
             wide |= matches!(field.native_type(), INT64 | CURRENCY);
             if selected.status() != IndexCheckStatus::Checked
                 || index.native_type() > 1
@@ -242,6 +256,9 @@ impl IndexTargets for IntegralUpdates<'_> {
             .columns()
             .get(position)
             .ok_or(EditError::Preservation)?;
+        if self.profile == Profile::RootLeaves {
+            return qualify_numeric(field, position);
+        }
         let size = width(field.native_type(), field.scalar_type())?;
         if field.number() != position
             || !field.fixed()
@@ -252,4 +269,20 @@ impl IndexTargets for IntegralUpdates<'_> {
         }
         Ok(())
     }
+}
+
+/// Eligibility of an actual numeric index key or named indexed target.
+/// Retained ordinary siblings are qualified by Source, not by this encoder.
+fn qualify_numeric(field: &NativeColumn, position: usize) -> Result<(), EditError> {
+    let size = width(field.native_type(), field.scalar_type())?;
+    if field.number() != position
+        || !field.fixed()
+        || field.storage_length() != size
+        || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+        || field.extended_flags() != 0
+        || field.complex_type_id().is_some()
+    {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    Ok(())
 }

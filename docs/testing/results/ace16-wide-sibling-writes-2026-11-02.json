@@ -1,0 +1,517 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "Target-relative fitting wider-key updates with retained ordinary fields passed independent whole-image proof, native/typed/SQL/CLI saves, recovery/resources and scoped retained regressions.",
+  "implementation": "One private IntegralUpdates owner moves root-leaf width/manual-field validation onto actual indexed keys and targets. RetainedTrees numeric-only checks, canonical Source, constraints, alias/LVAL ownership, stage and independent proof remain.",
+  "counts": {
+    "original_table_header_contexts": 4,
+    "principal_requests": 24,
+    "ordered_native_commits": 28,
+    "literal_direct_proof_positives": 28,
+    "direct_protected_byte_forgeries": 720,
+    "direct_wrong_counts": 24,
+    "direct_stale_witnesses": 20,
+    "checksum_consistent_journal_forgeries": 720,
+    "recovery_contexts_each_attempted_twice": 408,
+    "committed_mismatch_contexts": 112,
+    "write_free_completion_confirmations": 296,
+    "measured_public_operations": 24,
+    "typed_saves": 28,
+    "qualified_SQL_saves": 16,
+    "completed_CLI_save_readbacks_after_correction": 16,
+    "post_save_stale_handles": 44,
+    "adapter_prepublication_refusals": 16,
+    "CLI_prepublication_refusals": 12,
+    "new_unique_passing_test_functions": 10,
+    "retained_regression_functions": 18
+  },
+  "carrier_scope": {
+    "native_and_typed": "Exact Int64 and Currency, endpoints, NULL, swaps, no-op and named-empty groups.",
+    "SQL_and_CLI": "Int64 zero from 0 - 0, Currency zero from CCur(0), NULL, self-assignment, and empty matches. No inferred implicit small-integer widening or SQL extreme assignment claim."
+  },
+  "first_compile": [
+    {
+      "name": "direct",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::proof::ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 101,
+      "log_sha256": "2d0d21541babc0befd97afc7c120e434037e61bfeecd59c498216a1fef707b7a"
+    }
+  ],
+  "first_matching_runtime": [
+    {
+      "name": "direct",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::proof::ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "0ceb4655b230bcbe620cb446e2e0a93539ccc4d4ee14407471f99df1efb5262b",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "native",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "2aa917d7e5a98bf696d2577e8cf5cf151429613d2cc49ce761029235be08c221",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "access",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_wide_ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "944725b813341435429f05225009c3aea0e02dcb16bc35c6881162e5fbafc4b5",
+      "passed_functions": [
+        2
+      ]
+    },
+    {
+      "name": "cli",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_wide_ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 101,
+      "log_sha256": "1adc97441866a293b0f4cbfb6eed867549f78328f4164b41b9d56a093aa131f0",
+      "passed_functions": [
+        1
+      ]
+    }
+  ],
+  "affected_retry_and_regressions": [
+    {
+      "name": "cli-positive-retry",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_wide_ordinary_siblings",
+        "cli_exact_numeric_zero_null_noop_and_empty_saves_preserve_all_companions",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "log_sha256": "a5aabbc64f3f4c95743c1bab1b30c65edb12fd00cd107726e3387c4e53674759",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "legacy-wide",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_indexed_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "e05710a3a6be3592c94566a8c00d6bbd5d4bac38fadf5e5997e72339d9138dff",
+      "passed_functions": [
+        6
+      ]
+    },
+    {
+      "name": "legacy-node",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "a4d08d0d1224737476db3b76c59bbaea897f5fd76808239afdc52b2c7e287b5b",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "legacy-marker-wire",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::retained_binary_marker::marker_original_batch_reverse_null_noop_and_named_empty_commit_exact_images",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "log_sha256": "e8d5b17a7449209ef4b5e77fa274324aa7704a6b09f3f1a60d58873fdbfb6ba4",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "legacy-generated-wire",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::generated_companion_update::explicit_score_original_order_reverse_null_noop_and_empty_commit_without_generation",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "log_sha256": "fb89e970614c978f96643ee258a75527dde21c5aa66674a1b2dbaa22ad33055a",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "legacy-id-wire",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::binary_id_update::id_change_noop_and_named_empty_commit_exact_original_request_images",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "log_sha256": "2881fb1ab1a618c6f7733ecc6051fbe619531409dad508e61922b56afa8a6857",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "legacy-access",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_wide_update",
+        "--test",
+        "genuine_wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "7b8cac019a9029ff0ee78d0d2fbed206e6ed294daea7c826e902e1ede57a1141",
+      "passed_functions": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "legacy-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_wide_update",
+        "--test",
+        "genuine_wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "7ac05b1feb46bcd8a6582f4aff7f49a5ee94186196463842cad3b39997b4ef1e",
+      "passed_functions": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "446577975bce972163038e5c3fc8e3ce831dc91575f0c1aa26fb6a38a7096b69",
+      "passed_functions": []
+    },
+    {
+      "name": "reader-only",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "f7c91db7be4ba1162ecfee0116262f2284b7efb27a5405dbb643d914732fc284",
+      "passed_functions": []
+    },
+    {
+      "name": "journal-only",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "a1fcfb9639899d26a389138a0f3dc90aa44ff398e235b9da2c93e36d12d2d816",
+      "passed_functions": []
+    },
+    {
+      "name": "preview-only",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-write-preview",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "78504d72eba9afdea49f473f44b2e8b4ad96b6a44f1dc3996bacd22d0885f968",
+      "passed_functions": []
+    },
+    {
+      "name": "boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "passed_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ],
+  "corrections": [
+    "Initial compile failed E0753 for an inner documentation comment in an include! fixture fragment. Changed only the comment marker; no code, pins, images or expectations changed.",
+    "First CLI positive case passed whole-file save comparison, then failed a bare-Text TSV expectation. The established Text presentation quotes its contents and CSV quoting escapes them. Corrected only ASCII Text spelling in the CLI observation; reran only the affected positive function. Negative CLI function success retained. The initial positive attempt is preserved separately, not counted as an additional qualified case."
+  ],
+  "checks": "All-feature all-target strict Clippy for ACE/Access/CLI/testkit, reader-only/default-free, journal-only, preview-only, dependency boundaries and formatter passed.",
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 3757,
+      "sha256": "682a9676910924ef635a51a282345d84b6a34bfac502de9b1f84710b6ed69fa2"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/implementation-draft/ADVANCED_FIELDS_PRODUCTION_REVIEW_FIRST.json",
+      "bytes": 1730,
+      "sha256": "beb7989f7a24e1252170038c02682fec89e00512ddde78c4a82a263939340ecb"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/acceptance-draft/first-connected-private-checkpoint.json",
+      "bytes": 12261,
+      "sha256": "c2733c31c69399115e6d44292491da9cc2406991925f641d84e7b50da61bb2a1"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/acceptance-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2804,
+      "sha256": "74c619629a0c3b11e9a63fd792261910f1cd64bda217732e8ae1e57c8ef544fa"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/acceptance-draft/tcni4-original.rs.txt",
+      "bytes": 1531,
+      "sha256": "cb01d1bbaea4ebea46a6ca84fc7c2dbb93fe9c9e51e1e996ab0a3e4d01137075"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/acceptance-draft/tcni4-inverse.rs.txt",
+      "bytes": 1531,
+      "sha256": "cb01d1bbaea4ebea46a6ca84fc7c2dbb93fe9c9e51e1e996ab0a3e4d01137075"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/expected-first/manifest.json",
+      "bytes": 78131,
+      "sha256": "5cb0f5c8e795f3efb29abaac04eb40366b3f16e225a7fae40f71dd5f9e9496ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/saved-first.json",
+      "bytes": 652,
+      "sha256": "8ac38f0348421ab4aba16de0cb041c105e3186b6be385c94ed6c1195b19321a1"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/installation.json",
+      "bytes": 1533,
+      "sha256": "6dca21649e598b5bb56d4eb7f3f1fe52a8a3dffd65f23cfd89397cd0d8bd2d33"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/include-comment-successor.json",
+      "bytes": 477,
+      "sha256": "4d8ea3fd4c415fc0538181adc84d8f6ddbe7ead6aceeb4db6a456ec8ea7fa4a9"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/cli-text-spelling-successor.json",
+      "bytes": 743,
+      "sha256": "54b2316090323aa07238cf8161a4d99995e420d9cc23e9bcc9c3b14a6f7b2eca"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/results-first.json",
+      "bytes": 385,
+      "sha256": "514b32793e10b729e7bef5787f4e20262a4cf411221ad03f7388634dd1511eb4"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/results-second.json",
+      "bytes": 1510,
+      "sha256": "972ab901cd67ca0e1ad4a23d5034c52a2083e409c22f1b4f5cf7701964b87976"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/results-regression-first.json",
+      "bytes": 5521,
+      "sha256": "eb6887c8a5d4c5ddb885197907e82bff2f14cead57b2c94bee1da10a65ac2f18"
+    }
+  ],
+  "native_Access_save_reopen": "unrun",
+  "remaining": [
+    "IgnoreNULL numeric mutation and changed emitted populations",
+    "Mixed NODE and nonnumeric mutable index families",
+    "General allocation/growth and wider required-program/relationship semantics",
+    "Shared-file/native Access save qualification",
+    "Broader Access SQL assignment conversions, including numeric widening; current exact-carrier profile remains explicit"
+  ],
+  "final_documentation_links": {
+    "exit": 0,
+    "targets": 7543,
+    "missing": 0,
+    "log": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/matching-root-first/documentation-final.log",
+    "log_sha256": "ed19ae428a3a497b5fb2719413335081a397a3519a1144dc73163c7db5b8c3a0"
+  }
+}

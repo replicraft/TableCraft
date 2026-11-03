@@ -862,3 +862,6 @@ mod generated_companion_update;
 
 #[path = "normal/binary_id_update.rs"]
 mod binary_id_update;
+
+#[path = "normal/wide_ordinary_siblings.rs"]
+mod wide_ordinary_siblings;

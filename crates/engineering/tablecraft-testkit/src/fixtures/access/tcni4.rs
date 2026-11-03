@@ -1,4 +1,4 @@
-//! Literal original single-column I32/NULL framing, independent of engine codecs.
+//! Literal original single-column numeric/NULL framing, independent of engine codecs.
 use tablecraft_core::values::Value;
 
 pub fn single_column_original_wire(
@@ -30,8 +30,16 @@ pub fn single_column_original_wire(
                     wire.push(2);
                     wire.extend_from_slice(&u64::from(*value as u32).to_le_bytes());
                 }
+                Value::Int64(value) => {
+                    wire.push(3);
+                    wire.extend_from_slice(&value.to_le_bytes());
+                }
+                Value::Currency(value) => {
+                    wire.push(4);
+                    wire.extend_from_slice(&value.scaled().to_le_bytes());
+                }
                 Value::Null => wire.extend_from_slice(&[0; 9]),
-                _ => panic!("outside literal I32/NULL carrier law"),
+                _ => panic!("outside literal fixed numeric/NULL carrier law"),
             }
         }
     }

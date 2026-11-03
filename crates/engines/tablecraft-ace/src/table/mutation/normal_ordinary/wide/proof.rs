@@ -182,3 +182,6 @@ pub(super) fn prove(
     check(budget, cancelled)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod ordinary_siblings;

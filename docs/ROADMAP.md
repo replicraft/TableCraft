@@ -1198,6 +1198,17 @@ Read retention remains separate from mutation permission; this adds no Binary
 fixed target, broader wide-key schema admission, allocation or native Access
 save/reopen qualification.
 
+## Wider numeric key UPDATE with ordinary fields
+
+The fitting root-leaf service now validates every actual numeric key and target
+without applying numeric widths to unrelated Boolean/Text/Binary fields. Canonical
+Source, full ownership/constraints, exact carriers, original records and independent
+whole-image replay remain mandatory. Twenty-eight native commits/typed saves and
+sixteen SQL/CLI saves each pass, with protected-byte, recovery and public resource
+controls. See the [qualified profile](access/writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md).
+Retained NODE schemas keep their original numeric-only qualification; IgnoreNULL
+keys, broader allocation and native Access save/reopen remain work.
+
 ## Remaining local-file read/query work
 
 The explicit [arithmetic declaration profile](expressions/numeric/DECLARED_ARITHMETIC.md) now carries
