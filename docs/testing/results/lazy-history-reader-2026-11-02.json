@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "Source-bound per-parent stored Memo history implemented through engine and real browser; focused and retained runtime checks plus strict/minimal/documentation/boundary checks passed.",
+  "profile": "ACE2007 and ACE16-family stable/offline complex history; original source/budget/cancellation remain borrowed.",
+  "new_functions": {
+    "engine": 9,
+    "browser": 3
+  },
+  "runtime_passed_functions": {
+    "engine": 83,
+    "access": 63,
+    "cli": 48
+  },
+  "runtime_total": 194,
+  "working_behavior": [
+    "Actual visible-Memo to hidden-history selection without generated-name assumptions",
+    "Complete refreshed metadata/parent keys/child ROW-FK-identity census through EOF",
+    "Actual shared selector rechecks every fresh complex template before result allocation, including empty requested parents",
+    "Selected-parent owned stored rows use unchanged StoredVersion decoder/order/Text/DATE bits",
+    "Current visible Memo and unselected external history payloads are not decoded",
+    "Range errors leave reader ready; operational failures are terminal with no partial parent",
+    "Original cumulative budgets and explicit reopen semantics; no complete query/presence cache changes"
+  ],
+  "shared_fixture": "Existing two-history raw builder moved to tablecraft-testkit::fixtures::access::version_history::mixed with direct consumers; current-Memo raw overlay is shared too.",
+  "review_correction": "Static review found fresh all-template association ambiguity missing from selected-definition-only refresh. Actual paid selector now rechecks the already captured fresh schema, with a causal regression. No failed runtime invented.",
+  "first_results": [
+    {
+      "name": "engine",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--locked",
+        "--offline",
+        "--test",
+        "version_history",
+        "--test",
+        "complex_links",
+        "--test",
+        "attachment_columns",
+        "--test",
+        "attachment_modern",
+        "--test",
+        "multivalues",
+        "--test",
+        "multivalue_pages"
+      ],
+      "exit": 0,
+      "log_sha256": "f530fd1279399179a6916fea0108e69356ce72fba2c3d9bb2d1a5c4892c12ed0"
+    },
+    {
+      "name": "access",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--locked",
+        "--offline",
+        "--test",
+        "browsing",
+        "--test",
+        "version_history_source",
+        "--test",
+        "required_index_collections",
+        "--test",
+        "external_sources",
+        "--test",
+        "linked_sources"
+      ],
+      "exit": 0,
+      "log_sha256": "1a7fff175c46a7eb851ddfaafb989b170721f5b91f8704609bc25e7c07dd067e"
+    },
+    {
+      "name": "cli",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--locked",
+        "--offline",
+        "--test",
+        "browsing",
+        "--test",
+        "linked_queries"
+      ],
+      "exit": 0,
+      "log_sha256": "60288ac0a60bd379fc2bf86188d7a038dc9173d30890c0a49991cdab7eceef4f"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 101,
+      "log_sha256": "68fe91dbf1c43789435912641d5455e216ae401c92929b1febe95e3c4f684ccb"
+    }
+  ],
+  "resumed_results": [
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "bebff4f51011b2e77fa4589f54e31edb0a5a3d1ee84524a69e5969e0be839d87"
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "log_sha256": "f3dbce02818f6136a8ef72198017a3954d30a08f7120e3a9b128671721cd8f50"
+    },
+    {
+      "name": "rustdoc",
+      "argv": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--no-deps",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "log_sha256": "2531247f5e04ee471426159c12a143f74a4795a0170d676f1a698dd4c823f4bc"
+    },
+    {
+      "name": "boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "links",
+      "argv": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "exit": 0,
+      "log_sha256": "961feaf33fb16044a8000c496ff5d6fae32c2eca2673de3681c681f3c27410a3"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtime_correction": "First strict check found only a stale unused support alias after the mixed fixture move. Removed that alias and improved touched method spacing/type imports. Runtime bodies/oracles unchanged; retained first runtime successes, then resumed strict and remaining checks.",
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 21777,
+      "sha256": "defaf767db17fdef100dbd182a8b5835d340e4038a3f214f3ab6c8173a637fdb"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2193,
+      "sha256": "4d53754ada015febfad65beb8b9596b3410cb045a8743ece477842c08bee66c0"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/mechanical-preservation-first.json",
+      "bytes": 2053,
+      "sha256": "e3f1fcaf6d1e66bc46a7106c96382e68f86b98ea8ae2b76206f941a4f5844523"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/fresh-association-preservation-first.json",
+      "bytes": 698,
+      "sha256": "f80195b937294b14b5a63d785d41aedc43d9caff9f8330f3f466cb435c35fa56"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/acceptance-accounting-first.json",
+      "bytes": 1435,
+      "sha256": "463aa0760a5504174fc708237db6ae12f21d90a02851bf524aa9c8ceec35a3e6"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/implementation-draft/ADVANCED_FIELDS_REFRESH_FINDING_FIRST.json",
+      "bytes": 2560,
+      "sha256": "769bd41d879c1ca146a4b27ec84ea5c9ee8e1d9b258f6a7e1822455eeb9e9ec2"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/reader-root-first/installation.json",
+      "bytes": 2158,
+      "sha256": "082643e63a904cc30456c89d85413271ce3bae041d2e47b024bc907936fc522a"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/reader-root-first/results-first.json",
+      "bytes": 1853,
+      "sha256": "01d66ff2757992c6dcf4f3085e0f4b485d1d59a359726a3e07b49f9e718529ba"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/reader-root-first/results-second.json",
+      "bytes": 1840,
+      "sha256": "ce02ea78b699ac1ddc95caf73576529c926951bfd7af754eaf40e7686eb138c7"
+    },
+    {
+      "path": ".cache/ace16-lazy-version-history-reader-next-20261102/reader-root-first/unused-import-spacing-successor.json",
+      "bytes": 866,
+      "sha256": "71c270c1c190711ef6454d7f420dde07b007359dad5a57aa3460a3b06c6eac2b"
+    }
+  ],
+  "limitations": [
+    "Stable/offline sources; no native shared-file snapshot/coherence",
+    "Complete directory work can rescan all keys for each parent",
+    "No CLI or query grammar/cache expansion",
+    "Large-directory qualification for the new readers remains separate",
+    "Native Access comparison remains unrun"
+  ],
+  "final_documentation_links": {
+    "exit": 0,
+    "targets": 7535,
+    "missing": 0,
+    "path": ".cache/ace16-lazy-version-history-reader-next-20261102/reader-root-first/links-final.log",
+    "sha256": "30baf2360545cd0dfb0045d7e8eadf59ffaf324df17a5e60d130afbf4910e644"
+  }
+}

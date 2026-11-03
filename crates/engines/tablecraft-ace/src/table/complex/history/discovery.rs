@@ -43,7 +43,7 @@ pub fn inspect_version_history_declarations<R: crate::NativeReadSource>(
         if !supported_key(owner) || owner.extended_flags() != OBSERVED_HISTORY_EXT_FLAG {
             continue;
         }
-        let (value, _) = match schema::type_fields(column.type_table()) {
+        let (value, _) = match schema::type_fields(column.type_table(), budget, cancelled) {
             Ok(fields) => fields,
             Err(InspectError::Unsupported) => continue,
             Err(error) => return Err(error),
@@ -56,7 +56,7 @@ pub fn inspect_version_history_declarations<R: crate::NativeReadSource>(
         if complex.owner().columns()[position].number() != column.number() {
             return Err(InspectError::Malformed);
         }
-        let fields = match schema::qualify(column, column.flat_table()) {
+        let fields = match schema::qualify(column, column.flat_table(), budget, cancelled) {
             Ok(fields) => fields,
             Err(InspectError::Unsupported) => continue,
             Err(error) => return Err(error),

@@ -143,14 +143,14 @@ pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
     read_multivalue_table_page_with_request,
 };
+pub use table::{
+    ParentVersionHistory, StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
+    VersionHistoryReader, inspect_version_history_declarations, read_version_history_column,
+    read_version_history_column_with_limits,
+};
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use table::{RowDelete, TableRowDeletes};
 pub use table::{StoredTablePage, read_stored_table_page};
-pub use table::{
-    StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
-    inspect_version_history_declarations, read_version_history_column,
-    read_version_history_column_with_limits,
-};
 pub use table::{
     TableBatch, TableCursor, TablePage, TablePageRequest, TableSnapshotLimits, read_table_batched,
     read_table_page, read_table_projection_batched, read_table_projection_page,

@@ -1,5 +1,23 @@
 # Implementation status
 
+## Source-bound per-parent stored Memo history
+
+`VersionHistoryReader` and `NativeBrowser::version_history_reader` now return one
+parent's owned stored versions while retaining complete metadata and parent/child
+membership checks. Current visible Memo storage remains independent; original
+stored order, Text/NULL/empty values and DATE bits use the existing decoder.
+Every operation also rechecks the visible-to-hidden association across all fresh
+complex templates, including empty requested parents. Shared selector/qualifier
+work now uses the original budget and cancellation in full readers and discovery.
+See the [history contract](access/collections/LAZY_HISTORY.md).
+Twelve new functions and retained regressions pass: 83 engine, 63 adapter and
+48 CLI functions, followed by strict, minimal, warning-free Rust documentation,
+dependency and formatting checks. The
+[acceptance record](testing/results/lazy-history-reader-2026-11-02.json) preserves
+the static association finding and first unused-import lint failure. Existing
+complete query/presence caches remain unchanged; larger-directory evidence and
+native Access comparisons remain work.
+
 ## Source-bound per-parent attachments
 
 `AttachmentReader` and `NativeBrowser::attachment_reader` now return one parent's
@@ -14,8 +32,8 @@ complete query/presence caches. See the
 and retained regressions pass (86 engine, 68 adapter, 35 CLI), followed by strict,
 minimal, Rust documentation and boundary checks. The
 [acceptance record](testing/results/lazy-attachment-reader-2026-11-02.json)
-retains the test-only lexical-scope correction. History readers, larger-directory
-evidence and native Access comparisons remain work.
+retains the test-only lexical-scope correction. History now has the separate
+reader above; larger-directory evidence and native Access comparisons remain work.
 
 ## Int32 key updates beside retained Binary indexes
 
@@ -45,8 +63,8 @@ minimal-feature, Rust documentation and dependency checks. The
 [contract](access/collections/LAZY_MULTIVALUES.md) and
 [acceptance record](testing/results/lazy-multivalue-reader-2026-11-02.json)
 retain the first unused-argument lint failure and correction. Attachments now
-have the separate reader above; history consumers, larger directories and native
-Access qualification remain work.
+have the separate reader above; history also has its own reader above. Larger
+directories and native Access qualification remain work.
 
 ## Ordinary updates beside generated IDs
 

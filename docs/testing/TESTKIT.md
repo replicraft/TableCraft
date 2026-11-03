@@ -196,3 +196,9 @@ Historical model paths and qualification records keep their original hashes;
 they are not repointed to current source owners. Exact predecessors remain in
 the retained extraction archive. This source-owner refactor does not expand
 write admission or qualify native Access behavior, macros or saves.
+
+The same stored-history fixture owner now includes `version_history::mixed`,
+the existing independent two-history builder moved from its Access test owner.
+Engine freshness controls and the original query-source tests import it directly;
+current-Memo descriptor overlays also serve engine and browser observations.
+See the [reader acceptance record](results/lazy-history-reader-2026-11-02.json).

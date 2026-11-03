@@ -1,5 +1,7 @@
 #[path = "version_history/compression.rs"]
 mod compression;
+#[path = "version_history/reader.rs"]
+mod reader;
 use tablecraft_testkit::fixtures::access as support;
 use tablecraft_testkit::fixtures::access::version_history as fixture;
 #[path = "version_history/visible_memo.rs"]

@@ -1,13 +1,13 @@
 //! Complete original key census replay with selected-parent payload delivery.
 use super::{Directory, Projection};
 use crate::{
-    InspectError, NativeReadSource, TableSnapshotLimits, format::reader::Reader,
-    table::page::traversal::Traversal,
+    ComplexTableSchema, InspectError, NativeReadSource, TableSnapshotLimits,
+    format::reader::Reader, table::page::traversal::Traversal,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
-/// Actual read inputs shared by both source-bound typed collection readers.
+/// Actual read inputs shared by source-bound typed collection readers.
 pub(in crate::table::complex) struct ParentRead<'a, R> {
     pub source: &'a mut R,
     pub scope: CatalogScope,
@@ -27,10 +27,10 @@ impl Directory {
     ) -> Result<T, InspectError>
     where
         R: NativeReadSource,
-        P: FnOnce(usize, &mut ResourceBudget) -> Result<T, InspectError>,
+        P: FnOnce(&ComplexTableSchema, usize, &mut ResourceBudget) -> Result<T, InspectError>,
         F: FnMut(&mut T, Vec<Value>, &mut ResourceBudget) -> Result<(), InspectError>,
     {
-        self.require_source(
+        let fresh_schema = self.require_source(
             read.source,
             read.scope,
             read.limits,
@@ -42,7 +42,10 @@ impl Directory {
             .get(parent)
             .ok_or(InspectError::InvalidPageRange)?
             .child_count();
-        let mut result = prepare(count, read.budget)?;
+        let mut result = prepare(&fresh_schema, count, read.budget)?;
+        // The fresh metadata is an operation-local validation input, not part
+        // of the selected result or a retained complete payload cache.
+        drop(fresh_schema);
         let schema = self.column().flat_table();
         let mut reader = Reader {
             source: read.source,

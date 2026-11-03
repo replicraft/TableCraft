@@ -2,6 +2,8 @@
 mod attachments;
 #[path = "browsing/cursor.rs"]
 mod cursor;
+#[path = "browsing/history.rs"]
+mod history;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
