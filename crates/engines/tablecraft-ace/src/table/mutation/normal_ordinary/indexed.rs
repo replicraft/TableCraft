@@ -8,7 +8,7 @@ use crate::{
     table::{
         indexes::{IndexKeyUpdate, MutationKey, mutation::normal_fitting},
         mutation::{
-            fixed_records::{self, binding, indexed::CheckedIndexes, stage},
+            fixed_records::{self, binding, indexed::i32_updates::I32UpdateIndexes, stage},
             patch::BytePatch,
             preserved_source::{Source, validation},
         },
@@ -64,14 +64,18 @@ pub(super) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.ordinary.indexed.plan").entered();
-    let facts = CheckedIndexes::capture(&image, table, budget, cancelled)?;
+    let facts = I32UpdateIndexes::capture(&image, table, &source, budget, cancelled)?;
     let bound = preflight(&image, &source, groups, &facts, budget, cancelled)?;
     let (data, changed_rows) =
-        stage::prepare_indexed(&image, &source, groups, &facts, budget, cancelled)?;
+        stage::prepare_i32_updates(&image, &source, groups, &facts, budget, cancelled)?;
     let updates = index_updates(&source, groups, &bound, budget, cancelled)?;
     // All original-to-final keys are supplied together. UNIQUE swaps are
     // evaluated in their final population; no intermediate candidate exists.
-    let indexes = normal_fitting::patches(&image, facts.checked(), &updates, budget, cancelled)?;
+    let indexes = if facts.retains_binary() {
+        normal_fitting::patches_retained_i32(&image, facts.checked(), &updates, budget, cancelled)?
+    } else {
+        normal_fitting::patches(&image, facts.checked(), &updates, budget, cancelled)?
+    };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     for patch in data {
         apply(
@@ -126,11 +130,11 @@ fn preflight(
     image: &NativeImage,
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
-    facts: &CheckedIndexes<'_>,
+    facts: &I32UpdateIndexes<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<binding::Bound>, EditError> {
-    let (bound, _) = binding::all_indexed(image, source, groups, facts, budget, cancelled)?;
+    let (bound, _) = binding::all_i32_updates(image, source, groups, facts, budget, cancelled)?;
     for (group, target) in groups.iter().zip(&bound) {
         for update in group.updates() {
             check(budget, cancelled)?;

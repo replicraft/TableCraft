@@ -26,13 +26,46 @@ pub(in crate::table) fn patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(image, checked, updates, false, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table) fn patches_retained_i32(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(image, checked, updates, true, budget, cancelled)
+}
+
+fn patches_with(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    retained_binary: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
     let _span = tracing::debug_span!("native.before_change.index_fitting").entered();
     check(budget, cancelled)?;
     let schema = checked.schema();
     // Qualify every original physical declaration even when updates are empty.
     // The caller separately qualifies required programs or complete ordinary
     // content. These physical index facts supply neither kind of admission.
-    let ownership = Ownership::capture(image, checked, budget, cancelled)?;
+    let ownership = if retained_binary {
+        #[cfg(feature = "journal")]
+        {
+            Ownership::capture_i32_updates(image, checked, budget, cancelled)?
+        }
+        #[cfg(not(feature = "journal"))]
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+    } else {
+        Ownership::capture(image, checked, budget, cancelled)?
+    };
     let mut patches = Vec::new();
     let mut source = image.reader();
     let mut reader = Reader {
@@ -53,6 +86,25 @@ pub(in crate::table) fn patches(
             continue;
         }
         ownership.require(image, schema, index, reader.budget, cancelled)?;
+        // The normal caller already bound every named target through the sealed
+        // I32 token, including empty/no-op groups. Ownership independently checks
+        // every retained Binary owner before it can be left byte-exact here.
+        if retained_binary {
+            reader.work(schema.columns().len())?;
+            let retained = index
+                .columns()
+                .first()
+                .and_then(|key| {
+                    schema
+                        .columns()
+                        .iter()
+                        .find(|field| field.number() == key.number())
+                })
+                .is_some_and(|field| field.native_type() == crate::format::data_type::SHORT_BINARY);
+            if retained {
+                continue;
+            }
+        }
         let mut affected = false;
         for key in index.columns() {
             reader.tick()?;

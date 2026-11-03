@@ -33,10 +33,12 @@ argument changed in 24 cursor commands. Its failed output remains excluded, the
 two correct metadata reads are explicitly reused, and source images/models/report
 expectations remain unchanged.
 
-Matching mutation admission, actual commits, recovery and typed/SQL/CLI save
-qualification remain separate work. This source gate never asserts historical
-mutation refusal as a permanent format rule. Native Microsoft Access save/reopen
-and Windows mixed-client behavior remain unrun.
+Subsequent [actual save qualification](../access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
+uses these unchanged images for native commits, recovery and retained typed/SQL/CLI
+saves. The [write result](results/ace16-retained-binary-id-updates-2026-11-02.json)
+is separate from this preserved source record. This source gate never asserts
+historical mutation refusal as a permanent format rule. Native Microsoft Access
+save/reopen and Windows mixed-client behavior remain unrun.
 
 ```sh
 TABLECRAFT_BINARY_ID_UPDATE_SOURCE_DIR=/absolute/path/to/expected-first \

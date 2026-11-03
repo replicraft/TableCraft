@@ -1173,9 +1173,9 @@ Qualified ordinary unindexed Int32 updates now retain untouched Binary indexes
 through the normal Source/proof/journal route. Two ACE 16-family originals pass
 complete-image commits, recovery, resource and retained typed/SQL/CLI checks; see
 [the bounded write profile](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md).
-This removes a whole-schema admission barrier for these targets. It does not
-qualify changing the indexed Id in this mixed profile, broader index maintenance,
-new allocation or native Access save/reopen.
+This removes a whole-schema admission barrier for these targets. Indexed Id
+updates now have the separate qualified continuation below. Broader index
+maintenance, new allocation and native Access save/reopen remain work.
 
 ## Ordinary UPDATE beside generated IDs
 
@@ -1186,6 +1186,17 @@ preserves LAST, histories, deleted slots, stored defaults and indexes without
 invoking generation. Generated targets remain refused even for no-op/empty intent.
 Broader generated/default insertion composition and native Access save/reopen
 remain separate work.
+
+## Int32 key UPDATE with retained Binary owners
+
+The normal Int32 indexed service now has a target-relative facts path that retains
+fully qualified Binary indexes while updating original numeric membership. Six
+changed/no-op/named-empty outcomes pass whole-image proof, commits, recovery,
+resources and typed/SQL/CLI saves. See
+[the qualified profile](access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md).
+Read retention remains separate from mutation permission; this adds no Binary
+fixed target, broader wide-key schema admission, allocation or native Access
+save/reopen qualification.
 
 ## Remaining local-file read/query work
 

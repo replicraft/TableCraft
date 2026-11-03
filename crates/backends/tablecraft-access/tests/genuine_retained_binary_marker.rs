@@ -8,7 +8,6 @@ use tablecraft_access::editing::{
     NativeEditError, journal,
     offline::{Cause, OfflineWriteSession, Phase, SessionState},
 };
-use tablecraft_ace::{EditError, RecoverableEditError, WriteBlocker};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
 use tablecraft_io::{ExclusiveFile, IoError, journal::RecoveryOutcome};
@@ -113,7 +112,7 @@ fn marker_typed_and_sql_saves_preserve_indexes_refresh_rows_and_retain_the_same_
 
 #[test]
 #[ignore = "requires independently qualified original Binary schemas"]
-fn marker_typed_wrong_carrier_foreign_snapshot_and_selected_primary_refuse_before_publication() {
+fn marker_typed_wrong_carrier_and_foreign_snapshot_refuse_before_publication() {
     let cases = source::load_all(|raw, hash| {
         let actual: String = Sha256::digest(raw)
             .iter()
@@ -122,7 +121,9 @@ fn marker_typed_wrong_carrier_foreign_snapshot_and_selected_primary_refuse_befor
         assert_eq!(actual, hash);
     });
     for case in cases.iter().filter(|case| case.recipe == Recipe::Batch) {
-        for (column, value) in [("Marker", Value::Int64(29)), ("Id", Value::Int32(14))] {
+        {
+            let column = "Marker";
+            let value = Value::Int64(29);
             let dir = tempfile::tempdir().unwrap();
             let path = dir.path().join("target.accdb");
             fs::write(&path, &case.before).unwrap();
@@ -147,19 +148,10 @@ fn marker_typed_wrong_carrier_foreign_snapshot_and_selected_primary_refuse_befor
             assert_eq!(failure.phase(), Phase::Planning);
             assert_eq!(failure.state(), SessionState::Ready);
             assert_eq!(failure.last_completed(), None);
-            if column == "Marker" {
-                assert!(matches!(
-                    failure.cause(),
-                    Cause::Editing(journal::Error::Native(NativeEditError::Unsupported))
-                ));
-            } else {
-                assert!(matches!(
-                    failure.cause(),
-                    Cause::Editing(journal::Error::Plan(RecoverableEditError::Edit(
-                        EditError::Unsupported(WriteBlocker::IndexedColumn)
-                    )))
-                ));
-            }
+            assert!(matches!(
+                failure.cause(),
+                Cause::Editing(journal::Error::Native(NativeEditError::Unsupported))
+            ));
             assert_eq!(fs::read(&path).unwrap(), case.before);
             assert!(matches!(ExclusiveFile::open(&path), Err(IoError::LockBusy)));
             failure.into_session().release().unwrap();

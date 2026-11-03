@@ -58,6 +58,7 @@ enum CaptureMode {
     Dense,
     Actions,
     IntegralUpdates,
+    I32Updates,
 }
 
 impl Ownership {
@@ -97,6 +98,16 @@ impl Ownership {
             budget,
             cancelled,
         )
+    }
+
+    #[cfg(feature = "journal")]
+    pub(in crate::table) fn capture_i32_updates(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, CaptureMode::I32Updates, budget, cancelled)
     }
 
     fn capture_mode(
@@ -169,7 +180,16 @@ impl Ownership {
             map.require_allocated_storage(&mut reader, &global)?;
             // Retain the old dense discriminator and charged UPDATE trace.
             // Actions explicitly resolve actual native numbers, never stored IDs.
-            let typed = if mode != CaptureMode::Dense {
+            let typed = if mode == CaptureMode::I32Updates {
+                reader.work(schema.columns().len())?;
+                index.columns().first().and_then(|key| {
+                    schema
+                        .columns()
+                        .iter()
+                        .find(|field| field.number() == key.number())
+                        .filter(|field| field.native_type() == SHORT_BINARY)
+                })
+            } else if mode != CaptureMode::Dense {
                 reader.work(schema.columns().len())?;
                 index.columns().first().and_then(|key| {
                     schema

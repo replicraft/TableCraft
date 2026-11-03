@@ -224,6 +224,39 @@ pub(in crate::table::mutation) fn reconstruct_integral_original(
     )
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::i32_updates::I32UpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    if let Some(legacy) = indexed.legacy() {
+        return reconstruct_original(original, expected, groups, Some(legacy), budget, cancelled);
+    }
+    check(budget, cancelled)?;
+    groups.first().ok_or(EditError::Preservation)?;
+    if expected.len() != original.image.as_bytes().len() {
+        return Err(EditError::Preservation);
+    }
+    indexed.require_source(
+        original.image,
+        original.source.table.schema(),
+        budget,
+        cancelled,
+    )?;
+    reconstruct_with_targets(
+        original.source,
+        expected,
+        groups,
+        Some(indexed),
+        budget,
+        cancelled,
+    )
+}
+
 fn reconstruct_with_targets(
     original: &Source,
     mut expected: Vec<u8>,
