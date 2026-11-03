@@ -12,7 +12,7 @@ src/
 ├── fixtures/
 │   ├── access/                 independent images, requests and literal pins
 │   │   ├── tcna2.rs            independent original-presence wire grammar
-│   │   └── tcni4.rs            literal single-column I32/NULL original requests
+│   │   └── tcni4.rs            literal single-column numeric/NULL original requests
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
@@ -51,7 +51,9 @@ remain unchanged. Its [acceptance record](results/shared-page-read-support-2026-
 covers all six consumers, strict checks, minimal features and dependency guards.
 
 `fixtures::access::tcni4::single_column_original_wire` frames the independent
-single-column I32/NULL request grammar with caller-supplied original digest bytes.
+single-column Int32/Int64/Currency/NULL request grammar with caller-supplied original
+digest bytes. The Int64/Currency extension retains a byte-exact inverse of the
+original I32/NULL owner.
 The retained Binary Marker and generated-companion Score fixtures consume it
 directly. Table/column names and requests stay with each fixture; the helper owns
 no image expectation and imports no engine serializer. Its extraction preserves every existing request byte;
@@ -202,3 +204,8 @@ the existing independent two-history builder moved from its Access test owner.
 Engine freshness controls and the original query-source tests import it directly;
 current-Memo descriptor overlays also serve engine and browser observations.
 See the [reader acceptance record](results/lazy-history-reader-2026-11-02.json).
+
+`fixtures::access::genuine_wide_ordinary_siblings` owns the eighteen independently
+qualified source pins and original requests used by native proof/recovery, adapter
+and CLI tests. It shares the existing literal TCNI4 grammar without importing an
+engine encoder. See the [write acceptance record](results/ace16-wide-sibling-writes-2026-11-02.json).

@@ -1,5 +1,24 @@
 # Implementation status
 
+## Wider numeric key updates with ordinary fields
+
+Normal fixed UPDATE now qualifies actual Int32/Int64/Currency root-leaf keys and
+edit targets independently of retained ordinary scalar fields. Boolean, Text and
+Binary companions preserve their complete original records, while the retained
+NODE route keeps its existing numeric-only restrictions. The existing stage,
+fitting kernel, whole-image proof and checked original TCNI4 recovery remain.
+Twenty-eight native commits and typed saves match independent complete files;
+16 SQL and 16 CLI save/readbacks pass under their exact carrier rules. Direct
+and journal qualification each reject 720 protected-byte forgeries; 408 recovery
+contexts, 296 completion confirmations and 24 public resource contexts pass.
+Ten new test functions and eighteen retained regressions pass, followed by strict,
+reader/journal/preview, dependency and formatting checks. The
+[contract](access/writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md) and
+[acceptance record](testing/results/ace16-wide-sibling-writes-2026-11-02.json)
+keep the first fixture-comment compile failure and CLI Text-spelling correction.
+IgnoreNULL keys, mixed NODE schemas, general allocation and native Access
+save/reopen remain separate work.
+
 ## Source-bound per-parent stored Memo history
 
 `VersionHistoryReader` and `NativeBrowser::version_history_reader` now return one

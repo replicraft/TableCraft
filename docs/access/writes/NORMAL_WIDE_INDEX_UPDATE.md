@@ -2,8 +2,10 @@
 
 Normal fixed UPDATE now maintains qualified single-column Int32, Int64 and
 Currency root leaves when at least one native index uses a wider key. The
-initial schema is dense and contains only these exact fixed carriers. Full
-ordinary Source, constraints, alias ownership and LVAL exclusion remain required.
+initial qualified schemas contain only these exact fixed carriers. A separate
+[ordinary-field profile](NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md) now retains
+Boolean/Text/Binary siblings under target-relative numeric checks. Dense numbering,
+full ordinary Source, constraints, alias ownership and LVAL exclusion remain required.
 Nullable and descending keys, duplicate logical aliases and wider primary keys
 are checked explicitly. Compound keys and ignored-NULL indexes remain separate work. Existing
 [NODE trees](NORMAL_WIDE_NODE_UPDATE.md) have a separate retained-partition route.
