@@ -3,6 +3,7 @@
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
+- [GUID UPDATE sources and admission](ACE16_GUID_UPDATE_ADMISSION.md)
 - [Byte/Int16 literal UPDATE source qualification](ACE16_BYTE_INT16_UPDATE_SOURCES.md)
 - [Normal Byte/Int16 write acceptance](results/ace16-normal-byte-int16-update-2026-11-03.json)
 - [Existing Single/Double UPDATE source qualification](ACE16_IEEE_UPDATE_SOURCES.md)

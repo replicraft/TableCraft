@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Original read/admission and four in-memory unindexed span states, plus actual prior-stage diagnostics. No GUID mutation, output database, reference engine or new native Access evidence.",
+  "counts": {
+    "original_files": 6,
+    "unindexed_originals": 2,
+    "indexed_originals": 4,
+    "new_in_memory_span_states": 4,
+    "unique_unindexed_native_read_admission_contexts": 6,
+    "unique_indexed_native_read_contexts": 4,
+    "unindexed_NoRequired_admitted": 6,
+    "unindexed_canonical_Source_admitted": 6,
+    "indexed_NoRequired_refused": 4,
+    "indexed_canonical_Source_refused": 4,
+    "causal_definition_refusals_after_prior_stages": 4,
+    "passing_functions": 3
+  },
+  "first_compile": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::guid_update_originals::existing_guid_originals_keep_data_keys_and_observe_source_admission",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 101,
+    "log_sha256": "d5d61cf47524d30e424f2b41e0931aa993208c9984e30cb23b2f9c2c115410f7",
+    "passed_functions": []
+  },
+  "originals_after_test_call_correction": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::guid_update_originals::existing_guid_originals_keep_data_keys_and_observe_source_admission",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "7899d36fdc175421e2bcfd9392585ee036e3b58ffddccc404df23561805f57de",
+    "passed_functions": [
+      1
+    ]
+  },
+  "spans_causal_and_checks": [
+    {
+      "name": "spans",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::guid_update_spans::literal_unindexed_guid_states_preserve_all_other_bytes_and_observe_source_admission",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "log_sha256": "452494c4cee9640f767187956c5965f2a26e3c4439dee0d274c76d83ef56ebc4",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "causal",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::no_required_programs::guid_prior_stages::observe_actual_no_required_prior_stages_for_existing_guid_originals",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "log_sha256": "2e0abc3cc136cddf15955d6974689e62f00bac0060a34908507ed92c9222db51",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "10b63acac94a004e7710d089d91c7c7576d01dad7059f22b34bd94de329fbcf8",
+      "passed_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ],
+  "input_pins": [
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "b04d36341ed843e3bf7f2b9bfabd790e9a075d1b8002ad5a53253968c3ea82ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "1375d5e7453d0603ed42226b05c2f7afa6280f88d63287e2ab73b334a0da339f"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-source.accdb",
+      "bytes": 393216,
+      "sha256": "4991ffbc914b22d3ae0769e10a7f4c497e8e3066ce8431735a294e620f2a2353"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-source-proof.json",
+      "bytes": 7344,
+      "sha256": "210976fa495cef542cb30ad2452614bde46567112192e92cf6eef4c9fc612232"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-source.accdb",
+      "bytes": 393216,
+      "sha256": "04abb49839ea396628571f6e47fb563311db061c082634215a8e175dab82f036"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-source-proof.json",
+      "bytes": 7344,
+      "sha256": "210976fa495cef542cb30ad2452614bde46567112192e92cf6eef4c9fc612232"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-source.accdb",
+      "bytes": 466944,
+      "sha256": "3ccecfaa6865cecdc932bf239dad0bdfeb770361ef90e0d0d149f91979b1837e"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-source-proof.json",
+      "bytes": 7226,
+      "sha256": "b86ce68555ae96c0e373f9e359ff8c7c492aaba81c67a3ee440ac39749f3e973"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-source.accdb",
+      "bytes": 466944,
+      "sha256": "2cd3572d7ec08f5d538a4733d06edc4d8400838a76765bb0a828b343e4dc681d"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-source-proof.json",
+      "bytes": 7226,
+      "sha256": "b86ce68555ae96c0e373f9e359ff8c7c492aaba81c67a3ee440ac39749f3e973"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/recipes.py",
+      "bytes": 3106,
+      "sha256": "9162e02e8a51619c1257a8752ba8c40acda6368a5106553b4dcc539b4e89dc72"
+    },
+    {
+      "path": "docs/testing/ace16_insert_guid_tuple_indexes/GuidTupleIndexInsertReference.java",
+      "bytes": 13821,
+      "sha256": "500c7d6a1ccab1a04502e2068965f4f80a7a0462785ca84ca7cbe42dc879a174"
+    },
+    {
+      "path": "docs/testing/results/ace16-insert-guid-tuple-index-native-2026-10-28.json",
+      "bytes": 78645,
+      "sha256": "ec35f86b44b7da81fa0690d3a5f02936874a2fd24f5a9f3e1d46286bc3503415"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_ordinary_wide_insert.rs",
+      "bytes": 8861,
+      "sha256": "3ee3b86ef2775c6acbc495f9c61daeefa9123c662d69cee040abc84c7afb3b31"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_fixed_creation.rs",
+      "bytes": 13098,
+      "sha256": "6035f464746d74397b2a3d6b110a211f833bd03dcee9e78a0dbeeeef45e8f6a4"
+    }
+  ],
+  "observed_boundary": "All indexed cases first fail dense integral definition validation after standard/schema/catalog/present-property/catalog-LVAL helpers. Static trace: selected declaration lacks GUID width arm. Later full absence and Source stages remain unestablished.",
+  "qualification": "Read/source observations do not qualify native mutation, saved outputs, journal recovery or Windows/native Access comparison."
+}
