@@ -88,3 +88,25 @@ UPDATE states, while native Microsoft Access saves and TableCraft indexed writes
 remain separate acceptance work. The execution record above retains command,
 closure, report and saved-result hashes. Original files and prior evidence remain
 unchanged; generated images and SDK artifacts remain private.
+
+## Fitted GUID/Int32 tuple baseline
+
+Twelve unchanged SDK-authored fitted originals cover both GUID/Int32 component
+orders, both header families, ordinary/UNIQUE constraints and UNIQUE with ignored
+all-NULL keys. All twelve pass native schema, complete rows, raw records, primary
+and eligible tuple membership, all four aliases, physical owners, bitmaps and
+history checks. Partial-NULL tuples remain represented; the ignored all-NULL row
+retains its inactive native payload and is omitted from the secondary index.
+
+Both complete program-absence admission and canonical ordinary Source currently
+refuse all twelve with `Unsupported(ActiveContent)`. The selected declaration and
+retained membership families still lack the tuple/omission qualification. This
+refusal does not prove that active code exists. Mutation eligibility is unchanged;
+these reads identify the next source-admission work.
+
+The first run failed before native capture because its test EOF assertion used
+the pressure corpus's page count. Only that assertion changed to the pinned fitted
+sizes of 95/113 pages; original files, raw records and prior expected laws stayed
+unchanged. The corrected focused function passed. The
+[baseline record](results/ace16-guid-tuple-update-baseline-2026-11-03.json)
+retains both attempts. No new SDK, model construction or writer ran in this gate.

@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Read/raw/eligible-membership and complete Source diagnostics for12 unchanged fitted GUID/Int32 tuple originals. No source-admission widening, constructors or mutations.",
+  "counts": {
+    "originals": 12,
+    "header_families": 2,
+    "component_orders": 2,
+    "constraint_policies": 3,
+    "logical_rows_per_original": 6,
+    "physical_aliases_per_original": 4,
+    "physical_index_owners_per_original": 2,
+    "eligible_secondary_rows_ordinary_or_unique": 6,
+    "eligible_secondary_rows_ignore_all_null": 5,
+    "NoRequired_admitted": 0,
+    "canonical_Source_admitted": 0,
+    "corrected_runtime_functions": 1
+  },
+  "originals": [
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary-source.accdb",
+      "bytes": 389120,
+      "sha256": "6db68d365572ccaca857cfa382352a5d2e84e7b4d2e2749580adc1b4880eae6f"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored-source.accdb",
+      "bytes": 389120,
+      "sha256": "7bf2a7f850d251c5bf05ba2b588c420cc80b9c1945d3724649fd388229a8a84a"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-source.accdb",
+      "bytes": 389120,
+      "sha256": "8e43c16c89129ea941bda825025dab0f9142aeed6c6b929a0083bc1cd3286c96"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary-source.accdb",
+      "bytes": 389120,
+      "sha256": "faa5ec71349b21353449260a47f27832a13d77414b53bf96d7ec7a2773e8e4ca"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored-source.accdb",
+      "bytes": 389120,
+      "sha256": "83421aac0d51714f4293a013364bb71c0612659c93d33dbf0f9838c3a1e7e9f2"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-source.accdb",
+      "bytes": 389120,
+      "sha256": "d39afd860d4b6e6072e575b29293c1a62f9e829c8cf5235dbd5ae6e882d65958"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary-source.accdb",
+      "bytes": 462848,
+      "sha256": "b2b7eb48bc27933f6f12a7f704fd68cb20322c827150a42edc93b24b74fac565"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored-source.accdb",
+      "bytes": 462848,
+      "sha256": "8dc4610dd522482ae24f0ada1b81a031e6820562800485718fe2be2dccf860d2"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-source.accdb",
+      "bytes": 462848,
+      "sha256": "3def0fe4cea48ca7e7d4e8da16bb37829ee6e43301d0c23bf840c56201891c3d"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary-source.accdb",
+      "bytes": 462848,
+      "sha256": "0f0e5f0bd500dc242e8ee9459c737eb660135cd20ba875e6649ecd69747dd565"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored-source.accdb",
+      "bytes": 462848,
+      "sha256": "9e6d9c446a4bd324b7ff430e95c0e7720b513cc79cbe593dfeef3ee75b832f30"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-source.accdb",
+      "bytes": 462848,
+      "sha256": "1f4625574b692fddca25f9cc45cb058add8015d3ecbe0c01b38b738958e15beb"
+    }
+  ],
+  "original_raw_proofs": [
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-ordinary-source-proof.json",
+      "bytes": 7330,
+      "sha256": "bbcb104cb2b269e8fab19caf63c7c5b5f1f03dc5e3ffb388a37804cde03efecd"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-ignored-source-proof.json",
+      "bytes": 7330,
+      "sha256": "df031b2bf51d059aec188b81cdaa340232286d88a51550cbf02f01c7da1174c7"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-GuidThenScore-AD-fitted-unique-source-proof.json",
+      "bytes": 7330,
+      "sha256": "bbcb104cb2b269e8fab19caf63c7c5b5f1f03dc5e3ffb388a37804cde03efecd"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-ordinary-source-proof.json",
+      "bytes": 7330,
+      "sha256": "bbcb104cb2b269e8fab19caf63c7c5b5f1f03dc5e3ffb388a37804cde03efecd"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-ignored-source-proof.json",
+      "bytes": 7330,
+      "sha256": "df031b2bf51d059aec188b81cdaa340232286d88a51550cbf02f01c7da1174c7"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-ScoreThenGuid-AD-fitted-unique-source-proof.json",
+      "bytes": 7330,
+      "sha256": "bbcb104cb2b269e8fab19caf63c7c5b5f1f03dc5e3ffb388a37804cde03efecd"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-ordinary-source-proof.json",
+      "bytes": 7211,
+      "sha256": "0ba26f8cc5217399e2ec55a9e90c1a62cf098df07592fa7b1b28ee958b942a21"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-ignored-source-proof.json",
+      "bytes": 7211,
+      "sha256": "3d6a6bd1038aa46abe15d84eb51de643a88f16aad3c1065df2a67f57924db7e7"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-GuidThenScore-AD-fitted-unique-source-proof.json",
+      "bytes": 7211,
+      "sha256": "0ba26f8cc5217399e2ec55a9e90c1a62cf098df07592fa7b1b28ee958b942a21"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-ordinary-source-proof.json",
+      "bytes": 7211,
+      "sha256": "0ba26f8cc5217399e2ec55a9e90c1a62cf098df07592fa7b1b28ee958b942a21"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-ignored-source-proof.json",
+      "bytes": 7211,
+      "sha256": "3d6a6bd1038aa46abe15d84eb51de643a88f16aad3c1065df2a67f57924db7e7"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-ScoreThenGuid-AD-fitted-unique-source-proof.json",
+      "bytes": 7211,
+      "sha256": "0ba26f8cc5217399e2ec55a9e90c1a62cf098df07592fa7b1b28ee958b942a21"
+    }
+  ],
+  "actual": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::guid_tuple_originals::fitted_guid_tuples_keep_complete_eligible_membership_and_observe_source",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "initial_exit": 101,
+    "initial_log_sha256": "0650892f33e9aacfd55054ada9c82f15852776915b2b302cf1b3c9f11ee3d182",
+    "corrected_exit": 0,
+    "corrected_log_sha256": "b284f9793ced114600ab9d851032cd0652c96de08b221594ba688f533ff2e9c2",
+    "passed_functions": 1,
+    "native_views": 12,
+    "NoRequired_admitted": 0,
+    "canonical_Source_admitted": 0,
+    "typed_refusal": "Unsupported(ActiveContent)"
+  },
+  "corrected_gate": {
+    "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/original-gate/fitted-eof-successor/guid_tuple_originals.rs",
+    "bytes": 15747,
+    "sha256": "79e07b2254e272bce020af8fff8c56e807a0f9c4dd45427db58f70667826e789"
+  },
+  "correction_checkpoint": {
+    "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/original-gate/fitted-eof-successor/successor-checkpoint.json",
+    "sha256": "fc60fb21de42b4ab6cf70517fb4272a4f674c94ee8c714a8365e1f1f1a4dc267"
+  },
+  "geometry_observation": {
+    "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/original-gate/fitted-eof-successor/OBSERVED_FITTED_GEOMETRY_FIRST.json",
+    "bytes": 9803,
+    "sha256": "e1ad53c4cd4ae20fb94bb903b5c04b882155a71e9dc0e86e49622d849d6b13e0"
+  },
+  "checks": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "a7beacbaf35fc1b2588fd9e10b782fbdf172f3cdb98f8810299ee4efea9fca56"
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "notes": [
+    "First run failed the initial raw EOF assertion before native capture. The original12 file/proof pins all remained unchanged. Only pressure96/114 page literals changed to fitted95/113; the corrected run completed all12 native views.",
+    "Both NoRequired and canonical Source refuse every original with typed Unsupported(ActiveContent). This is failure to qualify source/program absence, not proof that active code exists. The test records diagnostics rather than making future refusal a permanent invariant.",
+    "Eligible IgnoreNULL tuples retain partial-NULL rows and omit only the all-NULL row. Actual complete check_table membership and independent manual tuple/ROW/root replay cover this domain; unsupported full-All selection is not substituted."
+  ],
+  "qualification": "Native read/inspection evidence only. No new SDK call, output database, producer, journal, typed/CLI save, Microsoft Access comparison or mutation permission is claimed."
+}
