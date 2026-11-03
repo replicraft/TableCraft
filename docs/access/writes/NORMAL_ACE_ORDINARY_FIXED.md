@@ -5,6 +5,9 @@ groups only after fresh native content and physical preservation validation. It 
 engine route from positive BeforeChange updates and engineering previews.
 `NativeJournalEditor`, the retained `OfflineWriteSession` and
 `query journal-update` now consume it through their existing lifecycle.
+The separate [exact IEEE continuation](NORMAL_IEEE_FIXED_UPDATE.md) admits ordinary
+unindexed Single/Double targets under the same complete native Source checks and
+a distinct original-request record.
 
 ## Initial global data-only family
 
@@ -148,6 +151,10 @@ carriers and BEFORE digest. No SQL, absence certificate, creator identity or fin
 assignments are serialized. Record-selected recovery freshly rebuilds the full
 ordinary plan and compares both complete images before effects. Unknown records
 and cross-profile combinations refuse; existing TCNI0001/2/3 bytes are unchanged.
+Requests naming a Single/Double target use the separate `TCNI0008`/profile 8
+[IEEE record](NORMAL_IEEE_FIXED_UPDATE.md), including named-empty groups. Legacy
+carrier-only requests and their TCNI0004 bytes remain unchanged; old record
+validators do not acquire IEEE tags.
 
 The [independent sources](../../testing/ACE16_ORDINARY_CONTENT_SOURCES.md) passed
 native reads and 24 exact SDK observations before mutation calls. Three content
@@ -210,8 +217,9 @@ Native Microsoft Access write/reopen qualification remains unrun.
 Inert metadata chooses which family to attempt; it never proves absence. The
 ordinary candidate must pass complete content/source/target checking before the
 adapter advertises `StoredScalar`. A failed check does not try another writer.
-The private retained route keeps ordinary single Int32, empty and batch requests
-on TCNI0004. Existing Jet4/positive Int32/positive fixed records remain 1/2/3.
+The private retained route keeps ordinary legacy-carrier single Int32, empty and
+batch requests on TCNI0004. IEEE-target requests retain their separate TCNI0008
+record even when equal or empty. Existing Jet4/positive Int32/positive fixed records remain 1/2/3.
 Every subsequent actual plan and recovery repeats native qualification.
 
 Seven adapter tests pass, including typed/SQL literal saves, equal/zero-match

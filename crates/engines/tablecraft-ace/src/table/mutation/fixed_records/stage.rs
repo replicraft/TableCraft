@@ -90,7 +90,7 @@ fn encode(kind: ScalarType, value: &Value) -> Result<Option<[u8; MAX_PAYLOAD_BYT
     if matches!(value, Value::Null) {
         return Ok(None);
     }
-    if kind == ScalarType::Int32 {
+    if matches!(kind, ScalarType::Int32 | ScalarType::Single) {
         let encoded = scalar_encoding::encode::<{ size_of::<i32>() }>(kind, value)
             .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
         let mut bytes = [0; MAX_PAYLOAD_BYTES];
@@ -125,6 +125,18 @@ pub(in crate::table::mutation) fn prepare_normal(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_normal(source, groups, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_ieee(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) = binding::all_ieee(source, groups, budget, cancelled)?;
     compose(image, source, groups, bound, capacity, budget, cancelled)
 }
 

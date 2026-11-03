@@ -1,5 +1,5 @@
 use crate::transaction::intent::NativeIntentError;
-use tablecraft_core::values::{Currency, LegacyDateTime, Value};
+use tablecraft_core::values::{Currency, Double, LegacyDateTime, Single, Value};
 
 const TAG_BYTES: usize = size_of::<u8>();
 const PAYLOAD_AT: usize = TAG_BYTES;
@@ -12,6 +12,8 @@ const INT32_TAG: u8 = 2;
 const INT64_TAG: u8 = 3;
 const CURRENCY_TAG: u8 = 4;
 const DATE_TAG: u8 = 5;
+const SINGLE_TAG: u8 = 6;
+const DOUBLE_TAG: u8 = 7;
 pub(super) const WIDTH: usize = TAG_BYTES + PAYLOAD_BYTES;
 
 pub(super) fn encode(value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
@@ -62,6 +64,43 @@ pub(super) fn decode(raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError> {
         _ => return Err(NativeIntentError::InvalidRecord),
     };
     if encode(&value)? != *raw {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    Ok(value)
+}
+
+/// Extended ordinary records retain the legacy cells byte-for-byte.
+/// These additional carriers are request data, never source permission.
+pub(super) fn encode_ieee(value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
+    let mut raw = [0; WIDTH];
+    match value {
+        Value::Single(value) => {
+            raw[TAG_AT] = SINGLE_TAG;
+            raw[PAYLOAD_AT..PAYLOAD_AT + size_of::<u32>()]
+                .copy_from_slice(&value.to_bits().to_le_bytes());
+        }
+        Value::Double(value) => {
+            raw[TAG_AT] = DOUBLE_TAG;
+            raw[PAYLOAD_AT..].copy_from_slice(&value.to_bits().to_le_bytes());
+        }
+        _ => return encode(value),
+    }
+    Ok(raw)
+}
+
+pub(super) fn decode_ieee(raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError> {
+    let value = match raw[TAG_AT] {
+        SINGLE_TAG => Value::Single(Single::from_bits(u32::from_le_bytes(
+            raw[PAYLOAD_AT..PAYLOAD_AT + size_of::<u32>()]
+                .try_into()
+                .unwrap(),
+        ))),
+        DOUBLE_TAG => Value::Double(Double::from_bits(u64::from_le_bytes(
+            raw[PAYLOAD_AT..].try_into().unwrap(),
+        ))),
+        _ => return decode(raw),
+    };
+    if encode_ieee(&value)? != *raw {
         return Err(NativeIntentError::InvalidRecord);
     }
     Ok(value)

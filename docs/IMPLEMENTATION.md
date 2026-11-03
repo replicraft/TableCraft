@@ -1,5 +1,18 @@
 # Implementation status
 
+## Exact ordinary Single/Double UPDATE
+
+Normal unindexed fixed updates now retain exact Single/Double bits through native
+planning, independent reconstruction, retained typed sessions and checked journal
+replay. Metadata selects TCNI0008 for IEEE targets even when named-empty; older
+TCNI3/4 records keep their closed target/carrier policy. Four independent whole-file
+pairs, typed saves, bit-exact stale/no-op tests, recovery and public resources pass.
+Two real CLI saves use explicit finite-zero constructors while preserving the
+original DATE negative zero. See the
+[current profile](access/writes/NORMAL_IEEE_FIXED_UPDATE.md).
+Indexed/mixed variable IEEE writes, independent nullable transition outcomes and
+native Access save/reopen remain separate work.
+
 ## Normal single-Int32 ignored-NULL UPDATE
 
 Normal fixed UPDATE now maintains qualified manual Int32 secondary root leaves

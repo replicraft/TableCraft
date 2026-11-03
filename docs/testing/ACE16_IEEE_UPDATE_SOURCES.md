@@ -24,3 +24,8 @@ command, source hashes and separate admission observations. Before execution,
 review corrected a test-only digest formatting assumption to the existing
 byte-wise hexadecimal pattern. The source files and byte laws stayed unchanged.
 Native Access save/reopen and Windows mixed-client evidence remain unrun.
+
+
+The later [ordinary IEEE service](../access/writes/NORMAL_IEEE_FIXED_UPDATE.md) now
+has separate matching write, proof, recovery and host acceptance. Those results
+follow this source prerequisite and do not change its original observations.

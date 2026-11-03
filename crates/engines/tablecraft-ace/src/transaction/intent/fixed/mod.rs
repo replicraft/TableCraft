@@ -13,3 +13,6 @@ mod tests;
 
 #[cfg(test)]
 mod ordinary_tests;
+
+#[cfg(test)]
+mod ieee_tests;

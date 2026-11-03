@@ -5,8 +5,8 @@ use crate::table::mutation::{preserved_source::Source, requests::FixedColumnUpda
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, WriteBlocker,
     format::data_type::{
-        BOOLEAN, BOOLEAN_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES, INT32,
-        INT32_BYTES, INT64, INT64_BYTES,
+        BOOLEAN, BOOLEAN_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES, DOUBLE,
+        INT32, INT32_BYTES, INT64, INT64_BYTES, SINGLE,
     },
     header::check,
     table::mutation::{field, rows},
@@ -23,15 +23,21 @@ pub(in crate::table::mutation) struct Bound {
     pub(in crate::table::mutation) width: usize,
 }
 
-fn carrier(kind: ScalarType, value: &Value) -> bool {
-    matches!(
-        (kind, value),
-        (ScalarType::Boolean, Value::Boolean(_))
-            | (ScalarType::Int32, Value::Null | Value::Int32(_))
-            | (ScalarType::Int64, Value::Null | Value::Int64(_))
-            | (ScalarType::Currency, Value::Null | Value::Currency(_))
-            | (ScalarType::DateTime, Value::Null | Value::DateTime(_))
-    )
+fn carrier(kind: ScalarType, value: &Value, ieee: bool) -> bool {
+    (ieee
+        && matches!(
+            (kind, value),
+            (ScalarType::Single, Value::Null | Value::Single(_))
+                | (ScalarType::Double, Value::Null | Value::Double(_))
+        ))
+        || matches!(
+            (kind, value),
+            (ScalarType::Boolean, Value::Boolean(_))
+                | (ScalarType::Int32, Value::Null | Value::Int32(_))
+                | (ScalarType::Int64, Value::Null | Value::Int64(_))
+                | (ScalarType::Currency, Value::Null | Value::Currency(_))
+                | (ScalarType::DateTime, Value::Null | Value::DateTime(_))
+        )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -52,6 +58,17 @@ pub(in crate::table::mutation) fn all_normal(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
     all_with_minimum(source, groups, 1, None, budget, cancelled)
+}
+
+/// Ordinary IEEE targets remain unindexed and require the same complete source.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_ieee(
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    all_with_targets(source, groups, 1, None, true, budget, cancelled)
 }
 
 #[cfg(feature = "journal")]
@@ -80,7 +97,7 @@ pub(in crate::table::mutation) fn all_i32_updates(
         return all_indexed(image, source, groups, legacy, budget, cancelled);
     }
     indexed.require_source(image, source.table.schema(), budget, cancelled)?;
-    all_with_targets(source, groups, 1, Some(indexed), budget, cancelled)
+    all_with_targets(source, groups, 1, Some(indexed), false, budget, cancelled)
 }
 
 fn all_with_minimum(
@@ -96,6 +113,7 @@ fn all_with_minimum(
         groups,
         minimum,
         indexed.map(|facts| facts as &dyn IndexTargets),
+        false,
         budget,
         cancelled,
     )
@@ -111,7 +129,7 @@ pub(in crate::table::mutation) fn all_integral(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
     indexed.require_source(image, source.table.schema(), budget, cancelled)?;
-    all_with_targets(source, groups, 1, Some(indexed), budget, cancelled)
+    all_with_targets(source, groups, 1, Some(indexed), false, budget, cancelled)
 }
 
 fn all_with_targets(
@@ -119,6 +137,7 @@ fn all_with_targets(
     groups: &[FixedColumnUpdates<'_>],
     minimum: usize,
     indexed: Option<&dyn IndexTargets>,
+    ieee: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Bound>, usize), EditError> {
@@ -172,6 +191,7 @@ fn all_with_targets(
             column,
             group.updates(),
             indexed,
+            ieee,
             budget,
             cancelled,
         )?);
@@ -189,7 +209,7 @@ pub(in crate::table::mutation) fn qualify_selected(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
-    qualify_with_indexes(source, column, updates, None, budget, cancelled)
+    qualify_with_indexes(source, column, updates, None, false, budget, cancelled)
 }
 
 fn qualify_with_indexes(
@@ -197,6 +217,7 @@ fn qualify_with_indexes(
     column: usize,
     updates: &[FixedScalarUpdate],
     indexed: Option<&dyn IndexTargets>,
+    ieee: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound, EditError> {
@@ -208,6 +229,8 @@ fn qualify_with_indexes(
         (INT64, Some(ScalarType::Int64)) => (ScalarType::Int64, INT64_BYTES),
         (CURRENCY, Some(ScalarType::Currency)) => (ScalarType::Currency, CURRENCY_BYTES),
         (DATE_TIME, Some(ScalarType::DateTime)) => (ScalarType::DateTime, DATE_TIME_BYTES),
+        (SINGLE, Some(ScalarType::Single)) if ieee => (ScalarType::Single, size_of::<u32>()),
+        (DOUBLE, Some(ScalarType::Double)) if ieee => (ScalarType::Double, size_of::<u64>()),
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
     field::fixed_column_at(schema, column, kind, width)?;
@@ -232,7 +255,7 @@ fn qualify_with_indexes(
     rows::unique(updates, budget, cancelled)?;
     for update in updates {
         check(budget, cancelled)?;
-        if !carrier(kind, update.expected()) || !carrier(kind, update.value()) {
+        if !carrier(kind, update.expected(), ieee) || !carrier(kind, update.value(), ieee) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
         if update.row() >= source.records.len() {

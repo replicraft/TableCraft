@@ -1,5 +1,5 @@
 //! Fresh content closure and independent manual fixed-record reconstruction.
-use super::{capture, preflight};
+use super::{capture, preflight_with_policy};
 use crate::{
     EditError, FixedColumnUpdates, NativeEditPlan, NativeImage,
     header::check,
@@ -17,6 +17,29 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    prove_with_policy(plan, scope, table, original, false, budget, cancelled)
+}
+
+pub(super) fn prove_ieee(
+    plan: &NativeEditPlan,
+    scope: CatalogScope,
+    table: &str,
+    original: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy(plan, scope, table, original, true, budget, cancelled)
+}
+
+fn prove_with_policy(
+    plan: &NativeEditPlan,
+    scope: CatalogScope,
+    table: &str,
+    original: &[FixedColumnUpdates<'_>],
+    ieee: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     let _span = tracing::debug_span!("native.ordinary.fixed.prove").entered();
     let image = NativeImage::capture(
         &mut Cursor::new(plan.before_bytes()),
@@ -25,13 +48,18 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = capture(&image, table, budget, cancelled)?;
-    preflight(&source, original, budget, cancelled)?;
+    preflight_with_policy(&source, original, ieee, budget, cancelled)?;
     let expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 
     // This reconstructs payloads and masks from original records and explicit
     // carriers. It consumes neither staged patches nor the producer's count.
     // Its final validation checks original properties and every AFTER byte.
-    proof::prove_original(
+    let manual_proof = if ieee {
+        proof::prove_ieee_original
+    } else {
+        proof::prove_original
+    };
+    manual_proof(
         proof::Original {
             image: &image,
             source: &source,
@@ -75,3 +103,6 @@ pub(super) fn prove(
     check(budget, cancelled)?;
     Ok(())
 }
+
+#[cfg(test)]
+mod ieee;

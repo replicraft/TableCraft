@@ -19,6 +19,27 @@ impl NativeFixedIntentGroup {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::new_with_carriers(column, updates, false, budget, cancelled)
+    }
+
+    /// Retain exact ordinary IEEE requests without qualifying a native target.
+    /// The consuming service rederives all source and field authority.
+    pub fn new_ordinary_ieee(
+        column: &str,
+        updates: Vec<FixedScalarUpdate>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_carriers(column, updates, true, budget, cancelled)
+    }
+
+    fn new_with_carriers(
+        column: &str,
+        updates: Vec<FixedScalarUpdate>,
+        ieee: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
         model::validate_name(column, budget, cancelled)?;
         if updates.len() > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
@@ -33,8 +54,13 @@ impl NativeFixedIntentGroup {
             budget
                 .charge(Resource::Steps, (carrier::WIDTH * 2) as u64)
                 .map_err(InspectError::from)?;
-            carrier::encode(update.expected())?;
-            carrier::encode(update.value())?;
+            if ieee {
+                carrier::encode_ieee(update.expected())?;
+                carrier::encode_ieee(update.value())?;
+            } else {
+                carrier::encode(update.expected())?;
+                carrier::encode(update.value())?;
+            }
         }
         let column = copy_name(column, budget)?;
         check(budget, cancelled)?;

@@ -376,3 +376,6 @@ pub mod collection_scale;
 
 /// Held genuine single-I32 IgnoreNULL UPDATE originals and independent outcomes.
 pub mod genuine_ignore_null_update;
+
+/// Qualified unchanged IEEE inputs and literal original UPDATE pairs.
+pub mod genuine_ieee_update;

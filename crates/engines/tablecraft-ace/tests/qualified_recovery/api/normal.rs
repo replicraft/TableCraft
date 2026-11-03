@@ -868,3 +868,6 @@ mod wide_ordinary_siblings;
 
 #[path = "normal/ignore_null_update.rs"]
 mod ignore_null_update;
+
+#[path = "normal/ieee_update.rs"]
+mod ieee_update;

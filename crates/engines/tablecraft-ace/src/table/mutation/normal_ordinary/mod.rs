@@ -17,7 +17,7 @@ mod retained_numeric_sources;
 mod retained_selection_tests;
 
 use crate::{
-    EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
+    EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
     header::check,
     table::mutation::{
         fixed_records::{self, binding, stage},
@@ -46,46 +46,81 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.fixed.plan").entered();
         let source = capture(&self, table, budget, cancelled)?;
-        if indexed::selected(&source, original, budget, cancelled)? {
-            if wide::selected(&source, budget, cancelled)? {
-                return wide::plan(self, source, table, original, budget, cancelled);
-            }
-            return indexed::plan(self, source, table, original, budget, cancelled);
-        }
-        preflight(&source, original, budget, cancelled)?;
-
-        let (patches, changed_rows) =
-            stage::prepare_normal(&self, &source, original, budget, cancelled)?;
-        let mut after = fixed_records::copy(self.as_bytes(), budget, cancelled)?;
-        for patch in patches {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, patch.before().len() as u64)
-                .map_err(InspectError::from)?;
-            let end = patch
-                .offset()
-                .checked_add(patch.before().len())
-                .ok_or(EditError::Preservation)?;
-            let output = after
-                .get_mut(patch.offset()..end)
-                .ok_or(EditError::Preservation)?;
-            if output != patch.before() {
-                return Err(EditError::Preservation);
-            }
-            output.copy_from_slice(patch.after());
-        }
-        validation::expected(&self, table, &source.table, &after, budget, cancelled)?;
-
-        let scope = self.catalog().catalog().scope();
-        let plan = NativeEditPlan {
-            before: self.bytes,
-            after,
-            changed_rows,
-        };
-        proof::prove(&plan, scope, table, original, budget, cancelled)?;
-        check(budget, cancelled)?;
-        Ok(plan)
+        plan(self, source, table, original, false, budget, cancelled)
     }
+
+    /// Ordinary IEEE requests retain separate target and original-intent policy.
+    pub(crate) fn plan_ordinary_ieee_updates(
+        self,
+        table: &str,
+        original: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let _span = tracing::debug_span!("native.ordinary.ieee_fixed.plan").entered();
+        let source = capture(&self, table, budget, cancelled)?;
+        plan(self, source, table, original, true, budget, cancelled)
+    }
+}
+
+fn plan(
+    image: NativeImage,
+    source: Source,
+    table: &str,
+    original: &[FixedColumnUpdates<'_>],
+    ieee: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeEditPlan, EditError> {
+    if indexed::selected(&source, original, budget, cancelled)? {
+        if ieee {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        if wide::selected(&source, budget, cancelled)? {
+            return wide::plan(image, source, table, original, budget, cancelled);
+        }
+        return indexed::plan(image, source, table, original, budget, cancelled);
+    }
+    preflight_with_policy(&source, original, ieee, budget, cancelled)?;
+
+    let (patches, changed_rows) = if ieee {
+        stage::prepare_ieee(&image, &source, original, budget, cancelled)?
+    } else {
+        stage::prepare_normal(&image, &source, original, budget, cancelled)?
+    };
+    let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
+    for patch in patches {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, patch.before().len() as u64)
+            .map_err(InspectError::from)?;
+        let end = patch
+            .offset()
+            .checked_add(patch.before().len())
+            .ok_or(EditError::Preservation)?;
+        let output = after
+            .get_mut(patch.offset()..end)
+            .ok_or(EditError::Preservation)?;
+        if output != patch.before() {
+            return Err(EditError::Preservation);
+        }
+        output.copy_from_slice(patch.after());
+    }
+    validation::expected(&image, table, &source.table, &after, budget, cancelled)?;
+
+    let scope = image.catalog().catalog().scope();
+    let plan = NativeEditPlan {
+        before: image.bytes,
+        after,
+        changed_rows,
+    };
+    if ieee {
+        proof::prove_ieee(&plan, scope, table, original, budget, cancelled)?;
+    } else {
+        proof::prove(&plan, scope, table, original, budget, cancelled)?;
+    }
+    check(budget, cancelled)?;
+    Ok(plan)
 }
 
 pub(in crate::table::mutation) fn capture(
@@ -134,7 +169,21 @@ fn preflight(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let (bound, _) = binding::all_normal(source, original, budget, cancelled)?;
+    preflight_with_policy(source, original, false, budget, cancelled)
+}
+
+fn preflight_with_policy(
+    source: &Source,
+    original: &[FixedColumnUpdates<'_>],
+    ieee: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let (bound, _) = if ieee {
+        binding::all_ieee(source, original, budget, cancelled)?
+    } else {
+        binding::all_normal(source, original, budget, cancelled)?
+    };
     for (group, selected) in original.iter().zip(bound) {
         check(budget, cancelled)?;
         for update in group.updates() {
