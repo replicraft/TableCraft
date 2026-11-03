@@ -5,6 +5,8 @@ pub(in crate::table) mod normal_binary_update;
 #[cfg(feature = "journal")]
 pub(in crate::table) mod normal_fitting;
 #[cfg(feature = "journal")]
+pub(in crate::table) mod normal_guid_update;
+#[cfg(feature = "journal")]
 pub(in crate::table) mod normal_index_audit;
 #[cfg(feature = "journal")]
 pub(in crate::table) mod normal_text_update;
@@ -28,6 +30,8 @@ mod population;
 use super::composite::DecimalValue;
 pub(in crate::table) use super::numeric::NumericKey;
 pub(in crate::table) use kind::MutationKey;
+#[cfg(feature = "journal")]
+use tablecraft_core::values::Guid;
 mod plan;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod split;
@@ -72,6 +76,26 @@ pub(in crate::table) struct IndexKeyUpdate {
     pub expected: Option<DecimalValue>,
     pub value: Option<DecimalValue>,
 }
+
+#[cfg(feature = "journal")]
+impl IndexKeyUpdate {
+    /// Canonical GUID components for the actual typed key owner. Native DATA
+    /// byte order belongs to the separate fixed-record encoder.
+    pub(in crate::table) fn canonical_guid(
+        reference: u32,
+        column: usize,
+        expected: Option<[u8; Guid::BYTE_LEN]>,
+        value: Option<[u8; Guid::BYTE_LEN]>,
+    ) -> Self {
+        Self {
+            reference,
+            column,
+            expected: expected.map(DecimalValue::Guid),
+            value: value.map(DecimalValue::Guid),
+        }
+    }
+}
+
 pub(in crate::table) struct IndexDataPatch {
     pub offset: usize,
     pub before: Vec<u8>,

@@ -1216,8 +1216,21 @@ The selected dense read path now qualifies manual single-GUID definitions and
 complete retained membership without widening integral/global/Actions families.
 All originals pass full Source; four literal I32 Score plans retain the original
 GUID data and owners. See the [bounded Source continuation](access/writes/NORMAL_RETAINED_GUID_SOURCE.md).
-The unindexed GUID continuation below supplies target width/protocol/proof;
-physical GUID key maintenance remains separate work.
+The unindexed continuation supplies target width/protocol/proof, and the
+single-GUID indexed continuation below now maintains qualified root leaves.
+Broader GUID key families remain work.
+
+## Ordinary single-GUID index UPDATE
+
+Fitting manual single-GUID root leaves now use the ordinary fixed service and
+existing TCNI10/V1 journal, retaining I32 owners and inactive NULL payloads. All
+28 ordered plans/commits and 24 distinct CLI saves match independent states;
+GUID/Score composition passes both column orders. Resources, recovery, malformed
+originals, typed saves and 25 retained functions pass. See the
+[qualified scope](access/writes/NORMAL_GUID_INDEX_UPDATE.md).
+Tuple/ignored-NULL GUID keys, broader positive constraints, NODEs, allocation and
+native Access save/reopen remain active work. Twelve fitted tuple originals read
+correctly but still refuse complete Source admission at this checkpoint.
 
 ## Ordinary unindexed GUID fixed UPDATE
 
@@ -1226,8 +1239,8 @@ independent whole-image proof, typed sessions and TCNI10 journal replay. NULL cl
 preserves inactive payload; original witnesses remain exact. Six literal outcomes
 each pass native, typed and CLI saves. See the
 [current profile](access/writes/NORMAL_GUID_FIXED_UPDATE.md).
-Physical GUID index maintenance, variable composition, generation and native
-Access save/reopen remain separate work.
+Broader index/variable composition, generation and native Access save/reopen
+remain separate work.
 
 ## Ordinary Byte/Int16 fixed UPDATE
 

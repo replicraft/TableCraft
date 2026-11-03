@@ -6,6 +6,12 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+const GUID_SEGMENT_BYTES: usize = 8;
+const GUID_CONTINUED_TAG: u8 = 9;
+const GUID_FIRST_TAG: usize = 1 + GUID_SEGMENT_BYTES;
+const GUID_LAST_TAG: usize = GUID_FIRST_TAG + 1 + GUID_SEGMENT_BYTES;
+const GUID_COMPONENT_BYTES: usize = GUID_LAST_TAG + 1;
+
 pub(super) struct Facts {
     /// Complete components plus the ROW suffix, excluding NODE child bytes.
     pub key_end: usize,
@@ -82,5 +88,47 @@ pub(super) fn inspect_width(
         key_end,
         all_null,
         any_null,
+    })
+}
+
+/// Two fixed eight-byte segments; ROW is never complemented or decoded as data.
+pub(super) fn inspect_guid(
+    entry: &[u8],
+    index: &NativeIndex,
+    leaf: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Facts, EditError> {
+    check(budget, cancelled)?;
+    let [key] = index.columns() else {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    };
+    let marker = *entry.first().ok_or(EditError::Preservation)?;
+    let (null, present, final_tag) = if key.descending() {
+        (0xff, 0x80, 0xf7)
+    } else {
+        (0, 0x7f, 8)
+    };
+    let component = if marker == null {
+        1
+    } else if marker == present
+        && entry.get(GUID_FIRST_TAG) == Some(&GUID_CONTINUED_TAG)
+        && entry.get(GUID_LAST_TAG) == Some(&final_tag)
+    {
+        GUID_COMPONENT_BYTES
+    } else {
+        return Err(EditError::Preservation);
+    };
+    let key_end = component + size_of::<u32>();
+    if entry.len() != key_end + if leaf { 0 } else { size_of::<u32>() } {
+        return Err(EditError::Preservation);
+    }
+    budget
+        .charge(Resource::Steps, entry.len() as u64)
+        .map_err(InspectError::from)?;
+    Ok(Facts {
+        key_end,
+        all_null: marker == null,
+        any_null: marker == null,
     })
 }

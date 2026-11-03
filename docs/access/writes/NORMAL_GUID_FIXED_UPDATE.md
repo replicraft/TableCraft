@@ -1,6 +1,9 @@
 # Ordinary unindexed GUID fixed updates
 
-The ordinary fixed UPDATE service carries exact GUID assignments through
+The [indexed GUID continuation](NORMAL_GUID_INDEX_UPDATE.md) shares this service
+and original request dialect under separate native index/ownership checks.
+
+The unindexed fixed UPDATE path carries exact GUID assignments through
 `plan_recoverable_ordinary_fixed_updates`, retained typed Access editing and the
 CLI's existing SQL GUID literals. `NativeFixedIntentGroup::new_ordinary_guid`
 retains original request data without admitting a native file.

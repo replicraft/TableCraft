@@ -1,5 +1,20 @@
 # Implementation status
 
+## Ordinary single-GUID index UPDATE
+
+Normal fitting GUID key updates now preserve aliases, retained I32 owners, raw
+NULL payloads, protected tails and original historical counters under complete
+native Source/ownership proof and TCNI10 replay. Twenty-eight ordered native
+commits, 28 typed and 24 distinct CLI saves match independent expected states;
+eight mixed GUID/Score cases additionally pass at each boundary. Eighteen resource
+contexts, 48 recovery states, 468 direct protected-byte forgeries and 25 retained
+functions pass, followed by strict checks. See the
+[current contract](access/writes/NORMAL_GUID_INDEX_UPDATE.md) and
+[execution record](testing/results/ace16-normal-indexed-guid-update-2026-11-03.json).
+Broader GUID constraints/tuples/omissions, NODEs, allocation and native Access
+save/reopen remain separate work. The twelve fitted GUID/Int32 tuple originals
+have passing reads and explicit current Source refusals.
+
 ## Ordinary unindexed GUID fixed UPDATE
 
 Exact 128-bit GUID values now pass through the ordinary fixed service, independent
@@ -9,8 +24,8 @@ typed and CLI saves each match literal complete-image expectations. Named GUID
 targets select the wider original-request dialect even when empty; old dialects
 remain closed. See the [current scope](access/writes/NORMAL_GUID_FIXED_UPDATE.md)
 and [execution record](testing/results/ace16-normal-guid-fixed-update-2026-11-03.json).
-Indexed GUID mutations, generation, mixed variable records and native Access
-save/reopen remain separate work.
+The single-GUID index continuation above now supplies fitting key maintenance.
+Generation, mixed variable records and native Access save/reopen remain work.
 
 ## Ordinary Source beside unchanged GUID indexes
 

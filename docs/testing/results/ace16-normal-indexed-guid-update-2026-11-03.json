@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Normal fitting manual single-GUID root-leaf UPDATE, retained I32 owners, atomic ordinary Score companion; existing TCNI10/V1",
+  "counts": {
+    "native_commits": 28,
+    "direct_positive": 28,
+    "direct_count_refusals": 28,
+    "protected_byte_forgeries": 468,
+    "public_resource_contexts": 18,
+    "cold_recovery_contexts": 48,
+    "committed_target_mismatches": 12,
+    "typed_ordered_saves": 28,
+    "cli_distinct_saves": 24,
+    "composite_guid_score_contexts_each_direct_native_typed_cli": 8,
+    "noops": 12,
+    "stales": 8,
+    "carriers": 8,
+    "indexed_i32_target_guards": 16,
+    "old_dialect_empty_guards": 12,
+    "original_malformed_preflight_guards": 28,
+    "new_matching_functions": 10,
+    "primitive_functions": 2,
+    "retained_runtime_functions": 25
+  },
+  "source_qualification": {
+    "manifest": "efb835f6b5d4f70760726dc820a6fa388ba78d72462f83586075b081422f6922",
+    "requests": 28,
+    "unique_afters": 24,
+    "native_qualified_views": 28,
+    "sdk_observations": 28,
+    "saved_sdk_artifacts": 58
+  },
+  "frozen_inputs": {
+    "production_full": "2eaebda2cbcde6ba5d1af6339e11482612e80faa2921d4bdc1f3856efc43487d",
+    "canonical_key_owner_repair": "2b8528ff212ebdb0ac09c6de2e64b07e6c83db41e1839e9f37420779f7ed6d05",
+    "shared_fixture": "fcb561810e7ab69d5b973a7f6e68ceb8d4b1a8fa45d48b99a94c5b33c85de662",
+    "shared_fixture_peer_review": "264abfabb9f41989ba99492749e9b0f6c3df22298f3bfe403eee37be19238f6c",
+    "acceptance": "1fc545bc8e0d0cdf8d4f90bb702e2bf38f752bfe1ff47829dd32dd83aff0c951",
+    "acceptance_peer_review": "95266b5c49cdaa4fce803847a5c210ffad986c60d6e1d099211a82e5d2a75df9"
+  },
+  "matching": [
+    {
+      "name": "direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "indexed_guid_literal_populations_and_protected_bytes_have_fresh_proof",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "1abcfbb01a1ae0f7fe4a794a78de63816badae7ead83de1a72480dfbb0ae55fd"
+    },
+    {
+      "name": "native",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "qualified_recovery",
+        "indexed_guid_update::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        7
+      ],
+      "log_sha256": "fbb2bc6a2e354bf0f1b97232b1c14c0713fd8b169b2232879a4599553849ab36"
+    },
+    {
+      "name": "access",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--test",
+        "genuine_indexed_guid_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "b1f32589e97b1ef4059e360e86f5e68f1dee032efbc1c65f2914e47cbff88eb6"
+    },
+    {
+      "name": "cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_indexed_guid_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "7f447bd673717f048cd165df314b9e9838b52984ad360650e7ed7d778313c2ae"
+    }
+  ],
+  "retained_and_strict": [
+    {
+      "name": "old-i32-units",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_ordinary::indexed::tests::"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        5
+      ],
+      "log_sha256": "14148db2401a2a1ba05522ceb578df080ad3dfbf6f2d717a58894048bb4380e4"
+    },
+    {
+      "name": "old-i32-resources",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_ordinary::indexed::resource_tests::"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "log_sha256": "5bff895b52419fe6a46eee1d622fef6af02ebeb63b0c648de0021d40b3b1fea4"
+    },
+    {
+      "name": "old-wide-node-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "normal_ordinary::wide::node_tests::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "log_sha256": "0c0f54c3f581966c028869ef395f26143d9e053f01afe2e98f5939c1d341cade"
+    },
+    {
+      "name": "old-i32-commit",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "indexed_normal_plans_commit_all_sixteen_literal_images_and_reverse_the_unique_swap"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "fcb0440f402aff9701a316370f526fb487f47b0f321ec2f68b157b4696834888"
+    },
+    {
+      "name": "old-i32-ties",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "nonunique_ties_and_composite_descending_tie_order_match_prequalified_literal_images"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "62e03bd0729ea2a8f722b64cf94dc7b1b9f2a2625b78e1aa768e4c8dc4a6e6ae"
+    },
+    {
+      "name": "old-wide-node-native",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "retained_numeric_updates_match_literal_images_in_both_original_orders_and_commit",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "f34da1d3753c6a281b7396924f6cdf02e666714ef15a52f01d541dd460659ed0"
+    },
+    {
+      "name": "old-wide-siblings",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "ordered_original_numeric_requests_commit_exact_companion_preserving_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "e9e7a2ebcd078147ae862ead8ee0b6ce60368d2ac11578bb5049359f4f2828fe"
+    },
+    {
+      "name": "old-omission-changes",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "single_omission_changes_and_three_distinct_empty_effect_requests_commit_exact_images",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "582b3fa3dfd049d63895221c257fcdc5f789d41d39e82bf48bbf03d04cae65d2"
+    },
+    {
+      "name": "old-omission-constraints",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "required_unique_and_both_historical_family_orders_refuse_before_a_plan_exists",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "a4b9649a629d0f745b1177eb41e0eb4b6f5d5e85681be6e87c966002d73402eb"
+    },
+    {
+      "name": "old-omission-retained",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "unindexed_marker_mutation_preserves_every_retained_ignored_owner_byte",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "904f1ef4651d4c055de9558d1ed83d565bb943dad8407d0dc038922c98cff8d5"
+    },
+    {
+      "name": "old-guid10",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::guid_update::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        6
+      ],
+      "log_sha256": "bb4f37d6e0acbfa74c7a570ac9edd6bcd2c93780f6481addecb1652d2ae4c338"
+    },
+    {
+      "name": "old-ordinary-commit",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "ordinary_public_plans_commit_literal_images_and_record_exact_original_groups"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "a693cda3d60388759a345477e9d2483b693eb4f8456ca5922b7a897fb056f058"
+    },
+    {
+      "name": "old-ordinary-resources",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "ordinary_planning_and_recovery_exact_pools_and_terminal_cancellation_precede_effects"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "fd9ec492388efefebfb2d55e5cc8154717fd927235282024cd26ad7ff7138d2b"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "954c1bacdb3cba3cdd1edcb2d5ddf195b28b9c0625b3bbe79ee04491523237f6"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "minimal_profiles": [
+    {
+      "name": "reader",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "ac44d30338a8a5bf83ddabc6f0097e62ecfe3684f8b548217708fa5c4afea493"
+    },
+    {
+      "name": "journal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "journal"
+      ],
+      "exit": 0,
+      "log_sha256": "491122188b2b2065ce088866081113343797475bb651a72f308b64e3620bfd1b"
+    },
+    {
+      "name": "preview",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "ace16-write-preview"
+      ],
+      "exit": 0,
+      "log_sha256": "b158b6c13f9e72a524a679768478b348fdd82fbf1f501934b7bec67d77d72cc1"
+    }
+  ],
+  "primitive": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary::guid::proof::keys::tests"
+    ],
+    "exit": 0,
+    "passed_functions": 2,
+    "log_sha256": "9df819764a4c65f9b1dc4481e65f74680c58c672b249115b4cdea445116736ab"
+  },
+  "first_compile_attempt": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary::guid::proof::keys::tests"
+    ],
+    "exit": 101,
+    "passed_functions": 0,
+    "log_sha256": "13bf5e1614de125ad965d55049c5da4ba924c835df0a50c7f39793505f0fcabb",
+    "error": "E0603 private indexes::composite import in new guid.rs; no tests executed; awaiting narrow owning-key construction successor.",
+    "resolution": "Repaired by the canonical-key owner constructor; the follow-up compilation and 2 primitive functions passed."
+  },
+  "other_checks": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": 17
+    }
+  ],
+  "verification_notes": [
+    "First primitive compilation failed E0603 before tests because the new caller named a private indexes::composite type. A real canonical-GUID constructor on IndexKeyUpdate repaired the owner boundary without widening visibility, reexports, byte-order conversion, protocol or mutation scope.",
+    "Preexecution review replaced an inaccessible constraint helper with independent Required/UNIQUE rules, added conservative new GUID work precharges, imported Guid normally and kept BytePatch in scope for trait methods. Later acceptance review made native readback consume actual saved Storage bytes; no runtime oracle retuning occurred.",
+    "The separately committed shared testkit extraction preserves 12 raw helpers,24 literal AFTER specs and actual Source/API glue; one identical immutable expected-image assertion moved to once-only eager loading. Three existing read/Source/Score functions pass in its record.",
+    "The 25 retained functions exercise affected old I32 definition/ownership/proof/resource branches, numeric NODEs, omission constraints and retained owners, old unindexed GUID10 and original 8-byte fixed paths. Unchanged source qualification, primitive and minimal checks were not rerun solely for formatting.",
+    "Eight GUID+Score expected states are composed in memory from a qualified GUID AFTER plus the independently qualified 4-byte Score span. They have no additional SDK interpretation claim. Native 28/typed 28 ordered principal requests are distinct; CLI runs 24 unique SQL saves, with 8 mixed saves separately at each boundary.",
+    "Known Required/UNIQUE/primary GUID metadata is checked structurally, but the positive mutation corpus in this record is nullable nonunique secondary GUID indexes. The malformed page-role controls do not qualify a live-LVAL overlap fixture."
+  ],
+  "qualification": "Normal unencoded fitting manual single-GUID root-leaf updates with retained I32 owners and unindexed fixed companions. Broader GUID schemas, UNIQUE/Required/primary positive source qualification, tuples, IgnoreNULL, NODEs, allocation and mutable I32+GUID composition remain active backend work. Native Microsoft Access save/reopen, Windows/mixed-client and physical power-loss comparisons remain unrun.",
+  "verification_environment": "Local macOS/aarch64, pinned Rust 1.99, locked/offline Cargo. Other platforms and native Microsoft Access comparisons were not run."
+}

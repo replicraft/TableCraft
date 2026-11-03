@@ -235,7 +235,7 @@ fn cell(value: &Value) -> Result<Option<i32>, EditError> {
     }
 }
 
-fn apply(
+pub(super) fn apply(
     output: &mut [u8],
     offset: usize,
     before: &[u8],

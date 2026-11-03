@@ -72,7 +72,10 @@ fitting Int64/Currency root leaves under its own complete schema/index checks.
 
 Manual single-GUID indexes also have a separate
 [readonly Source continuation](NORMAL_RETAINED_GUID_SOURCE.md), with exact
-unrelated I32 Score plans. This supplies no GUID target or save qualification.
+unrelated I32 Score plans. That read-only proof supplies no mutation permission.
+The separate [normal GUID index writer](NORMAL_GUID_INDEX_UPDATE.md) now qualifies
+fitting single-GUID root leaves, retained I32 owners and unindexed companions,
+with exact TCNI10 native/typed/CLI saves and independent complete-image proof.
 
 A separate [target-table program absence profile](NATIVE_TARGET_PROGRAM_ABSENCE.md)
 now admits the exact native seventeen-field catalog through a strict conjunction:

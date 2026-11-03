@@ -2,6 +2,9 @@
 
 [Table consistency checks](../NATIVE_CHECKS.md) combine complete sequential reads
 with every qualified index and report unverified profiles explicitly.
+Normal [single-GUID root-leaf updates](../writes/NORMAL_GUID_INDEX_UPDATE.md)
+use a separate checked writer, complete ownership and independent native proof;
+read inspection alone grants no mutation permission.
 
 Each logical index's at-most-ten key columns now use private inline ArrayVec
 storage. The public column slice, native key order, raw flags and qualification

@@ -8,7 +8,7 @@ use crate::{
     EditError, InspectError, NativeColumn, NativeImage, NativeIndex, WriteBlocker,
     format::{
         allocation,
-        data_type::{CURRENCY, INT64},
+        data_type::{CURRENCY, GUID, INT64},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::PAGE_BYTES,
         reader::Reader,
@@ -20,10 +20,13 @@ use crate::{
         page::{ENTRY_START, LEAF, NODE, PAGE_VERSION},
     },
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Guid,
+};
 
 const MASK_START: usize = size_of::<IndexHeader>();
-const COMPONENT_BYTES: usize = size_of::<u8>() + size_of::<i32>();
+const GUID_COMPONENT_BYTES: usize = size_of::<u8>() + Guid::BYTE_LEN + 2 * size_of::<u8>();
 const REFERENCE_BYTES: usize = size_of::<u32>();
 
 pub(super) struct Node {
@@ -45,11 +48,26 @@ struct Link {
     next: u32,
 }
 
+#[derive(Clone, Copy)]
+enum Component {
+    Integral(usize),
+    Guid,
+}
+
+impl Component {
+    fn bytes(self) -> usize {
+        match self {
+            Self::Integral(width) => size_of::<u8>() + width,
+            Self::Guid => GUID_COMPONENT_BYTES,
+        }
+    }
+}
+
 struct Capture<'image, 'index, 'budget> {
     image: &'image NativeImage,
     index: &'index NativeIndex,
     owner: u32,
-    value_bytes: usize,
+    component: Component,
     retained_integral: bool,
     owned: &'index [u32],
     visited: Vec<u32>,
@@ -75,6 +93,60 @@ impl Tree {
             budget,
             cancelled,
         )
+    }
+
+    pub(super) fn capture_guid(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        field: &NativeColumn,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        if field.native_type() != GUID
+            || field.scalar_type() != Some(tablecraft_schema::ScalarType::Guid)
+            || !field.fixed()
+            || field.storage_length() != Guid::BYTE_LEN
+            || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+            || field.extended_flags() != 0
+            || field.complex_type_id().is_some()
+            || index.columns().len() != 1
+            || index.columns()[0].number() != field.number()
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        let mut input = image.reader();
+        let mut reader = Reader {
+            source: &mut input,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        let raw = reader.page(index.root_page())?;
+        reader.work(size_of::<IndexHeader>())?;
+        let header = IndexHeader::read(&raw)?;
+        if header.kind != LEAF
+            || !header.qualified_for_update(0)
+            || header.previous.get() != 0
+            || header.next.get() != 0
+            || header.tail.get() != 0
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        let tree = Self::capture_component(
+            image,
+            index,
+            owner,
+            Component::Guid,
+            false,
+            budget,
+            cancelled,
+        )?;
+        if !tree.root.children.is_empty() || tree.pages != [index.root_page()] {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        Ok(tree)
     }
 
     pub(super) fn capture_integral(
@@ -139,6 +211,26 @@ impl Tree {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_component(
+            image,
+            index,
+            owner,
+            Component::Integral(value_bytes),
+            retained_integral,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_component(
+        image: &NativeImage,
+        index: &NativeIndex,
+        owner: u32,
+        component: Component,
+        retained_integral: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let mut source = image.reader();
         let owned = allocation::pages(
             &mut Reader {
@@ -159,7 +251,7 @@ impl Tree {
             image,
             index,
             owner,
-            value_bytes,
+            component,
             retained_integral,
             owned: &owned,
             visited,
@@ -247,7 +339,7 @@ impl Capture<'_, '_, '_> {
         }
         let leaf = header.kind == LEAF;
         let prefix = usize::from(header.prefix.get());
-        if self.value_bytes == size_of::<i64>()
+        if matches!(self.component, Component::Integral(width) if width == size_of::<i64>())
             && !self.retained_integral
             && (!leaf || depth != 0 || prefix != 0)
         {
@@ -257,11 +349,7 @@ impl Capture<'_, '_, '_> {
             .index
             .columns()
             .len()
-            .checked_mul(if self.value_bytes == size_of::<i32>() {
-                COMPONENT_BYTES
-            } else {
-                size_of::<u8>() + self.value_bytes
-            })
+            .checked_mul(self.component.bytes())
             .and_then(|bytes| bytes.checked_add(REFERENCE_BYTES))
             .ok_or(InspectError::StructureLimit)?;
         let maximum_width = key_bytes
@@ -305,17 +393,21 @@ impl Capture<'_, '_, '_> {
                 entry.extend_from_slice(first.get(..shared).ok_or(EditError::Preservation)?);
             }
             entry.extend_from_slice(&raw[ENTRY_START + last..ENTRY_START + bit]);
-            let facts = if self.value_bytes == size_of::<i32>() {
-                atoms::inspect(&entry, self.index, leaf, self.budget, self.cancelled)?
-            } else {
-                atoms::inspect_width(
+            let facts = match self.component {
+                Component::Integral(width) if width == size_of::<i32>() => {
+                    atoms::inspect(&entry, self.index, leaf, self.budget, self.cancelled)?
+                }
+                Component::Integral(width) => atoms::inspect_width(
                     &entry,
                     self.index,
                     leaf,
-                    self.value_bytes,
+                    width,
                     self.budget,
                     self.cancelled,
-                )?
+                )?,
+                Component::Guid => {
+                    atoms::inspect_guid(&entry, self.index, leaf, self.budget, self.cancelled)?
+                }
             };
             if let Some(previous) = entries.last() {
                 self.budget
