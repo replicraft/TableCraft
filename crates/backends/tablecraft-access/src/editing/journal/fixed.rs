@@ -130,8 +130,10 @@ impl NativeJournalEditor {
                 && matches!(kind, ScalarType::Single | ScalarType::Double);
             let small_integer = self.route == JournalRoute::Ordinary
                 && matches!(kind, ScalarType::Byte | ScalarType::Int16);
+            let guid = self.route == JournalRoute::Ordinary && kind == ScalarType::Guid;
             if !ieee
                 && !small_integer
+                && !guid
                 && !matches!(
                     kind,
                     ScalarType::Boolean
@@ -163,7 +165,12 @@ impl NativeJournalEditor {
                 if requests.iter().any(|request| request.row() == ordinal) {
                     return Err(NativeEditError::Unsupported.into());
                 }
-                let (expected, replacement) = if small_integer {
+                let (expected, replacement) = if guid {
+                    (
+                        guid_scalar(original, kind)?,
+                        guid_scalar(update.value(), kind)?,
+                    )
+                } else if small_integer {
                     (
                         small_integer_scalar(original, kind)?,
                         small_integer_scalar(update.value(), kind)?,
@@ -179,7 +186,14 @@ impl NativeJournalEditor {
                 requests.push(FixedScalarUpdate::new(ordinal, expected, replacement));
                 rows.push(ordinal);
             }
-            let group = if small_integer {
+            let group = if guid {
+                NativeFixedIntentGroup::new_ordinary_guid(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if small_integer {
                 NativeFixedIntentGroup::new_ordinary_scalar(
                     target.name(),
                     requests,
@@ -209,6 +223,14 @@ impl NativeJournalEditor {
         };
         Ok((plan, matched))
     }
+}
+
+fn guid_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+    Ok(match (kind, value) {
+        (ScalarType::Guid, Value::Guid(value)) => Value::Guid(*value),
+        (ScalarType::Guid, Value::Null) => Value::Null,
+        _ => return Err(NativeEditError::Unsupported),
+    })
 }
 
 fn small_integer_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {

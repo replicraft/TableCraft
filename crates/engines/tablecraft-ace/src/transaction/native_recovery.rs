@@ -137,7 +137,8 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
         (
             NativeUpdateProfile::Ace16OrdinaryFixed
             | NativeUpdateProfile::Ace16OrdinaryIeeeFixed
-            | NativeUpdateProfile::Ace16OrdinaryScalarFixed,
+            | NativeUpdateProfile::Ace16OrdinaryScalarFixed
+            | NativeUpdateProfile::Ace16OrdinaryGuidFixed,
             NativeUpdateBody::Fixed(original),
         ) => {
             check(budget, cancelled)?;
@@ -149,7 +150,9 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
                 cancelled,
             )?;
             let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan = if profile == NativeUpdateProfile::Ace16OrdinaryScalarFixed {
+            let plan = if profile == NativeUpdateProfile::Ace16OrdinaryGuidFixed {
+                image.plan_ordinary_guid_updates(original.table(), &groups, budget, cancelled)?
+            } else if profile == NativeUpdateProfile::Ace16OrdinaryScalarFixed {
                 image.plan_ordinary_scalar_updates(original.table(), &groups, budget, cancelled)?
             } else if profile == NativeUpdateProfile::Ace16OrdinaryIeeeFixed {
                 image.plan_ordinary_ieee_updates(original.table(), &groups, budget, cancelled)?

@@ -19,3 +19,6 @@ mod ieee_tests;
 
 #[cfg(test)]
 mod scalar_tests;
+
+#[cfg(test)]
+mod guid_tests;

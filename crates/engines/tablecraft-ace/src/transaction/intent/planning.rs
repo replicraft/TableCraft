@@ -113,6 +113,9 @@ impl NativeImage {
             FixedCarriers::Scalar => {
                 self.plan_ordinary_scalar_updates(table, &borrowed, budget, cancelled)?
             }
+            FixedCarriers::Guid => {
+                self.plan_ordinary_guid_updates(table, &borrowed, budget, cancelled)?
+            }
         };
         drop(borrowed);
         let original =
@@ -121,6 +124,7 @@ impl NativeImage {
             FixedCarriers::Legacy => NativeUpdateIntent::from_ordinary_fixed(original),
             FixedCarriers::Ieee => NativeUpdateIntent::from_ordinary_ieee_fixed(original),
             FixedCarriers::Scalar => NativeUpdateIntent::from_ordinary_scalar_fixed(original),
+            FixedCarriers::Guid => NativeUpdateIntent::from_ordinary_guid_fixed(original),
         };
         Ok(RecoverableNativeEditPlan { plan, intent })
     }

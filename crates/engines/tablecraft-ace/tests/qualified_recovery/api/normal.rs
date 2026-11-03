@@ -874,3 +874,6 @@ mod ieee_update;
 
 #[path = "normal/byte_int16_update.rs"]
 mod byte_int16_update;
+
+#[path = "normal/guid_update.rs"]
+mod guid_update;

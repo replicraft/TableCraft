@@ -1,5 +1,17 @@
 # Implementation status
 
+## Ordinary unindexed GUID fixed UPDATE
+
+Exact 128-bit GUID values now pass through the ordinary fixed service, independent
+native DATA reconstruction, retained typed sessions and checked TCNI10 replay.
+NULL clear preserves inactive bytes; expected values remain exact. Six native,
+typed and CLI saves each match literal complete-image expectations. Named GUID
+targets select the wider original-request dialect even when empty; old dialects
+remain closed. See the [current scope](access/writes/NORMAL_GUID_FIXED_UPDATE.md)
+and [execution record](testing/results/ace16-normal-guid-fixed-update-2026-11-03.json).
+Indexed GUID mutations, generation, mixed variable records and native Access
+save/reopen remain separate work.
+
 ## Ordinary Source beside unchanged GUID indexes
 
 Selected manual single-GUID keys now qualify through the retained scalar read

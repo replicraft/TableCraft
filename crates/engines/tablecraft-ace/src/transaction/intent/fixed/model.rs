@@ -55,6 +55,16 @@ impl NativeFixedIntentGroup {
         )
     }
 
+    /// Retain canonical GUID and cumulative fixed carriers as original data only.
+    pub fn new_ordinary_guid(
+        column: &str,
+        updates: Vec<FixedScalarUpdate>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_carriers(column, updates, carrier::Carriers::Guid, budget, cancelled)
+    }
+
     fn new_with_carriers(
         column: &str,
         updates: Vec<FixedScalarUpdate>,
@@ -74,10 +84,10 @@ impl NativeFixedIntentGroup {
                 return Err(InspectError::StructureLimit.into());
             }
             budget
-                .charge(Resource::Steps, (carrier::WIDTH * 2) as u64)
+                .charge(Resource::Steps, (carriers.width() * 2) as u64)
                 .map_err(InspectError::from)?;
-            carriers.encode(update.expected())?;
-            carriers.encode(update.value())?;
+            carriers.validate(update.expected())?;
+            carriers.validate(update.value())?;
         }
         let column = copy_name(column, budget)?;
         check(budget, cancelled)?;
@@ -108,6 +118,9 @@ pub struct NativeFixedEditIntent {
 impl NativeFixedEditIntent {
     /// Maximum encoded data record for this explicitly bounded request profile.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
+
+    /// Maximum cumulative GUID original record; legacy fixed limits stay closed.
+    pub const MAX_GUID_ENCODED_BYTES: usize = codec::MAX_GUID_RECORD_BYTES;
 
     /// Bind moved original requests to exact bytes; this does not qualify a file.
     pub fn new(

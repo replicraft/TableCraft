@@ -69,6 +69,9 @@ remains historical evidence.
 The later [Byte/Int16 continuation](../access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
 adds the cumulative TCNI9 dialect and a third complete literal golden to this
 same owner. Existing TCNI4/8 bytes and consumers retain their closed vocabulary.
+The [GUID continuation](../access/writes/NORMAL_GUID_FIXED_UPDATE.md) adds TCNI10
+with canonical 17-byte cells and a fourth whole literal golden. Native DATA
+permutation is independent of these original-request bytes.
 
 The independent `fixtures::access::{complex_schema, attachments,
 attachment_modern}` modules own the existing raw collection builders. Engine,

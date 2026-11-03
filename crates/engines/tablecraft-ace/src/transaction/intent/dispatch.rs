@@ -25,6 +25,8 @@ pub enum NativeUpdateProfile {
     Ace16OrdinaryIeeeFixed,
     /// Cumulative ordinary fixed cells, including native Byte and Int16.
     Ace16OrdinaryScalarFixed,
+    /// Cumulative ordinary fixed requests with canonical sixteen-byte GUIDs.
+    Ace16OrdinaryGuidFixed,
     /// Ordinary ACE16 fitting variable requests with optional fixed groups.
     Ace16OrdinaryFitted,
     /// Explicit ordinary growth within existing owned DATA capacity; no EOF growth.
@@ -45,7 +47,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed column groups for TCNI0003, TCNI0004, TCNI0008 or TCNI0009.
+    /// Original ordered fixed column groups for TCNI0003, TCNI0004, TCNI0008, TCNI0009 or TCNI0010.
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
@@ -58,12 +60,14 @@ pub enum NativeUpdateBody {
 impl NativeUpdateIntent {
     /// Maximum of the implemented closed data records, for bounded host capture.
     pub const MAX_ENCODED_BYTES: usize = if NativeFittedEditIntent::MAX_ENCODED_BYTES
-        > NativeFixedEditIntent::MAX_ENCODED_BYTES
+        > NativeFixedEditIntent::MAX_GUID_ENCODED_BYTES
         && NativeFittedEditIntent::MAX_ENCODED_BYTES > NativeInt32EditIntent::MAX_ENCODED_BYTES
     {
         NativeFittedEditIntent::MAX_ENCODED_BYTES
-    } else if NativeFixedEditIntent::MAX_ENCODED_BYTES > NativeInt32EditIntent::MAX_ENCODED_BYTES {
-        NativeFixedEditIntent::MAX_ENCODED_BYTES
+    } else if NativeFixedEditIntent::MAX_GUID_ENCODED_BYTES
+        > NativeInt32EditIntent::MAX_ENCODED_BYTES
+    {
+        NativeFixedEditIntent::MAX_GUID_ENCODED_BYTES
     } else {
         NativeInt32EditIntent::MAX_ENCODED_BYTES
     };
@@ -107,6 +111,13 @@ impl NativeUpdateIntent {
     pub(super) fn from_ordinary_scalar_fixed(original: NativeFixedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16OrdinaryScalarFixed,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
+    pub(super) fn from_ordinary_guid_fixed(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16OrdinaryGuidFixed,
             body: NativeUpdateBody::Fixed(original),
         }
     }
@@ -257,6 +268,9 @@ impl NativeUpdateIntent {
             (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryScalarFixed) => {
                 original.encode_scalar(budget, cancelled)
             }
+            (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryGuidFixed) => {
+                original.encode_guid(budget, cancelled)
+            }
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16OrdinaryFitted) => {
                 original.encode(budget, cancelled)
             }
@@ -308,6 +322,13 @@ impl NativeUpdateIntent {
             return Ok(Self::from_fitted(NativeFittedEditIntent::decode(
                 bytes, budget, cancelled,
             )?));
+        }
+        if bytes.get(..NativeFixedEditIntent::GUID_MAGIC.len())
+            == Some(NativeFixedEditIntent::GUID_MAGIC.as_slice())
+        {
+            return Ok(Self::from_ordinary_guid_fixed(
+                NativeFixedEditIntent::decode_guid(bytes, budget, cancelled)?,
+            ));
         }
         if bytes.get(..NativeFixedEditIntent::SCALAR_MAGIC.len())
             == Some(NativeFixedEditIntent::SCALAR_MAGIC.as_slice())
