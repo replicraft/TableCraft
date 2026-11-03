@@ -26,7 +26,8 @@ must remain stable/offline throughout the operation.
 
 The 100-value-per-parent multivalue policy remains unchanged. Attachment payload
 and codec limits remain separate. History retains stored order and exact DATE
-bits; this supplies no history SQL representation, sorting or latest-value rule.
+bits. Its bounded [stored-history query view](STORED_HISTORY_QUERIES.md) remains
+separate from native Access SQL equivalence, sorting or latest-value rules.
 Larger limits do not qualify calculated values or permit writes.
 
 `NativeSource::new_with_snapshot_limits` now applies those limits to explicitly
@@ -55,7 +56,9 @@ tablecraft query run 'SELECT Count(Numbers.Value) FROM ManyParents' \
 Buffered `rows --collections` and `--multivalues` now accept the explicit native
 controls described below. Their defaults, inspection and legacy engine entry
 points retain the default complete-collection limits. Scalar `rows --stream`
-does not become a collection stream. SQL history access remains unfinished.
+does not become a collection stream. Bounded stored-history member queries use
+their [separate contract](STORED_HISTORY_QUERIES.md); native Access SQL equivalence
+remains unqualified.
 
 ## Evidence and limits
 
@@ -189,3 +192,22 @@ orphans outside the displayed range, typed attachment/history pages and every
 observed successful cancellation checkpoint. A browser test proves budgets stay
 cumulative across pages; a CLI test checks rendered equivalence and pre-I/O range
 validation. These do not qualify live-file coherence or native Access SQL.
+
+## Source-bound selected-parent scale acceptance
+
+The real multivalue, attachment and stored-history readers now have sampled
+acceptance on the retained ACE16 originals: 20,000 sparse parents/48,000 values,
+400 dense parents/40,000 values, and 20,000 attachment/history members. Early,
+late and empty parents match independent recipes and labelled full-reader parity;
+full-reader counts are checked before comparing member pairs. The actual browser
+consumers retain their source, namespace and original cumulative allowances.
+
+Five engine and three browser functions pass, including explicit directory caps,
+the 101-value refusal, exact selected payloads and terminal cumulative Rows
+exhaustion. Native work uses 256 MiB/1,000,000 Rows/100,000,000 Steps; explicit
+attachment decoding has a separate named allowance. Defaults are unchanged.
+The [acceptance record](../../testing/results/lazy-collection-scale-2026-11-02.json)
+retains first compile/lint failures and syntax-only corrections.
+
+Each expansion still repeats the complete key census. These samples do not prove
+all-parent expansion, throughput, live-file coherence or native Access equivalence.

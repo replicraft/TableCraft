@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "Selected-parent multivalue/attachment/history scale acceptance passed on retained ACE16 originals; no production behavior or default limit change.",
+  "runtime": {
+    "engine_functions": 5,
+    "access_functions": 3,
+    "total_unique_functions": 8,
+    "results": [
+      {
+        "name": "engine-scale-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-ace",
+          "--test",
+          "collection_reader_scale",
+          "--locked",
+          "--offline",
+          "--",
+          "--ignored",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        "returncode": 0,
+        "seconds": 4.290926582994871,
+        "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/resumed-second/engine-scale-first.log",
+        "log_sha256": "69b272ab630eaf62a2ad81c4b79ee09eb7445dcfb1ac86219aa7930577e5f79f"
+      },
+      {
+        "name": "access-scale-first",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-access",
+          "--test",
+          "collection_reader_scale",
+          "--locked",
+          "--offline",
+          "--",
+          "--ignored",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        "returncode": 0,
+        "seconds": 9.259798582992516,
+        "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/resumed-second/access-scale-first.log",
+        "log_sha256": "5cf47d3a22ec0fe9e61175d9deb94ea600783e6bcb63935484fa98ef0c4b1b65"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "testkit-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-testkit",
+        "--lib",
+        "--features",
+        "ace-support",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 3.185014917049557,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/testkit-strict-first.log",
+      "log_sha256": "53d4415e1e7bcff01dfe611440b1c7cea9fc78054547f98ce23909765b5c990c"
+    },
+    {
+      "name": "ace-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "collection_reader_scale",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 4.451685082982294,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/ace-strict-first.log",
+      "log_sha256": "51539d2d26d6a8b11f77647ac176c6e2d37e275f5e5f75fd7747a1f5842212eb"
+    },
+    {
+      "name": "access-strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-access",
+        "--test",
+        "collection_reader_scale",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 4.516503875027411,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/access-strict-first.log",
+      "log_sha256": "e4341e489f8571fb18bcaf2079fdac32ed083f16c7d3aed2e6148369daac5586"
+    },
+    {
+      "name": "testkit-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--lib",
+        "--no-default-features",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 0,
+      "seconds": 1.2866188329644501,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/testkit-minimal-first.log",
+      "log_sha256": "a5b16b3b2c358a7f496a19f0af7e894195a267c346b3df461e7bbd428ebd6dd9"
+    },
+    {
+      "name": "testkit-ace-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace-support",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 0,
+      "seconds": 1.6021965000545606,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/testkit-ace-minimal-first.log",
+      "log_sha256": "b30dc709cf6da33366f6af4a5143fff1fb5eb86a9efd2f37d13c31fe68e47676"
+    },
+    {
+      "name": "backend-minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 0,
+      "seconds": 0.4468613750068471,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/backend-minimal-first.log",
+      "log_sha256": "d942f279d75d0268d417c86e238e5e34c9a4656586188688f7bf02255c71a1bd"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.08722641703207046,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/boundaries-first.log",
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "boundary-tests-first",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.1370244169374928,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/boundary-tests-first.log",
+      "log_sha256": "7a0e36a08118a05887e1da5a6e3b8f5bcb876c20b36af37c589f839117d3eeb3"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 8.32403333298862,
+      "log": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/strict-resumed-third/format-first.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputs": [
+    {
+      "path": ".cache/tablecraft-fixtures/large-collections/collections-V2016.accdb",
+      "sha256": "3024aeb7ffd25831245d8ab3407bf03c80ad1fd367d6bd35ae09cb60415fd459",
+      "unchanged_after_execution": true
+    },
+    {
+      "path": ".cache/tablecraft-fixtures/large-stored-objects/stored-V2016.accdb",
+      "sha256": "49877cf2cd236cb602dc1eaf2598d0fac81f0caeced02a137f3f48bb3db8d60c",
+      "unchanged_after_execution": true
+    }
+  ],
+  "caps": {
+    "native": {
+      "allocation_bytes": 268435456,
+      "rows": 1000000,
+      "steps": 100000000
+    },
+    "explicit_attachment_decoder": {
+      "allocation_bytes": 4194304,
+      "rows": 1000,
+      "steps": 10000000
+    }
+  },
+  "populations": {
+    "ManyParents": {
+      "parents": 20000,
+      "children": 48000
+    },
+    "ManyChildren": {
+      "parents": 400,
+      "children": 40000
+    },
+    "ManyFiles_and_Histories": {
+      "stored_members_per_collection": 20000
+    }
+  },
+  "observations": [
+    "Independent recipe values, metadata, DATE bits, encoded payload and full-reader parity for selected early/late/empty parents.",
+    "Complete directory caps and 101-member multivalue refusal remain; supplied larger limits do not change defaults.",
+    "Original cumulative Rows exhaustion makes the reader terminal, including an empty selected parent after complete-key refresh; owned prior results remain usable.",
+    "Actual browser APIs retain original source/scope/budget with no cache/namespace substitution."
+  ],
+  "preserved_failures": [
+    {
+      "receipt": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/driver-first.json",
+      "sha256": "78c6c72633f10e6a0db912e495bb4c6376fe05085f36d6725adee5f7635c8363",
+      "cause": "NativeRowReference deliberately has equality but no Debug; changed only three assertion forms"
+    },
+    {
+      "receipt": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/resumed-second/driver-first.json",
+      "sha256": "9f8bc4020d9a3fc71cefb858139a2113cf26d6d66d7f003beb772e5cff81fbd5",
+      "cause": "two manual_is_multiple_of lints; unsigned divisibility syntax only corrected"
+    }
+  ],
+  "corrections": [
+    "Three NativeRowReference equality assertions changed form because the identity deliberately lacks Debug; equalities themselves unchanged.",
+    "Two unsigned divisibility expressions use is_multiple_of; byte-exact inverse confirms identical model logic. Eight runtime successes retained after lint-only correction."
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-collection-scale-next-20261102/root-execution-first/terminal-combined-first.json",
+      "bytes": 9285,
+      "sha256": "ae32f39a4ca1963d4595ad9784d5868657e47614dcbb1d21f4c25bf638b015bd"
+    },
+    {
+      "path": ".cache/ace16-lazy-collection-scale-next-20261102/acceptance-draft/parity-count-successor/successor-checkpoint.json",
+      "bytes": 5074,
+      "sha256": "1795e64d6cb92470b970db1d1b91026c8b9abb9e868616d69eed2b5a4100b5c7"
+    },
+    {
+      "path": ".cache/ace16-lazy-collection-scale-next-20261102/VALUE_SEMANTICS_SCALE_SUCCESSOR_REVIEW_FIRST.json",
+      "bytes": 1076,
+      "sha256": "e9f3d381bd888f3776f31ca50d614c5202d01434c5edeb3fff3f78482774fc7c"
+    },
+    {
+      "path": ".cache/ace16-lazy-collection-scale-next-20261102/RUNTIME_MATRIX.md",
+      "bytes": 5215,
+      "sha256": "b01531a178c620e97d7d2bc3ab1007c1c670ccfdfbbd55271d3f859ab2a67ebf"
+    }
+  ],
+  "limitations": [
+    "Sampling qualification, not all-parent expansion or million-row throughput.",
+    "Every expansion still rechecks complete metadata and key membership.",
+    "Stable/offline sources; no concurrent Access coherence.",
+    "Native Access comparison remains unrun."
+  ]
+}
