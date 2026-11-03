@@ -1,4 +1,4 @@
-//! Read-only integral and action Binary/General Text indexes; no mutation authority.
+//! Complete readonly scalar indexes; GUID remains dense UPDATE Source only.
 mod ownership;
 use super::{ColumnFraming, ReadProfile, RetainedKeys};
 use crate::{
@@ -7,19 +7,34 @@ use crate::{
     format::{
         allocation,
         data_type::{
-            BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS,
-            SHORT_BINARY, SHORT_TEXT,
+            BYTE, CURRENCY, GUID, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES,
+            MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT,
         },
-        layout::UPDATABLE_FLAG,
+        layout::{FIXED_FLAG, UPDATABLE_FLAG},
         reader::Reader,
     },
     header::check,
     table::{indexes::check_table_retained, mutation::lval_ownership::Inventory},
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Guid,
+};
 use tablecraft_schema::ScalarType;
 
-fn supported(field: &NativeColumn, keys: RetainedKeys) -> bool {
+fn supported(field: &NativeColumn, profile: ReadProfile) -> bool {
+    let keys = profile.keys;
+    if matches!(profile.columns, ColumnFraming::Dense)
+        && matches!(keys, RetainedKeys::Scalar)
+        && field.native_type() == GUID
+        && field.scalar_type() == Some(ScalarType::Guid)
+    {
+        return field.fixed()
+            && field.storage_length() == Guid::BYTE_LEN
+            && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+            && field.extended_flags() == 0
+            && field.complex_type_id().is_none();
+    }
     if matches!(keys, RetainedKeys::Scalar)
         && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text)
@@ -93,7 +108,10 @@ pub(super) fn qualify(
             .ok_or(InspectError::Malformed)?;
             wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
                 || matches!(keys, RetainedKeys::Scalar)
-                    && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT);
+                    && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT)
+                || matches!(framing, ColumnFraming::Dense)
+                    && matches!(keys, RetainedKeys::Scalar)
+                    && field.native_type() == GUID;
         }
     }
     if !wide {
@@ -123,7 +141,7 @@ pub(super) fn qualify(
                 .constraints()
                 .is_some_and(|constraints| !constraints.ignore_nulls())
             || field.number() != key.number()
-            || !supported(field, keys)
+            || !supported(field, profile)
         {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }

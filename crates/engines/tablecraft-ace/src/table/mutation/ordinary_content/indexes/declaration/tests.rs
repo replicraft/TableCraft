@@ -327,3 +327,97 @@ fn ignored_selected_declaration_retains_type_flags_width_and_full_alias_guards()
         ));
     }
 }
+
+#[test]
+fn selected_scalar_guid_declarations_do_not_expand_other_source_families() {
+    for header in [5, 6] {
+        for rows in [0, 2] {
+            let bytes = witness(header, 15, 16, rows);
+            let original = image(&bytes);
+            let inspection = inspect_table_indexes(
+                &mut original.reader(),
+                SCOPE,
+                "Items",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            for index in inspection.indexes() {
+                super::qualify_for(
+                    inspection.schema(),
+                    index,
+                    super::KeyFamily::SelectedScalar,
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                for family in [
+                    super::KeyFamily::GlobalInt32,
+                    super::KeyFamily::SelectedIntegral,
+                    super::KeyFamily::ActionIntegral,
+                ] {
+                    assert_refused(super::qualify_for(
+                        inspection.schema(),
+                        index,
+                        family,
+                        &mut budget(),
+                        &|| false,
+                    ));
+                }
+            }
+            super::validate_retained_updates(
+                &original,
+                inspection.schema(),
+                inspection.indexes().iter(),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(original.as_bytes(), bytes);
+        }
+    }
+    // These authored NULL/empty metadata witnesses prove only declaration
+    // isolation. They do not qualify Source or any GUID mutation target.
+}
+
+#[test]
+fn selected_scalar_guid_requires_exact_manual_width_flags_and_every_alias() {
+    for control in 0..5 {
+        let mut bytes = witness(5, 15, 16, 0);
+        match control {
+            0 => bytes[FIRST_COLUMN + 15] = 0x43,
+            1 => bytes[FIRST_COLUMN + 16] = 0x40,
+            2 => put16(&mut bytes, FIRST_COLUMN + 23, 15),
+            3 => put16(&mut bytes, FIRST_COLUMN + 23, 17),
+            4 => {
+                let physical = bytes[DEFINITION..DEFINITION + PAGE]
+                    .windows(4)
+                    .position(|word| word == [0x83, 0x07, 0, 0])
+                    .unwrap();
+                // A later foreign alias cannot hide behind an ordinary first
+                // alias that shares the same physical data number/root.
+                bytes[DEFINITION + physical + 52 + 28 + 23] = 2;
+            }
+            _ => unreachable!(),
+        }
+        let original = image(&bytes);
+        let inspection = inspect_table_indexes(
+            &mut original.reader(),
+            SCOPE,
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(matches!(
+            super::validate_retained_updates(
+                &original,
+                inspection.schema(),
+                inspection.indexes().iter(),
+                &mut budget(),
+                &|| false,
+            ),
+            Err(EditError::Unsupported(WriteBlocker::ActiveContent)),
+        ));
+    }
+}

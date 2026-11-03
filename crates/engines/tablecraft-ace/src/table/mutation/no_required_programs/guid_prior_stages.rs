@@ -1,4 +1,4 @@
-//! Actual private NoRequired helpers locate the first admission failure.
+//! Historical DenseIntegral baseline helpers, not the current GUID dispatcher trace.
 use super::{catalog, declarations, properties};
 use crate::{EditError, NativeImage, inspect_table_schema, table::mutation::ordinary_content};
 use sha2::{Digest, Sha256};
@@ -49,9 +49,10 @@ fn observe(image: &NativeImage, header: u8, table: &str) {
     ) else {
         return;
     };
-    // ID/Group/Score contain no SHORT_TEXT or SHORT_BINARY. The actual
-    // capture_updates dispatcher therefore selects DenseIntegral, before
-    // reading any declaration, and never retries DenseRetained on failure.
+    // The original baseline dispatcher selected DenseIntegral for these
+    // ID/Group/Score declarations. This probe deliberately retains that old
+    // helper branch after readonly GUID Source support selects DenseRetained.
+    // It is historical phase evidence, not a current capture_updates trace.
     assert_eq!(schema.columns().len(), 3);
     assert_eq!(
         schema
@@ -112,7 +113,7 @@ fn observe(image: &NativeImage, header: u8, table: &str) {
 }
 
 #[test]
-#[ignore = "conditional GUID admission diagnostic: four unchanged indexed originals only"]
+#[ignore = "historical DenseIntegral baseline only; use full GUID source gate for current admission"]
 fn observe_actual_no_required_prior_stages_for_existing_guid_originals() {
     let directory =
         PathBuf::from(std::env::var_os("TABLECRAFT_GUID_UPDATE_INDEX_SOURCE_DIR").unwrap());

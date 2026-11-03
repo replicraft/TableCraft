@@ -112,6 +112,11 @@ beside unindexed fixed targets, under the
 membership and distinct physical storage roles are separate required checks;
 this read qualification never grants wider indexed-target mutation.
 
+Selected dense manual single-GUID indexes now have the separate
+[complete retained Source qualification](NORMAL_RETAINED_GUID_SOURCE.md).
+All alias/membership/ownership and final absence checks remain; integral/global/
+action families and GUID mutation targets keep their own closed policies.
+
 The existing fixed DATA and fitting manual-Int32 index rules remain those in
 [ordinary fixed writes](NORMAL_ACE_ORDINARY_FIXED.md). Independent proof freshly
 recaptures BEFORE, repeats the admission conjunction and compares the complete

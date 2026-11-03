@@ -5,8 +5,8 @@ use crate::{
     format::{
         bytes::u16_at,
         data_type::{
-            BYTE, CURRENCY, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS,
-            SHORT_BINARY, SHORT_TEXT,
+            BYTE, CURRENCY, GUID, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES,
+            MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT,
         },
         layout::{self, UPDATABLE_FLAG},
         page::PAGE_BYTES,
@@ -18,7 +18,10 @@ use crate::{
         NUMBER_OFFSET, PHYSICAL_BYTES, ROOT_OFFSET, TYPE_OFFSET, UNUSED_COLUMN, USAGE_OFFSET,
     },
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Guid,
+};
 use tablecraft_schema::ScalarType;
 
 const PHYSICAL_MAGIC: u32 = 1923;
@@ -326,6 +329,9 @@ fn qualify_for(
         KeyFamily::ActionIntegral | KeyFamily::SelectedScalar
     ) && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text);
+    let guid = matches!(family, KeyFamily::SelectedScalar)
+        && field.native_type() == GUID
+        && field.scalar_type() == Some(ScalarType::Guid);
     let variable = binary || text;
     let width = match (field.native_type(), field.scalar_type()) {
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
@@ -333,6 +339,7 @@ fn qualify_for(
         (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
         (INT64, Some(ScalarType::Int64)) => size_of::<i64>(),
         (CURRENCY, Some(ScalarType::Currency)) => size_of::<i64>(),
+        (GUID, Some(ScalarType::Guid)) if guid => Guid::BYTE_LEN,
         (SHORT_BINARY, Some(ScalarType::Binary)) if binary => field.storage_length(),
         (SHORT_TEXT, Some(ScalarType::Text)) if text => field.storage_length(),
         _ => return Err(refused()),
@@ -351,6 +358,9 @@ fn qualify_for(
         || constraints.ignore_nulls() && !selected_omission
         || field.number() != key.number()
         || field.storage_length() != width
+        || guid
+            && (field.flags() != (layout::FIXED_FLAG | UPDATABLE_FLAG)
+                || field.complex_type_id().is_some())
         || variable && field.fixed()
         || !variable && !field.fixed()
         || binary && !(1..=MAX_SHORT_BINARY_BYTES).contains(&width)

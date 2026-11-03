@@ -10,8 +10,9 @@ mod tests;
 use crate::{
     EditError, FileFormat, NativeImage, PayloadPresence, TableExtraCoverage, TableSchema,
     WriteBlocker,
-    format::data_type::{SHORT_BINARY, SHORT_TEXT},
+    format::data_type::{GUID, SHORT_BINARY, SHORT_TEXT},
     header::check,
+    inspect_table_indexes,
 };
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
@@ -53,6 +54,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     /// Dense native UPDATE declarations retain checked readonly scalar indexes.
+    /// This includes manual single-GUID keys under complete membership proof.
     /// This proves no mutation target; each planner still binds its actual fields.
     pub(in crate::table::mutation) fn capture_updates(
         image: &'image NativeImage,
@@ -62,13 +64,43 @@ impl<'image> NoRequiredTablePrograms<'image> {
     ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         let mut retained = false;
+        let mut guid_candidate = false;
         if schema.layout.physical_indexes != 0 {
             for field in schema.columns() {
                 check(budget, cancelled)?;
                 retained |= matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT);
+                guid_candidate |= field.native_type() == GUID;
             }
         }
-        // Metadata chooses a declaration attempt before reading. Integral-only
+        if !retained && guid_candidate {
+            // Only an actual GUID key selects the new readonly family. An
+            // unrelated GUID field keeps the former integral attempt/order.
+            let indexes = inspect_table_indexes(
+                &mut image.reader(),
+                image.catalog().catalog().scope(),
+                schema.name(),
+                budget,
+                cancelled,
+            )?;
+            if indexes.schema().object_id() != schema.object_id()
+                || indexes.schema().definition_page() != schema.definition_page()
+            {
+                return Err(EditError::Preservation);
+            }
+            for index in indexes.indexes() {
+                check(budget, cancelled)?;
+                for key in index.columns() {
+                    check(budget, cancelled)?;
+                    for field in schema.columns() {
+                        check(budget, cancelled)?;
+                        if field.number() == key.number() && field.native_type() == GUID {
+                            retained = true;
+                        }
+                    }
+                }
+            }
+        }
+        // Metadata chooses a declaration attempt before content admission. Integral-only
         // profiles retain their actual legacy consumer; no failure is retried.
         if !retained {
             return Self::capture(image, schema, budget, cancelled);

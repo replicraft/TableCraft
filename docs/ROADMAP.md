@@ -1210,6 +1210,14 @@ Retained NODE schemas keep their original numeric-only qualification. Qualified
 single-Int32 IgnoreNULL secondary updates now have the separate continuation
 below; broader allocation and native Access save/reopen remain work.
 
+## Source admission beside unchanged GUID keys
+
+The selected dense read path now qualifies manual single-GUID definitions and
+complete retained membership without widening integral/global/Actions families.
+All originals pass full Source; four literal I32 Score plans retain the original
+GUID data and owners. See the [bounded Source continuation](access/writes/NORMAL_RETAINED_GUID_SOURCE.md).
+GUID target width/protocol/proof and physical key maintenance remain separate work.
+
 ## Ordinary Byte/Int16 fixed UPDATE
 
 The ordinary fixed route now admits exact unindexed small integers, preserving
