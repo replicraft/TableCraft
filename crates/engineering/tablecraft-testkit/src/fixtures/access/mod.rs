@@ -384,3 +384,5 @@ pub mod genuine_ieee_update;
 pub mod genuine_byte_int16_update;
 
 pub mod genuine_guid_update;
+
+pub mod genuine_indexed_guid_update;

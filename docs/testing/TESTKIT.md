@@ -73,6 +73,15 @@ The [GUID continuation](../access/writes/NORMAL_GUID_FIXED_UPDATE.md) adds TCNI1
 with canonical 17-byte cells and a fourth whole literal golden. Native DATA
 permutation is independent of these original-request bytes.
 
+`fixtures::access::genuine_indexed_guid_update` owns shared raw GUID records,
+manual keys/bitmaps, pinned original/AFTER views and ordered request data. Its
+`raw` and `requests` modules use core carriers and independent byte rules; native
+Source and API observations stay in ACE. Three existing consumers import the
+actual owner directly. Twelve moved helpers retain their bodies and 24 literal
+AFTER specifications; the eager loader performs complete expected replay once.
+All three source/read/Score functions and strict testkit checks pass. See the
+[extraction record](results/shared-indexed-guid-fixtures-2026-11-03.json).
+
 The independent `fixtures::access::{complex_schema, attachments,
 attachment_modern}` modules own the existing raw collection builders. Engine,
 adapter and CLI tests import those owners directly. Their move preserves builder

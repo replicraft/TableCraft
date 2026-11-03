@@ -3,6 +3,7 @@
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
+- [Shared indexed GUID fixture extraction](results/shared-indexed-guid-fixtures-2026-11-03.json)
 - [Normal unindexed GUID write acceptance](results/ace16-normal-guid-fixed-update-2026-11-03.json)
 - [GUID UPDATE sources and admission](ACE16_GUID_UPDATE_ADMISSION.md)
 - [GUID/Int32 tuple UPDATE baseline](results/ace16-guid-tuple-update-baseline-2026-11-03.json)
