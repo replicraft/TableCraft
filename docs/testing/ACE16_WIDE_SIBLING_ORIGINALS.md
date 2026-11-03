@@ -40,3 +40,6 @@ TABLECRAFT_WIDE_SIBLING_ORIGINAL_DIR=/absolute/path/to/original-first \
   table::mutation::normal_ordinary_sources::wide_sibling_originals::wider_numeric_sibling_originals_have_complete_raw_read_and_canonical_source \
   -- --ignored --exact
 ```
+
+The later [independent expected-update qualification](ACE16_WIDE_SIBLING_AFTER_SOURCES.md)
+now covers AFTER construction and readback separately from write admission.

@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "Independent expected update files pass native reads/canonical Source and independent reader observations; mutation producer unchanged.",
+  "scope": "ACE16-family header5/6 Int64/Currency root-leaf keys with Boolean/Text/Binary ordinary siblings.",
+  "counts": {
+    "original_files": 2,
+    "new_expected_update_files": 16,
+    "unique_files": 18,
+    "native_table_contexts": 36,
+    "independent_fresh_read_observations": 240,
+    "reused_original_reports": 30,
+    "report_closure": 270,
+    "source_artifacts": 305,
+    "saved_read_artifacts": 482,
+    "receipt_denials": 13,
+    "raw_role_denials": 96,
+    "compiler_calls": 0,
+    "native_mutation_calls": 0
+  },
+  "requests_per_table": [
+    "MIN to zero",
+    "MAX to NULL",
+    "NULL to MIN",
+    "atomic MIN/MAX swap"
+  ],
+  "representation": {
+    "retained_original_prefix": 0,
+    "null_to_min_logical_bytes": 39,
+    "null_to_min_physical_bytes": 39,
+    "alternative_prefix_one_physical_bytes": 37,
+    "alternative_qualified": false,
+    "null_fixed_payload": "original inactive payload preserved"
+  },
+  "native_checks": [
+    {
+      "name": "native-source-first",
+      "exit": 0,
+      "passed_functions": 1,
+      "table_contexts": 36,
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/source-first.log",
+      "bytes": 571,
+      "sha256": "1cccfeed0167df6f752650c41cd4c47363ab383b8f8b8c0a141901da936a895c"
+    },
+    {
+      "name": "strict-first",
+      "exit": 101,
+      "accepted": false,
+      "reason": "needless_range_loop in independent test replay",
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/strict-first.log",
+      "bytes": 877,
+      "sha256": "cb4504711f95c7398eed090304a031dbb723fb1c0f31ec36ce99a46d9b1bed4a"
+    },
+    {
+      "name": "strict-second",
+      "exit": 0,
+      "accepted": true,
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/strict-second.log",
+      "bytes": 183,
+      "sha256": "336e0e2c03066f458c9e039dd7bc0b3922e1ebc1b1a3c7a273260f9b0efa424f"
+    },
+    {
+      "name": "native-source-after-enumerate",
+      "exit": 0,
+      "passed_functions": 1,
+      "table_contexts": 36,
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/source-second.log",
+      "bytes": 571,
+      "sha256": "9d1f9de4ae566ab35c8623cc92bdcafef86f55477ff30dd47004e0ff6e6f58e6"
+    }
+  ],
+  "corrections": [
+    "First strict Clippy failure preserved. Test-only root enumeration retains identical order, requests and expected files; affected gate and strict checks pass afterward."
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/first-complete-private-checkpoint.json",
+      "bytes": 4869,
+      "sha256": "6b28fdd283307f9fddf006d10a496cbe65d4762c53ef6d8efad451c148aa57c7"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 3213,
+      "sha256": "8005c437f838b09baf989cef28d5c279bd1fc8d433c32169712b0b0474eda420"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/retained-prefix-request-laws-first.json",
+      "bytes": 2215,
+      "sha256": "1d42250efa02dbcc2edad0aa38f128724b90e3bf82b61ccb1cc05019aed8d389"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/construction-first/result.json",
+      "bytes": 455,
+      "sha256": "ce147025b4d3deba77589cdbec37592b45632acfc68f34f17027f81c16b02d5d"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/expected-first/manifest.json",
+      "bytes": 78131,
+      "sha256": "5cb0f5c8e795f3efb29abaac04eb40366b3f16e225a7fae40f71dd5f9e9496ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/controls-first.json",
+      "bytes": 420,
+      "sha256": "7d92e8f6cfcdce7906085a0bd59563c65e9f62e2670dcdd4cbcef7414c448689"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/saved-first.json",
+      "bytes": 652,
+      "sha256": "8ac38f0348421ab4aba16de0cb041c105e3186b6be385c94ed6c1195b19321a1"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/sdk-first/precall.json",
+      "bytes": 488395,
+      "sha256": "c58ff002b06ba8f21a79a99bad22920e4a796c626f339f6a99615eb593bfa0b5"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/sdk-first/receipt.json",
+      "bytes": 354258,
+      "sha256": "d527391041cbf09d073e8cec5b2194bac1c619d1cd1de2b7d31fad5278920832"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/installation.json",
+      "bytes": 421,
+      "sha256": "409d9f308b05657ee0109e90ddef40bbe63d54dce221f7f616434cefbff7d5b0"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/enumerate-successor.json",
+      "bytes": 525,
+      "sha256": "97eede3ed7620f3480a371b7cd2acfbfa5cc76ba73fcaf76d5f2c209de7feb1c"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/results-first.json",
+      "bytes": 1331,
+      "sha256": "9ba46bfc8ed3d8bccf3845bfb08f10def75418deb724157cfc9fc8075e124f79"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/after-source/native-root-first/sdk-controller-first.log",
+      "bytes": 95,
+      "sha256": "e1ba7addf462eb6e8f6920979ad99f74e9b107370edb9279f1dc38aa16227ba6"
+    }
+  ],
+  "remaining": [
+    "target-relative wider-key mutation admission",
+    "actual commit/proof/journal/recovery/resource qualification",
+    "typed/SQL/CLI saves",
+    "native Microsoft Access save/reopen"
+  ],
+  "native_Access_save_reopen": "unrun"
+}
