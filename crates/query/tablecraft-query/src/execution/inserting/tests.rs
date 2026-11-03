@@ -305,7 +305,7 @@ fn field_identity_binding_precedes_all_values_and_preserves_written_error_order(
 }
 
 #[test]
-fn declared_non_int32_carriers_require_exact_existing_constructors() {
+fn declared_constructors_and_remaining_exact_carrier_guards_are_preserved() {
     for (kind, constructor) in [
         (ScalarType::Boolean, "CBool(7)"),
         (ScalarType::Byte, "CByte(7)"),
@@ -325,6 +325,11 @@ fn declared_non_int32_carriers_require_exact_existing_constructors() {
         let values = plan_insert(target, parsed.query(), &mut budget(), &|| false).unwrap();
         assert_eq!(ScalarType::of(&values[0]), Some(kind));
         assert_eq!(calls.get(), 1);
+
+        // Integral Currency assignment has its own shared UPDATE/INSERT cases.
+        if kind == ScalarType::Currency {
+            continue;
+        }
 
         let calls = Cell::new(0);
         let target = Target {

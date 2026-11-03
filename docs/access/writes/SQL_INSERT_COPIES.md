@@ -28,9 +28,12 @@ before one backend finish. A later expression error returns no partial candidate
 `NULL` remains distinct from the text `'null'` and the present empty text `''`.
 
 The planner shares the existing stored-scalar assignment law with SQL UPDATE:
-Int32 accepts checked integral values; other non-NULL carriers must match the
-actual declared type and constraints exactly. There is no implicit Text, decimal
-scale or floating-point conversion. The current SQL expression profile cannot
+[checked integral assignment](../../query/QUERY_EXECUTION.md#sql-stored-assignment)
+can supply Int32, Int64 and Currency targets; other non-NULL carriers must match
+the actual declared type and constraints exactly. Currency conversion scales
+whole integers exactly and refuses overflow. There is no implicit Text, decimal
+scale or floating-point conversion. The INSERT call set above remains unchanged:
+`CLngLng` is not admitted even though UPDATE supports it. The current SQL expression profile cannot
 construct every non-NULL carrier available through the
 [typed INSERT input](ENGINEERING_COPIES.md#complete-row-insert), such as arbitrary
 Binary or Extended Date/Time payloads.

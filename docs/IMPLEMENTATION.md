@@ -1,5 +1,20 @@
 # Implementation status
 
+## SQL integral assignment to wider numeric fields
+
+SQL UPDATE and INSERT now share lossless Byte/Int16/Int32 widening to Int64 and
+checked whole-integer scaling to Currency. Plain `SET KeyValue=0` works on
+qualified wider numeric fields; typed/native APIs and original expected values
+remain strict. New conversion work uses the original budget/cancellation and
+finishes before backend publication. Nullable NULL, existing Int32 and descriptor
+rules remain. See the [assignment contract](query/QUERY_EXECUTION.md#sql-stored-assignment).
+Forty unique functions pass across conversion units, actual UPDATE/INSERT plans,
+retained editing/inserting and four real CLI save/readbacks, followed by strict,
+minimal and boundary checks. The [acceptance record](testing/results/sql-integral-assignment-2026-11-02.json)
+preserves the mock trait, syntax-profile and superseded Currency refusal corrections.
+Fractional/Text/Boolean/date conversions and native Access qualification remain
+separate work.
+
 ## Wider numeric key updates with ordinary fields
 
 Normal fixed UPDATE now qualifies actual Int32/Int64/Currency root-leaf keys and
