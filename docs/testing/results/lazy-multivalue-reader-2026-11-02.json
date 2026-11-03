@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable source-bound multivalue reader acceptance passed; native Access comparison unrun",
+  "services": [
+    "MultivalueReader::open",
+    "MultivalueReader::read_parent",
+    "NativeBrowser::multivalue_reader"
+  ],
+  "scope": "Complete key membership before return; fresh full parent/child key and metadata census per operation; only selected parent Value payload decoded. Stable/offline source, cumulative controls, terminal operational errors.",
+  "counts": {
+    "new_engine_functions": 7,
+    "new_adapter_functions": 2,
+    "engine_functions": 99,
+    "adapter_functions": 61,
+    "CLI_functions": 35
+  },
+  "first_runtime_results": [
+    {
+      "name": "engine-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "multivalues",
+        "--test",
+        "complex_links",
+        "--test",
+        "attachment_metadata",
+        "--test",
+        "attachment_columns",
+        "--test",
+        "version_history",
+        "--test",
+        "table_pages",
+        "--test",
+        "table_projection"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        12,
+        4,
+        9,
+        17,
+        35,
+        8,
+        14
+      ],
+      "new_functions": 7,
+      "accepted": true,
+      "log_sha256": "568c6124a7fbc9937a130b2a9f9aabc8ed5d6f6d2edc68bc6dcdd17d960b8d4d"
+    },
+    {
+      "name": "access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "--test",
+        "automatic_browsing",
+        "--test",
+        "multivalue_source",
+        "--test",
+        "required_index_collections",
+        "--test",
+        "attachment_data_source",
+        "--test",
+        "version_history_source"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        15,
+        6,
+        15,
+        7,
+        8,
+        10
+      ],
+      "new_functions": 2,
+      "accepted": true,
+      "log_sha256": "67c64f994cd962456f75edd47ae971b9f15e6c912092dffb0c396f2d245c0fd3"
+    },
+    {
+      "name": "cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        35
+      ],
+      "new_functions": null,
+      "accepted": true,
+      "log_sha256": "f32ec34bece7f485ad6a46a6e16c12577afcd07c6af7908ab2ac909b65a5f273"
+    }
+  ],
+  "preserved_first_lint_failure": {
+    "name": "strict-first",
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-ace",
+      "-p",
+      "tablecraft-access",
+      "-p",
+      "tablecraft-cli",
+      "-p",
+      "tablecraft-testkit",
+      "--all-features",
+      "--all-targets",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 101,
+    "passed_functions": [],
+    "new_functions": null,
+    "accepted": false,
+    "log_sha256": "bd45d0dde9ea529e74f14bd0c0b9010bb8d012497253e96dde2a2cd7b5f1a2ce"
+  },
+  "correction": "Removed unused private Directory::capture scope parameter and sole caller argument; no capture-body, request, data or expectation change. Public scope remains used for source revalidation.",
+  "remaining_checks": [
+    {
+      "name": "strict-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "4595eecbe3eea7799e699024d55a9c2f5e76e32e8fd11b2acec525175b8339f0"
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "463011e307c672415b6cfa23a7bf1f29bf3e4fd087e74b73640e4c7313ce0cb8"
+    },
+    {
+      "name": "docs-first",
+      "argv": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "b1c27ab5f68a4c44993ca47655548871367cb9d4b334305af292e8619f419019"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 17849,
+      "sha256": "b86701c026fca8aaaaa323e6616413819af228e1fe65f9fe64ec48c367e8b39f"
+    },
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/implementation-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2265,
+      "sha256": "2dbd5b9209ba7e8a29c9faba3fcc04e9d7ed6b3fa18cbd954dea616e224fbd35"
+    },
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/root-first/installation.json",
+      "bytes": 341,
+      "sha256": "f3f5c69f8eb1b1ae76e4f35d2adb687671f9db3a6b06b9c9f1904d40b5adff7c"
+    },
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/root-first/results-first.json",
+      "bytes": 2356,
+      "sha256": "189767fe7bc5d11914867cf2cbac3607487ee355c8ebbc90bd97771599252f31"
+    },
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/root-first/unused-parameter-successor.json",
+      "bytes": 846,
+      "sha256": "cd548e70591cb00b53048c2893fe65c6ee1611d83845d645c204a56b27f0fb80"
+    },
+    {
+      "path": ".cache/ace16-lazy-multivalue-reader-next-20261102/root-first/results-second.json",
+      "bytes": 1743,
+      "sha256": "d033c28cc421d067943646d1fc082147d2ab6590b9496c70ae57e82b8120d3f1"
+    }
+  ],
+  "unchanged": [
+    "default full readers",
+    "complete query/presence caches",
+    "100-value parent limit",
+    "typed stored value semantics"
+  ],
+  "remaining_work": [
+    "lazy attachment/history consumers",
+    "query per-parent contracts",
+    "larger-directory qualification",
+    "live-file coherence",
+    "native Access comparison"
+  ]
+}

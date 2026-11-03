@@ -382,3 +382,29 @@ qualification work.
 The [projected-page acceptance record](../testing/results/projected-scalar-pages-2026-11-02.json)
 covers engine, browser and CLI controls, retained regressions and the preserved
 first test diagnostic correction. Native Access comparisons remain unrun.
+
+## Source-bound lazy multivalue reads
+
+`MultivalueReader` and `NativeBrowser::multivalue_reader` expose a separate explicit
+parent-list read service. Opening validates the existing typed declaration, complete
+parent/child keys and original logical ROW membership through EOF, under explicit
+retention limits. It does not decode multivalue `Value` payloads. Every parent read
+revalidates the actual owner/type/flat definitions, complete parent keys and full
+child ROW/foreign-key/identity census before returning that parent's complete typed
+values. All parents retain the existing 100-value ceiling, including unrequested
+parents. Duplicates, stored NULL values, signed child identities, stored order and
+exact Text declarations keep the current typed contracts.
+
+The source, original budget and cancellation callback remain exclusively borrowed
+and cumulative until reader drop. An invalid ordinal leaves a ready reader intact;
+other read failures return no partial list and make that reader terminal. Results
+own their scalar values but their logical ROW/key is scoped to the issuing stable
+source and column; it is not a durable bookmark or mutation witness.
+
+This bounds payload decoding/retention, not complete-directory size or per-click
+I/O: parent reads can scan all keys again. Unselected value payloads remain outside
+this view's qualification. A parent result cannot fill the existing complete
+collection/query cache, and neither a directory nor cursor prefix is a complete
+payload snapshot. Default full-column, presence and collection browsing are
+unchanged. Attachment/history lazy payload adapters, coherent live-file refresh
+and native Access differential qualification remain separate work.

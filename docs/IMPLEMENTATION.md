@@ -1,5 +1,20 @@
 # Implementation status
 
+## Source-bound per-parent multivalue reads
+
+`MultivalueReader` now captures complete key membership and returns one selected
+parent's stored values through the existing typed decoder. Each operation checks
+fresh metadata and the complete parent/child key census through EOF; unselected
+Value payloads are not decoded. The browser exposes the same source-bound reader
+under its original cumulative controls. Operational failures are terminal; default
+full readers and complete query caches remain unchanged. Nine focused functions
+and retained regressions pass (99 engine, 61 adapter, 35 CLI), followed by strict,
+minimal-feature, Rust documentation and dependency checks. The
+[contract](access/collections/LAZY_MULTIVALUES.md) and
+[acceptance record](testing/results/lazy-multivalue-reader-2026-11-02.json)
+retain the first unused-argument lint failure and correction. Attachment/history
+consumers, larger directories and native Access qualification remain work.
+
 ## Ordinary updates beside generated IDs
 
 The existing normal fixed UPDATE service now has independent save qualification

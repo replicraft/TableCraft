@@ -17,6 +17,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 ## Collections
 
+- [Source-bound per-parent multivalue reads](collections/LAZY_MULTIVALUES.md)
 - [Explicit larger decoded attachment files](collections/LARGER_DECODED_ATTACHMENTS.md)
 - [Explicit larger native collections](collections/LARGER_NATIVE_COLLECTIONS.md)
 - [Stored attachment FileData queries](collections/STORED_ATTACHMENT_DATA.md)

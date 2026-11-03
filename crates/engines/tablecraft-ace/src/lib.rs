@@ -91,9 +91,10 @@ pub use table::{
     decode_attachment, decode_attachment_with_limits,
 };
 pub use table::{
-    AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration,
-    inspect_attachment_declarations, inspect_attachment_members, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
+    AttachmentMemberDeclaration, MultivalueColumn, MultivalueDeclaration, MultivalueReader,
+    ParentMultivalue, inspect_attachment_declarations, inspect_attachment_members,
+    inspect_multivalue_columns, inspect_multivalue_declarations, read_multivalue_column,
+    read_multivalue_column_with_limits,
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use table::{

@@ -1,3 +1,4 @@
+pub(in crate::table::complex) mod directory;
 mod error;
 pub(in crate::table::complex) mod membership;
 mod metadata;

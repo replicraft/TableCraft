@@ -2,12 +2,14 @@
 use super::*;
 use crate::format::page::PAGE_BYTES;
 
-pub(super) struct Root {
+pub(in crate::table) struct Root {
     number: u32,
     slot: u8,
 }
 impl Root {
-    pub(super) fn row_reference(&self) -> Result<crate::table::NativeRowReference, InspectError> {
+    pub(in crate::table) fn row_reference(
+        &self,
+    ) -> Result<crate::table::NativeRowReference, InspectError> {
         crate::table::NativeRowReference::from_parts(self.number, self.slot)
     }
 }
@@ -17,14 +19,14 @@ struct CurrentPage {
     slots: usize,
     next_slot: usize,
 }
-pub(super) struct Traversal {
+pub(in crate::table) struct Traversal {
     pages: allocation::PageCursor,
     current: Option<CurrentPage>,
     visited: u64,
     ended: bool,
 }
 impl Traversal {
-    pub(super) fn new<R: crate::NativeReadSource>(
+    pub(in crate::table) fn new<R: crate::NativeReadSource>(
         reader: &mut Reader<'_, R>,
         schema: &TableSchema,
     ) -> Result<Self, InspectError> {
@@ -41,7 +43,7 @@ impl Traversal {
     pub(super) fn ended(&self) -> bool {
         self.ended
     }
-    pub(super) fn next<R: crate::NativeReadSource>(
+    pub(in crate::table) fn next<R: crate::NativeReadSource>(
         &mut self,
         reader: &mut Reader<'_, R>,
         schema: &TableSchema,
@@ -96,7 +98,7 @@ impl Traversal {
         row_range(self.bytes(root)?, usize::from(root.slot))?;
         Ok(())
     }
-    pub(super) fn values<R: crate::NativeReadSource>(
+    pub(in crate::table) fn values<R: crate::NativeReadSource>(
         &self,
         root: &Root,
         reader: &mut Reader<'_, R>,

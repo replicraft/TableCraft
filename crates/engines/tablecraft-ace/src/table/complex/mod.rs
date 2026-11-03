@@ -23,8 +23,9 @@ pub use links::{
     read_complex_column_links_with_limits,
 };
 pub use multivalue::{
-    MultivalueColumn, MultivalueDeclaration, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
+    MultivalueColumn, MultivalueDeclaration, MultivalueReader, ParentMultivalue,
+    inspect_multivalue_columns, inspect_multivalue_declarations, read_multivalue_column,
+    read_multivalue_column_with_limits,
 };
 pub use multivalue::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,

@@ -8,6 +8,27 @@ pub use tablecraft_ace::{
 };
 
 impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
+    /// Open a source-bound typed multivalue reader under the original controls.
+    /// Complete parent/child key membership is checked before return. Values are
+    /// decoded only for each explicitly requested parent; no complete query cache
+    /// is populated. The browser remains exclusively borrowed until reader drop.
+    pub fn multivalue_reader(
+        &mut self,
+        table: &str,
+        column: &str,
+        limits: tablecraft_ace::TableSnapshotLimits,
+    ) -> Result<tablecraft_ace::MultivalueReader<'_, R>, InspectError> {
+        tablecraft_ace::MultivalueReader::open(
+            &mut self.source,
+            self.scope,
+            table,
+            column,
+            limits,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+
     /// Browse a parent page with all qualified stored collection types.
     /// Full parent/child validation retains existing snapshot limits. Encoded
     /// attachments stay inert, history stays in stored order and formulas never run.

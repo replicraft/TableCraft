@@ -1,3 +1,5 @@
+#[path = "multivalue/reader.rs"]
+mod reader;
 use super::{fixture as base, support};
 use std::io::Cursor;
 use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};

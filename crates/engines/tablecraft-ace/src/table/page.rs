@@ -22,7 +22,7 @@ mod cursor;
 mod projection;
 mod records;
 pub use projection::read_table_projection_page;
-mod traversal;
+pub(in crate::table) mod traversal;
 pub use cursor::{
     TableBatch, TableCursor, TableSnapshotLimits, read_table_batched, read_table_projection_batched,
 };
