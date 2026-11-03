@@ -6,206 +6,19 @@ use crate::{
 };
 use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
-use tablecraft_core::{
-    limits::ResourceBudget,
-    values::{Guid, Value},
-};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::{
     canonical_fixed_creation as fixed, canonical_ordinary_wide_insert as wide,
+    genuine_indexed_guid_update::raw::{
+        ORIGINAL_PINS, PAGE, entries, geometry, guid, indexed_records, indexed_rows, leaf, record,
+    },
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(295);
-const PAGE: usize = 4096;
-const PINS: &[(u8, Option<bool>, &str, &str)] = &[
-    (
-        5,
-        None,
-        "h5-fixed-exact-after.accdb",
-        "b04d36341ed843e3bf7f2b9bfabd790e9a075d1b8002ad5a53253968c3ea82ed",
-    ),
-    (
-        6,
-        None,
-        "h6-fixed-exact-after.accdb",
-        "1375d5e7453d0603ed42226b05c2f7afa6280f88d63287e2ab73b334a0da339f",
-    ),
-    (
-        5,
-        Some(false),
-        "V2016-Guid-A-pressure-ordinary-source.accdb",
-        "4991ffbc914b22d3ae0769e10a7f4c497e8e3066ce8431735a294e620f2a2353",
-    ),
-    (
-        5,
-        Some(true),
-        "V2016-Guid-D-pressure-ordinary-source.accdb",
-        "04abb49839ea396628571f6e47fb563311db061c082634215a8e175dab82f036",
-    ),
-    (
-        6,
-        Some(false),
-        "V2019-Guid-A-pressure-ordinary-source.accdb",
-        "3ccecfaa6865cecdc932bf239dad0bdfeb770361ef90e0d0d149f91979b1837e",
-    ),
-    (
-        6,
-        Some(true),
-        "V2019-Guid-D-pressure-ordinary-source.accdb",
-        "2cd3572d7ec08f5d538a4733d06edc4d8400838a76765bb0a828b343e4dc681d",
-    ),
-];
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)
-}
-
-fn guid(seed: usize) -> Guid {
-    let mut bytes = [0_u8; 16];
-    bytes[..4].copy_from_slice(&u32::try_from(seed).unwrap().to_be_bytes());
-    bytes[4..].copy_from_slice(&[4, 5, 6, 7, 0x80, 9, 10, 11, 12, 13, 14, 0xff]);
-    Guid::from_bytes(bytes)
-}
-
-fn native_guid(value: Guid) -> [u8; 16] {
-    let mut bytes = value.to_bytes();
-    bytes[..4].reverse();
-    bytes[4..6].reverse();
-    bytes[6..8].reverse();
-    bytes
-}
-
-fn indexed_rows() -> Vec<Vec<Value>> {
-    (0..158)
-        .map(|slot| {
-            vec![
-                Value::Int32(slot as i32 + 1),
-                if slot == 157 {
-                    Value::Null
-                } else {
-                    Value::Guid(guid(slot))
-                },
-                Value::Int32(if slot == 157 { 12345 } else { slot as i32 - 64 }),
-            ]
-        })
-        .collect()
-}
-
-fn geometry(header: u8) -> (usize, [usize; 2], [usize; 2]) {
-    match header {
-        5 => (89, [93, 95], [91, 92]),
-        6 => (106, [111, 113], [108, 109]),
-        _ => panic!("outside the two existing native profiles"),
-    }
-}
-
-fn record(raw: &[u8], data: usize, slot: usize, width: usize) -> &[u8] {
-    let page = data * PAGE;
-    let offset = page + 14 + slot * 2;
-    let start = usize::from(u16::from_le_bytes(
-        raw[offset..offset + 2].try_into().unwrap(),
-    ));
-    assert_eq!(start, PAGE - width * (slot + 1));
-    &raw[page + start..page + start + width]
-}
-
-fn indexed_records(raw: &[u8], header: u8) -> Vec<(u32, Vec<u8>)> {
-    let (definition, data, _) = geometry(header);
-    assert_eq!(
-        &raw[definition * PAGE + 16..definition * PAGE + 20],
-        &158_u32.to_le_bytes()
-    );
-    let mut records = Vec::new();
-    for (page, count) in [(data[0], 140), (data[1], 18)] {
-        assert_eq!(&raw[page * PAGE..page * PAGE + 2], &[1, 1]);
-        assert_eq!(
-            &raw[page * PAGE + 4..page * PAGE + 8],
-            &(definition as u32).to_le_bytes()
-        );
-        assert_eq!(
-            &raw[page * PAGE + 12..page * PAGE + 14],
-            &(count as u16).to_le_bytes()
-        );
-        for slot in 0..count {
-            let ordinal = records.len();
-            let mut expected = Vec::from(3_u16.to_le_bytes());
-            expected.extend_from_slice(&(ordinal as i32 + 1).to_le_bytes());
-            // The logical NULL's inactive bytes retain seed156, not zero GUID.
-            expected.extend_from_slice(&native_guid(guid(ordinal.min(156))));
-            expected.extend_from_slice(
-                &(if ordinal == 157 {
-                    12345_i32
-                } else {
-                    ordinal as i32 - 64
-                })
-                .to_le_bytes(),
-            );
-            expected.push(if ordinal == 157 { 5 } else { 7 });
-            assert_eq!(record(raw, page, slot, 27), expected);
-            records.push((((page as u32) << 8) | slot as u32, expected));
-        }
-    }
-    assert_eq!(records.len(), 158);
-    records
-}
-
-fn entries(
-    rows: &[Vec<Value>],
-    references: &[(u32, Vec<u8>)],
-    secondary: bool,
-    descending: bool,
-) -> Vec<(Vec<u8>, usize)> {
-    let mut entries = Vec::new();
-    for (slot, row) in rows.iter().enumerate() {
-        let mut wire = if secondary {
-            match &row[1] {
-                Value::Null => vec![if descending { 0xff } else { 0 }],
-                Value::Guid(value) => {
-                    let mut bytes = value.to_bytes();
-                    if descending {
-                        bytes.iter_mut().for_each(|byte| *byte = !*byte);
-                    }
-                    let mut wire = vec![if descending { 0x80 } else { 0x7f }];
-                    wire.extend_from_slice(&bytes[..8]);
-                    wire.push(9);
-                    wire.extend_from_slice(&bytes[8..]);
-                    wire.push(if descending { 0xf7 } else { 8 });
-                    wire
-                }
-                _ => panic!("outside the frozen GUID row law"),
-            }
-        } else {
-            let Value::Int32(id) = row[0] else {
-                panic!("manual I32 primary required")
-            };
-            let mut wire = vec![0x7f];
-            wire.extend_from_slice(&((id as u32) ^ 0x8000_0000).to_be_bytes());
-            wire
-        };
-        wire.extend_from_slice(&references[slot].0.to_be_bytes());
-        entries.push((wire, slot));
-    }
-    entries.sort_unstable();
-    entries
-}
-
-fn leaf(raw: &[u8], definition: usize, root: usize, entries: &[(Vec<u8>, usize)]) {
-    let page = &raw[root * PAGE..(root + 1) * PAGE];
-    assert_eq!(&page[..2], &[4, 1]);
-    assert_eq!(&page[4..8], &(definition as u32).to_le_bytes());
-    assert_eq!(&page[8..27], &[0; 19]);
-    let mut bitmap = [0_u8; 453];
-    let mut active = Vec::new();
-    for (wire, _) in entries {
-        active.extend_from_slice(wire);
-        bitmap[active.len() / 8] |= 1 << (active.len() % 8);
-    }
-    assert_eq!(&page[27..480], &bitmap);
-    assert_eq!(&page[480..480 + active.len()], active);
-    assert_eq!(
-        &page[2..4],
-        &u16::try_from(3616 - active.len()).unwrap().to_le_bytes()
-    );
 }
 
 #[test]
@@ -216,7 +29,7 @@ fn existing_guid_originals_keep_data_keys_and_observe_source_admission() {
     let indexed_dir =
         PathBuf::from(std::env::var_os("TABLECRAFT_GUID_UPDATE_INDEX_SOURCE_DIR").unwrap());
     assert!(wide_dir.is_absolute() && indexed_dir.is_absolute());
-    let images: Vec<_> = PINS
+    let images: Vec<_> = ORIGINAL_PINS
         .iter()
         .map(|&(header, direction, name, pin)| {
             let raw = fs::read(if direction.is_some() {

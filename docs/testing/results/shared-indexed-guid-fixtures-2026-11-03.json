@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Shared raw indexed GUID fixtures and ordered requests in testkit, with three actual native Source/read consumers importing the real owner directly. No production source/target permission change.",
+  "counts": {
+    "moved_raw_helper_bodies": 12,
+    "literal_AFTER_specs": 24,
+    "unique_indexed_views": 28,
+    "native_runtime_functions": 3
+  },
+  "checkpoint": {
+    "path": ".cache/ace16-normal-indexed-guid-update-next-20261103/acceptance-draft/shared-fixture-extraction/first-private-checkpoint.json",
+    "bytes": 6376,
+    "sha256": "fcb561810e7ab69d5b973a7f6e68ceb8d4b1a8fa45d48b99a94c5b33c85de662"
+  },
+  "peer_review": {
+    "path": ".cache/ace16-normal-indexed-guid-update-next-20261103/acceptance-draft/shared-fixture-extraction/QUERY_COMPOSITION_REVIEW_FIRST.json",
+    "bytes": 1821,
+    "sha256": "264abfabb9f41989ba99492749e9b0f6c3df22298f3bfe403eee37be19238f6c"
+  },
+  "installed_bodies": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/guid_update_originals.rs",
+      "bytes": 10627,
+      "sha256": "45c0990f55fa6aef4cbeef1008cb72698cba76a9d72e617cfa7c86aaa247adf9"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/guid_update_originals/indexed_updates.rs",
+      "bytes": 7848,
+      "sha256": "400056363a01e79443002898c4a06555e256624d383e12f20e00e1319a7a89e4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/guid_update_originals/score_plan.rs",
+      "bytes": 4667,
+      "sha256": "fa172091feb87d87a160a51c625cde1c1cecf9765dd4492d0542b354ffb45c92"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/genuine_indexed_guid_update.rs",
+      "bytes": 111,
+      "sha256": "7697eca05f2a6be7bf3046dcf8be8cfeb3ae74d9038676ef4144a9e3a6d36c35"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/genuine_indexed_guid_update/raw.rs",
+      "bytes": 17265,
+      "sha256": "287d76e1ab1090bb5e2ea2126ea2dafe294e1f243f4572c9354e0ccfd2f71c38"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/genuine_indexed_guid_update/requests.rs",
+      "bytes": 6200,
+      "sha256": "8d4221503cba47d36feebbff72672532ff2dc8f8be637b0fa23543d5c453c1e7"
+    }
+  ],
+  "read_Source_Score_checks": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::guid_update_originals",
+      "--",
+      "--ignored"
+    ],
+    "exit": 0,
+    "passed_functions": 3,
+    "log_sha256": "4051dddcdd2a7898b04b3e45b9f556c76d7e5b34a042263fdffe4f2d38944ec2"
+  },
+  "strict_testkit": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-testkit",
+      "--all-targets",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "log_sha256": "07156c14a90caadb71e4ab0f33b87405fcfef67695042e2f5de67649e2972cc0"
+  },
+  "notes": [
+    "Twelve old helper bodies and24literal state descriptors retain independent laws and source pins. Complete expected-image replay occurs once in the eager shared loader; one identical immutable assertion was removed from the native consumer.",
+    "The first test run passed all3functions with one now-unused Value import warning. That import was removed and workspace formatting applied; no test body, fixture byte law or oracle changed. Tests were not repeated solely for import/whitespace cleanup.",
+    "Native Source, schema, record identity and actual API observations remain in ACE. The raw/request owner uses core carriers and manual bytes, with no engine codecs, opaque Source authority or compatibility forwarding shim."
+  ],
+  "qualification": "Test ownership/refactoring evidence only. Existing source and independent-reader qualification remain separate; new indexed GUID mutation matching is still pending."
+}

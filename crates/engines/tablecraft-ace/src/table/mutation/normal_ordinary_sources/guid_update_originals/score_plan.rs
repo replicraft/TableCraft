@@ -1,5 +1,5 @@
 //! Existing fixed I32 planning beside newly certified readonly GUID indexes.
-use super::{PAGE, PINS, SCOPE, geometry, guid, indexed_records};
+use super::SCOPE;
 use crate::{
     EditError, FixedColumnUpdates, FixedScalarUpdate, NativeFixedIntentGroup, NativeImage,
     NativeUpdateProfile, WriteBlocker, inspect_table_schema,
@@ -8,6 +8,9 @@ use crate::{
 use sha2::{Digest, Sha256};
 use std::{fs, io::Cursor, path::PathBuf};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_testkit::fixtures::access::genuine_indexed_guid_update::raw::{
+    ORIGINAL_PINS, PAGE, geometry, guid, indexed_records,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)
@@ -23,7 +26,7 @@ fn original_score_plan_preserves_every_guid_owner_and_old_target_policy() {
     let directory =
         PathBuf::from(std::env::var_os("TABLECRAFT_GUID_UPDATE_INDEX_SOURCE_DIR").unwrap());
     assert!(directory.is_absolute());
-    let images: Vec<_> = PINS
+    let images: Vec<_> = ORIGINAL_PINS
         .iter()
         .filter(|(_, direction, _, _)| direction.is_some())
         .map(|&(header, _, name, hash)| {
