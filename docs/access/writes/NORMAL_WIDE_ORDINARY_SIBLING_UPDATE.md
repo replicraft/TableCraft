@@ -35,12 +35,15 @@ Typed edits preserve exact Int64 and Currency carriers. SQL and CLI retain their
 current checked assignment rules. The sixteen qualified SQL/CLI cases use
 Int64 arithmetic `0 - 0`, Currency `CCur(0)`, NULL, self-assignment or an empty
 selection; extrema restoration and swaps have typed/native coverage. Small
-integer literals are not implicitly claimed to be wider assignment carriers.
+integer literals were outside that initial save matrix. The shared
+[SQL assignment continuation](../../query/QUERY_EXECUTION.md#sql-stored-assignment)
+now accepts checked integral widening/scaling, with four additional plain-zero
+CLI saves against the same independent images.
 For a table satisfying the profile, an explicit offline command is:
 
 ```sh
 tablecraft query journal-update \
-  'UPDATE [Int64Companions] SET KeyValue = 0 - 0 WHERE Id = 1' \
+  'UPDATE [Int64Companions] SET KeyValue = 0 WHERE Id = 1' \
   --database example.accdb --journal example.journal
 ```
 

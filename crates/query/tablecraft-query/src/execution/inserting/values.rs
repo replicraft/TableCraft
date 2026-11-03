@@ -116,7 +116,7 @@ pub(super) fn prepare<E: InsertableTable>(
             .with_cancellation(cancelled)
             .evaluate(expression)
             .map_err(QueryError::from)?;
-        staged[target] = Some(stored_value(value, &columns[target])?);
+        staged[target] = Some(stored_value(value, &columns[target], budget, cancelled)?);
     }
 
     Ok(staged)

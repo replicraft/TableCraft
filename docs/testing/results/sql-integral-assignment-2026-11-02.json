@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "SQL UPDATE/INSERT shared assignment accepts lossless integral Int64 widening and checked whole-integer Currency scaling; focused/retained tests and real CLI saves pass.",
+  "conversion_scope": {
+    "Int64": "Byte/Int16/Int32 widen exactly; existing Int64 remains exact.",
+    "Currency": "Byte/Int16/Int32/Int64 multiply by 10^Currency::SCALE with checked overflow; integral bounds -922337203685477 through 922337203685477.",
+    "preserved": "ExistingInt32, nullable NULL, descriptor validation, exact typed/native carriers, literal binding, read-query evaluation and intent protocols."
+  },
+  "counts": {
+    "new_assignment_unit_functions": 3,
+    "new_UPDATE_INSERT_integration_functions": 4,
+    "retained_editing_functions": 17,
+    "retained_inserting_functions": 15,
+    "new_CLI_functions": 1,
+    "real_CLI_save_readback_contexts": 4,
+    "unique_passing_runtime_functions": 40
+  },
+  "resource_law": "Only new fixed-size conversions check cancellation and charge one additional Steps before work; existing paths retain their original checks.",
+  "atomicity": "Late Currency overflow and resource/cancellation failures return before the consuming backend finish. SQL writes retain original-row RHS evaluation and exact converted intent values.",
+  "attempts": {
+    "first": [
+      {
+        "name": "assignment-unit",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "execution::editing::assignment::tests"
+        ],
+        "exit": 0,
+        "log_sha256": "556472cbe9d9ddb2b84fa17a69333c0169e8d3965fe281e8f182ce4cd8ee3b74"
+      },
+      {
+        "name": "assignment-integration",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "editing_numeric_assignments"
+        ],
+        "exit": 101,
+        "log_sha256": "615c4977c292f267b9fb2c845e26282c3823fb1ad3a3283d81e0f834891115b8"
+      }
+    ],
+    "second": [
+      {
+        "name": "assignment-integration",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "editing_numeric_assignments"
+        ],
+        "exit": 101,
+        "log_sha256": "fec87b9eeb59ed6cab734babd0a8ce6d987b2112b6711b89993ff27d42416e90"
+      }
+    ],
+    "third": [
+      {
+        "name": "late_currency_overflow_never_publishes_an_earlier_valid_assignment",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "editing_numeric_assignments",
+          "late_currency_overflow_never_publishes_an_earlier_valid_assignment",
+          "--",
+          "--exact"
+        ],
+        "exit": 0,
+        "log_sha256": "a5a394832fd755c948ebdc38053569dd20390ada88d5e489f45b22f30f31e1d7"
+      },
+      {
+        "name": "update_and_insert_small_integer_expressions_reach_backend_as_exact_target_carriers",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "editing_numeric_assignments",
+          "update_and_insert_small_integer_expressions_reach_backend_as_exact_target_carriers",
+          "--",
+          "--exact"
+        ],
+        "exit": 0,
+        "log_sha256": "045b03aa98f7582b5bc5d68ed308b47b184656767dc6055f98ca80996183e9b4"
+      },
+      {
+        "name": "retained-editing",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "editing_stored",
+          "--test",
+          "editing",
+          "--test",
+          "editing_columns"
+        ],
+        "exit": 0,
+        "log_sha256": "e4de43dfefe27171ac789c31211f07fb10abf7be0ec9df688cd0c2a5980265f6"
+      },
+      {
+        "name": "retained-inserting",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "execution::inserting"
+        ],
+        "exit": 101,
+        "log_sha256": "55ecca7aba78837de3dd145cd36ee3ee293e47ec859a9bc8c10032c40b405c6e"
+      }
+    ],
+    "fourth": [
+      {
+        "name": "constructor-regression",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-query",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--lib",
+          "execution::inserting::tests::declared_constructors_and_remaining_exact_carrier_guards_are_preserved",
+          "--",
+          "--exact"
+        ],
+        "exit": 0,
+        "log_sha256": "28a85614d225afaa1a74aabd56f684c2f539ab1434993d3437e2ef0acec7ddca"
+      },
+      {
+        "name": "literal-cli",
+        "argv": [
+          "cargo",
+          "test",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--offline",
+          "--locked",
+          "--test",
+          "genuine_wide_ordinary_siblings",
+          "cli_small_integer_literal_zero_assigns_to_wider_fields_without_carrier_expressions",
+          "--",
+          "--ignored",
+          "--exact",
+          "--nocapture"
+        ],
+        "exit": 0,
+        "log_sha256": "5968ef47197d229479e4535455e45c40183cc008d4bbd4ce84fa7403d38d9885"
+      },
+      {
+        "name": "strict",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--keep-going",
+          "-p",
+          "tablecraft-query",
+          "-p",
+          "tablecraft-cli",
+          "--all-features",
+          "--all-targets",
+          "--offline",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log_sha256": "ed270f99ad6b80ea008d400d150c0d67b96a584cbe9c76e2fe1c63532ce30123"
+      },
+      {
+        "name": "minimal",
+        "argv": [
+          "cargo",
+          "check",
+          "-p",
+          "tablecraft-query",
+          "--no-default-features",
+          "--offline",
+          "--locked"
+        ],
+        "exit": 0,
+        "log_sha256": "f9c2b42fdc321df3640ca032c2b4555d82b58465c6b42f6fbcda01a6e9181014"
+      },
+      {
+        "name": "boundaries",
+        "argv": [
+          "python3",
+          "scripts/check_dependency_boundaries.py"
+        ],
+        "exit": 0,
+        "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+      },
+      {
+        "name": "format",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "corrections": [
+    "Integration mock omitted existing requires_field_list trait item; complete two-scalar schema now returns false.",
+    "Bracketed reserved Input; retained UPDATE CLngLng case while respecting the existing INSERT constructor whitelist. INSERT overflow uses its actual direct Int64 literal path.",
+    "Legacy INSERT Currency-literal rejection was superseded by this intentional feature. Retained its explicit constructor positive and every other exact-carrier guard; reran only affected function. Other passing results retained."
+  ],
+  "checks": "Query/CLI all-feature all-target strict Clippy, standalone no-default query check, dependency boundaries and formatter pass.",
+  "references": [
+    {
+      "title": "Microsoft: Create and run an update query \u2014 data type conversion restrictions",
+      "url": "https://support.microsoft.com/en-gb/access/create-and-run-an-update-query"
+    },
+    {
+      "title": "Microsoft: Type conversion functions",
+      "url": "https://support.microsoft.com/en-gb/access/functions/type-conversion-functions"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/first-private-checkpoint.json",
+      "bytes": 2915,
+      "sha256": "dd96885fa22462e297303faf40929ef626b2cc5b017b025af111bacfaf1732ed"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/handoff-path-successor/successor-checkpoint.json",
+      "bytes": 3239,
+      "sha256": "83aa7140198d2aa2e72b1e06473c9a885aba342978751d8275ef6311efc367a1"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/VALUE_SEMANTICS_SUCCESSOR_REVIEW_FIRST.json",
+      "bytes": 902,
+      "sha256": "a3c4b7bae50b66513da2622fdccba3fb84e970257436a807abbcd4f3baaa036f"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/mechanical-preservation.json",
+      "bytes": 181,
+      "sha256": "d6f535c17086499532887830008611a599617ecd0c7fc8cfd85ff8d2f05168dd"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/docs-draft/section-placement-successor/successor-checkpoint.json",
+      "bytes": 2233,
+      "sha256": "19a57763008889f697a953b3d8858f5a9346d832f56b8bb8ea34ff536e57077a"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/installation.json",
+      "bytes": 655,
+      "sha256": "3b2db9dc0ac4b048b84b1d3cf41c114cc23055535daaebe7216f088342c22f55"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/insert-target-trait-successor.json",
+      "bytes": 526,
+      "sha256": "267425a6e66b710d2a4b80e86dcc76224a555ffc721ca7e4bdba46a7f35072e7"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/sql-input-contract-successor.json",
+      "bytes": 819,
+      "sha256": "aa997d8232898760f7f39f3e9a3fcc5ea1bf77de6d16f097d97d5f5ad43f6c3d"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/legacy-currency-negative-successor.json",
+      "bytes": 628,
+      "sha256": "ecca24ad9b88931c5ed179f5e838aec7297f4d574734c0f88063d66354554715"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/results-first.json",
+      "bytes": 703,
+      "sha256": "d533f38a489e64f97a98b7b89d2f14211bde9bc35e7633abbb146041d9c784c1"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/results-second.json",
+      "bytes": 353,
+      "sha256": "f0bb3bd79dddfcfee881343da22200bcbcfcef117c4f7b23242d82daf3e887a3"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/results-third.json",
+      "bytes": 1770,
+      "sha256": "bb94a4c8a30bc9b7b98b9e478a71556400b8c8b99c599018fbe80a4b9dfc4e3d"
+    },
+    {
+      "path": ".cache/ace16-sql-numeric-assignment-next-20261102/root-first/results-fourth.json",
+      "bytes": 2085,
+      "sha256": "4a39dda9c6ebd3c9b8fdde7e64c5cef3e4dcac62a2c7552a07d3fab53a118f5f"
+    }
+  ],
+  "native_Access_comparison": "unrun",
+  "remaining": [
+    "Fractional, Text, Boolean and date assignment conversion semantics",
+    "Wider native assignment/default/write qualification",
+    "Native Access comparison and full conversion parity"
+  ]
+}

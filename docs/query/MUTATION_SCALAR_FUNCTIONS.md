@@ -82,8 +82,8 @@ Calling a function does not introduce short-circuit behavior.
 
 Assignment is a separate boundary. `ExistingInt32` still accepts only non-NULL
 checked integral replacements; Currency, Decimal and Double results are not
-silently narrowed. The opt-in `StoredScalar` profile adds nullable NULL and exact
-other stored carriers. Use an admitted explicit conversion when its semantics are
+silently narrowed. The opt-in `StoredScalar` profile adds nullable NULL, exact other stored carriers
+and [lossless integral Int64/Currency assignment](QUERY_EXECUTION.md#sql-stored-assignment). Use an admitted explicit conversion when its semantics are
 intended, for example `CLng(Round(Score/2.0,0))`. Query-context `Nz(value)`
 without a fallback replaces NULL with empty Text, not Empty or zero. That Text
 still cannot be assigned to an Int32 field. Expression-only states cannot become

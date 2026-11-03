@@ -12,7 +12,8 @@ The separate [query editing API](../access/writes/QUERY_EDITING.md) plans bounde
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_COPIES.md)
 opts into `StoredScalar` assignment through the same planner: nullable NULL and
-exact stored carriers, with checked integral assignment to Int32.
+the [SQL stored-assignment rules](#sql-stored-assignment): exact stored carriers
+and checked integral conversion to the declared Int32, Int64 or Currency target.
 `plan_batch_update` consumes the explicit neutral `EditableBatch` capability for
 one local table and multiple assignments admitted by the selected backend. It rejects duplicate
 resolved targets before evaluation and evaluates all RHS expressions against
@@ -77,6 +78,48 @@ bit patterns until final WHERE/HAVING/ON selection, including collection criteri
 Rounded float/fixed/date operands now use checked Long/LongLong targets;
 Text operators and final predicates share the explicit NumberFormat and budgets.
 Full Variant/subtype inference and native Access qualification remain open.
+
+## SQL stored assignment
+
+SQL UPDATE with `StoredScalar` and INSERT share a target-aware assignment owner.
+It accepts nullable NULL, exact declared carriers, and these integral conversions:
+
+| Destination | Additional accepted carriers | Range and result |
+| --- | --- | --- |
+| Int32 | Byte, Int16, Int64 | Checked -2,147,483,648 through 2,147,483,647. |
+| Int64 | Byte, Int16, Int32 | Exact widening; the stored Int64 range remains -9,223,372,036,854,775,808 through 9,223,372,036,854,775,807. |
+| Currency | Byte, Int16, Int32, Int64 | Checked multiplication by 10,000; integral inputs -922,337,203,685,477 through 922,337,203,685,477 fit. |
+
+Currency integers denote whole currency units, not already-scaled storage units.
+Existing Currency carriers retain their full four-decimal range and exact bits.
+Converted results still pass the declared descriptor checks. Other fractional,
+Text, Boolean and date conversions remain outside this assignment slice; no
+locale, rounding or floating-point intermediate is introduced. `ExistingInt32`
+retains its separate non-NULL rule. Typed DB/native edit APIs, original expected
+values and retrieval carriers remain exact; this SQL rule does not relax them.
+
+Both UPDATE `SET Wide=0` and INSERT `VALUES (0)` can therefore supply a wider
+declared numeric target without a carrier-producing workaround. Expression
+admission remains distinct: UPDATE permits its existing `CLngLng` call, whereas
+the closed INSERT call set does not. An admitted integer INSERT literal or
+operator result can already be Int64; assignment does not change literal or
+arithmetic evaluation semantics or allow new calls.
+
+Each newly admitted conversion checks cancellation and charges one additional
+Steps unit before fixed work. Overflow reports the existing query evaluation
+Overflow error; NULL/descriptor/carrier refusals retain their existing errors.
+UPDATE evaluates all matching original-row expressions and INSERT all supplied
+expressions before one consuming backend finish, so a late conversion failure
+publishes no backend prefix. Native constraint, preservation and publication
+checks remain independent.
+
+Microsoft documents destination-sized numeric and Number-to-Currency conversion
+in its [update-query conversion table](https://support.microsoft.com/en-au/access/create-and-run-an-update-query).
+Its [conversion-function reference](https://support.microsoft.com/en-gb/access/functions/type-conversion-functions)
+describes Currency bounds, overflow and locale-sensitive explicit conversions.
+These references guide this lossless subset; they do not establish complete
+assignment conversion or native Access parity. Fractional/Text/Boolean behavior
+and ACE 16 comparison qualification remain separate work.
 
 ## Host API and ownership
 

@@ -1209,6 +1209,15 @@ controls. See the [qualified profile](access/writes/NORMAL_WIDE_ORDINARY_SIBLING
 Retained NODE schemas keep their original numeric-only qualification; IgnoreNULL
 keys, broader allocation and native Access save/reopen remain work.
 
+## SQL integral assignment continuation
+
+The actual shared UPDATE/INSERT assignment owner now admits lossless integral
+Int64 widening and checked integer-to-Currency scaling. Typed/native replacements,
+original witnesses and read-query carriers remain strict. Four literal-zero CLI
+saves match existing independent wider-key images; conversion overflow and work
+limits precede backend finish. See [current assignment laws](query/QUERY_EXECUTION.md#sql-stored-assignment).
+Broader fractional/regional/type conversion and native qualification remain work.
+
 ## Remaining local-file read/query work
 
 The explicit [arithmetic declaration profile](expressions/numeric/DECLARED_ARITHMETIC.md) now carries

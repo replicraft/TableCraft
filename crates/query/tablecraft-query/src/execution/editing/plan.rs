@@ -44,7 +44,7 @@ struct PreparedUpdate {
 
 /// Plan one local table/one assignment against its frozen original snapshot.
 /// ExistingInt32 keeps its old non-NULL checked integral conversion; StoredScalar
-/// adds nullable NULL and exact stored carriers while retaining that Int32 law.
+/// adds nullable NULL, lossless wider integral assignments and exact other carriers.
 /// Complete evaluation precedes one consuming single-column backend finish.
 /// No durable write or native authorization is implied by this generic planner.
 pub fn plan_update<E: EditableTable>(
@@ -223,7 +223,8 @@ fn prepare<E: EditableTable>(
                 .columns()
                 .get(assignment.column)
                 .ok_or(QueryError::UnknownName)?;
-            let replacement = update_value(runtime.eval(&assignment.value, env)?, target, profile)?;
+            let value = runtime.eval(&assignment.value, env)?;
+            let replacement = update_value(value, target, profile, runtime.budget, cancelled)?;
 
             // Each capacity increase is prepaid, including spare Vec capacity.
             if column.updates.len() == column.updates.capacity() {

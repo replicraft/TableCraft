@@ -138,3 +138,55 @@ fn cli_primary_null_duplicate_and_wrong_carrier_refuse_before_output_or_journal(
     }
     assert_eq!(refusals, 12);
 }
+
+#[test]
+#[ignore = "requires qualified wider-sibling zero UPDATE images"]
+fn cli_small_integer_literal_zero_assigns_to_wider_fields_without_carrier_expressions() {
+    let cases = source::load_all(|raw, hash| {
+        let actual: String = Sha256::digest(raw)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        assert_eq!(actual, hash);
+    });
+    let mut saves = 0;
+    for case in cases.into_iter().filter(|case| case.recipe == Recipe::Zero) {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("target.accdb");
+        let journal = directory.path().join("journal");
+        fs::write(&path, &case.before).unwrap();
+        let sql = format!("UPDATE [{}] SET KeyValue=0 WHERE Id=1", case.table);
+        let output = CLI.run(&[
+            "query",
+            "journal-update",
+            &sql,
+            "--database",
+            path.to_str().unwrap(),
+            "--journal",
+            journal.to_str().unwrap(),
+        ]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stderr.is_empty());
+        assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(fs::read(&path).unwrap(), case.after);
+        assert!(!journal.exists());
+
+        let sql = format!("SELECT Marker FROM [{}] WHERE KeyValue=0", case.table);
+        let read = CLI.run(&["query", "run", &sql, "--database", path.to_str().unwrap()]);
+        assert!(
+            read.status.success(),
+            "{}",
+            String::from_utf8_lossy(&read.stderr)
+        );
+        assert!(read.stderr.is_empty());
+        assert_eq!(read.stdout, b"Marker\n17\n");
+        assert_eq!(fs::read(&path).unwrap(), case.after);
+        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        saves += 1;
+    }
+    assert_eq!(saves, 4);
+}
