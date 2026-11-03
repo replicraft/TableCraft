@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "original-only native read/canonical Source and independent SDK observations passed; AFTER and mutation qualification remain separate",
+  "scope": "Two newly created independent ACE16-family header5/6 originals, each with Int64Companions and CurrencyCompanions; no native mutation producer used.",
+  "counts": {
+    "original_files": 2,
+    "table_contexts": 4,
+    "live_rows_per_table": 3,
+    "fields_per_table": 6,
+    "physical_indexes_per_table": 3,
+    "logical_aliases_per_table": 6,
+    "compiler_calls": 1,
+    "independent_original_creations": 2,
+    "inert_reader_observations": 30,
+    "copied_terminal_denials": 11,
+    "native_source_functions": 1,
+    "diagnostic_functions": 1
+  },
+  "fields": [
+    "Id",
+    "KeyValue (Int64 or exact scaled Currency)",
+    "Marker",
+    "Enabled (Boolean)",
+    "Label (Text)",
+    "Opaque (Binary payload/empty/NULL)"
+  ],
+  "geometry": {
+    "record_lengths": [
+      39,
+      39,
+      35
+    ],
+    "record_starts": [
+      4057,
+      4018,
+      3983
+    ],
+    "DATA_free_bytes": 3963,
+    "masks_hex": [
+      "3f",
+      "35",
+      "1f"
+    ],
+    "KeyValue_payload_relative_span": [
+      6,
+      14
+    ],
+    "primary_active_bytes": 27,
+    "wide_active_bytes": 31,
+    "index_histories": [
+      3,
+      3,
+      3
+    ],
+    "original_index_prefix": 0
+  },
+  "native_results": [
+    {
+      "name": "source-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::wide_sibling_originals::wider_numeric_sibling_originals_have_complete_raw_read_and_canonical_source",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "b25c0e8073475c6348fdb4363d102cc529ae9cfa5aa18f3ac67ffe1a2caadd76"
+    },
+    {
+      "name": "diagnostic-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::wide_sibling_originals::observe_wider_numeric_sibling_fixed_capability_and_target_facts",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "903c101fe5d8ef582346b04b39416d72078988ed092e6df728660c19d2ba610e"
+    },
+    {
+      "name": "strict-first",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "64c84bcf3bddfcd2379e2490da63f395b830c2869e1a99995a4e3cd55b30a100"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "diagnostic_observations": {
+    "fixed_table_capability": "Ok in all four contexts",
+    "named_empty_wide_key_facts": "Unsupported(IndexedColumn) in all four contexts",
+    "interpretation": "Historical observation of whole-schema numeric-width coupling, not a permanent durable refusal or write permission."
+  },
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/first-private-checkpoint.json",
+      "bytes": 1722,
+      "sha256": "9d1f9a8bbba9a7f33d858dc7d5fa72e24aad6a78ca3ab35d520f95ad1c606f0e"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-source/first-complete-private-checkpoint.json",
+      "bytes": 3075,
+      "sha256": "b50923c6b2d0ebbcb57f50f28731ba8a9854022245a98644fb712b6287e847e8"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-source/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2929,
+      "sha256": "4033568c2a047c506713777adfd22b184d94dbdf2d2ae701a879d6b4cc7ff3b4"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-source/readonly-original-execution-first.json",
+      "bytes": 7016,
+      "sha256": "0f7f7ff4d0e4570a88bfe8e2a3c2fe7b89294d3dedc3627401d6f8dc58f1b658"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/observed-original-geometry-first.json",
+      "bytes": 42613,
+      "sha256": "0a6cc50822a561dab398fdde9fa05d2de004d919dd60ef4b50cf014ef96f20bd"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-native-gate/first-private-checkpoint.json",
+      "bytes": 13419,
+      "sha256": "1bf9ee2489018273845cb0f9a15a8a072276f75a5e4da657d9ed43cbffb54cfa"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-native-gate/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2357,
+      "sha256": "5fe04a9b86f7bfc9ab08442771938a0b3cb31bc3207ec9ba180c33f46156efc6"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-native-root-first/installation.json",
+      "bytes": 544,
+      "sha256": "c6cf2c840dc1d8f8055da9724688427b912153c7750af9f2482e81f482993d0e"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-native-root-first/results-first.json",
+      "bytes": 1837,
+      "sha256": "d077c0007e387670478366ec4f54988574a3f06a15245bb485a4f49dd1f3a2b1"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-ordinary-siblings-next-20261102/original-native-root-first/diagnostic-first.log",
+      "bytes": 1123,
+      "sha256": "903c101fe5d8ef582346b04b39416d72078988ed092e6df728660c19d2ba610e"
+    }
+  ],
+  "remaining": [
+    "independent AFTER models and reader qualification",
+    "target-relative wider-key mutation",
+    "native commits/recovery/resources",
+    "typed/SQL/CLI saves",
+    "native Access qualification"
+  ],
+  "native_mutation_calls": 0,
+  "native_Access_save_reopen": "unrun"
+}
