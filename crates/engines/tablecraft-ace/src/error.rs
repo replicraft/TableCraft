@@ -99,6 +99,9 @@ pub enum InspectError {
     /// A failed resumable fetch has made this source-bound cursor terminal.
     #[error("native table cursor cannot continue after a failed fetch")]
     CursorFailed,
+    /// A prior collection-reader operation failed; open a new reader to continue.
+    #[error("native collection reader has failed")]
+    CollectionReaderFailed,
     /// Fallible allocation failure.
     #[error("database inspection allocation failed")]
     Allocation,

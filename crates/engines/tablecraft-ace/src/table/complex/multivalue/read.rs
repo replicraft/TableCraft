@@ -56,15 +56,24 @@ pub(in crate::table::complex) fn read_links(
 ) -> Result<MultivalueColumn, InspectError> {
     let (value_position, _) =
         super::schema::qualified(links.column(), links.child_snapshot().schema())?;
-    for parent in links.parents() {
-        check(budget, cancelled)?;
-        if parent.child_count() > MAX_VALUES_PER_PARENT {
-            return Err(InspectError::StructureLimit);
-        }
-    }
+    require_parent_counts(links.parents(), budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(MultivalueColumn {
         links,
         value_position,
     })
+}
+
+pub(super) fn require_parent_counts(
+    parents: &[crate::ComplexParentLink],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    for parent in parents {
+        check(budget, cancelled)?;
+        if parent.child_count() > MAX_VALUES_PER_PARENT {
+            return Err(InspectError::StructureLimit);
+        }
+    }
+    Ok(())
 }

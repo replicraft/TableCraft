@@ -1,3 +1,5 @@
+#[path = "multivalues/reader.rs"]
+mod reader;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "complex_schema/fixture.rs"]
 mod complex_fixture;

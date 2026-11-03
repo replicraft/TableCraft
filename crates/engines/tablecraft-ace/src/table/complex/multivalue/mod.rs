@@ -7,6 +7,8 @@ pub use page::{
     read_multivalue_table_page_with_request,
 };
 mod read;
+mod reader;
+pub use reader::{MultivalueReader, ParentMultivalue};
 mod schema;
 pub use metadata::MultivalueColumn;
 pub use read::{read_multivalue_column, read_multivalue_column_with_limits};

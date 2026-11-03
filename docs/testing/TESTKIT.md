@@ -17,6 +17,7 @@ src/
 └── support/
     ├── ace/sentinel.rs         shared native read observations
     ├── ace/page_reads.rs       byte-exact read-position counter for six consumers
+    ├── ace/mutable_source.rs   shared adversarial source for lifecycle observations
     ├── ace/resources.rs        public planner budget/cancellation assertions
     ├── query/multivalue.rs     query Source, DTO and assertion machinery
     ├── access/owned_growth.rs  retained adapter-session workflows

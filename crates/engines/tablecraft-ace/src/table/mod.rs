@@ -27,8 +27,9 @@ pub use complex::{
 };
 pub use complex::{ComplexColumnSchema, ComplexTableSchema, inspect_complex_schema};
 pub use complex::{
-    MultivalueColumn, MultivalueDeclaration, inspect_multivalue_columns,
-    inspect_multivalue_declarations, read_multivalue_column, read_multivalue_column_with_limits,
+    MultivalueColumn, MultivalueDeclaration, MultivalueReader, ParentMultivalue,
+    inspect_multivalue_columns, inspect_multivalue_declarations, read_multivalue_column,
+    read_multivalue_column_with_limits,
 };
 pub use complex::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,

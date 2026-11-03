@@ -79,9 +79,45 @@ impl Parents {
         Ok(Self { parents, keys })
     }
 
+    pub(in crate::table::complex) fn require_keys(
+        &self,
+        expected: &[ComplexParentLink],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), InspectError> {
+        check(budget, cancelled)?;
+        if self.parents.len() != expected.len() {
+            return Err(InspectError::Malformed);
+        }
+        for (observed, expected) in self.parents.iter().zip(expected) {
+            check(budget, cancelled)?;
+            if observed.reference != expected.reference || observed.key != expected.key {
+                return Err(InspectError::Malformed);
+            }
+        }
+        check(budget, cancelled)
+    }
+
     pub(in crate::table::complex) fn link(
-        mut self,
+        self,
         rows: &[Vec<Value>],
+        foreign_key: usize,
+        identity: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Membership, InspectError> {
+        self.link_rows(
+            rows.iter().map(Vec::as_slice),
+            foreign_key,
+            identity,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table::complex) fn link_rows<'a>(
+        mut self,
+        rows: impl ExactSizeIterator<Item = &'a [Value]>,
         foreign_key: usize,
         identity: usize,
         budget: &mut ResourceBudget,
@@ -90,7 +126,7 @@ impl Parents {
         let mut identities = reserved::<i32>(rows.len(), budget)?;
         let mut order = reserved::<(usize, usize)>(rows.len(), budget)?;
         let search_steps = u64::from(self.keys.len().checked_ilog2().unwrap_or(0)) + 1;
-        for (ordinal, row) in rows.iter().enumerate() {
+        for (ordinal, row) in rows.enumerate() {
             check(budget, cancelled)?;
             let key = child_key(row.get(foreign_key))?;
             identities.push(child_identity(row.get(identity))?);
