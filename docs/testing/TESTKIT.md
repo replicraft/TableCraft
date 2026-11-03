@@ -12,7 +12,7 @@ src/
 ├── fixtures/
 │   ├── access/                 independent images, requests and literal pins
 │   │   ├── tcna2.rs            independent original-presence wire grammar
-│   │   └── tcni4.rs            literal single-column numeric/NULL original requests
+│   │   └── original_fixed_wire.rs literal TCNI4/8 original group requests
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
@@ -50,15 +50,21 @@ feature for these consumers. The default testkit and production dependencies
 remain unchanged. Its [acceptance record](results/shared-page-read-support-2026-11-02.json)
 covers all six consumers, strict checks, minimal features and dependency guards.
 
-`fixtures::access::tcni4::single_column_original_wire` frames the independent
-single-column Int32/Int64/Currency/NULL request grammar with caller-supplied original
-digest bytes. The Int64/Currency extension retains a byte-exact inverse of the
-original I32/NULL owner.
-The retained Binary Marker and generated-companion Score fixtures consume it
-directly. Table/column names and requests stay with each fixture; the helper owns
-no image expectation and imports no engine serializer. Its extraction preserves every existing request byte;
-[existing proof/journal regressions](results/shared-tcni4-literal-framing-2026-11-02.json)
-and strict/minimal-feature checks pass.
+`fixtures::access::original_fixed_wire` owns literal TCNI4/8 group framing.
+Its single-column numeric helper preserves the original Int32/Int64/Currency/NULL
+contract; the IEEE fixture consumes the same envelope with independent raw tags
+and canonical padding. Six old-path consumers import the real owner directly;
+the old module is removed without a shim. Table/column names, original bindings,
+requests and image expectations remain with each fixture. No engine serializer
+is imported.
+
+Two full literal goldens, six actual IEEE native/legacy-boundary functions and
+five retained numeric commit functions pass. The latter cover Marker, generated
+Score, Binary Id, wider numeric siblings and ignored-NULL originals. Scoped
+strict and minimal testkit checks also pass; see the
+[extraction record](results/shared-fixed-wire-fixtures-2026-11-03.json).
+The [earlier TCNI4 record](results/shared-tcni4-literal-framing-2026-11-02.json)
+remains historical evidence.
 
 The independent `fixtures::access::{complex_schema, attachments,
 attachment_modern}` modules own the existing raw collection builders. Engine,

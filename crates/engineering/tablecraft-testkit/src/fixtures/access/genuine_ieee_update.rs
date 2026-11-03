@@ -121,41 +121,26 @@ impl Case {
 
     /// Literal original TCNI8 requests; no production codec or staged keys.
     pub fn wire(&self, binding: [u8; 32]) -> Vec<u8> {
-        let groups = self.groups();
-        let total = 72
-            + 5
-            + groups
-                .iter()
-                .map(|group| 12 + group.column.len() + 26)
-                .sum::<usize>();
-        let mut wire = Vec::from(*b"TCNI0008");
-        wire.extend_from_slice(&(total as u32).to_le_bytes());
-        wire.extend_from_slice(&[8, 0, 0, 0]);
-        wire.extend_from_slice(&(self.before.len() as u64).to_le_bytes());
-        wire.extend_from_slice(&binding);
-        for number in [5_u32, groups.len() as u32, groups.len() as u32, 0] {
-            wire.extend_from_slice(&number.to_le_bytes());
-        }
-        wire.extend_from_slice(b"Items");
-        for group in groups {
-            for number in [group.column.len() as u32, 1, 0] {
-                wire.extend_from_slice(&number.to_le_bytes());
-            }
-            wire.extend_from_slice(group.column.as_bytes());
-            wire.extend_from_slice(&2_u64.to_le_bytes());
-            for value in [group.expected, group.replacement] {
-                let (tag, payload) = match value {
-                    Value::Single(value) => (6, u64::from(value.to_bits())),
-                    Value::Double(value) => (7, value.to_bits()),
-                    Value::DateTime(value) => (5, value.to_bits()),
-                    _ => panic!("outside literal TCNI8 IEEE/DATE requests"),
-                };
-                wire.push(tag);
-                wire.extend_from_slice(&payload.to_le_bytes());
-            }
-        }
-        assert_eq!(wire.len(), total);
-        wire
+        let requests = self.groups();
+        let updates: Vec<_> = requests
+            .iter()
+            .map(|group| vec![(2, group.expected.clone(), group.replacement.clone())])
+            .collect();
+        let groups: Vec<_> = requests
+            .iter()
+            .zip(&updates)
+            .map(|(group, updates)| super::original_fixed_wire::Group {
+                column: group.column,
+                updates,
+            })
+            .collect();
+        super::original_fixed_wire::original_wire(
+            super::original_fixed_wire::Dialect::Ieee,
+            "Items",
+            &groups,
+            self.before.len(),
+            binding,
+        )
     }
 
     pub fn forged_offsets(&self) -> Vec<usize> {
