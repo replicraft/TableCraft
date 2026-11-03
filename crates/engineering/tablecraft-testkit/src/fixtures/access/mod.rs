@@ -370,3 +370,6 @@ pub mod attachment_modern;
 pub mod version_history;
 
 pub mod genuine_wide_ordinary_siblings;
+
+/// Registered independent collection-scale inputs and recipe-only models.
+pub mod collection_scale;

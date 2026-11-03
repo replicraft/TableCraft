@@ -209,3 +209,9 @@ See the [reader acceptance record](results/lazy-history-reader-2026-11-02.json).
 qualified source pins and original requests used by native proof/recovery, adapter
 and CLI tests. It shares the existing literal TCNI4 grammar without importing an
 engine encoder. See the [write acceptance record](results/ace16-wide-sibling-writes-2026-11-02.json).
+
+`fixtures::access::collection_scale` owns retained corpus pins and independent
+recipe expectations; `support::ace::collection_scale` owns shared real-reader
+limits/observations. Engine and browser scale targets import these owners directly.
+The [scale acceptance record](results/lazy-collection-scale-2026-11-02.json) separates
+recipe checks, full-reader parity and cumulative resource controls.

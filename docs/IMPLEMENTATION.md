@@ -1,5 +1,19 @@
 # Implementation status
 
+## Source-bound collection reader scale acceptance
+
+Selected-parent readers now pass sampled early/late/empty expansion over retained
+ACE16 sources with 20,000 sparse parents/48,000 multivalues, 400 dense parents/
+40,000 multivalues and 20,000 attachment/history members. Independent recipe
+models and explicitly labelled full-reader parity preserve values, IDs, encoded
+bytes and DATE bits. Five engine and three browser functions pass, including
+complete caps, multivalue overflow and terminal cumulative Rows exhaustion, followed
+by scoped strict/minimal/boundary/format checks. The
+[acceptance record](testing/results/lazy-collection-scale-2026-11-02.json) preserves
+test-only compile/lint corrections. Each expansion still performs complete-key
+validation; this adds no default-limit, throughput, concurrent-read or native Access
+claim. See [larger native collections](access/collections/LARGER_NATIVE_COLLECTIONS.md#source-bound-selected-parent-scale-acceptance).
+
 ## SQL integral assignment to wider numeric fields
 
 SQL UPDATE and INSERT now share lossless Byte/Int16/Int32 widening to Int64 and

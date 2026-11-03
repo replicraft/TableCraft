@@ -1645,8 +1645,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    records. Native wrapper decoding remains explicit. A source-bound
    [stored-history reader](access/collections/LAZY_HISTORY.md) now retains exact
    stored versions independently of current Memo values and rechecks fresh
-   all-template association uniqueness before each parent result. Larger-directory
-   qualification and query per-parent contracts remain separate work.
+   all-template association uniqueness before each parent result. Sampled
+   [larger-directory acceptance](access/collections/LARGER_NATIVE_COLLECTIONS.md#source-bound-selected-parent-scale-acceptance)
+   now covers sparse/dense multivalues, attachments/history and cumulative failure
+   with original browser controls. All-parent expansion, broader scale/coherence
+   and query per-parent contracts remain separate work.
    Ordinary SQL execution remains buffered; explicit
    [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
    cursors without complete-table retention. Explicit positive sorted TOP instead
