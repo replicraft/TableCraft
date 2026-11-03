@@ -3,6 +3,8 @@
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
+- [Generated-field UPDATE source qualification](ACE16_GENERATED_COMPANION_UPDATE_SOURCES.md)
+- [Retained Binary-index field UPDATE sources](ACE16_RETAINED_BINARY_MARKER_SOURCES.md)
 - [Test duplication audit](TEST_DUPLICATION_AUDIT.md)
 - [Wider numeric root-promotion sources](ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
 - [Int32 key updates beside retained Binary indexes: sources](ACE16_RETAINED_BINARY_ID_UPDATE_SOURCES.md)
