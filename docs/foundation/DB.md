@@ -27,7 +27,7 @@ before wrap/reuse. There is no unchecked ordinal constructor or serialization.
 exposes its frozen snapshot, candidate update profile and consuming batch planner.
 `UpdateProfile::StoredScalar` is a separate opt-in whose SQL consumer applies
 [target-aware stored assignment](../query/QUERY_EXECUTION.md#sql-stored-assignment):
-nullable NULL, exact stored carriers and checked integral Int32/Int64/Currency
+nullable NULL, exact stored carriers and checked integral Byte/Int16/Int32/Int64/Currency
 conversion. The typed DB contract still carries exact replacement Values. `ExistingInt32`
 keeps its earlier non-NULL behavior. Neither capability authorizes every field: adapters
 must validate carriers, identities, constraints and unavailable behavior. Planning
@@ -93,7 +93,7 @@ The [SQL VALUES consumer](../access/writes/SQL_INSERT_COPIES.md) binds every sup
 field exactly once before evaluating values, evaluates in written VALUES order,
 then moves results into backend column order and finishes once. It shares the
 actual UPDATE [stored-assignment owner](../query/QUERY_EXECUTION.md#sql-stored-assignment):
-nullable NULL, exact carriers and checked integral Int32/Int64/Currency conversion. INSERT does not broaden
+nullable NULL, exact carriers and checked integral Byte/Int16/Int32/Int64/Currency conversion. INSERT does not broaden
 ordinary UPDATE's `ExistingInt32` law. Nine neutral INSERT controls passed their first actual run. The full query
 regression passed 78 library and 16 existing editing integration tests; broader
 checks also passed: 296 INSERT regressions, 36 Access adapter tests, 31 CLI unit

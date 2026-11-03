@@ -14,6 +14,8 @@ fn exact_integral_assignments_and_scale_do_not_change_other_carrier_rules() {
         Value::Int64(7),
     ] {
         for (kind, expected) in [
+            (ScalarType::Byte, Value::Byte(7)),
+            (ScalarType::Int16, Value::Int16(7)),
             (ScalarType::Int64, Value::Int64(7)),
             (
                 ScalarType::Currency,
@@ -32,7 +34,12 @@ fn exact_integral_assignments_and_scale_do_not_change_other_carrier_rules() {
         }
     }
 
-    for kind in [ScalarType::Int64, ScalarType::Currency] {
+    for kind in [
+        ScalarType::Byte,
+        ScalarType::Int16,
+        ScalarType::Int64,
+        ScalarType::Currency,
+    ] {
         for value in [
             Value::Boolean(false),
             Value::Double(Double::from_float(7.0)),
@@ -141,4 +148,72 @@ fn only_new_conversions_consume_the_extra_work_and_check_cancellation() {
         ),
         Ok(Value::Int32(7)),
     );
+}
+
+#[test]
+fn smaller_integral_bounds_overflow_and_exact_cost_paths_are_explicit() {
+    for (kind, integer, expected) in [
+        (ScalarType::Byte, 0_i64, Value::Byte(0)),
+        (ScalarType::Byte, 255, Value::Byte(255)),
+        (ScalarType::Int16, -32_768, Value::Int16(-32_768)),
+        (ScalarType::Int16, 32_767, Value::Int16(32_767)),
+    ] {
+        assert_eq!(
+            stored_value(
+                Value::Int64(integer),
+                &target(kind, false),
+                &mut ResourceBudget::new(0, 0, 1),
+                &|| false
+            ),
+            Ok(expected),
+        );
+    }
+    for (kind, integer) in [
+        (ScalarType::Byte, -1_i64),
+        (ScalarType::Byte, 256),
+        (ScalarType::Int16, -32_769),
+        (ScalarType::Int16, 32_768),
+    ] {
+        assert_eq!(
+            stored_value(
+                Value::Int64(integer),
+                &target(kind, false),
+                &mut ResourceBudget::new(0, 0, 1),
+                &|| false
+            ),
+            Err(EvalError::Overflow.into()),
+        );
+    }
+    for (kind, exact) in [
+        (ScalarType::Byte, Value::Byte(7)),
+        (ScalarType::Int16, Value::Int16(7)),
+    ] {
+        assert_eq!(
+            stored_value(
+                exact.clone(),
+                &target(kind, false),
+                &mut ResourceBudget::new(0, 0, 0),
+                &|| true
+            ),
+            Ok(exact),
+        );
+        assert!(matches!(
+            stored_value(
+                Value::Int64(7),
+                &target(kind, false),
+                &mut ResourceBudget::new(0, 0, 0),
+                &|| false
+            ),
+            Err(QueryError::Limit(_)),
+        ));
+        assert_eq!(
+            stored_value(
+                Value::Int64(7),
+                &target(kind, false),
+                &mut ResourceBudget::new(0, 0, 1),
+                &|| true
+            ),
+            Err(QueryError::Cancelled),
+        );
+    }
 }

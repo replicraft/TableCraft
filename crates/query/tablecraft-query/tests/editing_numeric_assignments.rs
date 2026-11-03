@@ -87,8 +87,20 @@ fn policy() -> SchemaPolicy {
     }
 }
 
+fn integral(kind: ScalarType, integer: i64) -> Value {
+    match kind {
+        ScalarType::Byte => Value::Byte(u8::try_from(integer).unwrap()),
+        ScalarType::Int16 => Value::Int16(i16::try_from(integer).unwrap()),
+        ScalarType::Int64 => Value::Int64(integer),
+        ScalarType::Currency => Value::Currency(Currency::from_scaled(integer * 10_000)),
+        _ => unreachable!(),
+    }
+}
+
 fn target(kind: ScalarType, nullable: bool, input: Vec<Value>) -> (Target, Rc<Cell<usize>>) {
     let initial = match kind {
+        ScalarType::Byte => Value::Byte(0),
+        ScalarType::Int16 => Value::Int16(0),
         ScalarType::Int64 => Value::Int64(0),
         ScalarType::Currency => Value::Currency(Currency::from_scaled(0)),
         _ => unreachable!(),
@@ -121,30 +133,25 @@ fn target(kind: ScalarType, nullable: bool, input: Vec<Value>) -> (Target, Rc<Ce
 
 #[test]
 fn update_and_insert_small_integer_expressions_reach_backend_as_exact_target_carriers() {
-    for (kind, zero, seven) in [
-        (ScalarType::Int64, Value::Int64(0), Value::Int64(7)),
-        (
-            ScalarType::Currency,
-            Value::Currency(Currency::from_scaled(0)),
-            Value::Currency(Currency::from_scaled(70_000)),
-        ),
+    for kind in [
+        ScalarType::Byte,
+        ScalarType::Int16,
+        ScalarType::Int64,
+        ScalarType::Currency,
     ] {
-        for (expression, expected) in [
-            ("0", zero),
-            ("7", seven.clone()),
-            (
-                "-7",
-                if kind == ScalarType::Int64 {
-                    Value::Int64(-7)
-                } else {
-                    Value::Currency(Currency::from_scaled(-70_000))
-                },
-            ),
-            ("CByte(7)", seven.clone()),
-            ("CLng(7)", seven.clone()),
-            ("7 - 0", seven.clone()),
-            ("CLngLng(7)", seven),
+        for (expression, integer) in [
+            ("0", 0),
+            ("7", 7),
+            ("-7", -7),
+            ("CByte(7)", 7),
+            ("CLng(7)", 7),
+            ("7 - 0", 7),
+            ("CLngLng(7)", 7),
         ] {
+            if kind == ScalarType::Byte && integer < 0 {
+                continue;
+            }
+            let expected = integral(kind, integer);
             let (editor, calls) = target(kind, false, vec![Value::Int64(1)]);
             let sql = format!("UPDATE Items SET Target={expression}");
             let parsed = parse_query(&sql, ParseLimits::default()).unwrap();
@@ -170,7 +177,12 @@ fn update_and_insert_small_integer_expressions_reach_backend_as_exact_target_car
 
 #[test]
 fn nullable_assignment_remains_distinct_from_required_and_nonintegral_values() {
-    for kind in [ScalarType::Int64, ScalarType::Currency] {
+    for kind in [
+        ScalarType::Byte,
+        ScalarType::Int16,
+        ScalarType::Int64,
+        ScalarType::Currency,
+    ] {
         let (editor, calls) = target(kind, true, vec![Value::Int64(1)]);
         let parsed = parse_query("UPDATE Items SET Target=NULL", ParseLimits::default()).unwrap();
         let plan = plan_update(editor, parsed.query(), &mut budget(), None, &|| false).unwrap();
@@ -241,9 +253,15 @@ fn late_currency_overflow_never_publishes_an_earlier_valid_assignment() {
 
 #[test]
 fn both_public_planners_enforce_exact_work_and_cancel_before_finish() {
-    for insert in [false, true] {
+    for (kind, insert) in [ScalarType::Byte, ScalarType::Int16, ScalarType::Currency]
+        .into_iter()
+        .flat_map(|kind| [false, true].map(|insert| (kind, insert)))
+    {
         let sql = if insert {
             "INSERT INTO Items VALUES (0,0)"
+        } else if kind == ScalarType::Int16 {
+            // Arithmetic supplies Int64, exercising the new narrowing work.
+            "UPDATE Items SET Target=0 - 0"
         } else {
             "UPDATE Items SET Target=0"
         };
@@ -267,7 +285,7 @@ fn both_public_planners_enforce_exact_work_and_cancel_before_finish() {
         };
         let make_target = || {
             target(
-                ScalarType::Currency,
+                kind,
                 false,
                 if insert {
                     vec![]
@@ -304,5 +322,60 @@ fn both_public_planners_enforce_exact_work_and_cancel_before_finish() {
             Err(QueryError::Cancelled)
         );
         assert_eq!(calls.get(), 0);
+    }
+}
+
+#[test]
+fn smaller_integral_range_boundaries_and_late_overflow_never_publish_a_prefix() {
+    for (kind, lower, upper) in [
+        (ScalarType::Byte, 0_i64, 255_i64),
+        (ScalarType::Int16, -32_768, 32_767),
+    ] {
+        for integer in [lower, upper] {
+            let (editor, calls) = target(kind, false, vec![Value::Int64(integer)]);
+            let parsed =
+                parse_query("UPDATE Items SET Target=[Input]", ParseLimits::default()).unwrap();
+            let plan = plan_update(editor, parsed.query(), &mut budget(), None, &|| false).unwrap();
+            assert_eq!(plan.into_backend(), vec![integral(kind, integer)]);
+            assert_eq!(calls.get(), 1);
+
+            let (editor, calls) = target(kind, false, vec![]);
+            let parsed = parse_query(
+                &format!("INSERT INTO Items VALUES ({integer},0)"),
+                ParseLimits::default(),
+            )
+            .unwrap();
+            assert_eq!(
+                plan_insert(editor, parsed.query(), &mut budget(), &|| false).unwrap(),
+                vec![integral(kind, integer), Value::Int64(0)]
+            );
+            assert_eq!(calls.get(), 1);
+        }
+        for integer in [lower - 1, upper + 1] {
+            let (editor, calls) = target(kind, false, vec![Value::Int64(7), Value::Int64(integer)]);
+            let parsed =
+                parse_query("UPDATE Items SET Target=[Input]", ParseLimits::default()).unwrap();
+            assert!(matches!(
+                plan_update(editor, parsed.query(), &mut budget(), None, &|| false),
+                Err(UpdateError::Query(QueryError::Evaluation(
+                    EvalError::Overflow
+                )))
+            ));
+            assert_eq!(calls.get(), 0);
+
+            let (editor, calls) = target(kind, false, vec![]);
+            let parsed = parse_query(
+                &format!("INSERT INTO Items VALUES ({integer},0)"),
+                ParseLimits::default(),
+            )
+            .unwrap();
+            assert!(matches!(
+                plan_insert(editor, parsed.query(), &mut budget(), &|| false),
+                Err(InsertError::Query(QueryError::Evaluation(
+                    EvalError::Overflow
+                )))
+            ));
+            assert_eq!(calls.get(), 0);
+        }
     }
 }

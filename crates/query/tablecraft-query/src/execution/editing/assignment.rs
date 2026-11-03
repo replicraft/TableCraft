@@ -48,7 +48,9 @@ pub(in crate::execution) fn stored_value(
     }
 
     let value = match (target.data_type(), &value) {
-        (ScalarType::Int64, Value::Byte(_) | Value::Int16(_) | Value::Int32(_))
+        (ScalarType::Byte, Value::Int16(_) | Value::Int32(_) | Value::Int64(_))
+        | (ScalarType::Int16, Value::Byte(_) | Value::Int32(_) | Value::Int64(_))
+        | (ScalarType::Int64, Value::Byte(_) | Value::Int16(_) | Value::Int32(_))
         | (
             ScalarType::Currency,
             Value::Byte(_) | Value::Int16(_) | Value::Int32(_) | Value::Int64(_),
@@ -61,13 +63,21 @@ pub(in crate::execution) fn stored_value(
             budget.charge(Resource::Steps, 1)?;
 
             let integer = integer(&value).ok_or(QueryError::Unsupported)?;
-            if target.data_type() == ScalarType::Int64 {
-                Value::Int64(integer)
-            } else {
-                let scaled = integer
-                    .checked_mul(CURRENCY_UNITS_PER_INTEGER)
-                    .ok_or(EvalError::Overflow)?;
-                Value::Currency(Currency::from_scaled(scaled))
+            match target.data_type() {
+                ScalarType::Byte => {
+                    Value::Byte(u8::try_from(integer).map_err(|_| EvalError::Overflow)?)
+                }
+                ScalarType::Int16 => {
+                    Value::Int16(i16::try_from(integer).map_err(|_| EvalError::Overflow)?)
+                }
+                ScalarType::Int64 => Value::Int64(integer),
+                ScalarType::Currency => {
+                    let scaled = integer
+                        .checked_mul(CURRENCY_UNITS_PER_INTEGER)
+                        .ok_or(EvalError::Overflow)?;
+                    Value::Currency(Currency::from_scaled(scaled))
+                }
+                _ => return Err(QueryError::Unsupported),
             }
         }
         _ => value,

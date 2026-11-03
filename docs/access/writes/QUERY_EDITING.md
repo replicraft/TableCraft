@@ -124,7 +124,7 @@ across three CLI integration targets).
 The separate [SQL engineering-copy command](SQL_ENGINEERING_COPIES.md) uses
 `AccessEngineeringEditor` and the opt-in `StoredScalar` profile. Nullable NULL
 and exact stored carriers are accepted under shared descriptors, together with
-[checked integral Int32/Int64/Currency assignment](../../query/QUERY_EXECUTION.md#sql-stored-assignment).
+[checked integral Byte/Int16/Int32/Int64/Currency assignment](../../query/QUERY_EXECUTION.md#sql-stored-assignment).
 Typed/native APIs remain strict. Normal `NativeEditor`, `query update`, the
 existing Int32 profile and its ordinary ACE refusal are unchanged. The new command
 returns only an experimental, non-journalable copy under explicit native modes.

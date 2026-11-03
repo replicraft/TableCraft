@@ -13,7 +13,7 @@ UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_COPIES.md)
 opts into `StoredScalar` assignment through the same planner: nullable NULL and
 the [SQL stored-assignment rules](#sql-stored-assignment): exact stored carriers
-and checked integral conversion to the declared Int32, Int64 or Currency target.
+and checked integral conversion to the declared integral or Currency target.
 `plan_batch_update` consumes the explicit neutral `EditableBatch` capability for
 one local table and multiple assignments admitted by the selected backend. It rejects duplicate
 resolved targets before evaluation and evaluates all RHS expressions against
@@ -86,6 +86,8 @@ It accepts nullable NULL, exact declared carriers, and these integral conversion
 
 | Destination | Additional accepted carriers | Range and result |
 | --- | --- | --- |
+| Byte | Int16, Int32, Int64 | Checked 0 through 255. |
+| Int16 | Byte, Int32, Int64 | Checked -32,768 through 32,767. |
 | Int32 | Byte, Int16, Int64 | Checked -2,147,483,648 through 2,147,483,647. |
 | Int64 | Byte, Int16, Int32 | Exact widening; the stored Int64 range remains -9,223,372,036,854,775,808 through 9,223,372,036,854,775,807. |
 | Currency | Byte, Int16, Int32, Int64 | Checked multiplication by 10,000; integral inputs -922,337,203,685,477 through 922,337,203,685,477 fit. |

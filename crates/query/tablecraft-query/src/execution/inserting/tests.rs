@@ -326,8 +326,11 @@ fn declared_constructors_and_remaining_exact_carrier_guards_are_preserved() {
         assert_eq!(ScalarType::of(&values[0]), Some(kind));
         assert_eq!(calls.get(), 1);
 
-        // Integral Currency assignment has its own shared UPDATE/INSERT cases.
-        if kind == ScalarType::Currency {
+        // Integral destinations have their own shared UPDATE/INSERT cases.
+        if matches!(
+            kind,
+            ScalarType::Byte | ScalarType::Int16 | ScalarType::Currency
+        ) {
             continue;
         }
 

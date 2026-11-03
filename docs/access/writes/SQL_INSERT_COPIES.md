@@ -29,7 +29,7 @@ before one backend finish. A later expression error returns no partial candidate
 
 The planner shares the existing stored-scalar assignment law with SQL UPDATE:
 [checked integral assignment](../../query/QUERY_EXECUTION.md#sql-stored-assignment)
-can supply Int32, Int64 and Currency targets; other non-NULL carriers must match
+can supply Byte, Int16, Int32, Int64 and Currency targets; other non-NULL carriers must match
 the actual declared type and constraints exactly. Currency conversion scales
 whole integers exactly and refuses overflow. There is no implicit Text, decimal
 scale or floating-point conversion. The INSERT call set above remains unchanged:
