@@ -42,6 +42,13 @@ preserves the mock trait, syntax-profile and superseded Currency refusal correct
 Fractional/Text/Boolean/date conversions and native Access qualification remain
 separate work.
 
+Byte and Int16 destinations now use the same checked integral assignment owner.
+Out-of-range values fail before backend finish; exact-carrier paths retain their
+previous work cost. Four unit, five actual-planner, fifteen inserting and seventeen
+retained editing functions pass, followed by strict/minimal/boundary/format checks.
+See the [narrow assignment record](testing/results/sql-integral-narrow-assignment-2026-11-03.json).
+These SQL conversions grant no additional native field-mutation authority.
+
 ## Wider numeric key updates with ordinary fields
 
 Normal fixed UPDATE now qualifies actual Int32/Int64/Currency root-leaf keys and

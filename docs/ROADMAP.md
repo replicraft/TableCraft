@@ -1221,8 +1221,8 @@ Tuple/NODE omission mutations, allocation and native Access save/reopen remain.
 
 ## SQL integral assignment continuation
 
-The actual shared UPDATE/INSERT assignment owner now admits lossless integral
-Int64 widening and checked integer-to-Currency scaling. Typed/native replacements,
+The actual shared UPDATE/INSERT assignment owner now admits range-checked integral
+Byte/Int16 assignment, lossless Int64 widening and checked integer-to-Currency scaling. Typed/native replacements,
 original witnesses and read-query carriers remain strict. Four literal-zero CLI
 saves match existing independent wider-key images; conversion overflow and work
 limits precede backend finish. See [current assignment laws](query/QUERY_EXECUTION.md#sql-stored-assignment).

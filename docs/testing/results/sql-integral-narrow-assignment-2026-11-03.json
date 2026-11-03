@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Checked SQL integral assignment to Byte and Int16 using the shared UPDATE/INSERT owner. Exact carriers and NULL descriptors retain prior behavior; typed/native APIs remain strict.",
+  "acceptance": "41 functions pass across assignment, actual planners, inserting and retained editing; strict all-target/all-feature query checks, minimal query build, boundaries and formatting pass.",
+  "conversion": "Only mismatched integral carriers use the paid cancellable conversion; u8/i16 TryFrom rejects overflow before backend finish. Fractional/Text/Boolean/DATE coercion and native Access comparison remain separate.",
+  "execution": [
+    {
+      "name": "assignment",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--offline",
+        "--locked",
+        "--lib",
+        "execution::editing::assignment::tests"
+      ],
+      "exit": 0,
+      "log_sha256": "696c4ac38bf58647c4cb7c8a176d3317532a1d320fd2c9c69b5a5327dfbb4666",
+      "passed_functions": [
+        4
+      ]
+    },
+    {
+      "name": "actual-planners",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--offline",
+        "--locked",
+        "--test",
+        "editing_numeric_assignments"
+      ],
+      "exit": 0,
+      "log_sha256": "1a52c8c8dbda51322f4c7da4db29a0a31ea018c8b0cddff2cc3126d1184e5646",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "inserting",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--offline",
+        "--locked",
+        "--lib",
+        "execution::inserting"
+      ],
+      "exit": 0,
+      "log_sha256": "8bce88bcc6be79b10e6f08318d410644a7d9a9b0fc7e4340de00395e7538b175",
+      "passed_functions": [
+        15
+      ]
+    },
+    {
+      "name": "retained-editing",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-query",
+        "--offline",
+        "--locked",
+        "--test",
+        "editing",
+        "--test",
+        "editing_stored",
+        "--test",
+        "editing_columns"
+      ],
+      "exit": 0,
+      "log_sha256": "d26eb56474d25871441640294511ebda774e82cf9383db4fdbb8570b74afe8f8",
+      "passed_functions": [
+        8,
+        7,
+        2
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-query",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "5ed6654a5b59d6e659eb1052d16fd6eae15ba90c717a1b9d34635824341e1e24",
+      "passed_functions": []
+    },
+    {
+      "name": "minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-query",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "96f76f056d2e74821ca213a564b00bebd32377daf6d627f0c73f82efb5820fe2",
+      "passed_functions": []
+    },
+    {
+      "name": "boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "passed_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ]
+}
