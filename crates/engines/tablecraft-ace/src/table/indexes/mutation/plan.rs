@@ -518,7 +518,13 @@ fn edit<P: WriteProfile, const N: usize>(
         Change::Update(updates) => updates,
         Change::FixedUpdate(updates) => {
             return super::ignored::edit::<P, N>(
-                image, reader, index, schema, updates, profile, patches,
+                image,
+                reader,
+                index,
+                schema,
+                updates,
+                profile,
+                &mut patches.indexes,
             );
         }
         Change::Delete(references) => {

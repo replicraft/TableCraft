@@ -1,6 +1,6 @@
 //! Fitting IgnoreNULL rewrites consume complete original-row associations.
 use super::{
-    IndexKeyUpdate, PatchSet, population, profile::WriteProfile, tree::population::Population,
+    IndexDataPatch, IndexKeyUpdate, population, profile::WriteProfile, tree::population::Population,
 };
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema, WriteBlocker,
@@ -15,7 +15,7 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
     schema: &TableSchema,
     updates: &[IndexKeyUpdate],
     profile: &P,
-    patches: &mut PatchSet,
+    patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
     let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     if !constraints.ignore_nulls() || constraints.primary_key() {
@@ -37,19 +37,12 @@ pub(super) fn edit<P: WriteProfile, const N: usize>(
         image,
         &mut population,
         profile,
-        &mut patches.indexes,
+        patches,
         reader.budget,
         reader.cancelled,
     )?;
     if !population.keys.is_empty() || population.leaves != 0 {
         return Err(EditError::Preservation);
     }
-    population::history::patch(
-        image,
-        schema,
-        index,
-        prepared.increment,
-        &mut patches.indexes,
-        reader,
-    )
+    population::history::patch(image, schema, index, prepared.increment, patches, reader)
 }

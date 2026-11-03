@@ -90,6 +90,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Fixed updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
 - [Int32 key updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
 - [Wider numeric key updates with ordinary fields](writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md)
+- [Single-Int32 ignored-NULL index updates](writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md)
 - [Ordinary updates beside generated IDs](writes/NORMAL_GENERATED_COMPANION_UPDATE.md)
 
 - [Complete native image retention](writes/NATIVE_PRESERVATION.md)

@@ -25,8 +25,23 @@ pub(in crate::table) fn certify(
     };
     let constraints = index
         .constraints()
-        .filter(|constraints| !constraints.ignore_nulls())
         .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))?;
+    if constraints.ignore_nulls() && constraints.primary_key() {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
+    let emitted = if constraints.ignore_nulls() {
+        let mut emitted = 0_usize;
+        for (_, value) in expected {
+            check(budget, cancelled)?;
+            constraints
+                .check_tuple::<i64>(&mut None, None, value.is_none())
+                .map_err(InspectError::from)?;
+            emitted += usize::from(value.is_some());
+        }
+        emitted
+    } else {
+        expected.len()
+    };
     let profile = SingleKey {
         column: column.number(),
         key_type: KeyType::Int32,
@@ -68,7 +83,7 @@ pub(in crate::table) fn certify(
         gap: false,
     };
     walker.visit(index.root_page(), 0, None, None)?;
-    if walker.next_leaf != 0 || walker.gap || walker.entries.len() != expected.len() {
+    if walker.next_leaf != 0 || walker.gap || walker.entries.len() != emitted {
         return Err(InspectError::Malformed.into());
     }
     let entries = walker.entries;
@@ -101,7 +116,10 @@ pub(in crate::table) fn certify(
             .iter()
             .position(|(reference, _)| *reference == entry.row)
             .ok_or(InspectError::Malformed)?;
-        if seen[position] || entry.key != expected[position].1.map(i64::from) {
+        if seen[position]
+            || entry.key != expected[position].1.map(i64::from)
+            || constraints.ignore_nulls() && entry.key.is_none()
+        {
             return Err(InspectError::Malformed.into());
         }
         constraints

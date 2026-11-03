@@ -61,7 +61,19 @@ pub(super) fn prove(
                 cancelled,
             )
         };
-    if facts.retains_binary() {
+    if facts.omits_nulls() {
+        normal_index_audit::reconstruct_i32_omissions(
+            &image,
+            facts.checked(),
+            &mut expected,
+            final_value,
+            budget,
+            cancelled,
+        )?;
+        let after_image =
+            NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
+        capture(&after_image, table, budget, cancelled)?;
+    } else if facts.retains_binary() {
         normal_index_audit::reconstruct_retained_i32(
             &image,
             facts.checked(),
@@ -164,3 +176,6 @@ fn cell(value: &Value) -> Result<Option<i32>, EditError> {
 
 #[cfg(test)]
 mod binary_id;
+
+#[cfg(test)]
+mod ignore_null;

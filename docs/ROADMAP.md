@@ -1206,8 +1206,18 @@ Source, full ownership/constraints, exact carriers, original records and indepen
 whole-image replay remain mandatory. Twenty-eight native commits/typed saves and
 sixteen SQL/CLI saves each pass, with protected-byte, recovery and public resource
 controls. See the [qualified profile](access/writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md).
-Retained NODE schemas keep their original numeric-only qualification; IgnoreNULL
-keys, broader allocation and native Access save/reopen remain work.
+Retained NODE schemas keep their original numeric-only qualification. Qualified
+single-Int32 IgnoreNULL secondary updates now have the separate continuation
+below; broader allocation and native Access save/reopen remain work.
+
+## Normal single-Int32 ignored-NULL UPDATE
+
+The normal fixed service now maintains manual Int32 secondary root leaves while
+preserving logical NULL rows, Required/UNIQUE, physical aliases and historical
+counts. Full Source/program absence precedes matching proof, recovery and
+native/typed/SQL/CLI saves over unchanged independent images. See the
+[qualified fitting profile](access/writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
+Tuple/NODE omission mutations, allocation and native Access save/reopen remain.
 
 ## SQL integral assignment continuation
 

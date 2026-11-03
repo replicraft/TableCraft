@@ -26,7 +26,14 @@ pub(in crate::table) fn patches(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
-    patches_with(image, checked, updates, false, budget, cancelled)
+    patches_with(
+        image,
+        checked,
+        updates,
+        Selection::Legacy,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -37,14 +44,45 @@ pub(in crate::table) fn patches_retained_i32(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
-    patches_with(image, checked, updates, true, budget, cancelled)
+    patches_with(
+        image,
+        checked,
+        updates,
+        Selection::RetainedBinary,
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table) fn patches_i32_omissions(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        checked,
+        updates,
+        Selection::Omitted,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Selection {
+    Legacy,
+    RetainedBinary,
+    Omitted,
 }
 
 fn patches_with(
     image: &NativeImage,
     checked: &TableCheck,
     updates: &[IndexKeyUpdate],
-    retained_binary: bool,
+    selected: Selection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
@@ -54,7 +92,9 @@ fn patches_with(
     // Qualify every original physical declaration even when updates are empty.
     // The caller separately qualifies required programs or complete ordinary
     // content. These physical index facts supply neither kind of admission.
-    let ownership = if retained_binary {
+    let ownership = if selected == Selection::Omitted {
+        Ownership::capture_i32_omissions(image, checked, budget, cancelled)?
+    } else if selected == Selection::RetainedBinary {
         #[cfg(feature = "journal")]
         {
             Ownership::capture_i32_updates(image, checked, budget, cancelled)?
@@ -89,7 +129,7 @@ fn patches_with(
         // The normal caller already bound every named target through the sealed
         // I32 token, including empty/no-op groups. Ownership independently checks
         // every retained Binary owner before it can be left byte-exact here.
-        if retained_binary {
+        if selected == Selection::RetainedBinary {
             reader.work(schema.columns().len())?;
             let retained = index
                 .columns()
@@ -128,7 +168,33 @@ fn patches_with(
         if !affected {
             continue;
         }
-        if index.columns().len() == 1 {
+        if selected == Selection::Omitted
+            && index
+                .constraints()
+                .is_some_and(|flags| flags.ignore_nulls())
+        {
+            let number = index.columns()[0].number();
+            reader.work(schema.columns().len())?;
+            let column = schema
+                .columns()
+                .iter()
+                .position(|field| field.number() == number)
+                .ok_or(EditError::Preservation)?;
+            let profile = SingleProfile {
+                column,
+                kind: NumericKey::new(ScalarType::Int32)?,
+                descending: index.columns()[0].descending(),
+            };
+            super::ignored::edit::<_, { encoding::MAX_ENTRY_BYTES }>(
+                image,
+                &mut reader,
+                index,
+                schema,
+                updates,
+                &profile,
+                &mut patches,
+            )?;
+        } else if index.columns().len() == 1 {
             let number = index.columns()[0].number();
             reader.work(schema.columns().len())?;
             let column = schema

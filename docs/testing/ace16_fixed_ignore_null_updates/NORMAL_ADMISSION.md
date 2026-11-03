@@ -31,3 +31,15 @@ The [audit record](../results/ace16-ignore-null-admission-audit-2026-11-02.json)
 retains actual stage observations and first failures. Later implementations must
 establish full admission before matching writes; the test does not encode a
 permanent refusal invariant.
+
+
+## Later normal UPDATE continuation
+
+The later selected manual-Int32 secondary declaration continuation passes complete
+program-absence and canonical Source admission in all twelve original/AFTER
+contexts. The earlier refusal observations above remain the baseline audit;
+no source image was regenerated or retuned. The unchanged original requests and
+independent outcomes now pass separate normal proof, native recovery, retained
+session and CLI matching checks. See the
+[current fitting scope](../../access/writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
+Native Access save/reopen remains unrun.

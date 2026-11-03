@@ -1,5 +1,18 @@
 # Implementation status
 
+## Normal single-Int32 ignored-NULL UPDATE
+
+Normal fixed UPDATE now maintains qualified manual Int32 secondary root leaves
+that omit NULL keys. Complete Source/program absence, logical Required/UNIQUE,
+alias ownership and independent original/final membership and historical counts
+remain mandatory. Twelve native, typed, SQL and CLI outcomes each match retained
+independent images, including NULL transitions, no-op and named-empty requests.
+Direct proof and cold journal replay reject protected-byte forgeries; recovery
+and public resource controls pass. See the
+[bounded profile](access/writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
+Tuple/NODE omission mutations, allocation and native Access save/reopen remain
+separate work.
+
 ## Source-bound collection reader scale acceptance
 
 Selected-parent readers now pass sampled early/late/empty expansion over retained

@@ -83,6 +83,13 @@ records genuine native recovery, twenty principal typed/SQL session saves, ten C
 saves/readbacks and full ACE unit/recovery regressions. Mixed DATA/INDEX rollback
 and exact refusal diagnostics are tested separately from source admission.
 
+The selected seventeen-field family also has a fitting
+[single-Int32 IgnoreNULL continuation](NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
+It checks complete logical membership before omitting NULL secondary keys,
+retains Required-before-omission and final UNIQUE constraints, and independently
+derives bounded historical increments. This does not widen the initial global
+family or authorize ignored primary, tuple or NODE mutations.
+
 ## Authority and physical proof
 
 For the initial global family, `ordinary_content` accounts for the header, full catalog graph, declarations,
@@ -94,8 +101,9 @@ payloads remain ordinary data under their declared roles.
 For retained indexes, actual complete table checks and original row references
 and values establish key membership. Every physical declaration needs a real
 logical alias, and each physical map and INDEX page has exclusive ownership.
-Historical index counters are preserved as stored, never replaced by a live-row
-count. Full count, physical and logical declarations remain checked independently
+Historical index counters are preserved as stored, except for the independently
+derived increments in the qualified IgnoreNULL continuation; they are never
+replaced by a live-row count. Full count, physical and logical declarations remain checked independently
 of the semantic reader.
 
 Existing compressed prefixes and interior nodes are validated with their
@@ -103,8 +111,9 @@ original bounds, row suffixes, links, heights, entry extents and free counts.
 Inactive INDEX capacity may retain bytes such as A7 under that explicitly checked
 page role. Unaffected indexes remain byte-exact. An affected physical index is
 rewritten once even when it has multiple logical aliases, using fitting encoding
-selected before staging. Page identities, child topology and per-leaf entry counts
-stay fixed. Prefixes, active extents, free counts and node bounds may change to
+selected before staging. Page identities and child topology stay fixed. Per-leaf entry counts stay fixed
+for the original include-NULL profile; the qualified IgnoreNULL root leaf may
+change its emitted entry count. Prefixes, active extents, free counts and node bounds may change to
 describe the final key population. Entry-storage bytes beyond the new active
 extent retain their original contents. Equal assignments and empty groups
 preserve whole images.

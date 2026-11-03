@@ -337,9 +337,18 @@ fn qualify_for(
         (SHORT_TEXT, Some(ScalarType::Text)) if text => field.storage_length(),
         _ => return Err(refused()),
     };
+    // This selected dense declaration belongs to the normal UPDATE absence
+    // proof. It qualifies no physical mutation: full original membership and
+    // each actual target are checked by their later owning services.
+    let selected_omission = matches!(family, KeyFamily::SelectedIntegral)
+        && !constraints.primary_key()
+        && field.native_type() == INT32
+        && field.scalar_type() == Some(ScalarType::Int32)
+        && field.flags() == (layout::FIXED_FLAG | UPDATABLE_FLAG)
+        && field.complex_type_id().is_none();
     if index.native_type() > 1
         || index.foreign_reference().is_some()
-        || constraints.ignore_nulls()
+        || constraints.ignore_nulls() && !selected_omission
         || field.number() != key.number()
         || field.storage_length() != width
         || variable && field.fixed()

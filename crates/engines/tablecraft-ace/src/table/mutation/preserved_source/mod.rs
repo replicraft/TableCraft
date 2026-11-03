@@ -12,7 +12,7 @@ use crate::{
     format::{
         allocation,
         data_type::{COMPLEX, INT32},
-        layout::CALCULATED_EXT_MASK,
+        layout::{CALCULATED_EXT_MASK, FIXED_FLAG, UPDATABLE_FLAG},
         reader::Reader,
     },
     header::check,
@@ -478,6 +478,31 @@ fn capture_framed(
         .ok_or(InspectError::Malformed)?;
         if index.native_type() > 1 || index.constraints().is_none() {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        }
+        if index
+            .constraints()
+            .is_some_and(|flags| flags.ignore_nulls())
+        {
+            // Read certification covers only a manual native Int32 secondary.
+            // Every logical alias is checked before physical-owner deduplication.
+            if column.native_type() != INT32
+                || column.scalar_type() != Some(tablecraft_schema::ScalarType::Int32)
+                || !column.fixed()
+                || column.storage_length() != size_of::<i32>()
+                || column.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+                || column.extended_flags() != 0
+                || column.complex_type_id().is_some()
+            {
+                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+            }
+            for alias in indexes.indexes() {
+                check(budget, cancelled)?;
+                if alias.data_number() == index.data_number()
+                    && alias.constraints().is_none_or(|flags| flags.primary_key())
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+                }
+            }
         }
         budget
             .charge(Resource::Steps, physical.len() as u64)
