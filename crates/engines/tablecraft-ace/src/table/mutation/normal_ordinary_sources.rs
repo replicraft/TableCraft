@@ -247,3 +247,7 @@ mod ignore_null_update;
 mod ieee_update;
 
 mod byte_int16_update;
+
+mod guid_update_originals;
+
+mod guid_update_spans;

@@ -194,3 +194,6 @@ mod action_tests;
 
 #[cfg(test)]
 mod ignore_null_prior_stages;
+
+#[cfg(test)]
+mod guid_prior_stages;
