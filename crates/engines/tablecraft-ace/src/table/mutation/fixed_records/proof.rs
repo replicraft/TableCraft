@@ -1,4 +1,5 @@
 //! Independent original authority for preserved joint fixed-field candidates.
+use super::FixedCarriers;
 #[cfg(feature = "ace16-write-preview")]
 use super::copy;
 use super::{
@@ -14,7 +15,7 @@ use crate::table::mutation::{
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, DATE_TIME, DOUBLE, INT32, INT64, SINGLE},
+        data_type::{BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, INT16, INT32, INT64, SINGLE},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -40,6 +41,8 @@ enum Carrier {
     DateTime,
     Single,
     Double,
+    Byte,
+    Int16,
 }
 
 struct Bound<'a> {
@@ -105,7 +108,13 @@ pub(in crate::table::mutation) fn prove_original(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     prove_with_policy(
-        original, expected, groups, observed, false, budget, cancelled,
+        original,
+        expected,
+        groups,
+        observed,
+        FixedCarriers::Legacy,
+        budget,
+        cancelled,
     )
 }
 
@@ -119,7 +128,33 @@ pub(in crate::table::mutation) fn prove_ieee_original(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     prove_with_policy(
-        original, expected, groups, observed, true, budget, cancelled,
+        original,
+        expected,
+        groups,
+        observed,
+        FixedCarriers::Ieee,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prove_scalar_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    observed: Observed<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy(
+        original,
+        expected,
+        groups,
+        observed,
+        FixedCarriers::Scalar,
+        budget,
+        cancelled,
     )
 }
 
@@ -128,7 +163,7 @@ fn prove_with_policy(
     expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     observed: Observed<'_>,
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -141,10 +176,12 @@ fn prove_with_policy(
     if expected.len() != image.as_bytes().len() || after.len() != image.as_bytes().len() {
         return Err(EditError::Preservation);
     }
-    let (expected, changed_rows) = if ieee {
-        reconstruct_with_targets(original, expected, groups, None, true, budget, cancelled)?
-    } else {
+    let (expected, changed_rows) = if carriers == FixedCarriers::Legacy {
         reconstruct(original, expected, groups, None, budget, cancelled)?
+    } else {
+        reconstruct_with_targets(
+            original, expected, groups, None, carriers, budget, cancelled,
+        )?
     };
     if changed_rows != returned_count || expected.len() != after.len() {
         return Err(EditError::Preservation);
@@ -222,7 +259,7 @@ fn reconstruct(
         expected,
         groups,
         indexed.map(|facts| facts as &dyn IndexTargets),
-        false,
+        FixedCarriers::Legacy,
         budget,
         cancelled,
     )
@@ -253,7 +290,7 @@ pub(in crate::table::mutation) fn reconstruct_integral_original(
         expected,
         groups,
         Some(indexed),
-        false,
+        FixedCarriers::Legacy,
         budget,
         cancelled,
     )
@@ -287,7 +324,7 @@ pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
         expected,
         groups,
         Some(indexed),
-        false,
+        FixedCarriers::Legacy,
         budget,
         cancelled,
     )
@@ -298,7 +335,7 @@ fn reconstruct_with_targets(
     mut expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     indexed: Option<&dyn IndexTargets>,
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
@@ -321,7 +358,7 @@ fn reconstruct_with_targets(
         .map_err(|_| InspectError::Allocation)?;
     for group in groups {
         check(budget, cancelled)?;
-        let selected = select(original, group, indexed, ieee, budget, cancelled)?;
+        let selected = select(original, group, indexed, carriers, budget, cancelled)?;
         budget
             .charge(Resource::Steps, bound.len() as u64)
             .map_err(InspectError::from)?;
@@ -444,7 +481,7 @@ fn select<'a>(
     original: &'a Source,
     group: &FixedColumnUpdates<'_>,
     indexed: Option<&dyn IndexTargets>,
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound<'a>, EditError> {
@@ -470,8 +507,18 @@ fn select<'a>(
         (INT64, Some(ScalarType::Int64)) => (Carrier::Int64, WIDE_BYTES),
         (CURRENCY, Some(ScalarType::Currency)) => (Carrier::Currency, WIDE_BYTES),
         (DATE_TIME, Some(ScalarType::DateTime)) => (Carrier::DateTime, WIDE_BYTES),
-        (SINGLE, Some(ScalarType::Single)) if ieee => (Carrier::Single, size_of::<u32>()),
-        (DOUBLE, Some(ScalarType::Double)) if ieee => (Carrier::Double, WIDE_BYTES),
+        (SINGLE, Some(ScalarType::Single)) if carriers != FixedCarriers::Legacy => {
+            (Carrier::Single, size_of::<u32>())
+        }
+        (DOUBLE, Some(ScalarType::Double)) if carriers != FixedCarriers::Legacy => {
+            (Carrier::Double, WIDE_BYTES)
+        }
+        (BYTE, Some(ScalarType::Byte)) if carriers == FixedCarriers::Scalar => {
+            (Carrier::Byte, size_of::<u8>())
+        }
+        (INT16, Some(ScalarType::Int16)) if carriers == FixedCarriers::Scalar => {
+            (Carrier::Int16, size_of::<i16>())
+        }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
     if !field.fixed()
@@ -534,7 +581,9 @@ fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
             | Carrier::Currency
             | Carrier::DateTime
             | Carrier::Single
-            | Carrier::Double,
+            | Carrier::Double
+            | Carrier::Byte
+            | Carrier::Int16,
             Value::Null,
         ) => {
             return Ok(Cell::Fixed(None));
@@ -542,6 +591,16 @@ fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
         (Carrier::Int32, Value::Int32(value)) => {
             let mut bytes = [0; WIDE_BYTES];
             bytes[..INT32_BYTES].copy_from_slice(&value.to_le_bytes());
+            bytes
+        }
+        (Carrier::Byte, Value::Byte(value)) => {
+            let mut bytes = [0; WIDE_BYTES];
+            bytes[0] = *value;
+            bytes
+        }
+        (Carrier::Int16, Value::Int16(value)) => {
+            let mut bytes = [0; WIDE_BYTES];
+            bytes[..size_of::<i16>()].copy_from_slice(&value.to_le_bytes());
             bytes
         }
         (Carrier::Single, Value::Single(value)) => {

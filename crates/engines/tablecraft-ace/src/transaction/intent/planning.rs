@@ -4,7 +4,9 @@ use super::{
 };
 use crate::{
     EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit, PreparedNativeUpdate,
-    format::page::PAGE_BYTES, limits::MAX_IMAGE_BYTES, table::OrdinaryVariablePlanKind,
+    format::page::PAGE_BYTES,
+    limits::MAX_IMAGE_BYTES,
+    table::{FixedCarriers, OrdinaryVariablePlanKind},
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
@@ -100,19 +102,25 @@ impl NativeImage {
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         let _span = tracing::debug_span!("native.ordinary_fixed_edit.plan_recoverable").entered();
         let borrowed = super::fixed::borrow_groups(table, &groups, budget, cancelled)?;
-        let ieee = self.ordinary_fixed_ieee_requested(table, &borrowed, budget, cancelled)?;
-        let plan = if ieee {
-            self.plan_ordinary_ieee_updates(table, &borrowed, budget, cancelled)?
-        } else {
-            self.plan_ordinary_fixed_updates(table, &borrowed, budget, cancelled)?
+        let kind = self.ordinary_fixed_carriers(table, &borrowed, budget, cancelled)?;
+        let plan = match kind {
+            FixedCarriers::Legacy => {
+                self.plan_ordinary_fixed_updates(table, &borrowed, budget, cancelled)?
+            }
+            FixedCarriers::Ieee => {
+                self.plan_ordinary_ieee_updates(table, &borrowed, budget, cancelled)?
+            }
+            FixedCarriers::Scalar => {
+                self.plan_ordinary_scalar_updates(table, &borrowed, budget, cancelled)?
+            }
         };
         drop(borrowed);
         let original =
             NativeFixedEditIntent::new(table, groups, plan.before_bytes(), budget, cancelled)?;
-        let intent = if ieee {
-            NativeUpdateIntent::from_ordinary_ieee_fixed(original)
-        } else {
-            NativeUpdateIntent::from_ordinary_fixed(original)
+        let intent = match kind {
+            FixedCarriers::Legacy => NativeUpdateIntent::from_ordinary_fixed(original),
+            FixedCarriers::Ieee => NativeUpdateIntent::from_ordinary_ieee_fixed(original),
+            FixedCarriers::Scalar => NativeUpdateIntent::from_ordinary_scalar_fixed(original),
         };
         Ok(RecoverableNativeEditPlan { plan, intent })
     }

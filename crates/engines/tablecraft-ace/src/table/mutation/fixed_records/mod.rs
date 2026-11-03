@@ -7,6 +7,15 @@ pub(in crate::table::mutation) mod stage;
 use crate::{EditError, InspectError, header::check, preservation::COPY_CHUNK_BYTES};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+/// Closed target families; selecting a family never substitutes for Source proof.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum FixedCarriers {
+    Legacy,
+    #[cfg(feature = "journal")]
+    Ieee,
+    Scalar,
+}
+
 pub(in crate::table::mutation) fn copy(
     bytes: &[u8],
     budget: &mut ResourceBudget,

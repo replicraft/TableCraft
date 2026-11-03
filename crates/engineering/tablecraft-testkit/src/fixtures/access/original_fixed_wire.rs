@@ -1,10 +1,11 @@
-//! Literal original fixed UPDATE framing shared by actual TCNI4/8 consumers.
+//! Literal original fixed UPDATE framing shared by actual TCNI4/8/9 consumers.
 use tablecraft_core::values::Value;
 
 #[derive(Clone, Copy)]
 pub enum Dialect {
     Ordinary,
     Ieee,
+    Scalar,
 }
 
 pub struct Group<'a> {
@@ -58,6 +59,7 @@ pub fn original_wire(
     let (magic, profile) = match dialect {
         Dialect::Ordinary => (b"TCNI0004", 4),
         Dialect::Ieee => (b"TCNI0008", 8),
+        Dialect::Scalar => (b"TCNI0009", 9),
     };
     let mut wire = Vec::from(*magic);
     wire.extend_from_slice(&(total as u32).to_le_bytes());
@@ -88,11 +90,17 @@ pub fn original_wire(
                     Value::Int64(value) => (3, value.to_le_bytes()),
                     Value::Currency(value) => (4, value.scaled().to_le_bytes()),
                     Value::DateTime(value) => (5, value.to_bits().to_le_bytes()),
-                    Value::Single(value) if matches!(dialect, Dialect::Ieee) => {
+                    Value::Single(value) if matches!(dialect, Dialect::Ieee | Dialect::Scalar) => {
                         (6, u64::from(value.to_bits()).to_le_bytes())
                     }
-                    Value::Double(value) if matches!(dialect, Dialect::Ieee) => {
+                    Value::Double(value) if matches!(dialect, Dialect::Ieee | Dialect::Scalar) => {
                         (7, value.to_bits().to_le_bytes())
+                    }
+                    Value::Byte(value) if matches!(dialect, Dialect::Scalar) => {
+                        (8, u64::from(*value).to_le_bytes())
+                    }
+                    Value::Int16(value) if matches!(dialect, Dialect::Scalar) => {
+                        (9, u64::from(*value as u16).to_le_bytes())
                     }
                     _ => panic!("outside literal fixed dialect carrier law"),
                 };
@@ -151,6 +159,33 @@ mod tests {
             literal(
                 "54434e4930303038700000000800000000100000000000005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a0100000001000000010000000000000054010000000100000000000000530200000000000000060000008000000000060100000000000000"
             )
+        );
+    }
+
+    #[test]
+    fn scalar9_literal_bytes_retain_exact_small_widths_and_zero_upper_padding() {
+        let byte = [(2, Value::Byte(255), Value::Byte(0))];
+        let integer = [(2, Value::Int16(-32_768), Value::Int16(32_767))];
+        assert_eq!(
+            original_wire(
+                Dialect::Scalar,
+                "T",
+                &[
+                    Group {
+                        column: "B",
+                        updates: &byte
+                    },
+                    Group {
+                        column: "I",
+                        updates: &integer
+                    }
+                ],
+                4096,
+                [0x5a; 32]
+            ),
+            literal(
+                "54434e4930303039970000000900000000100000000000005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a010000000200000002000000000000005401000000010000000000000042020000000000000008ff0000000000000008000000000000000001000000010000000000000049020000000000000009008000000000000009ff7f000000000000"
+            ),
         );
     }
 }

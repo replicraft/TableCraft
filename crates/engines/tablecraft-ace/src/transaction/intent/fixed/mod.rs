@@ -16,3 +16,6 @@ mod ordinary_tests;
 
 #[cfg(test)]
 mod ieee_tests;
+
+#[cfg(test)]
+mod scalar_tests;

@@ -20,7 +20,7 @@ use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
     header::check,
     table::mutation::{
-        fixed_records::{self, binding, stage},
+        fixed_records::{self, FixedCarriers, binding, stage},
         no_required_programs::NoRequiredTablePrograms,
         ordinary_content,
         patch::BytePatch,
@@ -46,7 +46,15 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.fixed.plan").entered();
         let source = capture(&self, table, budget, cancelled)?;
-        plan(self, source, table, original, false, budget, cancelled)
+        plan(
+            self,
+            source,
+            table,
+            original,
+            FixedCarriers::Legacy,
+            budget,
+            cancelled,
+        )
     }
 
     /// Ordinary IEEE requests retain separate target and original-intent policy.
@@ -59,7 +67,38 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.ordinary.ieee_fixed.plan").entered();
         let source = capture(&self, table, budget, cancelled)?;
-        plan(self, source, table, original, true, budget, cancelled)
+        plan(
+            self,
+            source,
+            table,
+            original,
+            FixedCarriers::Ieee,
+            budget,
+            cancelled,
+        )
+    }
+}
+
+impl NativeImage {
+    /// Cumulative ordinary fixed requests retain exact original carriers.
+    pub(crate) fn plan_ordinary_scalar_updates(
+        self,
+        table: &str,
+        original: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let _span = tracing::debug_span!("native.ordinary.scalar_fixed.plan").entered();
+        let source = capture(&self, table, budget, cancelled)?;
+        plan(
+            self,
+            source,
+            table,
+            original,
+            FixedCarriers::Scalar,
+            budget,
+            cancelled,
+        )
     }
 }
 
@@ -68,12 +107,12 @@ fn plan(
     source: Source,
     table: &str,
     original: &[FixedColumnUpdates<'_>],
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     if indexed::selected(&source, original, budget, cancelled)? {
-        if ieee {
+        if carriers != FixedCarriers::Legacy {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         if wide::selected(&source, budget, cancelled)? {
@@ -81,12 +120,16 @@ fn plan(
         }
         return indexed::plan(image, source, table, original, budget, cancelled);
     }
-    preflight_with_policy(&source, original, ieee, budget, cancelled)?;
+    preflight_with_policy(&source, original, carriers, budget, cancelled)?;
 
-    let (patches, changed_rows) = if ieee {
-        stage::prepare_ieee(&image, &source, original, budget, cancelled)?
-    } else {
-        stage::prepare_normal(&image, &source, original, budget, cancelled)?
+    let (patches, changed_rows) = match carriers {
+        FixedCarriers::Legacy => {
+            stage::prepare_normal(&image, &source, original, budget, cancelled)?
+        }
+        FixedCarriers::Ieee => stage::prepare_ieee(&image, &source, original, budget, cancelled)?,
+        FixedCarriers::Scalar => {
+            stage::prepare_scalar(&image, &source, original, budget, cancelled)?
+        }
     };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     for patch in patches {
@@ -114,10 +157,12 @@ fn plan(
         after,
         changed_rows,
     };
-    if ieee {
-        proof::prove_ieee(&plan, scope, table, original, budget, cancelled)?;
-    } else {
-        proof::prove(&plan, scope, table, original, budget, cancelled)?;
+    match carriers {
+        FixedCarriers::Legacy => proof::prove(&plan, scope, table, original, budget, cancelled)?,
+        FixedCarriers::Ieee => proof::prove_ieee(&plan, scope, table, original, budget, cancelled)?,
+        FixedCarriers::Scalar => {
+            proof::prove_scalar(&plan, scope, table, original, budget, cancelled)?
+        }
     }
     check(budget, cancelled)?;
     Ok(plan)
@@ -169,20 +214,20 @@ fn preflight(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    preflight_with_policy(source, original, false, budget, cancelled)
+    preflight_with_policy(source, original, FixedCarriers::Legacy, budget, cancelled)
 }
 
 fn preflight_with_policy(
     source: &Source,
     original: &[FixedColumnUpdates<'_>],
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let (bound, _) = if ieee {
-        binding::all_ieee(source, original, budget, cancelled)?
-    } else {
-        binding::all_normal(source, original, budget, cancelled)?
+    let (bound, _) = match carriers {
+        FixedCarriers::Legacy => binding::all_normal(source, original, budget, cancelled)?,
+        FixedCarriers::Ieee => binding::all_ieee(source, original, budget, cancelled)?,
+        FixedCarriers::Scalar => binding::all_scalar(source, original, budget, cancelled)?,
     };
     for (group, selected) in original.iter().zip(bound) {
         check(budget, cancelled)?;

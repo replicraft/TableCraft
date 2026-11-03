@@ -17,7 +17,7 @@ pub(in crate::table) mod fitted;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod fixed;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
-mod fixed_records;
+pub(super) mod fixed_records;
 mod gates;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod guards;

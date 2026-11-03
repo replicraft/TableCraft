@@ -19,7 +19,13 @@ impl NativeFixedIntentGroup {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        Self::new_with_carriers(column, updates, false, budget, cancelled)
+        Self::new_with_carriers(
+            column,
+            updates,
+            carrier::Carriers::Legacy,
+            budget,
+            cancelled,
+        )
     }
 
     /// Retain exact ordinary IEEE requests without qualifying a native target.
@@ -30,13 +36,29 @@ impl NativeFixedIntentGroup {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        Self::new_with_carriers(column, updates, true, budget, cancelled)
+        Self::new_with_carriers(column, updates, carrier::Carriers::Ieee, budget, cancelled)
+    }
+
+    /// Retain cumulative ordinary fixed carriers without granting target authority.
+    pub fn new_ordinary_scalar(
+        column: &str,
+        updates: Vec<FixedScalarUpdate>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_carriers(
+            column,
+            updates,
+            carrier::Carriers::Scalar,
+            budget,
+            cancelled,
+        )
     }
 
     fn new_with_carriers(
         column: &str,
         updates: Vec<FixedScalarUpdate>,
-        ieee: bool,
+        carriers: carrier::Carriers,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
@@ -54,13 +76,8 @@ impl NativeFixedIntentGroup {
             budget
                 .charge(Resource::Steps, (carrier::WIDTH * 2) as u64)
                 .map_err(InspectError::from)?;
-            if ieee {
-                carrier::encode_ieee(update.expected())?;
-                carrier::encode_ieee(update.value())?;
-            } else {
-                carrier::encode(update.expected())?;
-                carrier::encode(update.value())?;
-            }
+            carriers.encode(update.expected())?;
+            carriers.encode(update.value())?;
         }
         let column = copy_name(column, budget)?;
         check(budget, cancelled)?;

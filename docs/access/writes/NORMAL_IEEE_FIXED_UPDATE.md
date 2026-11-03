@@ -46,7 +46,9 @@ use `NativeFixedIntentGroup::new_ordinary_ieee`; construction retains data and
 spelling, without admitting a native file. Original metadata selects the request
 dialect before comparisons. Naming an IEEE target selects
 `NativeUpdateProfile::Ace16OrdinaryIeeeFixed`, even for an equal or named-empty
-group. Other ordinary fixed requests retain their existing TCNI0004 encoding.
+group. Requests also naming Byte/Int16 use the cumulative
+[TCNI0009 continuation](NORMAL_BYTE_INT16_FIXED_UPDATE.md); legacy-only ordinary
+requests retain TCNI0004 encoding.
 
 `TCNI0008`/profile 8 reuses the fixed original-group framing, BEFORE length and
 digest, bounded names/counts and nine-byte carrier cells. Tags 0 through 5 retain

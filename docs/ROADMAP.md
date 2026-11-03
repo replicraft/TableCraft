@@ -1210,6 +1210,15 @@ Retained NODE schemas keep their original numeric-only qualification. Qualified
 single-Int32 IgnoreNULL secondary updates now have the separate continuation
 below; broader allocation and native Access save/reopen remain work.
 
+## Ordinary Byte/Int16 fixed UPDATE
+
+The ordinary fixed route now admits exact unindexed small integers, preserving
+inactive NULL payloads through independent proof and TCNI9 recovery. Six literal
+header/request outcomes each pass native, typed and CLI saves, with stale/resource
+and mixed IEEE/order checks. See the [current profile](access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md).
+GUID/Decimal targets, indexed small integers, variable composition and native
+Access save/reopen remain work.
+
 ## Exact ordinary Single/Double UPDATE
 
 The unindexed ordinary fixed service now preserves raw IEEE requests through

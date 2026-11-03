@@ -1,5 +1,17 @@
 # Implementation status
 
+## Ordinary Byte/Int16 fixed UPDATE
+
+Exact unindexed Byte/Int16 targets now use the normal fixed service, retained
+sessions and checked journal replay. Metadata selects cumulative TCNI0009 for
+named small-integer targets even when empty; TCNI4/8 retain their closed policies.
+Six native, typed and CLI saves each match independent literal endpoint, NULL-clear
+and NULL-restore spans. Plain integer CLI assignments, inactive-byte preservation,
+stale witnesses, recovery, resource controls and mixed IEEE batches pass. See the
+[qualified scope](access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md) and
+[execution record](testing/results/ace16-normal-byte-int16-update-2026-11-03.json).
+Indexed/mixed-variable composition and native Access save/reopen remain work.
+
 ## Exact ordinary Single/Double UPDATE
 
 Normal unindexed fixed updates now retain exact Single/Double bits through native

@@ -14,7 +14,34 @@ const CURRENCY_TAG: u8 = 4;
 const DATE_TAG: u8 = 5;
 const SINGLE_TAG: u8 = 6;
 const DOUBLE_TAG: u8 = 7;
+const BYTE_TAG: u8 = 8;
+const INT16_TAG: u8 = 9;
 pub(super) const WIDTH: usize = TAG_BYTES + PAYLOAD_BYTES;
+
+#[derive(Clone, Copy)]
+pub(super) enum Carriers {
+    Legacy,
+    Ieee,
+    Scalar,
+}
+
+impl Carriers {
+    pub(super) fn encode(self, value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
+        match self {
+            Self::Legacy => encode(value),
+            Self::Ieee => encode_ieee(value),
+            Self::Scalar => encode_scalar(value),
+        }
+    }
+
+    pub(super) fn decode(self, raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError> {
+        match self {
+            Self::Legacy => decode(raw),
+            Self::Ieee => decode_ieee(raw),
+            Self::Scalar => decode_scalar(raw),
+        }
+    }
+}
 
 pub(super) fn encode(value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
     let mut result = [0; WIDTH];
@@ -101,6 +128,39 @@ pub(super) fn decode_ieee(raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError>
         _ => return decode(raw),
     };
     if encode_ieee(&value)? != *raw {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    Ok(value)
+}
+
+/// Cumulative original cells retain every legacy/IEEE representation unchanged.
+pub(super) fn encode_scalar(value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
+    let mut raw = [0; WIDTH];
+    match value {
+        Value::Byte(value) => {
+            raw[TAG_AT] = BYTE_TAG;
+            raw[PAYLOAD_AT] = *value;
+        }
+        Value::Int16(value) => {
+            raw[TAG_AT] = INT16_TAG;
+            raw[PAYLOAD_AT..PAYLOAD_AT + size_of::<i16>()].copy_from_slice(&value.to_le_bytes());
+        }
+        _ => return encode_ieee(value),
+    }
+    Ok(raw)
+}
+
+pub(super) fn decode_scalar(raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError> {
+    let value = match raw[TAG_AT] {
+        BYTE_TAG => Value::Byte(raw[PAYLOAD_AT]),
+        INT16_TAG => Value::Int16(i16::from_le_bytes(
+            raw[PAYLOAD_AT..PAYLOAD_AT + size_of::<i16>()]
+                .try_into()
+                .unwrap(),
+        )),
+        _ => return decode_ieee(raw),
+    };
+    if encode_scalar(&value)? != *raw {
         return Err(NativeIntentError::InvalidRecord);
     }
     Ok(value)
