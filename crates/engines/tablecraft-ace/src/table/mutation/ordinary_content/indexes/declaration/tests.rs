@@ -421,3 +421,111 @@ fn selected_scalar_guid_requires_exact_manual_width_flags_and_every_alias() {
         ));
     }
 }
+
+// Independent raw record, not produced from declaration.rs format constants.
+const TWO_KEY_PHYSICAL: [u8; 52] = [
+    0x83, 0x07, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x00, 0xff, 0xff, 0x00,
+    0xff, 0xff, 0x00, 0xff, 0xff, 0x00, 0xff, 0xff, 0x00, 0xff, 0xff, 0x00, 0xff, 0xff, 0x00, 0xff,
+    0xff, 0x00, 0x10, 0x03, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00,
+];
+
+fn tuple_metadata() -> crate::IndexInspection {
+    let mut bytes = witness(5, 15, 16, 0);
+    let before = inspect_table_indexes(
+        &mut Cursor::new(&bytes),
+        SCOPE,
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let start = DEFINITION + before.schema().layout.index_start;
+    bytes[start..start + 52].copy_from_slice(&TWO_KEY_PHYSICAL);
+    // Metadata only: the underlying NULL leaf is not a tuple Source witness.
+    inspect_table_indexes(
+        &mut Cursor::new(bytes),
+        SCOPE,
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap()
+}
+
+#[test]
+fn tuple_physical_golden_closes_every_ordered_key_and_preserves_scope_guards() {
+    let inspected = tuple_metadata();
+    assert_eq!(inspected.indexes().len(), 2);
+    for index in inspected.indexes() {
+        assert_eq!(index.columns().len(), 2);
+        assert_eq!(
+            (index.columns()[0].number(), index.columns()[0].descending()),
+            (0, false)
+        );
+        assert_eq!(
+            (index.columns()[1].number(), index.columns()[1].descending()),
+            (1, true)
+        );
+        super::tuple_physical_record(&TWO_KEY_PHYSICAL, index, &mut budget(), &|| false).unwrap();
+        for family in [
+            super::KeyFamily::GlobalInt32,
+            super::KeyFamily::SelectedIntegral,
+            super::KeyFamily::ActionIntegral,
+        ] {
+            assert_refused(super::qualify_for(
+                inspected.schema(),
+                index,
+                family,
+                &mut budget(),
+                &|| false,
+            ));
+        }
+    }
+}
+
+#[test]
+fn tuple_physical_extra_unused_direction_reserved_and_control_bytes_refuse() {
+    let inspected = tuple_metadata();
+    let index = &inspected.indexes()[0];
+    // Active second key number/direction; hidden third key; unused direction;
+    // reserved suffix; raw owner/root/flags; exact record-length closure.
+    for (offset, value) in [
+        (7, 0),
+        (9, 1),
+        (10, 0),
+        (12, 1),
+        (42, 1),
+        (34, 0x11),
+        (38, 10),
+        (46, 0x81),
+    ] {
+        let mut raw = TWO_KEY_PHYSICAL;
+        raw[offset] = value;
+        assert_refused(super::tuple_physical_record(
+            &raw,
+            index,
+            &mut budget(),
+            &|| false,
+        ));
+    }
+    assert_refused(super::tuple_physical_record(
+        &TWO_KEY_PHYSICAL[..51],
+        index,
+        &mut budget(),
+        &|| false,
+    ));
+    assert!(matches!(
+        super::tuple_physical_record(&TWO_KEY_PHYSICAL, index, &mut budget(), &|| true),
+        Err(EditError::Inspect(crate::InspectError::Cancelled)),
+    ));
+    assert!(matches!(
+        super::tuple_physical_record(
+            &TWO_KEY_PHYSICAL,
+            index,
+            &mut ResourceBudget::new(0, 0, 0),
+            &|| false
+        ),
+        Err(EditError::Inspect(crate::InspectError::Limit(_))),
+    ));
+}

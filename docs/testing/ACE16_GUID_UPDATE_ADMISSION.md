@@ -98,8 +98,8 @@ and eligible tuple membership, all four aliases, physical owners, bitmaps and
 history checks. Partial-NULL tuples remain represented; the ignored all-NULL row
 retains its inactive native payload and is omitted from the secondary index.
 
-Both complete program-absence admission and canonical ordinary Source currently
-refuse all twelve with `Unsupported(ActiveContent)`. The selected declaration and
+At the baseline, both complete program-absence admission and canonical ordinary
+Source refused all twelve with `Unsupported(ActiveContent)`. The selected declaration and
 retained membership families still lack the tuple/omission qualification. This
 refusal does not prove that active code exists. Mutation eligibility is unchanged;
 these reads identify the next source-admission work.
@@ -117,5 +117,16 @@ retains both attempts. No new SDK, model construction or writer ran in this gate
 The [normal indexed GUID service](../access/writes/NORMAL_GUID_INDEX_UPDATE.md)
 now produces the 28 ordered request outcomes through checked commits and
 independent full-image proof. Typed/CLI saves, resource and recovery controls pass
-in the separate write record. That extends the single-GUID root-leaf family; the
-fitted tuple Source refusals above remain unchanged.
+in the separate write record. That extends the single-GUID root-leaf family. The later tuple Source
+continuation below supersedes the historical admission refusals without
+qualifying tuple mutations.
+
+
+## Complete retained tuple Source continuation
+
+All twelve fitted originals now pass complete NoRequired and canonical Source
+admission through the [retained tuple Source service](../access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md).
+The raw declaration checks every key slot and the parent consumes the complete
+retained proof while preserving aliases, allocation, DATA separation and the
+physical census. The historical failures above remain evidence of earlier states.
+This adds no indexed-target token or tuple save qualification.

@@ -14,7 +14,10 @@ use crate::{
         reader::Reader,
     },
     header::check,
-    table::{indexes::check_table_retained, mutation::lval_ownership::Inventory},
+    table::{
+        indexes::{check_table_retained, validate_manual_guid_tuple},
+        mutation::lval_ownership::Inventory,
+    },
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -119,6 +122,20 @@ pub(super) fn qualify(
     }
     for index in indexes.indexes() {
         check(budget, cancelled)?;
+        if matches!(framing, ColumnFraming::Dense)
+            && matches!(keys, RetainedKeys::Scalar)
+            && index.columns().len() > 1
+        {
+            validate_manual_guid_tuple(schema, index, budget, cancelled).map_err(|error| {
+                match error {
+                    InspectError::Unsupported => {
+                        EditError::Unsupported(WriteBlocker::ConstraintCoverage)
+                    }
+                    other => other.into(),
+                }
+            })?;
+            continue;
+        }
         let [key] = index.columns() else {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         };

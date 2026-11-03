@@ -459,29 +459,42 @@ fn capture_framed(
         .map_err(|_| InspectError::Allocation)?;
     for (position, index) in indexes.indexes().iter().enumerate() {
         check(budget, cancelled)?;
-        let [key] = index.columns() else {
-            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-        };
-        let column = match framing {
-            ColumnFraming::Dense => schema.columns().get(key.number()),
-            #[cfg(feature = "journal")]
-            ColumnFraming::Actions => {
-                budget
-                    .charge(Resource::Steps, schema.columns().len() as u64)
-                    .map_err(InspectError::from)?;
-                schema
-                    .columns()
-                    .iter()
-                    .find(|field| field.number() == key.number())
+        #[cfg(feature = "journal")]
+        let retained_tuple =
+            retained_tuple_scope(profile, retained_integral, index.columns().len());
+        #[cfg(not(feature = "journal"))]
+        let retained_tuple = false;
+        let scalar_certification = if retained_tuple {
+            // qualify() already proved every actual tuple alias, eligible
+            // membership, complete owned closure and catalog/LVAL roles.
+            None
+        } else {
+            let [key] = index.columns() else {
+                return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+            };
+            let column = match framing {
+                ColumnFraming::Dense => schema.columns().get(key.number()),
+                #[cfg(feature = "journal")]
+                ColumnFraming::Actions => {
+                    budget
+                        .charge(Resource::Steps, schema.columns().len() as u64)
+                        .map_err(InspectError::from)?;
+                    schema
+                        .columns()
+                        .iter()
+                        .find(|field| field.number() == key.number())
+                }
             }
-        }
-        .ok_or(InspectError::Malformed)?;
+            .ok_or(InspectError::Malformed)?;
+            Some((key, column))
+        };
         if index.native_type() > 1 || index.constraints().is_none() {
             return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
         }
-        if index
-            .constraints()
-            .is_some_and(|flags| flags.ignore_nulls())
+        if let Some((_, column)) = scalar_certification
+            && index
+                .constraints()
+                .is_some_and(|flags| flags.ignore_nulls())
         {
             // Read certification covers only a manual native Int32 secondary.
             // Every logical alias is checked before physical-owner deduplication.
@@ -533,6 +546,9 @@ fn capture_framed(
         let pages = if let Some(pages) = retained_pages {
             pages
         } else {
+            // A retained tuple must never enter the scalar fallback certifier.
+            let (key, column) = scalar_certification
+                .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))?;
             budget
                 .charge_allocation(records.len() as u64, size_of::<(u32, Option<i32>)>() as u64)
                 .map_err(InspectError::from)?;
@@ -618,6 +634,14 @@ fn capture_framed(
         records,
         dependencies,
     })
+}
+
+#[cfg(feature = "journal")]
+fn retained_tuple_scope(profile: ReadProfile, retained: bool, keys: usize) -> bool {
+    retained
+        && matches!(profile.columns, ColumnFraming::Dense)
+        && matches!(profile.keys, RetainedKeys::Scalar)
+        && (2..=crate::format::layout::INDEX_KEY_COLUMNS).contains(&keys)
 }
 
 fn allocated(
@@ -779,4 +803,39 @@ pub(in crate::table::mutation) fn capture_no_required_updates(
         budget,
         cancelled,
     )
+}
+
+#[cfg(all(test, feature = "journal"))]
+mod retained_tuple_scope_tests {
+    use super::*;
+
+    #[test]
+    fn retained_tuple_branch_requires_the_actual_closed_dense_scalar_profile() {
+        let scalar = ReadProfile {
+            columns: ColumnFraming::Dense,
+            keys: RetainedKeys::Scalar,
+        };
+        assert!(retained_tuple_scope(scalar, true, 2));
+        assert!(retained_tuple_scope(scalar, true, 10));
+        for count in [0, 1, 11] {
+            assert!(!retained_tuple_scope(scalar, true, count));
+        }
+        assert!(!retained_tuple_scope(scalar, false, 2));
+        assert!(!retained_tuple_scope(
+            ReadProfile {
+                columns: ColumnFraming::Dense,
+                keys: RetainedKeys::Integral
+            },
+            true,
+            2,
+        ));
+        assert!(!retained_tuple_scope(
+            ReadProfile {
+                columns: ColumnFraming::Actions,
+                keys: RetainedKeys::Scalar
+            },
+            true,
+            2,
+        ));
+    }
 }

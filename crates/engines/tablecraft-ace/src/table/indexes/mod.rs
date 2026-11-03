@@ -25,7 +25,11 @@ mod entry_digest;
 pub(in crate::table) mod header;
 mod metadata;
 mod profile;
+#[cfg(feature = "journal")]
+mod retained_guid_tuple;
 pub use metadata::{IndexColumn, IndexInspection, NativeIndex};
+#[cfg(feature = "journal")]
+pub(in crate::table) use retained_guid_tuple::validate_manual_guid_tuple;
 mod reference;
 pub(super) use reference::FOREIGN_INDEX;
 pub use reference::ForeignIndexReference;
