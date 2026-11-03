@@ -17,6 +17,8 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+mod omissions;
+
 #[cfg(test)]
 mod tests;
 
@@ -221,6 +223,13 @@ pub(super) fn reconstruct(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    if operation
+        .index
+        .constraints()
+        .is_some_and(|flags| flags.ignore_nulls())
+    {
+        return omissions::reconstruct(operation, expected, budget, cancelled);
+    }
     let schema = operation.checked.schema();
     let mut columns = vector(operation.index.columns().len(), budget, cancelled)?;
     for key in operation.index.columns() {

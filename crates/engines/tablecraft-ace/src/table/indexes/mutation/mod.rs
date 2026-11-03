@@ -16,14 +16,14 @@ pub(in crate::table) mod create;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;
 mod encoding;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod ignored;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod insertion;
 mod kind;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod pages;
-#[cfg(feature = "ace16-write-preview")]
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod population;
 use super::composite::DecimalValue;
 pub(in crate::table) use super::numeric::NumericKey;

@@ -71,7 +71,9 @@ pub(super) fn plan(
     let updates = index_updates(&source, groups, &bound, budget, cancelled)?;
     // All original-to-final keys are supplied together. UNIQUE swaps are
     // evaluated in their final population; no intermediate candidate exists.
-    let indexes = if facts.retains_binary() {
+    let indexes = if facts.omits_nulls() {
+        normal_fitting::patches_i32_omissions(&image, facts.checked(), &updates, budget, cancelled)?
+    } else if facts.retains_binary() {
         normal_fitting::patches_retained_i32(&image, facts.checked(), &updates, budget, cancelled)?
     } else {
         normal_fitting::patches(&image, facts.checked(), &updates, budget, cancelled)?

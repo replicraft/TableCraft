@@ -59,6 +59,7 @@ enum CaptureMode {
     Actions,
     IntegralUpdates,
     I32Updates,
+    I32Omissions,
 }
 
 impl Ownership {
@@ -110,6 +111,15 @@ impl Ownership {
         Self::capture_mode(image, checked, CaptureMode::I32Updates, budget, cancelled)
     }
 
+    pub(in crate::table) fn capture_i32_omissions(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, CaptureMode::I32Omissions, budget, cancelled)
+    }
+
     fn capture_mode(
         image: &NativeImage,
         checked: &TableCheck,
@@ -155,11 +165,31 @@ impl Ownership {
                 .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?;
             if check.status() != IndexCheckStatus::Checked
                 || index.native_type() > 1
-                || constraints.ignore_nulls()
+                || constraints.ignore_nulls() && mode != CaptureMode::I32Omissions
                 || index.columns().is_empty()
                 || index.data_number() as usize >= schema.layout.physical_indexes
             {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            if mode == CaptureMode::I32Omissions {
+                let [key] = index.columns() else {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                };
+                reader.work(schema.columns().len())?;
+                let field = schema
+                    .columns()
+                    .iter()
+                    .find(|field| field.number() == key.number())
+                    .ok_or(EditError::Preservation)?;
+                if field.native_type() != crate::format::data_type::INT32
+                    || field.scalar_type() != Some(tablecraft_schema::ScalarType::Int32)
+                    || !field.fixed()
+                    || field.storage_length() != size_of::<i32>()
+                    || field.extended_flags() != 0
+                    || constraints.ignore_nulls() && constraints.primary_key()
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
             }
             reader.work(position)?;
             if let Some(prior) = checked.indexes()[..position]
@@ -259,6 +289,11 @@ impl Ownership {
             } else {
                 Tree::capture(image, index, selected, reader.budget, cancelled)?
             };
+            if mode == CaptureMode::I32Omissions
+                && (!tree.root.children.is_empty() || tree.root.prefix != 0)
+            {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
             for page in &tree.pages {
                 reader.tick()?;
                 global.require_allocated(&mut reader, *page)?;

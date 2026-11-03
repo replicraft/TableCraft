@@ -212,3 +212,118 @@ fn selected_raw_validator_keeps_foreign_alias_and_ignore_null_refusals() {
         ));
     }
 }
+
+fn ignored_manual_declaration(native: u8, width: u16) -> Vec<u8> {
+    let mut bytes = witness(5, native, width, 0);
+    let page = &bytes[DEFINITION..DEFINITION + PAGE];
+    let physical = page
+        .windows(4)
+        .position(|word| word == [0x83, 0x07, 0, 0])
+        .expect("literal independent physical index magic 1923");
+    bytes[DEFINITION + physical + 46] |= 2;
+    bytes
+}
+
+#[test]
+fn selected_manual_i32_omission_is_a_declaration_only_not_other_family_authority() {
+    let bytes = ignored_manual_declaration(4, 4);
+    let original = image(&bytes);
+    let inspection = inspect_table_indexes(
+        &mut original.reader(),
+        SCOPE,
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(inspection.indexes().len(), 2);
+    for index in inspection.indexes() {
+        qualify_selected(inspection.schema(), index, &mut budget(), &|| false).unwrap();
+        for family in [
+            super::KeyFamily::GlobalInt32,
+            super::KeyFamily::ActionIntegral,
+            super::KeyFamily::SelectedScalar,
+        ] {
+            assert_refused(super::qualify_for(
+                inspection.schema(),
+                index,
+                family,
+                &mut budget(),
+                &|| false,
+            ));
+        }
+    }
+    validate_selected(
+        &original,
+        inspection.schema(),
+        inspection.indexes().iter(),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    // Empty authored DATA does not qualify Source, programs or a write plan.
+    assert_eq!(original.as_bytes(), bytes);
+}
+
+#[test]
+fn ignored_selected_declaration_retains_type_flags_width_and_full_alias_guards() {
+    for (native, width) in INTEGRAL {
+        if native == 4 {
+            continue;
+        }
+        let bytes = ignored_manual_declaration(native, width);
+        let original = image(&bytes);
+        let inspection = inspect_table_indexes(
+            &mut original.reader(),
+            SCOPE,
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        for index in inspection.indexes() {
+            assert_refused(qualify_selected(
+                inspection.schema(),
+                index,
+                &mut budget(),
+                &|| false,
+            ));
+        }
+    }
+    for control in 0..5 {
+        let mut bytes = ignored_manual_declaration(4, 4);
+        let physical = bytes[DEFINITION..DEFINITION + PAGE]
+            .windows(4)
+            .position(|word| word == [0x83, 0x07, 0, 0])
+            .unwrap();
+        match control {
+            0 => bytes[FIRST_COLUMN + 15] = 7,
+            1 => bytes[FIRST_COLUMN + 16] = 0x40,
+            2 => put16(&mut bytes, FIRST_COLUMN + 23, 5),
+            // A later primary alias must reject the owner even when the first
+            // visited logical alias is an ordinary secondary.
+            3 => bytes[DEFINITION + physical + 52 + 28 + 23] = 1,
+            4 => bytes[DEFINITION + physical + 52 + 28 + 23] = 2,
+            _ => unreachable!(),
+        }
+        let original = image(&bytes);
+        let inspection = inspect_table_indexes(
+            &mut original.reader(),
+            SCOPE,
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(matches!(
+            validate_selected(
+                &original,
+                inspection.schema(),
+                inspection.indexes().iter(),
+                &mut budget(),
+                &|| false,
+            ),
+            Err(EditError::Unsupported(WriteBlocker::ActiveContent))
+        ));
+    }
+}

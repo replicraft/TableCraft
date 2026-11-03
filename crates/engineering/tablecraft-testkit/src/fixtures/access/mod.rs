@@ -373,3 +373,6 @@ pub mod genuine_wide_ordinary_siblings;
 
 /// Registered independent collection-scale inputs and recipe-only models.
 pub mod collection_scale;
+
+/// Held genuine single-I32 IgnoreNULL UPDATE originals and independent outcomes.
+pub mod genuine_ignore_null_update;

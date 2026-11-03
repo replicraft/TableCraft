@@ -865,3 +865,6 @@ mod binary_id_update;
 
 #[path = "normal/wide_ordinary_siblings.rs"]
 mod wide_ordinary_siblings;
+
+#[path = "normal/ignore_null_update.rs"]
+mod ignore_null_update;

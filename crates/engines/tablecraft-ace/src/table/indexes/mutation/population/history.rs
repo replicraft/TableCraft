@@ -68,6 +68,7 @@ pub(super) fn increment<P: WriteProfile>(
 }
 
 /// Bind and check the exact source counter before an append state can exist.
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::indexes::mutation) fn preflight(
     image: &NativeImage,
     schema: &TableSchema,

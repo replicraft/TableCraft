@@ -59,7 +59,7 @@ where
         checked,
         expected,
         &mut final_value,
-        false,
+        Selection::Legacy,
         budget,
         cancelled,
     )
@@ -82,10 +82,39 @@ where
         checked,
         expected,
         &mut final_value,
-        true,
+        Selection::RetainedBinary,
         budget,
         cancelled,
     )
+}
+
+pub(in crate::table) fn reconstruct_i32_omissions<F>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    expected: &mut [u8],
+    mut final_value: F,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError>
+where
+    F: FnMut(usize, usize, Option<i32>, &mut ResourceBudget) -> Result<Option<i32>, EditError>,
+{
+    reconstruct_with(
+        image,
+        checked,
+        expected,
+        &mut final_value,
+        Selection::Omitted,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Selection {
+    Legacy,
+    RetainedBinary,
+    Omitted,
 }
 
 fn reconstruct_with<F>(
@@ -93,7 +122,7 @@ fn reconstruct_with<F>(
     checked: &TableCheck,
     expected: &mut [u8],
     final_value: &mut F,
-    retained_binary: bool,
+    selected: Selection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError>
@@ -106,7 +135,9 @@ where
         return Err(EditError::Preservation);
     }
     let schema = checked.schema();
-    let ownership = if retained_binary {
+    let ownership = if selected == Selection::Omitted {
+        Ownership::capture_i32_omissions(image, checked, budget, cancelled)?
+    } else if selected == Selection::RetainedBinary {
         #[cfg(feature = "journal")]
         {
             Ownership::capture_i32_updates(image, checked, budget, cancelled)?
@@ -135,7 +166,9 @@ where
         // original request through IndexTargets before this numeric-only replay.
         // Binary pages remain original in expected and whole-image equality
         // rejects every attempted change to their headers, keys, ROWs or tails.
-        if retained_binary && field.native_type() == crate::format::data_type::SHORT_BINARY {
+        if selected == Selection::RetainedBinary
+            && field.native_type() == crate::format::data_type::SHORT_BINARY
+        {
             continue;
         }
         if !indexed {
@@ -245,7 +278,7 @@ where
             continue;
         }
         let tree = ownership.require(image, schema, native, reader.budget, cancelled)?;
-        if retained_binary {
+        if selected == Selection::RetainedBinary {
             reader.work(schema.columns().len())?;
             let retained = native
                 .columns()

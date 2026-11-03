@@ -19,6 +19,7 @@ pub(in crate::table::mutation) struct I32UpdateIndexes<'a> {
 
 enum Mode<'a> {
     Legacy(CheckedIndexes<'a>),
+    Omitted(CheckedIndexes<'a>),
     Retained {
         image: &'a NativeImage,
         checked: TableCheck,
@@ -36,7 +37,11 @@ impl<'a> I32UpdateIndexes<'a> {
         // Select using original declarations, never an error or changed-key list.
         let schema = source.table.schema();
         let mut retained = false;
+        let mut omitted = false;
         for index in source.indexes.indexes() {
+            omitted |= index
+                .constraints()
+                .is_some_and(|flags| flags.ignore_nulls());
             for key in index.columns() {
                 check(budget, cancelled)?;
                 budget
@@ -49,6 +54,14 @@ impl<'a> I32UpdateIndexes<'a> {
                     .ok_or(EditError::Preservation)?;
                 retained |= field.native_type() == SHORT_BINARY;
             }
+        }
+        if !retained && omitted {
+            let facts = CheckedIndexes::capture(image, table, budget, cancelled)?;
+            require_definition(schema, facts.checked().schema(), budget, cancelled)?;
+            Ownership::capture_i32_omissions(image, facts.checked(), budget, cancelled)?;
+            return Ok(Self {
+                mode: Mode::Omitted(facts),
+            });
         }
         if !retained {
             return Ok(Self {
@@ -124,16 +137,20 @@ impl<'a> I32UpdateIndexes<'a> {
 
     pub(in crate::table::mutation) fn checked(&self) -> &TableCheck {
         match &self.mode {
-            Mode::Legacy(facts) => facts.checked(),
+            Mode::Legacy(facts) | Mode::Omitted(facts) => facts.checked(),
             Mode::Retained { checked, .. } => checked,
         }
     }
 
     pub(in crate::table::mutation) fn legacy(&self) -> Option<&CheckedIndexes<'_>> {
         match &self.mode {
-            Mode::Legacy(facts) => Some(facts),
+            Mode::Legacy(facts) | Mode::Omitted(facts) => Some(facts),
             Mode::Retained { .. } => None,
         }
+    }
+
+    pub(in crate::table::mutation) fn omits_nulls(&self) -> bool {
+        matches!(self.mode, Mode::Omitted(_))
     }
 
     pub(in crate::table::mutation) fn retains_binary(&self) -> bool {
@@ -150,7 +167,9 @@ impl IndexTargets for I32UpdateIndexes<'_> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         match &self.mode {
-            Mode::Legacy(facts) => facts.require_source(image, schema, budget, cancelled),
+            Mode::Legacy(facts) | Mode::Omitted(facts) => {
+                facts.require_source(image, schema, budget, cancelled)
+            }
             Mode::Retained {
                 image: original,
                 checked,
@@ -172,7 +191,9 @@ impl IndexTargets for I32UpdateIndexes<'_> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         match &self.mode {
-            Mode::Legacy(facts) => facts.require_target(schema, position, budget, cancelled),
+            Mode::Legacy(facts) | Mode::Omitted(facts) => {
+                facts.require_target(schema, position, budget, cancelled)
+            }
             Mode::Retained { image, .. } => {
                 self.require_source(image, schema, budget, cancelled)?;
                 let field = schema
