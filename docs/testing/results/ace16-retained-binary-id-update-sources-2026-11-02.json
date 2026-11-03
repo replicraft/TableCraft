@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "independent Id replacement source and read qualification passed; matching indexed mutation remains separate",
+  "profile": "Two SDK-authored BinaryKeys originals, ACE16-family header5/6, each plus an independent prospective Id1-to14 image.",
+  "preservation": "Only original ROW0 four-byte Id payload and primary117-byte active entries may change; Binary indexes, primary bitmap/free/inactive tail/links, history13/12/12, DATA framing, Marker17, NULL Binary, aliases/maps/catalog/EOF remain exact.",
+  "counts": {
+    "source_views": 4,
+    "source_artifacts": 39,
+    "qualified_reader_observations": 32,
+    "fresh_corrected_calls": 30,
+    "reused_correct_calls": 2,
+    "excluded_failed_calls": 1,
+    "total_actual_reader_calls": 33,
+    "compiler_calls": 0,
+    "saved_regular_files": 66
+  },
+  "native_checks": [
+    {
+      "name": "source-gate",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::binary_id_update::binary_id_sources_have_exact_primary_membership_and_full_source",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "6b2d5751a75eb9b0b78c4d91f40256f7a2076367e46228111d153230926087e2"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "10d9f00271d3ff0bc4c936075bd9623c0c0f0517f1fa9d79aff3e5400909ab5a"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "preserved_failures": [
+    "Pre-law raw bitmap inspection assumed offset32; original bytes established offset27 before laws/models/outputs were frozen.",
+    "SDK preflight stopped before children because adding native test registration changed a pinned non-executable parent reference; explicit historical reference successor preserves original bytes and checks exact23-byte suffix.",
+    "Initial SDK attempt passed inventory/metadata then failed first cursor report because final field argument was nonexistent Binary Id. Corrected only24 cursor arguments to Marker. First2 exact successful calls reused with pinned provenance; failed third excluded and preserved."
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/binary-id-requests-and-laws-first.json",
+      "bytes": 11442,
+      "sha256": "b95479657082d5647f2dbb2d25c9755c08805ebe371c4bf1d7b934eb3c4ba967"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/first-complete-private-checkpoint.json",
+      "bytes": 4785,
+      "sha256": "9559ce7b90b46ff8b14993f34f07c9483ba47e6f76432e6bf97c9af0c27ec6e2"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/VALUE_SEMANTICS_REVIEW_FIRST.json",
+      "bytes": 2616,
+      "sha256": "18a404ed3cbcb354c9f297abccd6da3cb77a0121544b134e27899ee6a4e38742"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/delegated-pure-first/accepted.json",
+      "bytes": 1132,
+      "sha256": "7a3f6935c51f3c6ed8653a923de4a54284c618234089871e726c8c267e90f585"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/expected-first/manifest.json",
+      "bytes": 8771,
+      "sha256": "aa190d73441d1eea75a995402afc3dc9d6fc65f39e314f0ed04d55a09e57f37b"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/root-native-first/results-first.json",
+      "bytes": 1211,
+      "sha256": "7a4ccca8a1a3af99bfd6f199d36e752f46faa11a6a99dbaec911939050ef9319"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/sdk-delegation-preflight-first-failure.json",
+      "bytes": 308,
+      "sha256": "cc266f48e2f3a6a933d21e566126905afc7e22ecacbaef0133a1eaa3ebb909fe"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/reference-binding-successor/first-private-checkpoint.json",
+      "bytes": 2980,
+      "sha256": "e68e3ff065ad9eb18323a6ab3d02d2a478f489edaea2e5161c6bb8ce34511044"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/delegated-sdk-bound-first/failed.json",
+      "bytes": 1340,
+      "sha256": "b214be75659528a29b111c60b2bfcfcd4077518cc848c17cf0f8f2421370cf6d"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/cursor-field-successor/first-private-checkpoint.json",
+      "bytes": 2751,
+      "sha256": "5e4a25b66bef49562203dfdb675a8f5a7d49b54a5dbd0068d5d4c2fbc437243e"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/cursor-field-successor/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 1557,
+      "sha256": "914a0576440ab83196b656d95715b925401b4aeb1cee3c12355ff969b2d86d6a"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/delegated-sdk-corrected-first/results.json",
+      "bytes": 852,
+      "sha256": "c132ffd4b5e4c6c57960f71c87b004bc4864b0ad05ae6076b883b6ddfaaf9938"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/source/saved-corrected-first.json",
+      "bytes": 897,
+      "sha256": "3eaee208dceee840a3bb54cb6a083ca4926518bdbb0c0ce1ad171ef8345b3525"
+    }
+  ],
+  "native_mutation_calls": 0,
+  "native_Access_qualification": "unrun; source/read qualification does not grant indexed update permission or establish Access save/reopen compatibility"
+}
