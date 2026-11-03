@@ -239,3 +239,5 @@ mod retained_binary_marker;
 mod binary_id_update;
 
 mod wide_sibling_originals;
+
+mod wide_sibling_after;

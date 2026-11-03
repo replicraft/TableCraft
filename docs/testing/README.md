@@ -8,6 +8,7 @@
 - [Test duplication audit](TEST_DUPLICATION_AUDIT.md)
 - [Wider numeric root-promotion sources](ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
 - [Wider numeric keys with ordinary siblings: originals](ACE16_WIDE_SIBLING_ORIGINALS.md)
+- [Wider numeric keys with ordinary siblings: expected updates](ACE16_WIDE_SIBLING_AFTER_SOURCES.md)
 - [Int32 key updates beside retained Binary indexes: sources](ACE16_RETAINED_BINARY_ID_UPDATE_SOURCES.md)
 - [Access application corpus policy](ACCESS_APPLICATIONS.md)
 - [Multiple-index INSERT engineering profile](ACE16_MULTIPLE_INDEX_INSERTS.md)
