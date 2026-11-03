@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Read/source admission only; no write producer, new file or external execution.",
+  "observations": {
+    "unchanged_images": 6,
+    "whole_image_pair_reconstructions": 4,
+    "read_contexts": 6,
+    "NoRequired_admitted": 6,
+    "canonical_Source_admitted": 6
+  },
+  "execution": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::ieee_update::existing_ieee_pairs_read_exact_bits_and_observe_current_source_admission",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "bbdc5095c3de42edc7a25858f4e94ac7275e0cf0c3454eecb33c10c8c222868c"
+  },
+  "inputs": [
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "b04d36341ed843e3bf7f2b9bfabd790e9a075d1b8002ad5a53253968c3ea82ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-subnormal-after.accdb",
+      "bytes": 36864,
+      "sha256": "8b3cd0ceeda4a9d3875bc8d2d5e2c786097dec4b6b06484ec4ffeb09dce72476"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-special-after.accdb",
+      "bytes": 36864,
+      "sha256": "168914cbc9325e2670576150eddbd23b150f1d1f795a53bdf48c63d642660019"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "1375d5e7453d0603ed42226b05c2f7afa6280f88d63287e2ab73b334a0da339f"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-subnormal-after.accdb",
+      "bytes": 36864,
+      "sha256": "323b381d5484715a0929f29d8451c3a1c2c0c63d02ac9a1978c1148ce713741d"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-special-after.accdb",
+      "bytes": 36864,
+      "sha256": "464904879eaf0b5e70e2a645cac80486497f1b0235cf81fb8e7ae1f1ceb28232"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_ordinary_wide_insert.rs",
+      "bytes": 8861,
+      "sha256": "3ee3b86ef2775c6acbc495f9c61daeefa9123c662d69cee040abc84c7afb3b31"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_fixed_creation.rs",
+      "bytes": 13098,
+      "sha256": "6035f464746d74397b2a3d6b110a211f833bd03dcee9e78a0dbeeeef45e8f6a4"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/wide_scalar.rs",
+      "bytes": 4093,
+      "sha256": "e62c41e3b62f24b6a66953bff1fdbfe4fbc04be24e341b9ea90ba14f193a9863"
+    },
+    {
+      "path": "docs/testing/results/ace16-wide-scalar-insert-sources-2026-11-01.json",
+      "bytes": 9569,
+      "sha256": "30e66fdbca01796f9e17a17e134dd4b7b8ef8f5418fe546630470296e049578c"
+    }
+  ],
+  "native_Access_save_reopen": "unrun",
+  "strict_check": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-ace",
+      "--all-targets",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "log_sha256": "a321be387ee818c57194be0312f06cb10c0ef43a9ab15cfbe0022e30d19ff1ff"
+  }
+}
