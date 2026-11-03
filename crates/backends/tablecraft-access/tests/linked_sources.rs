@@ -7,9 +7,7 @@ use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod collection_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "linked_sources/forwarding.rs"]
 mod forwarding;
 #[allow(dead_code)]

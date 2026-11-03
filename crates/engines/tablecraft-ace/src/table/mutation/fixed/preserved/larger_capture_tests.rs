@@ -4,19 +4,12 @@ use support as raw;
 use tablecraft_testkit::fixtures::access as support;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 
-#[allow(dead_code)]
-#[path = "../../../../../tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../../../tests/ace16_larger_fixed_images/corrected.rs"]
 mod corrected;
 #[path = "../../../../../tests/ace16_larger_fixed_images/model.rs"]
 mod model;
-#[allow(dead_code)]
-#[path = "../../../../../tests/attachment_modern/fixture.rs"]
-mod modern_attachment;
-#[allow(dead_code)]
-#[path = "../../../../../tests/attachments/fixture.rs"]
-mod old_attachment;
+use tablecraft_testkit::fixtures::access::attachment_modern as modern_attachment;
 #[path = "../../../../../tests/ace16_preserved_scalar_updates_contract/model.rs"]
 pub(super) mod preserved_model;
 

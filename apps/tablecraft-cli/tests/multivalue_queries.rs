@@ -1,8 +1,5 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::support::cli::Runner;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 use std::{
@@ -177,9 +174,7 @@ fn parent_criteria_preserve_parent_counts_and_match_multiple_stored_members() {
     }
 }
 
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod attachment_fixture;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
 #[test]
 fn decoded_attachment_queries_require_explicit_opt_in_and_buffer_late_errors() {
     let empty_file = [

@@ -1,6 +1,6 @@
 #[path = "multivalue/reader.rs"]
 mod reader;
-use super::{fixture as base, support};
+use super::support;
 use std::io::Cursor;
 use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
 use tablecraft_ace::{
@@ -12,8 +12,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 
-#[path = "../../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 

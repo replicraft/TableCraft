@@ -1,8 +1,5 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::support::cli::Runner;
-#[allow(dead_code)]
-#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "../../../crates/backends/tablecraft-access/tests/multivalue_join_results/fixture.rs"]
 mod join_fixture;
 #[allow(dead_code)]

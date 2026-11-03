@@ -1,21 +1,18 @@
-use super::{
-    base, complex_fixture,
-    support::{data_page, put16},
-};
+use super::{complex_schema as complex_fixture, data_page, mutation_fixture as base, put16};
 
-pub(super) const PAGE_BYTES: usize = 4096;
-pub(super) const TEMPLATE_PAGE: usize = 17;
-pub(super) const FLAT_PAGE: usize = 20;
-pub(super) const CHILD_PAGE: usize = 22;
-pub(super) const FIELD_START: usize = 63;
-pub(super) const FIELD_BYTES: usize = 25;
+pub const PAGE_BYTES: usize = 4096;
+pub const TEMPLATE_PAGE: usize = 17;
+pub const FLAT_PAGE: usize = 20;
+pub const CHILD_PAGE: usize = 22;
+pub const FIELD_START: usize = 63;
+pub const FIELD_BYTES: usize = 25;
 // Independent Python-zlib golden retained by the original wrapper tests.
-pub(super) const PAYLOAD: &[u8] = &[
+pub const PAYLOAD: &[u8] = &[
     1, 0, 0, 0, 24, 0, 0, 0, 120, 94, 19, 97, 96, 96, 96, 4, 98, 22, 32, 78, 98, 200, 100, 200, 3,
     210, 12, 140, 76, 255, 1, 15, 116, 2, 85,
 ];
 
-pub(super) fn definition(
+pub fn definition(
     fields: &[(&str, u8, u16, u16)],
     records: u32,
     usage: u32,
@@ -37,7 +34,7 @@ pub(super) fn definition(
     put16(&mut page, 43, variable);
     page
 }
-pub(super) fn template() -> Vec<(&'static str, u8, u16, u16)> {
+pub fn template() -> Vec<(&'static str, u8, u16, u16)> {
     vec![
         ("FileURL", 12, 0, 0),
         ("FileName", 10, 0, 510),
@@ -56,14 +53,14 @@ fn inline(data: &[u8]) -> Vec<u8> {
 fn text(value: &str) -> Vec<u8> {
     value.encode_utf16().flat_map(u16::to_le_bytes).collect()
 }
-pub(super) fn database() -> Vec<u8> {
+pub fn database() -> Vec<u8> {
     with_payloads(PAYLOAD, &[])
 }
-pub(super) fn with_payloads(first: &[u8], last: &[u8]) -> Vec<u8> {
+pub fn with_payloads(first: &[u8], last: &[u8]) -> Vec<u8> {
     with_data_fields(&inline(first), &inline(last))
 }
 
-pub(super) fn with_data_fields(first: &[u8], last: &[u8]) -> Vec<u8> {
+pub fn with_data_fields(first: &[u8], last: &[u8]) -> Vec<u8> {
     let mut bytes = complex_fixture::with_mappings(vec![complex_fixture::mapping(7, 10, 20, 17)]);
     bytes[10 * PAGE_BYTES + FIELD_START + FIELD_BYTES + 15] = 7;
     bytes[TEMPLATE_PAGE * PAGE_BYTES..(TEMPLATE_PAGE + 1) * PAGE_BYTES]

@@ -5,9 +5,7 @@ mod agile_fixture;
 #[allow(dead_code)]
 #[path = "../../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[allow(dead_code)]
-#[path = "../../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[allow(dead_code)]
 #[path = "../../../../crates/engines/tablecraft-ace/tests/version_history/fixture.rs"]
 mod history_fixture;

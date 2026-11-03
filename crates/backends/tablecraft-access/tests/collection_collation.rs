@@ -1,11 +1,6 @@
 //! Original synthetic layouts test composition; these are not Access SQL goldens.
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod attachment_fixture;
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 use tablecraft_testkit::fixtures::access as support;

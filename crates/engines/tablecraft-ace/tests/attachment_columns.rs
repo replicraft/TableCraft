@@ -1,6 +1,3 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[path = "complex_schema/fixture.rs"]
-mod complex_fixture;
 use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor};
@@ -14,9 +11,8 @@ use tablecraft_ace::{
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 
-#[path = "attachments/fixture.rs"]
-mod fixture;
 use fixture::*;
+use tablecraft_testkit::fixtures::access::attachments as fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000)

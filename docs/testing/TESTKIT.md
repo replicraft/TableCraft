@@ -58,6 +58,15 @@ no image expectation and imports no engine serializer. Its extraction preserves 
 [existing proof/journal regressions](results/shared-tcni4-literal-framing-2026-11-02.json)
 and strict/minimal-feature checks pass.
 
+The independent `fixtures::access::{complex_schema, attachments,
+attachment_modern}` modules own the existing raw collection builders. Engine,
+adapter and CLI tests import those owners directly. Their move preserves builder
+bodies and literal bytes; no production codec or dependency is introduced. Public
+and restricted test-module consumers retain their actual child dependencies.
+The [extraction record](results/shared-complex-attachment-fixtures-2026-11-02.json)
+retains the complete-consumer correction, lint cleanup and 435 passing runtime
+functions across engine, adapter, CLI and private preservation checks.
+
 ## Optional subsystem support
 
 The default feature set is empty. Raw fixtures depend only on

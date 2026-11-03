@@ -9,22 +9,19 @@ mod authority_sources;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
-#[path = "complex_schema/fixture.rs"]
-pub mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "ace16_preserved_scalar_updates_contract/fixed_scalar_sources.rs"]
 mod fixed_scalar_sources;
 #[path = "ace16_preserved_scalar_updates_contract/growing_sources.rs"]
 mod growing_sources;
 #[path = "ace16_preserved_scalar_updates_contract/model.rs"]
 mod model;
-#[path = "attachment_modern/fixture.rs"]
-pub mod modern_attachment;
+use tablecraft_testkit::fixtures::access::attachment_modern as modern_attachment;
 #[path = "ace16_preserved_scalar_updates_contract/name_map.rs"]
 mod name_map;
 #[path = "ace16_preserved_scalar_updates_contract/name_map_controls.rs"]
 mod name_map_controls;
-#[path = "attachments/fixture.rs"]
-pub mod old_attachment;
+use tablecraft_testkit::fixtures::access::attachments as old_attachment;
 #[path = "ace16_preserved_scalar_updates_contract/outer_url.rs"]
 mod outer_url;
 

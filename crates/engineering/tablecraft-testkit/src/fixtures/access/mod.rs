@@ -356,3 +356,12 @@ pub mod tcni4;
 pub mod genuine_generated_companion_update;
 
 pub mod genuine_binary_id_update;
+
+/// Independent complete complex-column metadata fixtures.
+pub mod complex_schema;
+
+/// Independent stored attachment rows and encoded payload goldens.
+pub mod attachments;
+
+/// Independent modern conceptual attachment field layouts.
+pub mod attachment_modern;

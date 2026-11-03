@@ -1,6 +1,5 @@
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[path = "complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "complex_links/fixture.rs"]
 mod links_fixture;
 #[path = "complex_links/signed.rs"]
