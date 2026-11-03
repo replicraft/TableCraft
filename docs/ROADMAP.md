@@ -1220,6 +1220,17 @@ The unindexed continuation supplies target width/protocol/proof, and the
 single-GUID indexed continuation below now maintains qualified root leaves.
 Broader GUID key families remain work.
 
+## Retained GUID/Int32 tuple Source admission
+
+The selected read-only family now retains manual GUID/Int32 tuples, including
+UNIQUE secondary all-NULL omission. All twelve original views pass complete
+program absence and canonical Source, with exact declarations, logical/eligible
+membership, aliases, global allocation, DATA exclusion and role census. Fourteen
+focused functions and seventeen retained functions pass, together with strict and
+minimal builds. See the [Source contract](access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md).
+Existing indexed-target facts stay sealed. Tuple mutation, independent AFTER
+qualification and matching saves remain separate active work.
+
 ## Ordinary single-GUID index UPDATE
 
 Fitting manual single-GUID root leaves now use the ordinary fixed service and
@@ -1229,8 +1240,8 @@ GUID/Score composition passes both column orders. Resources, recovery, malformed
 originals, typed saves and 25 retained functions pass. See the
 [qualified scope](access/writes/NORMAL_GUID_INDEX_UPDATE.md).
 Tuple/ignored-NULL GUID keys, broader positive constraints, NODEs, allocation and
-native Access save/reopen remain active work. Twelve fitted tuple originals read
-correctly but still refuse complete Source admission at this checkpoint.
+native Access save/reopen remain active work. The twelve fitted tuple originals now pass complete Source admission in the
+separate read-only continuation below.
 
 ## Ordinary unindexed GUID fixed UPDATE
 

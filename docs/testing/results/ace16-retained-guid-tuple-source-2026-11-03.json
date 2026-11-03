@@ -1,0 +1,370 @@
+{
+  "date": "2026-11-03",
+  "scope": "Selected manual fixed GUID/I32 tuple complete Source; original-only, no new mutable token",
+  "inputs": {
+    "unchanged_originals": 12,
+    "rows_each": 6,
+    "aliases_each": 4,
+    "physical_root_leaf_owners_each": 2,
+    "source_bytes_changed": false
+  },
+  "checkpoints": {
+    "source": "8cbff06513ac58e9580f00eea073fc1963b0c926ac70ed2503fdb7ff8f0f6cd0",
+    "root_facade_cfg_body": "04c2b4e3c28a988328e204248a5c54b8439ca73d466fd7d085dd74fbc9292e4d",
+    "raw_declaration": "b9f415a09f22e37c48f1209f9634e267bdd798d1f4e7e6ce75e8fd78010e2e1e",
+    "parent_loop": "d8d48b8532db602eab2a76be6e7b1a55c5054365826cecf01a0436cfdd958671",
+    "raw_review": "d7365138dc893a401b62d7070a4b08f0227bda2aef7b6b2aa1d31c94b8bea405",
+    "parent_review": "39aef313177eb9b17e822f1739ba8fa2f7434e4c4d51ea63daf637debe0aa236"
+  },
+  "attempts": [
+    {
+      "result": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/results.json",
+        "bytes": 932,
+        "sha256": "2ea0b5ce6e38290990edd21b3fd55c7d4d18bbcf273d99665d6a42e561b1a905"
+      },
+      "metadata_functions_passed": 3,
+      "source_gate_exit": 101,
+      "first_failure": "NoRequired Unsupported(ActiveContent), raw single-key-only physical declaration",
+      "source_log": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/tuple-source.log",
+        "bytes": 1137,
+        "sha256": "0a394dfb04b0618332b6b8b50f0adf36f1d89683d0efe4254c5e9baefa0518d0"
+      }
+    },
+    {
+      "result": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/results-second.json",
+        "bytes": 545,
+        "sha256": "077ae19f1dbf56a76763a5b8a85a0cd6336d4b251bc1da1a67a5d190cd3ec930"
+      },
+      "source_gate_exit": 101,
+      "observed_before_stop": "First NoRequired ADMITTED, first canonical Source Unsupported(ConstraintCoverage)",
+      "first_failure": "Parent retained Source loop single-key guard",
+      "source_log": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/tuple-source-second.log",
+        "bytes": 1466,
+        "sha256": "d81d2bd96ff0cd3d4922d9b460c532292df262c2656a2e5c5c8d887226202183"
+      }
+    },
+    {
+      "result": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/results-third.json",
+        "bytes": 959,
+        "sha256": "dcb91516481b76860330e3ce4947ea51cf170dedc800ab93e137717619319d90"
+      },
+      "scope_unit_functions_passed": 1,
+      "source_gate_functions_passed": 1,
+      "native_views": 12,
+      "NoRequired_admitted": 12,
+      "canonical_Source_admitted": 12,
+      "refused": 0,
+      "source_log": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/beyond-single-plan/read-admission-draft/root-first/tuple-source-third.log",
+        "bytes": 2625,
+        "sha256": "4ef6756a8f0e61cd4b2b7ba32cf558b49019333b680ee7090fe6ce3a401464c0"
+      }
+    }
+  ],
+  "retained_regressions": [
+    {
+      "name": "old-guid-source",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary_sources::guid_update_originals::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "log_sha256": "3e639127182029006d4ae5c672dea80b60ee64771143885fa4db23d26557bd54"
+    },
+    {
+      "name": "old-member-roles",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::preserved_source::retained_integral::ownership::tests::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "log_sha256": "5f9c2354778a45f6dd79f66a1f3764dcd0267cc9ff490bbe7d7991eabee4764c"
+    },
+    {
+      "name": "old-program-absence",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::no_required_programs::tests::genuine_originals_bind_and_all_nine_present_empty_carriers_refuse",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "77c7e6ffbcdb79e230e1a9231c85e715bd99409bd9a7dd231c5e15f4ae58a41a"
+    },
+    {
+      "name": "old-actions",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::no_required_programs::action_tests::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "log_sha256": "650150e9b2882adc7f80f4f61fd5bd4dfd241b76fc0c6480bef6e71bdf5fdda2"
+    },
+    {
+      "name": "old-program-resources",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::no_required_programs::resource_tests::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "log_sha256": "9176b5df9dd5a08da08977ca83d8850820d00ac20645301e808064029f38eaef"
+    },
+    {
+      "name": "old-ordinary-closure",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::ordinary_content::tests::"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        3
+      ],
+      "log_sha256": "e2dff65ff1fc02c14342d4cc3d97bcd0454afd22952999af9e5dbfbaa562f719"
+    },
+    {
+      "name": "old-ordinary-counters",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::ordinary_content::counter_index_tests::"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "log_sha256": "1ff934a90405917739f6e509a1ae7afccd04d12e375d4ebf4170047fdafeae8c"
+    },
+    {
+      "name": "old-retained-selection",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::retained_selection_tests::",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        2
+      ],
+      "log_sha256": "b28b373cf279bca2c3e5b7b4d95f5eb30cadc15ed8d07ae5c1a0b8cdcdf41040"
+    },
+    {
+      "name": "reader-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "00e631ed928f6ebeeb4e8bb747e1c682fa3ca009a0eb2f27ca499bafda8aa112"
+    },
+    {
+      "name": "journal-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "journal"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "25d423f7f4b015de7cf4fd7efdd0c11be398764d8c7ce80c6739405d2db37263"
+    },
+    {
+      "name": "preview-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "ace16-write-preview"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "log_sha256": "b0662dcce3a718027fdba00d07bd95157244e383fb96c359e021ff301caf144c"
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 101,
+      "passed_functions": [],
+      "log_sha256": "56aa5e27242c337ab0c0f503f23aed4646e7d9e3ebe300b2d22b135d039a430c"
+    }
+  ],
+  "strict_and_minimal_profiles": "Reader, journal and preview builds passed. Initial strict run found collapsible_if; a short-circuit let-chain cleanup passed strict retry. No functional tests repeated solely for that cleanup.",
+  "indexed_target_authority_added": false,
+  "SDK_calls_this_phase": 0,
+  "after_construction_this_phase": 0,
+  "matching_saves_this_phase": 0,
+  "native_Access_save_reopen": "NOT_RUN",
+  "schema_version": 1,
+  "strict_retry": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "tablecraft-ace",
+      "--all-targets",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 0,
+    "log_sha256": "006531070a0136a90400956e83854c7b41b96bab263694a5caa006c424e1c677"
+  },
+  "format": {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit": 0
+  },
+  "declaration_checks": {
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::ordinary_content::indexes::declaration::tests"
+    ],
+    "exit": 0,
+    "passed_functions": 9,
+    "log_sha256": "8e2fb5f54c093c8901af6476c36a3ee307b2a0b5afb73c6feaf403c89dd3fcad"
+  },
+  "counts": {
+    "native_original_views": 12,
+    "NoRequired_admitted": 12,
+    "canonical_Source_admitted": 12,
+    "new_metadata_units": 3,
+    "new_raw_declaration_units": 2,
+    "new_scope_unit": 1,
+    "declaration_functions_including_retained": 9,
+    "retained_runtime_functions": 17,
+    "passing_runtime_functions_including_retained": 31
+  },
+  "notes": [
+    "Before compilation, the metadata helper module and its real indexes facade were gated to journal, matching both callers. Source/validator behavior and visibility remained unchanged.",
+    "The raw declaration repair reconstructs all active tuple slots and all unused/reserved bytes while retaining the exact 52-Step old single-key body. The parent repair consumes the complete retained proof without bypassing alias, GLOBAL allocation, DATA/index exclusion or physical census tails.",
+    "The final cleanup uses the existing PRIMARY_INDEX tag constant and a semantically identical short-circuit let-chain. No source bytes, models or program rules changed. Prior failures and the strict lint finding remain preserved.",
+    "The migrated Source gate is an original-only read/admission observation. Independent AFTER construction uses a separate result/manifest and is not a tuple write or SDK claim in this record."
+  ]
+}

@@ -66,3 +66,9 @@ ignored-NULL GUID keys, NODE growth and broader key compositions also remain wor
 page-role controls do not constitute new LVAL-overlap qualification. Native
 Microsoft Access save/reopen, Windows locking, mixed-client and power-loss
 comparison have not been run.
+
+
+The separate [tuple Source continuation](NORMAL_RETAINED_GUID_TUPLE_SOURCE.md)
+now admits the fitted tuple originals for complete read/preservation proof.
+This single-key writer keeps its target restrictions; tuple Source success
+does not grant it tuple mutation permission.

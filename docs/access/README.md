@@ -95,6 +95,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Ordinary single-GUID index updates](writes/NORMAL_GUID_INDEX_UPDATE.md)
 - [Ordinary unindexed GUID fixed updates](writes/NORMAL_GUID_FIXED_UPDATE.md)
 - [Ordinary Byte/Int16 fixed updates](writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
+- [Retained GUID/Int32 tuple Source admission](writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md)
 - [Ordinary updates beside unchanged GUID indexes](writes/NORMAL_RETAINED_GUID_SOURCE.md)
 - [Ordinary updates beside generated IDs](writes/NORMAL_GENERATED_COMPANION_UPDATE.md)
 

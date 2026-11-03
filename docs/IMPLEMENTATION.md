@@ -1,5 +1,17 @@
 # Implementation status
 
+## Retained GUID/Int32 tuple Source admission
+
+Complete NoRequired and canonical Source now pass all twelve fitted originals,
+including UNIQUE and ignored all-NULL secondary keys. Raw declarations check all
+slots and the parent consumes the complete retained proof while preserving alias,
+allocation, DATA separation and physical-role census checks. Thirty-one runtime
+functions, strict lint and reader/journal/preview builds pass. See the
+[bounded Source contract](access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md) and
+[execution record](testing/results/ace16-retained-guid-tuple-source-2026-11-03.json).
+This qualifies no new indexed-target token or tuple save. Both prior complete
+admission failures are preserved; tuple UPDATE qualification remains work.
+
 ## Ordinary single-GUID index UPDATE
 
 Normal fitting GUID key updates now preserve aliases, retained I32 owners, raw
@@ -12,8 +24,8 @@ functions pass, followed by strict checks. See the
 [current contract](access/writes/NORMAL_GUID_INDEX_UPDATE.md) and
 [execution record](testing/results/ace16-normal-indexed-guid-update-2026-11-03.json).
 Broader GUID constraints/tuples/omissions, NODEs, allocation and native Access
-save/reopen remain separate work. The twelve fitted GUID/Int32 tuple originals
-have passing reads and explicit current Source refusals.
+save/reopen remain separate work. The twelve fitted GUID/Int32 tuple originals now pass Source admission in the
+separate continuation above.
 
 ## Ordinary unindexed GUID fixed UPDATE
 

@@ -1,5 +1,6 @@
 //! Shared strict raw retained-index declarations; no page-role authority.
 use super::super::refused;
+use crate::table::indexes::validate_manual_guid_tuple;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema,
     format::{
@@ -31,6 +32,7 @@ const HISTORY_OFFSET: usize = size_of::<u32>();
 const NO_REFERENCE_OFFSET: usize = 13;
 const NO_REFERENCE: u32 = u32::MAX;
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
+const TUPLE_RECORD_PASSES: usize = 4;
 
 #[cfg(test)]
 mod tests;
@@ -101,7 +103,12 @@ pub(super) fn physical<'index>(
     let raw = page
         .get(begin..begin + PHYSICAL_BYTES)
         .ok_or_else(refused)?;
-    physical_record(raw, index, budget)?;
+    if index.columns().len() > 1 {
+        tuple_physical_record(raw, index, budget, cancelled)?;
+    } else {
+        // Preserve the existing single-key reconstruction and exact charge.
+        physical_record(raw, index, budget)?;
+    }
     // The public reader performs a name search in its fresh metadata.
     // Prepay that search from the same immutable original index names.
     for candidate in indexes {
@@ -295,6 +302,14 @@ fn qualify_for(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     check(budget, cancelled)?;
+    if matches!(family, KeyFamily::SelectedScalar) && index.columns().len() > 1 {
+        return validate_manual_guid_tuple(schema, index, budget, cancelled).map_err(|error| {
+            match error {
+                InspectError::Unsupported => refused(),
+                other => other.into(),
+            }
+        });
+    }
     let [key] = index.columns() else {
         return Err(refused());
     };
@@ -427,6 +442,53 @@ pub(super) fn physical_record(
     if raw != expected {
         return Err(refused());
     }
+    Ok(())
+}
+
+/// Complete raw tuple slots after the caller has qualified every alias under
+/// its actual declaration family. This proves raw closure, not Source permission.
+fn tuple_physical_record(
+    raw: &[u8],
+    index: &NativeIndex,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    if !(2..=layout::INDEX_KEY_COLUMNS).contains(&index.columns().len()) {
+        return Err(refused());
+    }
+    // Prepay bounded zero-fill, header/slot writes and complete comparison
+    // before reconstructing any expected bytes. Per-slot checks also cancel.
+    budget
+        .charge(
+            Resource::Steps,
+            (TUPLE_RECORD_PASSES * PHYSICAL_BYTES) as u64,
+        )
+        .map_err(InspectError::from)?;
+    let mut expected = [0; PHYSICAL_BYTES];
+    expected[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&PHYSICAL_MAGIC.to_le_bytes());
+    for number in 0..layout::INDEX_KEY_COLUMNS {
+        check(budget, cancelled)?;
+        let at = KEY_START + number * KEY_BYTES;
+        expected[at..at + size_of::<u16>()].copy_from_slice(&UNUSED_COLUMN.to_le_bytes());
+    }
+    for (position, key) in index.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        let at = KEY_START + position * KEY_BYTES;
+        let number = u16::try_from(key.number()).map_err(|_| refused())?;
+        expected[at..at + size_of::<u16>()].copy_from_slice(&number.to_le_bytes());
+        expected[at + size_of::<u16>()] = if key.descending() { 0 } else { ASCENDING };
+    }
+    expected[USAGE_OFFSET..USAGE_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&index.usage_map().to_le_bytes());
+    expected[ROOT_OFFSET..ROOT_OFFSET + size_of::<u32>()]
+        .copy_from_slice(&index.root_page().to_le_bytes());
+    expected[FLAGS_OFFSET] = index.flags();
+    if raw != expected {
+        return Err(refused());
+    }
+    check(budget, cancelled)?;
     Ok(())
 }
 

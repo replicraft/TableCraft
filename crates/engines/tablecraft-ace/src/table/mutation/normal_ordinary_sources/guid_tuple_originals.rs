@@ -1,4 +1,4 @@
-//! Unchanged fitted GUID/I32 tuple originals: read and Source baseline only.
+//! Unchanged fitted GUID/I32 tuple originals: complete read/Source qualification.
 use crate::{
     IndexCheckStatus, NativeImage, check_table, inspect_table_index_counter, inspect_table_schema,
     read_table, read_table_index,
@@ -393,7 +393,7 @@ fn fitted_guid_tuples_keep_complete_eligible_membership_and_observe_source() {
                 admitted[0] += 1;
                 eprintln!("GUID_TUPLE_NO_REQUIRED {} ADMITTED", case.name);
             }
-            Err(error) => eprintln!("GUID_TUPLE_NO_REQUIRED {} REFUSED {error:?}", case.name),
+            Err(error) => panic!("GUID_TUPLE_NO_REQUIRED {} REFUSED {error:?}", case.name),
         }
         match normal_ordinary::capture(&image, "Items", &mut budget(), &|| false) {
             Ok(source) => {
@@ -407,7 +407,7 @@ fn fitted_guid_tuples_keep_complete_eligible_membership_and_observe_source() {
                 }
                 eprintln!("GUID_TUPLE_CANONICAL_SOURCE {} ADMITTED", case.name);
             }
-            Err(error) => eprintln!(
+            Err(error) => panic!(
                 "GUID_TUPLE_CANONICAL_SOURCE {} REFUSED {error:?}",
                 case.name
             ),
@@ -415,6 +415,7 @@ fn fitted_guid_tuples_keep_complete_eligible_membership_and_observe_source() {
         assert_eq!(image.as_bytes(), raw);
     }
     assert_eq!(images.len(), 12);
+    assert_eq!(admitted, [12, 12]);
     eprintln!(
         "GUID_TUPLE_SOURCE_SUMMARY views12 NoRequiredAdmitted{} SourceAdmitted{}",
         admitted[0], admitted[1]
