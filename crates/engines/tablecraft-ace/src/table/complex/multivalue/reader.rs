@@ -209,7 +209,7 @@ impl<'a, R: NativeReadSource> MultivalueReader<'a, R> {
             },
             parent,
             &self.values,
-            |count, budget| {
+            |_observed, count, budget| {
                 budget.charge_allocation(count as u64, size_of::<Value>() as u64)?;
                 let mut values = Vec::new();
                 values

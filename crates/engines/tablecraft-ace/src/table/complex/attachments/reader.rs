@@ -191,7 +191,7 @@ impl<'a, R: NativeReadSource> AttachmentReader<'a, R> {
             },
             parent,
             &self.payload,
-            |count, budget| {
+            |_observed, count, budget| {
                 budget.charge_allocation(count as u64, size_of::<Vec<Value>>() as u64)?;
                 let mut rows = Vec::new();
                 rows.try_reserve_exact(count)

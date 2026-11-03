@@ -1,10 +1,13 @@
 //! Original mixed metadata: one supported and one independently qualified history.
-use super::{PAGE_BYTES, complex_fixture, fixture, support};
+use super::PAGE_BYTES;
+use crate::fixtures::access::{
+    self as support, complex_schema as complex_fixture, version_history as fixture,
+};
 
-pub(super) const OWNER_PAGE: usize = 10;
-pub(super) const OTHER_FLAT_PAGE: usize = 27;
-pub(super) const FIELD_START: usize = 63;
-pub(super) const FIELD_BYTES: usize = 25;
+pub const OWNER_PAGE: usize = 10;
+pub const OTHER_FLAT_PAGE: usize = 27;
+pub const FIELD_START: usize = 63;
+pub const FIELD_BYTES: usize = 25;
 
 fn put_page(bytes: &mut [u8], number: usize, page: &[u8]) {
     bytes[number * PAGE_BYTES..(number + 1) * PAGE_BYTES].copy_from_slice(page);
@@ -24,7 +27,7 @@ fn other_mapping() -> Vec<u8> {
     row
 }
 
-pub(super) fn database() -> Vec<u8> {
+pub fn database() -> Vec<u8> {
     let mut bytes = fixture::database();
     bytes.resize(30 * PAGE_BYTES, 0);
     let mut owner = fixture::definition(

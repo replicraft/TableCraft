@@ -1,10 +1,7 @@
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "version_history_source/compression.rs"]
 mod compression;
 use tablecraft_testkit::fixtures::access::version_history as fixture;
-#[path = "version_history_source/mixed.rs"]
-mod mixed;
-use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::version_history::mixed;
 #[path = "version_history_source/visible_memo.rs"]
 mod visible_memo;
 

@@ -1,4 +1,7 @@
 //! Original synthetic stored-history records shared by engine and adapter tests.
+/// Independent two-history schema and storage fixture.
+pub mod mixed;
+
 use super::{complex_schema as complex_fixture, data_page, mutation_fixture as base, put16, put32};
 
 const PAGE_BYTES: usize = 4096;
@@ -101,4 +104,31 @@ pub fn database() -> Vec<u8> {
         (20, 7, Some(""), Some(1)),
         (20, 3, None, None),
     ])
+}
+
+/// Give the first visible current Memo an independently supplied native descriptor.
+/// Stored history rows remain exactly the original fixture. This does not decode
+/// the descriptor or choose a latest history value for the current Memo.
+pub fn with_current_memo_descriptor(descriptor: &[u8]) -> Vec<u8> {
+    let mut bytes = database();
+    let parents = [10_i32, 20, 30]
+        .into_iter()
+        .enumerate()
+        .map(|(ordinal, key)| {
+            let mut row = 3_u16.to_le_bytes().to_vec();
+            row.extend((ordinal as i32 + 1).to_le_bytes());
+            row.extend(key.to_le_bytes());
+            if ordinal == 0 {
+                row.extend(descriptor);
+            }
+            let end = row.len() as u16;
+            row.extend(end.to_le_bytes());
+            row.extend(10_u16.to_le_bytes());
+            row.extend(1_u16.to_le_bytes());
+            row.push(if ordinal == 0 { 7 } else { 3 });
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    bytes[12 * PAGE_BYTES..13 * PAGE_BYTES].copy_from_slice(&data_page(10, &parents));
+    bytes
 }

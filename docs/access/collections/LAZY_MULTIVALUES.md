@@ -35,8 +35,9 @@ actual source and original controls. Existing default browsing, native query
 collection/presence/indexed-member paths and their complete caches are unchanged.
 The [attachment reader](LAZY_ATTACHMENTS.md) shares the actual complete-directory
 and selected-parent traversal while retaining attachment-specific carrier
-qualification. History and query per-parent contracts still need separate typed
-consumers. No CLI grammar or UI is added by these APIs.
+qualification. The [stored-history reader](LAZY_HISTORY.md) uses the same directory with its
+actual visible-Memo binding and StoredVersion decoder. Query per-parent contracts
+still need separate consumers. No CLI grammar or UI is added by these APIs.
 Native Access comparisons remain distinct from independent engine/adapter tests.
 
 Nine focused functions and retained regressions pass: 99 engine functions,

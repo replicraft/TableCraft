@@ -1622,8 +1622,11 @@ contract retains the primary references, algorithms, provenance and exact limits
    membership and revalidates all parent/child keys before decoding one parent's
    values. A separate [attachment reader](access/collections/LAZY_ATTACHMENTS.md)
    now shares this complete census while decoding only one parent's encoded stored
-   records. Native wrapper decoding remains explicit. Lazy history consumers and
-   query per-parent contracts remain separate work.
+   records. Native wrapper decoding remains explicit. A source-bound
+   [stored-history reader](access/collections/LAZY_HISTORY.md) now retains exact
+   stored versions independently of current Memo values and rechecks fresh
+   all-template association uniqueness before each parent result. Larger-directory
+   qualification and query per-parent contracts remain separate work.
    Ordinary SQL execution remains buffered; explicit
    [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
    cursors without complete-table retention. Explicit positive sorted TOP instead

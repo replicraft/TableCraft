@@ -1,11 +1,11 @@
 //! Explicit stored attachments and visible-Memo history browsing.
 use super::NativeBrowser;
-use tablecraft_ace::InspectError;
 pub use tablecraft_ace::{
     AttachmentColumn, CollectionPageRequest, StoredAttachment, StoredCollectionColumn,
     StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
     StoredCollectionTablePage, StoredVersion, VersionHistoryColumn,
 };
+use tablecraft_ace::{InspectError, TableSnapshotLimits, VersionHistoryReader};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
     /// Open a source-bound typed multivalue reader under the original controls.
@@ -16,7 +16,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
         &mut self,
         table: &str,
         column: &str,
-        limits: tablecraft_ace::TableSnapshotLimits,
+        limits: TableSnapshotLimits,
     ) -> Result<tablecraft_ace::MultivalueReader<'_, R>, InspectError> {
         tablecraft_ace::MultivalueReader::open(
             &mut self.source,
@@ -37,7 +37,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
         &mut self,
         table: &str,
         column: &str,
-        limits: tablecraft_ace::TableSnapshotLimits,
+        limits: TableSnapshotLimits,
     ) -> Result<tablecraft_ace::AttachmentReader<'_, R>, InspectError> {
         tablecraft_ace::AttachmentReader::open(
             &mut self.source,
@@ -102,6 +102,27 @@ impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
             self.cancelled,
         )
     }
+
+    /// Open a source-bound reader for one visible Memo's stored history.
+    /// The current Memo value stays independent. Complete membership is replayed
+    /// for each selected parent under this browser's original cumulative controls.
+    pub fn version_history_reader(
+        &mut self,
+        table: &str,
+        memo: &str,
+        limits: TableSnapshotLimits,
+    ) -> Result<VersionHistoryReader<'_, R>, InspectError> {
+        VersionHistoryReader::open(
+            &mut self.source,
+            self.scope,
+            table,
+            memo,
+            limits,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+
     /// Read complete checked stored history associated with a visible Memo field.
     /// Retains flat snapshot order and exact timestamps; no latest-value selection.
     pub fn version_history_column(

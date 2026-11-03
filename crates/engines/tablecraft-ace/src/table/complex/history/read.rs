@@ -3,7 +3,7 @@ use crate::{InspectError, TableSnapshotLimits, header::check, inspect_complex_sc
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
-const RECORD_FIELDS: u64 = 3;
+pub(super) const RECORD_FIELDS: u64 = 3;
 
 /// Read stored versions for one explicitly named visible Memo on a stable/offline
 /// ACE 2007/16 source. Resolve its hidden history key without assuming generated names.
@@ -61,7 +61,7 @@ pub(in crate::table::complex) fn read_links(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<VersionHistoryColumn, InspectError> {
-    let columns = schema::read(&links)?;
+    let columns = schema::read(&links, budget, cancelled)?;
     for row in links.child_snapshot().rows() {
         check(budget, cancelled)?;
         budget.charge(Resource::Steps, RECORD_FIELDS)?;

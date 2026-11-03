@@ -222,7 +222,7 @@ impl Directory {
         limits: TableSnapshotLimits,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), InspectError> {
+    ) -> Result<ComplexTableSchema, InspectError> {
         let observed = super::super::inspect_complex_schema(
             source,
             scope,
@@ -269,7 +269,8 @@ impl Directory {
         if position != self.position {
             return Err(InspectError::Malformed);
         }
-        parents.require_keys(self.parents(), budget, cancelled)
+        parents.require_keys(self.parents(), budget, cancelled)?;
+        Ok(observed)
     }
 }
 

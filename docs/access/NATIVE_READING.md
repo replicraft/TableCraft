@@ -406,8 +406,9 @@ I/O: parent reads can scan all keys again. Unselected value payloads remain outs
 this view's qualification. A parent result cannot fill the existing complete
 collection/query cache, and neither a directory nor cursor prefix is a complete
 payload snapshot. Default full-column, presence and collection browsing are
-unchanged. History lazy payload adapters, coherent live-file refresh and native
-Access differential qualification remain separate work.
+unchanged. Coherent live-file refresh and native Access differential qualification
+remain separate work. The typed attachment and history readers share the actual
+complete-directory service while retaining their distinct payload rules.
 
 ## Source-bound per-parent encoded attachments
 
@@ -422,3 +423,15 @@ Existing full attachment, metadata-only and query/presence readers are unchanged
 Explicit wrapper decoding remains a separate operation. The
 [attachment reader contract](collections/LAZY_ATTACHMENTS.md) describes cumulative
 controls, terminal failures and the stable/offline source requirement.
+
+## Source-bound per-parent stored Memo history
+
+`VersionHistoryReader` and `NativeBrowser::version_history_reader` resolve an
+explicit visible Memo to its actual hidden history key. They reuse the complete
+parent/child directory and typed StoredVersion decoder. Every selected-parent read
+rechecks full metadata and key/ROW membership through EOF; only that parent's
+historical Text/DATE payloads are decoded. The current visible Memo value is not
+loaded or synthesized from history. Stored order, signed identities, NULL versus
+empty Text and accepted DATE bits remain exact, without latest-value selection.
+See the [history reader contract](collections/LAZY_HISTORY.md) for source ownership,
+cumulative controls, terminal failures and complete-cache boundaries.
