@@ -1620,8 +1620,10 @@ contract retains the primary references, algorithms, provenance and exact limits
    `--all`. Default complete collection browsing remains unchanged. A source-bound
    [multivalue reader](access/collections/LAZY_MULTIVALUES.md) now retains complete
    membership and revalidates all parent/child keys before decoding one parent's
-   values. Lazy attachment/history consumers and query per-parent contracts remain
-   separate work.
+   values. A separate [attachment reader](access/collections/LAZY_ATTACHMENTS.md)
+   now shares this complete census while decoding only one parent's encoded stored
+   records. Native wrapper decoding remains explicit. Lazy history consumers and
+   query per-parent contracts remain separate work.
    Ordinary SQL execution remains buffered; explicit
    [progressive scalar SELECT/WHERE and flat UNION ALL](cli/STREAMING_QUERIES.md) now uses fresh native
    cursors without complete-table retention. Explicit positive sorted TOP instead

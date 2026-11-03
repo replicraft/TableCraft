@@ -8,7 +8,9 @@ pub use metadata_only::{
     AttachmentMetadataColumn, read_attachment_metadata, read_attachment_metadata_with_limits,
 };
 mod read;
+mod reader;
 mod record;
+pub use reader::{AttachmentReader, ParentAttachments};
 pub(in crate::table::complex) mod schema;
 pub use metadata::{AttachmentColumn, StoredAttachment};
 pub use read::{read_attachment_column, read_attachment_column_with_limits};

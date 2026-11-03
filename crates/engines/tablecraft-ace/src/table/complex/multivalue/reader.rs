@@ -1,5 +1,4 @@
 //! Source-bound complete membership with explicitly selected parent Value decoding.
-mod payload;
 
 use super::{read::require_parent_counts, schema::qualified};
 use crate::{
@@ -8,7 +7,7 @@ use crate::{
     header::check,
     table::complex::{
         inspect_complex_schema,
-        links::directory::{Directory, Projection, reference_positions},
+        links::directory::{Directory, Projection, payload::ParentRead, reference_positions},
     },
 };
 use tablecraft_core::{
@@ -124,8 +123,16 @@ impl<'a, R: NativeReadSource> MultivalueReader<'a, R> {
             budget,
             cancelled,
         )?;
-        let directory =
-            Directory::capture(source, schema, field_position, limits, budget, cancelled)?;
+        let keys = Projection::capture(flat, &references, budget, cancelled)?;
+        let directory = Directory::capture(
+            source,
+            schema,
+            field_position,
+            keys,
+            limits,
+            budget,
+            cancelled,
+        )?;
         require_parent_counts(directory.parents(), budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(Self {
@@ -181,5 +188,48 @@ impl<'a, R: NativeReadSource> MultivalueReader<'a, R> {
             self.failed = true;
         }
         result
+    }
+
+    fn read_payload(&mut self, parent: usize) -> Result<ParentMultivalue, InspectError> {
+        let link = self
+            .directory
+            .parents()
+            .get(parent)
+            .ok_or(InspectError::InvalidPageRange)?;
+        let reference = link.row_reference();
+        let key = link.key();
+        let value_position = self.values.roles[2];
+        let values = self.directory.read_parent(
+            ParentRead {
+                source: &mut *self.source,
+                scope: self.scope,
+                limits: self.limits,
+                budget: &mut *self.budget,
+                cancelled: self.cancelled,
+            },
+            parent,
+            &self.values,
+            |count, budget| {
+                budget.charge_allocation(count as u64, size_of::<Value>() as u64)?;
+                let mut values = Vec::new();
+                values
+                    .try_reserve_exact(count)
+                    .map_err(|_| InspectError::Allocation)?;
+                Ok(values)
+            },
+            |values, row, _budget| {
+                let value = row
+                    .into_iter()
+                    .nth(value_position)
+                    .ok_or(InspectError::Malformed)?;
+                values.push(value);
+                Ok(())
+            },
+        )?;
+        Ok(ParentMultivalue {
+            reference,
+            key,
+            values,
+        })
     }
 }

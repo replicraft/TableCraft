@@ -33,8 +33,10 @@ not as a portable row identifier, write witness or foreign snapshot certificate.
 `NativeBrowser::multivalue_reader` is the working adapter consumer and borrows its
 actual source and original controls. Existing default browsing, native query
 collection/presence/indexed-member paths and their complete caches are unchanged.
-Lazy attachments/history and query per-parent contracts need separate typed
-consumers and payload qualifications. No CLI grammar or UI is added by this API.
+The [attachment reader](LAZY_ATTACHMENTS.md) shares the actual complete-directory
+and selected-parent traversal while retaining attachment-specific carrier
+qualification. History and query per-parent contracts still need separate typed
+consumers. No CLI grammar or UI is added by these APIs.
 Native Access comparisons remain distinct from independent engine/adapter tests.
 
 Nine focused functions and retained regressions pass: 99 engine functions,
