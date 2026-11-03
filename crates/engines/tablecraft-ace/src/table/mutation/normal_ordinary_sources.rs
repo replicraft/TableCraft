@@ -251,3 +251,5 @@ mod byte_int16_update;
 mod guid_update_originals;
 
 mod guid_update_spans;
+
+mod guid_tuple_originals;

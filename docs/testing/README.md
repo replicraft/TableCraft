@@ -5,6 +5,7 @@
 - [Shared test fixtures and support](TESTKIT.md)
 - [Normal unindexed GUID write acceptance](results/ace16-normal-guid-fixed-update-2026-11-03.json)
 - [GUID UPDATE sources and admission](ACE16_GUID_UPDATE_ADMISSION.md)
+- [GUID/Int32 tuple UPDATE baseline](results/ace16-guid-tuple-update-baseline-2026-11-03.json)
 - [Indexed GUID UPDATE expected-source qualification](results/ace16-indexed-guid-update-sources-2026-11-03.json)
 - [Retained GUID Source admission](results/ace16-retained-guid-source-2026-11-03.json)
 - [Byte/Int16 literal UPDATE source qualification](ACE16_BYTE_INT16_UPDATE_SOURCES.md)
