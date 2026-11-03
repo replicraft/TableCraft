@@ -29,6 +29,27 @@ impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
         )
     }
 
+    /// Open an encoded attachment reader under the browser's original controls.
+    /// Complete key membership is checked at open and replayed for every parent.
+    /// Only the requested parent's metadata and FileData are loaded; wrappers are
+    /// decoded only through an explicit StoredAttachment decoder call.
+    pub fn attachment_reader(
+        &mut self,
+        table: &str,
+        column: &str,
+        limits: tablecraft_ace::TableSnapshotLimits,
+    ) -> Result<tablecraft_ace::AttachmentReader<'_, R>, InspectError> {
+        tablecraft_ace::AttachmentReader::open(
+            &mut self.source,
+            self.scope,
+            table,
+            column,
+            limits,
+            &mut self.budget,
+            self.cancelled,
+        )
+    }
+
     /// Browse a parent page with all qualified stored collection types.
     /// Full parent/child validation retains existing snapshot limits. Encoded
     /// attachments stay inert, history stays in stored order and formulas never run.

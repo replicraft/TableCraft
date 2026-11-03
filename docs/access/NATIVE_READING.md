@@ -406,5 +406,19 @@ I/O: parent reads can scan all keys again. Unselected value payloads remain outs
 this view's qualification. A parent result cannot fill the existing complete
 collection/query cache, and neither a directory nor cursor prefix is a complete
 payload snapshot. Default full-column, presence and collection browsing are
-unchanged. Attachment/history lazy payload adapters, coherent live-file refresh
-and native Access differential qualification remain separate work.
+unchanged. History lazy payload adapters, coherent live-file refresh and native
+Access differential qualification remain separate work.
+
+## Source-bound per-parent encoded attachments
+
+`AttachmentReader` and `NativeBrowser::attachment_reader` use the complete key
+directory also consumed by the multivalue reader. Actual attachment qualification
+retains its legacy and modern conceptual carrier rules. Each parent request
+revalidates complete metadata and parent/child ROW/key membership through EOF,
+then publishes only that parent's owned typed metadata and encoded FileData.
+Unselected payload fields are not decoded or followed to external storage; key
+pages still contain their inline bytes. NULL FileData still counts as a member.
+Existing full attachment, metadata-only and query/presence readers are unchanged.
+Explicit wrapper decoding remains a separate operation. The
+[attachment reader contract](collections/LAZY_ATTACHMENTS.md) describes cumulative
+controls, terminal failures and the stable/offline source requirement.

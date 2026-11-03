@@ -1,3 +1,5 @@
+#[path = "attachment_columns/reader.rs"]
+mod reader;
 use tablecraft_testkit::fixtures::access as support;
 
 use std::{cell::Cell, io::Cursor};

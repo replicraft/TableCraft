@@ -1,3 +1,5 @@
+#[path = "browsing/attachments.rs"]
+mod attachments;
 #[path = "browsing/cursor.rs"]
 mod cursor;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;

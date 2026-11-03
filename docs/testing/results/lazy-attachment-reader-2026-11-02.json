@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "portable source-bound attachment reader acceptance passed; native Access comparison unrun",
+  "services": [
+    "AttachmentReader::open",
+    "AttachmentReader::read_parent",
+    "NativeBrowser::attachment_reader",
+    "ParentAttachments::attachments"
+  ],
+  "scope": "Complete parent/child membership and fresh full metadata/key/ROW census; selected-parent stored rows only, encoded FileData inert, original typed decoder and explicit decode boundary retained.",
+  "counts": {
+    "new_engine_functions": 8,
+    "new_browser_functions": 3,
+    "engine_functions_including_regressions": 86,
+    "adapter_functions_including_regressions": 68,
+    "CLI_browsing_functions": 35
+  },
+  "runtime_results": [
+    {
+      "name": "engine-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "attachment_columns",
+        "--test",
+        "attachment_modern",
+        "--test",
+        "attachment_metadata",
+        "--test",
+        "multivalues",
+        "--test",
+        "multivalue_pages",
+        "--test",
+        "complex_links",
+        "--test",
+        "version_history",
+        "--test",
+        "table_projection"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        20,
+        4,
+        6,
+        9,
+        8,
+        17,
+        8,
+        14
+      ],
+      "reader_functions": 15,
+      "accepted": true,
+      "log_sha256": "1cb6fc7cc944532ba371b01333391b4b2139747246c0bd72299d27aa74e31dd3"
+    },
+    {
+      "name": "access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "--test",
+        "automatic_browsing",
+        "--test",
+        "attachment_data_source",
+        "--test",
+        "required_index_collections",
+        "--test",
+        "multivalue_source",
+        "--test",
+        "version_history_source",
+        "--test",
+        "collection_collation"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        15,
+        6,
+        18,
+        4,
+        7,
+        8,
+        10
+      ],
+      "reader_functions": 3,
+      "accepted": true,
+      "log_sha256": "42f028d8c3adeb791a314e5fe8c69408a248f8ee1db61412f5069faa46e981e2"
+    },
+    {
+      "name": "cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        35
+      ],
+      "reader_functions": null,
+      "accepted": true,
+      "log_sha256": "c10d5ef9e13a49277b2b7201f780815f4210a74086adee315debd767256b3c98"
+    }
+  ],
+  "preserved_first_lint_failure": {
+    "name": "strict-first",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--keep-going",
+      "-p",
+      "tablecraft-ace",
+      "-p",
+      "tablecraft-access",
+      "-p",
+      "tablecraft-cli",
+      "-p",
+      "tablecraft-testkit",
+      "--all-features",
+      "--all-targets",
+      "--offline",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit": 101,
+    "passed_functions": [],
+    "reader_functions": null,
+    "accepted": false,
+    "log_sha256": "173b356e2cc879eab43d79679d1c0865c70d6729aa1d4fa29d1b24f15624dc06"
+  },
+  "correction": "Test-only explicit drop of non-Drop browser replaced with lexical scope; same owned-result lifetime assertion, inputs and operation order. Affected function rerun passes; production unchanged.",
+  "remaining_checks": [
+    {
+      "name": "browser-scope-second",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "attachments::browser_attachment_results_own_encoded_values_under_original_cumulative_controls",
+        "--",
+        "--exact"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1
+      ],
+      "accepted": true,
+      "log_sha256": "b8edb54e3b9c06208476b95abfd583ca02ae1ac667dfd578c3bba9b61b6c59fc"
+    },
+    {
+      "name": "strict-second",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "12188669caa7efe32d47e30fa4bf3143632bc3b98a97928ea4006a00da093193"
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "0798a484e78198f895b616093e02d3749adafe156b48486d694807526884a4df"
+    },
+    {
+      "name": "rustdoc-first",
+      "argv": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "8a4ace4ec07feaf322e40bde235664ec0c310297ff3b7a38405943beda37bcdf"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "passed_functions": [],
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/implementation-draft/first-private-checkpoint.json",
+      "bytes": 14561,
+      "sha256": "b77e91446ebbce5b14750558d5231cef46b4fd897de119545afdf8f91baf2d77"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/implementation-draft/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 2696,
+      "sha256": "d83fcadf43fc5260e80195696e5026f9e485a822122a8c29331485bda9fb1cd1"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/VALUE_SEMANTICS_INSTALLED_REVIEW_FIRST.json",
+      "bytes": 4667,
+      "sha256": "d9c62cff3ce5c96cde77894a5b092c9e9f0532b716f97ee9f9eaa47151376d99"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/reader-root-first/installation.json",
+      "bytes": 228,
+      "sha256": "9c4e969705c4cd87fbf7f114ba84bc901d427c313fa3c75b967114068f82f83c"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/reader-root-first/results-first.json",
+      "bytes": 2502,
+      "sha256": "560ccecfe7373dcf00d73b260b410c9df27263b711861579cb72f1513dd16e37"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/reader-root-first/browser-scope-successor.json",
+      "bytes": 519,
+      "sha256": "6d0ff2b6aad360cb4aa3a296aa0b871408568e2d5556803a30cdecb35ba97450"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/reader-root-first/results-second.json",
+      "bytes": 2431,
+      "sha256": "209a3a93d0f6f59ce8e0b22f4898d03618e4507317d794c62b17aa28e369f978"
+    }
+  ],
+  "retained_boundaries": [
+    "attachment-specific modern carriers",
+    "NULL FileData still counts as child",
+    "multivalue100 limit stays with its own reader",
+    "full/metadata/query/presence caches unchanged",
+    "stable/offline source, cumulative budgets and terminal operational errors"
+  ],
+  "remaining_work": [
+    "lazy stored history",
+    "query per-parent contracts",
+    "larger-directory qualification",
+    "coherent live-file refresh",
+    "native Access qualification"
+  ]
+}

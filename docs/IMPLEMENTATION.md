@@ -1,5 +1,22 @@
 # Implementation status
 
+## Source-bound per-parent attachments
+
+`AttachmentReader` and `NativeBrowser::attachment_reader` now return one parent's
+owned metadata and encoded FileData while retaining complete parent/child key
+membership validation. Modern reference fields use the actual attachment-specific
+qualifier. Each operation rechecks metadata and the full key/ROW census through
+EOF; unselected external payloads are not loaded. Existing typed attachment views
+and explicit decoding remain the only wrapper interpretation boundary. The shared
+traversal serves both attachment and multivalue readers without changing default
+complete query/presence caches. See the
+[attachment contract](access/collections/LAZY_ATTACHMENTS.md). Eleven new functions
+and retained regressions pass (86 engine, 68 adapter, 35 CLI), followed by strict,
+minimal, Rust documentation and boundary checks. The
+[acceptance record](testing/results/lazy-attachment-reader-2026-11-02.json)
+retains the test-only lexical-scope correction. History readers, larger-directory
+evidence and native Access comparisons remain work.
+
 ## Int32 key updates beside retained Binary indexes
 
 Normal fixed UPDATE now qualifies mutable Int32 keys separately from complete
@@ -27,8 +44,9 @@ and retained regressions pass (99 engine, 61 adapter, 35 CLI), followed by stric
 minimal-feature, Rust documentation and dependency checks. The
 [contract](access/collections/LAZY_MULTIVALUES.md) and
 [acceptance record](testing/results/lazy-multivalue-reader-2026-11-02.json)
-retain the first unused-argument lint failure and correction. Attachment/history
-consumers, larger directories and native Access qualification remain work.
+retain the first unused-argument lint failure and correction. Attachments now
+have the separate reader above; history consumers, larger directories and native
+Access qualification remain work.
 
 ## Ordinary updates beside generated IDs
 

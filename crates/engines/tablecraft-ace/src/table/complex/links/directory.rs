@@ -1,4 +1,6 @@
 //! Complete key/ROW membership, deliberately separate from child payload results.
+pub(in crate::table::complex) mod payload;
+
 use super::{membership::Membership, read::read_parents};
 use crate::{
     ComplexColumnSchema, ComplexParentLink, ComplexTableSchema, InspectError, NativeReadSource,
@@ -67,6 +69,29 @@ impl Projection {
             }
         }
         let (positions, columns) = snapshot::projected_columns(schema, &names, budget, cancelled)?;
+        Self::from_columns(positions, columns, roles, budget, cancelled)
+    }
+
+    /// Map actual owner-qualified projected carriers to their native roles.
+    /// This does not qualify metadata or grant scalar-read permission.
+    pub fn from_columns(
+        positions: Vec<usize>,
+        columns: Vec<Column>,
+        roles: &[usize],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        if positions.len() != columns.len() {
+            return Err(InspectError::Malformed);
+        }
+        let mut previous = None;
+        for position in &positions {
+            check(budget, cancelled)?;
+            if previous.is_some_and(|prior| prior >= *position) {
+                return Err(InspectError::Malformed);
+            }
+            previous = Some(*position);
+        }
         budget.charge_allocation(roles.len() as u64, size_of::<usize>() as u64)?;
         let mut projected = Vec::new();
         projected
@@ -95,6 +120,7 @@ impl Directory {
         source: &mut R,
         schema: ComplexTableSchema,
         field_position: usize,
+        keys: Projection,
         limits: TableSnapshotLimits,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -104,7 +130,30 @@ impl Directory {
         let declaration = &schema.columns()[position];
         let flat = declaration.flat_table();
         let roles = reference_positions(declaration, flat, budget, cancelled)?;
-        let keys = Projection::capture(flat, &roles, budget, cancelled)?;
+        if keys.positions.len() != roles.len() || keys.roles.len() != roles.len() {
+            return Err(InspectError::Malformed);
+        }
+        for (role, expected) in roles.iter().enumerate() {
+            check(budget, cancelled)?;
+            let projected = *keys.roles.get(role).ok_or(InspectError::Malformed)?;
+            let field = flat
+                .columns()
+                .get(*expected)
+                .ok_or(InspectError::Malformed)?;
+            let carrier = keys.columns.get(projected).ok_or(InspectError::Malformed)?;
+            let work = field
+                .name()
+                .len()
+                .checked_add(carrier.name().len())
+                .ok_or(InspectError::StructureLimit)?;
+            budget.charge(Resource::Steps, work as u64)?;
+            if keys.positions.get(projected) != Some(expected)
+                || carrier.data_type() != tablecraft_schema::ScalarType::Int32
+                || carrier.name() != field.name()
+            {
+                return Err(InspectError::Malformed);
+            }
+        }
         let rows = page::read_records_batched(
             source,
             flat,
