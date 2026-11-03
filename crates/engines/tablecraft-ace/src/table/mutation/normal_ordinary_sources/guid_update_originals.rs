@@ -437,3 +437,6 @@ fn existing_guid_originals_keep_data_keys_and_observe_source_admission() {
 
 #[cfg(test)]
 mod score_plan;
+
+#[cfg(test)]
+mod indexed_updates;
