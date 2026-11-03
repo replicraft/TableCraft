@@ -1,4 +1,5 @@
 //! Ordinary fixed requests require fresh native content and ownership proof.
+mod guid;
 mod indexed;
 mod proof;
 mod selection;
@@ -135,6 +136,9 @@ fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     if indexed::selected(&source, original, budget, cancelled)? {
+        if carriers == FixedCarriers::Guid {
+            return guid::plan(image, source, table, original, budget, cancelled);
+        }
         if carriers != FixedCarriers::Legacy {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }

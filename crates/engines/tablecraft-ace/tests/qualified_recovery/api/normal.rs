@@ -877,3 +877,6 @@ mod byte_int16_update;
 
 #[path = "normal/guid_update.rs"]
 mod guid_update;
+
+#[path = "normal/indexed_guid_update.rs"]
+mod indexed_guid_update;

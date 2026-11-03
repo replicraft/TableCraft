@@ -102,6 +102,7 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.ordinary.fixed.table").entered();
         let source = capture(self, table, budget, cancelled)?;
         let mut indexed_column = None;
+        let mut indexed_guid = None;
         for field in source.table.schema().columns() {
             check(budget, cancelled)?;
             let supported = matches!(
@@ -146,6 +147,9 @@ impl NativeImage {
                 if indexed_column.is_none() {
                     indexed_column = Some(field.name());
                 }
+                if field.native_type() == GUID && indexed_guid.is_none() {
+                    indexed_guid = Some(field.name());
+                }
                 continue;
             }
             let groups = [FixedColumnUpdates::new(
@@ -163,6 +167,18 @@ impl NativeImage {
                 return preflight_with_policy(&source, &groups, carriers, budget, cancelled);
             }
             return preflight(&source, &groups, budget, cancelled);
+        }
+        if let Some(column) = indexed_guid {
+            let groups = [FixedColumnUpdates::new(
+                source.table.schema().name(),
+                column,
+                &[],
+            )];
+            let facts = super::fixed_records::indexed::guid_updates::GuidUpdateIndexes::capture(
+                self, &source, budget, cancelled,
+            )?;
+            binding::all_guid_updates(self, &source, &groups, &facts, budget, cancelled)?;
+            return Ok(());
         }
         let column = indexed_column.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
         let groups = [FixedColumnUpdates::new(

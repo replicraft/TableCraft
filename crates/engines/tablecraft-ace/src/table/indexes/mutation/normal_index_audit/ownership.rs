@@ -5,7 +5,7 @@ use crate::{
     WriteBlocker,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
-        data_type::{CURRENCY, INT64, SHORT_BINARY, SHORT_TEXT},
+        data_type::{CURRENCY, GUID, INT64, SHORT_BINARY, SHORT_TEXT},
         definition,
         page::PAGE_BYTES,
         reader::Reader,
@@ -60,6 +60,7 @@ enum CaptureMode {
     IntegralUpdates,
     I32Updates,
     I32Omissions,
+    GuidUpdates,
 }
 
 impl Ownership {
@@ -118,6 +119,15 @@ impl Ownership {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         Self::capture_mode(image, checked, CaptureMode::I32Omissions, budget, cancelled)
+    }
+
+    pub(in crate::table) fn capture_guid_updates(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, CaptureMode::GuidUpdates, budget, cancelled)
     }
 
     fn capture_mode(
@@ -229,6 +239,7 @@ impl Ownership {
                         .filter(|field| {
                             matches!(field.native_type(), INT64 | CURRENCY)
                                 || matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT)
+                                || mode == CaptureMode::GuidUpdates && field.native_type() == GUID
                         })
                 })
             } else {
@@ -240,7 +251,9 @@ impl Ownership {
                 })
             };
             let tree = if let Some(field) = typed {
-                if field.native_type() == SHORT_TEXT {
+                if mode == CaptureMode::GuidUpdates && field.native_type() == GUID {
+                    Tree::capture_guid(image, index, selected, field, reader.budget, cancelled)?
+                } else if field.native_type() == SHORT_TEXT {
                     #[cfg(feature = "journal")]
                     {
                         Tree::capture_text(image, index, selected, field, reader.budget, cancelled)?

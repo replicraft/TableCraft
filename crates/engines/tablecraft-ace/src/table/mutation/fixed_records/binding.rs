@@ -164,6 +164,27 @@ pub(in crate::table::mutation) fn all_i32_updates(
     )
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_guid_updates(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::guid_updates::GuidUpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    indexed.require_source(image, source.table.schema(), budget, cancelled)?;
+    all_with_targets(
+        source,
+        groups,
+        1,
+        Some(indexed),
+        FixedCarriers::Guid,
+        budget,
+        cancelled,
+    )
+}
+
 fn all_with_minimum(
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],

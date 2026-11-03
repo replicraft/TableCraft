@@ -244,6 +244,20 @@ pub(in crate::table::mutation) fn prepare_i32_updates(
     compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_guid_updates(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::guid_updates::GuidUpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) =
+        binding::all_guid_updates(image, source, groups, indexed, budget, cancelled)?;
+    compose::<GUID_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+}
+
 fn compose<const N: usize>(
     image: &NativeImage,
     source: &Source,

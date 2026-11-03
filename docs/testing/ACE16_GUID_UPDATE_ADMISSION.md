@@ -110,3 +110,12 @@ sizes of 95/113 pages; original files, raw records and prior expected laws staye
 unchanged. The corrected focused function passed. The
 [baseline record](results/ace16-guid-tuple-update-baseline-2026-11-03.json)
 retains both attempts. No new SDK, model construction or writer ran in this gate.
+
+
+## Qualified single-GUID write continuation
+
+The [normal indexed GUID service](../access/writes/NORMAL_GUID_INDEX_UPDATE.md)
+now produces the 28 ordered request outcomes through checked commits and
+independent full-image proof. Typed/CLI saves, resource and recovery controls pass
+in the separate write record. That extends the single-GUID root-leaf family; the
+fitted tuple Source refusals above remain unchanged.

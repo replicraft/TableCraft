@@ -358,6 +358,37 @@ pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
     )
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn reconstruct_guid_updates_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::guid_updates::GuidUpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, usize), EditError> {
+    check(budget, cancelled)?;
+    groups.first().ok_or(EditError::Preservation)?;
+    if expected.len() != original.image.as_bytes().len() {
+        return Err(EditError::Preservation);
+    }
+    indexed.require_source(
+        original.image,
+        original.source.table.schema(),
+        budget,
+        cancelled,
+    )?;
+    reconstruct_with_targets::<GUID_BYTES>(
+        original.source,
+        expected,
+        groups,
+        Some(indexed),
+        FixedCarriers::Guid,
+        budget,
+        cancelled,
+    )
+}
+
 fn reconstruct_with_targets<const N: usize>(
     original: &Source,
     mut expected: Vec<u8>,
