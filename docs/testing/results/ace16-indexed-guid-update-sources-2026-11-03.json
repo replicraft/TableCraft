@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Four retained single-GUID originals and 24 independently authored UPDATE AFTER views, representing 28 requests. Source/read qualification only; no mutation producer or journal executed.",
+  "counts": {
+    "originals": 4,
+    "requests": 28,
+    "unique_AFTERs": 24,
+    "unique_native_views": 28,
+    "NoRequired_admitted": 28,
+    "canonical_Source_admitted": 28,
+    "historical_count_per_owner": 158,
+    "native_functions": 1
+  },
+  "source_model": {
+    "code_freeze": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/code-first-freeze.json",
+      "bytes": 4042,
+      "sha256": "135e4ba4ef37fad154b077911810068b1c5bea344e71d5df8cf8d434e33c18d9"
+    },
+    "model": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/model.py",
+      "bytes": 7799,
+      "sha256": "23a4b72ac91252f8dfdf49946c1b48cc8bdb56d105aa688fb860008d2651ea3e"
+    },
+    "constructor": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/prepare.py",
+      "bytes": 4439,
+      "sha256": "f9c1fe4736c3f9dd9e3bdf3a01ceb7f411f4c4741a2422e14ac9ce2813414891"
+    },
+    "receipt": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/construction-first.json",
+      "bytes": 1712,
+      "sha256": "233249021c0248cd9b29511db157ffa64b48c7e737a5c323f6de8f8ef157c76a"
+    },
+    "manifest": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/manifest.json",
+      "bytes": 36796,
+      "sha256": "efb835f6b5d4f70760726dc820a6fa388ba78d72462f83586075b081422f6922"
+    },
+    "expected_hashes": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/EXPECTED_HASHES_FIRST.md",
+      "bytes": 2492,
+      "sha256": "2f776eb1ee7990713b3ec885b9291040b72e23747077522c5c76148ff424cd46"
+    },
+    "erratum": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/IMPLEMENTATION_REFERENCE_ERRATUM.md",
+      "bytes": 740,
+      "sha256": "11fdb6e95cf96d42d0d18d3e439198120aaed3b0549cca4a0a70af5552926aa2"
+    }
+  },
+  "model_checkpoint": {
+    "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/first-complete-private-checkpoint.json",
+    "bytes": 20663,
+    "sha256": "a6f0a8c0e9fb6dac37ad95212c3bf66fc2f5e843d82c851ea19f3ba3cdc72cbe"
+  },
+  "original_inputs": [
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/model.py",
+      "bytes": 7799,
+      "sha256": "23a4b72ac91252f8dfdf49946c1b48cc8bdb56d105aa688fb860008d2651ea3e"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/prepare.py",
+      "bytes": 4439,
+      "sha256": "f9c1fe4736c3f9dd9e3bdf3a01ceb7f411f4c4741a2422e14ac9ce2813414891"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/IMPLEMENTATION_REFERENCE_ERRATUM.md",
+      "bytes": 740,
+      "sha256": "11fdb6e95cf96d42d0d18d3e439198120aaed3b0549cca4a0a70af5552926aa2"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-laws/REQUEST_LAWS_FIRST.json",
+      "bytes": 5891,
+      "sha256": "1a61ac2993e54873f37c2ed3d49733e17f912d745541e2d33f2c46a02a1d028c"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-laws/REFERENCE_AND_BYTE_LAWS.md",
+      "bytes": 7924,
+      "sha256": "f7cdc6f06d90d7655029bfb89574d033cf96547a8912d3efb93abb05f621c503"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-laws/first-private-checkpoint.json",
+      "bytes": 4280,
+      "sha256": "b479ab0e78fdb59e7550d0afefe3b632416e446488e27a1e6bbbe48148819668"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-laws/QUERY_COMPOSITION_REVIEW_FIRST.json",
+      "bytes": 5588,
+      "sha256": "74fc7c67b24fb80778d194562297890fa832ec36962a17b91a08d26f22f4d186"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-source.accdb",
+      "bytes": 393216,
+      "sha256": "4991ffbc914b22d3ae0769e10a7f4c497e8e3066ce8431735a294e620f2a2353"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-A-pressure-ordinary-source-proof.json",
+      "bytes": 7344,
+      "sha256": "210976fa495cef542cb30ad2452614bde46567112192e92cf6eef4c9fc612232"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-source.accdb",
+      "bytes": 393216,
+      "sha256": "04abb49839ea396628571f6e47fb563311db061c082634215a8e175dab82f036"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2016-Guid-D-pressure-ordinary-source-proof.json",
+      "bytes": 7344,
+      "sha256": "210976fa495cef542cb30ad2452614bde46567112192e92cf6eef4c9fc612232"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-source.accdb",
+      "bytes": 466944,
+      "sha256": "3ccecfaa6865cecdc932bf239dad0bdfeb770361ef90e0d0d149f91979b1837e"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-A-pressure-ordinary-source-proof.json",
+      "bytes": 7226,
+      "sha256": "b86ce68555ae96c0e373f9e359ff8c7c492aaba81c67a3ee440ac39749f3e973"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-source.accdb",
+      "bytes": 466944,
+      "sha256": "2cd3572d7ec08f5d538a4733d06edc4d8400838a76765bb0a828b343e4dc681d"
+    },
+    {
+      "path": ".cache/ace16-guid-tuple-index-insert-reference-first-20261028/V2019-Guid-D-pressure-ordinary-source-proof.json",
+      "bytes": 7226,
+      "sha256": "b86ce68555ae96c0e373f9e359ff8c7c492aaba81c67a3ee440ac39749f3e973"
+    }
+  ],
+  "expected_images": [
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-clear-present.accdb",
+      "bytes": 393216,
+      "sha256": "877c6cee16cd8a9d81950d37d75099bdc97000e1479f472e56bf619b2f6ec89f"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-fill-last-null-duplicate.accdb",
+      "bytes": 393216,
+      "sha256": "cba526c587d0beb61039c02bd4a643ba0019160180294c785c0d6505b1b52fad"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-fill-last-null-new.accdb",
+      "bytes": 393216,
+      "sha256": "1406d4dbc789c7f4f43716a0f52fbf847a10f89e38fc148c33ebe08392b6a225"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-present-duplicate.accdb",
+      "bytes": 393216,
+      "sha256": "910e9963c50ac9631b03beb95572494db5300d42a691d84a5af13bf2360cedac"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-present-new.accdb",
+      "bytes": 393216,
+      "sha256": "facebc1c8eda5160f2e5c85905004eb6e663a81af58f2063368fe58b4282f82a"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-A-swap-forward.accdb",
+      "bytes": 393216,
+      "sha256": "9cb20f55f492090358cb0145276c65bad3b60ff1628708eb7744f6f3e884b3be"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-clear-present.accdb",
+      "bytes": 393216,
+      "sha256": "9c26740729ad3da7133440e1071988a8f29a6bdc3e633aeccbc2a8c4bf146698"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-fill-last-null-duplicate.accdb",
+      "bytes": 393216,
+      "sha256": "676b220795387581050d2cfaddc6b31b2e5b5112ef7bed27066fa986eeb5e510"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-fill-last-null-new.accdb",
+      "bytes": 393216,
+      "sha256": "59e1d0587fdbdf3edac8a709078b90b6d12505512445361c4b71ddb4625146e8"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-present-duplicate.accdb",
+      "bytes": 393216,
+      "sha256": "0b134668eaebf853a2680e8df947dddc48e14da21adf8f15eb379b3405d7b33a"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-present-new.accdb",
+      "bytes": 393216,
+      "sha256": "14c28cc860fb87c6912f20a47fd1138ae14dd0d00c8cc61bebf734b23b9b13e7"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h5-D-swap-forward.accdb",
+      "bytes": 393216,
+      "sha256": "9c911d2d9fec9fe8a3e586afa84f3368bd56e5294c4177b5be5f0924d9f70611"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-clear-present.accdb",
+      "bytes": 466944,
+      "sha256": "8c7b1d148ae1630c87eb1d72504de64ef76afce1f20cffaef6aa0378d7b011a9"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-fill-last-null-duplicate.accdb",
+      "bytes": 466944,
+      "sha256": "ccb4338c152ccf68977ae5b0c3a727ccfd6adddcfac1865dda164731ccaab6de"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-fill-last-null-new.accdb",
+      "bytes": 466944,
+      "sha256": "d18a01be88c243342539ec482a987c53ca146b34683bf2db46645e289e714ae7"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-present-duplicate.accdb",
+      "bytes": 466944,
+      "sha256": "2af0cc160b887ca91b3097d4cb938cf8c2672d2df5ba40594d04d4063a895e56"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-present-new.accdb",
+      "bytes": 466944,
+      "sha256": "ccee3bc037ea1ce82d01b8bb0ccebdff4f6abdcac036ce7a97966f9c1217d367"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-A-swap-forward.accdb",
+      "bytes": 466944,
+      "sha256": "b09e2224a07f6055936d8b1e92ac2773645391bc62f9328ff8f995fac4eed6b3"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-clear-present.accdb",
+      "bytes": 466944,
+      "sha256": "06afabfdca16903d2348ba5d2dbb490cd179280b82e6151814073c42c93d383c"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-fill-last-null-duplicate.accdb",
+      "bytes": 466944,
+      "sha256": "861c31377904078ad5088ec0a480de4d4e60c6d5eed2fbe749ed0d07f29e7ea7"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-fill-last-null-new.accdb",
+      "bytes": 466944,
+      "sha256": "a36eb4d984a5a4bf0a67759ce5700b64aa9ea560dea3de22461df793ab007f97"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-present-duplicate.accdb",
+      "bytes": 466944,
+      "sha256": "f065f3d61ef4301b6032ac9172dc0c890b22c74111d72aed7e2320b91b30d405"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-present-new.accdb",
+      "bytes": 466944,
+      "sha256": "d1532fce3ecf959ee45cfd3d069cc0cec1c6ec1d50fb69970484c1e14f15e601"
+    },
+    {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/expected-first/h6-D-swap-forward.accdb",
+      "bytes": 466944,
+      "sha256": "d9f92a80b455a73b67a012c0a3928e82d716968174ae948a8603554eb4d182d5"
+    }
+  ],
+  "native_read_admission": {
+    "exit": 0,
+    "selector": "table::mutation::normal_ordinary_sources::guid_update_originals::indexed_updates::independently_authored_indexed_guid_updates_keep_complete_source_and_membership",
+    "passed_functions": 1,
+    "unique_views": 28,
+    "before": 4,
+    "after": 24,
+    "NoRequired_admitted": 28,
+    "canonical_Source_admitted": 28,
+    "log_sha256": "bcd50300f5aa4b4ceeef93ef3fea1a3c084ade3ebaa79353676d742dc8e38e03",
+    "argv": [
+      "cargo",
+      "test",
+      "-p",
+      "tablecraft-ace",
+      "--all-features",
+      "--offline",
+      "--locked",
+      "--lib",
+      "table::mutation::normal_ordinary_sources::guid_update_originals::indexed_updates::independently_authored_indexed_guid_updates_keep_complete_source_and_membership",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ]
+  },
+  "checks": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "ab416dc227a33aa8cbd0e67b77f2e285cf3ba9b6c5bb680f8f5f34a493d62aef"
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "laws": [
+    "Original requests and raw/reference laws were frozen before model construction. One pure construction completed first attempt; all inputs and outputs retain immutable pins.",
+    "Independent raw review decoded original and final DATA and both INDEX populations without importing the model or writer; complete complement, native GUID permutation, ROW tie order, prefix, bitmap, free, tails and unchanged history158 matched.",
+    "NULL payload remains inactive rather than becoming a second present key. Filling the last NULL grows common prefix to1/free139 for a new GUID, or4/free610 for duplicate seed156. Existing ordinary UPDATE history remains158.",
+    "Two swap request orders share one AFTER per original. Native views execute once each; request count is not an additional image count."
+  ],
+  "qualification": "Native reads and complete Source/program-absence passed. No TableCraft mutation, retained session, CLI save, journal recovery, Microsoft Access save/reopen, Windows or mixed-client qualification is claimed by this record. SDK continuation is recorded separately when executed."
+}
