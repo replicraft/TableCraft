@@ -121,7 +121,7 @@ fn request(column: &str, row: usize, old: Value, new: Value) -> Vec<NativeFixedI
 
 #[test]
 #[ignore = "requires independently qualified original Binary schemas"]
-fn marker_stale_exact_carrier_duplicate_and_selected_primary_boundaries_remain_closed() {
+fn marker_stale_exact_carrier_and_duplicate_boundaries_remain_closed() {
     let mut originals = 0;
     for case in all().iter().filter(|case| case.recipe == Recipe::Batch) {
         for (row, old, new, expected) in [
@@ -150,23 +150,8 @@ fn marker_stale_exact_carrier_duplicate_and_selected_primary_boundaries_remain_c
                 matches!(result, Err(RecoverableEditError::Edit(actual)) if actual == expected)
             );
         }
-        // Read retention grants no fitting I32 key-writer permission over Binary siblings.
-        for requests in [
-            request("Id", 0, Value::Int32(1), Value::Int32(14)),
-            vec![NativeFixedIntentGroup::new("Id", Vec::new(), &mut budget(), &|| false).unwrap()],
-        ] {
-            assert!(matches!(
-                image(&case.before).plan_recoverable_ordinary_fixed_updates(
-                    "BinaryKeys",
-                    requests,
-                    &mut budget(),
-                    &|| false,
-                ),
-                Err(RecoverableEditError::Edit(EditError::Unsupported(
-                    WriteBlocker::IndexedColumn
-                )))
-            ));
-        }
+        // Primary-key updates now have separate literal source, proof and save
+        // qualification in binary_id_update; retain Marker-specific guards here.
         let duplicate = NativeFixedIntentGroup::new(
             "Marker",
             vec![

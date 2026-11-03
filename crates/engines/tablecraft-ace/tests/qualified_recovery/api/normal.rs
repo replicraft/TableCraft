@@ -859,3 +859,6 @@ mod retained_binary_marker;
 
 #[path = "normal/generated_companion_update.rs"]
 mod generated_companion_update;
+
+#[path = "normal/binary_id_update.rs"]
+mod binary_id_update;

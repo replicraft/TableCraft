@@ -67,6 +67,22 @@ pub(in crate::table::mutation) fn all_indexed(
     all_with_minimum(source, groups, 1, Some(indexed), budget, cancelled)
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn all_i32_updates(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::i32_updates::I32UpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Bound>, usize), EditError> {
+    if let Some(legacy) = indexed.legacy() {
+        return all_indexed(image, source, groups, legacy, budget, cancelled);
+    }
+    indexed.require_source(image, source.table.schema(), budget, cancelled)?;
+    all_with_targets(source, groups, 1, Some(indexed), budget, cancelled)
+}
+
 fn all_with_minimum(
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],

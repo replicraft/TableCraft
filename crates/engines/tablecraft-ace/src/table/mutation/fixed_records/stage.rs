@@ -156,6 +156,23 @@ pub(in crate::table::mutation) fn prepare_integral(
     compose(image, source, groups, bound, capacity, budget, cancelled)
 }
 
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_i32_updates(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    indexed: &super::indexed::i32_updates::I32UpdateIndexes<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    if let Some(legacy) = indexed.legacy() {
+        return prepare_indexed(image, source, groups, legacy, budget, cancelled);
+    }
+    let (bound, capacity) =
+        binding::all_i32_updates(image, source, groups, indexed, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
 fn compose(
     image: &NativeImage,
     source: &Source,

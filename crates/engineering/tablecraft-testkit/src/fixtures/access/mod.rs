@@ -354,3 +354,5 @@ pub mod genuine_retained_binary_marker;
 pub mod tcni4;
 
 pub mod genuine_generated_companion_update;
+
+pub mod genuine_binary_id_update;

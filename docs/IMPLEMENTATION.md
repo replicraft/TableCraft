@@ -1,5 +1,20 @@
 # Implementation status
 
+## Int32 key updates beside retained Binary indexes
+
+Normal fixed UPDATE now qualifies mutable Int32 keys separately from complete
+retained Binary index ownership. The private facts token, shared binding/staging
+adapters and independent original-record/index proof preserve the existing legacy
+route. Six source-qualified changed/no-op/named-empty commits match whole frozen
+images; retained Binary pages, aliases, histories, maps and EOF stay exact. Six
+public resource contexts, 150 protected-byte forgeries at each proof/journal
+boundary, 36 recovery contexts, twelve typed/SQL saves and six CLI saves pass.
+Existing Int32/tuple/BeforeChange, Marker and generated-field regressions pass,
+alongside reader-only, journal, preview and strict checks. The
+[write contract](access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md) records the
+bounded profile and correction of superseded historical refusal assertions.
+Native Access save/reopen and broader mutable key families remain unqualified.
+
 ## Source-bound per-parent multivalue reads
 
 `MultivalueReader` now captures complete key membership and returns one selected
@@ -57,8 +72,8 @@ indexes while keeping actual mutation target checks separate. Two source-qualifi
 ACE 16-family originals accept unindexed Int32 Marker changes and NULL, preserving
 all Binary index pages and aliases byte-for-byte. Ten native commits, independent
 proof and journal forgeries, recovery/resource controls, eighteen typed/SQL saves
-and eight CLI saves/readbacks pass. Indexed Id remains refused in this mixed
-profile. The [write contract](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
+and eight CLI saves/readbacks pass. Indexed Id now has the separately qualified
+[mutation profile](access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md). The [write contract](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
 and [acceptance record](testing/results/ace16-retained-binary-marker-writes-2026-11-02.json)
 separate earlier source-only qualification from matching saves. Native Access
 save/reopen remains unrun.

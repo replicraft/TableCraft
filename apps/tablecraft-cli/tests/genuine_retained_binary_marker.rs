@@ -90,7 +90,7 @@ fn cli_marker_updates_commit_exact_images_and_read_null_binary_distinctions() {
 
 #[test]
 #[ignore = "requires independently qualified original Binary schemas"]
-fn cli_selected_primary_and_int32_overflow_refuse_before_output_or_journal_creation() {
+fn cli_int32_overflow_refuses_before_output_or_journal_creation() {
     let cases = source::load_all(|raw, hash| {
         let actual: String = Sha256::digest(raw)
             .iter()
@@ -99,12 +99,10 @@ fn cli_selected_primary_and_int32_overflow_refuse_before_output_or_journal_creat
         assert_eq!(actual, hash);
     });
     for case in cases.iter().filter(|case| case.recipe == Recipe::Batch) {
-        for sql in [
-            "UPDATE BinaryKeys SET Id=14 WHERE Id=1",
+        {
             // SQL Int32 assignment accepts checked integral carriers, including
             // Int64. This value is out of range; no false exact-carrier claim.
-            "UPDATE BinaryKeys SET Marker=2147483648 WHERE Id=1",
-        ] {
+            let sql = "UPDATE BinaryKeys SET Marker=2147483648 WHERE Id=1";
             let dir = tempfile::tempdir().unwrap();
             let path = dir.path().join("target.accdb");
             let journal = dir.path().join("journal");

@@ -26,10 +26,13 @@ All INDEX pages, histories, alias declarations, map records, catalog, unrelated
 rows, opaque bytes and EOF remain exact. No allocation or index maintenance is
 introduced by this retained-field route.
 
-Selecting indexed `Id`, including an empty supplied group, still refuses for this
-mixed Binary-index profile. Existing Binary/Text indexed UPDATE and INSERT/DELETE
-services retain their own target facts, constraints, ownership and proofs. Source
-readability alone does not grant those capabilities or skip a required program.
+Indexed `Id` changes now have separate
+[qualified mutation and save coverage](NORMAL_RETAINED_BINARY_ID_UPDATE.md),
+including no-op and named-empty original requests. The earlier Marker-only result
+records its historical refusal before that implementation. Existing Binary/Text
+indexed UPDATE and INSERT/DELETE services retain their own target facts,
+constraints, ownership and proofs. Source readability alone does not grant those
+capabilities or skip a required program.
 
 ## Consumers and recovery
 
@@ -63,8 +66,8 @@ and journal boundary, six unique stale proof inputs, eight measured public
 resource cases, and 42 recovery contexts with repeated recovery and successful
 write-free confirmation. Six committed mismatch contexts refuse without effects.
 Ten typed and eight SQL retained saves, plus eight CLI saves/readbacks, match the
-same frozen files. Exact-carrier, stale-handle, selected-primary and overflow
-controls pass. Fixed UPDATE regressions, minimal/journal/preview builds, scoped
+same frozen files. Exact-carrier, stale-handle and overflow controls pass. Historical selected-primary
+refusals were superseded by the independently qualified Id update profile. Fixed UPDATE regressions, minimal/journal/preview builds, scoped
 strict checks, formatting and dependency boundaries also pass.
 
 See the [write result](../../testing/results/ace16-retained-binary-marker-writes-2026-11-02.json).

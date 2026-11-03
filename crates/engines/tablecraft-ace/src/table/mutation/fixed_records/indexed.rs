@@ -2,6 +2,8 @@
 #[cfg(feature = "journal")]
 mod actions;
 #[cfg(feature = "journal")]
+pub(in crate::table::mutation) mod i32_updates;
+#[cfg(feature = "journal")]
 pub(in crate::table::mutation) mod integral_updates;
 #[cfg(feature = "journal")]
 mod text_updates;

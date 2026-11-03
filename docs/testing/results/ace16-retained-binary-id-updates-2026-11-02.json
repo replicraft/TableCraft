@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "scope": "Normal fixed Int32 Id UPDATE with immutable qualified Binary sibling indexes; original TCNI0004 and checked V1 recovery",
+  "source_record": "ace16-retained-binary-id-update-sources-2026-11-02.json",
+  "source_qualification_commit": "9f0089b0",
+  "source_expectations_unchanged": true,
+  "profile": {
+    "headers": [
+      5,
+      6
+    ],
+    "table": "BinaryKeys",
+    "physical_indexes": 3,
+    "logical_aliases": 6,
+    "target": "manual fixed Int32 Id",
+    "original_row_request": "physical ROW0 Id1 to14; Marker17 and Binary NULL retained",
+    "allocation": false
+  },
+  "counts": {
+    "source_views": 4,
+    "qualified_independent_reader_observations": 32,
+    "principal_contexts": 6,
+    "native_commits": 6,
+    "direct_literal_proof_positives": 6,
+    "direct_byte_forgeries": 150,
+    "native_journal_forgeries": 150,
+    "direct_wrong_counts": 6,
+    "distinct_direct_stales": 4,
+    "measured_full_public_contexts": 6,
+    "recovery_target_marker_contexts": 36,
+    "recoveries_per_context": 2,
+    "committed_mismatch_refusals": 6,
+    "write_free_successful_confirmations": 30,
+    "typed_saves": 6,
+    "SQL_saves": 6,
+    "CLI_saves": 6,
+    "post_save_stale_handle_refusals": 12,
+    "Access_prepublication_refusals": 14,
+    "CLI_prepublication_refusals": 8
+  },
+  "executed_matching_functions": {
+    "direct": 1,
+    "native": 5,
+    "Access": 2,
+    "CLI": 2
+  },
+  "preservation": "Full frozen-file equality; only Id payload and active primary entries may change. Both Binary pages, primary framing/tail, histories13/12/12, DATA framing/masks, maps, properties/catalog, residuals and EOF remain original. All six aliases read back after every native commit.",
+  "evidence": [
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/implementation-draft/first-connected-private-checkpoint.json",
+      "bytes": 13768,
+      "sha256": "0606992d77ae06bd19615208d3059500f3a3a92a746f673d0b9f88ea68cd53cc"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/implementation-draft/VALUE_SEMANTICS_PRODUCER_REVIEW_FIRST.json",
+      "bytes": 2466,
+      "sha256": "6ede21e09299c8c18318788d3606dfb593480ca67939a6ce52dbc68b1a727c2e"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/implementation-draft/QUERY_COMPOSITION_PRODUCTION_REVIEW_FIRST.json",
+      "bytes": 4493,
+      "sha256": "b79e9067a43dc2e002494f8b89e2d1b1d3069ec32d2d6be62515b89422434ad9"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/acceptance-draft/resource-successor/successor-checkpoint.json",
+      "bytes": 7587,
+      "sha256": "45861ff6ae15c1cdd7a69ae8347f6e1cbc23285373e206eff75767e2a6410ab3"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/acceptance-draft/resource-successor/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 3079,
+      "sha256": "fa12cac1e4688a5e83bc829b6e6a08c271735b47a3c1ec4655a618db54a24df3"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/matching-first/results-first.json",
+      "bytes": 3528,
+      "sha256": "a081224d36f8c6a28170c4d092061014031e1b2988b459ed88d713ecc31a51df"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/matching-first/results-second.json",
+      "bytes": 3930,
+      "sha256": "f11dd967308f83e96798453a13555d15c97b8fcf2be3e59b3cbc1fdf471c03d9"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/matching-first/feature-results-first.json",
+      "bytes": 1010,
+      "sha256": "a57782b8706349e5d8cf7cbc2987db39c8b762789ad58aa6e875616d7cca869c"
+    },
+    {
+      "path": ".cache/ace16-normal-mixed-numeric-key-update-next-20261102/matching-first/marker-contract-successor.json",
+      "bytes": 1318,
+      "sha256": "2559f2c150236a46ed585cc9a0bf2e27f583078d49e81c850b80e9a50fd1cd7f"
+    }
+  ],
+  "passing_checklist": {
+    "new_matching": "direct1/native5/Access2/CLI2 first pass",
+    "legacy": "indexed12/original-indexed4/BeforeChange3/generated5 pass",
+    "scope_transition": "remaining Marker native guard1/Access2/CLI2 pass after removing only obsolete Id-refusal assertions",
+    "strict": "ACE/testkit all targets, focused Access/CLI targets pass",
+    "features": "ACE minimal/journal/preview pass",
+    "other": "dependency boundaries and formatter pass"
+  },
+  "preserved_scope_transition": {
+    "step": "marker-regression-first",
+    "initial_result": "4 passed,1 failed: historical selected-Id refusal was superseded by the independent positive Id profile",
+    "failure_log_sha256": "86782de44acd873b3aab405e8dd2c06d10fc446c510102edff8ab0148589a079",
+    "correction": "Removed only obsolete native changed/empty Id refusal assertions and corresponding old host/CLI Id negatives; remaining Marker controls retained and tests renamed. Corrected native guard1, old Access2 and CLI2 passed.",
+    "producer_corrections": 0,
+    "source_oracle_retuning": 0,
+    "historical_public_records_unchanged": true
+  },
+  "preexecution_acceptance_corrections": "Preserved initial18f and host1c1b; host negatives use actual wrong Binary carriers because the existing variable writer legitimately admits Binary NULL no-op. Resource45861 uses the operation budget/cancellation for native request construction.",
+  "verification_scope": "Focused matching and listed legacy regressions, ACE/testkit all-target strict checks, focused Access/CLI strict checks, three ACE feature builds, dependency guard and formatting. No full-workspace suite claim.",
+  "native_Microsoft_Access_save_reopen": "unrun",
+  "Windows_mixed_client_locking": "unrun",
+  "full_native_compatibility_claim": false
+}
