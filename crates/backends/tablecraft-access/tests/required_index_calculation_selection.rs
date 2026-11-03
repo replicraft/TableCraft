@@ -5,18 +5,10 @@ use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
 #[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
-#[allow(dead_code)]
 #[path = "required_index_calculations/fixture.rs"]
 mod indexed_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachment_modern/fixture.rs"]
-mod modern_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod old_attachment;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::attachment_modern as modern_fixture;
 
 use std::cell::Cell;
 use std::io::Cursor;

@@ -1,18 +1,12 @@
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "required_index_collections/fixture.rs"]
 mod fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachment_modern/fixture.rs"]
-mod modern_fixture;
+use tablecraft_testkit::fixtures::access::attachment_modern as modern_fixture;
 #[path = "required_index_collections/modes.rs"]
 mod modes;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod old_attachment;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::attachments as old_attachment;
 
 use std::{
     cell::Cell,

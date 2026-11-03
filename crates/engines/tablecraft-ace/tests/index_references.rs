@@ -1,11 +1,3 @@
-use fixture as base;
-use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
-#[allow(dead_code)]
-#[path = "attachments/fixture.rs"]
-mod attachment_fixture;
-#[allow(dead_code)]
-#[path = "complex_schema/fixture.rs"]
-mod complex_fixture;
 use std::{cell::Cell, io::Cursor, ops::Bound};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection,
@@ -18,6 +10,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
 #[allow(dead_code)]
 use tablecraft_testkit::fixtures::access::index_fixture;
 

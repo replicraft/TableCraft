@@ -1,7 +1,4 @@
-use super::{
-    base,
-    support::{data_page, put16, put32, record},
-};
+use super::{data_page, mutation_fixture as base, put16, put32, record};
 
 fn page(bytes: &mut [u8], number: usize, data: &[u8]) {
     bytes[number * 4096..(number + 1) * 4096].copy_from_slice(data);

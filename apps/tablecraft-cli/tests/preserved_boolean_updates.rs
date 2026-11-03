@@ -4,16 +4,13 @@ mod api;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/catalog_flag.rs"]
 mod catalog_flag;
-#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-pub mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/frontend_source.rs"]
 mod frontend_source;
 #[path = "../../../crates/engines/tablecraft-ace/tests/ace16_preserved_scalar_updates_contract/model.rs"]
 mod model;
-#[path = "../../../crates/engines/tablecraft-ace/tests/attachment_modern/fixture.rs"]
-pub mod modern_attachment;
-#[path = "../../../crates/engines/tablecraft-ace/tests/attachments/fixture.rs"]
-pub mod old_attachment;
+use tablecraft_testkit::fixtures::access::attachment_modern as modern_attachment;
+use tablecraft_testkit::fixtures::access::attachments as old_attachment;
 
 use int32_sources::model as int32_model;
 use joint_model as fixed_model;

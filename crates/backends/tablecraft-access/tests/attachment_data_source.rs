@@ -1,10 +1,5 @@
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod attachment_fixture;
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "attachment_data_source/limits.rs"]
 mod limits;
 #[allow(dead_code)]

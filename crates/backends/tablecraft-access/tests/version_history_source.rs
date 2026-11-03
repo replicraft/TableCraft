@@ -1,7 +1,5 @@
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 #[path = "version_history_source/compression.rs"]
 mod compression;
 #[allow(dead_code)]

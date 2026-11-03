@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-02",
+  "status": "shared raw fixture extraction runtime and strict acceptance passed",
+  "owners": [
+    "tablecraft_testkit::fixtures::access::complex_schema",
+    "tablecraft_testkit::fixtures::access::attachments",
+    "tablecraft_testkit::fixtures::access::attachment_modern"
+  ],
+  "scope": {
+    "raw_builders": 3,
+    "existing_consumer_files": 40,
+    "old_path_bindings": 70,
+    "mapped_writes": 44,
+    "old_helpers_deleted": 3,
+    "production_dependency_changes": 0,
+    "builder_or_golden_changes": 0
+  },
+  "runtime_counts": {
+    "engine_integration_targets": 13,
+    "engine_integration_functions": 142,
+    "adapter_targets": 17,
+    "adapter_functions": 174,
+    "CLI_targets": 9,
+    "CLI_functions": 109,
+    "private_preservation_functions": 10,
+    "total_functions": 435
+  },
+  "runtime_results": [
+    {
+      "name": "tablecraft-ace-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "ace16_larger_fixed_images",
+        "--test",
+        "ace16_preserved_scalar_updates_contract",
+        "--test",
+        "ace16_preserved_ui_carriers_contract",
+        "--test",
+        "attachment_columns",
+        "--test",
+        "attachment_metadata",
+        "--test",
+        "attachment_modern",
+        "--test",
+        "collection_declarations",
+        "--test",
+        "complex_links",
+        "--test",
+        "complex_schema",
+        "--test",
+        "index_references",
+        "--test",
+        "multivalue_pages",
+        "--test",
+        "multivalues",
+        "--test",
+        "version_history"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        1,
+        54,
+        5,
+        12,
+        4,
+        6,
+        4,
+        9,
+        4,
+        4,
+        8,
+        17,
+        14
+      ],
+      "accepted": true,
+      "log_sha256": "1561ce845d6c007175f297b1f49e1520d553c78fb6f53ed3afe76001952137f9"
+    },
+    {
+      "name": "tablecraft-access-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "attachment_data_source",
+        "--test",
+        "automatic_browsing",
+        "--test",
+        "browsing",
+        "--test",
+        "collection_collation",
+        "--test",
+        "derived_multivalue_members",
+        "--test",
+        "external_sources",
+        "--test",
+        "linked_sources",
+        "--test",
+        "mixed_multivalue_results",
+        "--test",
+        "multivalue_join_results",
+        "--test",
+        "multivalue_outer_results",
+        "--test",
+        "multivalue_results",
+        "--test",
+        "multivalue_source",
+        "--test",
+        "preserved_boolean_updates",
+        "--test",
+        "required_index_calculation_selection",
+        "--test",
+        "required_index_calculations",
+        "--test",
+        "required_index_collections",
+        "--test",
+        "version_history_source"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        15,
+        6,
+        15,
+        4,
+        6,
+        14,
+        10,
+        5,
+        8,
+        7,
+        8,
+        7,
+        39,
+        6,
+        6,
+        8,
+        10
+      ],
+      "accepted": true,
+      "log_sha256": "d783151877870f27bc7bb5f1fa01edaef84db79251eb44c8da36d346ca2045c9"
+    },
+    {
+      "name": "tablecraft-cli-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "browsing",
+        "--test",
+        "derived_multivalue_queries",
+        "--test",
+        "linked_queries",
+        "--test",
+        "mixed_multivalue_queries",
+        "--test",
+        "multivalue_join_queries",
+        "--test",
+        "multivalue_outer_queries",
+        "--test",
+        "multivalue_queries",
+        "--test",
+        "native_field_features",
+        "--test",
+        "preserved_boolean_updates"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        35,
+        3,
+        13,
+        3,
+        3,
+        3,
+        12,
+        6,
+        31
+      ],
+      "accepted": true,
+      "log_sha256": "e4dfb73e32f87040eaa650ff1a586829e191ed87dfb8edb2f1c0d4ad9de0f778"
+    },
+    {
+      "name": "private-preservation-first",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::fixed::preserved::larger_capture_tests"
+      ],
+      "exit": 0,
+      "passed_functions": [
+        10
+      ],
+      "accepted": true,
+      "log_sha256": "cab1d86c465d3e0c24cf30cde957b806ba69bf3ce92a5320b5e43826c68f1147"
+    }
+  ],
+  "preserved_corrections": [
+    "Pre-install review found five optional-public consumers omitted by initial path parser; full successor maps exact40 files/70 bindings and preserves restricted child dependencies.",
+    "Current fixture parent composition retains the newly committed genuine_binary_id_update registration.",
+    "Strict attempts revealed stale aliases/import chains in five existing consumers. Removed only five fixture-as-base aliases and one now-unused underlying fixture import. Builder and assertion bodies unchanged; first four strict failures preserved, fifth strict pass retained."
+  ],
+  "final_checks": [
+    {
+      "name": "strict-fifth",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--keep-going",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "00e631ed928f6ebeeb4e8bb747e1c682fa3ca009a0eb2f27ca499bafda8aa112"
+    },
+    {
+      "name": "minimal-first",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "eb4d3eb79f5b5be571313746d762ba68064c5e4c158ca67bb3e4584a768e5397"
+    },
+    {
+      "name": "boundaries-first",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588"
+    },
+    {
+      "name": "format-first",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-draft/first-private-checkpoint.json",
+      "bytes": 1285,
+      "sha256": "820f652a587eb19b632d7d72880bf6d1a0b6afb46f558de630b8573fbac85b0d"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-draft/ADVANCED_FIELDS_REVIEW_FIRST_FINDING.json",
+      "bytes": 3200,
+      "sha256": "7c8abd22599f3d06c9bcef5806f65bed28b05c927aea0d9c45f96487ee95c7fe"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-draft/complete-consumer-successor/successor-checkpoint.json",
+      "bytes": 1440,
+      "sha256": "03cec228f42aaf6b0a2dbdcd335a686698d62bbbc35c11ccec9cf0f65f104eae"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-draft/complete-consumer-successor/ADVANCED_FIELDS_REVIEW_FIRST.json",
+      "bytes": 1534,
+      "sha256": "6e8c963bf1d3c9c7580deeb73de2d4c32edadde664341980c55aea7d68af2247"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-draft/ROOT_CURRENT_CONSUMER_INVENTORY.json",
+      "bytes": 10594,
+      "sha256": "63c9044f1c39f7e4df5d3fd740de9d91cbcff8105a8fa725ba60eddcbc986336"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/installation.json",
+      "bytes": 296,
+      "sha256": "cb6cc0b7ebc3d7b90d3916178c42affb5c5f22384303fadfae5567f53a05741e"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/results-first.json",
+      "bytes": 4193,
+      "sha256": "1dda4c941acf63b1b383c37dd495513c306ec61161aa784bf8924a6ddcfe5282"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/results-second.json",
+      "bytes": 494,
+      "sha256": "9e36cc85704357cac65452138741e638244080ec6c636a624beb97b7905aa01e"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/results-third.json",
+      "bytes": 493,
+      "sha256": "13801d4206591715d4325f85145f129147c40aedfab8836cbbc679603a5dbe03"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/results-fourth.json",
+      "bytes": 516,
+      "sha256": "fabe8dc2ffd443eb25bb9839b3887165b43481e6191861f5cb8cc36989ad1cda"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/results-fifth.json",
+      "bytes": 1329,
+      "sha256": "0bc3e177291cdea379f2105b60bc39dae28191c946cd70f5e08cf5fd849f7d91"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/unused-alias-successor.json",
+      "bytes": 480,
+      "sha256": "a567775cbc9c5315c5bb99b4835d55987276f60f8c6425bac91fdb0621aa8c19"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/remaining-aliases-successor.json",
+      "bytes": 1130,
+      "sha256": "6464069934de481c07cef6a2e6d7f0e5f16ff1adc345def0002e4e888b682a96"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/grouped-alias-successor.json",
+      "bytes": 410,
+      "sha256": "15113e29ab96c7cb4d9bdc7824fd97f9162a9c17f2b3613774f2891120f00cd9"
+    },
+    {
+      "path": ".cache/ace16-lazy-attachment-reader-next-20261102/fixture-extraction-root-first/chained-import-successor.json",
+      "bytes": 386,
+      "sha256": "79345126f10a7979392b814d2ced3e22ed5bbef526c88c25db40c82fb37842b5"
+    }
+  ],
+  "qualification": "Test ownership change only; no additional native Access read/write compatibility or feature is claimed."
+}

@@ -1,16 +1,10 @@
 #[path = "automatic_browsing/projection.rs"]
 mod projection;
-use fixture as base;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod attachment_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
 mod calculated_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
 use std::io::Cursor;
 use tablecraft_access::{
     BrowsePage, CollectionPageRequest, NativeBrowser, StoredCollectionItem,

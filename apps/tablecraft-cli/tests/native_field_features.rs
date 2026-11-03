@@ -1,4 +1,3 @@
-use fixture as base;
 use tablecraft_testkit::fixtures::access as support;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 use tablecraft_testkit::support::cli::Runner;
@@ -6,8 +5,7 @@ use tablecraft_testkit::support::cli::Runner;
 mod calculated_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/scalar_fixture.rs"]
 mod calculated_scalar_fixture;
-#[path = "../../../crates/engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 

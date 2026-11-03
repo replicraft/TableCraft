@@ -1,7 +1,4 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_schema/fixture.rs"]
-mod complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
 mod links_fixture;
 use std::{
@@ -235,9 +232,7 @@ fn malformed_children_limits_and_cancellation_fail_without_parent_placeholders()
     );
 }
 
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/attachments/fixture.rs"]
-mod attachment_fixture;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
 #[test]
 fn attachment_metadata_aligns_and_reuses_one_complete_snapshot_without_payload_decoding() {
     for code in [2, 5, 6] {
