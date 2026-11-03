@@ -10,9 +10,7 @@ mod collection_fixture;
 use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "linked_sources/forwarding.rs"]
 mod forwarding;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/version_history/fixture.rs"]
-mod history_fixture;
+use tablecraft_testkit::fixtures::access::version_history as history_fixture;
 #[path = "linked_sources/rejections.rs"]
 mod rejections;
 
@@ -29,7 +27,6 @@ use tablecraft_core::{
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::parse_query;
-use target_fixture as base;
 
 const PAGE_BYTES: u64 = 4096;
 const TARGET_ROW_PAGE: u64 = 12;

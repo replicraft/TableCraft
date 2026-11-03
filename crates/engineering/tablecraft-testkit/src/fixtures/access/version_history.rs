@@ -1,8 +1,5 @@
 //! Original synthetic stored-history records shared by engine and adapter tests.
-use super::{
-    base, complex_fixture,
-    support::{data_page, put16, put32},
-};
+use super::{complex_schema as complex_fixture, data_page, mutation_fixture as base, put16, put32};
 
 const PAGE_BYTES: usize = 4096;
 const FIELD_START: usize = 63;

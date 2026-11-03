@@ -1,4 +1,3 @@
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "required_index_collections/fixture.rs"]
 mod fixture;
