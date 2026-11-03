@@ -12,6 +12,8 @@ const ORDINARY_HEADER_MAGIC: &[u8; 8] = b"TCNI0004";
 const ORDINARY_PROFILE: u16 = 4;
 const IEEE_HEADER_MAGIC: &[u8; 8] = b"TCNI0008";
 const IEEE_PROFILE: u16 = 8;
+const SCALAR_HEADER_MAGIC: &[u8; 8] = b"TCNI0009";
+const SCALAR_PROFILE: u16 = 9;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -42,13 +44,15 @@ impl NativeFixedEditIntent {
 
     pub(in crate::transaction::intent) const IEEE_MAGIC: &'static [u8; 8] = IEEE_HEADER_MAGIC;
 
+    pub(in crate::transaction::intent) const SCALAR_MAGIC: &'static [u8; 8] = SCALAR_HEADER_MAGIC;
+
     /// Encode the exact ordered original request data, with canonical carrier padding.
     pub fn encode(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
-        self.encode_profile(MAGIC, PROFILE, false, budget, cancelled)
+        self.encode_profile(MAGIC, PROFILE, carrier::Carriers::Legacy, budget, cancelled)
     }
 
     pub(in crate::transaction::intent) fn encode_ordinary(
@@ -59,7 +63,7 @@ impl NativeFixedEditIntent {
         self.encode_profile(
             ORDINARY_HEADER_MAGIC,
             ORDINARY_PROFILE,
-            false,
+            carrier::Carriers::Legacy,
             budget,
             cancelled,
         )
@@ -70,14 +74,34 @@ impl NativeFixedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
-        self.encode_profile(IEEE_HEADER_MAGIC, IEEE_PROFILE, true, budget, cancelled)
+        self.encode_profile(
+            IEEE_HEADER_MAGIC,
+            IEEE_PROFILE,
+            carrier::Carriers::Ieee,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::transaction::intent) fn encode_scalar(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            SCALAR_HEADER_MAGIC,
+            SCALAR_PROFILE,
+            carrier::Carriers::Scalar,
+            budget,
+            cancelled,
+        )
     }
 
     fn encode_profile(
         &self,
         magic: &[u8; 8],
         profile: u16,
-        ieee: bool,
+        carriers: carrier::Carriers,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
@@ -130,13 +154,8 @@ impl NativeFixedEditIntent {
                     .charge(Resource::Steps, UPDATE_BYTES as u64)
                     .map_err(InspectError::from)?;
                 output.extend_from_slice(&(update.row() as u64).to_le_bytes());
-                let encode = if ieee {
-                    carrier::encode_ieee
-                } else {
-                    carrier::encode
-                };
-                output.extend_from_slice(&encode(update.expected())?);
-                output.extend_from_slice(&encode(update.value())?);
+                output.extend_from_slice(&carriers.encode(update.expected())?);
+                output.extend_from_slice(&carriers.encode(update.value())?);
             }
         }
         check(budget, cancelled)?;
@@ -149,7 +168,14 @@ impl NativeFixedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        Self::decode_profile(bytes, MAGIC, PROFILE, false, budget, cancelled)
+        Self::decode_profile(
+            bytes,
+            MAGIC,
+            PROFILE,
+            carrier::Carriers::Legacy,
+            budget,
+            cancelled,
+        )
     }
 
     pub(in crate::transaction::intent) fn decode_ordinary(
@@ -161,7 +187,7 @@ impl NativeFixedEditIntent {
             bytes,
             ORDINARY_HEADER_MAGIC,
             ORDINARY_PROFILE,
-            false,
+            carrier::Carriers::Legacy,
             budget,
             cancelled,
         )
@@ -176,7 +202,22 @@ impl NativeFixedEditIntent {
             bytes,
             IEEE_HEADER_MAGIC,
             IEEE_PROFILE,
-            true,
+            carrier::Carriers::Ieee,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::transaction::intent) fn decode_scalar(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(
+            bytes,
+            SCALAR_HEADER_MAGIC,
+            SCALAR_PROFILE,
+            carrier::Carriers::Scalar,
             budget,
             cancelled,
         )
@@ -186,7 +227,7 @@ impl NativeFixedEditIntent {
         bytes: &[u8],
         magic: &[u8; 8],
         profile: u16,
-        ieee: bool,
+        carriers: carrier::Carriers,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
@@ -230,7 +271,7 @@ impl NativeFixedEditIntent {
         let mut scan = Cursor {
             bytes,
             at: HEADER_BYTES,
-            ieee,
+            carriers,
         };
         scan.name(table_len, budget, cancelled)?;
         let mut actual = 0_usize;
@@ -250,7 +291,7 @@ impl NativeFixedEditIntent {
         let mut cursor = Cursor {
             bytes,
             at: HEADER_BYTES,
-            ieee,
+            carriers,
         };
         let table = cursor.name(table_len, budget, cancelled)?;
         budget
@@ -275,10 +316,16 @@ impl NativeFixedEditIntent {
             for _ in 0..count {
                 updates.push(cursor.update(budget, cancelled)?);
             }
-            let group = if ieee {
-                NativeFixedIntentGroup::new_ordinary_ieee(column, updates, budget, cancelled)?
-            } else {
-                NativeFixedIntentGroup::new(column, updates, budget, cancelled)?
+            let group = match carriers {
+                carrier::Carriers::Legacy => {
+                    NativeFixedIntentGroup::new(column, updates, budget, cancelled)?
+                }
+                carrier::Carriers::Ieee => {
+                    NativeFixedIntentGroup::new_ordinary_ieee(column, updates, budget, cancelled)?
+                }
+                carrier::Carriers::Scalar => {
+                    NativeFixedIntentGroup::new_ordinary_scalar(column, updates, budget, cancelled)?
+                }
             };
             groups.push(group);
         }
@@ -296,7 +343,7 @@ impl NativeFixedEditIntent {
 struct Cursor<'a> {
     bytes: &'a [u8],
     at: usize,
-    ieee: bool,
+    carriers: carrier::Carriers,
 }
 
 impl<'a> Cursor<'a> {
@@ -374,13 +421,12 @@ impl<'a> Cursor<'a> {
         if row >= crate::limits::MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }
-        let decode = if self.ieee {
-            carrier::decode_ieee
-        } else {
-            carrier::decode
-        };
-        let expected = decode(raw[ROW_BYTES..REPLACEMENT_AT].try_into().unwrap())?;
-        let replacement = decode(raw[REPLACEMENT_AT..UPDATE_BYTES].try_into().unwrap())?;
+        let expected = self
+            .carriers
+            .decode(raw[ROW_BYTES..REPLACEMENT_AT].try_into().unwrap())?;
+        let replacement = self
+            .carriers
+            .decode(raw[REPLACEMENT_AT..UPDATE_BYTES].try_into().unwrap())?;
         Ok(FixedScalarUpdate::new(row, expected, replacement))
     }
 }

@@ -23,6 +23,8 @@ pub enum NativeUpdateProfile {
     Ace16OrdinaryFixed,
     /// Ordinary exact IEEE fixed groups; legacy fixed record tags stay closed.
     Ace16OrdinaryIeeeFixed,
+    /// Cumulative ordinary fixed cells, including native Byte and Int16.
+    Ace16OrdinaryScalarFixed,
     /// Ordinary ACE16 fitting variable requests with optional fixed groups.
     Ace16OrdinaryFitted,
     /// Explicit ordinary growth within existing owned DATA capacity; no EOF growth.
@@ -43,7 +45,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed column groups for TCNI0003, TCNI0004 or TCNI0008.
+    /// Original ordered fixed column groups for TCNI0003, TCNI0004, TCNI0008 or TCNI0009.
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
@@ -98,6 +100,13 @@ impl NativeUpdateIntent {
     pub(super) fn from_ordinary_ieee_fixed(original: NativeFixedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16OrdinaryIeeeFixed,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
+    pub(super) fn from_ordinary_scalar_fixed(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16OrdinaryScalarFixed,
             body: NativeUpdateBody::Fixed(original),
         }
     }
@@ -245,6 +254,9 @@ impl NativeUpdateIntent {
             (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryIeeeFixed) => {
                 original.encode_ieee(budget, cancelled)
             }
+            (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryScalarFixed) => {
+                original.encode_scalar(budget, cancelled)
+            }
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16OrdinaryFitted) => {
                 original.encode(budget, cancelled)
             }
@@ -296,6 +308,13 @@ impl NativeUpdateIntent {
             return Ok(Self::from_fitted(NativeFittedEditIntent::decode(
                 bytes, budget, cancelled,
             )?));
+        }
+        if bytes.get(..NativeFixedEditIntent::SCALAR_MAGIC.len())
+            == Some(NativeFixedEditIntent::SCALAR_MAGIC.as_slice())
+        {
+            return Ok(Self::from_ordinary_scalar_fixed(
+                NativeFixedEditIntent::decode_scalar(bytes, budget, cancelled)?,
+            ));
         }
         if bytes.get(..NativeFixedEditIntent::IEEE_MAGIC.len())
             == Some(NativeFixedEditIntent::IEEE_MAGIC.as_slice())

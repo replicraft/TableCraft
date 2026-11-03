@@ -9,6 +9,11 @@ The separate [exact IEEE continuation](NORMAL_IEEE_FIXED_UPDATE.md) admits ordin
 unindexed Single/Double targets under the same complete native Source checks and
 a distinct original-request record.
 
+The [Byte/Int16 continuation](NORMAL_BYTE_INT16_FIXED_UPDATE.md) uses the same
+ordinary service for exact unindexed small-integer targets. Original named targets
+select TCNI9 for Byte/Int16, TCNI8 for IEEE, and TCNI4 for legacy fields; old records
+retain their own target and carrier checks even for named-empty requests.
+
 ## Initial global data-only family
 
 The initial family is unencoded ACE header 5/6, with the known clear header

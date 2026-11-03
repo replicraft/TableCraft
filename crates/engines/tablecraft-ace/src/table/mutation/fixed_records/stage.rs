@@ -90,6 +90,20 @@ fn encode(kind: ScalarType, value: &Value) -> Result<Option<[u8; MAX_PAYLOAD_BYT
     if matches!(value, Value::Null) {
         return Ok(None);
     }
+    if kind == ScalarType::Byte {
+        let encoded = scalar_encoding::encode::<{ size_of::<u8>() }>(kind, value)
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let mut bytes = [0; MAX_PAYLOAD_BYTES];
+        bytes[..encoded.len()].copy_from_slice(&encoded);
+        return Ok(Some(bytes));
+    }
+    if kind == ScalarType::Int16 {
+        let encoded = scalar_encoding::encode::<{ size_of::<i16>() }>(kind, value)
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let mut bytes = [0; MAX_PAYLOAD_BYTES];
+        bytes[..encoded.len()].copy_from_slice(&encoded);
+        return Ok(Some(bytes));
+    }
     if matches!(kind, ScalarType::Int32 | ScalarType::Single) {
         let encoded = scalar_encoding::encode::<{ size_of::<i32>() }>(kind, value)
             .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
@@ -137,6 +151,18 @@ pub(in crate::table::mutation) fn prepare_ieee(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_ieee(source, groups, budget, cancelled)?;
+    compose(image, source, groups, bound, capacity, budget, cancelled)
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prepare_scalar(
+    image: &NativeImage,
+    source: &Source,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) = binding::all_scalar(source, groups, budget, cancelled)?;
     compose(image, source, groups, bound, capacity, budget, cancelled)
 }
 

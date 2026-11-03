@@ -12,7 +12,7 @@ src/
 ├── fixtures/
 │   ├── access/                 independent images, requests and literal pins
 │   │   ├── tcna2.rs            independent original-presence wire grammar
-│   │   └── original_fixed_wire.rs literal TCNI4/8 original group requests
+│   │   └── original_fixed_wire.rs literal fixed original group requests
 │   └── formats/deployment.rs   independent raw CAB construction
 └── support/
     ├── ace/sentinel.rs         shared native read observations
@@ -65,6 +65,10 @@ strict and minimal testkit checks also pass; see the
 [extraction record](results/shared-fixed-wire-fixtures-2026-11-03.json).
 The [earlier TCNI4 record](results/shared-tcni4-literal-framing-2026-11-02.json)
 remains historical evidence.
+
+The later [Byte/Int16 continuation](../access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
+adds the cumulative TCNI9 dialect and a third complete literal golden to this
+same owner. Existing TCNI4/8 bytes and consumers retain their closed vocabulary.
 
 The independent `fixtures::access::{complex_schema, attachments,
 attachment_modern}` modules own the existing raw collection builders. Engine,

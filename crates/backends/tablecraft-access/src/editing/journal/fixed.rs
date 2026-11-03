@@ -128,7 +128,10 @@ impl NativeJournalEditor {
             let kind = target.data_type();
             let ieee = self.route == JournalRoute::Ordinary
                 && matches!(kind, ScalarType::Single | ScalarType::Double);
+            let small_integer = self.route == JournalRoute::Ordinary
+                && matches!(kind, ScalarType::Byte | ScalarType::Int16);
             if !ieee
+                && !small_integer
                 && !matches!(
                     kind,
                     ScalarType::Boolean
@@ -160,7 +163,12 @@ impl NativeJournalEditor {
                 if requests.iter().any(|request| request.row() == ordinal) {
                     return Err(NativeEditError::Unsupported.into());
                 }
-                let (expected, replacement) = if ieee {
+                let (expected, replacement) = if small_integer {
+                    (
+                        small_integer_scalar(original, kind)?,
+                        small_integer_scalar(update.value(), kind)?,
+                    )
+                } else if ieee {
                     (
                         ieee_scalar(original, kind)?,
                         ieee_scalar(update.value(), kind)?,
@@ -171,7 +179,14 @@ impl NativeJournalEditor {
                 requests.push(FixedScalarUpdate::new(ordinal, expected, replacement));
                 rows.push(ordinal);
             }
-            let group = if ieee {
+            let group = if small_integer {
+                NativeFixedIntentGroup::new_ordinary_scalar(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if ieee {
                 NativeFixedIntentGroup::new_ordinary_ieee(
                     target.name(),
                     requests,
@@ -194,6 +209,15 @@ impl NativeJournalEditor {
         };
         Ok((plan, matched))
     }
+}
+
+fn small_integer_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+    Ok(match (kind, value) {
+        (ScalarType::Byte, Value::Byte(value)) => Value::Byte(*value),
+        (ScalarType::Int16, Value::Int16(value)) => Value::Int16(*value),
+        (ScalarType::Byte | ScalarType::Int16, Value::Null) => Value::Null,
+        _ => return Err(NativeEditError::Unsupported),
+    })
 }
 
 fn ieee_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {

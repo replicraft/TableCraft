@@ -3,12 +3,14 @@ use super::{capture, preflight, preflight_with_policy};
 use crate::{
     EditError, FileFormat, FixedColumnUpdates, NativeImage, PayloadPresence, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, DATE_TIME, DOUBLE, INT32, INT64, SINGLE},
+        data_type::{BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, INT16, INT32, INT64, SINGLE},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
     },
     header::check,
     inspect_table_schema,
-    table::mutation::fixed_records::{binding, indexed::i32_updates::I32UpdateIndexes},
+    table::mutation::fixed_records::{
+        FixedCarriers, binding, indexed::i32_updates::I32UpdateIndexes,
+    },
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
@@ -52,13 +54,13 @@ impl NativeImage {
 
     /// Select only a request dialect from original metadata; native admission
     /// and every target check are still repeated by the consuming planner.
-    pub(crate) fn ordinary_fixed_ieee_requested(
+    pub(crate) fn ordinary_fixed_carriers(
         &self,
         table: &str,
         groups: &[FixedColumnUpdates<'_>],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<bool, EditError> {
+    ) -> Result<FixedCarriers, EditError> {
         let schema = inspect_table_schema(
             &mut self.reader(),
             self.catalog().catalog().scope(),
@@ -66,19 +68,23 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        let mut ieee = false;
+        let mut carriers = FixedCarriers::Legacy;
         for group in groups {
             check(budget, cancelled)?;
             for field in schema.columns() {
                 check(budget, cancelled)?;
                 super::fixed_records::name_work(field.name(), group.column(), budget)?;
                 if field.name().eq_ignore_ascii_case(group.column()) {
-                    ieee |= matches!(field.native_type(), SINGLE | DOUBLE);
+                    carriers = match field.native_type() {
+                        BYTE | INT16 => FixedCarriers::Scalar,
+                        SINGLE | DOUBLE if carriers == FixedCarriers::Legacy => FixedCarriers::Ieee,
+                        _ => carriers,
+                    };
                 }
             }
         }
         check(budget, cancelled)?;
-        Ok(ieee)
+        Ok(carriers)
     }
 
     /// Prove complete original content and qualify an actual supported fixed
@@ -104,6 +110,8 @@ impl NativeImage {
                     | (DATE_TIME, Some(ScalarType::DateTime))
                     | (SINGLE, Some(ScalarType::Single))
                     | (DOUBLE, Some(ScalarType::Double))
+                    | (BYTE, Some(ScalarType::Byte))
+                    | (INT16, Some(ScalarType::Int16))
             );
             if !supported
                 || !field.fixed()
@@ -141,8 +149,13 @@ impl NativeImage {
                 field.name(),
                 &[],
             )];
-            if matches!(field.native_type(), SINGLE | DOUBLE) {
-                return preflight_with_policy(&source, &groups, true, budget, cancelled);
+            let carriers = match field.native_type() {
+                BYTE | INT16 => FixedCarriers::Scalar,
+                SINGLE | DOUBLE => FixedCarriers::Ieee,
+                _ => FixedCarriers::Legacy,
+            };
+            if carriers != FixedCarriers::Legacy {
+                return preflight_with_policy(&source, &groups, carriers, budget, cancelled);
             }
             return preflight(&source, &groups, budget, cancelled);
         }

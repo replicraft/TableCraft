@@ -1,0 +1,780 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Ordinary unindexed exact Byte/Int16 fixed UPDATE using cumulative TCNI0009 and existing checked V1 journal. Source-qualified literal endpoint/NULL/restore spans; no new on-disk corpus or external-reader/native Access interpretation of variants.",
+  "counts": {
+    "pinned_originals": 2,
+    "in_memory_source_variants": 4,
+    "Source_and_NoRequired_admitted_contexts_each": 6,
+    "header_request_outcomes": 6,
+    "direct_positive_proofs": 6,
+    "direct_protected_byte_forgeries": 60,
+    "direct_wrong_counts": 6,
+    "native_commits": 6,
+    "exact_noop_and_named_empty_contexts": 8,
+    "wrong_carrier_refusals": 4,
+    "inactive_NULL_stale_refusals": 4,
+    "present_same_carrier_stale_refusals": 4,
+    "old4_and8_named_empty_cold_refusals": 8,
+    "measured_public_operations": 6,
+    "recovery_contexts": 20,
+    "committed_mismatch_refusals": 6,
+    "mixed_kind_order_contexts": 16,
+    "typed_session_saves": 6,
+    "CLI_save_readbacks": 6,
+    "new_matching_functions_including_literal_unit": 11,
+    "new_primitive_functions": 3,
+    "retained_regression_unique_functions": 109,
+    "retained_regression_executions": 110
+  },
+  "primitive_and_features": [
+    {
+      "name": "fixed-codec",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "transaction::intent::fixed"
+      ],
+      "exit": 0,
+      "log_sha256": "4ec8b2bf8a4acbc61279c89e8bc14b58cd7ae1eba6127c4eaeb7c6c85359351a",
+      "passed_functions": [
+        17
+      ]
+    },
+    {
+      "name": "reader-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "b9b3c55223e895be0fcef86d8a29fc8376c3780cc11d3b8c3fc27f6ea2ce36f5",
+      "passed_functions": []
+    },
+    {
+      "name": "journal-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "journal"
+      ],
+      "exit": 0,
+      "log_sha256": "1e8157b98a3c28b953c31a8b9f361002aef980cf4899a713831fc5461df150b0",
+      "passed_functions": []
+    },
+    {
+      "name": "preview-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "ace16-write-preview"
+      ],
+      "exit": 0,
+      "log_sha256": "05a754d490fec3d50542b779708676f53c242938ae5359ceb1a9bd7bd02047f0",
+      "passed_functions": []
+    }
+  ],
+  "first_matching": [
+    {
+      "name": "literal-wire",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-testkit",
+        "--lib",
+        "original_fixed_wire"
+      ],
+      "exit": 0,
+      "log_sha256": "f92eb5635cabc12b5d91532b86ba22a874c605668d394a3b2c4bd01aa6177b2b",
+      "passed_functions": [
+        3
+      ]
+    },
+    {
+      "name": "direct",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "table::mutation::normal_ordinary::proof::small_integral",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "56e9a7f51377dfa7aab5a034384c7878c3b9e78d48b4527206edd06eb35364ca",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "native",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "qualified_recovery",
+        "api::normal::byte_int16_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "73cb11ac33537855b42a0af59704d41dd22f4cc677c0d32bea6b9b64df9f462f",
+      "passed_functions": [
+        7
+      ]
+    },
+    {
+      "name": "access",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-access",
+        "--test",
+        "genuine_byte_int16_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "b5591b836f820cb32e3880136c3611b1e7a3fd385c56b89b918192d8f85f2649",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "cli",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "-p",
+        "tablecraft-cli",
+        "--test",
+        "genuine_byte_int16_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "64ffa451bbb5232315a4c9c4131416831831e426dd0f564e265448d3c68ef167",
+      "passed_functions": [
+        1
+      ]
+    }
+  ],
+  "retained_and_strict": [
+    {
+      "name": "retained-ieee-proof",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::proof::ieee",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "b6355286f636df64120bd3cdbf1d60028ca6f4adf7da3e6a9258b70d4c708040",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "retained-ieee-native",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::ieee_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "bba8680c51a6375fbf6a347204ecbbe0ac1de7715829c6ce05bf06f0dae136a4",
+      "passed_functions": [
+        6
+      ]
+    },
+    {
+      "name": "retained-ieee-access",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_ieee_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "e5601f681e6c9501926931e322087f00e3ba37e576dcbddc3265ff61afb72e30",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "retained-ieee-cli",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-cli",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "genuine_ieee_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "2e0fc32c131af46f13ba83ebad4f05de787d160ddd3224d52076bfd77f136dcf",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "legacy-empty",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "legacy_named_empty_ieee_columns_decode_but_cold_qualification_refuses_before_effects",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "d87a7906feb944e52a5edd9f0510816c0530ff1d72f3c0586e81450dfef78e8e",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "ordinary-units",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::normal_ordinary::tests"
+      ],
+      "exit": 0,
+      "log_sha256": "45845e530e4b8b640e1b73de5aa60f42ff5c3c7474649154b62e94daf6cb2c13",
+      "passed_functions": [
+        4
+      ]
+    },
+    {
+      "name": "before-change-native",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::native_fixed"
+      ],
+      "exit": 0,
+      "log_sha256": "bed7c459b8dc503435f16bb1e87951b8a59c556773586f4a1094d49d231f0f53",
+      "passed_functions": [
+        8
+      ]
+    },
+    {
+      "name": "ordinary-native",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::native_ordinary"
+      ],
+      "exit": 0,
+      "log_sha256": "e65ef4fd0c0178f49797828490d832d8a93ff2d9648bf6822bf021c088e956c9",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "retained-hosts",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "normal_fixed_before_change",
+        "--test",
+        "normal_ordinary_fixed",
+        "--test",
+        "normal_ordinary_fitted"
+      ],
+      "exit": 0,
+      "log_sha256": "e0a872379a2fa2c298778a5db78d7d8446ce68c49e43b354db4601df5fee9349",
+      "passed_functions": [
+        4,
+        2,
+        7
+      ]
+    },
+    {
+      "name": "ignored-reader",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "ignored_null_indexes"
+      ],
+      "exit": 0,
+      "log_sha256": "0855db333145d0e7289bd3959a03668282162e76dacd6d734ad1152cf65a06bc",
+      "passed_functions": [
+        7
+      ]
+    },
+    {
+      "name": "ignored-preview",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--lib",
+        "table::mutation::fixed::ignored_updates"
+      ],
+      "exit": 0,
+      "log_sha256": "34f5da5761673f16bfd70a337be05664c6cdd227788d378c531ff5e9c04e4c85",
+      "passed_functions": [
+        24
+      ]
+    },
+    {
+      "name": "wide_indexed_update",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_indexed_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "cabf1526a727898702963366a841441df18e2bf1a465f067ba6ac26945b6b320",
+      "passed_functions": [
+        6
+      ]
+    },
+    {
+      "name": "wide_node_update",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_node_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "8f86a81398299d06ae4a6a7693f579dd2e836ec319b516aab2877077b2a32cff",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "retained_binary_marker",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::retained_binary_marker",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "27de0f49ed58e615eb5a2a6bad31e9ead53868ef6b5ff3740e6c5d2792e81954",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "generated_companion_update",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::generated_companion_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "4a3d55d122b7a89d6514370b1505407b1460301d367cfe596153d228d58c82ba",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "binary_id_update",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::binary_id_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "2f9eed4174a07bbffa9240932c2c684deab94d7601b1c8037710ceb49797694a",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "ignore_null_update",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::ignore_null_update",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "6bfde85fce49bc805eb1dbcbd3ce1b7a3a2e785155760483c90cd7997962ef6a",
+      "passed_functions": [
+        8
+      ]
+    },
+    {
+      "name": "wide_ordinary_siblings",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "api::normal::wide_ordinary_siblings",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "0ad6cd3486356e7d173c6fdf26aa448d1be8ebe646599d3b6a282f71dbd8f1ca",
+      "passed_functions": [
+        5
+      ]
+    },
+    {
+      "name": "strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "d11ec77e21cf0a269b6810ac08dca3a08353e32d1b8628a51e0012a03cb41881",
+      "passed_functions": []
+    },
+    {
+      "name": "reader-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "log_sha256": "732186322402325172940531d8d6d7cfac85dc902585b2bef6715ad6839dacfd",
+      "passed_functions": []
+    },
+    {
+      "name": "journal-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "journal"
+      ],
+      "exit": 0,
+      "log_sha256": "749f703d41a81b2dddd079c4b79bfc75e2c0fc32032d0b12faef794ea95a461a",
+      "passed_functions": []
+    },
+    {
+      "name": "preview-minimal",
+      "argv": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--features",
+        "ace16-write-preview"
+      ],
+      "exit": 0,
+      "log_sha256": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc",
+      "passed_functions": []
+    },
+    {
+      "name": "boundaries",
+      "argv": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "log_sha256": "5ef6e8ca22d1fc8b6d589046062527cebfcb3f33e24237545d267f335273e588",
+      "passed_functions": []
+    },
+    {
+      "name": "boundary-tests",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_dependency_boundaries.py"
+      ],
+      "exit": 0,
+      "log_sha256": "30ea6ec68f99ddee172730857da0a1f115391b6e336113ff00f1127dd5b5f5c3",
+      "passed_functions": []
+    },
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ],
+  "present_witness_continuation": [
+    {
+      "name": "present-witness",
+      "argv": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--test",
+        "qualified_recovery",
+        "scalar9_exact_carriers_noops_and_empty_targets_keep_original_bytes",
+        "--",
+        "--ignored"
+      ],
+      "exit": 0,
+      "log_sha256": "bc62316d8fe228f38ed2dc52e094c37399ab7cbef4d19d69798bfc75ccbfb474",
+      "passed_functions": [
+        1
+      ]
+    },
+    {
+      "name": "present-strict",
+      "argv": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "qualified_recovery",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "log_sha256": "32793dd9959ef612369b9858142d8f5da5fc158de8188fad489cb23d6be0b6e2",
+      "passed_functions": []
+    },
+    {
+      "name": "present-format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passed_functions": []
+    }
+  ],
+  "input_pins": [
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h5-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "b04d36341ed843e3bf7f2b9bfabd790e9a075d1b8002ad5a53253968c3ea82ed"
+    },
+    {
+      "path": ".cache/ace16-normal-wide-scalar-insert-next-20261101/source/export-first/h6-fixed-exact-after.accdb",
+      "bytes": 36864,
+      "sha256": "1375d5e7453d0603ed42226b05c2f7afa6280f88d63287e2ab73b334a0da339f"
+    }
+  ],
+  "verification_notes": [
+    "One existing legacy-empty function ran both in the retained IEEE selector and an explicit selector; unique regression counts deduplicate it. No duplicate test body was added.",
+    "Four correctly typed present-value stale controls were added to the existing witness function after the first matching run. Only that changed function plus scoped lint/format were repeated. Production, source and expectations were unchanged.",
+    "Preexecution review restored the original Legacy proof call for preview-only builds and replaced broad profile selection with the actual closed three-state table contract. A WIDTH constant was grouped with the other constants before compilation.",
+    "The endpoint CLI uses plain integer literals, integrating checked SQL assignment with native9. NULL clears and explicit CByte/CInt restores preserve the same independent bytes."
+  ],
+  "qualification": "Native Microsoft Access save/reopen, Windows/mixed-client execution and physical power-loss qualification remain unrun. Indexed small-integer targets, variable-field composition and broader implicit coercion remain separate work."
+}

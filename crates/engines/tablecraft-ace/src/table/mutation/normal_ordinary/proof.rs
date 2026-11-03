@@ -3,7 +3,7 @@ use super::{capture, preflight_with_policy};
 use crate::{
     EditError, FixedColumnUpdates, NativeEditPlan, NativeImage,
     header::check,
-    table::mutation::fixed_records::{self, proof},
+    table::mutation::fixed_records::{self, FixedCarriers, proof},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -17,7 +17,15 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    prove_with_policy(plan, scope, table, original, false, budget, cancelled)
+    prove_with_policy(
+        plan,
+        scope,
+        table,
+        original,
+        FixedCarriers::Legacy,
+        budget,
+        cancelled,
+    )
 }
 
 pub(super) fn prove_ieee(
@@ -28,7 +36,34 @@ pub(super) fn prove_ieee(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    prove_with_policy(plan, scope, table, original, true, budget, cancelled)
+    prove_with_policy(
+        plan,
+        scope,
+        table,
+        original,
+        FixedCarriers::Ieee,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prove_scalar(
+    plan: &NativeEditPlan,
+    scope: CatalogScope,
+    table: &str,
+    original: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy(
+        plan,
+        scope,
+        table,
+        original,
+        FixedCarriers::Scalar,
+        budget,
+        cancelled,
+    )
 }
 
 fn prove_with_policy(
@@ -36,7 +71,7 @@ fn prove_with_policy(
     scope: CatalogScope,
     table: &str,
     original: &[FixedColumnUpdates<'_>],
-    ieee: bool,
+    carriers: FixedCarriers,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -48,16 +83,16 @@ fn prove_with_policy(
         cancelled,
     )?;
     let source = capture(&image, table, budget, cancelled)?;
-    preflight_with_policy(&source, original, ieee, budget, cancelled)?;
+    preflight_with_policy(&source, original, carriers, budget, cancelled)?;
     let expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 
     // This reconstructs payloads and masks from original records and explicit
     // carriers. It consumes neither staged patches nor the producer's count.
     // Its final validation checks original properties and every AFTER byte.
-    let manual_proof = if ieee {
-        proof::prove_ieee_original
-    } else {
-        proof::prove_original
+    let manual_proof = match carriers {
+        FixedCarriers::Legacy => proof::prove_original,
+        FixedCarriers::Ieee => proof::prove_ieee_original,
+        FixedCarriers::Scalar => proof::prove_scalar_original,
     };
     manual_proof(
         proof::Original {
@@ -106,3 +141,6 @@ fn prove_with_policy(
 
 #[cfg(test)]
 mod ieee;
+
+#[cfg(test)]
+mod small_integral;

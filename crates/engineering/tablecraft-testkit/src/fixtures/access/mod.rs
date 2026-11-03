@@ -379,3 +379,6 @@ pub mod genuine_ignore_null_update;
 
 /// Qualified unchanged IEEE inputs and literal original UPDATE pairs.
 pub mod genuine_ieee_update;
+
+/// Existing exact originals and independent Byte/Int16 payload/mask spans.
+pub mod genuine_byte_int16_update;

@@ -4,6 +4,7 @@
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
 - [Byte/Int16 literal UPDATE source qualification](ACE16_BYTE_INT16_UPDATE_SOURCES.md)
+- [Normal Byte/Int16 write acceptance](results/ace16-normal-byte-int16-update-2026-11-03.json)
 - [Existing Single/Double UPDATE source qualification](ACE16_IEEE_UPDATE_SOURCES.md)
 - [Normal exact Single/Double write acceptance](results/ace16-normal-ieee-update-2026-11-03.json)
 - [Generated-field UPDATE source qualification](ACE16_GENERATED_COMPANION_UPDATE_SOURCES.md)

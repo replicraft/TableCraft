@@ -871,3 +871,6 @@ mod ignore_null_update;
 
 #[path = "normal/ieee_update.rs"]
 mod ieee_update;
+
+#[path = "normal/byte_int16_update.rs"]
+mod byte_int16_update;
