@@ -314,5 +314,475 @@
     "NULL payload remains inactive rather than becoming a second present key. Filling the last NULL grows common prefix to1/free139 for a new GUID, or4/free610 for duplicate seed156. Existing ordinary UPDATE history remains158.",
     "Two swap request orders share one AFTER per original. Native views execute once each; request count is not an additional image count."
   ],
-  "qualification": "Native reads and complete Source/program-absence passed. No TableCraft mutation, retained session, CLI save, journal recovery, Microsoft Access save/reopen, Windows or mixed-client qualification is claimed by this record. SDK continuation is recorded separately when executed."
+  "qualification": "Native reads, complete Source/program-absence and independent Jackcess getter reports passed. No TableCraft indexed mutation, retained session, CLI save, journal recovery, Microsoft Access save/reopen, Windows or mixed-client qualification is claimed by this record.",
+  "independent_SDK_reader": {
+    "controller_argv": [
+      "python3",
+      ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/run_sdk.py",
+      "--closure-sha256",
+      "228376e73878d6b606b4d66a8b936fd85a66abfea7ff6d5d5c05391f55c662d8"
+    ],
+    "controller_exit": 0,
+    "closure": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/closure-first.json",
+      "bytes": 13174,
+      "sha256": "228376e73878d6b606b4d66a8b936fd85a66abfea7ff6d5d5c05391f55c662d8"
+    },
+    "controller_log": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/first-controller.log",
+      "bytes": 69,
+      "sha256": "94d1dab4c06041df9ca9c6a7b2e5e509d19078bdc2ad9944f3513ffb0a8339ba"
+    },
+    "saved_verifier_argv": [
+      "python3",
+      ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/verify_saved.py",
+      "--closure-sha256",
+      "228376e73878d6b606b4d66a8b936fd85a66abfea7ff6d5d5c05391f55c662d8"
+    ],
+    "saved_verifier_exit": 0,
+    "saved_verification": {
+      "state": "SAVED_SDK28_PASS",
+      "calls": 28,
+      "artifact_count": 58,
+      "child_processes": 0,
+      "receipt": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/receipt.json",
+        "bytes": 36588,
+        "sha256": "d0e8cf8acbae6ddd24a9058d2ea9c3857d2f54795d32ff8d36e30a20dd3842bf"
+      },
+      "plan": {
+        "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/plan.json",
+        "bytes": 30455,
+        "sha256": "06d3f361405274a566c1c223a1edb4337cee5dc675a9565ffc37955e88a609ec"
+      }
+    },
+    "saved_verification_pin": {
+      "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/saved-first.json",
+      "bytes": 589,
+      "sha256": "db2997c6bbe11c62655668e5cf3767b8b8541f6a6cc0ffe0563e6ca34ee57fbd"
+    },
+    "calls": [
+      {
+        "id": "h5-A-before",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-before.stdout",
+          "bytes": 60722,
+          "sha256": "8a07e22a7e4c262eafb524d8f8f0230a17a4bca0cd66fba1bdade8d30d3a00f9"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-before.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-before",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-before.stdout",
+          "bytes": 60724,
+          "sha256": "5cb506f9f68bced31cc43fc2331889b81c5ee32ba4b8749142852137b5c2db6f"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-before.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-before",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-before.stdout",
+          "bytes": 60885,
+          "sha256": "1a8e2446341cfd8569344409adcd70cecb903b87124e818b12c1be41cac89a6b"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-before.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-before",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-before.stdout",
+          "bytes": 60887,
+          "sha256": "c4abee7b433c62259f3c24e36af70f26831bb427b0f355005bcc7dd7e5c34bbc"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-before.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-present-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-present-new.stdout",
+          "bytes": 60722,
+          "sha256": "08335061ed4a8260963549dfb8856f13f53a5dfa97649a21081fe800fe475c11"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-present-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-present-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-present-duplicate.stdout",
+          "bytes": 60722,
+          "sha256": "ff4ee15518e8a9aeb30b9225209bf5ef5356ddc3ba5f04650f4e2d7f3a48c786"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-present-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-swap-forward",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-swap-forward.stdout",
+          "bytes": 60722,
+          "sha256": "19c0e80d5d95bce181abba877ea5806a9462f63062cbd8191bb17eced695d7db"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-swap-forward.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-clear-present",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-clear-present.stdout",
+          "bytes": 60565,
+          "sha256": "64f06779720d78c5ecd8d4cb539d0fc4d48c3bd9670d2e3af7ad427205699103"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-clear-present.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-fill-last-null-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-fill-last-null-new.stdout",
+          "bytes": 60879,
+          "sha256": "543ddbab46d9e15eff76891fb86f7d77b1bdee09e08692c88350be0f4ccc9916"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-fill-last-null-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-A-fill-last-null-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-fill-last-null-duplicate.stdout",
+          "bytes": 60879,
+          "sha256": "2fa9067f9a43a38ff265ca8575ae3eb2ba86a72e6983b26dcd744997aee30e03"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-A-fill-last-null-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-present-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-present-new.stdout",
+          "bytes": 60724,
+          "sha256": "795debc9cec7ed64becdb2ef02279d877a4435978ba426cd9d14cef41e103d9c"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-present-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-present-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-present-duplicate.stdout",
+          "bytes": 60724,
+          "sha256": "a2eb117a4ac34dbe22e78e71e8d52ed00d0b1ca238e78bcc5dfd18c3fe501204"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-present-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-swap-forward",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-swap-forward.stdout",
+          "bytes": 60724,
+          "sha256": "41e5a5d9175756dafa853d715d3daa5c77c3f14f0016b3a88e5f160cac7a1c59"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-swap-forward.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-clear-present",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-clear-present.stdout",
+          "bytes": 60567,
+          "sha256": "3cf4ae8b20476c25b4fba42118c682f8d45a16a5b51aaa503ede3d4ec96d6c27"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-clear-present.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-fill-last-null-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-fill-last-null-new.stdout",
+          "bytes": 60881,
+          "sha256": "61bf1a8f59ea4d4eb2270d693b93bd9ccf64bc22f18417d5dd5be353e6d8ec52"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-fill-last-null-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h5-D-fill-last-null-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-fill-last-null-duplicate.stdout",
+          "bytes": 60881,
+          "sha256": "b713c1cb6ddc8a3d005cc13338083fa10e54df31c33a8db397f2872ffb6de125"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h5-D-fill-last-null-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-present-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-present-new.stdout",
+          "bytes": 60885,
+          "sha256": "b4724a6840ac69a55959764c783f777b0bb85de7a88e861597bd75fd5685550f"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-present-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-present-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-present-duplicate.stdout",
+          "bytes": 60885,
+          "sha256": "f211777575765fa2935d13e5ea056271969e0b5c9547c60e7642f7654754f274"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-present-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-swap-forward",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-swap-forward.stdout",
+          "bytes": 60885,
+          "sha256": "ad6a66dd61579757656ff38486685d5ad55c73c8ec0438415d3e4ab828967467"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-swap-forward.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-clear-present",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-clear-present.stdout",
+          "bytes": 60728,
+          "sha256": "239d6c20aef01ef2112000d824a090d81ef4d7c2afba187aa7eb1da334d079d5"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-clear-present.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-fill-last-null-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-fill-last-null-new.stdout",
+          "bytes": 61042,
+          "sha256": "ee1a0186ef82216aea37495a4cdd758253f4b36b685537e775d8655d72a7caa6"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-fill-last-null-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-A-fill-last-null-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-fill-last-null-duplicate.stdout",
+          "bytes": 61042,
+          "sha256": "8851cbf141edaec873f4cc83adf1d13b206c05a5acdfef864509290b90185694"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-A-fill-last-null-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-present-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-present-new.stdout",
+          "bytes": 60887,
+          "sha256": "f333ac07d626693646b9bef00fe874a0ebfb9f4c2065aff4a0ef766638c8496a"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-present-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-present-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-present-duplicate.stdout",
+          "bytes": 60887,
+          "sha256": "a1763e7563485653900b22b6b09b0b268e7d2e4e96a7e6cc02c70deeb5a637cc"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-present-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-swap-forward",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-swap-forward.stdout",
+          "bytes": 60887,
+          "sha256": "e7d19e98840442e321133cc36aaa6125597fbac0ad872b95ae838b6f00003d2f"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-swap-forward.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-clear-present",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-clear-present.stdout",
+          "bytes": 60730,
+          "sha256": "776faed0b391aa0958b8d0d5a28c132f5f196fdde3de816a73e36d46d996f347"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-clear-present.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-fill-last-null-new",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-fill-last-null-new.stdout",
+          "bytes": 61044,
+          "sha256": "50e8ad9b55935e61a1bc9e74bb58ec04c961ce9bd46a1131baf326e7aa0de402"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-fill-last-null-new.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "id": "h6-D-fill-last-null-duplicate",
+        "returncode": 0,
+        "transport_failure": null,
+        "stdout": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-fill-last-null-duplicate.stdout",
+          "bytes": 61044,
+          "sha256": "5693f89ecacbe9318c313d0e3958eab3392e2a2552b734a87671a82eaadad238"
+        },
+        "stderr": {
+          "path": ".cache/ace16-normal-guid-update-assessment-next-20261103/indexed-update-source/sdk-gate/reads-first/h6-D-fill-last-null-duplicate.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "notes": "Exactly one existing SlotUpdateFixture oracle call per unique view. No new Java authoring/compilation, writer/generator invocation, expressions or links. Original complete reports roundtrip before launch; all53 closure pins checked around children; all complete reports match frozen law projections. Saved verifier starts zero children. Exact actual Java argv remains bound in the immutable private receipt/plan above."
+  }
 }
