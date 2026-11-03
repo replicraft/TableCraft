@@ -14,7 +14,7 @@ use crate::table::mutation::{
 use crate::{
     EditError, InspectError, NativeColumn, NativeImage, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64},
+        data_type::{BOOLEAN, CURRENCY, DATE_TIME, DOUBLE, INT32, INT64, SINGLE},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
@@ -38,6 +38,8 @@ enum Carrier {
     Int64,
     Currency,
     DateTime,
+    Single,
+    Double,
 }
 
 struct Bound<'a> {
@@ -102,6 +104,34 @@ pub(in crate::table::mutation) fn prove_original(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    prove_with_policy(
+        original, expected, groups, observed, false, budget, cancelled,
+    )
+}
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn prove_ieee_original(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    observed: Observed<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_policy(
+        original, expected, groups, observed, true, budget, cancelled,
+    )
+}
+
+fn prove_with_policy(
+    original: Original<'_>,
+    expected: Vec<u8>,
+    groups: &[FixedColumnUpdates<'_>],
+    observed: Observed<'_>,
+    ieee: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     check(budget, cancelled)?;
     let image = original.image;
     let original = original.source;
@@ -111,8 +141,11 @@ pub(in crate::table::mutation) fn prove_original(
     if expected.len() != image.as_bytes().len() || after.len() != image.as_bytes().len() {
         return Err(EditError::Preservation);
     }
-    let (expected, changed_rows) =
-        reconstruct(original, expected, groups, None, budget, cancelled)?;
+    let (expected, changed_rows) = if ieee {
+        reconstruct_with_targets(original, expected, groups, None, true, budget, cancelled)?
+    } else {
+        reconstruct(original, expected, groups, None, budget, cancelled)?
+    };
     if changed_rows != returned_count || expected.len() != after.len() {
         return Err(EditError::Preservation);
     }
@@ -189,6 +222,7 @@ fn reconstruct(
         expected,
         groups,
         indexed.map(|facts| facts as &dyn IndexTargets),
+        false,
         budget,
         cancelled,
     )
@@ -219,6 +253,7 @@ pub(in crate::table::mutation) fn reconstruct_integral_original(
         expected,
         groups,
         Some(indexed),
+        false,
         budget,
         cancelled,
     )
@@ -252,6 +287,7 @@ pub(in crate::table::mutation) fn reconstruct_i32_updates_original(
         expected,
         groups,
         Some(indexed),
+        false,
         budget,
         cancelled,
     )
@@ -262,6 +298,7 @@ fn reconstruct_with_targets(
     mut expected: Vec<u8>,
     groups: &[FixedColumnUpdates<'_>],
     indexed: Option<&dyn IndexTargets>,
+    ieee: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, usize), EditError> {
@@ -284,7 +321,7 @@ fn reconstruct_with_targets(
         .map_err(|_| InspectError::Allocation)?;
     for group in groups {
         check(budget, cancelled)?;
-        let selected = select(original, group, indexed, budget, cancelled)?;
+        let selected = select(original, group, indexed, ieee, budget, cancelled)?;
         budget
             .charge(Resource::Steps, bound.len() as u64)
             .map_err(InspectError::from)?;
@@ -407,6 +444,7 @@ fn select<'a>(
     original: &'a Source,
     group: &FixedColumnUpdates<'_>,
     indexed: Option<&dyn IndexTargets>,
+    ieee: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Bound<'a>, EditError> {
@@ -432,6 +470,8 @@ fn select<'a>(
         (INT64, Some(ScalarType::Int64)) => (Carrier::Int64, WIDE_BYTES),
         (CURRENCY, Some(ScalarType::Currency)) => (Carrier::Currency, WIDE_BYTES),
         (DATE_TIME, Some(ScalarType::DateTime)) => (Carrier::DateTime, WIDE_BYTES),
+        (SINGLE, Some(ScalarType::Single)) if ieee => (Carrier::Single, size_of::<u32>()),
+        (DOUBLE, Some(ScalarType::Double)) if ieee => (Carrier::Double, WIDE_BYTES),
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
     if !field.fixed()
@@ -488,7 +528,15 @@ fn select<'a>(
 fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
     let bytes = match (carrier, value) {
         (Carrier::Boolean, Value::Boolean(value)) => return Ok(Cell::Boolean(*value)),
-        (Carrier::Int32 | Carrier::Int64 | Carrier::Currency | Carrier::DateTime, Value::Null) => {
+        (
+            Carrier::Int32
+            | Carrier::Int64
+            | Carrier::Currency
+            | Carrier::DateTime
+            | Carrier::Single
+            | Carrier::Double,
+            Value::Null,
+        ) => {
             return Ok(Cell::Fixed(None));
         }
         (Carrier::Int32, Value::Int32(value)) => {
@@ -496,6 +544,12 @@ fn encode(carrier: Carrier, value: &Value) -> Result<Cell, EditError> {
             bytes[..INT32_BYTES].copy_from_slice(&value.to_le_bytes());
             bytes
         }
+        (Carrier::Single, Value::Single(value)) => {
+            let mut bytes = [0; WIDE_BYTES];
+            bytes[..size_of::<u32>()].copy_from_slice(&value.to_bits().to_le_bytes());
+            bytes
+        }
+        (Carrier::Double, Value::Double(value)) => value.to_bits().to_le_bytes(),
         (Carrier::Int64, Value::Int64(value)) => value.to_le_bytes(),
         (Carrier::Currency, Value::Currency(value)) => value.scaled().to_le_bytes(),
         (Carrier::DateTime, Value::DateTime(value)) => value.to_bits().to_le_bytes(),

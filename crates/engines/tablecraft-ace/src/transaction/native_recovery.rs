@@ -134,7 +134,10 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             check(budget, cancelled)?;
             Qualified::BeforeChange(checked)
         }
-        (NativeUpdateProfile::Ace16OrdinaryFixed, NativeUpdateBody::Fixed(original)) => {
+        (
+            NativeUpdateProfile::Ace16OrdinaryFixed | NativeUpdateProfile::Ace16OrdinaryIeeeFixed,
+            NativeUpdateBody::Fixed(original),
+        ) => {
             check(budget, cancelled)?;
             original.verify_before(checked.before_bytes(), budget, cancelled)?;
             let image = NativeImage::capture(
@@ -144,8 +147,11 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
                 cancelled,
             )?;
             let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan =
-                image.plan_ordinary_fixed_updates(original.table(), &groups, budget, cancelled)?;
+            let plan = if profile == NativeUpdateProfile::Ace16OrdinaryIeeeFixed {
+                image.plan_ordinary_ieee_updates(original.table(), &groups, budget, cancelled)?
+            } else {
+                image.plan_ordinary_fixed_updates(original.table(), &groups, budget, cancelled)?
+            };
             equal_image(
                 plan.before_bytes(),
                 checked.before_bytes(),

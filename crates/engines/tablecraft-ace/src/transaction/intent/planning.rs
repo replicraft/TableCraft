@@ -100,11 +100,20 @@ impl NativeImage {
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         let _span = tracing::debug_span!("native.ordinary_fixed_edit.plan_recoverable").entered();
         let borrowed = super::fixed::borrow_groups(table, &groups, budget, cancelled)?;
-        let plan = self.plan_ordinary_fixed_updates(table, &borrowed, budget, cancelled)?;
+        let ieee = self.ordinary_fixed_ieee_requested(table, &borrowed, budget, cancelled)?;
+        let plan = if ieee {
+            self.plan_ordinary_ieee_updates(table, &borrowed, budget, cancelled)?
+        } else {
+            self.plan_ordinary_fixed_updates(table, &borrowed, budget, cancelled)?
+        };
         drop(borrowed);
         let original =
             NativeFixedEditIntent::new(table, groups, plan.before_bytes(), budget, cancelled)?;
-        let intent = NativeUpdateIntent::from_ordinary_fixed(original);
+        let intent = if ieee {
+            NativeUpdateIntent::from_ordinary_ieee_fixed(original)
+        } else {
+            NativeUpdateIntent::from_ordinary_fixed(original)
+        };
         Ok(RecoverableNativeEditPlan { plan, intent })
     }
 

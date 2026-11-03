@@ -126,14 +126,18 @@ impl NativeJournalEditor {
             positions.push(position);
             let target = &self.snapshot().columns()[position];
             let kind = target.data_type();
-            if !matches!(
-                kind,
-                ScalarType::Boolean
-                    | ScalarType::Int32
-                    | ScalarType::Int64
-                    | ScalarType::Currency
-                    | ScalarType::DateTime
-            ) {
+            let ieee = self.route == JournalRoute::Ordinary
+                && matches!(kind, ScalarType::Single | ScalarType::Double);
+            if !ieee
+                && !matches!(
+                    kind,
+                    ScalarType::Boolean
+                        | ScalarType::Int32
+                        | ScalarType::Int64
+                        | ScalarType::Currency
+                        | ScalarType::DateTime
+                )
+            {
                 return Err(NativeEditError::Unsupported.into());
             }
             let mut requests: Vec<FixedScalarUpdate> = vector(column.updates.len(), budget)?;
@@ -156,15 +160,28 @@ impl NativeJournalEditor {
                 if requests.iter().any(|request| request.row() == ordinal) {
                     return Err(NativeEditError::Unsupported.into());
                 }
-                let expected = scalar(original, kind)?;
-                let replacement = scalar(update.value(), kind)?;
+                let (expected, replacement) = if ieee {
+                    (
+                        ieee_scalar(original, kind)?,
+                        ieee_scalar(update.value(), kind)?,
+                    )
+                } else {
+                    (scalar(original, kind)?, scalar(update.value(), kind)?)
+                };
                 requests.push(FixedScalarUpdate::new(ordinal, expected, replacement));
                 rows.push(ordinal);
             }
-            groups.push(
+            let group = if ieee {
+                NativeFixedIntentGroup::new_ordinary_ieee(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else {
                 NativeFixedIntentGroup::new(target.name(), requests, budget, cancelled)
-                    .map_err(RecoverableEditError::from)?,
-            );
+            };
+            groups.push(group.map_err(RecoverableEditError::from)?);
         }
         let matched = matched_rows(rows, budget, cancelled)?;
         let plan = match self.route {
@@ -177,6 +194,15 @@ impl NativeJournalEditor {
         };
         Ok((plan, matched))
     }
+}
+
+fn ieee_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+    Ok(match (kind, value) {
+        (ScalarType::Single, Value::Single(value)) => Value::Single(*value),
+        (ScalarType::Double, Value::Double(value)) => Value::Double(*value),
+        (ScalarType::Single | ScalarType::Double, Value::Null) => Value::Null,
+        _ => return Err(NativeEditError::Unsupported),
+    })
 }
 
 pub(super) fn scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {

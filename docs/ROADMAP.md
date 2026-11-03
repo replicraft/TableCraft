@@ -1210,6 +1210,16 @@ Retained NODE schemas keep their original numeric-only qualification. Qualified
 single-Int32 IgnoreNULL secondary updates now have the separate continuation
 below; broader allocation and native Access save/reopen remain work.
 
+## Exact ordinary Single/Double UPDATE
+
+The unindexed ordinary fixed service now preserves raw IEEE requests through
+TCNI0008, independent proof, journal replay and retained sessions. Existing
+source pairs pass whole-image saves and two separate finite-zero CLI controls;
+old intent dialects remain closed. See the
+[qualified scope](access/writes/NORMAL_IEEE_FIXED_UPDATE.md).
+Nullable outcome qualification, indexed/mixed variable composition, other fixed
+carriers and native Access save/reopen remain work.
+
 ## Normal single-Int32 ignored-NULL UPDATE
 
 The normal fixed service now maintains manual Int32 secondary root leaves while

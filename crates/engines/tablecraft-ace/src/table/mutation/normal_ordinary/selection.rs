@@ -1,9 +1,9 @@
 //! Metadata selects an attempt; only a fresh complete content proof admits it.
-use super::{capture, preflight};
+use super::{capture, preflight, preflight_with_policy};
 use crate::{
     EditError, FileFormat, FixedColumnUpdates, NativeImage, PayloadPresence, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64},
+        data_type::{BOOLEAN, CURRENCY, DATE_TIME, DOUBLE, INT32, INT64, SINGLE},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
     },
     header::check,
@@ -50,6 +50,37 @@ impl NativeImage {
         Ok(children.is_empty())
     }
 
+    /// Select only a request dialect from original metadata; native admission
+    /// and every target check are still repeated by the consuming planner.
+    pub(crate) fn ordinary_fixed_ieee_requested(
+        &self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, EditError> {
+        let schema = inspect_table_schema(
+            &mut self.reader(),
+            self.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let mut ieee = false;
+        for group in groups {
+            check(budget, cancelled)?;
+            for field in schema.columns() {
+                check(budget, cancelled)?;
+                super::fixed_records::name_work(field.name(), group.column(), budget)?;
+                if field.name().eq_ignore_ascii_case(group.column()) {
+                    ieee |= matches!(field.native_type(), SINGLE | DOUBLE);
+                }
+            }
+        }
+        check(budget, cancelled)?;
+        Ok(ieee)
+    }
+
     /// Prove complete original content and qualify an actual supported fixed
     /// target. This evaluates no program, stages no assignment and issues no
     /// reusable permission; every subsequent plan repeats the complete proof.
@@ -71,6 +102,8 @@ impl NativeImage {
                     | (INT64, Some(ScalarType::Int64))
                     | (CURRENCY, Some(ScalarType::Currency))
                     | (DATE_TIME, Some(ScalarType::DateTime))
+                    | (SINGLE, Some(ScalarType::Single))
+                    | (DOUBLE, Some(ScalarType::Double))
             );
             if !supported
                 || !field.fixed()
@@ -108,6 +141,9 @@ impl NativeImage {
                 field.name(),
                 &[],
             )];
+            if matches!(field.native_type(), SINGLE | DOUBLE) {
+                return preflight_with_policy(&source, &groups, true, budget, cancelled);
+            }
             return preflight(&source, &groups, budget, cancelled);
         }
         let column = indexed_column.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
