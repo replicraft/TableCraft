@@ -267,12 +267,21 @@ of native I/O, query execution and display quotas. The host supplies no omitted
 VBA module Option Compare setting; explicit binary and supported database string
 comparison modes retain their own contracts.
 
-LIKE grammar remains a separate setting. Microsoft documents a
+LIKE grammar remains a separate setting. Explicit query runs read the native
+database property map through its checked Databases/MSysDb catalog roles, under
+the same cumulative native allowance. Qualified `ANSI Query Mode` LONG/DDL values
+0 and 1 select ANSI-89 and ANSI-92 respectively. The actual example supplies 0;
+the 1 mapping has reference-supported synthetic checks, not a native Access
+execution comparison. Missing or unsupported observations leave LIKE unavailable
+without blocking numeric execution. Malformed metadata, role, cancellation and
+resource failures propagate rather than becoming a guessed default.
+
+Microsoft documents the
 [per-database ANSI-89/ANSI-92 choice](https://support.microsoft.com/en-us/access/access-wildcard-character-reference).
-Until that setting is read or explicitly supplied through a shared application
-contract, GUI LIKE evaluation refuses instead of assuming wildcard syntax.
-Database sort order, application version and operating-system locale do not
-establish this option. See [native policy admission](../access/queries/NATIVE_QUERIES.md).
+This does not implement every SQL-mode difference. Database sort order,
+application version and operating-system locale do not establish the option.
+See [database properties](../access/schema/NATIVE_PROPERTIES.md) and
+[native comparison admission](../access/queries/NATIVE_QUERIES.md).
 
 ## Limits and verification
 

@@ -7,8 +7,10 @@ use super::{
 };
 use std::cell::RefCell;
 use tablecraft_access::{NativeCollationResolver, NativeSource};
+use tablecraft_ace::{DatabaseQueryMode, NativeReadSource};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_query::{ExecutionOptions, QueryLimits, Source, execute_with_schema_discovery};
+use tablecraft_expressions::predicates::LikeMode;
+use tablecraft_query::{ExecutionOptions, QueryLimits, execute_with_schema_discovery};
 use tablecraft_sql::{ParseLimits, parse_query, query::Query};
 
 const SQL_BYTES: usize = 64 * 1024;
@@ -29,11 +31,11 @@ impl Document {
         let parsed = parse_query(sql, ParseLimits::default())?;
         let source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
         let comparison_pool = RefCell::new(comparison_budget());
-        let (source, resolver) =
+        let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
         execute(
             parsed.query(),
-            &source,
+            &mut source,
             &resolver,
             &[],
             "Query results",
@@ -42,14 +44,19 @@ impl Document {
     }
 }
 
-pub(super) fn execute(
+pub(super) fn execute<R: NativeReadSource>(
     query: &Query,
-    source: &dyn Source,
+    source: &mut NativeSource<'_, R>,
     resolver: &NativeCollationResolver<'_>,
     parameters: &[(&str, Value)],
     title: &str,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
+    let like_mode = match source.database_query_mode()? {
+        DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
+        DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
+        DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
+    };
     let result = execute_with_schema_discovery(
         query,
         source,
@@ -63,6 +70,7 @@ pub(super) fn execute(
             },
             collation: Some(resolver.default_collation()),
             collation_resolver: Some(resolver),
+            like_mode,
             ..Default::default()
         },
     )?;

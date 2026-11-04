@@ -84,7 +84,7 @@ impl Document {
         let bindings = parameters::bindings(saved.query(), inputs, &mut output)?;
         crate::query::execute(
             saved.query(),
-            &source,
+            &mut source,
             &resolver,
             &bindings,
             &target.name,
