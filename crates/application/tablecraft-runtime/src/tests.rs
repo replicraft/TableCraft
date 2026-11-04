@@ -5,6 +5,7 @@ mod contents;
     any(target_os = "macos", target_os = "linux")
 ))]
 mod editing;
+mod formatting;
 mod saved;
 mod schema;
 mod stored;

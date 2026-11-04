@@ -1,6 +1,7 @@
 //! Metadata-selected scalar/stored-field pages from the immutable read session.
 mod collections;
 mod controls;
+mod formatting;
 
 use super::{
     Error, Response,
@@ -61,6 +62,7 @@ impl Document {
             }
         };
         controls::enrich(properties.as_ref(), &columns, &mut rows, &mut output)?;
+        formatting::apply(properties.as_ref(), &columns, &mut rows, &mut output)?;
         Ok(Response::Data {
             source_revision: Some(self.revision),
             table: output.text(table)?,

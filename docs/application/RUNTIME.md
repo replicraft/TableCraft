@@ -70,8 +70,8 @@ resolver, file export or external application is invoked by browsing.
 
 The shared UI renders values before compact annotations, retains provenance in
 tooltips/accessibility context and copies the complete display text without its
-badge. Display strings are not lossless exports, edit carriers or native field
-formatting rules. Query Empty/Missing/error states remain explicit display
+badge. Display strings are not lossless exports, edit carriers or a general native
+field-formatting engine. Query Empty/Missing/error states remain explicit display
 states; they are not silently converted to stored NULL.
 
 Native Page preflights the actual `MSysObjects` schema for its property carrier,
@@ -90,6 +90,31 @@ explicit native checkbox control (106). Text-box, combo-box and unknown controls
 retain the stored display text; absent/uninspected controls remain explicit.
 Full-value Copy and cached-result provenance are unchanged. See the
 [desktop presentation record](../ui/DESKTOP.md).
+
+## Native Boolean field Format
+
+Native pages now apply the qualified predefined `Yes/No`, `True/False` and
+`On/Off` Format names to non-NULL typed Boolean cells with an explicit TextBox
+DisplayControl (109). The current English presentation policy supplies `Yes`/
+`No`, `True`/`False` and `On`/`Off`; neither database LCID nor ambient OS locale
+chooses those labels. Other locale policies remain unimplemented.
+
+The original table identity and column-scoped property group must already be
+bound by the page reader. Format requires its native DDL flag and Text carrier.
+Missing, unknown or unsupported declarations retain the original display value;
+actual property read/framing/cancellation/resource errors still fail the page.
+CheckBox (106) retains its read-only checkbox and previous full-value copy text;
+combo-box, absent and unknown controls do not gain text-box behavior. NULL stays
+NULL, and cached-result provenance remains separate from these display labels.
+No formatted string is reparsed into a stored value or replacement input.
+
+The shared UI copies the full resulting display text. Native property bytes and
+stored values remain unchanged; queries and explicit collection contents do not
+inherit a parent field format. Custom format sections, numeric/date formats,
+DecimalPlaces and Caption headers are outside this slice. See Microsoft's
+[Yes/No formatting contract](https://support.microsoft.com/en-us/access/format-a-yes-no-data-type).
+This is a documented presentation policy with synthetic native-property tests,
+not a new Microsoft Access differential or locale-compatibility claim.
 
 ## Explicit collection inspection
 
