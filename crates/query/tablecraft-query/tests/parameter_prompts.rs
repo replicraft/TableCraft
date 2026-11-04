@@ -1,9 +1,9 @@
 use tablecraft_core::values::Value;
 use tablecraft_query::{
-    QueryError, prepare,
+    ParameterType, QueryError, prepare, resolve_parameter_type,
     source::{MemorySource, MemoryTable},
 };
-use tablecraft_schema::{Column, ScalarType};
+use tablecraft_schema::{Column, ScalarType, TypeDescriptor};
 use tablecraft_sql::parse_query;
 
 #[test]
@@ -102,5 +102,41 @@ fn field_resolution_still_precedes_an_identically_spelled_parameter() {
             .unwrap()
             .rows(),
         &[vec![Value::Int64(9)]]
+    );
+}
+
+#[test]
+fn public_parameter_resolution_retains_constraints_without_binding_a_source() {
+    let parsed = parse_query(
+        "PARAMETERS [Prompt] VARCHAR(2), D DECIMAL(4,2), V VALUE; SELECT [Prompt],D,V",
+        Default::default(),
+    )
+    .unwrap();
+    let parameters = &parsed.query().parameters;
+    let text = resolve_parameter_type(&parameters[0].data_type).unwrap();
+    assert_eq!(
+        text,
+        ParameterType::Scalar(TypeDescriptor::text(2).unwrap())
+    );
+    assert!(text.accepts(&Value::Text("é🦀".into())));
+    assert!(text.accepts(&Value::Null));
+    assert!(!text.accepts(&Value::Text("abc".into())));
+    assert!(!text.accepts(&Value::Int32(2)));
+
+    assert_eq!(
+        resolve_parameter_type(&parameters[1].data_type).unwrap(),
+        ParameterType::Scalar(TypeDescriptor::decimal(4, 2).unwrap()),
+    );
+    let variant = resolve_parameter_type(&parameters[2].data_type).unwrap();
+    assert_eq!(variant, ParameterType::Value);
+    assert!(variant.accepts(&Value::Binary(vec![0, 255])));
+
+    let invalid = tablecraft_sql::query::DataType {
+        name: "LONG".into(),
+        arguments: vec![4],
+    };
+    assert_eq!(
+        resolve_parameter_type(&invalid),
+        Err(QueryError::Unsupported)
     );
 }

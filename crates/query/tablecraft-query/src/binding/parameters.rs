@@ -10,13 +10,17 @@ pub(crate) struct Parameter {
     pub data_type: ParameterType,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ParameterType {
+/// Resolved Access parameter carrier, independent of source binding or values.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ParameterType {
+    /// A declared stored scalar carrier with its exact length/precision constraints.
     Scalar(TypeDescriptor),
+    /// An explicitly declared VALUE parameter, retaining the supplied carrier.
     Value,
 }
 
 impl ParameterType {
+    /// Whether a supplied carrier meets this declaration without coercion.
     pub fn accepts(self, value: &Value) -> bool {
         match self {
             Self::Scalar(data_type) => data_type.validate_value(value).is_ok(),
@@ -24,7 +28,7 @@ impl ParameterType {
         }
     }
 
-    pub fn output_type(self) -> OutputType {
+    pub(crate) fn output_type(self) -> OutputType {
         match self {
             Self::Scalar(data_type) => OutputType::Scalar {
                 data_type,
@@ -34,7 +38,7 @@ impl ParameterType {
         }
     }
 
-    pub fn declaration(self) -> OperandDeclaration {
+    pub(crate) fn declaration(self) -> OperandDeclaration {
         match self {
             Self::Scalar(_) => OperandDeclaration::Scalar,
             Self::Value => OperandDeclaration::Variant,
@@ -77,14 +81,17 @@ impl Binder<'_> {
             }) {
                 return Err(QueryError::AmbiguousName);
             }
-            let data_type = parameter_type(&parameter.data_type)?;
+            let data_type = resolve_parameter_type(&parameter.data_type)?;
             parameters.push(Parameter { name, data_type });
         }
         Ok(parameters)
     }
 }
 
-fn parameter_type(data_type: &DataType) -> Result<ParameterType, QueryError> {
+/// Resolve a parsed Access declaration using the same rules as query binding.
+/// This performs no row reads, source binding, prompting or value conversion.
+/// Names, declaration counts and operation budgets remain the caller's checks.
+pub fn resolve_parameter_type(data_type: &DataType) -> Result<ParameterType, QueryError> {
     if data_type.name == "VALUE" {
         if !data_type.arguments.is_empty() {
             return Err(QueryError::Unsupported);

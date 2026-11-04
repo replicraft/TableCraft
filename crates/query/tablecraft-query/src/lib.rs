@@ -32,7 +32,10 @@ mod plan;
 pub use output_types::OutputType;
 mod profile;
 pub mod source;
-pub use binding::{BindingDepth, PreparationOptions, PreparedQuery, prepare, prepare_with_options};
+pub use binding::{
+    BindingDepth, ParameterType, PreparationOptions, PreparedQuery, prepare, prepare_with_options,
+    resolve_parameter_type,
+};
 pub use error::QueryError;
 pub use execution::{
     DeleteError, DeletePlan, UpdateError, UpdatePlan, plan_batch_update, plan_delete, plan_update,
