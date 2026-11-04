@@ -8,6 +8,8 @@ mod document;
 mod editing;
 mod query;
 mod rows;
+mod saved;
+mod scalar_input;
 mod schema;
 mod source;
 mod worker;
@@ -20,6 +22,10 @@ pub use editing::{
     SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase,
     SaveReceipt, SaveReport, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
     journal_path,
+};
+pub use saved::{
+    MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
+    SavedQuery, SavedQueryTarget,
 };
 pub use schema::Field;
 pub use worker::Worker;
@@ -36,9 +42,18 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Edit(#[from] EditError),
-    #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Conversion(#[from] tablecraft_expressions::EvalError),
+    #[error("typed input is invalid")]
+    InvalidScalarInput,
+    #[error("typed input exceeds the input limit")]
+    ScalarInputLimit,
+    #[error("saved query target belongs to another document or object")]
+    StaleSavedQuery,
+    #[error("saved query parameter inputs do not match their declarations")]
+    ParameterInput,
+    #[error(transparent)]
+    Saved(#[from] tablecraft_access::NativeSavedReadError),
     #[error("operation cancelled")]
     Cancelled,
     #[error("no database is open")]
@@ -111,6 +126,13 @@ pub enum Command {
     Query {
         sql: String,
     },
+    InspectSavedQuery {
+        target: SavedQueryTarget,
+    },
+    RunSavedQuery {
+        target: SavedQueryTarget,
+        parameters: Vec<ParameterInput>,
+    },
 }
 
 impl Drop for Command {
@@ -128,6 +150,10 @@ pub struct Table {
 }
 
 pub enum Response {
+    SavedQuery {
+        target: SavedQueryTarget,
+        parameters: Vec<ParameterSpec>,
+    },
     #[cfg(feature = "offline-edit")]
     EditDraft(EditDraft),
     #[cfg(feature = "offline-edit")]
@@ -156,6 +182,7 @@ pub enum Response {
         title: String,
         format: String,
         tables: Vec<Table>,
+        queries: Vec<SavedQuery>,
     },
     Data {
         source_revision: Option<u64>,

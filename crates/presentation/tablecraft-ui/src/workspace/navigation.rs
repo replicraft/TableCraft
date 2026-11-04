@@ -1,5 +1,5 @@
 //! Object navigation emits page intents without owning a database source.
-use super::{Action, DocumentView, State};
+use super::{Action, DocumentView, SavedQueryTarget, State};
 use egui::{Color32, RichText, ScrollArea, Sense, Stroke, StrokeKind, TextEdit, Ui};
 
 const TABLE_ICON_COLOR: Color32 = Color32::from_rgb(66, 96, 144);
@@ -13,13 +13,13 @@ impl State {
             .show(ui, |ui| {
                 ui.add_space(5.0);
                 ui.label(RichText::new("All Access Objects").strong().size(15.0));
-                ui.add(TextEdit::singleline(&mut self.filter).hint_text("Search tables"));
-                ui.checkbox(&mut self.show_system, "Show system tables");
+                ui.add(TextEdit::singleline(&mut self.filter).hint_text("Search objects"));
+                ui.checkbox(&mut self.show_system, "Show system objects");
                 ui.separator();
-                ui.label(RichText::new("Tables").strong());
                 if let Some(db) = &self.database {
                     let filter = self.filter.to_lowercase();
                     ScrollArea::vertical().show(ui, |ui| {
+                        ui.label(RichText::new("Tables").strong());
                         for table in &db.tables {
                             if (!self.show_system && table.system)
                                 || !table.name.to_lowercase().contains(&filter)
@@ -59,9 +59,38 @@ impl State {
                                 }
                             });
                         }
+                        ui.separator();
+                        ui.label(RichText::new("Queries").strong());
+                        for query in &db.queries {
+                            if (!self.show_system && query.system)
+                                || !query.name.to_lowercase().contains(&filter)
+                            {
+                                continue;
+                            }
+                            let selected = self.saved_query_visible()
+                                && self.saved_query.target.as_ref().is_some_and(|target| {
+                                    target.document_revision == db.document_revision
+                                        && target.object_id == query.object_id
+                                });
+                            if ui
+                                .add_enabled(
+                                    !self.busy,
+                                    egui::Button::selectable(selected, &query.name),
+                                )
+                                .clicked()
+                            {
+                                actions.push(Action::InspectSavedQuery {
+                                    target: SavedQueryTarget {
+                                        document_revision: db.document_revision,
+                                        object_id: query.object_id,
+                                        name: query.name.clone(),
+                                    },
+                                });
+                            }
+                        }
                     });
                 } else {
-                    ui.weak("Open a database to see its tables.");
+                    ui.weak("Open a database to see its objects.");
                 }
             });
         if selected_table {

@@ -17,6 +17,10 @@ screenshot-based row/column highlights. A bottom record navigator now retains
 field selection across bounded pages with exact source/request binding and
 checked-EOF preservation. Home's Copy and table View commands use
 that presentation state and the existing metadata service.
+Saved queries now appear beside tables through one inert object inventory.
+Explicit inspection supplies typed declared prompts; a separate Run uses the
+existing saved-read execution service. Saved/SQL results retain distinct slots,
+and neither grants native record/edit/collection capabilities.
 Typed Yes/No cells now honor explicit native checkbox declarations while keeping
 text-box overrides, uninspected metadata, NULL and cached-result facts separate.
 

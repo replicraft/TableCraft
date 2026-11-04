@@ -1,0 +1,291 @@
+//! Explicit saved-query inspection and execution; no SQL reconstruction in UI.
+mod editor;
+
+use super::{Action, Data, DocumentView, State};
+use crate::datasheet::Selection;
+
+const MAX_PARAMETERS: usize = 256;
+const MAX_INPUT_BYTES: usize = 1_048_576;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SavedQueryTarget {
+    pub document_revision: u64,
+    pub object_id: u128,
+    pub name: String,
+}
+
+pub struct SavedQuery {
+    pub object_id: u128,
+    pub name: String,
+    pub system: bool,
+}
+
+pub struct ParameterSpec {
+    pub name: String,
+    pub kind: String,
+    pub label: String,
+    pub nullable: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ParameterInput {
+    pub name: String,
+    pub kind: String,
+    pub text: String,
+    pub is_null: bool,
+}
+
+struct Pending {
+    request_id: u64,
+    parameters: Option<Vec<ParameterInput>>,
+}
+
+#[derive(Default)]
+pub(super) struct SavedQueryState {
+    pub(super) active: bool,
+    pub(super) target: Option<SavedQueryTarget>,
+    pub(super) data: Option<Data>,
+    pub(super) selection: Selection,
+    parameters: Option<Vec<ParameterSpec>>,
+    inputs: Vec<ParameterInput>,
+    pending: Option<Pending>,
+    error: Option<String>,
+}
+
+impl State {
+    fn saved_query_binding(&self, target: &SavedQueryTarget) -> bool {
+        self.database.as_ref().is_some_and(|database| {
+            database.document_revision == target.document_revision
+                && database
+                    .queries
+                    .iter()
+                    .any(|query| query.object_id == target.object_id && query.name == target.name)
+        })
+    }
+
+    /// Inspection is explicit and inert; an object name never authorizes a run.
+    pub fn can_inspect_saved_query(&self, target: &SavedQueryTarget) -> bool {
+        !self.busy
+            && !self.backstage_visible()
+            && !self.edit_dialog_open()
+            && self.contents_request_id().is_none()
+            && self.saved_query.pending.is_none()
+            && self.saved_query_binding(target)
+    }
+
+    /// Bind an accepted inspection request and enter the saved-query view.
+    pub fn begin_saved_query_inspection(&mut self, target: SavedQueryTarget, request_id: u64) {
+        if self.saved_query_binding(&target)
+            && !self.edit_dialog_open()
+            && self.contents_request_id().is_none()
+            && !self.backstage_visible()
+        {
+            self.select_view(DocumentView::Query);
+            self.reset_saved_query();
+            self.saved_query.active = true;
+            self.saved_query.target = Some(target);
+            self.saved_query.pending = Some(Pending {
+                request_id,
+                parameters: None,
+            });
+        }
+    }
+
+    fn accepts_saved_reply(&self, request_id: u64, target: &SavedQueryTarget) -> bool {
+        self.saved_query_visible()
+            && !self.backstage_visible()
+            && !self.edit_dialog_open()
+            && self.contents_request_id().is_none()
+            && self.saved_query_binding(target)
+            && self.saved_query.target.as_ref() == Some(target)
+            && self.saved_query.pending.as_ref().is_some_and(|pending| {
+                pending.request_id == request_id
+                    && pending
+                        .parameters
+                        .as_ref()
+                        .is_none_or(|inputs| inputs == &self.saved_query.inputs)
+            })
+    }
+
+    pub fn set_saved_query_details(
+        &mut self,
+        request_id: u64,
+        target: SavedQueryTarget,
+        parameters: Vec<ParameterSpec>,
+    ) -> bool {
+        if !self.accepts_saved_reply(request_id, &target)
+            || !self
+                .saved_query
+                .pending
+                .as_ref()
+                .is_some_and(|pending| pending.parameters.is_none())
+        {
+            return false;
+        }
+        if parameters.len() > MAX_PARAMETERS {
+            self.saved_query.pending = None;
+            self.saved_query.error = Some("The query exceeds the 256-parameter UI limit.".into());
+            return false;
+        }
+        self.saved_query.inputs = parameters
+            .iter()
+            .map(|parameter| ParameterInput {
+                name: parameter.name.clone(),
+                kind: if parameter.kind == "value" {
+                    String::new()
+                } else {
+                    parameter.kind.clone()
+                },
+                text: String::new(),
+                is_null: false,
+            })
+            .collect();
+        self.saved_query.parameters = Some(parameters);
+        self.saved_query.pending = None;
+        true
+    }
+
+    pub fn can_run_saved_query(
+        &self,
+        target: &SavedQueryTarget,
+        parameters: &[ParameterInput],
+    ) -> bool {
+        !self.busy
+            && self.saved_query_visible()
+            && !self.backstage_visible()
+            && !self.edit_dialog_open()
+            && self.contents_request_id().is_none()
+            && self.saved_query_binding(target)
+            && self.saved_query.target.as_ref() == Some(target)
+            && self.saved_query.pending.is_none()
+            && self.saved_query.parameters.is_some()
+            && self.saved_query.inputs == parameters
+            && inputs_within_limits(parameters)
+            && self.saved_query.parameters.as_ref().is_some_and(|specs| {
+                specs.len() == parameters.len()
+                    && specs.iter().zip(parameters).all(|(spec, input)| {
+                        spec.name == input.name
+                            && (spec.kind == "value" || spec.kind == input.kind)
+                            && (spec.nullable || !input.is_null)
+                            && editor::INPUT_KINDS
+                                .iter()
+                                .any(|(kind, _)| *kind == input.kind)
+                    })
+            })
+    }
+
+    pub fn begin_saved_query_run(
+        &mut self,
+        target: SavedQueryTarget,
+        parameters: Vec<ParameterInput>,
+        request_id: u64,
+    ) {
+        // The host already checked can_run_saved_query before dispatch. Busy
+        // may now be true, so recheck the captured identity and inputs only.
+        if self.saved_query_binding(&target)
+            && self.saved_query_visible()
+            && self.saved_query.target.as_ref() == Some(&target)
+            && self.saved_query.inputs == parameters
+            && self.saved_query.pending.is_none()
+        {
+            self.saved_query.pending = Some(Pending {
+                request_id,
+                parameters: Some(parameters),
+            });
+            self.saved_query.error = None;
+        }
+    }
+
+    pub fn set_saved_query_data(
+        &mut self,
+        request_id: u64,
+        target: SavedQueryTarget,
+        data: Data,
+    ) -> bool {
+        if !self.accepts_saved_reply(request_id, &target)
+            || !self.saved_query.pending.as_ref().is_some_and(|pending| {
+                pending.parameters.as_ref() == Some(&self.saved_query.inputs)
+            })
+        {
+            return false;
+        }
+        if data.source_revision.is_some() || data.offset != 0 || data.has_more {
+            self.saved_query.pending = None;
+            self.saved_query.error = Some("The reply is not a complete saved-query result.".into());
+            return false;
+        }
+        self.saved_query.selection.reset(&data);
+        self.saved_query.data = Some(data);
+        self.saved_query.pending = None;
+        self.saved_query.error = None;
+        true
+    }
+
+    pub fn fail_saved_query(&mut self, request_id: u64, target: SavedQueryTarget, message: String) {
+        if self.accepts_saved_reply(request_id, &target) {
+            self.saved_query.pending = None;
+            self.saved_query.error = Some(message);
+        }
+    }
+
+    pub(super) fn reset_saved_query(&mut self) {
+        // Preserve only the old grid's exact focus-surrender bookkeeping;
+        // metadata, parameters and result rows belong to the new publication.
+        let mut selection = std::mem::take(&mut self.saved_query.selection);
+        selection.clear();
+        self.saved_query = SavedQueryState {
+            selection,
+            ..Default::default()
+        };
+    }
+
+    pub(super) fn interrupt_saved_query(&mut self) {
+        if self.saved_query.pending.take().is_some() {
+            self.saved_query.error =
+                Some("The request was interrupted. Inspect or run the query again.".into());
+        }
+    }
+
+    pub(super) fn saved_query_run_ready(&self) -> bool {
+        self.saved_query
+            .target
+            .as_ref()
+            .is_some_and(|target| self.can_run_saved_query(target, &self.saved_query.inputs))
+    }
+
+    pub(super) fn saved_query_run_action(&self) -> Option<Action> {
+        self.saved_query_run_ready().then(|| Action::RunSavedQuery {
+            target: self
+                .saved_query
+                .target
+                .as_ref()
+                .expect("admitted saved query")
+                .clone(),
+            parameters: self.saved_query.inputs.clone(),
+        })
+    }
+
+    pub fn selected_saved_target(&self) -> Option<&SavedQueryTarget> {
+        self.saved_query.target.as_ref()
+    }
+
+    pub(super) fn saved_query_visible(&self) -> bool {
+        self.view == DocumentView::Query && self.saved_query.active
+    }
+}
+
+fn inputs_within_limits(parameters: &[ParameterInput]) -> bool {
+    parameters.len() <= MAX_PARAMETERS
+        && parameters
+            .iter()
+            .try_fold(0usize, |bytes, parameter| {
+                bytes
+                    .checked_add(parameter.name.len())?
+                    .checked_add(parameter.kind.len())?
+                    .checked_add(parameter.text.len())
+            })
+            .is_some_and(|bytes| bytes <= MAX_INPUT_BYTES)
+}
+
+#[cfg(test)]
+mod tests;

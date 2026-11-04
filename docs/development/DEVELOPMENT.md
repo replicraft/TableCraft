@@ -113,6 +113,23 @@ Commit `Cargo.lock`. CI runs the Rust commands on Linux, macOS and Windows.
 Configuring those jobs does not establish that they passed. Local execution evidence is recorded in IMPLEMENTATION.md.
 CI has read-only repository permissions and does not retain checkout credentials.
 
+For a selected-package aggregate lint that activates both Access and query
+support cycles in testkit, include the testkit package root and its explicit
+`access-support` feature:
+
+```sh
+cargo clippy -p tablecraft-runtime -p tablecraft-ui -p tablecraft-desktop \
+  -p tablecraft-access -p tablecraft-query -p tablecraft-testkit \
+  --features tablecraft-runtime/offline-edit,tablecraft-testkit/access-support \
+  --all-targets --locked --offline -- -D warnings
+```
+
+The aggregate without that root was observed to pass `access-support` cfg to
+testkit while omitting its optional Access/I/O/hash/tempfile externs. The command
+above validates the intended full helper closure without changing normal
+features or adding unconditional dependencies. This is a recorded toolchain/unit-
+graph observation, not a reason to remove feature gates or weaken checks.
+
 ## Committed producer builds
 
 Build compatibility producers exported from a committed archive into an initially

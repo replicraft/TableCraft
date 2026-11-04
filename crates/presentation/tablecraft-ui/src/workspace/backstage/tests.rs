@@ -143,6 +143,7 @@ fn file_back_and_escape_preserve_document_inputs_and_running_work() {
         document_revision: 4,
         title: "Original".into(),
         format: "ACE16".into(),
+        queries: vec![],
         tables: vec![],
     });
     state.set_table_data(Data {
@@ -194,6 +195,7 @@ fn about_suppresses_hidden_query_shortcut_and_keeps_explicit_cancel_available() 
         document_revision: 1,
         title: "Source".into(),
         format: "ACE16".into(),
+        queries: vec![],
         tables: vec![],
     });
     state.view = DocumentView::Query;

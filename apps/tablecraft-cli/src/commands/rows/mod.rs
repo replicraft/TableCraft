@@ -137,9 +137,9 @@ fn selected_table<R: tablecraft_ace::NativeReadSource>(
         return Ok(name.to_owned());
     }
 
-    let inventory = browser.tables().map_err(Error::Read)?;
+    let inventory = browser.inventory().map_err(Error::Read)?;
     let names = inventory
-        .entries()
+        .tables()
         .filter(|entry| !entry.is_system())
         .map(|entry| entry.object().name().as_str());
     sole_user_table(names).map(str::to_owned)

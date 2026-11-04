@@ -70,6 +70,14 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .review_edit(*draft_id, input, cancelled),
+            Command::InspectSavedQuery { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_saved_query(target, cancelled),
+            Command::RunSavedQuery { target, parameters } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .run_saved_query(target, parameters, cancelled),
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -121,6 +129,8 @@ impl Worker {
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",
                     Command::Query { .. } => "query",
+                    Command::InspectSavedQuery { .. } => "inspect_saved_query",
+                    Command::RunSavedQuery { .. } => "run_saved_query",
                 };
                 let span = tracing::debug_span!("application read task", operation);
                 let _entered = span.enter();

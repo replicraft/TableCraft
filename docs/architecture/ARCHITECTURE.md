@@ -67,8 +67,10 @@ its separate `TablePage` result makes partial row validation explicit. The CLI
 opens the requested file, passes host limits and formats the result; it does not
 own table classification or pagination semantics. No new crate is needed for this
 boundary. Its `TableDescription` reports scalar-column support from engine metadata;
-`TableEntry` exposes captured storage classifications without opening linked
-sources. Neither promises readable records or a complete integrity check.
+`ObjectInventory` captures one inert catalog with full object identities;
+`ObjectEntry` exposes captured system/storage classifications. Table and saved-query
+views filter that inventory without opening linked sources, user records or query
+bodies. Neither promises readable records or a complete integrity check.
 The distinct `StoredTablePage`/`stored_page` opt-in exposes qualified cached
 calculation results with retained inert declarations and per-column origins.
 It shares physical paging while keeping ordinary scalar/query eligibility intact.
