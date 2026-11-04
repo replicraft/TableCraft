@@ -163,3 +163,18 @@ effect, target/journal sync failures and retired garbage cleanup failure. They
 retain the same lease throughout. Local runtime evidence is macOS; generic
 protocol checks do not establish native Access or other-platform qualification.
 See the [V2 verification record](../testing/results/checked-v2-retained-targets-2026-11-01.json).
+
+## Explicit incomplete-setup unlock
+
+`PairSetupFailure::release_resources` explicitly unlocks its retained target and
+partial journal handles without creating, changing, removing or retiring any
+namespace entry. Original setup diagnostics remain available. Target release
+runs first, through the existing owner that enters `ReleaseUncertain` before the
+OS unlock and `Released` only after acknowledgment. A later journal unlock error
+therefore cannot expose a target still claiming exclusive storage access.
+
+Only a target whose lock state is still `Held` admits this operation. Success or
+any unlock error prevents a second attempt; remaining owners survive an error.
+This is lock release, not recovery or partial-bundle cleanup. Callers retain
+responsibility for diagnosis of the preserved entries. Ordinary pair release and
+journal finalization keep their existing contracts.

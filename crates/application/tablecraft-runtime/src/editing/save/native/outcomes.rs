@@ -144,9 +144,7 @@ pub(super) fn retain(failure: Failure, retained: &mut Option<RetainedOwner>) -> 
             ),
         can_release: !matches!(
             state,
-            SaveSessionState::IncompleteSetup
-                | SaveSessionState::ReleaseUncertain
-                | SaveSessionState::Released
+            SaveSessionState::ReleaseUncertain | SaveSessionState::Released
         ),
     };
     *retained = Some(RetainedOwner::Failure(failure));

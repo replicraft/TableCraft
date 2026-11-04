@@ -1,3 +1,5 @@
+mod setup_release;
+
 use super::{
     Cause, CompletionKind, KnownOutcome, OfflineWriteSession, Phase, Receipt, SessionState,
     VerifiedImage,

@@ -150,8 +150,12 @@ The host blocks source replacement and window closure while an accepted save
 remains unacknowledged. A successful acknowledged save reopens its source and
 refreshes only the table/page bound to that exact reopen generation. Failed or
 released uncertain outcomes cannot leave the old snapshot masquerading as current.
-Incomplete setup or uncertain release can require diagnosis; the current UI has
-no general restart/recovery browser for those states.
+Incomplete setup offers explicit resource release while preserving any existing
+or partial journal entries for diagnosis. Uncertain release still denies retry;
+the current UI has no general restart/recovery browser for that state. Reports
+show the current operation outcome separately from the last completed receipt,
+including its available row counts. A release failure cannot hide a completed
+commit, and a previous receipt cannot be promoted to the current attempt.
 
 The default reserved `.FILENAME.tablecraft-journal` sibling blocks reopening
 while present, including a symlink, without following or deleting it. This only

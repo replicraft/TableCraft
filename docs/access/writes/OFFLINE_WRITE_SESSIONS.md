@@ -92,7 +92,12 @@ reapply SQL.
 Retained journals and incomplete setup prevent normal planning. An uncertain
 unlock prevents retrying release or normal reuse. Dropping an owner only runs
 its existing handle cleanup; it does not certify successful release or remove
-retained namespace entries. A failed complete native capture requires an explicit
+retained namespace entries. Incomplete setup now admits one explicit `release`
+through the retained setup owner. It unlocks target/journal handles without
+changing colliding or partially created entries. Failure retains the same typed
+setup diagnostics in `ReleaseUncertain`, with no retry, recovery or storage reuse.
+A successful release does not establish that those entries are repaired or safe
+to ignore. A failed complete native capture requires an explicit
 `refresh`; refresh reads the retained target and cannot repair or replay a
 journal.
 
