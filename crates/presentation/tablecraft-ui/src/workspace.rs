@@ -2,12 +2,14 @@ mod backstage;
 mod chrome;
 mod content;
 mod contents;
+mod editing;
 mod home;
 mod navigation;
 mod query;
 mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
+pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
@@ -43,10 +45,45 @@ pub struct Data {
 pub enum Action {
     ChooseFile,
     Open,
-    Page { table: String, offset: u32 },
-    ViewSchema { table: String },
-    ViewContents { target: ContentsTarget },
-    CloseContents { request_id: u64 },
+    Page {
+        table: String,
+        offset: u32,
+    },
+    ViewSchema {
+        table: String,
+    },
+    ViewContents {
+        target: ContentsTarget,
+    },
+    CloseContents {
+        request_id: u64,
+    },
+    BeginEdit {
+        target: EditTarget,
+    },
+    ReviewEdit {
+        draft_id: u64,
+        input: EditInput,
+    },
+    ApplyEdit {
+        review_id: u64,
+    },
+    CloseEdit {
+        request_id: u64,
+        draft_id: Option<u64>,
+    },
+    CancelEditSave {
+        save_id: u64,
+    },
+    RecoverEditSave {
+        save_id: u64,
+    },
+    ReleaseEditSave {
+        save_id: u64,
+    },
+    AcknowledgeEditSave {
+        save_id: u64,
+    },
     Query,
     Cancel,
 }
@@ -74,6 +111,7 @@ pub struct State {
     query_selection: Selection,
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
+    edit: Option<editing::EditDialog>,
     selected_field: usize,
     schema_activation_pending: bool,
     pub busy: bool,
@@ -88,6 +126,7 @@ pub struct State {
 impl State {
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, data: Data) {
+        self.invalidate_edit();
         self.close_contents();
         self.table_selection.reset(&data);
         self.data = Some(data);
@@ -95,13 +134,14 @@ impl State {
 
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, data: Data) {
+        self.invalidate_edit();
         self.query_selection.reset(&data);
         self.query_data = Some(data);
     }
 
     /// Full text of the retained selection in the visible loaded data only.
     pub fn selected_cell_text(&self) -> Option<&str> {
-        if self.backstage_visible() {
+        if self.backstage_visible() || self.edit_dialog_open() {
             return None;
         }
         if self.contents_request_id().is_some() {
@@ -125,6 +165,7 @@ impl State {
 
     /// Record explicit navigation to Design before the host submits Describe.
     pub fn prepare_schema_view(&mut self) {
+        self.invalidate_edit();
         self.schema_activation_pending = true;
     }
 
@@ -139,6 +180,10 @@ impl State {
     }
 
     fn select_view(&mut self, view: DocumentView) {
+        if self.edit_save_pending() {
+            return;
+        }
+        self.invalidate_edit();
         self.close_contents();
         self.schema_activation_pending = false;
         self.view = view;
@@ -146,6 +191,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.invalidate_edit();
         self.close_contents();
         self.table_selection.clear();
         self.query_selection.clear();
@@ -159,6 +205,10 @@ impl State {
 
     /// Enter File/Open without changing the current session or running task.
     pub fn show_open(&mut self) {
+        if self.edit_save_pending() {
+            return;
+        }
+        self.invalidate_edit();
         self.backstage = backstage::Backstage::Open;
     }
 
@@ -194,7 +244,7 @@ impl State {
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         let mut actions = Vec::new();
-        let modal_open = self.contents_request_id().is_some();
+        let modal_open = self.contents_request_id().is_some() || self.edit_dialog_open();
         if !modal_open
             && self.backstage_visible()
             && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
@@ -231,6 +281,7 @@ impl State {
             }
         });
         self.contents_dialog(ui.ctx(), &mut actions);
+        self.edit_dialog(ui.ctx(), &mut actions);
         actions
     }
 }

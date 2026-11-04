@@ -29,7 +29,7 @@ impl State {
                         .color(INK),
                     );
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(RichText::new("READ ONLY · PREVIEW").color(INK).size(11.0));
+                        ui.label(RichText::new(self.edit_status()).color(INK).size(11.0));
                     });
                 });
             });
@@ -78,7 +78,7 @@ impl State {
                         .map_or("Local Access databases", |db| db.format.as_str()),
                 );
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    ui.small("Snapshot browsing · original file unchanged");
+                    ui.small("Snapshot browsing");
                 });
             });
         });

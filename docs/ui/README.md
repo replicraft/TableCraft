@@ -8,7 +8,9 @@ Field inspection is metadata-only; explicit collection dialogs retain stored
 membership and inert attachment metadata. File/Open uses the retained Access
 Backstage layout reference. Complete interaction and cross-platform visual
 acceptance remain pending. The desktop bridges UI actions; `tablecraft-runtime`
-owns database sessions and read commands.
+owns database sessions and commands. A restricted reviewed offline cell-edit
+workflow now uses runtime-issued capabilities and retained save outcomes;
+its native dialog observation remains pending.
 This does not change backend compatibility claims or resume SQLite, project
 infrastructure or VBA execution.
 

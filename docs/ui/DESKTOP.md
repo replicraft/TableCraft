@@ -93,14 +93,15 @@ unqualified concurrent Access session.
 
 ## Editor restrictions and release gates
 
-The initial datasheet is read-only. The SQL editor executes admitted reads only;
+The initial browse surface remains a snapshot. An explicit offline cell-edit
+preview now invokes normal typed editing; the SQL editor executes admitted reads only;
 it is not an unrestricted action-query or scripting console. A later editing UI
 must call the same typed command/session services as other hosts, with fresh
 source/constraint checks, exact target capability, consuming revision/lease
 semantics and durable recovery where required. No button may bypass unsupported
 validation, data macros, locking or native-save restrictions.
 
-The next connected editing slice belongs in the runtime, using the existing
+The connected editing slice belongs in the runtime, using the existing
 [offline write session](../access/writes/OFFLINE_WRITE_SESSIONS.md); desktop must
 not launch CLI commands or reproduce native planning. The current filesystem
 session is macOS/Linux-only and does not supply Access multiuser coordination.
@@ -527,3 +528,34 @@ Clippy, native build, formatting, dependency boundaries and documentation links
 pass. No full engine-suite rerun is claimed. Synthetic native fixtures cover
 explicit checkbox/text-box codes, unknown codes/flags/types/widths, absent
 properties, a missing carrier, corrupt present framing and unchanged bytes.
+
+## Connected offline editing preview
+
+A native scalar cell's context menu offers **Edit cell…** as a candidate request.
+Runtime determines actual eligibility. Enter a replacement or request NULL, then
+choose **Review change** to obtain a native validated before/after result.
+**Apply to original file** consumes that exact review. Editing the input or
+changing the source invalidates it. Query results, collection summaries and
+calculated cells cannot supply direct native update targets.
+
+Close other writers first. Draft/review hold no file lease; Apply uses the normal
+exclusive offline session, exact whole-image precondition and checked journal.
+Desktop only dispatches and presents runtime results. A running or retained save
+blocks navigation and window closure until its outcome/resources are resolved;
+cancellation never claims rollback. Successful acknowledgment refreshes the
+source and original table. Retained setup/release failures can require diagnosis.
+The [runtime contract](../application/RUNTIME.md#reviewed-offline-cell-edits)
+records the platform, restart-discovery and native profile limitations.
+
+This is an explicit offline workflow. It does not implement Access
+record autosave, live shared editing or general query-result updateability.
+Native visual observation of this new dialog remains pending; earlier captures
+and native observations above cover the browsing surfaces.
+
+All 88 focused checks pass: thirty-three runtime unit tests, one diagnostic test,
+thirty-nine shared UI tests, thirteen desktop tests and two Access image-guard
+checks. The edit tests use independent synthetic Jet 4 inputs and real normal
+session/journal services; they do not establish a new ACE 16 native differential.
+Strict runtime/UI/desktop Clippy, native desktop build, formatting, dependency
+boundaries and twenty-four guard tests pass. No full engine-suite rerun or
+Windows/Linux desktop observation is claimed for this slice.

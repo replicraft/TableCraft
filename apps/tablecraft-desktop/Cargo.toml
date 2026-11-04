@@ -21,7 +21,7 @@ egui.workspace = true
 tablecraft-ui.workspace = true
 clap.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
-tablecraft-runtime.workspace = true
+tablecraft-runtime = { workspace = true, features = ["offline-edit"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 
