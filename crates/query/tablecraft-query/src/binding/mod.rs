@@ -33,6 +33,7 @@ mod mutation_scalar;
 mod named;
 mod parameters;
 pub(crate) use parameters::Parameter;
+pub use parameters::{ParameterType, resolve_parameter_type};
 mod projection;
 mod relation;
 mod result_types;

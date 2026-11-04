@@ -159,7 +159,17 @@ there is no implicit parameter prompt. Parameters require their declared carrier
 with NULL allowed, no silent coercion and optional Text limits counted in Unicode
 scalar values (not a claim of native length-unit fidelity), using the same schema
 TypeDescriptor as constrained fields. SQL
-INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16. Explicit
+INTEGER/INT/LONG map to Int32; SHORT/SMALLINT map to Int16.
+
+`resolve_parameter_type` exposes the binder's actual type-declaration resolver to
+hosts that present declared query parameters before execution. It returns
+`ParameterType::Scalar(TypeDescriptor)` or the explicit `Value` carrier policy;
+its `accepts` check validates exact carriers and retained constraints without
+coercion. Resolving a declaration does not bind sources, validate parameter names
+or counts, scan records or grant execution readiness. Those checks and operation
+budgets stay at their existing boundaries. The binder uses this same resolver;
+application prompts must not maintain another Access type-alias table.
+
 [DECIMAL(p,s)/NUMERIC(p,s) parameters](DECIMAL_PARAMETERS.md) use checked precision
 1–28 and exact retained scale 0–precision. Bare Decimal keeps its existing
 unconstrained carrier boundary. Other unsupported type arguments fail rather
