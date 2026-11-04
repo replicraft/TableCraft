@@ -17,8 +17,11 @@ identify a UI release. Imported forms/reports retain native layout and behavior.
 This is working guidance, not authorization to scaffold application-profile/UI
 types or resume deferred VBA execution. The user explicitly authorized desktop implementation on 4 November 2026.
 Base UI layout and styling on the actual retained Access screenshots, following
-[the visual reference record](docs/ui/VISUAL_REFERENCES.md). Preserve native
-workflow and layout distinctions; do not substitute a generic Office-inspired
+[the visual reference record](docs/ui/VISUAL_REFERENCES.md).
+Open the actual local reference images when changing their corresponding surface;
+the written reference summary alone is not visual verification. Record the
+rendered platform/scale and any surface for which no Access capture exists.
+Preserve native workflow and layout distinctions; do not substitute a generic Office-inspired
 design or add nonfunctional controls to imitate screenshots. Keep private
 reference captures private and distinguish visual approximation from verified
 interaction and database behavior.
