@@ -28,11 +28,16 @@ pub struct Worker {
 impl Worker {
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
         let mut document = None;
+        let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
             Command::Open { path, password } => {
                 // A failed open cannot leave the old file behind a new UI title.
                 document = None;
-                let (opened, response) = Document::open(path, password, cancelled)?;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open(path, password, document_revision, cancelled)?;
                 document = Some(opened);
                 Ok(response)
             }
@@ -44,6 +49,17 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .describe(table, cancelled),
+            Command::InspectCollection { target } => {
+                // Failed opens also advance the attempt revision. Reject that
+                // old target before catalog/page I/O, even with no live Document.
+                if target.document_revision != document_revision {
+                    return Err(Error::StaleDocument);
+                }
+                document
+                    .as_mut()
+                    .ok_or(Error::NoDatabase)?
+                    .inspect_collection(target, cancelled)
+            }
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -89,6 +105,7 @@ impl Worker {
                     Command::Open { .. } => "open",
                     Command::Page { .. } => "page",
                     Command::Describe { .. } => "describe",
+                    Command::InspectCollection { .. } => "inspect_collection",
                     Command::Query { .. } => "query",
                 };
                 let span = tracing::debug_span!("application read task", operation);

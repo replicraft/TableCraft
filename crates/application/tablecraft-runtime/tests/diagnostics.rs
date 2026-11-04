@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
-use tablecraft_runtime::{Command, Error, Worker};
+use tablecraft_runtime::{Command, ContentsTarget, Error, Worker};
 
 #[derive(Clone, Default)]
 struct Capture(Arc<Mutex<Vec<u8>>>);
@@ -50,6 +50,14 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
         Command::Describe {
             table: "PRIVATE_SCHEMA_TABLE".into(),
         },
+        Command::InspectCollection {
+            target: ContentsTarget {
+                document_revision: 0,
+                table: "PRIVATE_CONTENTS_TABLE".into(),
+                column: "PRIVATE_CONTENTS_COLUMN".into(),
+                parent_ordinal: 0,
+            },
+        },
     ];
     for command in commands {
         let generation = worker.request(command);
@@ -62,12 +70,15 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
             std::thread::yield_now();
         };
         assert_eq!(actual, generation);
-        assert!(matches!(response, Err(Error::Io(_) | Error::NoDatabase)));
+        assert!(matches!(
+            response,
+            Err(Error::Io(_) | Error::NoDatabase | Error::StaleDocument)
+        ));
     }
 
     let output = String::from_utf8(capture.0.lock().unwrap().clone()).unwrap();
-    assert_eq!(output.matches("application read task completed").count(), 4);
-    for operation in ["open", "page", "query", "describe"] {
+    assert_eq!(output.matches("application read task completed").count(), 5);
+    for operation in ["open", "page", "query", "describe", "inspect_collection"] {
         assert!(
             output.contains(&format!("operation=\"{operation}\"")),
             "{output}"

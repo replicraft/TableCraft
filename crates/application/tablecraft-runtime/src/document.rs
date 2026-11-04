@@ -15,12 +15,14 @@ const COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Document {
     pub(super) source: Source,
+    pub(super) revision: u64,
 }
 
 impl Document {
     pub(super) fn open(
         path: &Path,
         password: &mut String,
+        revision: u64,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, Response), Error> {
         // Take credentials immediately, including on path or snapshot failures.
@@ -46,7 +48,7 @@ impl Document {
         file.close()?;
         check(cancelled)?;
         let (source, format) = Source::open(bytes, password.as_str(), &mut work, cancelled)?;
-        let mut document = Self { source };
+        let mut document = Self { source, revision };
         let mut browser = NativeBrowser::new(&mut document.source, SCOPE, work, cancelled);
         let inventory = browser.tables()?;
         let tables = inventory
@@ -66,6 +68,7 @@ impl Document {
         Ok((
             document,
             Response::Opened {
+                document_revision: revision,
                 title,
                 format,
                 tables,

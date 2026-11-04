@@ -23,8 +23,9 @@ headless backend worker, document reads and application operations. Its working
 dependencies are Access, ACE, core/model, I/O, query and SQL; testkit remains a
 development-only dependency. Runtime imports neither UI nor desktop and has no GUI
 dependency. The binary-only `tablecraft-desktop` application under `apps/` imports
-only runtime and UI from the workspace. It owns native window composition, file
-selection and application lifetime, without importing backend services directly.
+only runtime and UI as normal workspace dependencies; testkit is permitted only
+as a development dependency for host-adaptation acceptance. It owns native window
+composition, file selection and application lifetime, without importing backend services directly.
 Neither runtime nor desktop imports the CLI or SQLite. These new edges do not grant
 foundation, engine, adapter, query or CLI packages permission to import UI/runtime;
 the existing library-to-application prohibition also applies to desktop.

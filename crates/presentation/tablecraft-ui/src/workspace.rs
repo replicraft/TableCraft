@@ -1,9 +1,11 @@
 mod chrome;
 mod content;
+mod contents;
 mod navigation;
 mod query;
 mod schema;
 
+pub use contents::{CollectionKind, ContentsTarget};
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
@@ -18,6 +20,7 @@ pub struct Table {
 
 /// Opened database metadata supplied by the application host.
 pub struct Database {
+    pub document_revision: u64,
     pub title: String,
     pub format: String,
     pub tables: Vec<Table>,
@@ -25,6 +28,7 @@ pub struct Database {
 
 /// One bounded buffered page or query result supplied by the host.
 pub struct Data {
+    pub source_revision: Option<u64>,
     pub table: String,
     pub offset: u32,
     pub columns: Vec<String>,
@@ -38,6 +42,8 @@ pub enum Action {
     Open,
     Page { table: String, offset: u32 },
     ViewSchema { table: String },
+    ViewContents { target: ContentsTarget },
+    CloseContents { request_id: u64 },
     Query,
     Cancel,
 }
@@ -62,6 +68,7 @@ pub struct State {
     pub data: Option<Data>,
     pub query_data: Option<Data>,
     pub schema: Option<Schema>,
+    contents: Option<contents::ContentsDialog>,
     selected_field: usize,
     schema_activation_pending: bool,
     pub busy: bool,
@@ -76,6 +83,7 @@ pub struct State {
 impl State {
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, data: Data) {
+        self.close_contents();
         self.data = Some(data);
     }
 
@@ -91,6 +99,7 @@ impl State {
 
     /// Publish metadata without overriding a view chosen after its request.
     pub fn set_schema(&mut self, schema: Schema) {
+        self.close_contents();
         self.schema = Some(schema);
         self.selected_field = 0;
         if std::mem::take(&mut self.schema_activation_pending) {
@@ -99,12 +108,14 @@ impl State {
     }
 
     fn select_view(&mut self, view: DocumentView) {
+        self.close_contents();
         self.schema_activation_pending = false;
         self.view = view;
     }
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.close_contents();
         self.schema = None;
         self.selected_field = 0;
         self.schema_activation_pending = false;
@@ -135,7 +146,12 @@ impl State {
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         let mut actions = Vec::new();
-        let shortcuts = keyboard::consume(ui.ctx(), self.query_ready(), self.busy);
+        let modal_open = self.contents_request_id().is_some();
+        let shortcuts = if modal_open {
+            keyboard::Shortcuts::default()
+        } else {
+            keyboard::consume(ui.ctx(), self.query_ready(), self.busy)
+        };
         if shortcuts.query {
             actions.push(Action::Query);
         }
@@ -150,10 +166,13 @@ impl State {
                 ui.memory_mut(|memory| memory.request_focus(path_id));
             }
         }
-        self.chrome(ui, &mut actions, path_id);
-        self.navigation(ui, &mut actions);
-        self.content(ui, &mut actions);
-        self.about_window(ui);
+        ui.add_enabled_ui(!modal_open, |ui| {
+            self.chrome(ui, &mut actions, path_id);
+            self.navigation(ui, &mut actions);
+            self.content(ui, &mut actions);
+            self.about_window(ui);
+        });
+        self.contents_dialog(ui.ctx(), &mut actions);
         actions
     }
 }
@@ -164,6 +183,7 @@ mod tests {
 
     fn data(table: &str, offset: u32) -> Data {
         Data {
+            source_revision: None,
             table: table.into(),
             offset,
             columns: vec!["Id".into()],
@@ -199,6 +219,7 @@ mod tests {
         };
         assert!(!state.query_ready());
         state.database = Some(Database {
+            document_revision: 1,
             title: "Sample".into(),
             format: "ACE16".into(),
             tables: vec![],

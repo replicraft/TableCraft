@@ -354,3 +354,36 @@ uncovered. All 39 focused checks pass: fourteen runtime unit tests, one isolated
 diagnostics test, eighteen shared UI tests and six desktop tests. Strict Clippy
 and the native build pass. The shared-fixture refactor separately passed strict
 checks for 43 consumers and 77 representative engine/adapter/CLI tests.
+
+## Explicit collection contents
+
+A collection cell's View contents command, or Enter while that cell has focus,
+now opens a read-only dialog through the shared runtime service. It shows ordered
+multivalue members, stored attachment metadata or Memo history. Assigned-empty
+and absent collections remain distinct. Attachment payloads are neither decoded,
+opened nor exported; history keeps original DATE bits beside its rounded civil
+display. Child IDs are stored metadata, not durable editing handles.
+
+Targets retain the current document revision, original table/column names and
+global parent ordinal. Dialog replies must match the current request and target;
+closing, navigating or reopening cannot resurrect stale contents. Parent data,
+query results and schema remain intact. The modal owns its keyboard shortcuts;
+closing a matching pending dialog cancels only that request. Complete native
+membership and bounded presentation must succeed before publishing any result.
+
+Native inspection caught an overlapping modal grid that headless semantic checks
+had missed. The datasheet now receives a bounded viewport below the heading,
+controls and metadata. A settled-frame test checks actual text geometry against
+those controls, rather than recreating the layout in a test-only widget.
+
+The rebuilt macOS preview now visibly separates the heading, Close button and
+metadata from the child grid. Explicit attachment inspection on a temporary
+sample copy displayed its stored filename/type and encoded byte count, retaining
+NULL metadata. Close restored the same parent table. This is a local display/read
+observation, not attachment decoding or a native Access behavioral comparison.
+
+All 52 focused checks pass: twenty runtime unit tests, one isolated diagnostics
+test, twenty-four shared UI tests and seven desktop tests. Strict Clippy and the
+native binary build pass; dependency guard checks and its twenty-three tests pass.
+No full engine-suite rerun, Windows/Linux run or platform screen-reader claim is
+made for this slice.

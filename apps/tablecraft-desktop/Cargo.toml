@@ -24,3 +24,7 @@ zeroize = { workspace = true, features = ["alloc"] }
 tablecraft-runtime.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+
+[dev-dependencies]
+tablecraft-testkit.workspace = true
+tempfile.workspace = true

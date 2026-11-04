@@ -7,7 +7,9 @@ mod workspace;
 
 pub use cells::{Cell, CellKind};
 pub use theme::configure;
-pub use workspace::{Action, Data, Database, Field, Schema, State, Table};
+pub use workspace::{
+    Action, CollectionKind, ContentsTarget, Data, Database, Field, Schema, State, Table,
+};
 
 #[cfg(test)]
 mod tests {
@@ -21,6 +23,7 @@ mod tests {
         for populated in [false, true] {
             if populated {
                 state.database = Some(Database {
+                    document_revision: 1,
                     title: "Sample.accdb".into(),
                     format: "Ace2016".into(),
                     tables: vec![Table {
@@ -30,6 +33,7 @@ mod tests {
                     }],
                 });
                 state.data = Some(Data {
+                    source_revision: None,
                     table: "Customers".into(),
                     offset: 0,
                     columns: vec!["Name".into()],

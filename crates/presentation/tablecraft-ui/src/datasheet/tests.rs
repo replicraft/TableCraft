@@ -17,6 +17,7 @@ fn input(events: Vec<Event>) -> RawInput {
 fn ten_thousand_rows_only_draw_the_visible_subset() {
     let context = Context::default();
     let data = Data {
+        source_revision: None,
         table: "Large table".into(),
         offset: 100,
         columns: vec!["Value".into()],
@@ -28,7 +29,7 @@ fn ten_thousand_rows_only_draw_the_visible_subset() {
     for _ in 0..2 {
         let mut drawn = Vec::new();
         let mut output = context.run_ui(input(Vec::new()), |ui| {
-            show_rows(ui, &data, |row| drawn.push(row));
+            show_rows(ui, &data, |row| drawn.push(row), &mut Vec::new());
         });
         output.textures_delta.clear();
         assert!(!drawn.is_empty());
@@ -185,7 +186,7 @@ fn scroll_frame(context: &Context, data: &Data, events: Vec<Event>) -> ScrollObs
     // Advance a deterministic clock past visibility animations between frames.
     frame_input.time = Some(context.cumulative_frame_nr() as f64 * 0.25);
     let mut output = context.run_ui(frame_input, |ui| {
-        let area = show_rows(ui, data, |_| {});
+        let area = show_rows(ui, data, |_| {}, &mut Vec::new());
         let bar = context.read_response(area.id.with(0_usize));
         observed = Some(ScrollObservation {
             offset: area.state.offset,
@@ -215,6 +216,7 @@ fn horizontal_wheel_and_scrollbar_drag_move_actual_one_and_hundred_row_tables() 
     for rows in [1, 100] {
         let context = Context::default();
         let data = Data {
+            source_revision: None,
             table: format!("Wide table with {rows} rows"),
             offset: 0,
             columns: (0..16).map(|column| format!("Column {column}")).collect(),
@@ -288,4 +290,101 @@ fn horizontal_wheel_and_scrollbar_drag_move_actual_one_and_hundred_row_tables() 
         );
         assert!(released.offset.x > left.offset.x);
     }
+}
+
+#[test]
+fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_enter_do_not() {
+    let context = Context::default();
+    let mut data = Data {
+        source_revision: Some(9),
+        table: "Parents".into(),
+        offset: 100,
+        columns: vec!["Items".into()],
+        rows: vec![vec![Cell {
+            text: "2 items".into(),
+            kind: CellKind::Multivalue {
+                assigned: true,
+                members: 2,
+            },
+        }]],
+        has_more: false,
+    };
+    let mut first = context.run_ui(input(Vec::new()), |ui| {
+        cell(ui, &data.rows[0][0], "Items", 101).request_focus();
+    });
+    first.textures_delta.clear();
+    for (modifiers, expected) in [
+        (egui::Modifiers::NONE, true),
+        (
+            egui::Modifiers {
+                shift: true,
+                ..Default::default()
+            },
+            false,
+        ),
+        (
+            egui::Modifiers {
+                ctrl: true,
+                command: true,
+                ..Default::default()
+            },
+            false,
+        ),
+    ] {
+        let mut output = context.run_ui(
+            input(vec![Event::Key {
+                key: egui::Key::Enter,
+                physical_key: None,
+                pressed: true,
+                repeat: false,
+                modifiers,
+            }]),
+            |ui| {
+                let response = cell(ui, &data.rows[0][0], "Items", 101);
+                let mut actions = Vec::new();
+                collect_contents_action(ui, &response, &data, (0, 0), &mut actions);
+                if expected {
+                    assert!(
+                        matches!(actions.as_slice(), [Action::ViewContents { target }]
+                    if target.document_revision == 9 && target.table == "Parents"
+                    && target.column == "Items" && target.parent_ordinal == 100)
+                    );
+                } else {
+                    assert!(actions.is_empty());
+                }
+            },
+        );
+        output.textures_delta.clear();
+    }
+    let mut output = context.run_ui(input(vec![Event::Copy]), |ui| {
+        let response = cell(ui, &data.rows[0][0], "Items", 101);
+        let mut actions = Vec::new();
+        collect_contents_action(ui, &response, &data, (0, 0), &mut actions);
+        assert!(actions.is_empty());
+    });
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&OutputCommand::CopyText("2 items".into()))
+    );
+    output.textures_delta.clear();
+
+    data.source_revision = None;
+    let mut output = context.run_ui(
+        input(vec![Event::Key {
+            key: egui::Key::Enter,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        }]),
+        |ui| {
+            let response = cell(ui, &data.rows[0][0], "Items", 101);
+            let mut actions = Vec::new();
+            collect_contents_action(ui, &response, &data, (0, 0), &mut actions);
+            assert!(actions.is_empty());
+        },
+    );
+    output.textures_delta.clear();
 }

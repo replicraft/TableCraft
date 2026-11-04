@@ -54,6 +54,7 @@ impl Document {
             }
         };
         Ok(Response::Data {
+            source_revision: Some(self.revision),
             table: output.text(table)?,
             offset,
             columns,

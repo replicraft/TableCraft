@@ -36,7 +36,7 @@ ALLOWED = {
     "tablecraft-runtime": {"tablecraft-access", "tablecraft-ace", "tablecraft-core",
                            "tablecraft-model", "tablecraft-io", "tablecraft-query",
                            "tablecraft-sql", "tablecraft-testkit"},
-    "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime"},
+    "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",

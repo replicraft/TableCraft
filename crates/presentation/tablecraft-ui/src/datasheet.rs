@@ -1,17 +1,20 @@
-use super::{Cell, Data};
+use super::{Action, Cell, Data};
 use crate::theme::{GRID_HEADER, GRID_LINE};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 
-pub(super) fn show(ui: &mut Ui, data: &Data) {
-    show_rows(ui, data, |_| {});
+pub(super) fn show(ui: &mut Ui, data: &Data) -> Vec<Action> {
+    let mut actions = Vec::new();
+    show_rows(ui, data, |_| {}, &mut actions);
+    actions
 }
 
 fn show_rows(
     ui: &mut Ui,
     data: &Data,
     mut row_drawn: impl FnMut(usize),
+    actions: &mut Vec<Action>,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
     ui.push_id((&data.table, data.offset), |ui| {
         // Reserve scrollbar space below the viewport, including one-row pages.
@@ -48,10 +51,19 @@ fn show_rows(
                                 grid_cell(ui, true);
                                 ui.weak(number.to_string());
                             });
-                            for (column, text) in data.columns.iter().zip(&data.rows[index]) {
+                            for (position, (column, text)) in
+                                data.columns.iter().zip(&data.rows[index]).enumerate()
+                            {
                                 row.col(|ui| {
                                     grid_cell(ui, false);
-                                    cell(ui, text, column, number);
+                                    let response = cell(ui, text, column, number);
+                                    collect_contents_action(
+                                        ui,
+                                        &response,
+                                        data,
+                                        (index, position),
+                                        actions,
+                                    );
                                 });
                             }
                         });
@@ -59,6 +71,53 @@ fn show_rows(
             })
     })
     .inner
+}
+
+fn collect_contents_action(
+    ui: &mut Ui,
+    response: &Response,
+    data: &Data,
+    position: (usize, usize),
+    actions: &mut Vec<Action>,
+) {
+    let (row, column) = position;
+    let Some(value) = data.rows.get(row).and_then(|row| row.get(column)) else {
+        return;
+    };
+    if data.source_revision.is_some()
+        && !matches!(value.kind, crate::CellKind::Scalar { .. })
+        && contents_requested(ui, response)
+        && let Some(target) = data.contents_target(row, column)
+    {
+        actions.push(Action::ViewContents { target });
+    }
+}
+
+fn contents_requested(ui: &mut Ui, response: &Response) -> bool {
+    if !ui.is_enabled() {
+        return false;
+    }
+    let mut requested = false;
+    response.context_menu(|ui| {
+        if ui.button("View contents").clicked() {
+            requested = true;
+            ui.close();
+        }
+    });
+    if response.has_focus() {
+        requested |= ui.input_mut(|input| {
+            let mut enter = false;
+            input.events.retain(|event| {
+                let matches = matches!(event, egui::Event::Key {
+                    key: egui::Key::Enter, pressed: true, modifiers, ..
+                } if modifiers.is_none());
+                enter |= matches;
+                !matches
+            });
+            enter
+        });
+    }
+    requested
 }
 
 fn grid_cell(ui: &Ui, header: bool) {
@@ -100,7 +159,7 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
         )
     });
 
-    if response.has_focus() {
+    if response.has_focus() && ui.is_enabled() {
         let copy = ui.input_mut(|input| {
             let copy = input
                 .events
