@@ -293,8 +293,7 @@ fn system_classification_uses_either_catalog_bit_and_not_names_or_hidden_bit() {
     );
 }
 
-#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 
 #[test]
 fn cached_page_is_a_separate_explicit_library_operation_with_origins_and_paging() {

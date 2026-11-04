@@ -386,3 +386,9 @@ pub mod genuine_byte_int16_update;
 pub mod genuine_guid_update;
 
 pub mod genuine_indexed_guid_update;
+
+/// Independent stored calculation cache images.
+pub mod calculated_storage;
+
+/// Independent populated multivalue parent/child images.
+pub mod complex_links;

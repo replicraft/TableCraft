@@ -1,7 +1,6 @@
-use super::{Command, FileCopy, calculated_fixture, complex_fixture, success, support};
+use super::{Command, FileCopy, calculated_fixture, success};
 
-#[path = "../../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 #[test]
 fn buffered_multivalue_browsing_keeps_null_empty_and_paging_distinctions() {

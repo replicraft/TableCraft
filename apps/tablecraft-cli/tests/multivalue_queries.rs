@@ -1,7 +1,3 @@
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
-use tablecraft_testkit::support::cli::Runner;
-#[path = "../../../crates/engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
 use std::{
     fs,
     io::Write,
@@ -9,6 +5,8 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
+use tablecraft_testkit::support::cli::Runner;
 
 const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 

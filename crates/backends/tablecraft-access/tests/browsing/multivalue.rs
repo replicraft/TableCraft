@@ -12,9 +12,7 @@ use tablecraft_core::{
 };
 use tablecraft_model::CatalogScope;
 
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
-#[path = "../../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 #[test]
 fn multivalue_pages_keep_explicit_collection_cells_at_the_shared_browsing_boundary() {

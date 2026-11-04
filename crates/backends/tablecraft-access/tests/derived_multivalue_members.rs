@@ -1,11 +1,8 @@
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 #[path = "derived_multivalue_members/boundaries.rs"]
 mod boundaries;

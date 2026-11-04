@@ -3,7 +3,6 @@ mod count_all;
 #[path = "browsing/projection.rs"]
 mod projection;
 use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "browsing/large.rs"]
 mod large;
@@ -296,8 +295,7 @@ fn explicit_table_format_renders_browsing_and_queries_while_tsv_remains_availabl
     assert!(invalid.stdout.is_empty());
 }
 
-#[path = "../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 
 #[test]
 fn buffered_calculations_are_cached_by_default_and_labelled_in_both_formats() {

@@ -1,10 +1,5 @@
 #[path = "automatic_browsing/projection.rs"]
 mod projection;
-use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
-use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
 use std::io::Cursor;
 use tablecraft_access::{
     BrowsePage, CollectionPageRequest, NativeBrowser, StoredCollectionItem,
@@ -14,6 +9,9 @@ use tablecraft_ace::{InspectError, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
+use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 use tablecraft_testkit::support::ace::page_reads;
 
 fn budget() -> ResourceBudget {
