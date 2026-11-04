@@ -4,6 +4,7 @@ use tablecraft_access::NativeSource;
 use tablecraft_ace::QueryAttribute;
 use tablecraft_core::values::Value;
 use tablecraft_query::prepare;
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 fn derived<'a>(text: &'a str, alias: Option<&'a str>) -> Fragment<'a> {
     Fragment {

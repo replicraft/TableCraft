@@ -2,6 +2,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::{Double, Single, Value};
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 fn parameter<'a>(name: &'a str, kind: i16, length: Option<i32>, order: &'a [u8]) -> Fragment<'a> {
     Fragment {

@@ -1,5 +1,7 @@
 //! Native saved aggregate definitions compose through the retained stage driver.
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 const SELECT_FLAGS: u32 = 0x8000_0000;
 

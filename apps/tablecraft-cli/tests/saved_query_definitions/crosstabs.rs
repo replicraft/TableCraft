@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 fn crosstab(flags: i16, transform: &str, pivot: &str) -> Vec<u8> {
     let row = |attribute| Fragment {
         object: Some(fixture::QUERY_ID),

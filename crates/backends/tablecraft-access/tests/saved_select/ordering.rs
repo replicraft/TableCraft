@@ -3,6 +3,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_query::prepare;
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 #[test]
 fn all_attributes_follow_keys_while_original_physical_fragments_remain_unchanged() {

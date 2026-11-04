@@ -3,6 +3,7 @@ use super::*;
 use tablecraft_access::{NativeSource, reconstruct_saved_read};
 use tablecraft_core::values::Value;
 use tablecraft_query::{ExecutionOptions, prepare};
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 #[test]
 fn unicode_named_and_derived_sources_retain_exact_labels_and_owned_names() {

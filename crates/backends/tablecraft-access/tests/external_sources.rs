@@ -8,9 +8,6 @@ use tablecraft_testkit::fixtures::access::complex_links as collection_fixture;
 use tablecraft_testkit::fixtures::access::version_history as history_fixture;
 #[path = "external_sources/named.rs"]
 mod named;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
-mod saved_fixture;
 
 use std::{
     cell::{Cell, RefCell},

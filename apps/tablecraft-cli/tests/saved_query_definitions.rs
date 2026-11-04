@@ -1,8 +1,6 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-use tablecraft_testkit::support::cli::Runner;
-#[path = "../../../crates/engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
-mod fixture;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::support::cli::Runner;
 
 #[path = "saved_query_definitions/crosstabs.rs"]
 mod crosstabs;
@@ -29,12 +27,12 @@ mod unions;
 #[path = "saved_query_definitions/wildcards.rs"]
 mod wildcards;
 
-use fixture::Fragment;
 use std::{
     io::Write,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
 };
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 

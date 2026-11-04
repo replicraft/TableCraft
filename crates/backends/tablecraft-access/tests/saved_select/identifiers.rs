@@ -3,6 +3,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_query::prepare;
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 #[test]
 fn stored_delimiters_normalize_once_for_sources_aliases_columns_and_parameters() {

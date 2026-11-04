@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 pub(super) fn source<'a>(table: &'a str, alias: Option<&'a str>) -> Fragment<'a> {
     Fragment {

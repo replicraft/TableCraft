@@ -1,7 +1,4 @@
-use super::{
-    base,
-    support::{data_page, put16, put32, record},
-};
+use super::{data_page, mutation_fixture as base, put16, put32, record};
 
 pub const PAGE_BYTES: usize = 4096;
 pub const DEFINITION_PAGE: usize = 14;

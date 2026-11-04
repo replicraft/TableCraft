@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 #[test]
 fn stored_bracketed_names_bind_parameters_and_publish_literal_headers() {

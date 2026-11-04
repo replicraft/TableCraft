@@ -11,6 +11,7 @@ use tablecraft_sql::{
     query::{ReadBody, Statement},
     select::{Table, TableSource},
 };
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 fn source<'a>(table: &'a str, database: Option<&'a str>, alias: Option<&'a str>) -> Fragment<'a> {
     Fragment {
