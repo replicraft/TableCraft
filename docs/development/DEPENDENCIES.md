@@ -37,6 +37,35 @@ is retained beside the file and displayed in the shared About view. Existing CLI
 release archives do not contain this font or new desktop dependencies. Desktop
 release packaging and its complete transitive notice audit are a follow-on gate.
 
+## Shared captured database images
+
+`tablecraft-runtime` directly inherits `bytes` 1.12.1 (MIT, declared MSRV 1.57),
+with defaults disabled and only `std` enabled. This version was already locked;
+no registry package upgrade is requested. The published manifest has no build
+script and this selected feature has no additional normal dependency.
+Upstream manifest, source ownership implementation and MIT notice were inspected.
+The crate internally uses unsafe reference-counting/pointer operations; runtime
+consumers use its safe API. This is not an independent unsafe-code audit.
+A targeted [RustSec package check](https://rustsec.org/packages/bytes.html)
+found [RUSTSEC-2026-0007](https://rustsec.org/advisories/RUSTSEC-2026-0007.html),
+whose patched range includes 1.12.1. This is not a full dependency-graph audit.
+
+The working consumer transfers the bounded captured `Vec<u8>` into
+[`Bytes`](https://docs.rs/bytes/1.12.1/bytes/struct.Bytes.html), then shares handles
+between the native reader and reviewed-edit precondition. The complete physical
+image stays retained until its last owner drops it; a small view must not be
+accounted as a small backing allocation. Opening still uses the existing 64 MiB
+capture ceiling and native/query work budgets. Review and native journal planning
+have their own allocations; sharing the capture does not eliminate them or
+establish an exact process-memory ceiling. No native page cache, core Binary
+carrier, CLI dependency or transaction policy is replaced.
+
+The optional runtime `offline-edit` feature also reuses the existing DB/schema,
+expression, civil Jiff and UUID dependencies for actual typed native editing.
+Desktop enables that feature. The runtime stays GUI-free, the UI stays backend-free,
+and the CLI remains independent of this application feature. There is no new
+Tokio executor, clipboard owner or designer/report dependency.
+
 ## Desktop contents acceptance (4 November 2026)
 
 The desktop directly inherits existing `tablecraft-testkit` and `tempfile`

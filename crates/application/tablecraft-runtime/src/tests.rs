@@ -1,5 +1,10 @@
 mod boolean;
 mod contents;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
+mod editing;
 mod schema;
 mod stored;
 
@@ -170,12 +175,30 @@ fn encrypted_open_reports_password_errors_and_allows_same_worker_retry() {
             Err(Error::NoDatabase)
         ));
     }
-    let Response::Opened { tables, .. } =
-        request(&worker, open(&path, "public workflow password")).unwrap()
+    let Response::Opened {
+        tables,
+        document_revision: _revision,
+        ..
+    } = request(&worker, open(&path, "public workflow password")).unwrap()
     else {
         panic!("expected authenticated database");
     };
     assert!(tables.iter().any(|table| table.name == "ROULETTE_TB"));
+    #[cfg(feature = "offline-edit")]
+    assert!(matches!(
+        request(
+            &worker,
+            Command::BeginEdit {
+                target: crate::EditTarget {
+                    document_revision: _revision,
+                    table: "ROULETTE_TB".into(),
+                    column: "ID".into(),
+                    parent_ordinal: 0,
+                },
+            }
+        ),
+        Err(Error::Edit(crate::EditError::ReadOnlySource))
+    ));
     let Response::Data { rows, .. } = request(
         &worker,
         Command::Page {

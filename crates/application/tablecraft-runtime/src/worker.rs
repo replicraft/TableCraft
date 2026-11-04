@@ -60,6 +60,16 @@ impl Worker {
                     .ok_or(Error::NoDatabase)?
                     .inspect_collection(target, cancelled)
             }
+            #[cfg(feature = "offline-edit")]
+            Command::BeginEdit { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .begin_edit(target, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::ReviewEdit { draft_id, input } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_edit(*draft_id, input, cancelled),
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -103,6 +113,10 @@ impl Worker {
                 };
                 let operation = match &request.command {
                     Command::Open { .. } => "open",
+                    #[cfg(feature = "offline-edit")]
+                    Command::BeginEdit { .. } => "begin_edit",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReviewEdit { .. } => "review_edit",
                     Command::Page { .. } => "page",
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",

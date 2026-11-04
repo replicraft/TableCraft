@@ -1,4 +1,4 @@
-# Read sessions and application tasks
+# Application sessions and tasks
 
 `tablecraft-runtime` owns the desktop's working native read session, command
 execution and background worker. It has no egui/eframe dependency. The desktop
@@ -122,6 +122,49 @@ Replies must match its still-open task ID and full source/parent target; closing
 replacing the source or changing the underlying view prevents late reopening.
 Closing an old dialog cannot cancel a newer request. Native decoding and revision
 checks stay in runtime; desktop moves DTOs and routes results.
+
+## Reviewed offline cell edits
+
+The optional `offline-edit` feature supplies BeginEdit/ReviewEdit on the read
+worker and a separate `SaveWorker`. Desktop enables it. Drafts use exact document
+revision/table/column/ordinal targets; they retain no offline lease while the
+user types. Runtime converts replacement text to typed values and invokes normal
+native planning. SQL is never generated from the input. The shared UI's review
+is a display DTO; only the runtime can issue its opaque consuming `ReviewedEdit`.
+
+The capture is shared through Bytes between the reader and review precondition.
+Apply acquires the existing exclusive offline session and compares the complete
+physical image before resolving fresh snapshot-local handles and reconstructing
+the native plan. Encrypted/package sources remain read-only for this route.
+Backend validation, required programs, write profiles and resource controls still
+apply. See [offline session ownership](../access/writes/OFFLINE_WRITE_SESSIONS.md).
+
+Save work is nonreplaceable: a newer read generation cannot discard its terminal
+outcome. Reports distinguish known commit/rollback facts, retained resources,
+recovery eligibility and acknowledged release. Cancellation requests stopping;
+it is not a rollback receipt. Recovery/release consume the retained owner through
+explicit operations. Busy/stale starts return the unconsumed capability.
+Known committed edits are never replayed as recovery attempts.
+
+The host blocks source replacement and window closure while an accepted save
+remains unacknowledged. A successful acknowledged save reopens its source and
+refreshes only the table/page bound to that exact reopen generation. Failed or
+released uncertain outcomes cannot leave the old snapshot masquerading as current.
+Incomplete setup or uncertain release can require diagnosis; the current UI has
+no general restart/recovery browser for those states.
+
+The default reserved `.FILENAME.tablecraft-journal` sibling blocks reopening
+while present, including a symlink, without following or deleting it. This only
+detects that active reserved path. Journal retirement renames bundles, so a crash
+after rename can leave an undiscovered retired sibling. Other caller-selected
+bundles and path aliases are not a general journal-discovery mechanism. Keep the
+explicit offline and outstanding-journal preconditions; this is not Access
+multiuser locking or complete crash-restart recovery.
+
+Normal filesystem editing currently works only on macOS/Linux. Other platforms
+return an explicit unsupported result. This reviewed-cell workflow is a bounded
+offline workflow, not Access autosave, record navigation or query-result
+updateability parity.
 
 ## Limits and verification
 

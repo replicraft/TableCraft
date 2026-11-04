@@ -71,6 +71,9 @@ zerocopy = { version = "0.8.63", default-features = false, features = ["derive"]
 wide = { version = "1.7.1", default-features = false }
 bytemuck = { version = "1.25.2", default-features = false }
 
+# Shared immutable captured inputs and reviewed edit preconditions
+bytes = { version = "1.12.1", default-features = false, features = ["std"] }
+
 # Fixed-capacity native index metadata
 arrayvec = { version = "0.7.8", default-features = false }
 

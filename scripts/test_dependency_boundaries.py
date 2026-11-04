@@ -45,6 +45,7 @@ class BoundaryTests(unittest.TestCase):
             package("tablecraft-model", "crates/foundation/tablecraft-model"),
             package("tablecraft-io", "crates/platform/tablecraft-io"),
             package("tablecraft-sql", "crates/query/tablecraft-sql"),
+            package("tablecraft-expressions", "crates/query/tablecraft-expressions"),
         ]:
             data["packages"].append(added)
             data["workspace_members"].append(added["id"])
@@ -123,10 +124,21 @@ class BoundaryTests(unittest.TestCase):
             for error in violations(data)
         ))
 
+    def test_runtime_owns_optional_typed_editing_dependencies(self):
+        data, _, _ = self.desktop_workspace()
+        runtime = next(
+            candidate for candidate in data["packages"]
+            if candidate["name"] == "tablecraft-runtime"
+        )
+        for target in ["tablecraft-db", "tablecraft-schema", "tablecraft-expressions"]:
+            runtime["dependencies"].append({"name": target, "optional": True})
+        self.assertEqual(violations(data), [])
+
     def test_desktop_backend_access_is_owned_by_runtime(self):
         for target in ["tablecraft-core", "tablecraft-access", "tablecraft-ace",
                        "tablecraft-model", "tablecraft-io", "tablecraft-query",
-                       "tablecraft-sql"]:
+                       "tablecraft-sql", "tablecraft-db", "tablecraft-schema",
+                       "tablecraft-expressions"]:
             with self.subTest(target=target):
                 data, _, desktop = self.desktop_workspace()
                 desktop["dependencies"].append({"name": target})

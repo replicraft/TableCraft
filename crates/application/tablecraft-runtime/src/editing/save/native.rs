@@ -1,0 +1,269 @@
+//! The actual offline owner lives on this worker until released or diagnosed.
+mod apply;
+mod outcomes;
+
+use self::{
+    apply::apply,
+    outcomes::{finish, known, no_session, receipt, retain},
+};
+use super::{
+    SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
+};
+use crate::{controls::budget, editing::ReviewedEdit};
+use std::{
+    path::PathBuf,
+    sync::{
+        Arc, Condvar, Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+};
+use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
+
+enum Task {
+    Apply(ReviewedEdit, PathBuf),
+    Recover,
+    Release,
+}
+
+enum RetainedOwner {
+    Failure(Failure),
+    Session(OfflineWriteSession),
+}
+
+impl RetainedOwner {
+    fn into_session(self) -> OfflineWriteSession {
+        match self {
+            Self::Failure(failure) => failure.into_session(),
+            Self::Session(session) => session,
+        }
+    }
+}
+
+struct Mailbox {
+    next: u64,
+    active: bool,
+    retained: bool,
+    pending: Option<(u64, Task)>,
+    report: Option<SaveReport>,
+}
+
+struct Shared {
+    mailbox: Mutex<Mailbox>,
+    ready: Condvar,
+    cancelled: AtomicBool,
+    stopped: AtomicBool,
+}
+
+pub struct SaveWorker {
+    shared: Arc<Shared>,
+}
+
+impl SaveWorker {
+    pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
+        let shared = Arc::new(Shared {
+            mailbox: Mutex::new(Mailbox {
+                next: 0,
+                active: false,
+                retained: false,
+                pending: None,
+                report: None,
+            }),
+            ready: Condvar::new(),
+            cancelled: AtomicBool::new(false),
+            stopped: AtomicBool::new(false),
+        });
+        let owner = Arc::clone(&shared);
+        let dispatch = tracing::dispatcher::get_default(Clone::clone);
+        std::thread::spawn(move || {
+            let _subscriber = tracing::dispatcher::set_default(&dispatch);
+            let mut retained: Option<RetainedOwner> = None;
+            loop {
+                let mut mailbox = owner.mailbox.lock().unwrap();
+                while mailbox.pending.is_none() && !owner.stopped.load(Ordering::Acquire) {
+                    mailbox = owner.ready.wait(mailbox).unwrap();
+                }
+                if mailbox.pending.is_none() && owner.stopped.load(Ordering::Acquire) {
+                    break;
+                }
+                let Some((id, task)) = mailbox.pending.take() else {
+                    continue;
+                };
+                drop(mailbox);
+                let cancelled = || owner.cancelled.load(Ordering::Acquire);
+                let operation = match &task {
+                    Task::Apply(..) => SaveOperation::Apply,
+                    Task::Recover => SaveOperation::Recover,
+                    Task::Release => SaveOperation::Release,
+                };
+                let operation_name = match operation {
+                    SaveOperation::Apply => "apply",
+                    SaveOperation::Recover => "recover",
+                    SaveOperation::Release => "release",
+                };
+                let span =
+                    tracing::debug_span!("application save task", operation = operation_name);
+                let _entered = span.enter();
+                let mut work = budget();
+                let outcome = match task {
+                    Task::Apply(reviewed, bundle) => {
+                        apply(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::Recover => match retained.take().map(RetainedOwner::into_session) {
+                        Some(session) => finish(
+                            session.recover_pending(&mut work, &cancelled),
+                            &mut retained,
+                        ),
+                        None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
+                    },
+                    Task::Release => match retained.take().map(RetainedOwner::into_session) {
+                        Some(session) => {
+                            let current_outcome = session.current_outcome().map(known);
+                            let last_completed = session.last_completed().map(receipt);
+                            match session.release() {
+                                Ok(()) => SaveOutcome::Released {
+                                    current_outcome,
+                                    last_completed,
+                                },
+                                Err(failure) => retain(failure, &mut retained),
+                            }
+                        }
+                        None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
+                    },
+                };
+                tracing::debug!(
+                    retained_resources = retained.is_some(),
+                    "application save task completed"
+                );
+                let mut mailbox = owner.mailbox.lock().unwrap();
+                mailbox.active = false;
+                mailbox.retained = retained.is_some();
+                mailbox.report = Some(SaveReport {
+                    id,
+                    operation,
+                    outcome,
+                });
+                drop(mailbox);
+                repaint();
+            }
+        });
+        Self { shared }
+    }
+
+    pub fn start(&self, reviewed: ReviewedEdit, bundle: PathBuf) -> Result<u64, SaveStartError> {
+        if !reviewed.state.valid.load(Ordering::Acquire) {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::StaleDocument,
+                reviewed: Some(reviewed),
+            });
+        }
+        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        if mailbox.active || mailbox.report.is_some() || mailbox.retained {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::Busy,
+                reviewed: Some(reviewed),
+            });
+        }
+        let Some(id) = mailbox.next.checked_add(1) else {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::Exhausted,
+                reviewed: Some(reviewed),
+            });
+        };
+        mailbox.next = id;
+        mailbox.active = true;
+        mailbox.pending = Some((id, Task::Apply(reviewed, bundle)));
+        self.shared.cancelled.store(false, Ordering::Release);
+        drop(mailbox);
+        self.shared.ready.notify_one();
+        Ok(id)
+    }
+
+    /// Repeated polling observes the SAME terminal report until explicit acknowledgement.
+    pub fn poll(&self) -> Option<SaveReport> {
+        self.shared.mailbox.lock().unwrap().report
+    }
+
+    pub fn is_busy(&self) -> bool {
+        let mailbox = self.shared.mailbox.lock().unwrap();
+        mailbox.active || mailbox.report.is_some() || mailbox.retained
+    }
+
+    pub fn cancel(&self, id: u64) -> bool {
+        let mailbox = self.shared.mailbox.lock().unwrap();
+        if mailbox.next != id || !mailbox.active {
+            return false;
+        }
+        self.shared.cancelled.store(true, Ordering::Release);
+        true
+    }
+
+    pub fn acknowledge(&self, id: u64) -> bool {
+        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        if mailbox.active
+            || mailbox.retained
+            || !mailbox.report.is_some_and(|report| report.id == id)
+        {
+            return false;
+        }
+        mailbox.report = None;
+        true
+    }
+
+    pub fn recover(&self, id: u64) -> Result<u64, SaveStartError> {
+        self.continue_retained(id, true)
+    }
+    pub fn release(&self, id: u64) -> Result<u64, SaveStartError> {
+        self.continue_retained(id, false)
+    }
+
+    fn continue_retained(&self, id: u64, recover: bool) -> Result<u64, SaveStartError> {
+        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        let allowed = mailbox.report.is_some_and(|report| {
+            report.id == id
+                && match report.outcome {
+                    SaveOutcome::Failed(failure) => {
+                        if recover {
+                            failure.can_recover
+                        } else {
+                            failure.can_release
+                        }
+                    }
+                    _ => false,
+                }
+        });
+        if mailbox.active || !mailbox.retained || !allowed {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::InvalidState,
+                reviewed: None,
+            });
+        }
+        let next = mailbox.next.checked_add(1).ok_or(SaveStartError {
+            kind: SaveStartFailure::Exhausted,
+            reviewed: None,
+        })?;
+        mailbox.next = next;
+        mailbox.active = true;
+        mailbox.report = None;
+        mailbox.pending = Some((
+            next,
+            if recover {
+                Task::Recover
+            } else {
+                Task::Release
+            },
+        ));
+        self.shared.cancelled.store(false, Ordering::Release);
+        drop(mailbox);
+        self.shared.ready.notify_one();
+        Ok(next)
+    }
+}
+
+impl Drop for SaveWorker {
+    fn drop(&mut self) {
+        // Never interrupt publication or auto-clean retained bundles. The host
+        // must resolve busy/retained state before allowing application exit.
+        self.shared.stopped.store(true, Ordering::Release);
+        self.shared.ready.notify_one();
+    }
+}

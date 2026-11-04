@@ -10,7 +10,18 @@ publish = false
 [lints]
 workspace = true
 
+[features]
+offline-edit = [
+    "tablecraft-access/offline-write-session",
+    "dep:tablecraft-db",
+    "dep:tablecraft-schema",
+    "dep:tablecraft-expressions",
+    "dep:jiff",
+    "dep:uuid",
+]
+
 [dependencies]
+bytes.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
 tablecraft-access.workspace = true
 tablecraft-ace.workspace = true
@@ -21,6 +32,11 @@ tablecraft-query.workspace = true
 tablecraft-sql.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+tablecraft-db = { workspace = true, optional = true }
+tablecraft-schema = { workspace = true, optional = true }
+tablecraft-expressions = { workspace = true, optional = true }
+jiff = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile.workspace = true
