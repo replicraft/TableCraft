@@ -24,7 +24,7 @@ Access behavior. Keep Selawik and shared assets under `assets/ui/`.
 | smallvec | Already a direct development benchmark and transitive library dependency. The native index comparison selected ArrayVec; no production SmallVec migration planned for that collection. |
 | arrayvec | Already adopted for private bounded native index columns, after measurement. Keep fallible insertion and the existing ten-column ceiling. |
 | memchr | Already a development benchmark. The proposed optimized InStrB search changed early-match work admission, so production retains its checked search. |
-| encoding_rs | Already used for explicit legacy character-code conversion in expressions. It does not replace native text collation or decoding policy. |
+| encoding_rs | Already used for explicit legacy character-code conversion and strict Japanese 932 whole-string conversion in expressions. Character operations retain their separate single-byte contract. It does not replace native text collation or decoding policy. |
 | indexmap | Defer direct use to an ordered keyed property/registry consumer; currently transitive. Bounded vectors retain native order. Rust hashing/equality cannot replace SQL key semantics. |
 
 The [earlier targeted review](DEPENDENCY_REVIEW.md#targeted-backend-review-24-october-2026)
@@ -44,7 +44,7 @@ the original experiments and limits.
 | kurbo | Strong first form/report designer candidate for screen-space geometry; currently transitive. Keep authoritative Access dimensions in exact native units, with explicit conversion. No designer consumer yet. |
 | rstar | Benchmark against linear selection when a real control canvas exists. Typical small forms may not justify an R-tree. No current spatial-query consumer. |
 | slotmap | Evaluate for ephemeral editor handles; currently transitive. Existing document generations work. Never persist SlotMap keys as native control identity. |
-| petgraph | Prefer for the first working relationship/dependency/refactoring graph. Keep stable domain identity separately and bound traversal. Existing bounded query/cycle checks do not justify an unrelated rewrite. |
+| petgraph | Prefer for the first working relationship/dependency/refactoring graph. Keep stable domain identity and relationship/query/application edge kinds separate, and bound traversal. Graph algorithms supply neither diagram layout, SQL semantics nor safe schema mutation. Preserve cycles where the domain permits them; do not assume every graph is a DAG. Existing bounded query/cycle checks do not justify an unrelated rewrite. |
 | parley | Prioritize for the first shared report/text-layout prototype. Qualify bidi, fallback, line breaking and printer metrics; use one authoritative layout for screen and output. No report renderer exists yet. |
 | krilla | Strong PDF output candidate for that report-layout consumer. Does not implement native Access pagination; no PDF dependency until output is implemented. |
 | resvg | Evaluate when actual SVG assets are introduced. No need for a second renderer for today's text/buttons; imported application images remain separate preserved content. |
@@ -57,6 +57,9 @@ Primary API references: [kurbo](https://docs.rs/kurbo/latest/kurbo/),
 [fontdb](https://docs.rs/fontdb/latest/fontdb/),
 [arboard](https://docs.rs/arboard/latest/arboard/), and the
 [Fluent icon license](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE).
+Report candidates have distinct jobs: [Parley](https://docs.rs/parley/latest/parley/)
+provides text layout; [Krilla](https://docs.rs/krilla/latest/krilla/) provides PDF
+output primitives. Neither supplies the Access report model or pagination policy.
 
 ## Application services and concurrency
 
@@ -64,9 +67,9 @@ Primary API references: [kurbo](https://docs.rs/kurbo/latest/kurbo/),
 | --- | --- |
 | tracing | Already used in backend operations, and now extended to the working runtime task boundary and opt-in desktop stderr diagnostics. Hosts own subscribers; record only fixed operation names and success/supersession, never SQL, credentials, paths or error Debug output. |
 | parking_lot | Evaluate specific measured contention or lock ergonomics. Current runtime uses std Mutex/Condvar; changing poison semantics needs an explicit decision. Keep OS Access locks independent. Transitive presence is not direct adoption. |
-| crossbeam-channel | Defer a direct dependency until a real queue consumer needs it. Current mailbox replaces pending work and suppresses stale responses; an ordinary bounded FIFO does not preserve those semantics automatically. Present transitively. |
+| crossbeam-channel | Defer a direct dependency until a real queue consumer needs it. The read Worker's mailbox replaces pending work and suppresses stale responses. The separate SaveWorker never replaces an accepted write and retains its terminal report/resources through acknowledgement. An ordinary bounded FIFO does not supply either policy. Present transitively. |
 | tokio | Retain existing optional SQLite worker use; that backend's expansion remains paused. No executor required for the synchronous native worker or the currently polled native file-dialog future. |
-| tokio-util | Prefer CancellationToken for a real asynchronous task tree. Current synchronous per-generation cancellation closures already integrate with native/query budgets. Adding a token would not establish rollback or replace generation checks. |
+| tokio-util | Prefer CancellationToken for a real asynchronous task tree. Current synchronous read-generation cancellation closures already integrate with native/query budgets. Save cancellation separately retains the actual terminal outcome and recovery resources. Adding a token would not establish rollback, release those resources or replace generation checks. |
 | rayon | Policy-selected, not currently a direct working consumer. Adopt with measured independent immutable CPU batches and explicit accounting; never use it to choose transaction order. |
 | moka | Selected for future recomputable shared caches. No current shared cache consumer; define revision/policy keys and hard retained-byte/work admission before adoption. Best-effort eviction is not a resource limit. |
 | dashmap | Only with measured concurrent lookup demand. Native source-local RefCell state is not a concurrent connection; map guards introduce callback/reentry hazards. No cache or lock-manager replacement. |
@@ -119,9 +122,10 @@ Source, test, desktop and platform qualification remain distinct.
 1. Retain the current GUI stack and compare each implemented surface with the
    retained Access captures. Keep the shared datasheet selection/edit state
    independent of `egui_extras`; extract a crate only when it has real consumers.
-2. Finish the connected editing consumer and its failure/recovery checks. A
-   latest-wins read mailbox cannot own a write whose terminal outcome must be
-   retained. Neither a FIFO channel nor a cancellation token supplies that policy.
+2. Deepen lifecycle/recovery checks around the working connected editing consumer.
+   Preserve its separate nonreplaceable SaveWorker, terminal reports, acknowledgement
+   and recovery resources. A latest-wins read mailbox cannot own that write;
+   neither a FIFO channel nor a cancellation token supplies its retention policy.
 3. Prototype schedule exploration on the actual worker synchronization, and a
    bounded native fuzz harness. These are engineering tasks, not additional
    production dependencies or claims that those tools already run in CI.
@@ -137,8 +141,9 @@ work-admission behavior, and no bitmap/parser/lock rewrite is justified solely
 by a candidate list. Likewise, criterion, rstest and insta should improve a real
 benchmark or test rather than duplicate existing harnesses and assertions.
 
-The captured-image consumer passes the runtime's standalone read-only feature
-profile (twenty-five unit tests and one diagnostics test) and its optional edit
-profile. The connected UI/runtime acceptance and native-observation limits are
+At captured-image adoption, the runtime's standalone read-only feature profile
+passed twenty-five unit tests and one diagnostics test, alongside its optional edit
+profile. Those are historical adoption counts, not the current suite inventory.
+The connected UI/runtime acceptance and native-observation limits are
 recorded in the [desktop guide](../ui/DESKTOP.md#connected-offline-editing-preview).
 No candidate performance result is inferred from those functional checks.

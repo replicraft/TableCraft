@@ -181,7 +181,10 @@ semantics is adopted implicitly.
   named-flags, shared-buffer, supported-code-page, ordered-property or temporary-file
   consumer appears. `bytes` now shares bounded runtime captured images between
   readers and reviewed edits; charge retained backing, not just view lengths.
-  `encoding_rs` is now adopted for [explicit scalar character-code pages](../expressions/text/CHARACTER_CODE_PAGES.md), with defaults disabled and non-replacing stack decoding. Existing bounded parsers/arrays need no mechanical rewrite.
+  `encoding_rs` is now adopted for [explicit scalar character-code pages](../expressions/text/CHARACTER_CODE_PAGES.md)
+  and the separate [strict Japanese string codec](../expressions/text/JAPANESE_STRING_ENCODING.md),
+  with defaults disabled and non-replacing decoding. Character operations retain
+  their single-byte restrictions. Existing bounded parsers/arrays need no mechanical rewrite.
 - Use Jiff civil calendars now; qualify future zoned services separately. Evaluate
   `icu_collator` using actual Jet/ACE evidence before accepting native sort keys.
 - Study UCanAccess, DataFusion, SQLite, redb, Fjall and LMDB at their relevant

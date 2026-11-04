@@ -41,6 +41,14 @@ The sample's checked Yes/No fields now render from typed Boolean values plus
 their inspected native checkbox declarations. A Boolean type alone does not
 override a stored text-box choice or stand in for missing field metadata.
 
+The bottom record navigator follows the datasheet capture's placement below the
+grid. Current bounded pages expose known offsets and checked EOF; the capture's
+total-record count and Last command do not supply missing backend capabilities.
+The working Queries group follows the object pane's grouping. Explicit saved-query
+inspection and typed parameter entry have their own documented behavior, but none
+of these three captures shows an Access parameter dialog. The current parameter
+form must not be described as a visually verified copy of that dialog.
+
 Only working commands remain interactive. File opening, passwords, cancellation,
 table pages and read queries retain their current paths. No mock Create ribbon,
 editable new-record row, Click to Add field, checkbox editing, query designer or
@@ -68,6 +76,11 @@ Observe the rendered TableCraft window at a known logical size and scale; record
 which surface was inspected and which platform remains unverified. Retain exact
 native measurements in future form/report models rather than deriving them from
 screenshot pixels or a layout library's preferred units.
+
+These three captures do not establish Relationships, Query Design, Form Design,
+Report Design or Print Preview layouts. Use corresponding actual Access references
+when implementing those surfaces; record any interim layout as provisional rather
+than extrapolating it from the datasheet or a library demo.
 
 A library or replacement icon set cannot redefine the reference appearance.
 Choose any Fluent assets individually for working actions; their Windows 11
