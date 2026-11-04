@@ -29,6 +29,14 @@ stated purpose). Directory/package owners below include prospective boundaries;
 they do not imply implemented crates. Avoid empty scaffolding or unused manifest
 entries. [LIBRARY_POLICY.md](LIBRARY_POLICY.md) remains the concise selection policy.
 
+## Desktop and engine follow-up: 4 November 2026
+
+The [complete follow-up review](DESKTOP_LIBRARY_REVIEW.md) evaluates every item
+in the later cross-project proposal against working consumers. It supersedes
+older prospective desktop and worker statuses below. In particular, egui/eframe,
+egui_extras, AccessKit integration and rfd are now working dependencies; the
+application runtime now has a concurrent worker worth schedule testing.
+
 ## Targeted backend review: 24 October 2026
 
 All fourteen requested libraries were checked against root/member manifests,
@@ -53,7 +61,7 @@ inventory; this section refines their current implementation readiness.
 | [arrayvec](https://docs.rs/arrayvec/latest/arrayvec/struct.ArrayVec.html) | Native index consumer 0.7.8; originally lockfile-only | Adopted for private native index columns after the measured comparison. The existing ten-column ceiling and fallible insertion remove one allocation per index; public slices, validation and physical encoding remain unchanged. |
 | [dashmap](https://docs.rs/dashmap/latest/dashmap/struct.DashMap.html) | Absent | Defer until a measured concurrent-map consumer exists. Source-local RefCell state is not a concurrent native connection; guard-held callbacks/reentry introduce deadlock hazards. |
 | [indexmap](https://docs.rs/indexmap/latest/indexmap/map/struct.IndexMap.html) | Lockfile-only 2.14.2 | Keep as a future insertion-ordered keyed registry/property collection. Current bounded vectors work; Rust Value equality/hashing cannot replace SQL grouping semantics. |
-| [bitvec](https://docs.rs/bitvec/1.1.1/bitvec/) | Absent | Defer until mutable allocation maps or derived bitmaps need it. Explicit bit order and borrowed views are useful; existing native u64/trailing-zero scans have workload evidence. |
+| [bitvec](https://docs.rs/bitvec/1.1.1/bitvec/) | Absent | Defer until a concrete bitmap consumer demonstrates benefit over the current representation. Mutable maps now exist; explicit bit order and borrowed views are useful, but existing native u64/trailing-zero scans have workload evidence. |
 | [winnow](https://docs.rs/winnow/1.0.4/winnow/) | Lockfile-only 1.0.4 | Prototype the next irregular property/object stream. Stateful combinators can carry controls; replacing the existing Access SQL adapter would duplicate working dialect logic. |
 | [bilge](https://docs.rs/bilge/0.5.0/bilge/) | Absent | Selective packed-field candidate for row-slot offsets/status bits. Prefer existing named masks where they are already clear; preserve raw/reserved numeric encodings. |
 | [bytes](https://docs.rs/bytes/latest/bytes/) | Lockfile-only 1.12.1 | Defer direct adoption until immutable buffers are actually shared across consumers. Cheap views are useful, but small slices can retain large backing allocations; current bounded pages/borrowed layouts need no refcounted replacement. |
@@ -242,10 +250,10 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 
 | Library/tool and reviewed release | Declared license | Decision / owner | Assessment and adoption condition |
 | --- | --- | --- | --- |
-| [egui 0.37.0](https://docs.rs/crate/egui/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with UI; ui/builders | Custom Office-style controls need focus, keyboard and accessibility behavior from the first slice; no GUI dependency in the CLI/engine. |
-| [eframe 0.37.0](https://docs.rs/crate/eframe/0.37.0) | MIT OR Apache-2.0 | Selected direction, add with host; Desktop application | Host integration for egui; choose native/browser features with runnable targets rather than pulling defaults into libraries. |
+| [egui 0.37.0](https://docs.rs/crate/egui/0.37.0) | MIT OR Apache-2.0 | Adopted 0.36.2; shared ui | Custom Office-style controls need focus, keyboard and accessibility behavior from the first slice; no GUI dependency in the CLI/engine. |
+| [eframe 0.37.0](https://docs.rs/crate/eframe/0.37.0) | MIT OR Apache-2.0 | Adopted 0.36.2; Desktop application | Host integration for egui; choose native/browser features with runnable targets rather than pulling defaults into libraries. |
 | [wgpu 30.0.1](https://docs.rs/crate/wgpu/30.0.1) | MIT OR Apache-2.0 | Use through qualified renderer; Desktop/render host | Select backends and limits per platform; avoid a separate dependency when eframe already owns it. Core report measurement should remain headless. |
-| [accesskit 0.25.1](https://docs.rs/crate/accesskit/0.25.1) | MIT OR Apache-2.0 | High priority with custom controls; ui and desktop host | Wire roles, focus, accessible names/actions and platform adapters with the first controls; visual rendering alone is not accessibility evidence. |
+| [accesskit 0.25.1](https://docs.rs/crate/accesskit/0.25.1) | MIT OR Apache-2.0 | Integrated through egui/eframe (locked 0.24.1); ui and desktop host | Wire roles, focus, accessible names/actions and platform adapters with the first controls; visual rendering alone is not accessibility evidence. |
 | [parley 0.12.0](https://docs.rs/crate/parley/0.12.0) | Apache-2.0 OR MIT | Prototype shared text measurement; render/reports | Strong shaping/layout/fallback candidate; verify fonts, bidi, line breaks and printer metrics. Preview and PDF/print must share measurements; font licenses need separate review. |
 | [krilla 0.8.2](https://docs.rs/crate/krilla/0.8.2) | MIT OR Apache-2.0 | Prototype PDF backend; reports/render | Useful high-level PDF generation; does not implement Access report pagination. Test font embedding, text positioning, output/accessibility needs and native comparisons. |
 | [calamine 0.36.1](https://docs.rs/crate/calamine/0.36.1) | MIT | Prefer for spreadsheet reading; connectors/import | Excel/OpenDocument reader; qualify formulas, dates, encodings and supported formats without executing workbook code. Apply row/byte/decompression limits. |
@@ -281,7 +289,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [arbitrary 1.5.0](https://docs.rs/crate/arbitrary/1.5.0) | MIT OR Apache-2.0 | Use for structured fuzz targets; Fuzz harnesses | Generate bounded inputs and invalid structures intentionally; derive is not a validity proof or replacement for raw-byte fuzzing. |
 | [cargo-nextest 0.9.148](https://docs.rs/crate/cargo-nextest/0.9.148) | Apache-2.0 OR MIT | Optional engineering runner; CI/development | Evaluate speed/isolation on this workspace; retain Cargo/doctest commands and no requirement until installed/runnable evidence exists. |
 | [insta 1.49.0](https://docs.rs/crate/insta/1.49.0) | Apache-2.0 | Selective snapshots; Metadata/diagnostic tests | Useful for large stable reports; omit private payloads and review updates. Independent explicit byte/semantic assertions remain necessary. |
-| [shuttle 0.9.7](https://docs.rs/crate/shuttle/0.9.7) | Apache-2.0 | Use with first concurrent algorithm; Cache/worker test harnesses | Reproducible randomized schedules require instrumented primitives. No current concurrent engine owner to test; not an SMB or power-loss simulator. |
+| [shuttle 0.9.7](https://docs.rs/crate/shuttle/0.9.7) | Apache-2.0 | Use with first concurrent algorithm; Cache/worker test harnesses | Reproducible randomized schedules require instrumented primitives. The new runtime Worker is a concrete candidate; prototype against its actual mailbox algorithm. Not an SMB or power-loss simulator. |
 | [loom 0.7.2](https://docs.rs/crate/loom/0.7.2) | MIT | Use for small concurrency models; Synchronization tests | Explore bounded interleavings using Loom primitives/configuration; not exhaustive for arbitrary production code or real filesystem behavior. |
 | [fail 0.5.1](https://docs.rs/crate/fail/0.5.1) | Apache-2.0 | First failpoint candidate; Future write/recovery tests | Established fail-rs-style instrumentation, enabled only in engineering profiles. Preserve errors and stage identities; compare against existing explicit injected Read/Seek failures. |
 | [failpoints 0.2.0](https://docs.rs/crate/failpoints/0.2.0) | Apache-2.0 OR MIT | Separate alternative to fail; Future write/recovery tests | Different crate, not an alias. Compare scoped/async behavior and disabled overhead before choosing; no need to install both instrumentation frameworks. |

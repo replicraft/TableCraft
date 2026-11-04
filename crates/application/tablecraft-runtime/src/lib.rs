@@ -87,3 +87,6 @@ pub enum Response {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod diagnostics_tests;

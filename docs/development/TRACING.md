@@ -30,3 +30,18 @@ status/no partial stdout. These tests exercise the real subscriber/engine path.
 Trace-level output can be verbose; enable it for a bounded investigation. Logging
 is diagnostic work, not part of resource-budget accounting or correctness checks.
 It does not replace query/native cancellation and structural limits.
+
+## Desktop read tasks
+
+`tablecraft-desktop -v [DATABASE]` enables the same explicit stderr debug output;
+`-vv` also enables trace-level native I/O. The default remains quiet. The desktop
+owns its subscriber, and the shared runtime captures its caller's dispatcher when
+starting the worker so task spans and nested backend spans share that subscriber.
+
+An `application read task` span contains only the fixed operation `open`, `page`
+or `query`. Its completion event records boolean `success` and `superseded` fields.
+No command Debug value, error text, path, table name, SQL or password is recorded.
+These events describe execution completion, not acceptance of a possibly stale
+response by the GUI, and do not change cancellation or transactional outcomes.
+A worker regression test captures all three command kinds on the background
+thread and checks both operation visibility and payload omission.

@@ -3847,6 +3847,8 @@ dependencies = [
  "rfd",
  "tablecraft-runtime",
  "tablecraft-ui",
+ "tracing",
+ "tracing-subscriber",
  "zeroize",
 ]
 
@@ -3952,6 +3954,8 @@ dependencies = [
  "tablecraft-testkit",
  "tempfile",
  "thiserror 2.0.21",
+ "tracing",
+ "tracing-subscriber",
  "zeroize",
 ]
 
