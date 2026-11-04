@@ -20,7 +20,7 @@ Access behavior. Keep Selawik and shared assets under `assets/ui/`.
 | zerocopy | Already used for qualified borrowed native index/LVAL layouts. Retain endian/alignment validation and independent golden bytes; no new adoption needed. |
 | bitvec | Defer to a real mutable bitmap consumer or measured replacement. Existing usage-map word scans are bounded and measured; a new abstraction must preserve native bit order and work admission. |
 | bitflags | Useful for the next genuinely typed flags domain. Current named masks remain clear; preserve unknown raw bits and separate supported-mask checks. No mechanical constant migration. |
-| bytes | Defer direct use until immutable buffers cross multiple owners. Present transitively. Current borrowed pages need no reference counting; small views can retain large backing allocations. |
+| bytes | Adopted directly by the runtime for the bounded captured image shared by its reader and opaque reviewed-edit precondition. Moving the captured Vec into Bytes avoids another whole-image copy; cloned handles retain that complete allocation. Native borrowed pages and core Binary ownership remain unchanged. |
 | smallvec | Already a direct development benchmark and transitive library dependency. The native index comparison selected ArrayVec; no production SmallVec migration planned for that collection. |
 | arrayvec | Already adopted for private bounded native index columns, after measurement. Keep fallible insertion and the existing ten-column ceiling. |
 | memchr | Already a development benchmark. The proposed optimized InStrB search changed early-match work admission, so production retains its checked search. |
@@ -40,7 +40,7 @@ the original experiments and limits.
 | AccessKit | Already integrated through egui and eframe; the locked dependency is 0.24.1. Existing tests cover cell context and focus, not full grid roles or platform screen readers. Retain accessibility as a control acceptance requirement. |
 | arboard | Already supplied by the native egui-winit clipboard integration. Shared UI emits `Context::copy_text`; adding another direct clipboard owner would duplicate platform handling and hinder web reuse. Multi-cell transport remains future work. |
 | rfd | Already adopted, desktop-only. Native asynchronous file selection feeds the same runtime Open command; no independent file-reading path. |
-| fontdb | Evaluate with real font discovery/report fallback. Current UI bundles Selawik and egui fallback fonts, so no system-font scan is needed. Its database is not itself a shaper or renderer. |
+| fontdb | Evaluate with real font discovery/report fallback. Current UI bundles Selawik and egui fallback fonts, so no system-font scan is needed. Its database supplies enumeration/matching, not font fallback, shaping or rendering. |
 | kurbo | Strong first form/report designer candidate for screen-space geometry; currently transitive. Keep authoritative Access dimensions in exact native units, with explicit conversion. No designer consumer yet. |
 | rstar | Benchmark against linear selection when a real control canvas exists. Typical small forms may not justify an R-tree. No current spatial-query consumer. |
 | slotmap | Evaluate for ephemeral editor handles; currently transitive. Existing document generations work. Never persist SlotMap keys as native control identity. |
@@ -86,7 +86,7 @@ native transaction outcomes or revision policy. Runtime tracing uses explicit
 | cargo-fuzz | Prioritize a runnable bounded native-decoder harness with approved seeds and a compatible sanitizer toolchain. No harness or fuzz execution claimed by this review. Tooling, not a production dependency. |
 | rstest | Selective candidate for genuinely clearer new parameterized tests. Existing table-driven loops and testkit helpers do not need wholesale migration. |
 | insta | Useful for stable semantic UI/model snapshots once those states settle. Review payload/privacy and snapshot diffs. Explicit behavior tests and controlled visual comparisons remain necessary. |
-| shuttle | High-value next concurrency prototype for the actual runtime mailbox, which recently needed a race fix. Instrument the same algorithm's synchronization; a copied simplified model would provide weaker evidence. Not installed or run here. |
+| shuttle | High-value next concurrency prototype for the actual runtime mailbox, which recently needed a race fix. Instrument the same algorithm's synchronization; a copied simplified model would provide weaker evidence. No integrated schedule harness or execution is claimed here. |
 | loom | Alternative for narrow exhaustive atomic/lock models. Do not install alongside Shuttle without a separate concrete purpose; real filesystem/native interoperability stays outside both. |
 | kani-verifier | Selective bounded offset/size/invariant proof candidate. Requires working harnesses/toolchain and a connection to real Rust; no formal proof supplied here. |
 | criterion | Adopt with a new statistical benchmark consumer; existing native benchmarks already have working harnesses and measurements. No speed claim or bulk rewrite of those benches. |
@@ -108,7 +108,37 @@ expansion remain paused. None of these proposals resumes those subsystems.
 ACE and the CLI retain GUI/PDF/provider-free dependency boundaries; the desktop
 composes shared UI and runtime services.
 
-This review adds no unused registry dependencies. Its immediate implementation
-changes reuse existing tracing dependencies and correct the shared UI against
-the actual Access captures. Source, test, desktop and platform qualification
-remain distinct in the owning records.
+The initial follow-up reused existing tracing dependencies and corrected the UI
+against actual Access captures. The connected-editing follow-up gives `bytes` a
+working runtime consumer; the [adoption record](DEPENDENCIES.md#shared-captured-database-images)
+records its version, features and ownership limits. No unused candidate is added.
+Source, test, desktop and platform qualification remain distinct.
+
+## Adoption order after this review
+
+1. Retain the current GUI stack and compare each implemented surface with the
+   retained Access captures. Keep the shared datasheet selection/edit state
+   independent of `egui_extras`; extract a crate only when it has real consumers.
+2. Finish the connected editing consumer and its failure/recovery checks. A
+   latest-wins read mailbox cannot own a write whose terminal outcome must be
+   retained. Neither a FIFO channel nor a cancellation token supplies that policy.
+3. Prototype schedule exploration on the actual worker synchronization, and a
+   bounded native fuzz harness. These are engineering tasks, not additional
+   production dependencies or claims that those tools already run in CI.
+4. Introduce `kurbo`/`petgraph` with the first real designer geometry/graph service;
+   evaluate `rstar`, `slotmap` and `indexmap` against that service's actual needs.
+5. Prototype one shared report-layout service with Parley and evaluate Krilla
+   as its PDF output. Keep native measurements, printer metrics and Access
+   pagination qualification explicit. These are not prerequisites for browsing.
+
+The proposal's immediate-adoption labels do not override existing measurements:
+ArrayVec won the index collection comparison, the memchr replacement changed
+work-admission behavior, and no bitmap/parser/lock rewrite is justified solely
+by a candidate list. Likewise, criterion, rstest and insta should improve a real
+benchmark or test rather than duplicate existing harnesses and assertions.
+
+The captured-image consumer passes the runtime's standalone read-only feature
+profile (twenty-five unit tests and one diagnostics test) and its optional edit
+profile. The connected UI/runtime acceptance and native-observation limits are
+recorded in the [desktop guide](../ui/DESKTOP.md#connected-offline-editing-preview).
+No candidate performance result is inferred from those functional checks.

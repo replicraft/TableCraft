@@ -64,7 +64,7 @@ inventory; this section refines their current implementation readiness.
 | [bitvec](https://docs.rs/bitvec/1.1.1/bitvec/) | Absent | Defer until a concrete bitmap consumer demonstrates benefit over the current representation. Mutable maps now exist; explicit bit order and borrowed views are useful, but existing native u64/trailing-zero scans have workload evidence. |
 | [winnow](https://docs.rs/winnow/1.0.4/winnow/) | Lockfile-only 1.0.4 | Prototype the next irregular property/object stream. Stateful combinators can carry controls; replacing the existing Access SQL adapter would duplicate working dialect logic. |
 | [bilge](https://docs.rs/bilge/0.5.0/bilge/) | Absent | Selective packed-field candidate for row-slot offsets/status bits. Prefer existing named masks where they are already clear; preserve raw/reserved numeric encodings. |
-| [bytes](https://docs.rs/bytes/latest/bytes/) | Lockfile-only 1.12.1 | Defer direct adoption until immutable buffers are actually shared across consumers. Cheap views are useful, but small slices can retain large backing allocations; current bounded pages/borrowed layouts need no refcounted replacement. |
+| [bytes](https://docs.rs/bytes/latest/bytes/) | Runtime direct dependency 1.12.1 after the desktop follow-up | The captured native image now has multiple immutable owners: reader and reviewed-edit precondition. Share that bounded allocation; retain borrowed native pages and account for the complete retained backing. See the [adoption record](DEPENDENCIES.md#shared-captured-database-images). |
 | [bitflags](https://docs.rs/bitflags/latest/bitflags/) | Lockfile-only 1.3.2 and 2.13.2 | Useful for a real typed flag domain during an index/constraint refactor. Preserve unknown raw bits and the separate supported-mask qualification; four clear constants alone do not justify a mechanical rewrite. |
 | [memchr](https://docs.rs/memchr/latest/memchr/) | Development benchmark 2.8.3; originally lockfile-only | Completed memmem experiment for exact InStrB; the tested replacement is not selected because bounded precharging changes early-match work admission. Retain benchmark evidence and the current production callback contract. |
 | [moka](https://docs.rs/moka/latest/moka/) | Absent | Retain the selected future derived-cache choice; defer adoption until generation/invalidation keys and a real shared consumer exist. Best-effort eviction does not enforce our hard budget or native snapshot guarantees. |
@@ -150,9 +150,10 @@ Bytes/BytesMut help when ownership crosses immutable-buffer consumers or future
 protocol services; the existing [bounded I/O layer](../../crates/platform/tablecraft-io/src/read.rs)
 still owns retries, fallible reads, cancellation and byte accounting. A Bytes
 slice can pin the entire backing allocation, so charge retained ownership rather
-than slice length alone. bytes is present in optional rust_decimal/borsh lockfile
-closure; that does not make it a working direct consumer. Do not change core
-Binary ownership or add both bytes and byteview without a measured need.
+than slice length alone. bytes was originally present only in the optional
+rust_decimal/borsh lockfile closure. It now has a direct runtime captured-image consumer, recorded in the
+[desktop follow-up](DESKTOP_LIBRARY_REVIEW.md). This does not change core Binary
+ownership or justify adding byteview alongside it.
 
 The bounded memchr and ArrayVec/SmallVec experiments now have
 [recorded measurements](DEPENDENCIES.md). ArrayVec is adopted only for native

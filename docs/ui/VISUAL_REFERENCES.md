@@ -59,6 +59,22 @@ inspector is not established by these references. Native type codes, supported
 read carriers and uninspected properties must remain distinguishable; a familiar
 property-sheet shape does not justify inventing Required/default/validation facts.
 
+## Review each new surface against the captures
+
+Use the actual local images while implementing the corresponding surface, not
+only this written description. Compare ribbon grouping and density, object/tab
+placement, grid spacing, active/selected states and the Design pane arrangement.
+Observe the rendered TableCraft window at a known logical size and scale; record
+which surface was inspected and which platform remains unverified. Retain exact
+native measurements in future form/report models rather than deriving them from
+screenshot pixels or a layout library's preferred units.
+
+A library or replacement icon set cannot redefine the reference appearance.
+Choose any Fluent assets individually for working actions; their Windows 11
+styling is not evidence of a match to these Access captures. Preserve labels,
+keyboard/focus behavior and native embedded application images. Keep the source
+captures private and out of CI requirements.
+
 ## Verification limits
 
 These references establish observed layout, not complete interaction, keyboard,
