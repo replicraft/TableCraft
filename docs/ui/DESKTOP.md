@@ -211,3 +211,29 @@ visible labels connected through actual egui label relationships. The font notic
 continues to load from the root asset directory. All eight UI tests and desktop/UI
 strict lint pass after this extraction; this is not additional platform accessibility
 or native workflow qualification.
+
+
+### Native selection and background completion
+
+Desktop now advertises file-selection capability to the shared UI: Browse and
+Command/Control+O request the host picker. A host without that capability retains
+path focus. Busy state refuses picker requests. Desktop owns the parented native
+async dialog and polls it with a repaint waker, adding no executor or database
+read path. Selection dispatches the existing Open task with an exact PathBuf;
+manual path edits invalidate the native binding. Cancelling leaves the current
+document, password and results intact. The preview filter includes native MDB,
+ACCDB, MDE/ACCDE, ACCDR and ACCDC inputs; content qualification remains authoritative.
+
+Three desktop tests pass future completion/cancellation and non-Unicode path
+identity; two new UI tests pass host-capability/shortcut admission (ten UI tests
+total). A fourth desktop test verifies task completion through eframe's logic
+callback with no visible UI pass. Runtime/dialog results are consumed there so
+background processing does not depend on drawing the window. Desktop/UI strict
+lint and the native binary build pass after these changes.
+
+During native observation the old preview accepted path input and submitted Open,
+but complete catalog results were not observed. Its sampled worker was idle; the
+review identified UI-only completion polling and corrected it as above. Reopening
+the updated preview produced a live process, but the computer-use connection then
+timed out. Native picker/table/query interaction remains unverified; these tool
+failures are not recorded as a successful workflow or a native database failure.
