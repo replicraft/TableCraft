@@ -60,6 +60,21 @@ impl NativeProperty {
             _ => Err(InspectError::Malformed),
         }
     }
+
+    /// Decode an exact signed 16-bit native property without interpreting its
+    /// flags or assigning meaning to unknown numeric values.
+    pub fn int16(&self) -> Result<i16, InspectError> {
+        if self.kind != data_type::INT16 {
+            return Err(InspectError::Unsupported);
+        }
+        let bytes = self
+            .raw
+            .as_slice()
+            .try_into()
+            .map_err(|_| InspectError::Malformed)?;
+        Ok(i16::from_le_bytes(bytes))
+    }
+
     /// Decoded text, never evaluated as a default, validation rule or callback.
     pub fn text(&self) -> Result<&str, InspectError> {
         self.text.as_deref().ok_or(InspectError::Unsupported)
@@ -131,6 +146,43 @@ impl TableProperties {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn signed_integer_properties_keep_exact_native_width_and_unknown_values() {
+        for (raw, expected) in [
+            ([0x6A, 0x00], 106),
+            ([0xFF, 0x7F], 32_767),
+            ([0x00, 0x80], -32_768),
+            ([0xFF, 0xFF], -1),
+        ] {
+            let property = NativeProperty {
+                name: "DisplayControl".into(),
+                kind: 3,
+                flags: 0x81,
+                raw: raw.to_vec(),
+                text: None,
+            };
+            assert_eq!(property.int16(), Ok(expected));
+            assert_eq!(property.flags(), 0x81);
+        }
+
+        for (kind, raw, expected) in [
+            (2, vec![106], InspectError::Unsupported),
+            (4, vec![106, 0, 0, 0], InspectError::Unsupported),
+            (3, vec![], InspectError::Malformed),
+            (3, vec![106], InspectError::Malformed),
+            (3, vec![106, 0, 0], InspectError::Malformed),
+        ] {
+            let property = NativeProperty {
+                name: "DisplayControl".into(),
+                kind,
+                flags: 1,
+                raw,
+                text: None,
+            };
+            assert_eq!(property.int16(), Err(expected));
+        }
+    }
 
     #[test]
     fn numeric_byte_properties_preserve_unknown_values_without_coercion() {
