@@ -1,12 +1,19 @@
+mod selection;
+pub(crate) use selection::Selection;
+
 use super::{Action, Cell, Data};
 use crate::theme::{GRID_HEADER, GRID_LINE};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 
-pub(super) fn show(ui: &mut Ui, data: &Data) -> Vec<Action> {
+const ACTIVE_HEADER: egui::Color32 = egui::Color32::from_rgb(255, 225, 102);
+const ACTIVE_ROW: egui::Color32 = egui::Color32::from_rgb(166, 205, 234);
+const CELL_TEXT_PADDING: f32 = 3.0;
+
+pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection) -> Vec<Action> {
     let mut actions = Vec::new();
-    show_rows(ui, data, |_| {}, &mut actions);
+    show_rows(ui, data, |_| {}, &mut actions, selection);
     actions
 }
 
@@ -15,7 +22,10 @@ fn show_rows(
     data: &Data,
     mut row_drawn: impl FnMut(usize),
     actions: &mut Vec<Action>,
+    selection: &mut Selection,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
+    selection.prepare(ui, data);
+    let scroll_to = selection.scroll_to_row();
     ui.push_id((&data.table, data.offset), |ui| {
         // Reserve scrollbar space below the viewport, including one-row pages.
         // The style change is scoped to this datasheet and its nested table.
@@ -24,7 +34,11 @@ fn show_rows(
             .id_salt("datasheet_horizontal")
             .auto_shrink([false, false])
             .show(ui, |ui| {
-                TableBuilder::new(ui)
+                let mut table = TableBuilder::new(ui);
+                if let Some(row) = scroll_to {
+                    table = table.scroll_to_row(row, Some(egui::Align::Center));
+                }
+                table
                     .auto_shrink([false, false])
                     .striped(false)
                     .resizable(true)
@@ -35,9 +49,12 @@ fn show_rows(
                             grid_cell(ui, true);
                             ui.label(RichText::new("#"));
                         });
-                        for name in &data.columns {
+                        for (column, name) in data.columns.iter().enumerate() {
                             header.col(|ui| {
                                 grid_cell(ui, true);
+                                if ui.is_enabled() && selection.column() == Some(column) {
+                                    ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
+                                }
                                 ui.label(RichText::new(name));
                             });
                         }
@@ -49,6 +66,9 @@ fn show_rows(
                             let number = u64::from(data.offset) + index as u64 + 1;
                             row.col(|ui| {
                                 grid_cell(ui, true);
+                                if ui.is_enabled() && selection.row() == Some(index) {
+                                    ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
+                                }
                                 ui.weak(number.to_string());
                             });
                             for (position, (column, text)) in
@@ -56,7 +76,25 @@ fn show_rows(
                             {
                                 row.col(|ui| {
                                     grid_cell(ui, false);
-                                    let response = cell(ui, text, column, number);
+                                    let active = selection.selected(index, position);
+                                    if ui.is_enabled() && selection.row() == Some(index) {
+                                        let fill = if active {
+                                            egui::Color32::WHITE
+                                        } else {
+                                            ACTIVE_ROW
+                                        };
+                                        ui.painter().rect_filled(ui.max_rect(), 0.0, fill);
+                                    }
+                                    let response = cell(ui, text, column, number, active);
+                                    selection.observe(ui, index, position, &response);
+                                    if ui.is_enabled() && selection.selected(index, position) {
+                                        ui.painter().rect_stroke(
+                                            ui.max_rect(),
+                                            0.0,
+                                            egui::Stroke::new(1.0, crate::theme::ACCENT),
+                                            egui::StrokeKind::Inside,
+                                        );
+                                    }
                                     collect_contents_action(
                                         ui,
                                         &response,
@@ -68,6 +106,12 @@ fn show_rows(
                             }
                         });
                     });
+                // The inner vertical ScrollArea consumes both scroll targets,
+                // including its disabled horizontal axis. Issue this one-shot
+                // cell reveal only after that inner area has completed.
+                if let Some(rect) = selection.take_reveal() {
+                    ui.scroll_to_rect(rect, Some(egui::Align::Center));
+                }
             })
     })
     .inner
@@ -132,21 +176,41 @@ fn grid_cell(ui: &Ui, header: bool) {
         .line_segment([rect.left_bottom(), rect.right_bottom()], stroke);
 }
 
-fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
+fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64, allow_copy: bool) -> Response {
     let text = value.text.as_str();
     let context = value.context();
     let display = match value.badge() {
         Some(badge) => Cow::Owned(format!("{text}  [{badge}]")),
         None => Cow::Borrowed(text),
     };
-    let response = ui.add(
-        egui::Label::new(display.as_ref())
-            .selectable(true)
-            .sense(Sense::focusable_noninteractive())
-            .truncate(),
+    let response = ui.allocate_response(ui.available_size(), Sense::click());
+    let width = (response.rect.width() - 2.0 * CELL_TEXT_PADDING).max(0.0);
+    let galley = egui::WidgetText::from(display.as_ref()).into_galley(
+        ui,
+        Some(egui::TextWrapMode::Truncate),
+        width,
+        egui::TextStyle::Body,
     );
+    let position = egui::pos2(
+        response.rect.left() + CELL_TEXT_PADDING,
+        response.rect.center().y - galley.size().y * 0.5,
+    );
+    ui.painter()
+        .galley(position, galley, ui.visuals().text_color());
     if response.clicked() {
         response.request_focus();
+    }
+    if ui.is_enabled() && response.has_focus() {
+        ui.memory_mut(|memory| {
+            memory.set_focus_lock_filter(
+                response.id,
+                egui::EventFilter {
+                    horizontal_arrows: true,
+                    vertical_arrows: true,
+                    ..Default::default()
+                },
+            );
+        });
     }
     response.widget_info(|| {
         WidgetInfo::labeled(
@@ -159,7 +223,7 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
         )
     });
 
-    if response.has_focus() && ui.is_enabled() {
+    if allow_copy && response.has_focus() && ui.is_enabled() {
         let copy = ui.input_mut(|input| {
             let copy = input
                 .events
@@ -173,7 +237,7 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
             copy
         });
         if copy {
-            ui.ctx().copy_text(text.to_owned());
+            copy_text(ui.ctx(), text);
         }
         egui::Tooltip::for_widget(&response).show(|ui| {
             ui.label(text);
@@ -189,6 +253,10 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
             ui.small(context);
         }
     })
+}
+
+pub(crate) fn copy_text(ctx: &egui::Context, text: &str) {
+    ctx.copy_text(text.to_owned());
 }
 
 #[cfg(test)]

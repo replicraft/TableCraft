@@ -100,6 +100,19 @@ source/constraint checks, exact target capability, consuming revision/lease
 semantics and durable recovery where required. No button may bypass unsupported
 validation, data macros, locking or native-save restrictions.
 
+The next connected editing slice belongs in the runtime, using the existing
+[offline write session](../access/writes/OFFLINE_WRITE_SESSIONS.md); desktop must
+not launch CLI commands or reproduce native planning. The current filesystem
+session is macOS/Linux-only and does not supply Access multiuser coordination.
+Collect an edit before acquiring its exclusive lease. Under that lease, compare
+the current complete image with the viewed source before resolving a fresh
+snapshot-local row handle; a displayed ordinal alone is not write authority.
+Keep query-result updateability separate from direct table editing. Apply must
+retain validation, journal/recovery outcomes and fallible release, then publish a
+fresh read view only after acknowledged completion. A cancelled or failed
+operation cannot be represented as a successful toggle or edited cell. This is
+the integration direction, not a currently implemented GUI write capability.
+
 Before calling the first desktop slice usable, verify a real file-open → catalog
 → table page → explicit SELECT workflow, unsupported/corrupt file errors, empty
 and nullable results, paging/projection, cancellation and stale-generation races.
@@ -425,3 +438,50 @@ native build, formatting, dependency boundaries and documentation links pass.
 Open layout checks include the desktop minimum 900 × 580 and default 1280 × 820
 logical sizes, with long path/error text. Actual Windows/Linux and platform
 screen-reader qualification remain unrun.
+
+## Active cells and working Home commands
+
+The loaded datasheet retains a selected cell separately for table pages, query
+results and collection contents. The screenshot's yellow active-column header,
+blue current row and red active-cell outline make that state visible. Mouse and
+plain arrow keys move within the loaded data; keyboard movement reveals its
+target without continuously forcing scroll position. No implicit page fetch,
+editing or new-record row is supplied by selection.
+
+Publishing new Data resets that slot's selection, including same-name/same-offset
+replacements. Ordinary document-tab and File navigation retain each slot's
+position. A default first selection does not request keyboard focus from a text
+editor. Keyboard Copy belongs to the focused selected cell; the Home Copy command
+can use the retained selection after toolbar focus changes. Both publish its full
+display value through the toolkit clipboard, without badges. Hidden results and
+Design cannot supply a cell copy; a collection dialog uses only its own contents.
+
+Home contains working Views and Clipboard groups. Datasheet and Table Design
+apply to the active table/schema owner; the Query tab cannot redirect them to a
+previous table. Table Design submits the existing metadata command, while Copy
+uses presentation state only. Unsupported editing, formatting, paste and sorting
+commands are not filled in as decorative functionality.
+
+Native macOS observation confirmed the yellow header, blue row, red active-cell
+outline and readable left text inset. Fifteen separate Right presses retained
+cell focus through the last field and revealed it horizontally; Left and Enter
+then opened the adjacent attachment contents. Home Copy published the complete
+selected text through the system clipboard, verified by pasting into a local
+field without opening a different source. Home Table Design and Datasheet used
+the real metadata route and retained page respectively.
+
+The checks caught a nested-scroller reveal bug, centered text caused by a
+full-cell label layout, and egui's automatic directional focus escaping after the
+first arrow. The implementation now issues horizontal reveal outside the inner
+vertical scroller, paints text within one full-cell response and owns consumed
+arrow focus. Tests use actual response bounds and separate keydown/keyup frames;
+manual-scroll checks wait for the toolkit animation to settle. Initial guessed
+click coordinates and an ambiguous text-prefix lookup were corrected in the test
+helper, without changing the intended selected-cell assertions.
+
+All 62 focused checks pass: twenty runtime unit tests, one diagnostic integration
+test, thirty-two shared UI tests and nine desktop tests. The final UI/desktop
+batch was rerun after the visual/focus corrections; strict Clippy, native build,
+formatting, dependency boundaries and documentation links pass. The private
+sample remains byte-for-byte unchanged. These checks do not establish editable
+cells, full grid accessibility, Windows/Linux behavior or native Access parity.
