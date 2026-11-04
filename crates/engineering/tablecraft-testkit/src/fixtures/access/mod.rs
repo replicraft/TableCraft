@@ -106,6 +106,8 @@ pub fn image(overflow: bool, indirect: bool) -> Vec<u8> {
     bytes
 }
 
+/// Literal field properties and mask-only Boolean record fixtures.
+pub mod field_presentation;
 /// Literal ordinary INSERT seeds without native engine dependencies.
 pub mod insert_seed;
 /// Literal definition framing used by source models.
