@@ -549,8 +549,20 @@ records the platform, restart-discovery and native profile limitations.
 
 This is an explicit offline workflow. It does not implement Access
 record autosave, live shared editing or general query-result updateability.
-Native visual observation of this new dialog remains pending; earlier captures
-and native observations above cover the browsing surfaces.
+Native macOS observation now covers the draft, review, apply, acknowledgment and
+refreshed-table sequence on a disposable independent Jet 4 fixture. Score row 2
+changed from 20 to 27. Comparing the entire 57,344-byte file with the original
+found only the expected byte at offset 53,232 changed; no journal entries remained.
+A second draft containing invalid integer text retained that text and showed a
+validation error, with no Apply action. Cancel preserved the exact saved image.
+The window then closed normally. This does not qualify Access-native behavior,
+other write profiles or Windows/Linux GUI operation.
+
+The native automation initially failed to focus the text area through its
+accessibility index; the unchanged review correctly reported zero changes. A
+coordinate click based on the actual screenshot focused the input, after which
+the changed-value sequence above passed. No no-op review was reported as a
+changed-value save.
 
 All 88 focused checks pass: thirty-three runtime unit tests, one diagnostic test,
 thirty-nine shared UI tests, thirteen desktop tests and two Access image-guard
