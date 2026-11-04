@@ -1,4 +1,5 @@
 //! Native TableCraft workspace. Database work is isolated from the event thread.
+mod diagnostics;
 mod file_dialog;
 mod workspace;
 
@@ -9,12 +10,17 @@ use std::path::PathBuf;
 #[derive(Parser)]
 #[command(version, about)]
 struct Args {
+    /// Emit payload-free operation diagnostics to stderr; repeat for I/O detail.
+    #[arg(short, long, action = clap::ArgAction::Count)]
+    verbose: u8,
+
     /// Optional MDB/ACCDB path to open after startup.
     database: Option<PathBuf>,
 }
 
 fn main() -> eframe::Result {
     let args = Args::parse();
+    diagnostics::init(args.verbose).map_err(eframe::Error::AppCreation)?;
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([1280.0, 820.0])

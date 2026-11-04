@@ -19,7 +19,7 @@ fn query(sql: &str) -> Command {
     }
 }
 
-fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
+pub(super) fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {
         if let Some(reply) = worker.poll() {

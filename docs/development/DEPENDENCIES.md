@@ -15,6 +15,13 @@ Window/device/accessibility behavior still needs qualification on each platform.
 `tablecraft-runtime` reuses existing dependencies for application sessions,
 read/query tasks and typed errors; it has no GUI dependency.
 
+The runtime now directly inherits the existing `tracing` 0.1.44 dependency for
+payload-free worker operation spans. The desktop inherits `tracing` and
+`tracing-subscriber` 0.3.20 for explicit `-v`/`-vv` stderr diagnostics; the runtime
+uses the subscriber only in development tests. No registry version or feature
+changes are introduced. See [the diagnostics contract](TRACING.md) and the
+[complete follow-up review](DESKTOP_LIBRARY_REVIEW.md).
+
 Native file selection adds host-only `rfd` 0.17.2 (MIT), centrally declared with
 no default features and desktop-only `xdg-portal`/`wayland` features. The actual
 published release uses pollster for the portal backend; it has no async-std/Tokio

@@ -20,7 +20,9 @@ tablecraft-io.workspace = true
 tablecraft-query.workspace = true
 tablecraft-sql.workspace = true
 thiserror.workspace = true
+tracing.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+tracing-subscriber.workspace = true
 tablecraft-testkit.workspace = true

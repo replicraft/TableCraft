@@ -61,7 +61,9 @@ impl Worker {
             response: Mutex::new(None),
         });
         let thread_shared = Arc::clone(&shared);
+        let dispatch = tracing::dispatcher::get_default(Clone::clone);
         std::thread::spawn(move || {
+            let _subscriber = tracing::dispatcher::set_default(&dispatch);
             loop {
                 let mut pending = thread_shared.pending.lock().unwrap();
                 while pending.is_none() && !thread_shared.stopped.load(Ordering::Acquire) {
@@ -79,8 +81,21 @@ impl Worker {
                     thread_shared.stopped.load(Ordering::Acquire)
                         || thread_shared.generation.load(Ordering::Acquire) != request.id
                 };
+                let operation = match &request.command {
+                    Command::Open { .. } => "open",
+                    Command::Page { .. } => "page",
+                    Command::Query { .. } => "query",
+                };
+                let span = tracing::debug_span!("application read task", operation);
+                let _entered = span.enter();
                 let result = execute(&mut request.command, &cancelled);
-                if !cancelled() {
+                let superseded = cancelled();
+                tracing::debug!(
+                    success = result.is_ok(),
+                    superseded,
+                    "application read task completed"
+                );
+                if !superseded {
                     *thread_shared.response.lock().unwrap() = Some((request.id, result));
                     repaint();
                 }
