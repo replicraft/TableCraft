@@ -4,7 +4,7 @@ use std::{
     io::{Cursor, Read, Seek, SeekFrom},
 };
 use tablecraft_access::{NativeSavedReadError, NativeSource};
-use tablecraft_ace::{InspectError, NativeReadSource};
+use tablecraft_ace::{DatabaseQueryMode, InspectError, NativeReadSource};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -413,4 +413,44 @@ fn deferred_policy_keeps_native_and_comparison_admission_separate() {
     let comparison_before = remaining(&comparisons);
     assert_eq!(read(&source), Ok(38));
     assert_eq!(remaining(&comparisons), comparison_before);
+}
+
+#[test]
+fn database_query_options_consume_the_actual_native_pool_and_propagate_failures() {
+    let pool = RefCell::new(allowance(MAX_STEPS));
+    let cancelled = Cell::new(false);
+    let callback = || cancelled.get();
+    let mut source = open(&pool, &callback);
+    let before = remaining(&pool);
+    assert_eq!(
+        source.database_query_mode().unwrap(),
+        DatabaseQueryMode::Ansi89
+    );
+    let after = remaining(&pool);
+    assert!(after[0] < before[0]);
+    assert!(after[2] < before[2]);
+
+    {
+        let _borrow = pool.borrow_mut();
+        assert!(matches!(
+            source.database_query_mode(),
+            Err(InspectError::Unsupported)
+        ));
+    }
+    assert_eq!(remaining(&pool), after);
+
+    cancelled.set(true);
+    assert!(matches!(
+        source.database_query_mode(),
+        Err(InspectError::Cancelled)
+    ));
+    assert_eq!(remaining(&pool), after);
+
+    cancelled.set(false);
+    let steps = pool.borrow().remaining(Resource::Steps);
+    pool.borrow_mut().charge(Resource::Steps, steps).unwrap();
+    assert!(matches!(
+        source.database_query_mode(),
+        Err(InspectError::Limit(_))
+    ));
 }

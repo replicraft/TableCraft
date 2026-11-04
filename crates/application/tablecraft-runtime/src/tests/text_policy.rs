@@ -58,11 +58,48 @@ fn native_text_policies_reach_predicates_groups_and_explicit_string_modes() {
     );
     assert_eq!(row_texts(&actual), [["true"]]);
 
-    // Comparison does not invent the separate database wildcard setting or
-    // a VBA module's omitted Option Compare policy.
-    assert!(request(&worker, query("SELECT 'abc' LIKE 'a*'")).is_err());
+    // This actual database declares ANSI-89; it does not supply a VBA module's
+    // omitted Option Compare setting.
+    assert_eq!(
+        row_texts(&rows(&worker, "SELECT 'abc' LIKE 'a*'")),
+        [["true"]]
+    );
     assert!(request(&worker, query("SELECT StrComp('a','A')")).is_err());
     assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn native_wildcard_mode_uses_only_qualified_database_settings() {
+    use tablecraft_testkit::fixtures::access::database_properties;
+
+    for mode in [Some(0_i32), Some(1), Some(2), None] {
+        let raw_mode = mode.unwrap_or(0).to_le_bytes();
+        let properties = match mode {
+            Some(_) => database_properties::query_modes(&[(1, 4, &raw_mode)]),
+            None => database_properties::query_modes(&[]),
+        };
+        let mut original = database_properties::database(Some(&properties));
+        database_order(&mut original, [9, 4, 0, 0]);
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("wildcards.mdb");
+        std::fs::write(&path, &original).unwrap();
+        let worker = Worker::new(|| {});
+        request(&worker, open(&path, "")).unwrap();
+
+        assert_eq!(row_texts(&rows(&worker, "SELECT 40+2 AS N")), [["42"]]);
+        let sql = "SELECT 'Apple' LIKE 'a*' AS [Star], 'Apple' LIKE 'a%' AS [Percent]";
+        match mode {
+            Some(0) => assert_eq!(row_texts(&rows(&worker, sql)), [["true", "false"]]),
+            Some(1) => assert_eq!(row_texts(&rows(&worker, sql)), [["false", "true"]]),
+            _ => assert!(matches!(
+                request(&worker, query(sql)),
+                Err(Error::Query(QueryError::Evaluation(
+                    EvalError::LikeModeRequired
+                )))
+            )),
+        }
+        assert_eq!(std::fs::read(path).unwrap(), original);
+    }
 }
 
 #[test]

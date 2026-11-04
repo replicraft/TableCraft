@@ -14,6 +14,7 @@ pub use links::{LinkSourceError, LinkedNativeSource, NativeLinkMapping};
 mod multivalue;
 mod progressive;
 mod projection;
+mod query_mode;
 mod recomputed;
 pub use recomputed::{CalculationView, RecomputedNativeSource};
 mod saved;
