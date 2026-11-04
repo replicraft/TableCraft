@@ -2,6 +2,7 @@ mod backstage;
 mod chrome;
 mod content;
 mod contents;
+mod home;
 mod navigation;
 mod query;
 mod schema;
@@ -10,6 +11,7 @@ pub use contents::{CollectionKind, ContentsTarget};
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
+use crate::datasheet::{self, Selection};
 use egui::Ui;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
@@ -68,6 +70,8 @@ pub struct State {
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,
+    table_selection: Selection,
+    query_selection: Selection,
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
     selected_field: usize,
@@ -85,12 +89,38 @@ impl State {
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, data: Data) {
         self.close_contents();
+        self.table_selection.reset(&data);
         self.data = Some(data);
     }
 
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, data: Data) {
+        self.query_selection.reset(&data);
         self.query_data = Some(data);
+    }
+
+    /// Full text of the retained selection in the visible loaded data only.
+    pub fn selected_cell_text(&self) -> Option<&str> {
+        if self.backstage_visible() {
+            return None;
+        }
+        if self.contents_request_id().is_some() {
+            return self.selected_contents_text();
+        }
+        let data = self.visible_data()?;
+        match self.view {
+            DocumentView::Table => self.table_selection.text(data),
+            DocumentView::Query => self.query_selection.text(data),
+            DocumentView::Design => None,
+        }
+    }
+
+    pub fn copy_selected(&self, ctx: &egui::Context) -> bool {
+        let Some(text) = self.selected_cell_text() else {
+            return false;
+        };
+        datasheet::copy_text(ctx, text);
+        true
     }
 
     /// Record explicit navigation to Design before the host submits Describe.
@@ -117,6 +147,8 @@ impl State {
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
         self.close_contents();
+        self.table_selection.clear();
+        self.query_selection.clear();
         self.schema = None;
         self.selected_field = 0;
         self.schema_activation_pending = false;
@@ -323,5 +355,48 @@ mod picker_tests {
         assert!(state.file_picker_ready());
         let (actions, _) = command_open(&mut state);
         assert!(matches!(actions.as_slice(), [Action::ChooseFile]));
+    }
+}
+
+#[cfg(test)]
+mod selection_tests {
+    use super::*;
+
+    fn data(text: &str) -> Data {
+        Data {
+            source_revision: None,
+            table: "Same result name".into(),
+            offset: 0,
+            columns: vec!["Value".into()],
+            rows: vec![vec![text.into()]],
+            has_more: false,
+        }
+    }
+
+    #[test]
+    fn publication_resets_only_its_slot_and_hidden_views_do_not_publish_copy_text() {
+        let mut state = State::default();
+        state.dismiss_backstage();
+        state.set_table_data(data("old table"));
+        state.set_query_data(data("old query"));
+        assert_eq!(state.selected_cell_text(), Some("old table"));
+        state.select_view(DocumentView::Query);
+        assert_eq!(state.selected_cell_text(), Some("old query"));
+        state.set_table_data(data("new table"));
+        assert_eq!(state.selected_cell_text(), Some("old query"));
+        state.set_query_data(data("new query"));
+        assert_eq!(state.selected_cell_text(), Some("new query"));
+        state.select_view(DocumentView::Design);
+        assert!(state.selected_cell_text().is_none());
+        state.select_view(DocumentView::Table);
+        assert_eq!(state.selected_cell_text(), Some("new table"));
+        state.show_open();
+        assert!(state.selected_cell_text().is_none());
+        state.dismiss_backstage();
+        assert_eq!(state.selected_cell_text(), Some("new table"));
+        state.clear_schema();
+        assert!(state.selected_cell_text().is_none());
+        state.data = None;
+        assert!(state.selected_cell_text().is_none());
     }
 }

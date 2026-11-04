@@ -21,6 +21,7 @@ pub(super) struct ContentsDialog {
     target: ContentsTarget,
     request_id: u64,
     result: ContentsResult,
+    selection: datasheet::Selection,
 }
 
 enum ContentsResult {
@@ -87,6 +88,7 @@ impl State {
                 target,
                 request_id,
                 result: ContentsResult::Loading,
+                selection: datasheet::Selection::default(),
             });
         }
     }
@@ -110,6 +112,7 @@ impl State {
         // Child rows are observations, never a new native parent capability.
         data.source_revision = None;
         if let Some(dialog) = &mut self.contents {
+            dialog.selection.reset(&data);
             dialog.result = ContentsResult::Ready {
                 kind,
                 assigned,
@@ -135,6 +138,17 @@ impl State {
                 .is_some_and(|dialog| dialog.request_id == request_id && &dialog.target == target)
     }
 
+    pub(super) fn selected_contents_text(&self) -> Option<&str> {
+        let dialog = self.contents.as_ref()?;
+        if !self.can_view_contents(&dialog.target) {
+            return None;
+        }
+        let ContentsResult::Ready { data, .. } = &dialog.result else {
+            return None;
+        };
+        dialog.selection.text(data)
+    }
+
     pub fn close_contents(&mut self) {
         self.contents = None;
     }
@@ -149,6 +163,7 @@ impl State {
             actions.push(Action::CloseContents { request_id });
             return;
         }
+        let dialog = self.contents.as_mut().expect("validated open dialog");
         let mut close = false;
         let response = egui::Modal::new(egui::Id::new("collection_contents")).show(ctx, |ui| {
             ui.set_width((ctx.content_rect().width() - 80.0).clamp(320.0, 880.0));
@@ -194,7 +209,7 @@ impl State {
                             egui::Layout::top_down(egui::Align::LEFT),
                             |ui| {
                                 ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                                let _ = datasheet::show(ui, data);
+                                let _ = datasheet::show(ui, data, &mut dialog.selection);
                             },
                         );
                     }

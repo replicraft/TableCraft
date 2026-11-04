@@ -56,21 +56,17 @@ impl State {
                     return;
                 }
                 self.query_editor(ui, actions);
-                if let Some(data) = self.visible_data() {
+                let data = match self.view {
+                    DocumentView::Table => self.data.as_ref(),
+                    DocumentView::Query => self.query_data.as_ref(),
+                    DocumentView::Design => None,
+                };
+                if let Some(data) = data {
                     ui.horizontal(|ui| {
                         ui.heading(&data.table);
                         ui.label(
                             RichText::new(format!("{} columns", data.columns.len())).color(MUTED),
                         );
-                        if self.view == DocumentView::Table
-                            && ui
-                                .add_enabled(!self.busy, egui::Button::new("View schema"))
-                                .clicked()
-                        {
-                            actions.push(Action::ViewSchema {
-                                table: data.table.clone(),
-                            });
-                        }
                     });
                     if self.view == DocumentView::Table {
                         ui.horizontal(|ui| {
@@ -115,7 +111,12 @@ impl State {
                     if data.rows.is_empty() {
                         ui.weak("No rows.");
                     } else {
-                        actions.extend(datasheet::show(ui, data));
+                        let selection = if self.view == DocumentView::Table {
+                            &mut self.table_selection
+                        } else {
+                            &mut self.query_selection
+                        };
+                        actions.extend(datasheet::show(ui, data, selection));
                     }
                 } else if self.view == DocumentView::Query {
                     ui.weak("Run a query to see its results.");

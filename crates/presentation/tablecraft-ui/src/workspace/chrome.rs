@@ -1,4 +1,4 @@
-//! Shared title, database controls, status and About presentation.
+//! Shared application title, working Home ribbon and task status.
 use super::{Action, State};
 use crate::theme::{ACCENT, INK, TITLE_FILL};
 use egui::{Color32, Frame, Margin, RichText, Ui};
@@ -41,9 +41,25 @@ impl State {
                         .inner_margin(Margin::symmetric(8, 5)),
                 )
                 .show(ui, |ui| {
-                    if ui.button("File").clicked() {
-                        self.show_open();
-                    }
+                    ui.horizontal(|ui| {
+                        if ui
+                            .add(egui::Button::new("File").fill(Color32::WHITE))
+                            .clicked()
+                        {
+                            self.show_open();
+                        }
+                        let home = ui.add(
+                            egui::Button::new("Home")
+                                .selected(true)
+                                .fill(Color32::WHITE),
+                        );
+                        ui.painter().line_segment(
+                            [home.rect.left_bottom(), home.rect.right_bottom()],
+                            egui::Stroke::new(2.0, ACCENT),
+                        );
+                    });
+                    ui.separator();
+                    self.home(ui, actions);
                 });
         }
         egui::Panel::bottom("status").show(ui, |ui| {

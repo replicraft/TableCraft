@@ -32,6 +32,12 @@ from a captured display, not platform-independent logical measurements. Current
 colors and spacing are approximations requiring visual comparison at the target
 scale; they are not measured pixel-exact matches.
 
+The active datasheet field uses the observed yellow header, blue current row and
+white active cell with a red outline. Home exposes actual View and Clipboard
+groups: Datasheet/Table Design target the current table object, and Copy uses the
+retained selected cell. Selection and read-only commands do not establish record
+editing, rectangular selection or query-result updateability.
+
 Only working commands remain interactive. File opening, passwords, cancellation,
 table pages and read queries retain their current paths. No mock Create ribbon,
 editable new-record row, Click to Add field, checkbox editing, query designer or
