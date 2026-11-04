@@ -31,6 +31,7 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    ChooseFile,
     Open,
     Page { table: String, offset: u32 },
     Query,
@@ -42,6 +43,8 @@ pub enum Action {
 pub struct State {
     pub path: String,
     pub password: String,
+    /// The host has an actual file-selection implementation.
+    pub file_picker_available: bool,
     pub database: Option<Database>,
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
@@ -64,6 +67,10 @@ impl State {
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, data: Data) {
         self.query_data = Some(data);
+    }
+
+    fn file_picker_ready(&self) -> bool {
+        self.file_picker_available && !self.busy
     }
 
     fn query_ready(&self) -> bool {
@@ -90,7 +97,11 @@ impl State {
         }
         let path_id = egui::Id::new("database_path");
         if shortcuts.focus_path {
-            ui.memory_mut(|memory| memory.request_focus(path_id));
+            if self.file_picker_ready() {
+                actions.push(Action::ChooseFile);
+            } else if !self.file_picker_available {
+                ui.memory_mut(|memory| memory.request_focus(path_id));
+            }
         }
         self.chrome(ui, &mut actions, path_id);
         self.navigation(ui, &mut actions);
@@ -153,5 +164,69 @@ mod tests {
         state.busy = false;
         state.sql.clear();
         assert!(!state.query_ready());
+    }
+}
+
+#[cfg(test)]
+mod picker_tests {
+    use super::*;
+
+    fn command_open(state: &mut State) -> (Vec<Action>, Option<egui::Id>) {
+        let ctx = egui::Context::default();
+        let mut observed = None;
+        let mut output = ctx.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1280.0, 820.0),
+                )),
+                events: vec![egui::Event::Key {
+                    key: egui::Key::O,
+                    physical_key: None,
+                    pressed: true,
+                    repeat: false,
+                    modifiers: egui::Modifiers {
+                        ctrl: true,
+                        command: true,
+                        ..Default::default()
+                    },
+                }],
+                ..Default::default()
+            },
+            |ui| {
+                let actions = state.show(ui);
+                let focused = ui.memory(|memory| memory.focused());
+                observed = Some((actions, focused));
+            },
+        );
+        output.textures_delta.clear();
+        observed.unwrap()
+    }
+
+    #[test]
+    fn command_open_uses_host_picker_or_focuses_the_existing_path_field() {
+        let mut state = State::default();
+        let (actions, focused) = command_open(&mut state);
+        assert!(actions.is_empty());
+        assert_eq!(focused, Some(egui::Id::new("database_path")));
+        state.file_picker_available = true;
+        let (actions, _) = command_open(&mut state);
+        assert!(matches!(actions.as_slice(), [Action::ChooseFile]));
+    }
+
+    #[test]
+    fn busy_picker_capability_disables_browse_and_command_open() {
+        let mut state = State {
+            file_picker_available: true,
+            busy: true,
+            ..Default::default()
+        };
+        assert!(!state.file_picker_ready());
+        let (actions, _) = command_open(&mut state);
+        assert!(actions.is_empty());
+        state.busy = false;
+        assert!(state.file_picker_ready());
+        let (actions, _) = command_open(&mut state);
+        assert!(matches!(actions.as_slice(), [Action::ChooseFile]));
     }
 }

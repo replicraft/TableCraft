@@ -1,4 +1,5 @@
 //! Native TableCraft workspace. Database work is isolated from the event thread.
+mod file_dialog;
 mod workspace;
 
 use clap::Parser;

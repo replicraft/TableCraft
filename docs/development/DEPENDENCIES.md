@@ -15,6 +15,15 @@ Window/device/accessibility behavior still needs qualification on each platform.
 `tablecraft-runtime` reuses existing dependencies for application sessions,
 read/query tasks and typed errors; it has no GUI dependency.
 
+Native file selection adds host-only `rfd` 0.17.2 (MIT), centrally declared with
+no default features and desktop-only `xdg-portal`/`wayland` features. The actual
+published release uses pollster for the portal backend; it has no async-std/Tokio
+feature. A parented [AsyncFileDialog](https://docs.rs/rfd/0.17.2/rfd/struct.AsyncFileDialog.html)
+is polled on the UI event thread using a repaint waker. Selected paths go to the
+existing runtime Open operation, rather than reading bytes through the dialog.
+The shared UI, runtime and CLI do not depend on rfd. Native dialog behavior still
+requires platform observation; future polling tests are not that observation.
+
 The unmodified regular [Selawik 1.01 font](../../assets/ui/fonts/README.md) is
 bundled at the repository asset root under SIL OFL 1.1. Its copyright/license
 is retained beside the file and displayed in the shared About view. Existing CLI

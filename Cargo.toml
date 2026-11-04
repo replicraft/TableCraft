@@ -32,6 +32,7 @@ repository = "https://github.com/replicraft/TableCraft"
 # Native desktop rendering and shared UI mechanics
 # Host features remain local; headless packages do not inherit these dependencies.
 eframe = { version = "0.36.2", default-features = false }
+rfd = { version = "0.17.2", default-features = false }
 egui = { version = "0.36.2", default-features = false }
 egui_extras = { version = "0.36.2", default-features = false }
 tablecraft-runtime = { path = "crates/application/tablecraft-runtime", default-features = false }

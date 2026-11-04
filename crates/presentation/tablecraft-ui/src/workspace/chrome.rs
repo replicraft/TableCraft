@@ -62,6 +62,13 @@ impl State {
                         .hint_text("Path to .accdb or .mdb"),
                 )
                 .labelled_by(path_label.id);
+                if self.file_picker_available
+                    && ui
+                        .add_enabled(self.file_picker_ready(), egui::Button::new("Browse…"))
+                        .clicked()
+                {
+                    actions.push(Action::ChooseFile);
+                }
                 let password_label = ui.label("Password");
                 ui.add_sized(
                     [130.0, 28.0],
