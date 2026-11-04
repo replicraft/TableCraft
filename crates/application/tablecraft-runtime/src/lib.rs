@@ -4,6 +4,8 @@ mod contents;
 mod controls;
 mod display;
 mod document;
+#[cfg(feature = "offline-edit")]
+mod editing;
 mod query;
 mod rows;
 mod schema;
@@ -12,6 +14,13 @@ mod worker;
 
 pub use cell::{Cell, CellKind, DisplayControl};
 pub use contents::{CollectionKind, ContentsTarget};
+#[cfg(feature = "offline-edit")]
+pub use editing::{
+    EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, SaveCompletion,
+    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase,
+    SaveReceipt, SaveReport, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
+    journal_path,
+};
 pub use schema::Field;
 pub use worker::Worker;
 
@@ -21,6 +30,15 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "offline-edit")]
+    #[error("a reserved journal entry requires explicit recovery or diagnosis before opening")]
+    RetainedJournal,
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    Edit(#[from] EditError),
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    Conversion(#[from] tablecraft_expressions::EvalError),
     #[error("operation cancelled")]
     Cancelled,
     #[error("no database is open")]
@@ -67,11 +85,32 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
-    Open { path: PathBuf, password: String },
-    Page { table: String, offset: u32 },
-    Describe { table: String },
-    InspectCollection { target: ContentsTarget },
-    Query { sql: String },
+    Open {
+        path: PathBuf,
+        password: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    BeginEdit {
+        target: EditTarget,
+    },
+    #[cfg(feature = "offline-edit")]
+    ReviewEdit {
+        draft_id: u64,
+        input: EditInput,
+    },
+    Page {
+        table: String,
+        offset: u32,
+    },
+    Describe {
+        table: String,
+    },
+    InspectCollection {
+        target: ContentsTarget,
+    },
+    Query {
+        sql: String,
+    },
 }
 
 impl Drop for Command {
@@ -89,6 +128,13 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(feature = "offline-edit")]
+    EditDraft(EditDraft),
+    #[cfg(feature = "offline-edit")]
+    EditReviewed {
+        review: EditReview,
+        capability: ReviewedEdit,
+    },
     /// A complete explicit read of one parent's stored collection. There are no
     /// executable attachment actions or borrowed native values in this response.
     Contents {

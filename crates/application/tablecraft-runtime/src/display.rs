@@ -84,10 +84,30 @@ impl<'a> Presentation<'a> {
     }
 
     pub(super) fn text(&mut self, text: &str) -> Result<String, Error> {
+        let mut owned = String::new();
+        self.append_text(&mut owned, text)?;
+        Ok(owned)
+    }
+
+    #[cfg(all(
+        feature = "offline-edit",
+        any(target_os = "macos", target_os = "linux")
+    ))]
+    pub(crate) fn binary(&mut self, count: usize) -> Result<Vec<u8>, Error> {
+        self.work(1)?;
+        self.work.charge_allocation(count as u64, 1)?;
+        let mut bytes = Vec::new();
+        bytes.try_reserve_exact(count)?;
+        Ok(bytes)
+    }
+
+    pub(crate) fn append_text(&mut self, owned: &mut String, fragment: &str) -> Result<(), Error> {
         check(self.cancelled)?;
         self.work.charge(Resource::Steps, 1)?;
-        self.work.charge(Resource::Bytes, text.len() as u64)?;
-        Ok(text.to_owned())
+        self.work.charge(Resource::Bytes, fragment.len() as u64)?;
+        owned.try_reserve(fragment.len())?;
+        owned.push_str(fragment);
+        Ok(())
     }
 
     pub(super) fn value(&mut self, value: &Value) -> Result<String, Error> {

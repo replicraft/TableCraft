@@ -1,11 +1,12 @@
 //! Raw package selection and explicit authenticated native page decoding.
 use super::Error;
+use bytes::Bytes;
 use std::io::{Cursor, Read, Seek, SeekFrom};
 use tablecraft_access::AccessInput;
 use tablecraft_ace::{EncryptedSource, Header, InspectError, NativeReadSource, inspect_header};
 use tablecraft_core::limits::ResourceBudget;
 
-type Input = AccessInput<Cursor<Vec<u8>>>;
+type Input = AccessInput<Cursor<Bytes>>;
 
 pub(super) enum Source {
     Plain(Input),
@@ -53,8 +54,16 @@ impl NativeReadSource for Source {
 }
 
 impl Source {
+    #[cfg(all(
+        feature = "offline-edit",
+        any(target_os = "macos", target_os = "linux")
+    ))]
+    pub(super) fn editable_native(&self) -> bool {
+        matches!(self, Self::Plain(input) if !input.is_deployment())
+    }
+
     pub(super) fn open(
-        bytes: Vec<u8>,
+        bytes: Bytes,
         password: &str,
         work: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
