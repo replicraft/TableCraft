@@ -37,6 +37,16 @@ is retained beside the file and displayed in the shared About view. Existing CLI
 release archives do not contain this font or new desktop dependencies. Desktop
 release packaging and its complete transitive notice audit are a follow-on gate.
 
+## Desktop contents acceptance (4 November 2026)
+
+The desktop directly inherits existing `tablecraft-testkit` and `tempfile`
+development dependencies for its actual worker/dialog/source-replacement
+round-trip test. Raw attachment bytes come from the shared independent builder;
+no fixture is copied into the host. No registry versions or features change.
+The desktop's normal workspace dependencies remain runtime and UI. The boundary
+guard permits testkit only as a development edge and tests both application
+owners' normal/build/dev cases.
+
 ## Typed CLI creation (31 October 2026)
 
 Typed creation now consumes `ScalarType` and validated `DecimalConstraints` from

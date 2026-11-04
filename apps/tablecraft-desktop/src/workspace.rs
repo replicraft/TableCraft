@@ -1,14 +1,23 @@
 use crate::file_dialog::{FileDialog, SelectedFile};
 use std::path::PathBuf;
-use tablecraft_runtime::{Command, Response, Worker};
-use tablecraft_ui::{Action, Data, Database, Field, Schema, State, Table};
+use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
+use tablecraft_ui::{Action, ContentsTarget, Data, Database, Field, Schema, State, Table};
 use zeroize::Zeroize;
+
+enum PendingOperation {
+    Read,
+    Query,
+    Contents {
+        target: ContentsTarget,
+        request_id: u64,
+    },
+}
 
 pub(super) struct Desktop {
     state: State,
     worker: Worker,
     generation: u64,
-    query_pending: bool,
+    pending: PendingOperation,
     file_dialog: FileDialog,
     selected_file: Option<SelectedFile>,
 }
@@ -20,7 +29,7 @@ impl Desktop {
             state: State::default(),
             worker,
             generation: 0,
-            query_pending: false,
+            pending: PendingOperation::Read,
             file_dialog: FileDialog::default(),
             selected_file: None,
         };
@@ -33,11 +42,36 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
+        let contents = match &command {
+            Command::InspectCollection { target } => {
+                Some(crate::view_models::contents_target(target))
+            }
+            _ => None,
+        };
+        if let Some(target) = &contents {
+            if !self.state.can_view_contents(target) {
+                self.state.error = Some("The collection no longer belongs to this view.".into());
+                return;
+            }
+        } else {
+            self.state.close_contents();
+        }
         if matches!(&command, Command::Describe { .. }) {
             self.state.prepare_schema_view();
         }
-        self.query_pending = matches!(&command, Command::Query { .. });
+        let query = matches!(&command, Command::Query { .. });
         self.generation = self.worker.request(command);
+        self.pending = if let Some(target) = contents {
+            self.state.begin_contents(target.clone(), self.generation);
+            PendingOperation::Contents {
+                target,
+                request_id: self.generation,
+            }
+        } else if query {
+            PendingOperation::Query
+        } else {
+            PendingOperation::Read
+        };
         self.state.busy = true;
         self.state.error = None;
     }
@@ -72,6 +106,7 @@ impl Desktop {
         self.state.data = None;
         self.state.query_data = None;
         self.state.clear_schema();
+        self.state.close_contents();
         self.submit(Command::Open { path, password });
     }
 
@@ -107,11 +142,13 @@ impl Desktop {
                         .collect(),
                 }),
                 Ok(Response::Opened {
+                    document_revision,
                     title,
                     format,
                     tables,
                 }) => {
                     self.state.database = Some(Database {
+                        document_revision,
                         title,
                         format,
                         tables: tables
@@ -125,6 +162,7 @@ impl Desktop {
                     });
                 }
                 Ok(Response::Data {
+                    source_revision,
                     table,
                     offset,
                     columns,
@@ -132,23 +170,66 @@ impl Desktop {
                     has_more,
                 }) => {
                     let data = Data {
+                        source_revision,
                         table,
                         offset,
                         columns,
-                        rows: rows
-                            .into_iter()
-                            .map(|row| row.into_iter().map(crate::view_models::cell).collect())
-                            .collect(),
+                        rows: crate::view_models::rows(rows),
                         has_more,
                     };
-                    if self.query_pending {
+                    if matches!(&self.pending, PendingOperation::Query) {
                         self.state.set_query_data(data);
                     } else {
                         self.state.set_table_data(data);
                     }
                 }
-                Err(error) => self.state.error = Some(error.to_string()),
+                Ok(Response::Contents {
+                    target,
+                    kind,
+                    assigned,
+                    columns,
+                    rows,
+                }) => {
+                    if let PendingOperation::Contents { request_id, .. } = &self.pending {
+                        let target = crate::view_models::contents_target(&target);
+                        let data = Data {
+                            table: target.column.clone(),
+                            source_revision: None,
+                            offset: 0,
+                            columns,
+                            rows: crate::view_models::rows(rows),
+                            has_more: false,
+                        };
+                        self.state.set_contents(
+                            *request_id,
+                            target,
+                            crate::view_models::collection_kind(kind),
+                            assigned,
+                            data,
+                        );
+                    }
+                }
+                Err(error) => match &self.pending {
+                    PendingOperation::Contents { target, request_id } => {
+                        self.state
+                            .fail_contents(*request_id, target.clone(), error.to_string());
+                    }
+                    _ => self.state.error = Some(error.to_string()),
+                },
             }
+        }
+    }
+
+    fn close_contents(&mut self, request_id: u64) {
+        if matches!(&self.pending, PendingOperation::Contents { request_id: current, .. } if *current == request_id)
+            && self.generation == request_id
+        {
+            self.state.close_contents();
+            if self.state.busy {
+                self.worker.cancel();
+                self.state.busy = false;
+            }
+            self.pending = PendingOperation::Read;
         }
     }
 }
@@ -178,13 +259,26 @@ impl eframe::App for Desktop {
                 Action::Open => self.open(),
                 Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
                 Action::ViewSchema { table } => self.submit(Command::Describe { table }),
+                Action::ViewContents { target } => self.submit(Command::InspectCollection {
+                    target: RuntimeContentsTarget {
+                        document_revision: target.document_revision,
+                        table: target.table,
+                        column: target.column,
+                        parent_ordinal: target.parent_ordinal,
+                    },
+                }),
+                Action::CloseContents { request_id } => self.close_contents(request_id),
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
                 Action::Cancel => {
-                    self.worker.cancel();
-                    self.state.busy = false;
-                    self.state.error = Some("Operation cancelled.".into());
+                    if let PendingOperation::Contents { request_id, .. } = &self.pending {
+                        self.close_contents(*request_id);
+                    } else {
+                        self.worker.cancel();
+                        self.state.busy = false;
+                        self.state.error = Some("Operation cancelled.".into());
+                    }
                 }
             }
         }
@@ -204,6 +298,7 @@ mod tests {
     use eframe::App;
     use std::path::Path;
     use std::time::{Duration, Instant};
+    use tablecraft_testkit::fixtures::access::attachment_modern;
 
     fn finish(desktop: &mut Desktop, context: &egui::Context, frame: &mut eframe::Frame) {
         let deadline = Instant::now() + Duration::from_secs(10);
@@ -288,5 +383,96 @@ mod tests {
             }
         ));
         assert!(desktop.state.data.is_none());
+    }
+
+    #[test]
+    fn collection_metadata_roundtrip_keeps_source_and_dialog_requests_separate() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("attachments.accdb");
+        let original = attachment_modern::database(6);
+        std::fs::write(&path, &original).unwrap();
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        let mut desktop = Desktop::new(context.clone(), Some(path.clone()));
+        let mut frame = eframe::Frame::_new_kittest();
+        finish(&mut desktop, &context, &mut frame);
+        let revision = desktop.state.database.as_ref().unwrap().document_revision;
+        desktop.submit(Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        });
+        finish(&mut desktop, &context, &mut frame);
+
+        let target = RuntimeContentsTarget {
+            document_revision: revision,
+            table: "Items".into(),
+            column: "Score".into(),
+            parent_ordinal: 0,
+        };
+        desktop.submit(Command::InspectCollection {
+            target: target.clone(),
+        });
+        let first_request = desktop.generation;
+        finish(&mut desktop, &context, &mut frame);
+        assert_eq!(desktop.state.contents_request_id(), Some(first_request));
+        assert_eq!(
+            desktop.state.data.as_ref().unwrap().rows[0][1].text,
+            "2 attachments"
+        );
+
+        let mut visible_metadata = false;
+        for pass in 0..3 {
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    time: Some(f64::from(pass) * 0.25),
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(1280.0, 820.0),
+                    )),
+                    ..Default::default()
+                },
+                |ui| assert!(desktop.state.show(ui).is_empty()),
+            );
+            visible_metadata = output
+                .platform_output
+                .accesskit_update
+                .as_ref()
+                .is_some_and(|tree| {
+                    tree.nodes.iter().any(|(_, node)| {
+                        node.value()
+                            .is_some_and(|text| text.contains("synthetic.bin"))
+                    })
+                });
+            output.textures_delta.clear();
+        }
+        assert!(visible_metadata, "collection metadata was not presented");
+        desktop.close_contents(first_request);
+        assert!(desktop.state.contents_request_id().is_none());
+
+        // An old dialog close must not cancel a newer request for the same cell.
+        desktop.submit(Command::InspectCollection {
+            target: target.clone(),
+        });
+        let second_request = desktop.generation;
+        desktop.close_contents(first_request);
+        assert_eq!(desktop.state.contents_request_id(), Some(second_request));
+        assert!(desktop.state.busy);
+        desktop.close_contents(second_request);
+        assert!(desktop.state.contents_request_id().is_none());
+        assert!(!desktop.state.busy);
+
+        desktop.open();
+        finish(&mut desktop, &context, &mut frame);
+        assert_ne!(
+            desktop.state.database.as_ref().unwrap().document_revision,
+            revision
+        );
+        let before = desktop.generation;
+        desktop.submit(Command::InspectCollection { target });
+        assert_eq!(desktop.generation, before);
+        assert!(desktop.state.contents_request_id().is_none());
+        assert!(!desktop.state.busy);
+        assert!(desktop.state.error.is_some());
+        assert_eq!(std::fs::read(path).unwrap(), original);
     }
 }

@@ -1,5 +1,6 @@
 """Regression cases for architectural violations and manifest bypasses."""
 from copy import deepcopy
+import itertools
 import unittest
 
 from check_dependency_boundaries import violations
@@ -134,18 +135,20 @@ class BoundaryTests(unittest.TestCase):
                     for error in violations(data)
                 ))
 
-    def test_runtime_testkit_dependency_remains_development_only(self):
-        for kind in [None, "build", "dev"]:
-            with self.subTest(kind=kind):
+    def test_application_testkit_dependencies_remain_development_only(self):
+        for owner, kind in itertools.product(
+            ["tablecraft-runtime", "tablecraft-desktop"], [None, "build", "dev"]
+        ):
+            with self.subTest(owner=owner, kind=kind):
                 data, _, _ = self.desktop_workspace()
                 helper = package("tablecraft-testkit", "crates/engineering/tablecraft-testkit")
                 data["packages"].append(helper)
                 data["workspace_members"].append(helper["id"])
-                runtime = next(
+                consumer = next(
                     candidate for candidate in data["packages"]
-                    if candidate["name"] == "tablecraft-runtime"
+                    if candidate["name"] == owner
                 )
-                runtime["dependencies"].append({"name": "tablecraft-testkit", "kind": kind})
+                consumer["dependencies"].append({"name": "tablecraft-testkit", "kind": kind})
                 errors = violations(data)
                 if kind == "dev":
                     self.assertEqual(errors, [])

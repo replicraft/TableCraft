@@ -61,6 +61,7 @@ impl Document {
             rows.push(row);
         }
         Ok(Response::Data {
+            source_revision: None,
             table: output.text("Query results")?,
             offset: 0,
             columns,

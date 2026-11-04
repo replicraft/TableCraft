@@ -13,8 +13,10 @@ native and eventual web hosts. Shared fonts live in `assets/ui/fonts`.
 
 Runtime tests pass actual table/query operations, action refusal, cancellation
 and stale-generation suppression. Table pages also retain typed NULL/cache facts
-and complete stored collection counts; cached formulas and attachment payloads
-remain inert. See the [shared application read contract](application/RUNTIME.md). The shared UI renders empty and populated
+and complete stored collection counts. Explicit collection inspection shows
+ordered multivalue members, attachment metadata and stored Memo history in a
+revision-bound dialog; cached formulas and attachment payloads remain inert.
+See the [shared application read contract](application/RUNTIME.md). The shared UI renders empty and populated
 states in a headless egui pass. Native visual/platform verification and build
 status are recorded in the [desktop guide](ui/DESKTOP.md). Writes and designers
 are not exposed by this first workspace. Broader backend work continues alongside

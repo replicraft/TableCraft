@@ -39,12 +39,13 @@ owns its subscriber, and the shared runtime captures its caller's dispatcher whe
 starting the worker so task spans and nested backend spans share that subscriber.
 
 An `application read task` span contains only the fixed operation `open`, `page`
-or `query`, plus explicit metadata-only `describe`. Its completion event records
+or `query`, plus explicit metadata-only `describe` and stored-child
+`inspect_collection`. Its completion event records
 boolean `success` and `superseded` fields.
 No command Debug value, error text, path, table name, SQL or password is recorded.
 These events describe execution completion, not acceptance of a possibly stale
 response by the GUI, and do not change cancellation or transactional outcomes.
-A dedicated integration test captures all four command kinds on the background
+A dedicated integration test captures all five command kinds on the background
 thread and checks both operation visibility and payload omission. Its separate
 process avoids tracing-core 0.1.36's single-dispatch callsite registration fast
 path caching quiet parallel unit workers' sites as disabled. The real worker and

@@ -170,6 +170,7 @@ mod tests {
     fn design_publication_and_source_reset_preserve_independent_result_slots() {
         let mut state = State::default();
         state.set_table_data(Data {
+            source_revision: None,
             table: "Records".into(),
             offset: 100,
             columns: vec![],
@@ -177,6 +178,7 @@ mod tests {
             has_more: false,
         });
         state.set_query_data(Data {
+            source_revision: None,
             table: "Query result".into(),
             offset: 0,
             columns: vec![],

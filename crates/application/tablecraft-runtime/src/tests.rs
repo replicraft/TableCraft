@@ -1,3 +1,4 @@
+mod contents;
 mod schema;
 mod stored;
 
@@ -238,6 +239,7 @@ fn latest_request_cancels_running_work_and_replaces_pending_work() {
         }
         assert!(!cancelled());
         Ok(Response::Data {
+            source_revision: None,
             table: sql.clone(),
             offset: 0,
             columns: Vec::new(),
@@ -272,6 +274,7 @@ fn explicit_cancel_discards_a_late_result() {
         release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
         observed_tx.send(cancelled()).unwrap();
         Ok(Response::Opened {
+            document_revision: 1,
             title: String::new(),
             format: String::new(),
             tables: Vec::new(),
@@ -292,6 +295,7 @@ fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
             panic!("expected query");
         };
         Ok(Response::Data {
+            source_revision: None,
             table: sql.clone(),
             offset: 0,
             columns: Vec::new(),

@@ -115,7 +115,7 @@ impl State {
                     if data.rows.is_empty() {
                         ui.weak("No rows.");
                     } else {
-                        datasheet::show(ui, data);
+                        actions.extend(datasheet::show(ui, data));
                     }
                 } else if self.view == DocumentView::Query {
                     ui.weak("Run a query to see its results.");

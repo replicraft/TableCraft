@@ -98,7 +98,7 @@ impl From<&str> for Cell {
     }
 }
 
-fn membership(kind: &str, assigned: bool, members: usize) -> String {
+pub(crate) fn membership(kind: &str, assigned: bool, members: usize) -> String {
     if assigned {
         let unit = if members == 1 { "member" } else { "members" };
         format!(
