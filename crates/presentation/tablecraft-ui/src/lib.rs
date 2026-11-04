@@ -1,5 +1,6 @@
 //! Shared database workspace presentation; hosts own files, tasks and services.
 mod datasheet;
+mod keyboard;
 mod theme;
 mod workspace;
 

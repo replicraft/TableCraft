@@ -143,3 +143,60 @@ The first compile corrected the installed egui style API. The first rendering
 test needed explicit disposal of egui texture deltas, and a subsequent compile
 followed the font notice's user rename to `OFL-Selawik.txt`. The final runtime
 three-test and UI one-test passes, build and strict checks are the current result.
+
+## GUI implementation sequence
+
+The active goal is the Access-compatible application, rather than a single empty
+window or a prerequisite to finish every engine profile first. Work proceeds in
+reviewable slices, with backend changes justified by the same user workflows:
+
+1. Connected opening, password/error handling, table navigation, bounded pages and
+   explicit read SQL; verify the public runtime and real desktop path.
+2. Native file picking/drop, separate object/query tabs, keyboard navigation,
+   accessible labels and cells, selection/copy, column metadata and responsive
+   paging/search/filter/sort controls through shared services.
+3. Query design, schema/relationship inspection and designer workflows, retaining
+   native names, semantics and explicit unsupported cases.
+4. Connected datasheet editing and creation through qualified typed sessions,
+   shared validation and journal/recovery. Expand backend profiles needed by
+   actual edits; do not expose a cell as editable solely because it is readable.
+5. Imported and authored forms/reports, application navigation, non-VBA actions
+   and macros, printing/preview and preservation. Deferred VBA execution remains
+   visible rather than silently changing imported application behavior.
+6. Platform integration, document associations, accessibility/DPI/fallback review,
+   packaging, upgrades and reproducible Windows/macOS/Linux workflow verification.
+
+The initial developer preview does not complete any of the later milestones.
+Existing backend roadmap items and native Access comparisons retain their own
+acceptance boundaries alongside these UI-driven tasks.
+
+### Connected workflow and keyboard follow-up
+
+The public runtime now passes five tests through its actual Worker Open/Page/Query
+interface: file-backed catalog/read/query, immutable reads after the source file
+changes, failed-open session clearing and retry, exact missing/wrong password
+errors and successful retry, stale invalid-path suppression and cancellation.
+The encrypted test uses a temporary derivative of the existing licensed example
+through the production encryption writer; independent engine goldens, rather than
+this test, remain the crypto oracle. Runtime code is split into document/source,
+rows, query, display and control owners.
+
+Table pages and query results now retain separate slots, with host completion
+routing by request kind. Shared shortcuts focus the path (Command/Control+O), run
+an admitted query (Command/Control+Enter) and cancel current work (Escape).
+Eight UI test functions pass across the original batch and one targeted rerun:
+view/admission state, key events, visible-row virtualization over 10,000 rows,
+Tab focus, full cell copy/accessibility value and the shared render smoke. The
+shortcut fixture was corrected for egui's actual key-event API; the accessibility
+assertion uses Label's AccessKit value property. No production workaround was
+added for either test API assumption. Strict lint for all three packages passes.
+Cells have real selectable/focusable Label semantics; complete grid topology and
+screen-reader/platform qualification remain future work.
+
+A subsequent mailbox review found and fixed a fast-result publication race and
+concurrent pending-request ordering. Submission/cancel now serialize generation,
+old-result clearing and pending replacement under the mailbox lock; native work
+still runs outside locks. All six runtime tests pass after the correction,
+including 2,048 submissions from concurrent producers with highest-generation
+result checks. Strict lint passes again. This verifies task coordination rather
+than database shared-file concurrency.

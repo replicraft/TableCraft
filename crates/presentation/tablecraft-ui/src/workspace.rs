@@ -1,5 +1,5 @@
 use super::{
-    datasheet,
+    datasheet, keyboard,
     theme::{ACCENT, MUTED},
 };
 use egui::{Color32, Frame, Margin, RichText, ScrollArea, TextEdit, Ui};
@@ -41,7 +41,9 @@ pub struct State {
     pub path: String,
     pub password: String,
     pub database: Option<Database>,
+    /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
+    pub query_data: Option<Data>,
     pub busy: bool,
     pub error: Option<String>,
     pub sql: String,
@@ -52,9 +54,42 @@ pub struct State {
 }
 
 impl State {
+    /// Publish a table response without replacing the query result.
+    pub fn set_table_data(&mut self, data: Data) {
+        self.data = Some(data);
+    }
+
+    /// Publish a query response without changing the table page or its offset.
+    pub fn set_query_data(&mut self, data: Data) {
+        self.query_data = Some(data);
+    }
+
+    fn query_ready(&self) -> bool {
+        self.query_view && self.database.is_some() && !self.busy && !self.sql.trim().is_empty()
+    }
+
+    fn visible_data(&self) -> Option<&Data> {
+        if self.query_view {
+            self.query_data.as_ref()
+        } else {
+            self.data.as_ref()
+        }
+    }
+
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         let mut actions = Vec::new();
+        let shortcuts = keyboard::consume(ui.ctx(), self.query_ready(), self.busy);
+        if shortcuts.query {
+            actions.push(Action::Query);
+        }
+        if shortcuts.cancel {
+            actions.push(Action::Cancel);
+        }
+        let path_id = egui::Id::new("database_path");
+        if shortcuts.focus_path {
+            ui.memory_mut(|memory| memory.request_focus(path_id));
+        }
         egui::Panel::top("title")
             .frame(
                 Frame::new()
@@ -80,7 +115,10 @@ impl State {
                     );
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         if ui
-                            .button(RichText::new("About").color(Color32::WHITE))
+                            .add(
+                                egui::Button::new(RichText::new("About").color(Color32::WHITE))
+                                    .fill(ACCENT),
+                            )
                             .clicked()
                         {
                             self.about = true;
@@ -96,7 +134,7 @@ impl State {
         egui::Panel::top("ribbon").show(ui, |ui| {
             ui.add_space(3.0);
             ui.horizontal(|ui| {
-                ui.selectable_value(&mut self.query_view, false, "Home");
+                ui.selectable_value(&mut self.query_view, false, "Table");
                 ui.selectable_value(&mut self.query_view, true, "Query");
             });
             ui.separator();
@@ -104,7 +142,9 @@ impl State {
                 ui.label("Database");
                 ui.add_sized(
                     [(ui.available_width().min(530.0) - 190.0).max(150.0), 28.0],
-                    TextEdit::singleline(&mut self.path).hint_text("Path to .accdb or .mdb"),
+                    TextEdit::singleline(&mut self.path)
+                        .id(path_id)
+                        .hint_text("Path to .accdb or .mdb"),
                 );
                 ui.add_sized(
                     [130.0, 28.0],
@@ -215,17 +255,14 @@ impl State {
                         .hint_text("SELECT TOP 100 * FROM [Customers]"),
                 );
                 if ui
-                    .add_enabled(
-                        self.database.is_some() && !self.busy && !self.sql.trim().is_empty(),
-                        egui::Button::new("Run query"),
-                    )
+                    .add_enabled(self.query_ready(), egui::Button::new("Run query"))
                     .clicked()
                 {
                     actions.push(Action::Query);
                 }
                 ui.separator();
             }
-            if let Some(data) = &self.data {
+            if let Some(data) = self.visible_data() {
                 ui.horizontal(|ui| {
                     ui.heading(&data.table);
                     ui.label(RichText::new(format!("{} columns", data.columns.len())).color(MUTED));
@@ -253,13 +290,17 @@ impl State {
                             },
                             u64::from(data.offset) + data.rows.len() as u64
                         ));
+                        let next_offset = data.offset.checked_add(100);
                         if ui
-                            .add_enabled(!self.busy && data.has_more, egui::Button::new("Next ›"))
+                            .add_enabled(
+                                !self.busy && data.has_more && next_offset.is_some(),
+                                egui::Button::new("Next ›"),
+                            )
                             .clicked()
                         {
                             actions.push(Action::Page {
                                 table: data.table.clone(),
-                                offset: data.offset.saturating_add(100),
+                                offset: next_offset.expect("enabled only for a valid next page"),
                             });
                         }
                     });
@@ -270,6 +311,8 @@ impl State {
                 } else {
                     datasheet::show(ui, data);
                 }
+            } else if self.query_view {
+                ui.weak("Run a query to see its results.");
             } else {
                 ui.add_space(80.0);
                 ui.vertical_centered(|ui| {
@@ -300,5 +343,61 @@ impl State {
                 });
             });
         actions
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn data(table: &str, offset: u32) -> Data {
+        Data {
+            table: table.into(),
+            offset,
+            columns: vec!["Id".into()],
+            rows: vec![vec!["1".into()]],
+            has_more: true,
+        }
+    }
+
+    #[test]
+    fn tab_results_retain_separate_data_and_original_table_page_offset() {
+        let mut state = State::default();
+        state.set_table_data(data("Customers", 200));
+        assert_eq!(state.visible_data().unwrap().table, "Customers");
+        state.query_view = true;
+        assert!(state.visible_data().is_none());
+        state.set_query_data(data("Query result", 0));
+        assert_eq!(state.visible_data().unwrap().table, "Query result");
+        state.query_view = false;
+        let page = state.visible_data().unwrap();
+        assert_eq!(page.table, "Customers");
+        assert_eq!(page.offset, 200);
+        state.set_table_data(data("Customers", 300));
+        state.query_view = true;
+        assert_eq!(state.visible_data().unwrap().table, "Query result");
+        assert_eq!(state.visible_data().unwrap().offset, 0);
+    }
+
+    #[test]
+    fn running_query_requires_query_tab_document_text_and_idle_state() {
+        let mut state = State {
+            sql: "SELECT 1".into(),
+            ..Default::default()
+        };
+        assert!(!state.query_ready());
+        state.database = Some(Database {
+            title: "Sample".into(),
+            format: "ACE16".into(),
+            tables: vec![],
+        });
+        assert!(!state.query_ready());
+        state.query_view = true;
+        assert!(state.query_ready());
+        state.busy = true;
+        assert!(!state.query_ready());
+        state.busy = false;
+        state.sql.clear();
+        assert!(!state.query_ready());
     }
 }

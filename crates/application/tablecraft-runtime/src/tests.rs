@@ -1,8 +1,15 @@
-use super::{Command, Error, Response, Worker, read::Document};
+use super::{Command, Error, Response, Worker};
 use std::{
-    sync::mpsc,
+    io::Cursor,
+    path::Path,
+    sync::{
+        Arc, Barrier, Mutex,
+        atomic::{AtomicBool, Ordering},
+        mpsc,
+    },
     time::{Duration, Instant},
 };
+use tablecraft_ace::{EncryptionRewrite, InspectError, rewrite_encryption};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
@@ -13,7 +20,7 @@ fn query(sql: &str) -> Command {
 }
 
 fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
-    let deadline = Instant::now() + Duration::from_secs(5);
+    let deadline = Instant::now() + Duration::from_secs(30);
     loop {
         if let Some(reply) = worker.poll() {
             return reply;
@@ -23,17 +30,52 @@ fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
     }
 }
 
+fn open(path: &Path, password: &str) -> Command {
+    Command::Open {
+        path: path.to_owned(),
+        password: password.to_owned(),
+    }
+}
+
+fn request(worker: &Worker, command: Command) -> Result<Response, Error> {
+    let expected = worker.request(command);
+    let (actual, response) = poll(worker);
+    assert_eq!(actual, expected);
+    response
+}
+
 #[test]
 fn native_sample_pages_and_queries_use_real_services() {
-    let raw = mutation_fixture::database();
-    let mut work = ResourceBudget::new(128 * 1024 * 1024, 10_000, 1_000_000);
-    let (mut document, _) = Document::from_bytes(raw, "", &mut work, &|| false).unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("sample.mdb");
+    let original = mutation_fixture::database();
+    std::fs::write(&path, &original).unwrap();
+    let worker = Worker::new(|| {});
+    let Response::Opened { title, tables, .. } = request(&worker, open(&path, "")).unwrap() else {
+        panic!("expected opened database");
+    };
+    assert_eq!(title, "sample.mdb");
+    assert!(
+        tables
+            .iter()
+            .any(|table| table.name == "Items" && !table.system)
+    );
+
+    // Reads use the captured image after the original handle has been released.
+    std::fs::write(&path, b"changed outside the read session").unwrap();
     let Response::Data {
         columns,
         rows,
         has_more,
         ..
-    } = document.page("Items", 0, &|| false).unwrap()
+    } = request(
+        &worker,
+        Command::Page {
+            table: "Items".to_owned(),
+            offset: 0,
+        },
+    )
+    .unwrap()
     else {
         panic!("expected data page");
     };
@@ -46,20 +88,125 @@ fn native_sample_pages_and_queries_use_real_services() {
         rows,
         has_more,
         ..
-    } = document
-        .query(
-            "SELECT [Id], [Score] FROM [Items] WHERE [Score] > 10 ORDER BY [Id] DESC",
-            &|| false,
-        )
-        .unwrap()
+    } = request(
+        &worker,
+        query("SELECT [Id], [Score] FROM [Items] WHERE [Score] > 10 ORDER BY [Id] DESC"),
+    )
+    .unwrap()
     else {
         panic!("expected buffered query result");
     };
     assert_eq!(columns, ["Id", "Score"]);
     assert_eq!(rows, [["3", "30"], ["2", "20"]]);
     assert!(!has_more);
-    assert!(document.query("DELETE FROM [Items]", &|| false).is_err());
-    assert!(document.page("Items", 0, &|| true).is_err());
+    assert!(request(&worker, query("DELETE FROM [Items]")).is_err());
+
+    // A new failed open closes the old session; subsequent rows cannot quietly
+    // come from the database previously shown under another path.
+    let absent = directory.path().join("absent.accdb");
+    assert!(matches!(
+        request(&worker, open(&absent, "private credential")),
+        Err(Error::Io(_))
+    ));
+    assert!(matches!(
+        request(
+            &worker,
+            Command::Page {
+                table: "Items".to_owned(),
+                offset: 0,
+            }
+        ),
+        Err(Error::NoDatabase)
+    ));
+    std::fs::write(&path, &original).unwrap();
+    assert!(matches!(
+        request(&worker, open(&path, "")),
+        Ok(Response::Opened { .. })
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+}
+
+#[test]
+fn encrypted_open_reports_password_errors_and_allows_same_worker_retry() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../../docs/examples/Access_Example_VBA.accdb");
+    let original = std::fs::read(path).unwrap();
+    // This integration derivative exercises application routing and retry. The
+    // engine's independent crypto goldens own ciphertext correctness separately.
+    let encrypted = rewrite_encryption(
+        &mut Cursor::new(&original),
+        EncryptionRewrite::Add {
+            password: None,
+            new_password: "public workflow password",
+        },
+        &mut ResourceBudget::new(512 * 1024 * 1024, 100_000, 10_000_000),
+        &|| false,
+    )
+    .unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("encrypted.accdb");
+    std::fs::write(&path, encrypted.as_bytes()).unwrap();
+    let worker = Worker::new(|| {});
+    for (password, expected) in [
+        ("", InspectError::PasswordRequired),
+        ("incorrect", InspectError::IncorrectPassword),
+    ] {
+        assert!(
+            matches!(request(&worker, open(&path, password)), Err(Error::Native(error)) if error == expected)
+        );
+        assert!(matches!(
+            request(&worker, query("SELECT 1")),
+            Err(Error::NoDatabase)
+        ));
+    }
+    let Response::Opened { tables, .. } =
+        request(&worker, open(&path, "public workflow password")).unwrap()
+    else {
+        panic!("expected authenticated database");
+    };
+    assert!(tables.iter().any(|table| table.name == "ROULETTE_TB"));
+    let Response::Data { rows, .. } = request(
+        &worker,
+        Command::Page {
+            table: "ROULETTE_TB".to_owned(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("expected decrypted native rows");
+    };
+    assert!(!rows.is_empty());
+    assert_eq!(std::fs::read(&path).unwrap(), encrypted.as_bytes());
+}
+
+#[test]
+fn invalid_path_error_is_discarded_when_a_new_open_supersedes_it() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("valid.mdb");
+    std::fs::write(&path, mutation_fixture::database()).unwrap();
+    let (published_tx, published_rx) = mpsc::sync_channel(1);
+    let (release_tx, release_rx) = mpsc::sync_channel(1);
+    let release_rx = Mutex::new(release_rx);
+    let first = AtomicBool::new(true);
+    let worker = Worker::new(move || {
+        if first.swap(false, Ordering::AcqRel) {
+            published_tx.send(()).unwrap();
+            release_rx
+                .lock()
+                .unwrap()
+                .recv_timeout(Duration::from_secs(5))
+                .unwrap();
+        }
+    });
+    worker.request(open(&directory.path().join("absent.accdb"), ""));
+    published_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+    let newest = worker.request(open(&path, ""));
+    assert!(worker.poll().is_none());
+    release_tx.send(()).unwrap();
+    let (actual, response) = poll(&worker);
+    assert_eq!(actual, newest);
+    assert!(matches!(response, Ok(Response::Opened { title, .. }) if title == "valid.mdb"));
+    assert!(worker.poll().is_none());
 }
 
 #[test]
@@ -127,4 +274,54 @@ fn explicit_cancel_discards_a_late_result() {
     release_tx.send(()).unwrap();
     assert!(observed_rx.recv_timeout(Duration::from_secs(5)).unwrap());
     assert!(worker.poll().is_none());
+}
+
+#[test]
+fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
+    let worker = Arc::new(Worker::test_worker(|command, _| {
+        let Command::Query { sql } = command else {
+            panic!("expected query");
+        };
+        Ok(Response::Data {
+            table: sql.clone(),
+            offset: 0,
+            columns: Vec::new(),
+            rows: Vec::new(),
+            has_more: false,
+        })
+    }));
+
+    // Fast completions race mailbox replacement; concurrent producers race
+    // generation issuance. Each round must still publish its highest ID exactly
+    // once without requiring another request to release a stranded UI operation.
+    for round in 0..16 {
+        let start = Arc::new(Barrier::new(4));
+        let mut producers = Vec::new();
+        for producer in 0..4 {
+            let worker = Arc::clone(&worker);
+            let start = Arc::clone(&start);
+            producers.push(std::thread::spawn(move || {
+                start.wait();
+                let mut last = None;
+                for ordinal in 0..32 {
+                    let label = format!("{round}:{producer}:{ordinal}");
+                    let id = worker.request(query(&label));
+                    last = Some((id, label));
+                }
+                last.unwrap()
+            }));
+        }
+        let expected = producers
+            .into_iter()
+            .map(|producer| producer.join().unwrap())
+            .max_by_key(|(id, _)| *id)
+            .unwrap();
+        let (id, response) = poll(&worker);
+        assert_eq!(id, expected.0);
+        let Response::Data { table, .. } = response.unwrap() else {
+            panic!("expected completed newest operation");
+        };
+        assert_eq!(table, expected.1);
+        assert!(worker.poll().is_none());
+    }
 }
