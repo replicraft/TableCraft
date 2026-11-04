@@ -75,6 +75,19 @@ schema checks retain the same distinction. The explicit native resolver now
 uses the metadata for per-operation routing; native mixed-expression precedence
 remains unqualified.
 
+Application hosts can configure `NativeSource::with_deferred_database_collation_resolver`
+before schema discovery. It reads the exact stored database descriptor under the
+source's native allowance, but defers an unsupported default's refusal until an
+operation actually requests that comparison policy. Numeric operations and plain
+Text projections remain usable. Independently supported field descriptors still
+resolve exactly; unknown required field/default policies never fall back to French,
+General, ordinal or the host locale. Comparison callbacks use a distinct cumulative
+budget and the same cancellation callback. Metadata I/O/resource failures still
+propagate immediately. This API selects neither Option Compare nor ANSI LIKE
+syntax, and establishes no additional native SQL compatibility. The existing
+`with_database_collation_resolver` retains eager default validation for callers
+that require configuration-time admission.
+
 ## Explicit supported boundary
 
 [Native scalar tables](../storage/NATIVE_TABLES.md) defines the accepted unencoded profiles

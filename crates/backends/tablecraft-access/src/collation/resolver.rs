@@ -12,6 +12,9 @@ use tablecraft_query::{
     source::{CollationResolver, TextCollationId, TextEqualityKey},
 };
 
+mod deferred;
+use deferred::DeferredDefault;
+
 const LEGACY_ORDER: [u8; 4] = [9, 4, 0, 0];
 const GENERAL_2010_ORDER: [u8; 4] = [9, 4, 0, 1];
 const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
@@ -25,6 +28,7 @@ const _: () = assert!(GeneralEqualityPrefix::MAX_BYTES <= TextEqualityKey::MAX_B
 /// explicitly. No heap-owned cache, runtime or source discovery is introduced.
 pub struct NativeCollationResolver<'a> {
     default: NativeSortOrder,
+    deferred: DeferredDefault<'a>,
     legacy: GeneralCollation<'a>,
     modern: GeneralCollation<'a>,
     french: FrenchLegacyCollation<'a>,
@@ -46,8 +50,21 @@ impl<'a> NativeCollationResolver<'a> {
         {
             return Err(InspectError::Unsupported);
         }
+        Self::new_deferred_default(default, budget, cancelled)
+    }
+
+    /// Retain an exact database descriptor without requiring default-policy support.
+    /// Unsupported defaults refuse only when a comparison operation demands them;
+    /// independently supported field descriptors remain usable. Header inspection
+    /// and policy construction are still eager and retain their normal failures.
+    pub fn new_deferred_default(
+        default: NativeSortOrder,
+        budget: &'a RefCell<ResourceBudget>,
+        cancelled: &'a dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
         let resolver = Self {
             default,
+            deferred: DeferredDefault::new(budget, cancelled),
             legacy: GeneralCollation::new_shared(
                 NativeSortOrder::from_native_bytes(LEGACY_ORDER),
                 budget,
@@ -74,10 +91,11 @@ impl<'a> NativeCollationResolver<'a> {
         self.legacy = self.legacy.with_option_compare(mode);
         self.modern = self.modern.with_option_compare(mode);
         self.french = self.french.with_option_compare(mode);
+        self.deferred = self.deferred.with_option_compare(mode);
         self
     }
-    /// Borrow the configured database/default policy; unknown defaults never
-    /// reach construction and the descriptor is not inferred from file generation.
+    /// Borrow the configured database/default policy. A deferred unknown default
+    /// supplies a refusing provider, never a guessed family or ordinal fallback.
     /// The trait return replaces the previous GeneralCollation reference so a
     /// French default retains its exact provider instead of a General fallback.
     pub fn default_collation(&self) -> &dyn Collation {
@@ -85,8 +103,10 @@ impl<'a> NativeCollationResolver<'a> {
             &self.legacy
         } else if self.default == self.modern.order {
             &self.modern
-        } else {
+        } else if self.default == NativeSortOrder::from_native_bytes(FRENCH_LEGACY_ORDER) {
             &self.french
+        } else {
+            &self.deferred
         }
     }
 }
