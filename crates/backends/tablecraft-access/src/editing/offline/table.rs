@@ -1,11 +1,16 @@
 //! Typed table editing over the same retained offline target and normal planner.
 use super::{Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedUpdate};
 use crate::editing::journal::NativeJournalEditor;
-use tablecraft_ace::NativeImage;
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_ace::{InspectError, NativeImage};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{
     CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, UpdateProfile,
 };
+
+const IMAGE_COMPARE_CHUNK_BYTES: usize = 64 * 1024;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+mod original_tests;
 
 /// A real snapshot and normal journal editor, retaining the session's exclusive
 /// target while callers read rows and build snapshot-local typed replacements.
@@ -23,8 +28,32 @@ impl OfflineWriteSession {
     /// issues fresh local handles. A capture failure requires explicit refresh;
     /// any failure retains the session and its earlier completed receipt.
     pub fn edit_table(
+        self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<OfflineTableEditor, Failure> {
+        self.edit_table_with_original(table, None, budget, cancelled)
+    }
+
+    /// Require exact equality with the complete viewed image before issuing
+    /// fresh snapshot-local handles. Comparison and editor construction use the
+    /// SAME capture from the SAME exclusively retained target descriptor.
+    /// No journal is created on mismatch; failure retains the session owner.
+    pub fn edit_table_if_original(
+        self,
+        table: &str,
+        expected: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<OfflineTableEditor, Failure> {
+        self.edit_table_with_original(table, Some(expected), budget, cancelled)
+    }
+
+    fn edit_table_with_original(
         mut self,
         table: &str,
+        expected: Option<&[u8]>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<OfflineTableEditor, Failure> {
@@ -42,6 +71,9 @@ impl OfflineWriteSession {
             )
             .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
+            if let Some(expected) = expected {
+                require_original(image.as_bytes(), expected, budget, cancelled)?;
+            }
             NativeJournalEditor::new(image, table, budget, cancelled).map_err(Cause::Editor)
         })();
 
@@ -53,6 +85,35 @@ impl OfflineWriteSession {
             Err(cause) => Err(self.fail(Phase::Planning, cause)),
         }
     }
+}
+
+fn require_original(
+    actual: &[u8],
+    expected: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), Cause> {
+    super::check(budget, cancelled).map_err(Cause::Native)?;
+    if actual.len() != expected.len() {
+        return Err(Cause::SourceChanged);
+    }
+
+    // Both byte streams are visited. Charge before comparing, including an
+    // early mismatch; chunk boundaries provide bounded cancellation latency.
+    budget
+        .charge(Resource::Bytes, 2 * actual.len() as u64)
+        .map_err(InspectError::from)
+        .map_err(Cause::Native)?;
+    for (actual, expected) in actual
+        .chunks(IMAGE_COMPARE_CHUNK_BYTES)
+        .zip(expected.chunks(IMAGE_COMPARE_CHUNK_BYTES))
+    {
+        super::check(budget, cancelled).map_err(Cause::Native)?;
+        if actual != expected {
+            return Err(Cause::SourceChanged);
+        }
+    }
+    super::check(budget, cancelled).map_err(Cause::Native)
 }
 
 impl OfflineTableEditor {

@@ -44,6 +44,15 @@ namespace and lock assumptions.
 resource owner before opening the target. Opening acquires the exclusive target
 descriptor; it does not create a journal or establish native write eligibility.
 
+For a host editing a previously viewed snapshot,
+`session.edit_table_if_original(table, expected, budget, cancelled)` compares the
+complete captured physical image with `expected` before creating a fresh table
+editor or resolving snapshot-local row handles. Capture uses the same retained
+target descriptor. Length or byte mismatch returns `Cause::SourceChanged` with
+the planning failure owner; it creates no journal and changes no target bytes.
+The chunked comparison pays for both complete inputs and checks cancellation.
+The ordinary `edit_table` API retains its existing behavior and costs.
+
 `session.plan_update(query, budget, collation, cancelled)` consumes the session
 and returns `StagedUpdate`. It captures the native image from that descriptor,
 uses the existing shared SQL update planner and retains the exact resolved
