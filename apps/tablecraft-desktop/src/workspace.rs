@@ -1,15 +1,22 @@
 mod editing;
+mod navigation;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
-use tablecraft_ui::{Action, ContentsTarget, Data, Database, Field, Schema, State, Table};
+use tablecraft_ui::{
+    Action, ContentsTarget, Data, Database, Field, RecordTarget, Schema, State, Table,
+};
 use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
     Query,
+    Record {
+        target: RecordTarget,
+        request_id: u64,
+    },
     Contents {
         target: ContentsTarget,
         request_id: u64,
@@ -210,10 +217,13 @@ impl Desktop {
                         rows: crate::view_models::rows(rows),
                         has_more,
                     };
-                    if matches!(&self.pending, PendingOperation::Query) {
-                        self.state.set_query_data(data);
-                    } else {
-                        self.state.set_table_data(data);
+                    match &self.pending {
+                        PendingOperation::Query => self.state.set_query_data(data),
+                        PendingOperation::Record { target, request_id } => {
+                            self.state
+                                .set_record_data(*request_id, target.clone(), data);
+                        }
+                        _ => self.state.set_table_data(data),
                     }
                 }
                 Ok(Response::Contents {
@@ -243,6 +253,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::Record { request_id, .. } => {
+                        self.state
+                            .fail_record_navigation(*request_id, error.to_string());
+                    }
                     PendingOperation::Edit { request_id } => {
                         self.state.fail_edit(*request_id, error.to_string());
                     }
@@ -296,6 +310,7 @@ impl eframe::App for Desktop {
                 Action::ChooseFile => self.file_dialog.open(frame, ui.ctx()),
                 Action::Open => self.open(),
                 Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
+                Action::NavigateRecord { target } => self.navigate_record(target),
                 Action::ViewSchema { table } => self.submit(Command::Describe { table }),
                 Action::ViewContents { target } => self.submit(Command::InspectCollection {
                     target: RuntimeContentsTarget {
@@ -327,7 +342,12 @@ impl eframe::App for Desktop {
                     } else {
                         self.worker.cancel();
                         self.state.busy = false;
-                        self.state.error = Some("Operation cancelled.".into());
+                        if let PendingOperation::Record { request_id, .. } = &self.pending {
+                            self.state
+                                .fail_record_navigation(*request_id, "Operation cancelled.".into());
+                        } else {
+                            self.state.error = Some("Operation cancelled.".into());
+                        }
                     }
                 }
             }

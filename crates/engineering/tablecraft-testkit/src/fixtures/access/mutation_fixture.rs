@@ -3,6 +3,11 @@ use super::{data_page, image, put16, put32, record};
 
 // Original independent golden format bytes. No external fixture/tool is needed.
 pub fn database() -> Vec<u8> {
+    with_rows(&[(1, 10), (2, 20), (3, 30)])
+}
+
+/// Independently framed one-page scalar records for browser/host scenarios.
+pub fn with_rows(records: &[(i32, i32)]) -> Vec<u8> {
     let mut bytes = image(false, false);
     bytes.resize(14 * 4096, 0);
     bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
@@ -51,15 +56,19 @@ pub fn database() -> Vec<u8> {
     put_page(
         &mut bytes,
         10,
-        &definition(&[("Id", 4, 0, 4), ("Score", 4, 4, 4)], 3, 11 << 8),
+        &definition(
+            &[("Id", 4, 0, 4), ("Score", 4, 4, 4)],
+            u32::try_from(records.len()).unwrap(),
+            11 << 8,
+        ),
     );
     put_page(
         &mut bytes,
         11,
         &data_page(1, &[(0, vec![0, 0, 0, 0, 0, 0, 0x10])]),
     );
-    let rows = [(1_i32, 10_i32), (2, 20), (3, 30)]
-        .into_iter()
+    let rows = records
+        .iter()
         .map(|(id, score)| {
             let mut row = 2_u16.to_le_bytes().to_vec();
             row.extend_from_slice(&id.to_le_bytes());

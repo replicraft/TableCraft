@@ -6,10 +6,12 @@ mod editing;
 mod home;
 mod navigation;
 mod query;
+mod records;
 mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
+pub use records::RecordTarget;
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
@@ -48,6 +50,9 @@ pub enum Action {
     Page {
         table: String,
         offset: u32,
+    },
+    NavigateRecord {
+        target: RecordTarget,
     },
     ViewSchema {
         table: String,
@@ -112,6 +117,7 @@ pub struct State {
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
+    records: records::RecordNavigation,
     selected_field: usize,
     schema_activation_pending: bool,
     pub busy: bool,
@@ -126,6 +132,7 @@ pub struct State {
 impl State {
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, data: Data) {
+        self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
         self.table_selection.reset(&data);
@@ -134,6 +141,7 @@ impl State {
 
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, data: Data) {
+        self.reset_record_navigation();
         self.invalidate_edit();
         self.query_selection.reset(&data);
         self.query_data = Some(data);
@@ -166,6 +174,7 @@ impl State {
     /// Record explicit navigation to Design before the host submits Describe.
     pub fn prepare_schema_view(&mut self) {
         self.invalidate_edit();
+        self.reset_record_navigation();
         self.schema_activation_pending = true;
     }
 
@@ -184,6 +193,7 @@ impl State {
             return;
         }
         self.invalidate_edit();
+        self.reset_record_navigation();
         self.close_contents();
         self.schema_activation_pending = false;
         self.view = view;
@@ -191,6 +201,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
         self.table_selection.clear();
@@ -209,6 +220,7 @@ impl State {
             return;
         }
         self.invalidate_edit();
+        self.reset_record_navigation();
         self.backstage = backstage::Backstage::Open;
     }
 

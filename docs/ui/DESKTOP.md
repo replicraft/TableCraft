@@ -571,3 +571,47 @@ session/journal services; they do not establish a new ACE 16 native differential
 Strict runtime/UI/desktop Clippy, native desktop build, formatting, dependency
 boundaries and twenty-four guard tests pass. No full engine-suite rerun or
 Windows/Linux desktop observation is claimed for this slice.
+
+## Record navigation across pages
+
+The table datasheet now has a bottom record navigator with First, Previous,
+Next and an explicit one-based record-number input. Moves within the loaded page
+select locally; other positions use the existing bounded runtime Page service.
+The selected field is retained and the target cell receives focus/reveal once.
+The separate Previous/Next page buttons remain explicitly labelled as page moves.
+
+A pending navigation retains the old page. Only the exact document revision,
+table, request, starting offset and requested field can publish its result.
+Checked EOF, invalid positions and failed/cancelled requests preserve the prior
+page and selection. Switching views or sources, or entering a collection/edit
+dialog, invalidates pending navigation. A save cannot be superseded by a record
+request. Declared row counts supply neither an observed total nor a Last-record
+operation; those broader navigation controls remain work.
+
+Incomplete save setup now offers explicit resource release without deleting or
+repairing retained files. Acknowledgment can then close that save outcome; the
+reserved active-journal guard still prevents reopening an unresolved source.
+Failed/released outcomes independently retain the current operation result and
+last completed receipt, so an earlier known commit is neither hidden nor treated
+as the current operation's result. Uncertain unlock still requires diagnosis.
+
+Native macOS observation passed record 101 via the focused Go input and plain
+Return, Previous across the boundary back to 100, checked EOF at requested record
+999 with the prior page intact, and First returning to record 1. Score retained
+selection and actual keyboard focus. The navigator remained below the grid; the
+entire synthetic 105-record database stayed unchanged.
+
+A native setup-collision check created a sentinel bundle only after review.
+Apply reported retained setup failure without changing the database. Explicit
+Release reported acknowledged resource release; Close cleared the stale view.
+A subsequent Open refused the retained reserved entry. Both source and sentinel
+bytes remained exact. This checks actual GUI dispatch and the normal resource
+owner path, not filesystem crash recovery or native Access interoperability.
+
+The focused batch passes forty-five shared UI tests, eighteen desktop tests,
+thirty-three runtime unit tests plus diagnostics, four low-level setup-unlock
+checks and twenty-nine Access unit tests. The additional focused Return test
+caught the toolkit's focus surrender on submission; navigation now accepts that
+field's own lost-focus Return as well as focused Return, with exact modifier
+checks. Strict selected-package Clippy, native build, formatting, dependency
+boundaries and documentation links pass. No full engine-suite rerun is claimed.

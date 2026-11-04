@@ -56,6 +56,11 @@ impl State {
                     return;
                 }
                 self.query_editor(ui, actions);
+                if self.view == DocumentView::Table {
+                    egui::Panel::bottom("record_navigation").show(ui, |ui| {
+                        self.record_navigator(ui, actions);
+                    });
+                }
                 let data = match self.view {
                     DocumentView::Table => self.data.as_ref(),
                     DocumentView::Query => self.query_data.as_ref(),
@@ -73,7 +78,7 @@ impl State {
                             if ui
                                 .add_enabled(
                                     !self.busy && data.offset > 0,
-                                    egui::Button::new("‹ Previous"),
+                                    egui::Button::new("‹ Previous page"),
                                 )
                                 .clicked()
                             {
@@ -95,7 +100,7 @@ impl State {
                             if ui
                                 .add_enabled(
                                     !self.busy && data.has_more && next_offset.is_some(),
-                                    egui::Button::new("Next ›"),
+                                    egui::Button::new("Next page ›"),
                                 )
                                 .clicked()
                             {

@@ -137,6 +137,7 @@ impl State {
 
     pub fn begin_edit(&mut self, target: EditTarget, request_id: u64) {
         if !self.edit_save_pending() && self.can_edit_cell(&target) {
+            self.reset_record_navigation();
             self.edit = Some(EditDialog::Checking {
                 target,
                 request_id,
