@@ -253,3 +253,60 @@ pass. A rebuilt native launch was attempted for visual comparison, but computer-
 inspection timed out; the sampled process was still in the macOS dynamic loader.
 The corrected native rendering and interactive catalog/page/query sequence are
 therefore not yet observed. The earlier native screenshot depicts the old layout.
+
+## Read-only Table Design and native workflow follow-up
+
+An explicit View schema command is available on the current table and in each
+catalog table's context menu. It uses runtime `Describe` and
+`NativeBrowser::describe`, without loading user records or required/default/
+validation property maps. The shared Design document follows the captured central
+field grid and lower Field Properties area. It shows original names/numbers, type
+codes, storage widths/flags, available read carriers and complex/Decimal facts.
+Reader NULL support is labelled separately from the uninspected Required property.
+Unsupported fields remain visible, even when the table's scalar page refuses.
+Table pages, query results and metadata retain independent slots; replacing the
+source clears its schema and the usual generation guard rejects old completions.
+This is an inspector, not a schema editor. Descriptions/captions remain uninspected.
+
+The schema addition passes two real-worker fixture cases, two shared state/render
+cases and a desktop source-replacement/adaptation case, alongside retained checks.
+The diagnostic observation now runs in a dedicated integration-test process after
+a batch exposed tracing-core's scoped-subscriber registration race. Its complete
+operation/privacy assertions remain enabled.
+
+The corrected light workspace was subsequently observed on macOS. A private
+development bundle containing a regular executable replaced the earlier symlinked
+preview bundle; no application security settings were changed. The public ACE
+2007 example copied to a temporary directory opened and enumerated its catalog.
+Selecting ROULETTE_TB displayed 38 records. The SQL editor executed
+`SELECT TOP 3 [NBR_VALUE], [COLOR_ID] FROM [ROULETTE_TB] ORDER BY [ORDR_NBR]`
+and displayed `(2, 0)`, `(0, 65280)`, `(28, 0)`. Browse opened the native picker;
+Cancel preserved the document, SQL and complete query result. These observations
+supersede the earlier unobserved catalog/page/query/picker states above. They
+qualify this macOS/public-example workflow only.
+
+The Desktop-path attempt remained in the OS file-open syscall, while the same
+bytes in the temporary directory completed. Protected-folder consent/access and
+Desktop-path opening still need qualification; the observation does not establish
+a specific OS permission cause. A blocking filesystem open is not interruptible
+by the cooperative cancellation callback. Table Design native observation is
+now confirmed on the rebuilt preview: tblContacts displayed its seven field
+declarations, initially selected ID, and selecting FirstName updated the lower
+pane to native field number 1, variable storage and original flags 0x02/0x01.
+The document surface is white and navigation table icons use decorative vector
+geometry; the previous Unicode symbol was visibly missing from the bundled fonts.
+Native design rendering and field selection are observed; schema editing remains
+unimplemented.
+
+The final connected checks pass eight runtime unit tests, one isolated diagnostic
+integration test, thirteen shared UI tests and five desktop tests (27 total). Strict
+Clippy for all three packages, formatting, dependency boundaries, documentation
+links and the native binary build pass. No full engine-suite rerun or Windows/
+Linux/native Access comparison is claimed for this presentation slice.
+
+A pending Describe reply also preserves a newer Table/Query tab choice. Hosts
+record an explicit Design activation intent before requesting metadata; tab
+navigation or source reset clears that intent. The reply still updates the
+metadata slot, but activates Design only while that original intent remains.
+The focused regression covers tab changes, normal completion and source reset;
+source identity remains enforced by the host/worker generation checks.

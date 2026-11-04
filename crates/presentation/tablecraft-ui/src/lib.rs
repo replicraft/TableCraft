@@ -5,7 +5,7 @@ mod theme;
 mod workspace;
 
 pub use theme::configure;
-pub use workspace::{Action, Data, Database, State, Table};
+pub use workspace::{Action, Data, Database, Field, Schema, State, Table};
 
 #[cfg(test)]
 mod tests {

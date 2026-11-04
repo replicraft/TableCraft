@@ -1,7 +1,7 @@
 use crate::file_dialog::{FileDialog, SelectedFile};
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, Response, Worker};
-use tablecraft_ui::{Action, Data, Database, State, Table};
+use tablecraft_ui::{Action, Data, Database, Field, Schema, State, Table};
 use zeroize::Zeroize;
 
 pub(super) struct Desktop {
@@ -33,6 +33,9 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
+        if matches!(&command, Command::Describe { .. }) {
+            self.state.prepare_schema_view();
+        }
         self.query_pending = matches!(&command, Command::Query { .. });
         self.generation = self.worker.request(command);
         self.state.busy = true;
@@ -68,6 +71,7 @@ impl Desktop {
         self.state.database = None;
         self.state.data = None;
         self.state.query_data = None;
+        self.state.clear_schema();
         self.submit(Command::Open { path, password });
     }
 
@@ -78,6 +82,30 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::Details {
+                    table,
+                    declared_rows,
+                    fields,
+                }) => self.state.set_schema(Schema {
+                    table,
+                    declared_rows,
+                    fields: fields
+                        .into_iter()
+                        .map(|field| Field {
+                            name: field.name,
+                            number: field.number,
+                            native_type: field.native_type,
+                            storage_bytes: field.storage_bytes,
+                            fixed: field.fixed,
+                            flags: field.flags,
+                            extended_flags: field.extended_flags,
+                            scalar_type: field.scalar_type,
+                            reader_nullable: field.reader_nullable,
+                            decimal_parameters: field.decimal_parameters,
+                            complex_type_id: field.complex_type_id,
+                        })
+                        .collect(),
+                }),
                 Ok(Response::Opened {
                     title,
                     format,
@@ -146,6 +174,7 @@ impl eframe::App for Desktop {
                 Action::ChooseFile => self.file_dialog.open(frame, ui.ctx()),
                 Action::Open => self.open(),
                 Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
+                Action::ViewSchema { table } => self.submit(Command::Describe { table }),
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
@@ -170,7 +199,17 @@ impl Drop for Desktop {
 mod tests {
     use super::*;
     use eframe::App;
+    use std::path::Path;
     use std::time::{Duration, Instant};
+
+    fn finish(desktop: &mut Desktop, context: &egui::Context, frame: &mut eframe::Frame) {
+        let deadline = Instant::now() + Duration::from_secs(10);
+        while desktop.state.busy && Instant::now() < deadline {
+            desktop.logic(context, frame);
+            std::thread::yield_now();
+        }
+        assert!(!desktop.state.busy, "desktop task did not finish");
+    }
 
     #[test]
     fn task_completion_is_consumed_without_drawing_a_visible_frame() {
@@ -180,12 +219,38 @@ mod tests {
         desktop.submit(Command::Query {
             sql: "SELECT 1".into(),
         });
-        let deadline = Instant::now() + Duration::from_secs(5);
-        while desktop.state.busy && Instant::now() < deadline {
-            desktop.logic(&context, &mut frame);
-            std::thread::yield_now();
-        }
-        assert!(!desktop.state.busy);
+        finish(&mut desktop, &context, &mut frame);
         assert_eq!(desktop.state.error.as_deref(), Some("no database is open"));
+    }
+
+    #[test]
+    fn schema_response_is_adapted_and_cleared_when_the_document_changes() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb");
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), Some(path));
+        let mut frame = eframe::Frame::_new_kittest();
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.database.is_some());
+
+        desktop.submit(Command::Describe {
+            table: "tblContacts".to_owned(),
+        });
+        finish(&mut desktop, &context, &mut frame);
+        let schema = desktop.state.schema.as_ref().expect("schema response");
+        assert_eq!(schema.table, "tblContacts");
+        assert_eq!(schema.fields[0].name, "ID");
+        assert_eq!(schema.fields[0].scalar_type.as_deref(), Some("Int32"));
+        assert!(desktop.state.data.is_none());
+
+        // Reopening clears the old schema before the next request completes.
+        desktop.submit(Command::Describe {
+            table: "tblContacts".to_owned(),
+        });
+        desktop.open();
+        assert!(desktop.state.schema.is_none());
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.database.is_some());
+        assert!(desktop.state.schema.is_none());
     }
 }

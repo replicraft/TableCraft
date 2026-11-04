@@ -3,7 +3,10 @@
 ## Desktop workspace kickoff — 4 November 2026
 
 The first desktop implementation connects table navigation, bounded scalar pages
-and explicit read SQL to real Access services. `tablecraft-runtime` owns the
+and explicit read SQL to real Access services. An explicit read-only Table Design
+view now displays field declarations and selected-field properties without reading
+user table rows; uninspected Required/default/validation properties remain
+explicit. `tablecraft-runtime` owns the
 headless read session and cancellable tasks; `tablecraft-desktop` owns native
 startup and the UI action bridge; `tablecraft-ui` owns reusable presentation for
 native and eventual web hosts. Shared fonts live in `assets/ui/fonts`.

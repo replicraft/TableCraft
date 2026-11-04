@@ -80,8 +80,8 @@ Start the native read-only workspace with an optional database path:
 cargo run -p tablecraft-desktop -- path/to/example.accdb
 ```
 
-The first desktop slice provides table navigation, bounded datasheets and a SQL
-editor over existing Access services. It opens a snapshot of a stable file up to
+The first desktop slice provides table navigation, bounded datasheets, field
+inspection and a SQL editor over existing Access services. It opens a snapshot of a stable file up to
 64 MiB; close other writers first. Editing, designers and desktop release
 packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
 

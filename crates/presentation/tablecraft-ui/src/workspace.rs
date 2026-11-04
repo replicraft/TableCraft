@@ -2,6 +2,9 @@ mod chrome;
 mod content;
 mod navigation;
 mod query;
+mod schema;
+
+pub use schema::{Field, Schema};
 
 use super::keyboard;
 use egui::Ui;
@@ -34,8 +37,17 @@ pub enum Action {
     ChooseFile,
     Open,
     Page { table: String, offset: u32 },
+    ViewSchema { table: String },
     Query,
     Cancel,
+}
+
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+enum DocumentView {
+    #[default]
+    Table,
+    Query,
+    Design,
 }
 
 /// Presentation state shared by potential native and browser hosts.
@@ -49,11 +61,14 @@ pub struct State {
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,
+    pub schema: Option<Schema>,
+    selected_field: usize,
+    schema_activation_pending: bool,
     pub busy: bool,
     pub error: Option<String>,
     pub sql: String,
     filter: String,
-    query_view: bool,
+    view: DocumentView,
     show_system: bool,
     about: bool,
 }
@@ -69,19 +84,51 @@ impl State {
         self.query_data = Some(data);
     }
 
+    /// Record explicit navigation to Design before the host submits Describe.
+    pub fn prepare_schema_view(&mut self) {
+        self.schema_activation_pending = true;
+    }
+
+    /// Publish metadata without overriding a view chosen after its request.
+    pub fn set_schema(&mut self, schema: Schema) {
+        self.schema = Some(schema);
+        self.selected_field = 0;
+        if std::mem::take(&mut self.schema_activation_pending) {
+            self.view = DocumentView::Design;
+        }
+    }
+
+    fn select_view(&mut self, view: DocumentView) {
+        self.schema_activation_pending = false;
+        self.view = view;
+    }
+
+    /// Remove metadata when the host replaces or closes its source.
+    pub fn clear_schema(&mut self) {
+        self.schema = None;
+        self.selected_field = 0;
+        self.schema_activation_pending = false;
+        if self.view == DocumentView::Design {
+            self.view = DocumentView::Table;
+        }
+    }
+
     fn file_picker_ready(&self) -> bool {
         self.file_picker_available && !self.busy
     }
 
     fn query_ready(&self) -> bool {
-        self.query_view && self.database.is_some() && !self.busy && !self.sql.trim().is_empty()
+        self.view == DocumentView::Query
+            && self.database.is_some()
+            && !self.busy
+            && !self.sql.trim().is_empty()
     }
 
     fn visible_data(&self) -> Option<&Data> {
-        if self.query_view {
-            self.query_data.as_ref()
-        } else {
-            self.data.as_ref()
+        match self.view {
+            DocumentView::Table => self.data.as_ref(),
+            DocumentView::Query => self.query_data.as_ref(),
+            DocumentView::Design => None,
         }
     }
 
@@ -130,16 +177,16 @@ mod tests {
         let mut state = State::default();
         state.set_table_data(data("Customers", 200));
         assert_eq!(state.visible_data().unwrap().table, "Customers");
-        state.query_view = true;
+        state.view = DocumentView::Query;
         assert!(state.visible_data().is_none());
         state.set_query_data(data("Query result", 0));
         assert_eq!(state.visible_data().unwrap().table, "Query result");
-        state.query_view = false;
+        state.view = DocumentView::Table;
         let page = state.visible_data().unwrap();
         assert_eq!(page.table, "Customers");
         assert_eq!(page.offset, 200);
         state.set_table_data(data("Customers", 300));
-        state.query_view = true;
+        state.view = DocumentView::Query;
         assert_eq!(state.visible_data().unwrap().table, "Query result");
         assert_eq!(state.visible_data().unwrap().offset, 0);
     }
@@ -157,7 +204,7 @@ mod tests {
             tables: vec![],
         });
         assert!(!state.query_ready());
-        state.query_view = true;
+        state.view = DocumentView::Query;
         assert!(state.query_ready());
         state.busy = true;
         assert!(!state.query_ready());

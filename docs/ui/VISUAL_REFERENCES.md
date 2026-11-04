@@ -39,8 +39,10 @@ Microsoft account service is introduced to fill the screenshot layout. The
 current file controls remain directly accessible; a complete File/Backstage
 workflow is further work.
 
-Schema presentation should follow the observed Design-view organization when
-implemented, with read-only facts clearly identified. A generic right-side field
+The read-only schema inspector now follows the observed Design-view organization,
+with a central fields grid and lower selected-field pane. Native rendering and
+selection were observed for the public example on macOS. It exposes inspected
+facts only, rather than the screenshot's complete editable property set. A generic right-side field
 inspector is not established by these references. Native type codes, supported
 read carriers and uninspected properties must remain distinguishable; a familiar
 property-sheet shape does not justify inventing Required/default/validation facts.

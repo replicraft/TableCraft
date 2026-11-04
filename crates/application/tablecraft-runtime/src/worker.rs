@@ -40,6 +40,10 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .page(table, *offset, cancelled),
+            Command::Describe { table } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .describe(table, cancelled),
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -84,6 +88,7 @@ impl Worker {
                 let operation = match &request.command {
                     Command::Open { .. } => "open",
                     Command::Page { .. } => "page",
+                    Command::Describe { .. } => "describe",
                     Command::Query { .. } => "query",
                 };
                 let span = tracing::debug_span!("application read task", operation);
