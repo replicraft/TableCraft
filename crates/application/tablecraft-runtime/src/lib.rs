@@ -4,9 +4,11 @@ mod display;
 mod document;
 mod query;
 mod rows;
+mod schema;
 mod source;
 mod worker;
 
+pub use schema::Field;
 pub use worker::Worker;
 
 use std::path::PathBuf;
@@ -53,6 +55,7 @@ pub enum Error {
 pub enum Command {
     Open { path: PathBuf, password: String },
     Page { table: String, offset: u32 },
+    Describe { table: String },
     Query { sql: String },
 }
 
@@ -71,6 +74,13 @@ pub struct Table {
 }
 
 pub enum Response {
+    /// Inert declarations. Row totals are unverified; field reader nullability
+    /// does not establish native Required/default/validation properties.
+    Details {
+        table: String,
+        declared_rows: u32,
+        fields: Vec<Field>,
+    },
     Opened {
         title: String,
         format: String,
@@ -87,6 +97,3 @@ pub enum Response {
 
 #[cfg(test)]
 mod tests;
-
-#[cfg(test)]
-mod diagnostics_tests;

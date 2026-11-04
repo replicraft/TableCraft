@@ -1,3 +1,5 @@
+mod schema;
+
 use super::{Command, Error, Response, Worker};
 use std::{
     io::Cursor,
@@ -19,7 +21,7 @@ fn query(sql: &str) -> Command {
     }
 }
 
-pub(super) fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
+fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {
         if let Some(reply) = worker.poll() {

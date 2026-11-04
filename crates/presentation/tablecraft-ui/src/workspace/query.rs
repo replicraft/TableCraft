@@ -1,11 +1,11 @@
 //! Query editor admission is shared with keyboard command handling.
-use super::{Action, State};
+use super::{Action, DocumentView, State};
 use crate::theme::MUTED;
 use egui::{RichText, TextEdit, Ui};
 
 impl State {
     pub(super) fn query_editor(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
-        if self.query_view {
+        if self.view == DocumentView::Query {
             let sql_label = ui.heading("SQL query");
             ui.label(
                 RichText::new("Run a supported SELECT against the opened snapshot.").color(MUTED),

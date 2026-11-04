@@ -1,8 +1,9 @@
-use super::{Command, Error, Worker};
 use std::{
     io::{self, Write},
     sync::{Arc, Mutex},
+    time::{Duration, Instant},
 };
+use tablecraft_runtime::{Command, Error, Worker};
 
 #[derive(Clone, Default)]
 struct Capture(Arc<Mutex<Vec<u8>>>);
@@ -28,13 +29,15 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
         .with_ansi(false)
         .with_writer(move || writer.clone())
         .finish();
-    let worker = tracing::subscriber::with_default(subscriber, || {
-        Worker::test_worker(|_, _| Err(Error::NoDatabase))
-    });
+    // Keep this scoped-subscriber observation in its own test executable.
+    // tracing-core's single-dispatch registration fast path can otherwise let
+    // parallel quiet unit workers cache these shared callsites as disabled.
+    let worker = tracing::subscriber::with_default(subscriber, || Worker::new(|| {}));
+    let directory = tempfile::tempdir().unwrap();
 
     let commands = [
         Command::Open {
-            path: "PRIVATE_PATH.accdb".into(),
+            path: directory.path().join("PRIVATE_PATH.accdb"),
             password: "PRIVATE_PASSWORD".into(),
         },
         Command::Page {
@@ -44,17 +47,27 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
         Command::Query {
             sql: "SELECT 'PRIVATE_SQL'".into(),
         },
+        Command::Describe {
+            table: "PRIVATE_SCHEMA_TABLE".into(),
+        },
     ];
     for command in commands {
         let generation = worker.request(command);
-        let (actual, response) = super::tests::poll(&worker);
+        let deadline = Instant::now() + Duration::from_secs(10);
+        let (actual, response) = loop {
+            if let Some(reply) = worker.poll() {
+                break reply;
+            }
+            assert!(Instant::now() < deadline, "worker did not finish");
+            std::thread::yield_now();
+        };
         assert_eq!(actual, generation);
-        assert!(matches!(response, Err(Error::NoDatabase)));
+        assert!(matches!(response, Err(Error::Io(_) | Error::NoDatabase)));
     }
 
     let output = String::from_utf8(capture.0.lock().unwrap().clone()).unwrap();
-    assert_eq!(output.matches("application read task completed").count(), 3);
-    for operation in ["open", "page", "query"] {
+    assert_eq!(output.matches("application read task completed").count(), 4);
+    for operation in ["open", "page", "query", "describe"] {
         assert!(
             output.contains(&format!("operation=\"{operation}\"")),
             "{output}"
