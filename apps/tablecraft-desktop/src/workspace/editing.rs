@@ -4,8 +4,8 @@ use crate::view_models::cell;
 use std::path::PathBuf;
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
-    EditTarget as RuntimeTarget, ReviewedEdit, SaveFailure, SaveKnownOutcome, SaveOutcome,
-    SaveReport, SaveWorker, journal_path,
+    EditTarget as RuntimeTarget, ReviewedEdit, SaveCompletion, SaveFailure, SaveFailureKind,
+    SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
 use tablecraft_ui::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
 
@@ -188,22 +188,7 @@ impl Desktop {
             return;
         }
         save.report = Some(report);
-        let outcome = match report.outcome {
-            SaveOutcome::Saved { receipt } => {
-                let mut message = String::from("Save completed and lock release was acknowledged.");
-                if let Some(changed) = receipt.changed_rows {
-                    message.push_str(&format!(" Changed rows: {changed}."));
-                }
-                EditSaveOutcome::Saved(message)
-            }
-            SaveOutcome::Released {
-                current_outcome, ..
-            } => EditSaveOutcome::Failed(format!(
-                "Resources released. Recovery files may remain; resolve them before using this file. Known result: {}.",
-                known_result(current_outcome),
-            )),
-            SaveOutcome::Failed(failure) => failure_outcome(failure),
-        };
+        let outcome = save_outcome(report.outcome);
         self.state.set_edit_save_outcome(report.id, outcome);
     }
 
@@ -300,11 +285,80 @@ fn known_result(outcome: Option<SaveKnownOutcome>) -> &'static str {
     }
 }
 
+fn save_outcome(outcome: SaveOutcome) -> EditSaveOutcome {
+    match outcome {
+        SaveOutcome::Saved { receipt } => {
+            let mut message = String::from("Save completed and lock release was acknowledged.");
+            if let Some(changed) = receipt.changed_rows {
+                message.push_str(&format!(" Changed rows: {changed}."));
+            }
+            EditSaveOutcome::Saved(message)
+        }
+        SaveOutcome::Released {
+            current_outcome,
+            last_completed,
+        } => EditSaveOutcome::Failed(format!(
+            "Resources released. Recovery files may remain; resolve them before using this file. {}",
+            outcome_details(current_outcome, last_completed),
+        )),
+        SaveOutcome::Failed(failure) => failure_outcome(failure),
+    }
+}
+
+fn outcome_details(
+    current_outcome: Option<SaveKnownOutcome>,
+    last_completed: Option<SaveReceipt>,
+) -> String {
+    let mut message = format!(
+        "Current operation outcome: {}.",
+        known_result(current_outcome),
+    );
+    let Some(receipt) = last_completed else {
+        message.push_str(" No completed-operation receipt is available.");
+        return message;
+    };
+    let completion = match receipt.completion {
+        SaveCompletion::Applied => "applied",
+        SaveCompletion::Recovered => "recovered",
+        SaveCompletion::Confirmed => "confirmed",
+    };
+    message.push_str(&format!(
+        " Last completed operation: {completion}; outcome: {}.",
+        known_result(Some(receipt.known)),
+    ));
+    if let Some(matched) = receipt.matched_rows {
+        message.push_str(&format!(" Matched rows: {matched}."));
+    }
+    if let Some(changed) = receipt.changed_rows {
+        message.push_str(&format!(" Changed rows: {changed}."));
+    }
+    message
+}
+
+fn failure_reason(kind: SaveFailureKind) -> &'static str {
+    match kind {
+        SaveFailureKind::StaleDocument => "the viewed document was replaced",
+        SaveFailureKind::Open => "the file could not be opened for exclusive editing",
+        SaveFailureKind::SourceChanged => "the file changed after it was viewed",
+        SaveFailureKind::Cancelled => "cancellation was requested",
+        SaveFailureKind::Resource => "an operation limit was reached",
+        SaveFailureKind::Planning => "the edit could not be validated",
+        SaveFailureKind::Intent => "the change record could not be prepared",
+        SaveFailureKind::Setup => "the recovery files could not be set up",
+        SaveFailureKind::Prepare => "the save could not be prepared",
+        SaveFailureKind::Commit => "the commit did not finish normally",
+        SaveFailureKind::Recovery => "recovery did not finish normally",
+        SaveFailureKind::Finalization => "save finalization did not finish normally",
+        SaveFailureKind::Release => "lock release was not acknowledged",
+        SaveFailureKind::InvalidState => "the save session requires diagnosis",
+    }
+}
+
 fn failure_outcome(failure: SaveFailure) -> EditSaveOutcome {
     let message = format!(
-        "Save did not finish normally ({:?}). Known result: {}. Do not retry the update.",
-        failure.kind,
-        known_result(failure.current_outcome),
+        "Save did not finish normally ({}). {} Do not retry automatically.",
+        failure_reason(failure.kind),
+        outcome_details(failure.current_outcome, failure.last_completed),
     );
     if failure.state.is_some() {
         EditSaveOutcome::Retained {
@@ -317,5 +371,5 @@ fn failure_outcome(failure: SaveFailure) -> EditSaveOutcome {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
 mod tests;

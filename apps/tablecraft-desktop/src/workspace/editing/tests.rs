@@ -207,3 +207,86 @@ fn close_is_vetoed_until_the_real_terminal_save_is_acknowledged() {
     desktop.acknowledge_save(report.id);
     assert!(!desktop.editing.has_save());
 }
+
+#[test]
+fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_outcome() {
+    let outcome = save_outcome(SaveOutcome::Failed(SaveFailure {
+        kind: tablecraft_runtime::SaveFailureKind::Release,
+        phase: Some(tablecraft_runtime::SavePhase::Release),
+        state: Some(tablecraft_runtime::SaveSessionState::ReleaseUncertain),
+        current_outcome: None,
+        last_completed: Some(SaveReceipt {
+            completion: SaveCompletion::Applied,
+            known: SaveKnownOutcome::Committed,
+            matched_rows: Some(3),
+            changed_rows: Some(2),
+        }),
+        can_recover: false,
+        can_release: false,
+    }));
+    let EditSaveOutcome::Retained {
+        message,
+        can_recover,
+        can_release,
+    } = outcome
+    else {
+        panic!("release failure must remain retained");
+    };
+    assert!(!can_recover);
+    assert!(!can_release);
+    assert!(message.contains("Current operation outcome: not established."));
+    assert!(message.contains("Last completed operation: applied; outcome: committed."));
+    assert!(message.contains("Matched rows: 3. Changed rows: 2."));
+    assert!(message.contains("Do not retry automatically."));
+}
+
+#[test]
+fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
+    for (completion, label, known) in [
+        (
+            SaveCompletion::Recovered,
+            "recovered",
+            SaveKnownOutcome::Committed,
+        ),
+        (
+            SaveCompletion::Confirmed,
+            "confirmed",
+            SaveKnownOutcome::ReplacementVerified,
+        ),
+    ] {
+        let outcome = save_outcome(SaveOutcome::Released {
+            current_outcome: Some(SaveKnownOutcome::RolledBack),
+            last_completed: Some(SaveReceipt {
+                completion,
+                known,
+                matched_rows: None,
+                changed_rows: None,
+            }),
+        });
+        let EditSaveOutcome::Failed(message) = outcome else {
+            panic!("release alone must not become a successful save");
+        };
+        assert!(message.contains("Recovery files may remain"));
+        assert!(message.contains("Current operation outcome: rolled back."));
+        assert!(message.contains(&format!("Last completed operation: {label};")));
+        assert!(message.contains(known_result(Some(known))));
+        assert!(!message.contains("Matched rows:"));
+        assert!(!message.contains("Changed rows:"));
+    }
+}
+
+#[test]
+fn absent_receipt_does_not_invent_completed_operations_or_counts() {
+    let outcome = save_outcome(SaveOutcome::Released {
+        current_outcome: None,
+        last_completed: None,
+    });
+    let EditSaveOutcome::Failed(message) = outcome else {
+        panic!("released unknown result is not a save receipt");
+    };
+    assert!(message.contains("Current operation outcome: not established."));
+    assert!(message.contains("No completed-operation receipt is available."));
+    assert!(!message.contains("Last completed operation:"));
+    assert!(!message.contains("Matched rows:"));
+    assert!(!message.contains("Changed rows:"));
+}
