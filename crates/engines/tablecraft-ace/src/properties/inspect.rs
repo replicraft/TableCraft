@@ -1,11 +1,11 @@
 use super::{TableProperties, decode};
-use crate::{InspectError, inspect_catalog, table::read_selected};
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use crate::{InspectError, inspect_catalog};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
 
-const SYSTEM_CATALOG: &str = "MSysObjects";
-const OBJECT_ID_COLUMN: &str = "Id";
-const PROPERTY_COLUMN: &str = "LvProp";
+mod raw;
+pub(super) use raw::read_property_bytes;
+
 const LOCAL_TABLE_TYPE: i16 = 1;
 
 /// Inspect inert property maps for one local table in the qualified read profile.
@@ -33,41 +33,7 @@ pub fn inspect_table_properties<R: crate::NativeReadSource>(
     if origin.type_code() != LOCAL_TABLE_TYPE {
         return Err(InspectError::Unsupported);
     }
-    let snapshot = read_selected(
-        source,
-        scope,
-        SYSTEM_CATALOG,
-        Some(&[OBJECT_ID_COLUMN, PROPERTY_COLUMN]),
-        budget,
-        cancelled,
-    )?;
-    let id_column = snapshot
-        .columns()
-        .iter()
-        .position(|column| column.name().eq_ignore_ascii_case(OBJECT_ID_COLUMN))
-        .ok_or(InspectError::Malformed)?;
-    let properties_column = snapshot
-        .columns()
-        .iter()
-        .position(|column| column.name().eq_ignore_ascii_case(PROPERTY_COLUMN))
-        .ok_or(InspectError::Malformed)?;
-    let mut rows = snapshot.into_rows();
-    let mut matched = rows
-        .iter_mut()
-        .filter(|row| row.get(id_column) == Some(&Value::Int32(origin.native_id())));
-    let row = matched.next().ok_or(InspectError::Malformed)?;
-    let bytes = match std::mem::replace(
-        row.get_mut(properties_column)
-            .ok_or(InspectError::Malformed)?,
-        Value::Null,
-    ) {
-        Value::Null => Vec::new(),
-        Value::Binary(bytes) => bytes,
-        _ => return Err(InspectError::Malformed),
-    };
-    if matched.next().is_some() {
-        return Err(InspectError::Malformed);
-    }
+    let bytes = read_property_bytes(source, scope, origin.native_id(), budget, cancelled)?;
     let groups = decode::decode(&bytes, budget, cancelled)?;
     let name = object.name().as_str();
     budget.charge_allocation(name.len() as u64, 1)?;

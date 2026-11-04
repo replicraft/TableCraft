@@ -4,7 +4,7 @@ use tablecraft_core::ids::ObjectId;
 /// Native property-block scope. Column and index maps may share a name.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PropertyGroupKind {
-    /// Unnamed table-level property map.
+    /// Unnamed default property map for its owning table or database object.
     Table,
     /// Named column-level map.
     Column,

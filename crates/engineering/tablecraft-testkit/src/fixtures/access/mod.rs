@@ -397,3 +397,6 @@ pub mod complex_links;
 
 /// Independent saved-query catalog/fragment images; no SQL reconstruction.
 pub mod saved_queries;
+
+/// Independent database-property catalog roles and query-mode observations.
+pub mod database_properties;
