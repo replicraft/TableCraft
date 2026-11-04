@@ -22,4 +22,5 @@ tablecraft-sql.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
+tempfile.workspace = true
 tablecraft-testkit.workspace = true

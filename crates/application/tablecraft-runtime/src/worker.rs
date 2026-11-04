@@ -1,4 +1,4 @@
-use super::{Command, Error, Response, read::Document};
+use super::{Command, Error, Response, document::Document};
 use std::sync::{
     Arc, Condvar, Mutex,
     atomic::{AtomicBool, AtomicU64, Ordering},
@@ -91,9 +91,14 @@ impl Worker {
 
     /// Supersede earlier work without waiting for that work to finish.
     pub fn request(&self, command: Command) -> u64 {
+        // The worker cannot take this command until its preceding response has
+        // been cleared. Serializing generation issuance with replacement also
+        // prevents a slower caller from replacing a newer caller's command.
+        let mut pending = self.shared.pending.lock().unwrap();
         let id = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
-        *self.shared.pending.lock().unwrap() = Some(Pending { id, command });
         self.shared.response.lock().unwrap().take();
+        *pending = Some(Pending { id, command });
+        drop(pending);
         self.shared.ready.notify_one();
         id
     }
@@ -104,8 +109,9 @@ impl Worker {
     }
 
     pub fn cancel(&self) {
+        let mut pending = self.shared.pending.lock().unwrap();
         self.shared.generation.fetch_add(1, Ordering::AcqRel);
-        self.shared.pending.lock().unwrap().take();
+        pending.take();
         self.shared.response.lock().unwrap().take();
     }
 }

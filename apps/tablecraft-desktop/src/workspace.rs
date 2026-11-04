@@ -7,6 +7,7 @@ pub(super) struct Desktop {
     state: State,
     worker: Worker,
     generation: u64,
+    query_pending: bool,
 }
 
 impl Desktop {
@@ -16,6 +17,7 @@ impl Desktop {
             state: State::default(),
             worker,
             generation: 0,
+            query_pending: false,
         };
         if let Some(path) = path {
             app.state.path = path.to_string_lossy().into_owned();
@@ -25,6 +27,7 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
+        self.query_pending = matches!(&command, Command::Query { .. });
         self.generation = self.worker.request(command);
         self.state.busy = true;
         self.state.error = None;
@@ -34,6 +37,7 @@ impl Desktop {
         let password = std::mem::take(&mut self.state.password);
         self.state.database = None;
         self.state.data = None;
+        self.state.query_data = None;
         self.submit(Command::Open {
             path: PathBuf::from(&self.state.path),
             password,
@@ -72,13 +76,18 @@ impl Desktop {
                     rows,
                     has_more,
                 }) => {
-                    self.state.data = Some(Data {
+                    let data = Data {
                         table,
                         offset,
                         columns,
                         rows,
                         has_more,
-                    });
+                    };
+                    if self.query_pending {
+                        self.state.set_query_data(data);
+                    } else {
+                        self.state.set_table_data(data);
+                    }
                 }
                 Err(error) => self.state.error = Some(error.to_string()),
             }

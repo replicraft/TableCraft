@@ -3913,6 +3913,7 @@ dependencies = [
  "tablecraft-query",
  "tablecraft-sql",
  "tablecraft-testkit",
+ "tempfile",
  "thiserror 2.0.21",
  "zeroize",
 ]
