@@ -200,3 +200,14 @@ still runs outside locks. All six runtime tests pass after the correction,
 including 2,048 submissions from concurrent producers with highest-generation
 result checks. Strict lint passes again. This verifies task coordination rather
 than database shared-file concurrency.
+
+
+### Shared workspace ownership and labels
+
+Workspace rendering now has focused chrome, navigation, query and content modules
+while State composes them. Public state/actions, separate result slots and existing
+tests retain their behavior. Path, Password and SQL controls have persistent
+visible labels connected through actual egui label relationships. The font notice
+continues to load from the root asset directory. All eight UI tests and desktop/UI
+strict lint pass after this extraction; this is not additional platform accessibility
+or native workflow qualification.
