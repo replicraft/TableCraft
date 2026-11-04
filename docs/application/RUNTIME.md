@@ -49,6 +49,11 @@ Each cell owns its display text and explicit reader facts:
 - Scalar cells carry independent NULL and stored-calculation flags. Literal text
   `NULL` does not acquire NULL semantics from its spelling. Cached NULL results
   retain both flags; no formula evaluates and freshness remains unknown.
+- Exact Boolean values carry `Some(true/false)` separately from display text;
+  text/numeric lookalikes and expression-only states never acquire that fact.
+  `DisplayControl` independently distinguishes uninspected metadata, a verified
+  absent declaration, the exact native signed control code and an unsupported
+  declaration. It does not supply a guessed field default.
 - Multivalue, attachment and stored-history cells carry assigned-key presence and
   a complete member count. An absent key differs from an assigned empty list.
   Duplicate and NULL elements count. An attachment whose FileData is NULL remains
@@ -68,6 +73,23 @@ tooltips/accessibility context and copies the complete display text without its
 badge. Display strings are not lossless exports, edit carriers or native field
 formatting rules. Query Empty/Missing/error states remain explicit display
 states; they are not silently converted to stored NULL.
+
+Native Page preflights the actual `MSysObjects` schema for its property carrier,
+then inspects present property storage under the same cumulative native budget
+that is moved into the browser. A successfully inspected catalog without that
+carrier yields `Uninspected`; actual metadata/read/framing/cancellation/limit
+errors propagate. Property and page object identities must match. Field names
+join only column-scoped groups, and exact DDL-flagged Int16 declarations retain
+their original codes. Unknown flags, carriers or widths are `Unsupported` rather
+than absent. Presentation work charges the name lookups and cell enrichment.
+Query results and explicit child contents remain `Uninspected`: aliases or a
+parent collection's settings do not establish native field provenance.
+
+Shared UI shows a read-only checkbox only for a non-NULL typed Boolean with an
+explicit native checkbox control (106). Text-box, combo-box and unknown controls
+retain the stored display text; absent/uninspected controls remain explicit.
+Full-value Copy and cached-result provenance are unchanged. See the
+[desktop presentation record](../ui/DESKTOP.md).
 
 ## Explicit collection inspection
 

@@ -7,6 +7,19 @@ pub struct Cell {
     pub kind: CellKind,
 }
 
+/// Observed native field-control declaration, independent of value type.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DisplayControl {
+    /// The native property carrier was not inspected, including query results.
+    Uninspected,
+    /// The inspected field has no DisplayControl property.
+    Absent,
+    /// Exact native signed 16-bit control code, without a fabricated default.
+    Native(i16),
+    /// The property exists with unqualified flags, type or width.
+    Unsupported,
+}
+
 /// Reader facts, kept separate from the displayed text. A literal text "NULL"
 /// is an ordinary value; it cannot acquire NULL semantics from its spelling.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -15,6 +28,9 @@ pub enum CellKind {
     Scalar {
         is_null: bool,
         stored_calculation: bool,
+        /// Exact typed Boolean value; display text never establishes this fact.
+        boolean: Option<bool>,
+        display_control: DisplayControl,
     },
     /// Complete checked stored membership, including duplicates and NULL items.
     Multivalue { assigned: bool, members: usize },
@@ -32,6 +48,8 @@ impl Cell {
             kind: CellKind::Scalar {
                 is_null: false,
                 stored_calculation: false,
+                boolean: None,
+                display_control: DisplayControl::Uninspected,
             },
         }
     }

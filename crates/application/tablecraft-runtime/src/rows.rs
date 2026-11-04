@@ -1,5 +1,6 @@
 //! Metadata-selected scalar/stored-field pages from the immutable read session.
 mod collections;
+mod controls;
 
 use super::{
     Error, Response,
@@ -19,7 +20,9 @@ impl Document {
         offset: u32,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
-        let mut browser = NativeBrowser::new(&mut self.source, SCOPE, budget(), cancelled);
+        let mut work = budget();
+        let properties = controls::inspect(&mut self.source, table, &mut work, cancelled)?;
+        let mut browser = NativeBrowser::new(&mut self.source, SCOPE, work, cancelled);
         let request = CollectionPageRequest::new(
             TablePageRequest::new(offset, PAGE_ROWS)?,
             TableSnapshotLimits::default(),
@@ -28,8 +31,10 @@ impl Document {
         // retried as another profile or converted to a partial/empty collection.
         let page = browser.browse_page(table, request)?;
         let mut output = Presentation::new(cancelled);
-        let (columns, rows, reached_end) = match page {
+        let (columns, mut rows, reached_end) = match page {
             BrowsePage::Scalar(page) => {
+                output.work(1)?;
+                controls::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.columns().len())?;
                 for column in page.columns() {
                     columns.push(output.text(column.name())?);
@@ -45,6 +50,8 @@ impl Document {
                 (columns, rows, page.reached_end())
             }
             BrowsePage::Collections(page) => {
+                output.work(1)?;
+                controls::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.schema().columns().len())?;
                 for column in page.schema().columns() {
                     columns.push(output.text(column.name())?);
@@ -53,6 +60,7 @@ impl Document {
                 (columns, rows, page.reached_end())
             }
         };
+        controls::enrich(properties.as_ref(), &columns, &mut rows, &mut output)?;
         Ok(Response::Data {
             source_revision: Some(self.revision),
             table: output.text(table)?,

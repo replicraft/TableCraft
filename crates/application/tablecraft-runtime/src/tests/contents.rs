@@ -19,7 +19,9 @@ fn is_null(kind: CellKind) -> bool {
         kind,
         CellKind::Scalar {
             is_null: true,
-            stored_calculation: false
+            stored_calculation: false,
+            boolean: None,
+            display_control: crate::DisplayControl::Uninspected
         }
     )
 }

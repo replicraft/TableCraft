@@ -10,7 +10,7 @@ mod schema;
 mod source;
 mod worker;
 
-pub use cell::{Cell, CellKind};
+pub use cell::{Cell, CellKind, DisplayControl};
 pub use contents::{CollectionKind, ContentsTarget};
 pub use schema::Field;
 pub use worker::Worker;

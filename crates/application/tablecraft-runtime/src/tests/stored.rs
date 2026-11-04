@@ -45,7 +45,9 @@ fn cached_values_and_null_keep_stored_provenance_without_evaluating_formula() {
         rows[0][1].kind,
         CellKind::Scalar {
             is_null: false,
-            stored_calculation: true
+            stored_calculation: true,
+            boolean: None,
+            display_control: crate::DisplayControl::Absent
         }
     );
     assert_eq!(rows[1][1].text, "NULL");
@@ -53,14 +55,18 @@ fn cached_values_and_null_keep_stored_provenance_without_evaluating_formula() {
         rows[1][1].kind,
         CellKind::Scalar {
             is_null: true,
-            stored_calculation: true
+            stored_calculation: true,
+            boolean: None,
+            display_control: crate::DisplayControl::Absent
         }
     );
     assert_eq!(
         rows[0][0].kind,
         CellKind::Scalar {
             is_null: false,
-            stored_calculation: false
+            stored_calculation: false,
+            boolean: None,
+            display_control: crate::DisplayControl::Absent
         }
     );
     assert!(!has_more);
@@ -151,7 +157,9 @@ fn stored_history_summary_remains_separate_from_visible_current_memo() {
             row[2].kind,
             CellKind::Scalar {
                 is_null: true,
-                stored_calculation: false
+                stored_calculation: false,
+                boolean: None,
+                display_control: crate::DisplayControl::Absent
             }
         );
         assert_eq!(row[2].text, "NULL");
