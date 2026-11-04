@@ -5,7 +5,7 @@ mod keyboard;
 mod theme;
 mod workspace;
 
-pub use cells::{Cell, CellKind};
+pub use cells::{Cell, CellKind, DisplayControl};
 pub use theme::configure;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, Field, Schema, State, Table,

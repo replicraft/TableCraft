@@ -5,11 +5,24 @@ pub struct Cell {
     pub kind: CellKind,
 }
 
+/// Original stored presentation metadata, without a guessed field default.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DisplayControl {
+    Uninspected,
+    Absent,
+    Native(i16),
+    Unsupported,
+}
+
+const CHECKBOX_DISPLAY_CONTROL: i16 = 106;
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CellKind {
     Scalar {
         is_null: bool,
         stored_calculation: bool,
+        boolean: Option<bool>,
+        display_control: DisplayControl,
     },
     Multivalue {
         assigned: bool,
@@ -34,6 +47,8 @@ impl Cell {
             kind: CellKind::Scalar {
                 is_null: false,
                 stored_calculation: false,
+                boolean: None,
+                display_control: DisplayControl::Uninspected,
             },
         }
     }
@@ -43,6 +58,7 @@ impl Cell {
             CellKind::Scalar {
                 is_null: true,
                 stored_calculation: true,
+                ..
             } => Some("stored"),
             CellKind::Scalar {
                 stored_calculation: true,
@@ -56,11 +72,24 @@ impl Cell {
         }
     }
 
-    pub(crate) fn context(&self) -> Option<String> {
+    pub(crate) fn checkbox_value(&self) -> Option<bool> {
         match self.kind {
+            CellKind::Scalar {
+                is_null: false,
+                boolean,
+                display_control: DisplayControl::Native(CHECKBOX_DISPLAY_CONTROL),
+                ..
+            } => boolean,
+            _ => None,
+        }
+    }
+
+    pub(crate) fn context(&self) -> Option<String> {
+        let base = match self.kind {
             CellKind::Scalar {
                 is_null,
                 stored_calculation,
+                ..
             } => match (is_null, stored_calculation) {
                 (false, false) => None,
                 (true, false) => Some("NULL value".into()),
@@ -82,6 +111,36 @@ impl Cell {
                 "{}; stored order retained; current Memo text is separate",
                 membership("stored version", assigned, members),
             )),
+        };
+        let presentation = match self.kind {
+            CellKind::Scalar {
+                boolean: Some(_),
+                display_control,
+                ..
+            } => match display_control {
+                DisplayControl::Uninspected => Some(
+                    "Field display settings are not inspected; showing the stored value".to_owned(),
+                ),
+                DisplayControl::Absent => {
+                    Some("No display control is declared; showing the stored value".to_owned())
+                }
+                DisplayControl::Unsupported => Some(
+                    "Field display settings are unsupported; showing the stored value".to_owned(),
+                ),
+                DisplayControl::Native(CHECKBOX_DISPLAY_CONTROL) => None,
+                DisplayControl::Native(109) => Some("This field uses a text box".to_owned()),
+                DisplayControl::Native(111) => {
+                    Some("Lookup display is not supported yet; showing the stored value".to_owned())
+                }
+                DisplayControl::Native(_) => Some(
+                    "Field display settings are unsupported; showing the stored value".to_owned(),
+                ),
+            },
+            _ => None,
+        };
+        match (base, presentation) {
+            (Some(base), Some(presentation)) => Some(format!("{base}; {presentation}")),
+            (base, presentation) => base.or(presentation),
         }
     }
 }
@@ -121,6 +180,8 @@ mod tests {
             kind: CellKind::Scalar {
                 is_null: true,
                 stored_calculation: true,
+                boolean: None,
+                display_control: DisplayControl::Uninspected,
             },
         };
         assert!(plain.badge().is_none());
@@ -158,5 +219,63 @@ mod tests {
         assert!(context.contains("1 complete member"));
         assert!(context.contains("NULL payloads"));
         assert!(context.contains("not opened"));
+    }
+}
+
+#[cfg(test)]
+mod boolean_tests {
+    use super::*;
+
+    #[test]
+    fn checkbox_requires_typed_non_null_boolean_and_explicit_native_checkbox_control() {
+        for display_control in [
+            DisplayControl::Uninspected,
+            DisplayControl::Absent,
+            DisplayControl::Unsupported,
+            DisplayControl::Native(109),
+            DisplayControl::Native(111),
+            DisplayControl::Native(999),
+            DisplayControl::Native(106),
+        ] {
+            let value = Cell {
+                text: "true".into(),
+                kind: CellKind::Scalar {
+                    is_null: false,
+                    stored_calculation: false,
+                    boolean: Some(true),
+                    display_control,
+                },
+            };
+            assert_eq!(
+                value.checkbox_value(),
+                (display_control == DisplayControl::Native(106)).then_some(true)
+            );
+            if display_control != DisplayControl::Native(106) {
+                let context = value.context().unwrap();
+                assert!(!context.contains("DisplayControl"));
+                assert!(!context.contains("Native"));
+                assert!(!context.contains("109"));
+                assert!(!context.contains("111"));
+                assert!(!context.contains("999"));
+                if display_control == DisplayControl::Native(109) {
+                    assert_eq!(context, "This field uses a text box");
+                } else {
+                    assert!(context.ends_with("showing the stored value"));
+                }
+            }
+        }
+        for (is_null, boolean) in [(true, None), (true, Some(false)), (false, None)] {
+            let value = Cell {
+                text: "NULL".into(),
+                kind: CellKind::Scalar {
+                    is_null,
+                    stored_calculation: false,
+                    boolean,
+                    display_control: DisplayControl::Native(106),
+                },
+            };
+            assert_eq!(value.checkbox_value(), None);
+        }
+        assert_eq!(Cell::scalar("true").checkbox_value(), None);
     }
 }

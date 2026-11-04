@@ -10,6 +10,7 @@ use std::borrow::Cow;
 const ACTIVE_HEADER: egui::Color32 = egui::Color32::from_rgb(255, 225, 102);
 const ACTIVE_ROW: egui::Color32 = egui::Color32::from_rgb(166, 205, 234);
 const CELL_TEXT_PADDING: f32 = 3.0;
+const BOOLEAN_BOX_SIZE: f32 = 14.0;
 
 pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection) -> Vec<Action> {
     let mut actions = Vec::new();
@@ -184,19 +185,12 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64, allow_copy: bool) -> 
         None => Cow::Borrowed(text),
     };
     let response = ui.allocate_response(ui.available_size(), Sense::click());
-    let width = (response.rect.width() - 2.0 * CELL_TEXT_PADDING).max(0.0);
-    let galley = egui::WidgetText::from(display.as_ref()).into_galley(
-        ui,
-        Some(egui::TextWrapMode::Truncate),
-        width,
-        egui::TextStyle::Body,
-    );
-    let position = egui::pos2(
-        response.rect.left() + CELL_TEXT_PADDING,
-        response.rect.center().y - galley.size().y * 0.5,
-    );
-    ui.painter()
-        .galley(position, galley, ui.visuals().text_color());
+    let checkbox = value.checkbox_value();
+    if let Some(checked) = checkbox {
+        paint_boolean(ui, response.rect, checked, value.badge());
+    } else {
+        paint_cell_text(ui, response.rect, display.as_ref());
+    }
     if response.clicked() {
         response.request_focus();
     }
@@ -213,15 +207,24 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64, allow_copy: bool) -> 
         });
     }
     response.widget_info(|| {
-        WidgetInfo::labeled(
-            WidgetType::Label,
-            ui.is_enabled(),
-            match &context {
-                Some(context) => format!("{column}, row {row}: {text}; {context}"),
-                None => format!("{column}, row {row}: {text}"),
-            },
-        )
+        let label = match &context {
+            Some(context) => format!("{column}, row {row}: {text}; {context}"),
+            None => format!("{column}, row {row}: {text}"),
+        };
+        if let Some(checked) = checkbox {
+            WidgetInfo::selected(WidgetType::Checkbox, ui.is_enabled(), checked, label)
+        } else {
+            WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), label)
+        }
     });
+    if checkbox.is_some() {
+        ui.ctx().accesskit_node_builder(response.id, |node| {
+            node.set_read_only();
+            // This response selects a cell. It never offers an assistive
+            // action that could be understood as toggling the stored value.
+            node.remove_action(egui::accesskit::Action::Click);
+        });
+    }
 
     if allow_copy && response.has_focus() && ui.is_enabled() {
         let copy = ui.input_mut(|input| {
@@ -253,6 +256,58 @@ fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64, allow_copy: bool) -> 
             ui.small(context);
         }
     })
+}
+
+fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str) {
+    let width = (rect.width() - 2.0 * CELL_TEXT_PADDING).max(0.0);
+    let galley = egui::WidgetText::from(text).into_galley(
+        ui,
+        Some(egui::TextWrapMode::Truncate),
+        width,
+        egui::TextStyle::Body,
+    );
+    let position = egui::pos2(
+        rect.left() + CELL_TEXT_PADDING,
+        rect.center().y - galley.size().y * 0.5,
+    );
+    ui.painter()
+        .galley(position, galley, ui.visuals().text_color());
+}
+
+fn paint_boolean(ui: &Ui, rect: egui::Rect, checked: bool, badge: Option<&str>) {
+    let size = BOOLEAN_BOX_SIZE.min(rect.height());
+    let check = egui::Rect::from_center_size(
+        egui::pos2(
+            rect.left() + CELL_TEXT_PADDING + size * 0.5,
+            rect.center().y,
+        ),
+        egui::Vec2::splat(size),
+    );
+    let color = egui::Color32::from_rgb(44, 107, 159);
+    let fill = if checked { color } else { egui::Color32::WHITE };
+    ui.painter().rect_filled(check, 2.0, fill);
+    ui.painter().rect_stroke(
+        check,
+        2.0,
+        egui::Stroke::new(1.0, color),
+        egui::StrokeKind::Inside,
+    );
+    if checked {
+        let inner = check.shrink(3.0);
+        ui.painter().add(egui::epaint::Shape::line(
+            vec![
+                inner.left_center(),
+                egui::pos2(inner.center().x - 1.0, inner.bottom()),
+                inner.right_top(),
+            ],
+            egui::Stroke::new(1.5, egui::Color32::WHITE),
+        ));
+    }
+    if let Some(badge) = badge {
+        let badge_rect =
+            egui::Rect::from_min_max(egui::pos2(check.right() + 3.0, rect.top()), rect.max);
+        paint_cell_text(ui, badge_rect, &format!("[{badge}]"));
+    }
 }
 
 pub(crate) fn copy_text(ctx: &egui::Context, text: &str) {

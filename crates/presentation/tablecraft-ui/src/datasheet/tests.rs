@@ -1,6 +1,9 @@
 use super::*;
 use crate::CellKind;
-use egui::{Context, Event, OutputCommand, RawInput, Rect, Vec2};
+use egui::{
+    Context, Event, OutputCommand, RawInput, Rect, Vec2,
+    accesskit::{Action as AccessibleAction, Role, Toggled},
+};
 
 fn input(events: Vec<Event>) -> RawInput {
     RawInput {
@@ -64,6 +67,8 @@ fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
         kind: CellKind::Scalar {
             is_null: true,
             stored_calculation: true,
+            boolean: None,
+            display_control: crate::DisplayControl::Uninspected,
         },
     };
     assert_focused_copy(
@@ -162,6 +167,8 @@ fn narrow_cached_result_cell_paints_the_value_before_its_annotation() {
         kind: CellKind::Scalar {
             is_null: false,
             stored_calculation: true,
+            boolean: None,
+            display_control: crate::DisplayControl::Uninspected,
         },
     };
     let mut output = context.run_ui(input(Vec::new()), |ui| {
@@ -660,4 +667,103 @@ fn same_identity_publication_surrenders_old_grid_focus_before_contents_enter() {
         egui::PointerButton::Secondary,
     );
     assert_eq!(selection.text(&data), Some("1 item"));
+}
+
+#[test]
+fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
+    for checked in [false, true] {
+        let context = Context::default();
+        context.enable_accesskit();
+        let value = Cell {
+            text: if checked { "-1".into() } else { "0".into() },
+            kind: CellKind::Scalar {
+                is_null: false,
+                stored_calculation: true,
+                boolean: Some(checked),
+                display_control: crate::DisplayControl::Native(106),
+            },
+        };
+        let mut bounds = None;
+        let mut first = context.run_ui(input(vec![]), |ui| {
+            ui.set_max_width(128.0);
+            let response = cell(ui, &value, "YesNo", 1, true);
+            bounds = Some(response.rect);
+            response.request_focus();
+        });
+        first.textures_delta.clear();
+        let pointer = bounds.unwrap().center();
+        for events in [
+            vec![
+                Event::PointerMoved(pointer),
+                Event::PointerButton {
+                    pos: pointer,
+                    button: egui::PointerButton::Primary,
+                    pressed: true,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+            vec![Event::PointerButton {
+                pos: pointer,
+                button: egui::PointerButton::Primary,
+                pressed: false,
+                modifiers: egui::Modifiers::NONE,
+            }],
+            vec![Event::Key {
+                key: egui::Key::Space,
+                physical_key: None,
+                pressed: true,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            }],
+            vec![
+                Event::Key {
+                    key: egui::Key::Enter,
+                    physical_key: None,
+                    pressed: true,
+                    repeat: false,
+                    modifiers: egui::Modifiers::NONE,
+                },
+                Event::Copy,
+            ],
+        ] {
+            let copying = events.iter().any(|event| matches!(event, Event::Copy));
+            let mut output = context.run_ui(input(events), |ui| {
+                ui.set_max_width(128.0);
+                let response = cell(ui, &value, "YesNo", 1, true);
+                assert!(!response.changed());
+                assert!(response.sense.is_focusable());
+            });
+            let tree = output
+                .platform_output
+                .accesskit_update
+                .as_ref()
+                .expect("accessibility update");
+            let node = tree
+                .nodes
+                .iter()
+                .find(|(_, node)| node.role() == Role::CheckBox)
+                .expect("typed checkbox node");
+            assert_eq!(
+                node.1.toggled(),
+                Some(if checked {
+                    Toggled::True
+                } else {
+                    Toggled::False
+                })
+            );
+            assert!(node.1.is_read_only());
+            assert!(!node.1.supports_action(AccessibleAction::Click));
+            assert!(node.1.label().unwrap().contains("freshness unknown"));
+            if copying {
+                assert!(
+                    output
+                        .platform_output
+                        .commands
+                        .contains(&OutputCommand::CopyText(value.text.clone()))
+                );
+            }
+            assert_eq!(value.checkbox_value(), Some(checked));
+            output.textures_delta.clear();
+        }
+    }
 }

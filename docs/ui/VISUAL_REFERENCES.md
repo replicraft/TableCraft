@@ -37,6 +37,9 @@ white active cell with a red outline. Home exposes actual View and Clipboard
 groups: Datasheet/Table Design target the current table object, and Copy uses the
 retained selected cell. Selection and read-only commands do not establish record
 editing, rectangular selection or query-result updateability.
+The sample's checked Yes/No fields now render from typed Boolean values plus
+their inspected native checkbox declarations. A Boolean type alone does not
+override a stored text-box choice or stand in for missing field metadata.
 
 Only working commands remain interactive. File opening, passwords, cancellation,
 table pages and read queries retain their current paths. No mock Create ribbon,

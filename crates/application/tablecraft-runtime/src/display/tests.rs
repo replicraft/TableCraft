@@ -1,6 +1,9 @@
 use super::Presentation;
-use crate::Error;
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use crate::{Cell, CellKind, Error};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 #[test]
 fn column_envelopes_and_header_payloads_share_the_bounded_output_pool() {
@@ -39,4 +42,37 @@ fn column_envelopes_and_header_payloads_share_the_bounded_output_pool() {
         if limit.resource == Resource::Bytes && limit.remaining == 0)
     );
     assert_eq!(columns, ["Id"]);
+}
+
+#[test]
+fn boolean_facts_are_independent_of_cached_provenance_and_expression_text() {
+    let mut output = Presentation::new(&|| false);
+    for (value, boolean, is_null) in [
+        (Value::Boolean(true), Some(true), false),
+        (Value::Boolean(false), Some(false), false),
+        (Value::Null, None, true),
+        (Value::Text("true".into()), None, false),
+        (Value::Int32(-1), None, false),
+    ] {
+        let cell = output.scalar(&value, true).unwrap();
+        assert_eq!(
+            cell.kind,
+            CellKind::Scalar {
+                is_null,
+                stored_calculation: true,
+                boolean,
+                display_control: crate::DisplayControl::Uninspected,
+            }
+        );
+    }
+    let expression = Cell::expression("true".into());
+    assert_eq!(
+        expression.kind,
+        CellKind::Scalar {
+            is_null: false,
+            stored_calculation: false,
+            boolean: None,
+            display_control: crate::DisplayControl::Uninspected
+        }
+    );
 }

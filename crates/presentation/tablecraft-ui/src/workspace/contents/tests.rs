@@ -46,6 +46,8 @@ fn data() -> Data {
             kind: CellKind::Scalar {
                 is_null: true,
                 stored_calculation: false,
+                boolean: None,
+                display_control: crate::DisplayControl::Uninspected,
             },
         }]],
         has_more: false,
@@ -74,6 +76,8 @@ fn target_binds_original_names_revision_and_global_parent_not_summary_text() {
     state.data.as_mut().unwrap().rows[0][0].kind = CellKind::Scalar {
         is_null: false,
         stored_calculation: true,
+        boolean: None,
+        display_control: crate::DisplayControl::Uninspected,
     };
     assert!(state.data.as_ref().unwrap().contents_target(0, 0).is_none());
     assert!(!state.can_view_contents(&original));

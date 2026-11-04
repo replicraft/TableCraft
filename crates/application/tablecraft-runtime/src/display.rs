@@ -74,6 +74,11 @@ impl<'a> Presentation<'a> {
             kind: CellKind::Scalar {
                 is_null: matches!(value, Value::Null),
                 stored_calculation,
+                boolean: match value {
+                    Value::Boolean(value) => Some(*value),
+                    _ => None,
+                },
+                display_control: crate::DisplayControl::Uninspected,
             },
         })
     }

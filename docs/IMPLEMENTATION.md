@@ -15,6 +15,8 @@ capture, with actual Open/About controls and success-only return to the workspac
 Datasheets now retain active-cell selection with bounded arrow navigation and
 screenshot-based row/column highlights. Home's Copy and table View commands use
 that presentation state and the existing metadata service.
+Typed Yes/No cells now honor explicit native checkbox declarations while keeping
+text-box overrides, uninspected metadata, NULL and cached-result facts separate.
 
 Runtime tests pass actual table/query operations, action refusal, cancellation
 and stale-generation suppression. Table pages also retain typed NULL/cache facts

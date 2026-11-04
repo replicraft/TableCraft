@@ -485,3 +485,45 @@ batch was rerun after the visual/focus corrections; strict Clippy, native build,
 formatting, dependency boundaries and documentation links pass. The private
 sample remains byte-for-byte unchanged. These checks do not establish editable
 cells, full grid accessibility, Windows/Linux behavior or native Access parity.
+
+## Native Yes/No display controls
+
+The renderer now receives exact Boolean facts separately from stored field
+display-control metadata. A checked or unchecked read-only checkbox requires a
+non-NULL Boolean and an explicit native checkbox declaration (106). A literal
+text `true`, numeric -1/0 or NULL cannot become a checkbox from its spelling or
+value. Cache provenance remains independent, and Copy retains the original full
+cell text. Clicking, Space and Enter select/focus the cell without changing data.
+Accessibility exposes the checked state and read-only property without a toggle
+action; platform screen-reader qualification remains separate.
+
+Text-box declarations (109) retain text, and combo boxes (111) or other
+unsupported controls do not silently become checkboxes. Absent and uninspected
+settings remain distinct, with explanatory context. Query results and child
+contents do not inherit a native field control through an alias or parent name.
+Field Format/lookup rendering, inferred defaults and general display-control
+support remain work.
+
+Microsoft documents that DisplayControl affects datasheet presentation and allows
+Yes/No fields to use checkbox, text-box or combo-box controls. See the
+[DisplayControl reference](https://learn.microsoft.com/en-us/previous-versions/office/aa195849(v=office.11))
+and [control-code enumeration](https://learn.microsoft.com/en-us/office/vba/api/access.accontroltype).
+The [default-new-field guidance](https://support.microsoft.com/en-gb/access/add-a-check-box-control-to-show-yes-no-values)
+does not establish the declaration of an existing field whose metadata was not
+inspected. The retained Access screenshot supplies the actual visual reference.
+
+The rebuilt macOS preview displayed both actual sample Yes/No declarations as
+checked boxes. Repeated arrow navigation reached the field; mouse click, Space
+and Enter retained its original value. Home Copy published the original `true`
+text through the real system clipboard, verified by pasting into a local field
+without submitting another Open. The private source/copy comparison remains
+unchanged. This observes local presentation and interaction, not a Windows Access
+differential or platform screen-reader qualification.
+
+All 72 focused checks pass: twenty-five runtime unit tests, one diagnostic
+integration test, thirty-four shared UI tests, nine desktop tests and three
+native property-accessor tests. Strict runtime/UI/desktop and minimal-engine
+Clippy, native build, formatting, dependency boundaries and documentation links
+pass. No full engine-suite rerun is claimed. Synthetic native fixtures cover
+explicit checkbox/text-box codes, unknown codes/flags/types/widths, absent
+properties, a missing carrier, corrupt present framing and unchanged bytes.

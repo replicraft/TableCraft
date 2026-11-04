@@ -1,3 +1,4 @@
+mod boolean;
 mod contents;
 mod schema;
 mod stored;

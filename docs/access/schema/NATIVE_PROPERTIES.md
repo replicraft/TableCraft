@@ -25,6 +25,13 @@ Text/Memo values remain inert expression text. Typed access rejects wrong carrie
 Required is never guessed false because its payload has an unexpected type.
 Ordinary schema/row APIs keep their conservative nullability policy.
 
+`NativeProperty::int16` also decodes an exact two-byte signed native Int16 without
+coercing other tags or widths. It preserves negative and unknown numeric values;
+callers still interpret property flags and domain meanings separately. The
+application's [field-control presentation](../../application/RUNTIME.md) uses this
+accessor for inspected DisplayControl metadata. This does not change CLI property
+formatting or qualify arbitrary UI controls and native writes.
+
 Unknown block tags are retained only when they fit the understood value framing;
 other layouts fail. KKD/Jet 3 and newer ACE streams remain unqualified. Existing
 limits include 2 MiB long values; this parser adds 256 property names, 4,096 total

@@ -486,7 +486,7 @@ mod tests {
         let mut frame = eframe::Frame::_new_kittest();
         finish(&mut desktop, &context, &mut frame);
         desktop.submit(Command::Query {
-            sql: "SELECT NULL AS [Absent], 'NULL' AS [Label]".into(),
+            sql: "SELECT NULL AS [Absent], 'NULL' AS [Label], True AS [Yes], False AS [No], 'false' AS [Text]".into(),
         });
         finish(&mut desktop, &context, &mut frame);
 
@@ -497,16 +497,32 @@ mod tests {
             data.rows[0][0].kind,
             tablecraft_ui::CellKind::Scalar {
                 is_null: true,
-                stored_calculation: false
+                stored_calculation: false,
+                boolean: None,
+                display_control: tablecraft_ui::DisplayControl::Uninspected
             }
         ));
         assert!(matches!(
             data.rows[0][1].kind,
             tablecraft_ui::CellKind::Scalar {
                 is_null: false,
-                stored_calculation: false
+                stored_calculation: false,
+                boolean: None,
+                display_control: tablecraft_ui::DisplayControl::Uninspected
             }
         ));
+        for (index, boolean) in [(2, Some(true)), (3, Some(false)), (4, None)] {
+            assert!(matches!(
+                data.rows[0][index].kind,
+                tablecraft_ui::CellKind::Scalar {
+                    is_null: false,
+                    stored_calculation: false,
+                    boolean: actual,
+                display_control: tablecraft_ui::DisplayControl::Uninspected
+                } if actual == boolean
+            ));
+        }
+        assert_eq!(data.rows[0][3].text, data.rows[0][4].text);
         assert!(desktop.state.data.is_none());
     }
 
