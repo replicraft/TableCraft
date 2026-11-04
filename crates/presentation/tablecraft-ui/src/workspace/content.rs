@@ -9,6 +9,25 @@ use egui::{Color32, Frame, RichText, Ui};
 impl State {
     pub(super) fn content(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         egui::CentralPanel::default().show(ui, |ui| {
+            ui.horizontal(|ui| {
+                let table_title = self
+                    .data
+                    .as_ref()
+                    .map_or("Table", |data| data.table.as_str());
+                for (query, title) in [(false, table_title), (true, "Query")] {
+                    let response = ui.selectable_label(self.query_view == query, title);
+                    if self.query_view == query {
+                        ui.painter().line_segment(
+                            [response.rect.left_bottom(), response.rect.right_bottom()],
+                            egui::Stroke::new(2.0, ACCENT),
+                        );
+                    }
+                    if response.clicked() {
+                        self.query_view = query;
+                    }
+                }
+            });
+            ui.separator();
             if let Some(error) = &self.error {
                 Frame::new()
                     .fill(Color32::from_rgb(255, 237, 237))

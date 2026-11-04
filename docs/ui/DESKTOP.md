@@ -237,3 +237,19 @@ review identified UI-only completion polling and corrected it as above. Reopenin
 the updated preview produced a live process, but the computer-use connection then
 timed out. Native picker/table/query interaction remains unverified; these tool
 failures are not recorded as a successful workflow or a native database failure.
+
+## Screenshot-grounded presentation
+
+The [retained Access visual references](VISUAL_REFERENCES.md) govern the initial
+layout correction: compact light chrome, a white command surface, document tabs,
+object navigation and dense datasheets. The references and their application
+version limits are recorded there. Current controls remain a read-only preview;
+visual resemblance does not expand editing or native compatibility claims.
+
+The corrected shared UI passes all ten existing presentation tests, including
+virtualization, cell copy/focus and keyboard admission; all seven runtime and four
+desktop tests also pass. Strict Clippy for the three packages and the native build
+pass. A rebuilt native launch was attempted for visual comparison, but computer-use
+inspection timed out; the sampled process was still in the macOS dynamic loader.
+The corrected native rendering and interactive catalog/page/query sequence are
+therefore not yet observed. The earlier native screenshot depicts the old layout.

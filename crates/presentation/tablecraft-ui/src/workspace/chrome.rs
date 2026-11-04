@@ -1,6 +1,6 @@
 //! Shared title, database controls, status and About presentation.
 use super::{Action, State};
-use crate::theme::ACCENT;
+use crate::theme::{ACCENT, INK, TITLE_FILL};
 use egui::{Color32, Frame, Margin, RichText, ScrollArea, TextEdit, Ui};
 
 impl State {
@@ -8,16 +8,16 @@ impl State {
         egui::Panel::top("title")
             .frame(
                 Frame::new()
-                    .fill(ACCENT)
-                    .inner_margin(Margin::symmetric(18, 10)),
+                    .fill(TITLE_FILL)
+                    .inner_margin(Margin::symmetric(10, 5)),
             )
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
                     ui.label(
-                        RichText::new("TABLECRAFT")
-                            .color(Color32::WHITE)
+                        RichText::new("TableCraft")
+                            .color(ACCENT)
                             .strong()
-                            .size(17.0),
+                            .size(13.0),
                     );
                     ui.separator();
                     ui.label(
@@ -26,76 +26,72 @@ impl State {
                                 .as_ref()
                                 .map_or("Database workspace", |db| db.title.as_str()),
                         )
-                        .color(Color32::WHITE),
+                        .color(INK),
                     );
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         if ui
                             .add(
-                                egui::Button::new(RichText::new("About").color(Color32::WHITE))
-                                    .fill(ACCENT),
+                                egui::Button::new(RichText::new("About").color(INK))
+                                    .fill(TITLE_FILL),
                             )
                             .clicked()
                         {
                             self.about = true;
                         }
-                        ui.label(
-                            RichText::new("READ ONLY · PREVIEW")
-                                .color(Color32::WHITE)
-                                .size(11.0),
-                        );
+                        ui.label(RichText::new("READ ONLY · PREVIEW").color(INK).size(11.0));
                     });
                 });
             });
-        egui::Panel::top("ribbon").show(ui, |ui| {
-            ui.add_space(3.0);
-            ui.horizontal(|ui| {
-                ui.selectable_value(&mut self.query_view, false, "Table");
-                ui.selectable_value(&mut self.query_view, true, "Query");
-            });
-            ui.separator();
-            ui.horizontal(|ui| {
-                let path_label = ui.label("Database path");
-                ui.add_sized(
-                    [(ui.available_width().min(530.0) - 190.0).max(150.0), 28.0],
-                    TextEdit::singleline(&mut self.path)
-                        .id(path_id)
-                        .hint_text("Path to .accdb or .mdb"),
-                )
-                .labelled_by(path_label.id);
-                if self.file_picker_available
-                    && ui
-                        .add_enabled(self.file_picker_ready(), egui::Button::new("Browse…"))
-                        .clicked()
-                {
-                    actions.push(Action::ChooseFile);
-                }
-                let password_label = ui.label("Password");
-                ui.add_sized(
-                    [130.0, 28.0],
-                    TextEdit::singleline(&mut self.password)
-                        .password(true)
-                        .hint_text("Password"),
-                )
-                .labelled_by(password_label.id);
-                if ui
-                    .add_enabled(
-                        !self.path.trim().is_empty(),
-                        egui::Button::new("Open database"),
+        egui::Panel::top("ribbon")
+            .frame(
+                Frame::new()
+                    .fill(Color32::WHITE)
+                    .inner_margin(Margin::symmetric(8, 5)),
+            )
+            .show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    let path_label = ui.label("Database path");
+                    ui.add_sized(
+                        [(ui.available_width().min(530.0) - 190.0).max(150.0), 23.0],
+                        TextEdit::singleline(&mut self.path)
+                            .id(path_id)
+                            .hint_text("Path to .accdb or .mdb"),
                     )
-                    .clicked()
-                {
-                    actions.push(Action::Open);
-                }
-                if self.busy {
-                    ui.spinner();
-                    if ui.button("Cancel").clicked() {
-                        actions.push(Action::Cancel);
+                    .labelled_by(path_label.id);
+                    if self.file_picker_available
+                        && ui
+                            .add_enabled(self.file_picker_ready(), egui::Button::new("Browse…"))
+                            .clicked()
+                    {
+                        actions.push(Action::ChooseFile);
                     }
-                }
+                    let password_label = ui.label("Password");
+                    ui.add_sized(
+                        [130.0, 23.0],
+                        TextEdit::singleline(&mut self.password)
+                            .password(true)
+                            .hint_text("Password"),
+                    )
+                    .labelled_by(password_label.id);
+                    if ui
+                        .add_enabled(
+                            !self.path.trim().is_empty(),
+                            egui::Button::new("Open database"),
+                        )
+                        .clicked()
+                    {
+                        actions.push(Action::Open);
+                    }
+                    if self.busy {
+                        ui.spinner();
+                        if ui.button("Cancel").clicked() {
+                            actions.push(Action::Cancel);
+                        }
+                    }
+                });
+                ui.small("Open a stable copy or close other database writers before opening.");
+                ui.add_space(4.0);
             });
-            ui.small("Open a stable copy or close other database writers before opening.");
-            ui.add_space(4.0);
-        });
         egui::Panel::bottom("status").show(ui, |ui| {
             ui.horizontal(|ui| {
                 ui.small(if self.busy { "Working…" } else { "Ready" });

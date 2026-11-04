@@ -9,6 +9,7 @@ This does not change backend compatibility claims or resume SQLite, project
 infrastructure or VBA execution.
 
 - [Native desktop kickoff, ownership and release gates](DESKTOP.md)
+- [Observed Access visual references and current corrections](VISUAL_REFERENCES.md)
 - [Current implementation status](../IMPLEMENTATION.md)
 - [Access behavioral parity](../decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
 

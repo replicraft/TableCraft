@@ -16,6 +16,12 @@ application version and database settings distinct; file magic alone does not
 identify a UI release. Imported forms/reports retain native layout and behavior.
 This is working guidance, not authorization to scaffold application-profile/UI
 types or resume deferred VBA execution. The user explicitly authorized desktop implementation on 4 November 2026.
+Base UI layout and styling on the actual retained Access screenshots, following
+[the visual reference record](docs/ui/VISUAL_REFERENCES.md). Preserve native
+workflow and layout distinctions; do not substitute a generic Office-inspired
+design or add nonfunctional controls to imitate screenshots. Keep private
+reference captures private and distinguish visual approximation from verified
+interaction and database behavior.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
