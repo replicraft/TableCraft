@@ -28,7 +28,7 @@ pub(super) fn collection_kind(kind: RuntimeCollectionKind) -> CollectionKind {
     }
 }
 
-fn cell(cell: RuntimeCell) -> Cell {
+pub(super) fn cell(cell: RuntimeCell) -> Cell {
     let kind = match cell.kind {
         RuntimeKind::Scalar {
             is_null,

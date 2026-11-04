@@ -125,44 +125,46 @@ fn collect_contents_action(
     position: (usize, usize),
     actions: &mut Vec<Action>,
 ) {
-    let (row, column) = position;
-    let Some(value) = data.rows.get(row).and_then(|row| row.get(column)) else {
-        return;
-    };
-    if data.source_revision.is_some()
-        && !matches!(value.kind, crate::CellKind::Scalar { .. })
-        && contents_requested(ui, response)
-        && let Some(target) = data.contents_target(row, column)
-    {
-        actions.push(Action::ViewContents { target });
-    }
-}
-
-fn contents_requested(ui: &mut Ui, response: &Response) -> bool {
     if !ui.is_enabled() {
-        return false;
+        return;
     }
-    let mut requested = false;
+    let (row, column) = position;
+    let contents = data.contents_target(row, column);
+    let edit = data.edit_target(row, column);
+    if contents.is_none() && edit.is_none() {
+        return;
+    }
+    let mut view_contents = false;
+    let mut edit_cell = false;
     response.context_menu(|ui| {
-        if ui.button("View contents").clicked() {
-            requested = true;
+        if contents.is_some() && ui.button("View contents").clicked() {
+            view_contents = true;
+            ui.close();
+        }
+        if edit.is_some() && ui.button("Edit cell…").clicked() {
+            edit_cell = true;
             ui.close();
         }
     });
-    if response.has_focus() {
-        requested |= ui.input_mut(|input| {
+    if contents.is_some() && response.has_focus() {
+        view_contents |= ui.input_mut(|input| {
             let mut enter = false;
             input.events.retain(|event| {
-                let matches = matches!(event, egui::Event::Key {
+                let plain_enter = matches!(event, egui::Event::Key {
                     key: egui::Key::Enter, pressed: true, modifiers, ..
                 } if modifiers.is_none());
-                enter |= matches;
-                !matches
+                enter |= plain_enter;
+                !plain_enter
             });
             enter
         });
     }
-    requested
+    if view_contents && let Some(target) = contents {
+        actions.push(Action::ViewContents { target });
+    }
+    if edit_cell && let Some(target) = edit {
+        actions.push(Action::BeginEdit { target });
+    }
 }
 
 fn grid_cell(ui: &Ui, header: bool) {
@@ -177,7 +179,13 @@ fn grid_cell(ui: &Ui, header: bool) {
         .line_segment([rect.left_bottom(), rect.right_bottom()], stroke);
 }
 
-fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64, allow_copy: bool) -> Response {
+pub(crate) fn cell(
+    ui: &mut Ui,
+    value: &Cell,
+    column: &str,
+    row: u64,
+    allow_copy: bool,
+) -> Response {
     let text = value.text.as_str();
     let context = value.context();
     let display = match value.badge() {

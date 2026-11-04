@@ -25,8 +25,11 @@ ordered multivalue members, attachment metadata and stored Memo history in a
 revision-bound dialog; cached formulas and attachment payloads remain inert.
 See the [shared application read contract](application/RUNTIME.md). The shared UI renders empty and populated
 states in a headless egui pass. Native visual/platform verification and build
-status are recorded in the [desktop guide](ui/DESKTOP.md). Writes and designers
-are not exposed by this first workspace. Broader backend work continues alongside
+status are recorded in the [desktop guide](ui/DESKTOP.md). An explicit reviewed
+offline cell-edit preview now uses runtime-owned normal native planning and a
+nonreplaceable save worker; broader editing and designers remain work. Its
+[ownership and recovery limits](application/RUNTIME.md#reviewed-offline-cell-edits)
+remain explicit. Broader backend work continues alongside
 UI implementation, following the user's explicit reprioritization.
 
 ## Retained GUID/Int32 tuple Source admission

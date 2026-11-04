@@ -1,4 +1,7 @@
+mod editing;
+
 use crate::file_dialog::{FileDialog, SelectedFile};
+use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
 use tablecraft_ui::{Action, ContentsTarget, Data, Database, Field, Schema, State, Table};
@@ -11,6 +14,9 @@ enum PendingOperation {
         target: ContentsTarget,
         request_id: u64,
     },
+    Edit {
+        request_id: u64,
+    },
 }
 
 pub(super) struct Desktop {
@@ -20,10 +26,12 @@ pub(super) struct Desktop {
     pending: PendingOperation,
     file_dialog: FileDialog,
     selected_file: Option<SelectedFile>,
+    editing: Editing,
 }
 
 impl Desktop {
     pub(super) fn new(ctx: egui::Context, path: Option<PathBuf>) -> Self {
+        let editing = Editing::new(ctx.clone());
         let worker = Worker::new(move || ctx.request_repaint());
         let mut app = Self {
             state: State::default(),
@@ -32,6 +40,7 @@ impl Desktop {
             pending: PendingOperation::Read,
             file_dialog: FileDialog::default(),
             selected_file: None,
+            editing,
         };
         app.state.file_picker_available = true;
         if let Some(path) = path {
@@ -42,6 +51,9 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
+        if self.editing.has_save() {
+            return;
+        }
         let contents = match &command {
             Command::InspectCollection { target } => {
                 Some(crate::view_models::contents_target(target))
@@ -89,6 +101,9 @@ impl Desktop {
     }
 
     fn file_selected(&mut self, selection: Option<PathBuf>) {
+        if self.editing.has_save() {
+            return;
+        }
         if let Some(path) = selection {
             self.select_file(path);
             self.open();
@@ -96,6 +111,11 @@ impl Desktop {
     }
 
     fn open(&mut self) {
+        if self.editing.has_save() {
+            return;
+        }
+        self.editing.clear_review();
+        self.editing.clear_refresh();
         self.state.show_open();
         let path = match self
             .selected_file
@@ -124,6 +144,10 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::EditDraft(draft)) => self.publish_edit_draft(generation, draft),
+                Ok(Response::EditReviewed { review, capability }) => {
+                    self.publish_edit_review(generation, review, capability);
+                }
                 Ok(Response::Details {
                     table,
                     declared_rows,
@@ -168,6 +192,7 @@ impl Desktop {
                             .collect(),
                     });
                     self.state.dismiss_backstage();
+                    self.refresh_after_save(generation);
                 }
                 Ok(Response::Data {
                     source_revision,
@@ -218,6 +243,9 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::Edit { request_id } => {
+                        self.state.fail_edit(*request_id, error.to_string());
+                    }
                     PendingOperation::Contents { target, request_id } => {
                         self.state
                             .fail_contents(*request_id, target.clone(), error.to_string());
@@ -243,11 +271,13 @@ impl Desktop {
 }
 
 impl eframe::App for Desktop {
-    fn logic(&mut self, _ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // eframe also calls logic for repaint requests while the viewport is
         // hidden. Task completion must not depend on drawing a visible frame.
         self.poll_file_dialog();
         self.poll();
+        self.poll_saves();
+        self.guard_save_close(ctx);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -279,7 +309,19 @@ impl eframe::App for Desktop {
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
+                Action::BeginEdit { target } => self.begin_edit(target),
+                Action::ReviewEdit { draft_id, input } => self.review_edit(draft_id, input),
+                Action::ApplyEdit { review_id } => self.apply_edit(review_id),
+                Action::CloseEdit { request_id, .. } => self.close_edit(request_id),
+                Action::CancelEditSave { save_id } => self.cancel_save(save_id),
+                Action::RecoverEditSave { save_id } => self.resolve_save(save_id, true),
+                Action::ReleaseEditSave { save_id } => self.resolve_save(save_id, false),
+                Action::AcknowledgeEditSave { save_id } => self.acknowledge_save(save_id),
                 Action::Cancel => {
+                    if self.editing.has_save() {
+                        self.cancel_current_save();
+                        continue;
+                    }
                     if let PendingOperation::Contents { request_id, .. } = &self.pending {
                         self.close_contents(*request_id);
                     } else {

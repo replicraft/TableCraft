@@ -142,8 +142,12 @@ from stored Database/Connect fields. Keep linked routing in the adapter, all Sou
 capabilities forwarded, root named-query ownership and target field policies intact.
 Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; the bounded `query update` command creates fresh offline Jet 4 copies under
-[explicit editing limits](docs/access/writes/QUERY_EDITING.md). In-place CLI editing and GUI hosts
-are not implemented. Follow [NATIVE_READING.md](docs/access/NATIVE_READING.md) for supported native
+[explicit editing limits](docs/access/writes/QUERY_EDITING.md). The desktop host now
+composes shared UI and runtime services. Its explicit offline cell edits use
+runtime-issued consuming reviews and a separate nonreplaceable save worker;
+retain terminal outcomes and resource owners across cancellation and view changes.
+Follow the [application editing contract](docs/application/RUNTIME.md#reviewed-offline-cell-edits).
+Follow [NATIVE_READING.md](docs/access/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.
 Explicit `rows --stream` uses the existing browser cursor for progressive scalar
 TSV publication; see [streaming rows](docs/cli/STREAMING_ROWS.md). Preserve cumulative
