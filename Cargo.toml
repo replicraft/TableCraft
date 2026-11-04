@@ -1,6 +1,9 @@
 [workspace]
 members = [
     "apps/tablecraft-cli",
+    "apps/tablecraft-desktop",
+    "crates/application/tablecraft-runtime",
+    "crates/presentation/tablecraft-ui",
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
@@ -26,6 +29,14 @@ license = "Apache-2.0"
 repository = "https://github.com/replicraft/TableCraft"
 
 [workspace.dependencies]
+# Native desktop rendering and shared UI mechanics
+# Host features remain local; headless packages do not inherit these dependencies.
+eframe = { version = "0.36.2", default-features = false }
+egui = { version = "0.36.2", default-features = false }
+egui_extras = { version = "0.36.2", default-features = false }
+tablecraft-runtime = { path = "crates/application/tablecraft-runtime", default-features = false }
+tablecraft-ui = { path = "crates/presentation/tablecraft-ui", default-features = false }
+
 # CLI arguments, table presentation and host diagnostics
 csv = "1.4"
 comfy-table = { version = "8.0.1", default-features = false }

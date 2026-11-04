@@ -72,6 +72,19 @@ also supports fixed updates to qualified tables, with a separate
 [restricted row deletion](docs/access/writes/NORMAL_ACE_DELETE.md).
 Qualified targets also accept [explicit-row insertion](docs/access/writes/NORMAL_ACE_INSERT.md).
 
+## Desktop preview
+
+Start the native read-only workspace with an optional database path:
+
+```sh
+cargo run -p tablecraft-desktop -- path/to/example.accdb
+```
+
+The first desktop slice provides table navigation, bounded datasheets and a SQL
+editor over existing Access services. It opens a snapshot of a stable file up to
+64 MiB; close other writers first. Editing, designers and desktop release
+packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
+
 ## Documentation
 
 - [Documentation index](docs/README.md)

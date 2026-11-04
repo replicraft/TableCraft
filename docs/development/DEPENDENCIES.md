@@ -1,5 +1,26 @@
 # Adopted dependency and licensing baseline
 
+## Desktop workspace (4 November 2026)
+
+Working consumers introduce `egui`, `egui_extras` and `eframe` 0.36.2 (MIT OR
+Apache-2.0), declared centrally with default features disabled. Shared
+`tablecraft-ui` consumes egui/default fallback fonts and the resizable virtualized
+table helper. The desktop host enables eframe Glow, native platform windowing and
+AccessKit. These dependencies are absent from the runtime, native engine, query
+libraries and CLI dependency closure. The desktop does not depend on CLI or SQLite.
+
+The renderer uses the upstream [eframe App contract](https://docs.rs/eframe/0.36.2/eframe/trait.App.html)
+and [egui tables](https://docs.rs/egui_extras/0.36.2/egui_extras/struct.TableBuilder.html).
+Window/device/accessibility behavior still needs qualification on each platform.
+`tablecraft-runtime` reuses existing dependencies for application sessions,
+read/query tasks and typed errors; it has no GUI dependency.
+
+The unmodified regular [Selawik 1.01 font](../../assets/ui/fonts/README.md) is
+bundled at the repository asset root under SIL OFL 1.1. Its copyright/license
+is retained beside the file and displayed in the shared About view. Existing CLI
+release archives do not contain this font or new desktop dependencies. Desktop
+release packaging and its complete transitive notice audit are a follow-on gate.
+
 ## Typed CLI creation (31 October 2026)
 
 Typed creation now consumes `ScalarType` and validated `DecimalConstraints` from

@@ -15,7 +15,9 @@ must preserve those observable semantics. Keep file capabilities, target Access
 application version and database settings distinct; file magic alone does not
 identify a UI release. Imported forms/reports retain native layout and behavior.
 This is working guidance, not authorization to scaffold application-profile/UI
-types or resume deferred VBA execution. Backend-first implementation continues.
+types or resume deferred VBA execution. The user explicitly authorized desktop implementation on 4 November 2026.
+Develop the Access browser/query UI alongside the backend; full backend completion
+is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
 Focus implementation and compatibility testing on ACE 16. The long-term target
 is 100% ACE 16 compatibility, not a permanently limited subset. Prioritize ACE 16
