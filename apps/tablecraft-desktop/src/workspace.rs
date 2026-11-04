@@ -83,13 +83,20 @@ impl Desktop {
     }
 
     fn poll_file_dialog(&mut self) {
-        if let Some(Some(path)) = self.file_dialog.poll() {
+        if let Some(selection) = self.file_dialog.poll() {
+            self.file_selected(selection);
+        }
+    }
+
+    fn file_selected(&mut self, selection: Option<PathBuf>) {
+        if let Some(path) = selection {
             self.select_file(path);
             self.open();
         }
     }
 
     fn open(&mut self) {
+        self.state.show_open();
         let path = match self
             .selected_file
             .as_ref()
@@ -160,6 +167,7 @@ impl Desktop {
                             })
                             .collect(),
                     });
+                    self.state.dismiss_backstage();
                 }
                 Ok(Response::Data {
                     source_revision,
@@ -319,6 +327,123 @@ mod tests {
         });
         finish(&mut desktop, &context, &mut frame);
         assert_eq!(desktop.state.error.as_deref(), Some("no database is open"));
+    }
+
+    #[test]
+    fn backstage_stays_open_on_failure_and_closes_only_after_open_succeeds() {
+        let directory = tempfile::tempdir().unwrap();
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), None);
+        let mut frame = eframe::Frame::_new_kittest();
+        assert!(desktop.state.backstage_visible());
+
+        // A workspace picker selection must expose the Open surface immediately,
+        // including when the asynchronous open subsequently fails.
+        desktop.state.dismiss_backstage();
+        desktop.state.password = "pending credential".into();
+        desktop.file_selected(Some(directory.path().join("missing.accdb")));
+        assert!(desktop.state.backstage_visible());
+        assert!(desktop.state.busy);
+        assert!(desktop.state.password.is_empty());
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.backstage_visible());
+        assert!(desktop.state.database.is_none());
+        assert!(desktop.state.error.is_some());
+
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb");
+        desktop.file_selected(Some(path));
+        assert!(desktop.state.backstage_visible());
+        assert!(desktop.state.busy);
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.database.is_some());
+        assert!(desktop.state.error.is_none());
+        assert!(!desktop.state.backstage_visible());
+
+        // Entering Backstage does not cancel a task, and a query response does
+        // not dismiss it as though another document had just opened.
+        desktop.submit(Command::Query {
+            sql: "SELECT 17 AS [Kept]".into(),
+        });
+        let generation = desktop.generation;
+        desktop.state.show_open();
+        assert_eq!(desktop.generation, generation);
+        assert!(desktop.state.busy);
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.backstage_visible());
+        assert_eq!(
+            desktop.state.query_data.as_ref().unwrap().rows[0][0].text,
+            "17"
+        );
+    }
+
+    #[test]
+    fn cancelling_the_picker_preserves_the_document_views_and_open_inputs() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb");
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), Some(path.clone()));
+        let mut frame = eframe::Frame::_new_kittest();
+        finish(&mut desktop, &context, &mut frame);
+        desktop.submit(Command::Page {
+            table: "tblContacts".into(),
+            offset: 0,
+        });
+        finish(&mut desktop, &context, &mut frame);
+        desktop.submit(Command::Query {
+            sql: "SELECT 17 AS [Kept]".into(),
+        });
+        finish(&mut desktop, &context, &mut frame);
+        desktop.submit(Command::Describe {
+            table: "tblContacts".into(),
+        });
+        finish(&mut desktop, &context, &mut frame);
+        assert!(desktop.state.error.is_none());
+
+        desktop.state.show_open();
+        desktop.state.password = "unsubmitted credential".into();
+        desktop.state.error = Some("retained diagnostic".into());
+        let generation = desktop.generation;
+        let revision = desktop.state.database.as_ref().unwrap().document_revision;
+        let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
+        let query_rows = desktop.state.query_data.as_ref().unwrap().rows.as_ptr();
+        let fields = desktop.state.schema.as_ref().unwrap().fields.as_ptr();
+
+        desktop.file_selected(None);
+        assert_eq!(desktop.generation, generation);
+        assert!(!desktop.state.busy);
+        assert!(desktop.state.backstage_visible());
+        assert_eq!(desktop.state.password, "unsubmitted credential");
+        assert_eq!(desktop.state.error.as_deref(), Some("retained diagnostic"));
+        assert_eq!(
+            desktop.state.database.as_ref().unwrap().document_revision,
+            revision
+        );
+        assert_eq!(
+            desktop.state.data.as_ref().unwrap().rows.as_ptr(),
+            table_rows
+        );
+        assert_eq!(
+            desktop.state.query_data.as_ref().unwrap().rows.as_ptr(),
+            query_rows
+        );
+        assert_eq!(
+            desktop.state.schema.as_ref().unwrap().fields.as_ptr(),
+            fields
+        );
+        assert_eq!(
+            desktop
+                .selected_file
+                .as_ref()
+                .unwrap()
+                .path_for(&desktop.state.path),
+            Some(path.as_path())
+        );
+
+        desktop.state.dismiss_backstage();
+        desktop.file_selected(None);
+        assert!(!desktop.state.backstage_visible());
+        assert_eq!(desktop.generation, generation);
     }
 
     #[test]

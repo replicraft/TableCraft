@@ -52,6 +52,7 @@ impl State {
     /// Only actual collection cells in the current native page are actionable.
     pub fn can_view_contents(&self, target: &ContentsTarget) -> bool {
         if self.view != DocumentView::Table
+            || self.backstage_visible()
             || self.database.as_ref().map(|db| db.document_revision)
                 != Some(target.document_revision)
         {

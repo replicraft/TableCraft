@@ -187,6 +187,7 @@ mod tests {
         });
         state.prepare_schema_view();
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert!(state.view == DocumentView::Design);
         assert!(!state.query_ready());
         assert!(state.visible_data().is_none());
@@ -201,6 +202,7 @@ mod tests {
         assert_eq!(state.visible_data().unwrap().table, "Query result");
         state.prepare_schema_view();
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert_eq!(state.selected_field, 0);
         state.clear_schema();
         assert!(state.schema.is_none());
@@ -214,20 +216,24 @@ mod tests {
         state.prepare_schema_view();
         state.select_view(DocumentView::Query);
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert!(state.view == DocumentView::Query);
         assert_eq!(state.schema.as_ref().unwrap().table, "Mixed");
 
         state.prepare_schema_view();
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert!(state.view == DocumentView::Design);
         state.prepare_schema_view();
         state.select_view(DocumentView::Table);
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert!(state.view == DocumentView::Table);
 
         state.prepare_schema_view();
         state.clear_schema();
         state.set_schema(schema());
+        state.dismiss_backstage();
         assert!(state.view == DocumentView::Table);
     }
 
@@ -237,6 +243,7 @@ mod tests {
         let mut state = State::default();
         state.prepare_schema_view();
         state.set_schema(schema());
+        state.dismiss_backstage();
         for empty in [false, true] {
             if empty {
                 state.schema.as_mut().unwrap().fields.clear();

@@ -32,6 +32,7 @@ mod tests {
                         storage: "Local".into(),
                     }],
                 });
+                state.dismiss_backstage();
                 state.data = Some(Data {
                     source_revision: None,
                     table: "Customers".into(),
