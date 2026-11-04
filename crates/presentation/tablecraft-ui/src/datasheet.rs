@@ -1,3 +1,4 @@
+mod clipboard;
 mod selection;
 pub(crate) use selection::Selection;
 
@@ -14,6 +15,9 @@ const BOOLEAN_BOX_SIZE: f32 = 14.0;
 
 pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection) -> Vec<Action> {
     let mut actions = Vec::new();
+    if let Some(error) = selection.copy_error() {
+        ui.colored_label(crate::theme::ACCENT, error);
+    }
     show_rows(ui, data, |_| {}, &mut actions, selection);
     actions
 }
@@ -70,7 +74,7 @@ fn show_rows(
                                 if ui.is_enabled() && selection.row() == Some(index) {
                                     ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
                                 }
-                                ui.weak(number.to_string());
+                                row_selector(ui, data, index, number, selection);
                             });
                             for (position, (column, text)) in
                                 data.columns.iter().zip(&data.rows[index]).enumerate()
@@ -96,13 +100,15 @@ fn show_rows(
                                             egui::StrokeKind::Inside,
                                         );
                                     }
-                                    collect_contents_action(
-                                        ui,
-                                        &response,
-                                        data,
-                                        (index, position),
-                                        actions,
-                                    );
+                                    if !selection.row_selected() {
+                                        collect_contents_action(
+                                            ui,
+                                            &response,
+                                            data,
+                                            (index, position),
+                                            actions,
+                                        );
+                                    }
                                 });
                             }
                         });
@@ -116,6 +122,46 @@ fn show_rows(
             })
     })
     .inner
+}
+
+fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &mut Selection) {
+    let response = ui.allocate_response(ui.available_size(), Sense::click());
+    paint_cell_text(ui, response.rect, &number.to_string());
+    selection.observe_row(ui, data, row, &response);
+    response.widget_info(|| {
+        WidgetInfo::labeled(
+            WidgetType::Button,
+            ui.is_enabled(),
+            format!("Select record {number}"),
+        )
+    });
+    ui.ctx().accesskit_node_builder(response.id, |node| {
+        node.set_role(egui::accesskit::Role::RowHeader);
+        node.set_selected(selection.row_selected() && selection.row() == Some(row));
+    });
+    if response.has_focus() {
+        ui.memory_mut(|memory| {
+            memory.set_focus_lock_filter(
+                response.id,
+                egui::EventFilter {
+                    horizontal_arrows: true,
+                    vertical_arrows: true,
+                    ..Default::default()
+                },
+            );
+        });
+    }
+    response.context_menu(|ui| {
+        if ui.button("Copy displayed record").clicked() {
+            selection.copy(data, ui.ctx());
+            ui.close();
+        }
+    });
+    response.on_hover_text(if selection.row_selected() && selection.row() == Some(row) {
+        "Selected record. Copy uses all displayed fields, including collection summaries; it does not copy child payloads."
+    } else {
+        "Select this record. Copy uses all displayed fields, including collection summaries; it does not copy child payloads."
+    });
 }
 
 fn collect_contents_action(

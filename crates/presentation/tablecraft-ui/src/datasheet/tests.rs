@@ -767,3 +767,163 @@ fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
         }
     }
 }
+
+#[test]
+fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_opening_children() {
+    let context = Context::default();
+    let data = Data {
+        source_revision: Some(7),
+        table: "Parents".into(),
+        offset: 0,
+        columns: vec!["ID".into(), "Nullable".into(), "Items".into()],
+        rows: vec![
+            vec![
+                "0:0".into(),
+                Cell {
+                    text: "NULL".into(),
+                    kind: CellKind::Scalar {
+                        is_null: true,
+                        stored_calculation: false,
+                        boolean: None,
+                        display_control: crate::DisplayControl::Uninspected,
+                    },
+                },
+                Cell {
+                    text: "2 items".into(),
+                    kind: CellKind::Multivalue {
+                        assigned: true,
+                        members: 2,
+                    },
+                },
+            ],
+            vec!["1:0".into(), "1:1".into(), "1:2".into()],
+        ],
+        has_more: false,
+    };
+    let mut selection = Selection::default();
+    selection.reset(&data);
+    click_grid_cell(
+        &context,
+        &data,
+        &mut selection,
+        (0, 2),
+        egui::PointerButton::Primary,
+    );
+    for pressed in [true, false] {
+        let mut events = vec![record_key(
+            egui::Key::Space,
+            pressed,
+            egui::Modifiers::SHIFT,
+        )];
+        if pressed {
+            // The toolkit can deliver the shortcut and Copy in one frame.
+            events.push(Event::Copy);
+        }
+        let (mut output, _, _) = selection_frame(&context, &data, &mut selection, events);
+        if pressed {
+            let record_copies = output.platform_output.commands.iter().filter(|command| {
+                matches!(command, OutputCommand::CopyText(text) if text == "0:0\tNULL\t2 items\n")
+            }).count();
+            assert_eq!(record_copies, 1);
+        }
+        output.textures_delta.clear();
+    }
+    assert!(selection.row_selected());
+    assert_eq!(
+        context.memory(|memory| memory.focused()),
+        selection.focus_id()
+    );
+    assert_eq!(selection.position(), Some((0, 2)));
+    assert!(selection.text(&data).is_none());
+    let (mut output, _, _) = selection_frame(&context, &data, &mut selection, vec![Event::Copy]);
+    let copied: Vec<_> = output
+        .platform_output
+        .commands
+        .iter()
+        .filter_map(|command| {
+            if let OutputCommand::CopyText(text) = command {
+                Some(text.as_str())
+            } else {
+                None
+            }
+        })
+        .collect();
+    assert_eq!(copied, ["0:0\tNULL\t2 items\n"]);
+    output.textures_delta.clear();
+
+    let mut output = context.run_ui(
+        input(vec![record_key(
+            egui::Key::Enter,
+            true,
+            egui::Modifiers::NONE,
+        )]),
+        |ui| {
+            assert!(show(ui, &data, &mut selection).is_empty());
+        },
+    );
+    output.textures_delta.clear();
+    assert!(selection.row_selected());
+    for pressed in [true, false] {
+        let (mut output, _, _) = selection_frame(
+            &context,
+            &data,
+            &mut selection,
+            vec![record_key(
+                egui::Key::Space,
+                pressed,
+                egui::Modifiers::SHIFT,
+            )],
+        );
+        output.textures_delta.clear();
+    }
+    assert!(!selection.row_selected());
+    assert_eq!(selection.position(), Some((0, 0)));
+
+    for (key, modifiers) in [
+        (egui::Key::Space, egui::Modifiers::SHIFT),
+        (egui::Key::ArrowDown, egui::Modifiers::NONE),
+    ] {
+        for pressed in [true, false] {
+            let (mut output, _, _) = selection_frame(
+                &context,
+                &data,
+                &mut selection,
+                vec![record_key(key, pressed, modifiers)],
+            );
+            output.textures_delta.clear();
+        }
+    }
+    assert!(!selection.row_selected());
+    assert_eq!(selection.text(&data), Some("1:0"));
+
+    let mut editor = String::new();
+    let mut output = context.run_ui(input(vec![]), |ui| {
+        ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")))
+            .request_focus();
+        let _ = show(ui, &data, &mut selection);
+    });
+    output.textures_delta.clear();
+    let mut output = context.run_ui(
+        input(vec![
+            record_key(egui::Key::Space, true, egui::Modifiers::SHIFT),
+            Event::Text(" ".into()),
+        ]),
+        |ui| {
+            ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")));
+            let _ = show(ui, &data, &mut selection);
+        },
+    );
+    output.textures_delta.clear();
+    assert_eq!(editor, " ");
+    assert!(!selection.row_selected());
+}
+
+fn record_key(key: egui::Key, pressed: bool, modifiers: egui::Modifiers) -> Event {
+    Event::Key {
+        key,
+        physical_key: None,
+        pressed,
+        repeat: false,
+        modifiers,
+    }
+}

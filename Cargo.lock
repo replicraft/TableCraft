@@ -4025,6 +4025,7 @@ dependencies = [
 name = "tablecraft-ui"
 version = "0.1.0"
 dependencies = [
+ "csv",
  "egui",
  "egui_extras",
 ]

@@ -54,6 +54,7 @@ impl State {
     pub fn can_view_contents(&self, target: &ContentsTarget) -> bool {
         if self.edit_dialog_open()
             || self.view != DocumentView::Table
+            || self.table_selection.row_selected()
             || self.backstage_visible()
             || self.database.as_ref().map(|db| db.document_revision)
                 != Some(target.document_revision)
@@ -149,6 +150,32 @@ impl State {
             return None;
         };
         dialog.selection.text(data)
+    }
+
+    pub(super) fn can_copy_contents_selection(&self) -> bool {
+        let Some(dialog) = &self.contents else {
+            return false;
+        };
+        if !self.can_view_contents(&dialog.target) {
+            return false;
+        }
+        match &dialog.result {
+            ContentsResult::Ready { data, .. } => dialog.selection.can_copy(data),
+            _ => false,
+        }
+    }
+
+    pub(super) fn copy_contents_selection(&mut self, ctx: &egui::Context) -> bool {
+        if !self.can_copy_contents_selection() {
+            return false;
+        }
+        let Some(dialog) = &mut self.contents else {
+            return false;
+        };
+        match &dialog.result {
+            ContentsResult::Ready { data, .. } => dialog.selection.copy(data, ctx),
+            _ => false,
+        }
     }
 
     pub fn close_contents(&mut self) {
