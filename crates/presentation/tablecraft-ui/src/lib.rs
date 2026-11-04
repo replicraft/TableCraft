@@ -9,7 +9,7 @@ pub use cells::{Cell, CellKind, DisplayControl};
 pub use theme::configure;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, EditDraft, EditInput, EditReview,
-    EditSaveOutcome, EditTarget, Field, Schema, State, Table,
+    EditSaveOutcome, EditTarget, Field, RecordTarget, Schema, State, Table,
 };
 
 #[cfg(test)]

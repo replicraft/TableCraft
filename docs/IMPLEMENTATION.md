@@ -13,7 +13,9 @@ native and eventual web hosts. Shared fonts live in `assets/ui/fonts`.
 File/Open now uses a full-page Backstage surface based on the retained Access
 capture, with actual Open/About controls and success-only return to the workspace.
 Datasheets now retain active-cell selection with bounded arrow navigation and
-screenshot-based row/column highlights. Home's Copy and table View commands use
+screenshot-based row/column highlights. A bottom record navigator now retains
+field selection across bounded pages with exact source/request binding and
+checked-EOF preservation. Home's Copy and table View commands use
 that presentation state and the existing metadata service.
 Typed Yes/No cells now honor explicit native checkbox declarations while keeping
 text-box overrides, uninspected metadata, NULL and cached-result facts separate.

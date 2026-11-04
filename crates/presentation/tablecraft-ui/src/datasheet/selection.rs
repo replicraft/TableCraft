@@ -22,6 +22,19 @@ impl Selection {
         }
     }
 
+    pub(crate) fn position(&self) -> Option<(usize, usize)> {
+        self.position
+    }
+
+    /// Explicit record navigation focuses and reveals the selected loaded cell.
+    pub(crate) fn select(&mut self, data: &Data, row: usize, column: usize) {
+        if data.rows.get(row).and_then(|row| row.get(column)).is_some() {
+            self.position = Some((row, column));
+            self.focus_pending = true;
+            self.scroll_pending = Some(row);
+        }
+    }
+
     pub(crate) fn clear(&mut self) {
         let surrender_focus = self.focus.or(self.surrender_focus);
         *self = Self::default();

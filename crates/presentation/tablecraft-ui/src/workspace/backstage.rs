@@ -118,7 +118,9 @@ impl State {
         });
         ui.add_space(12.0);
         ui.label("Open a stable copy or close other database writers before opening.");
-        ui.small("Read-only snapshot browsing. Original database files remain unchanged.");
+        ui.small(
+            "Opening does not change the file. Offline edits require explicit review and apply.",
+        );
     }
 
     fn about_pane(&self, ui: &mut Ui) {

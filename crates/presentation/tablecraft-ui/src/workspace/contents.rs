@@ -85,6 +85,7 @@ impl State {
     /// Bind the dialog to the actual host request, after target admission.
     pub fn begin_contents(&mut self, target: ContentsTarget, request_id: u64) {
         if self.can_view_contents(&target) {
+            self.reset_record_navigation();
             self.contents = Some(ContentsDialog {
                 target,
                 request_id,
