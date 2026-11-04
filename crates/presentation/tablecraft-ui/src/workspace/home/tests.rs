@@ -37,6 +37,14 @@ fn click(state: &mut State, context: &egui::Context, label: &str) -> (Vec<Action
             _ => None,
         })
         .expect("painted command or cell label");
+    click_at(state, context, position)
+}
+
+fn click_at(
+    state: &mut State,
+    context: &egui::Context,
+    position: egui::Pos2,
+) -> (Vec<Action>, FullOutput) {
     render(
         state,
         context,
@@ -172,4 +180,71 @@ fn home_view_buttons_use_existing_table_navigation_and_schema_actions() {
     assert!(actions.is_empty());
     assert!(state.backstage_visible());
     assert!(state.busy);
+}
+
+#[test]
+fn row_selector_and_home_copy_share_complete_displayed_record_and_publication_resets_mode() {
+    let context = egui::Context::default();
+    let mut state = State::default();
+    state.dismiss_backstage();
+    state.database = Some(super::super::Database {
+        document_revision: 4,
+        title: "Example".into(),
+        format: "ACE16".into(),
+        tables: vec![],
+        queries: vec![],
+    });
+    state.set_table_data(table());
+    let target = state.data.as_ref().unwrap().edit_target(0, 0).unwrap();
+    assert!(state.can_edit_cell(&target));
+    context.enable_accesskit();
+    let (_, output) = render(&mut state, &context, vec![]);
+    let bounds = output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .expect("actual accessibility tree")
+        .nodes
+        .iter()
+        .find_map(|(_, node)| {
+            if node.role() == egui::accesskit::Role::RowHeader
+                && node.label() == Some("Select record 101")
+            {
+                node.bounds()
+            } else {
+                None
+            }
+        })
+        .expect("actual record selector response bounds");
+    let position = egui::pos2(
+        ((bounds.x0 + bounds.x1) * 0.5) as f32,
+        ((bounds.y0 + bounds.y1) * 0.5) as f32,
+    );
+    let (actions, _) = click_at(&mut state, &context, position);
+    assert!(actions.is_empty());
+    assert!(state.record_selected());
+    assert!(state.selected_cell_text().is_none());
+    assert!(!state.can_edit_cell(&target));
+    let (actions, output) = click(&mut state, &context, "Copy");
+    assert!(actions.is_empty());
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText(
+                "Old first cell\tSelected full cell text\n".into(),
+            ))
+    );
+    let mut replacement = table();
+    replacement.rows[0][0] = "NEW first".into();
+    state.set_table_data(replacement);
+    assert!(!state.record_selected());
+    let (actions, output) = click(&mut state, &context, "Copy");
+    assert!(actions.is_empty());
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText("NEW first".into()))
+    );
 }

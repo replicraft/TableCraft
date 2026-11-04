@@ -16,7 +16,7 @@ contracts, and CLI composes these libraries. The allowlist is slightly broader
 than today's graph for already accepted directions; it is not a feature claim.
 
 `tablecraft-ui` lives under `crates/presentation/` and owns the working egui
-presentation. Its current policy permits no workspace dependencies: it receives
+presentation. Its current policy permits no local workspace-crate dependencies: it receives
 owned presentation state and user actions without opening databases or importing
 concrete adapters. `tablecraft-runtime` under `crates/application/` owns the
 headless backend worker, document reads and application operations. Its working

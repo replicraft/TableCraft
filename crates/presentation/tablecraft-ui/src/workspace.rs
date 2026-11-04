@@ -17,7 +17,7 @@ pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarge
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
-use crate::datasheet::{self, Selection};
+use crate::datasheet::Selection;
 use egui::Ui;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
@@ -158,7 +158,7 @@ impl State {
         self.query_data = Some(data);
     }
 
-    /// Full text of the retained selection in the visible loaded data only.
+    /// Full text of the visible single-cell selection; record selection is separate.
     pub fn selected_cell_text(&self) -> Option<&str> {
         if self.backstage_visible() || self.edit_dialog_open() {
             return None;
@@ -175,12 +175,66 @@ impl State {
         }
     }
 
-    pub fn copy_selected(&self, ctx: &egui::Context) -> bool {
-        let Some(text) = self.selected_cell_text() else {
+    pub fn can_copy_selection(&self) -> bool {
+        if self.backstage_visible() || self.edit_dialog_open() {
+            return false;
+        }
+        if self.contents_request_id().is_some() {
+            return self.can_copy_contents_selection();
+        }
+        let Some(data) = self.visible_data() else {
             return false;
         };
-        datasheet::copy_text(ctx, text);
-        true
+        match self.view {
+            DocumentView::Table => self.table_selection.can_copy(data),
+            DocumentView::Query if self.saved_query.active => {
+                self.saved_query.selection.can_copy(data)
+            }
+            DocumentView::Query => self.query_selection.can_copy(data),
+            DocumentView::Design => false,
+        }
+    }
+
+    fn record_selected(&self) -> bool {
+        if self.backstage_visible()
+            || self.edit_dialog_open()
+            || self.contents_request_id().is_some()
+        {
+            return false;
+        }
+        match self.view {
+            DocumentView::Table => self.table_selection.row_selected(),
+            DocumentView::Query if self.saved_query.active => {
+                self.saved_query.selection.row_selected()
+            }
+            DocumentView::Query => self.query_selection.row_selected(),
+            DocumentView::Design => false,
+        }
+    }
+
+    pub fn copy_selected(&mut self, ctx: &egui::Context) -> bool {
+        if self.backstage_visible() || self.edit_dialog_open() {
+            return false;
+        }
+        if self.contents_request_id().is_some() {
+            return self.copy_contents_selection(ctx);
+        }
+        match self.view {
+            DocumentView::Table => self
+                .data
+                .as_ref()
+                .is_some_and(|data| self.table_selection.copy(data, ctx)),
+            DocumentView::Query if self.saved_query.active => self
+                .saved_query
+                .data
+                .as_ref()
+                .is_some_and(|data| self.saved_query.selection.copy(data, ctx)),
+            DocumentView::Query => self
+                .query_data
+                .as_ref()
+                .is_some_and(|data| self.query_selection.copy(data, ctx)),
+            DocumentView::Design => false,
+        }
     }
 
     /// Record explicit navigation to Design before the host submits Describe.

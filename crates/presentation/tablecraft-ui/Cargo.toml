@@ -11,5 +11,6 @@ publish = false
 workspace = true
 
 [dependencies]
+csv.workspace = true
 egui = { workspace = true, features = ["default_fonts"] }
 egui_extras.workspace = true

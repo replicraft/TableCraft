@@ -616,6 +616,32 @@ field's own lost-focus Return as well as focused Return, with exact modifier
 checks. Strict selected-package Clippy, native build, formatting, dependency
 boundaries and documentation links pass. No full engine-suite rerun is claimed.
 
+## Displayed record selection and clipboard
+
+Datasheet row selectors now select one complete displayed record and expose an
+accessible RowHeader selection state. Shift+Space toggles between that record
+and its first field while the grid owns navigation focus; cell clicks and arrow
+navigation return to cell selection. This follows Microsoft's
+[record-selection shortcut](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+and [record-selector workflow](https://support.microsoft.com/en-us/access/ways-to-add-edit-and-delete-records).
+Text editors and modal controls keep their own keyboard input.
+
+Home, the row context menu and keyboard Copy use one selection owner. A selected
+record copies all displayed fields, without headers, through the existing csv
+crate's tab-delimited writer. Necessary quoting and its final LF count toward
+the 1 MiB limit; failure publishes no partial clipboard prefix. NULL and stored
+collection cells copy their displayed text/summaries, without child payloads.
+Single-cell Copy retains its full-value text contract. This is an explicit
+displayed-text interchange profile, not native Access clipboard or paste
+qualification.
+
+Record selection cannot issue single-cell edit or collection-opening commands.
+New Data publications reset it; table, SQL, saved-query and child-dialog
+selections remain separate. Query row selection grants no native row capability.
+The focused shared UI suite passes 57 tests, including actual selector/toolbar
+interaction, keyboard event ordering, publication reset, quoting expansion and
+failure atomicity. Native observations are recorded separately below when run.
+
 ## Saved-query objects and typed parameters
 
 The object pane now lists Tables and Queries from a single inert native catalog

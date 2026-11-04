@@ -98,6 +98,7 @@ impl State {
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
         if self.view != DocumentView::Table
+            || self.table_selection.row_selected()
             || self.backstage_visible()
             || self.contents_request_id().is_some()
             || self.database.as_ref().map(|db| db.document_revision)

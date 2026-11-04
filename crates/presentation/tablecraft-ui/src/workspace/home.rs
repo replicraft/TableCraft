@@ -45,7 +45,12 @@ impl State {
             ui.separator();
             ui.vertical(|ui| {
                 if ui
-                    .add_enabled(self.selected_cell_text().is_some(), Button::new("Copy"))
+                    .add_enabled(self.can_copy_selection(), Button::new("Copy"))
+                    .on_hover_text(if self.record_selected() {
+                        "Copy the complete displayed record as tab-delimited text, including collection summaries."
+                    } else {
+                        "Copy the full active cell text."
+                    })
                     .clicked()
                 {
                     self.copy_selected(ui.ctx());

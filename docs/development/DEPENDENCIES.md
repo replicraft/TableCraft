@@ -9,6 +9,13 @@ table helper. The desktop host enables eframe Glow, native platform windowing an
 AccessKit. These dependencies are absent from the runtime, native engine, query
 libraries and CLI dependency closure. The desktop does not depend on CLI or SQLite.
 
+Selected-record clipboard output now reuses workspace `csv` 1.4.0
+(Unlicense OR MIT) directly in the shared UI. `WriterBuilder` emits displayed
+field text as tab-delimited records with necessary quoting and LF termination.
+A checked, fallibly reserved sink bounds the encoded output, including quoting,
+to 1 MiB. This adds no registry version or feature change. It is a displayed-text
+clipboard contract, not native Access paste or attachment-payload transport.
+
 The renderer uses the upstream [eframe App contract](https://docs.rs/eframe/0.36.2/eframe/trait.App.html)
 and [egui tables](https://docs.rs/egui_extras/0.36.2/egui_extras/struct.TableBuilder.html).
 Window/device/accessibility behavior still needs qualification on each platform.
