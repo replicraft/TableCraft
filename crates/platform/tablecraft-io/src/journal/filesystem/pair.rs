@@ -4,14 +4,14 @@ pub use transfer::TargetTransferFailure;
 
 use super::storage::{PairedStorage, ResizablePairedTarget};
 use super::{
-    BindingError, OfflineTarget,
+    BindingError, OfflineTarget, TargetLockState,
     reopen::{self, ExistingBundle, ReopenError},
 };
 use super::{
     create,
     retirement::{self, FinalizationError, FinalizationPhase, TerminalPermit},
 };
-use crate::{IoError, journal::RecoveryOutcome};
+use crate::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use std::{error::Error, fmt, path::Path};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
@@ -97,6 +97,35 @@ impl PairSetupFailure {
     /// This is not proof that a directory exists or that an existing entry is owned.
     pub fn incomplete_setup(&self) -> bool {
         !self.incomplete.is_empty()
+    }
+
+    /// Explicitly unlock retained setup resources once, without deleting or
+    /// altering any existing/partial namespace entry. Original setup diagnostics
+    /// remain available. An unlock error retains every owner and forbids retry.
+    pub fn release_resources(&mut self) -> Result<(), PairError> {
+        self.release_with(ExclusiveFile::try_release, OfflineTarget::release)
+    }
+
+    fn release_with(
+        &mut self,
+        mut journal: impl FnMut(&mut ExclusiveFile) -> Result<(), IoError>,
+        target: impl FnOnce(&mut OfflineTarget) -> Result<(), IoError>,
+    ) -> Result<(), PairError> {
+        if self.target.lock_state() != TargetLockState::Held {
+            return Err(PairError::InvalidState);
+        }
+        // The real target owner marks ReleaseUncertain BEFORE its OS callback,
+        // then Released on acknowledgement. Reuse that authoritative state for
+        // one-shot release instead of adding another potentially divergent flag.
+        // Release target storage FIRST: a later journal error also cannot let
+        // into_target() recover an allegedly held target lease.
+        target(&mut self.target)?;
+        for bundle in &mut self.incomplete {
+            if let Some(held) = bundle.journal.as_mut() {
+                journal(held)?;
+            }
+        }
+        Ok(())
     }
 
     /// Recover the retained target. Dropping incomplete setup resources closes
@@ -469,3 +498,7 @@ impl OfflineJournalPair {
         Ok(())
     }
 }
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[path = "setup_release_tests.rs"]
+mod setup_release_tests;

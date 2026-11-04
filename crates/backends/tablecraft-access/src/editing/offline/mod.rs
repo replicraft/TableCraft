@@ -24,7 +24,7 @@ use tablecraft_ace::{InspectError, NativeImage};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{
     RecoveryOutcome,
-    filesystem::{OfflineJournalPair, OfflineTarget, PairSetupFailure, PairState},
+    filesystem::{OfflineJournalPair, OfflineTarget, PairError, PairSetupFailure, PairState},
 };
 use tablecraft_model::CatalogScope;
 
@@ -255,22 +255,30 @@ impl OfflineWriteSession {
         }
     }
 
-    /// Explicit unlock. No bundle entry is removed or state reset. Incomplete
-    /// setup stays retained for diagnosis rather than discarding its capabilities.
-    pub fn release(mut self) -> Result<(), Failure> {
+    /// Explicit unlock. No bundle entry is removed or repaired. Incomplete setup
+    /// releases its retained locks once, preserving namespace entries for diagnosis.
+    /// Every unlock error retains owners and excludes further release/storage.
+    pub fn release(self) -> Result<(), Failure> {
+        self.release_with_setup(PairSetupFailure::release_resources)
+    }
+
+    fn release_with_setup(
+        mut self,
+        release_setup: impl FnOnce(&mut PairSetupFailure) -> Result<(), PairError>,
+    ) -> Result<(), Failure> {
         let _span = tracing::debug_span!("access.offline.release").entered();
         let result = (|| {
             let slot = self.slot_mut()?;
-            if slot.setup.is_some()
-                || matches!(
-                    slot.state,
-                    SessionState::ReleaseUncertain | SessionState::Released
-                )
-            {
+            if matches!(
+                slot.state,
+                SessionState::ReleaseUncertain | SessionState::Released
+            ) {
                 return Err(Cause::InvalidState);
             }
             slot.state = SessionState::ReleaseUncertain;
-            if let Some(pair) = slot.pair.as_mut() {
+            if let Some(setup) = slot.setup.as_mut() {
+                release_setup(setup).map_err(Cause::ReleaseSetup)?;
+            } else if let Some(pair) = slot.pair.as_mut() {
                 pair.release().map_err(Cause::ReleasePair)?;
             } else {
                 slot.target

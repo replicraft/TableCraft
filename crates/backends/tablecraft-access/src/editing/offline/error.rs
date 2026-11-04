@@ -104,6 +104,9 @@ pub enum Cause {
     /// The cleaned pair could not transfer its still-held target.
     #[error(transparent)]
     Transfer(PairError),
+    /// Incomplete setup lock release failed; original setup diagnostics survive.
+    #[error(transparent)]
+    ReleaseSetup(PairError),
     /// Pair lock release failed; no implicit retry follows.
     #[error(transparent)]
     ReleasePair(PairError),

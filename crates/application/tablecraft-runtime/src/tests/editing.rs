@@ -198,7 +198,7 @@ fn reopening_invalidates_an_old_capability_and_input_does_not_become_sql() {
 }
 
 #[test]
-fn journal_collision_is_retained_and_cannot_be_acknowledged_as_a_failed_read() {
+fn journal_collision_retains_diagnostics_until_explicit_resource_release() {
     let original = mutation_fixture::database();
     let (directory, path, worker, revision) = opened(&original);
     let capability = review(&worker, revision, "42");
@@ -216,11 +216,27 @@ fn journal_collision_is_retained_and_cannot_be_acknowledged_as_a_failed_read() {
         Some(crate::SaveSessionState::IncompleteSetup)
     );
     assert!(!failure.can_recover);
-    assert!(!failure.can_release);
+    assert!(failure.can_release);
     assert!(!saves.acknowledge(id));
     assert!(saves.recover(id).is_err());
-    assert!(saves.release(id).is_err());
     assert_eq!(saves.poll(), Some(report));
+    let release = saves.release(id).unwrap();
+    assert_ne!(release, id);
+    let released = terminal(&saves);
+    assert_eq!(released.id, release);
+    assert!(matches!(
+        released.outcome,
+        SaveOutcome::Released {
+            current_outcome: None,
+            last_completed: None
+        }
+    ));
+    assert!(saves.acknowledge(release));
+    assert!(!saves.is_busy());
+    tablecraft_io::SharedFile::open(&path)
+        .unwrap()
+        .close()
+        .unwrap();
     assert_eq!(std::fs::read(path).unwrap(), original);
     assert_eq!(
         std::fs::read(bundle.join("sentinel")).unwrap(),
