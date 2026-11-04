@@ -1,4 +1,5 @@
 mod schema;
+mod stored;
 
 use super::{Command, Error, Response, Worker};
 use std::{
@@ -19,6 +20,12 @@ fn query(sql: &str) -> Command {
     Command::Query {
         sql: sql.to_owned(),
     }
+}
+
+fn row_texts(rows: &[Vec<crate::Cell>]) -> Vec<Vec<&str>> {
+    rows.iter()
+        .map(|row| row.iter().map(|cell| cell.text.as_str()).collect())
+        .collect()
 }
 
 fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {
@@ -82,7 +89,7 @@ fn native_sample_pages_and_queries_use_real_services() {
         panic!("expected data page");
     };
     assert_eq!(columns, ["Id", "Score"]);
-    assert_eq!(rows, [["1", "10"], ["2", "20"], ["3", "30"]]);
+    assert_eq!(row_texts(&rows), [["1", "10"], ["2", "20"], ["3", "30"]]);
     assert!(!has_more);
 
     let Response::Data {
@@ -99,7 +106,7 @@ fn native_sample_pages_and_queries_use_real_services() {
         panic!("expected buffered query result");
     };
     assert_eq!(columns, ["Id", "Score"]);
-    assert_eq!(rows, [["3", "30"], ["2", "20"]]);
+    assert_eq!(row_texts(&rows), [["3", "30"], ["2", "20"]]);
     assert!(!has_more);
     assert!(request(&worker, query("DELETE FROM [Items]")).is_err());
 

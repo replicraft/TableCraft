@@ -71,7 +71,11 @@ fn public_describe_preserves_original_names_widths_and_reader_policies() {
 fn describe_retains_unsupported_fields_without_claiming_readability() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("complex.accdb");
-    let original = complex_schema::database();
+    let mut original = complex_schema::database();
+    // Stored collection browsing can now admit qualified complex declarations.
+    // This remains a genuinely unknown native declaration, not an obsolete
+    // scalar-only refusal of a newly supported field family.
+    original[10 * 4096 + 63 + 25] = 0xff;
     std::fs::write(&path, &original).unwrap();
     let worker = Worker::new(|| {});
     request(&worker, open(&path, "")).unwrap();
@@ -89,13 +93,13 @@ fn describe_retains_unsupported_fields_without_claiming_readability() {
     let field = &fields[1];
     assert_eq!(field.name, "Score");
     assert_eq!(field.number, 1);
-    assert_eq!(field.native_type, 0x12);
+    assert_eq!(field.native_type, 0xff);
     assert_eq!(field.storage_bytes, 4);
     assert_eq!(field.flags, 3);
     assert_eq!(field.extended_flags, 0);
     assert_eq!(field.scalar_type, None);
     assert_eq!(field.reader_nullable, None);
-    assert_eq!(field.complex_type_id, Some(7));
+    assert_eq!(field.complex_type_id, None);
     assert!(matches!(
         request(
             &worker,

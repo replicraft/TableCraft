@@ -6,7 +6,7 @@ mod schema;
 
 pub use schema::{Field, Schema};
 
-use super::keyboard;
+use super::{Cell, keyboard};
 use egui::Ui;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
@@ -28,7 +28,7 @@ pub struct Data {
     pub table: String,
     pub offset: u32,
     pub columns: Vec<String>,
-    pub rows: Vec<Vec<String>>,
+    pub rows: Vec<Vec<Cell>>,
     pub has_more: bool,
 }
 
