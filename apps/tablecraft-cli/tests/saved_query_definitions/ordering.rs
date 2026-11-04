@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 #[test]
 fn saved_native_key_order_controls_headers_and_rows_without_rewriting_inert_inspection() {

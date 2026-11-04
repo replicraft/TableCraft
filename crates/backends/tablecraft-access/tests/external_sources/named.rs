@@ -1,5 +1,6 @@
 use super::*;
-use saved_fixture::{Fragment, QUERY_ID};
+use tablecraft_testkit::fixtures::access::saved_queries as saved_fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, QUERY_ID};
 
 fn row(attribute: u8) -> Fragment<'static> {
     Fragment {

@@ -3,6 +3,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_query::prepare;
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 fn edge<'a>(
     kind: i16,
     left: &'a str,

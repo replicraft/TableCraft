@@ -1,17 +1,14 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[path = "saved_queries/fixture.rs"]
-mod fixture;
-use tablecraft_testkit::fixtures::access as support;
-
-use fixture::{DEFINITION_PAGE, EMPTY_ID, Fragment, PAGE_BYTES, QUERY_ID, database, database_with};
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
-use support::put32;
 use tablecraft_ace::{
     InspectError, QueryAttribute, SavedQueryDefinition, read_saved_query_definition,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
+use tablecraft_testkit::fixtures::access::put32;
+use tablecraft_testkit::fixtures::access::saved_queries::{
+    DEFINITION_PAGE, EMPTY_ID, Fragment, PAGE_BYTES, QUERY_ID, database, database_with,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000)

@@ -10,6 +10,7 @@ use tablecraft_sql::{
     query::{ReadBody, Statement},
     select::ExternalDatabase,
 };
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 fn remote<'a>(path: Option<&'a str>, connection: Option<&'a str>) -> Fragment<'a> {
     Fragment {

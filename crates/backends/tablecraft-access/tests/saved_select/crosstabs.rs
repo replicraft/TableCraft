@@ -2,6 +2,7 @@ use super::*;
 use tablecraft_access::{NativeSource, reconstruct_saved_read};
 use tablecraft_core::values::Value;
 use tablecraft_query::{QueryError, prepare};
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 fn kind() -> Fragment<'static> {
     Fragment {

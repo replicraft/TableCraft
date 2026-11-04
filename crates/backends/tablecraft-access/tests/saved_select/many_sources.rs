@@ -7,6 +7,7 @@ use tablecraft_query::{
     source::{MemorySource, MemoryTable},
 };
 use tablecraft_schema::{Column, ScalarType};
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 fn aliases(count: usize) -> Vec<String> {
     (0..count).map(|index| format!("a{index}")).collect()

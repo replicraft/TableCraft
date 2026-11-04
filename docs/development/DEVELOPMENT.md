@@ -35,6 +35,15 @@ four affected packages and formatting. These fixture moves grant no additional
 write or event-coverage permission.
 See the [extraction record](../testing/results/ace16-before-change-shared-fixtures-2026-10-31.json).
 
+The saved-query raw fragment builder now belongs to
+`tablecraft-testkit::fixtures::access::saved_queries`. Engine, Access, CLI and
+runtime consumers import that owner directly. Its original builder body is
+unchanged after reversing the owning import; thirty-four existing consumers
+retain their test-body tokens. Historical verification records retain their
+original source paths and hashes. The extraction changes no native codec or
+query execution contract. Focused engine/Access/CLI/query checks pass 220 tests;
+they are not a native Access comparison.
+
 ## Toolchain and commands
 
 Install Rust through rustup. The repository selects Rust 1.99.0, edition 2024,

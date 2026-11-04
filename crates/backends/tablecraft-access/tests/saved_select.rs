@@ -1,4 +1,3 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[path = "saved_select/crosstabs.rs"]
 mod crosstabs;
 #[path = "saved_select/derived.rs"]
@@ -11,9 +10,6 @@ mod execution;
 mod external;
 #[path = "saved_select/external_tables.rs"]
 mod external_tables;
-#[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
-#[allow(dead_code)]
-mod fixture;
 #[path = "saved_select/forests.rs"]
 mod forests;
 #[path = "saved_select/identifiers.rs"]
@@ -30,13 +26,11 @@ mod parameter_prompts;
 mod parameters;
 #[path = "saved_select/qualified_fields.rs"]
 mod qualified_fields;
-use tablecraft_testkit::fixtures::access as support;
 #[path = "saved_select/unions.rs"]
 mod unions;
 #[path = "saved_select/wildcards.rs"]
 mod wildcards;
 
-use fixture::{Fragment, QUERY_ID, database_with_query_flags};
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use tablecraft_access::{SavedSelect, SavedSelectError as E, reconstruct_saved_select};
@@ -44,6 +38,9 @@ use tablecraft_ace::{SavedQueryDefinition, read_saved_query_definition};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_testkit::fixtures::access::saved_queries::{
+    Fragment, QUERY_ID, database_with_query_flags,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000)

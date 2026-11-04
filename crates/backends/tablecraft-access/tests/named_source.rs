@@ -1,7 +1,3 @@
-use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/saved_queries/fixture.rs"]
-mod fixture;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -12,7 +8,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
 
 const USER_DATA_PAGE: u64 = 12;
 struct Counting {

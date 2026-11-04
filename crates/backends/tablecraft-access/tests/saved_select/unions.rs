@@ -2,6 +2,7 @@ use super::*;
 use tablecraft_access::{NativeSource, reconstruct_saved_read};
 use tablecraft_core::values::Value;
 use tablecraft_query::{ExecutionOptions, prepare};
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 fn part(text: &str, first: bool) -> Fragment<'_> {
     Fragment {

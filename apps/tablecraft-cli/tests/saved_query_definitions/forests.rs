@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 fn saved(on: &str) -> Vec<u8> {
     let row = |attribute, ordinal: u8| Fragment {

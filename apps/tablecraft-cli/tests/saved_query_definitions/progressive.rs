@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 fn database(expression: &str, parameter: bool) -> Database {
     let row = |attribute| Fragment {

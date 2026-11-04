@@ -3,6 +3,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_query::{prepare, source::MemorySource};
+use tablecraft_testkit::fixtures::access::saved_queries::{Fragment, database_with_query_flags};
 
 fn parameter(name: &str) -> Fragment<'_> {
     Fragment {

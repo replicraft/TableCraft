@@ -2,6 +2,7 @@ use super::*;
 use tablecraft_access::NativeSource;
 use tablecraft_core::values::Value;
 use tablecraft_query::{ExecutionOptions, prepare};
+use tablecraft_testkit::fixtures::access::saved_queries::database_with_query_flags;
 
 #[test]
 fn stored_domain_arguments_preserve_omission_and_reusable_explicit_parameters() {

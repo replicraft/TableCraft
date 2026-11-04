@@ -2,6 +2,7 @@ use super::*;
 use tablecraft_access::{NativeSavedSelectError, NativeSource};
 use tablecraft_core::values::Value;
 use tablecraft_query::{ExecutionOptions, Source, prepare};
+use tablecraft_testkit::fixtures::access::saved_queries::{QUERY_ID, database_with_query_flags};
 
 #[test]
 fn explicitly_loaded_select_executes_against_the_same_native_source_and_parameters() {

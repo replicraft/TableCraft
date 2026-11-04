@@ -1,4 +1,6 @@
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 #[test]
 fn inline_punctuation_prompts_bind_as_names_instead_of_field_or_control_paths() {

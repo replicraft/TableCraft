@@ -1,4 +1,7 @@
 use super::*;
+use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::saved_queries as fixture;
+use tablecraft_testkit::fixtures::access::saved_queries::Fragment;
 
 const PAGE_BYTES: usize = 4096;
 const ITEMS_DATA_PAGE: usize = 12;
