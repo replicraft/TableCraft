@@ -22,3 +22,5 @@ native Access behavior; SQLite and native-project implementation are paused.
 
 Project container specifications remain in [formats](formats/), accepted decisions
 in [decisions](decisions/), and protocol contracts in [interfaces](interfaces/).
+
+- [Desktop UI scope and acceptance](ui/README.md)

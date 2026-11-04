@@ -2095,3 +2095,23 @@ integration. Qualified [List Definition agreement](access/containers/ACCESS_TEMP
 SOAP declarations before table reads. Broader defaults/types, wider XSD/native field
 fidelity and Access-created qualification remain required; this does not complete
 template read/query acceptance. See [stored-data scope](access/containers/ACCESS_TEMPLATE_DATA.md).
+
+
+## Desktop work authorized — 4 November 2026
+
+The user has reprioritized starting the desktop UI now. Complete backend parity
+is no longer a prerequisite for the first UI. Build the Access database browser
+and query workspace around current services, then use observed UI workflows to
+guide backend work. Keep SQLite/native projects and VBA execution deferred.
+
+The [desktop milestone](ui/DESKTOP.md) starts with inert opening, table navigation,
+bounded read-only datasheets and explicit SELECT execution. General native edits,
+schema/DDL creation and alteration, wider key/record allocation and constraints,
+full validation/data-macro semantics, shared-file concurrent writes and crash
+recovery qualification remain backend work. Existing qualified write profiles
+remain available through their current hosts. Read/query promotion, non-General
+text policies and native Windows/Access comparison remain separate gaps.
+
+Forms/report designers, visual query construction, imported application behavior,
+printing and polished accessible platform packaging follow the connected browser.
+This direction does not imply those application features are implemented.

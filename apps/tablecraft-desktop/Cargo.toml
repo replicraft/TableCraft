@@ -1,0 +1,23 @@
+[package]
+name = "tablecraft-desktop"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[[bin]]
+name = "tablecraft-desktop"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+eframe = { workspace = true, features = ["glow", "default_fonts", "accesskit", "wayland", "x11"] }
+egui.workspace = true
+tablecraft-ui.workspace = true
+clap.workspace = true
+zeroize = { workspace = true, features = ["alloc"] }
+tablecraft-runtime.workspace = true

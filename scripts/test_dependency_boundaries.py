@@ -38,6 +38,120 @@ class BoundaryTests(unittest.TestCase):
     def test_adapter_composition_and_generic_query_contracts_pass(self):
         self.assertEqual(violations(self.base), [])
 
+    def desktop_workspace(self):
+        data = deepcopy(self.base)
+        for added in [
+            package("tablecraft-model", "crates/foundation/tablecraft-model"),
+            package("tablecraft-io", "crates/platform/tablecraft-io"),
+            package("tablecraft-sql", "crates/query/tablecraft-sql"),
+        ]:
+            data["packages"].append(added)
+            data["workspace_members"].append(added["id"])
+        ui = package("tablecraft-ui", "crates/presentation/tablecraft-ui")
+        ui["dependencies"].append({"name": "egui"})
+        runtime = package(
+            "tablecraft-runtime", "crates/application/tablecraft-runtime",
+            ["tablecraft-access", "tablecraft-ace", "tablecraft-core", "tablecraft-model",
+             "tablecraft-io", "tablecraft-query", "tablecraft-sql"],
+        )
+        desktop = package(
+            "tablecraft-desktop", "apps/tablecraft-desktop",
+            ["tablecraft-ui", "tablecraft-runtime"], False,
+        )
+        desktop["dependencies"].append({"name": "eframe"})
+        for added in [ui, runtime, desktop]:
+            data["packages"].append(added)
+            data["workspace_members"].append(added["id"])
+        return data, ui, desktop
+
+    def test_presentation_and_desktop_working_composition_passes(self):
+        data, _, _ = self.desktop_workspace()
+        self.assertEqual(violations(data), [])
+
+    def test_presentation_has_no_workspace_backend_or_host_dependencies(self):
+        for target in ["tablecraft-core", "tablecraft-access", "tablecraft-ace",
+                       "tablecraft-query", "tablecraft-cli", "tablecraft-runtime",
+                       "tablecraft-desktop"]:
+            with self.subTest(target=target):
+                data, ui, _ = self.desktop_workspace()
+                ui["dependencies"].append({"name": target})
+                self.assertTrue(any(
+                    f"tablecraft-ui -> {target}" in error
+                    for error in violations(data)
+                ))
+
+    def test_existing_headless_packages_cannot_import_presentation_or_desktop(self):
+        for owner in ["tablecraft-core", "tablecraft-schema", "tablecraft-db",
+                      "tablecraft-ace", "tablecraft-access", "tablecraft-query",
+                      "tablecraft-cli", "tablecraft-runtime"]:
+            for target in ["tablecraft-ui", "tablecraft-desktop"]:
+                for kind in [None, "dev", "build"]:
+                    for identity in [
+                        {"name": target, "rename": "display"},
+                        {"name": "tablecraft-core", "path": (
+                            "/repo/crates/presentation/tablecraft-ui"
+                            if target == "tablecraft-ui"
+                            else "/repo/apps/tablecraft-desktop"
+                        )},
+                    ]:
+                        with self.subTest(owner=owner, target=target, kind=kind,
+                                          identity=identity):
+                            data, _, _ = self.desktop_workspace()
+                            package_under_test = next(
+                                candidate for candidate in data["packages"]
+                                if candidate["name"] == owner
+                            )
+                            package_under_test["dependencies"].append({
+                                **identity, "kind": kind, "optional": True,
+                                "target": 'cfg(target_os = "windows")',
+                            })
+                            self.assertTrue(any(
+                                f"{owner} -> {target}" in error
+                                for error in violations(data)
+                            ))
+
+    def test_desktop_remains_binary_only_and_does_not_import_cli(self):
+        data, _, desktop = self.desktop_workspace()
+        desktop["targets"].append({"kind": ["lib"]})
+        self.assertTrue(any("belongs under crates" in error for error in violations(data)))
+
+        data, _, desktop = self.desktop_workspace()
+        desktop["dependencies"].append({"name": "tablecraft-cli"})
+        self.assertTrue(any(
+            "tablecraft-desktop -> tablecraft-cli" in error
+            for error in violations(data)
+        ))
+
+    def test_desktop_backend_access_is_owned_by_runtime(self):
+        for target in ["tablecraft-core", "tablecraft-access", "tablecraft-ace",
+                       "tablecraft-model", "tablecraft-io", "tablecraft-query",
+                       "tablecraft-sql"]:
+            with self.subTest(target=target):
+                data, _, desktop = self.desktop_workspace()
+                desktop["dependencies"].append({"name": target})
+                self.assertTrue(any(
+                    f"tablecraft-desktop -> {target}" in error
+                    for error in violations(data)
+                ))
+
+    def test_runtime_testkit_dependency_remains_development_only(self):
+        for kind in [None, "build", "dev"]:
+            with self.subTest(kind=kind):
+                data, _, _ = self.desktop_workspace()
+                helper = package("tablecraft-testkit", "crates/engineering/tablecraft-testkit")
+                data["packages"].append(helper)
+                data["workspace_members"].append(helper["id"])
+                runtime = next(
+                    candidate for candidate in data["packages"]
+                    if candidate["name"] == "tablecraft-runtime"
+                )
+                runtime["dependencies"].append({"name": "tablecraft-testkit", "kind": kind})
+                errors = violations(data)
+                if kind == "dev":
+                    self.assertEqual(errors, [])
+                else:
+                    self.assertTrue(any("development-only" in error for error in errors))
+
     def test_engine_cannot_import_adapter_or_generic_db(self):
         for target in ["tablecraft-access", "tablecraft-db"]:
             with self.subTest(target=target):

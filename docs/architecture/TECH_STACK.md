@@ -41,9 +41,16 @@ study, defer and reject decisions. Existing adopted versions remain unchanged.
 ## Desktop typography decision
 
 Selawik is the selected font for the TableCraft UI. This is a frontend design
-decision; no font assets are bundled and no UI font loading is implemented yet.
-Review asset provenance and licensing, package the required fonts, and verify
-rendering, accessibility and fallback coverage when implementing the desktop UI.
+decision. The desktop implementation embeds the regular font from Microsoft's
+official Selawik 1.01 release with its SIL Open Font License. Egui fallback fonts
+remain available; typography, accessibility and platform coverage need GUI checks.
+See [asset provenance](../../assets/ui/fonts/README.md).
+
+The first native desktop implementation uses egui/eframe 0.36.2 with a custom
+Access-familiar workspace in `tablecraft-ui`; `tablecraft-desktop` hosts the window.
+`tablecraft-runtime` owns the working document/read-query tasks and cancellation
+without GUI dependencies. [Desktop scope](../ui/DESKTOP.md) records the read-only
+milestone and its limits.
 
 ## Standalone native engine direction
 

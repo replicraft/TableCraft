@@ -128,12 +128,14 @@ introduction. The target map includes implemented and prospective owners across
 | `tooling/` | `tablecraft-codegen`: later maintainable-source generation from the shared application model, independent of native scripting |
 | `engineering/` | `tablecraft-compat`: native Access oracle and differential checks; `tablecraft-testkit`: shared synthetic data, failpoints and deterministic helpers; `tablecraft-bench`: cross-subsystem measurement |
 
-Application hosts remain under `apps/`: the existing `tablecraft-cli`, a future
-native `tablecraft`, and a future browser `tablecraft-web`. Desktop and browser
-packages are introduced with runnable functionality, not empty application shells.
-UI technology, transport and other future dependency choices remain recorded in
-[TECH_STACK.md](TECH_STACK.md) and [LIBRARY_POLICY.md](../development/LIBRARY_POLICY.md); this map
-does not adopt additional dependencies.
+Application hosts remain under `apps/`: existing `tablecraft-cli` and the working
+`tablecraft-desktop` preview. Its window/startup/action bridge composes the actual
+`tablecraft-ui` shared presentation under `presentation/` and the headless
+`tablecraft-runtime` document/read-task service under `application/`. An eventual
+`tablecraft-web` may reuse the UI with its own host and platform capabilities.
+Fonts reside at `assets/ui/fonts`. No platform file/window/runtime service lives
+in the presentation crate. Desktop implementation began at the user's explicit
+request; the [desktop scope](../ui/DESKTOP.md) owns its acceptance status.
 
 The [standalone native engine requirement](NATIVE_ENGINE.md) separates reusable
 Jet/ACE implementation from TableCraft's adapter. External Rust applications must

@@ -1,0 +1,15 @@
+[package]
+name = "tablecraft-ui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+egui = { workspace = true, features = ["default_fonts"] }
+egui_extras.workspace = true
