@@ -1,8 +1,11 @@
 use egui::{Color32, Context, FontData, FontDefinitions, FontFamily, FontId, TextStyle, Visuals};
 
-pub const ACCENT: Color32 = Color32::from_rgb(151, 42, 57);
-pub const INK: Color32 = Color32::from_rgb(40, 45, 54);
-pub const MUTED: Color32 = Color32::from_rgb(107, 113, 123);
+pub const ACCENT: Color32 = Color32::from_rgb(185, 16, 38);
+pub const INK: Color32 = Color32::from_rgb(32, 32, 32);
+pub const MUTED: Color32 = Color32::from_rgb(96, 96, 96);
+pub const TITLE_FILL: Color32 = Color32::from_rgb(240, 240, 240);
+pub const GRID_HEADER: Color32 = Color32::from_rgb(225, 228, 232);
+pub const GRID_LINE: Color32 = Color32::from_rgb(217, 221, 226);
 
 /// Install bundled Selawik with egui's fallback glyph coverage and custom colors.
 pub fn configure(ctx: &Context) {
@@ -21,20 +24,20 @@ pub fn configure(ctx: &Context) {
     let mut style = (*ctx.style_of(egui::Theme::Light)).clone();
     style.visuals = Visuals::light();
     style.visuals.override_text_color = Some(INK);
-    style.visuals.panel_fill = Color32::from_rgb(247, 248, 250);
-    style.visuals.selection.bg_fill = Color32::from_rgb(244, 224, 229);
+    style.visuals.panel_fill = TITLE_FILL;
+    style.visuals.selection.bg_fill = Color32::from_rgb(166, 205, 234);
     style.visuals.selection.stroke.color = ACCENT;
-    style.spacing.item_spacing = egui::vec2(10.0, 8.0);
-    style.spacing.button_padding = egui::vec2(12.0, 7.0);
+    style.spacing.item_spacing = egui::vec2(6.0, 3.0);
+    style.spacing.button_padding = egui::vec2(7.0, 3.0);
     style
         .text_styles
-        .insert(TextStyle::Body, FontId::proportional(14.0));
+        .insert(TextStyle::Body, FontId::proportional(13.0));
     style
         .text_styles
-        .insert(TextStyle::Button, FontId::proportional(14.0));
+        .insert(TextStyle::Button, FontId::proportional(13.0));
     style
         .text_styles
-        .insert(TextStyle::Heading, FontId::proportional(24.0));
+        .insert(TextStyle::Heading, FontId::proportional(18.0));
     ctx.set_theme(egui::Theme::Light);
     ctx.set_style_of(egui::Theme::Light, style);
 }

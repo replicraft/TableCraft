@@ -1,0 +1,57 @@
+# Access visual references
+
+The initial shared desktop presentation is being corrected against three retained
+screenshots under private `docs/temp/Access Sample/`. They are local reference
+material, not copied assets or a public fixture requirement:
+
+| Private reference basename | Visible state | Useful observations |
+| --- | --- | --- |
+| `Bildschirmfoto_2026-10-28_12-07-35.png` | Table1 datasheet, Home ribbon | Light title chrome, white command ribbon, compact object navigation, separate object tab and dense gray-header grid; blue selected row and yellow active field header. |
+| `Bildschirmfoto_2026-10-28_12-07-50.png` | Table1 Design view | Field Name / Data Type / Description grid above a separate lower Field Properties area; contextual Table Design ribbon. |
+| `Bildschirmfoto_2026-10-28_12-09-31.png` | File / Account Backstage | Full-page Backstage with left navigation and content sections, distinct from an object document or small popup. |
+
+These are Windows Access captures inside VirtualBox. The title describes an
+Access 2016 database while the Account screen identifies Microsoft 365 Apps,
+version 2610, build 20527.20088. Do not infer a particular application's UI release
+from the database header or title alone. The screenshots include OS/VM chrome;
+that chrome does not belong in TableCraft's shared workspace. Account details
+are partly obscured and are not product content to reproduce.
+
+## Immediate presentation correction
+
+Use a compact light-gray application title area, white command surface and red
+accent rather than a large burgundy banner. Reduce broad button padding and
+heading emphasis. Move the functional table/query document switch above its
+content, separate from file-opening commands. Keep actual table names visible.
+The left object pane follows the reference's compact search and Tables grouping.
+
+The datasheet uses smaller rows and headers, narrower row numbers, gray column
+headers and fine grid separators while preserving virtual rows, resizing,
+keyboard focus and complete cell copying. Reference pixel sizes are proportions
+from a captured display, not platform-independent logical measurements. Current
+colors and spacing are approximations requiring visual comparison at the target
+scale; they are not measured pixel-exact matches.
+
+Only working commands remain interactive. File opening, passwords, cancellation,
+table pages and read queries retain their current paths. No mock Create ribbon,
+editable new-record row, Click to Add field, checkbox editing, query designer or
+Microsoft account service is introduced to fill the screenshot layout. The
+current file controls remain directly accessible; a complete File/Backstage
+workflow is further work.
+
+Schema presentation should follow the observed Design-view organization when
+implemented, with read-only facts clearly identified. A generic right-side field
+inspector is not established by these references. Native type codes, supported
+read carriers and uninspected properties must remain distinguishable; a familiar
+property-sheet shape does not justify inventing Required/default/validation facts.
+
+## Verification limits
+
+These references establish observed layout, not complete interaction, keyboard,
+accessibility, query or database semantics. Selawik is the selected bundled font;
+the captures do not prove every displayed font uses it. Retain native window
+management and fallback glyphs, then compare actual rendered TableCraft windows
+at representative scales. Headless tests and successful builds alone do not
+establish screenshot fidelity or native Access behavioral compatibility.
+
+[Desktop preview](DESKTOP.md) · [UI index](README.md)

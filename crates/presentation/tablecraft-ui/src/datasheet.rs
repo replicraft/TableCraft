@@ -1,4 +1,5 @@
 use super::Data;
+use crate::theme::{GRID_HEADER, GRID_LINE};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 
@@ -12,30 +13,34 @@ fn show_rows(ui: &mut Ui, data: &Data, mut row_drawn: impl FnMut(usize)) {
             .id_salt("datasheet_horizontal")
             .show(ui, |ui| {
                 TableBuilder::new(ui)
-                    .striped(true)
+                    .striped(false)
                     .resizable(true)
-                    .column(Column::exact(58.0))
-                    .columns(Column::initial(160.0).at_least(80.0), data.columns.len())
-                    .header(34.0, |mut header| {
+                    .column(Column::exact(28.0))
+                    .columns(Column::initial(128.0).at_least(60.0), data.columns.len())
+                    .header(22.0, |mut header| {
                         header.col(|ui| {
-                            ui.label(RichText::new("#").strong());
+                            grid_cell(ui, true);
+                            ui.label(RichText::new("#"));
                         });
                         for name in &data.columns {
                             header.col(|ui| {
-                                ui.label(RichText::new(name).strong());
+                                grid_cell(ui, true);
+                                ui.label(RichText::new(name));
                             });
                         }
                     })
                     .body(|body| {
-                        body.rows(30.0, data.rows.len(), |mut row| {
+                        body.rows(20.0, data.rows.len(), |mut row| {
                             let index = row.index();
                             row_drawn(index);
                             let number = u64::from(data.offset) + index as u64 + 1;
                             row.col(|ui| {
+                                grid_cell(ui, true);
                                 ui.weak(number.to_string());
                             });
                             for (column, text) in data.columns.iter().zip(&data.rows[index]) {
                                 row.col(|ui| {
+                                    grid_cell(ui, false);
                                     cell(ui, text, column, number);
                                 });
                             }
@@ -43,6 +48,18 @@ fn show_rows(ui: &mut Ui, data: &Data, mut row_drawn: impl FnMut(usize)) {
                     });
             });
     });
+}
+
+fn grid_cell(ui: &Ui, header: bool) {
+    let rect = ui.max_rect();
+    if header {
+        ui.painter().rect_filled(rect, 0.0, GRID_HEADER);
+    }
+    let stroke = egui::Stroke::new(0.5, GRID_LINE);
+    ui.painter()
+        .line_segment([rect.right_top(), rect.right_bottom()], stroke);
+    ui.painter()
+        .line_segment([rect.left_bottom(), rect.right_bottom()], stroke);
 }
 
 fn cell(ui: &mut Ui, text: &str, column: &str, row: u64) -> Response {
