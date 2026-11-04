@@ -53,6 +53,9 @@ pub enum Cause {
     /// This retained capability does not permit the requested transition.
     #[error("offline session state does not permit this operation")]
     InvalidState,
+    /// The retained target differs from the complete image reviewed by the host.
+    #[error("the database changed after it was viewed")]
+    SourceChanged,
     /// Native capture, allocation, cancellation or resource failure.
     #[error(transparent)]
     Native(InspectError),
